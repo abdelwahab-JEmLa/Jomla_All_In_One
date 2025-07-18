@@ -73,7 +73,7 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.repositorysMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.repoMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"

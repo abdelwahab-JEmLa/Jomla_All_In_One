@@ -49,7 +49,7 @@ fun get_Edited_M8BonVent(
     onShowToast: (ToastData) -> Unit
 ): Triple<M8BonVent?, M8BonVent, Modifier>? {
     val getFocusedVars = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
+    val repo8BonVent = aCentralFacade.repoMainGetter.repo8BonVent
     val currentPeriod = getFocusedVars.currentActiveFocuced_M14VentPeriode
 
     if (currentPeriod == null) {
@@ -90,7 +90,7 @@ fun ClientSearchItem(
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
 ) {
-    val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
+    val bonVentRepository = viewModel.aCentralFacade.repoMainGetter.repo8BonVent
 
     // Add toast state management
     var toastData by remember { mutableStateOf<ToastData?>(null) }

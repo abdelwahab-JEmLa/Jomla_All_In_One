@@ -138,15 +138,15 @@ fun LazyColumn_Client(
 ) {
     // Filter clients to show only those who have made purchases
     val clientsWithPurchases = remember(
-        viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        viewModel.aCentralFacade.repoMainGetter.repo2Client.datasValue,
+        viewModel.aCentralFacade.repoMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
     ) {
-        val allClients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
-        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        val allClients = viewModel.aCentralFacade.repoMainGetter.repo2Client.datasValue
+        val allBonVents = viewModel.aCentralFacade.repoMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue
+        val allAchatOperations = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
 
         // Get all client IDs that have purchases
         val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
@@ -197,13 +197,13 @@ fun Item_Client(
     // Calculate the number of different products this client has purchased
     val clientPurchaseInfo = remember(
         client.keyID,
-        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        viewModel.aCentralFacade.repoMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
     ) {
-        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        val allBonVents = viewModel.aCentralFacade.repoMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue
+        val allAchatOperations = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
 
         // Get all BonVents for this client
         val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == client.keyID }

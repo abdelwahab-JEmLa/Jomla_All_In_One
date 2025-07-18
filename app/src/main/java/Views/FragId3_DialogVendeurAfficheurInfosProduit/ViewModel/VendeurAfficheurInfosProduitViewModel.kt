@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModel
 class VendeurAfficheurInfosProduitViewModel(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-    val getter= aCentral.repositorysMainGetter
+    val getter= aCentral.repoMainGetter
 
     fun getRelatedFAchatCouleurOperation(): (ArticlesBasesStatsTable, Int) -> M10OperationVentCouleur? {
-        return aCentral.repositorysMainGetter::getVentForArticleAndColorInThisApp
+        return aCentral.repoMainGetter::getVentForArticleAndColorInThisApp
     }
 
 }

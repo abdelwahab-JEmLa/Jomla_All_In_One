@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBaseD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager.Repository
+import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

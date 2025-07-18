@@ -50,7 +50,7 @@ fun B_ItemMessagesVocale(
     relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repoMainGetter,
     list_D_EtateMessageVocale: List<M17MessageVocale>,
     uiState: UiState,
 ) {
@@ -178,7 +178,7 @@ fun B_ItemMessagesVocale(
                             messageVID = relative_M17MessageVocale.parentMessageVID,
                             timestamp = relative_M17MessageVocale.creationTimestamps,
                             datesHandler = datesHandler,
-                            parentD_EtateMessageVocale = relative_M17MessageVocale,
+                            relative_M17MessageVocale = relative_M17MessageVocale,
                             etatesChildKeyIDsList = list_D_EtateMessageVocale,
                             isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
                         )

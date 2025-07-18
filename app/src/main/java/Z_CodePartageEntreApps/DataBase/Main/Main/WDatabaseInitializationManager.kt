@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase
+package Z_CodePartageEntreApps.DataBase.Main.Main
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJu
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
@@ -24,13 +25,13 @@ class WDatabaseInitializationManager(
     val dataBaseInitFactory_14VentPeriode: DataBaseInitFactory_14VentPeriode,
     val dataBaseInitFactory_15Grossist: DataBaseInitFactory_15Grossist,
     val dataBaseInitFactory_11AchatOperation: DataBaseInitFactory_11AchatOperation,
+    val dataBaseInitFactory_8BonVent: DataBaseInitFactory_8BonVent,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
     private val scope = CoroutineScope(Dispatchers.Main)
 
     enum class Repository {
-        GBonVentEntity,
         FCouleurVentOperation,
         Z_AppComptEntity,
         D_ACHAT_OPERATION,
@@ -39,6 +40,7 @@ class WDatabaseInitializationManager(
         M14VentPeriode_Entity,
         M15Grossist_Entity,
         M11AchatOperation_Entity,
+        Entity_8BonVent,
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -116,6 +118,17 @@ class WDatabaseInitializationManager(
             scope.launch {
                val factory =dataBaseInitFactory_11AchatOperation
                 initRepo(Repository.M11AchatOperation_Entity.name, context) {
+                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        factory.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
+            scope.launch {
+               val factory =dataBaseInitFactory_8BonVent
+                initRepo(Repository.Entity_8BonVent.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)

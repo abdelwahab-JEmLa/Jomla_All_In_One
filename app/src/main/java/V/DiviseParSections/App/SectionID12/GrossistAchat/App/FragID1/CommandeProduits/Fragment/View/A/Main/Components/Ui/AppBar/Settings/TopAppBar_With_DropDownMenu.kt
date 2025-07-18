@@ -59,7 +59,7 @@ fun TopAppBar_With_DropDownMenu(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     uiState: GrossistAchatSec12FragID1_ViewModel.UiState
 ) {
-    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
+    val repositorysMainGetter = viewModel.aCentralFacade.repoMainGetter
     val data = repositorysMainGetter.repo10OperationVentCouleur.datasValue
 
     TopAppBar(
@@ -90,12 +90,12 @@ fun TopAppBar_With_DropDownMenu(
             val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
             val achats_Depuit_M11AchatOperation_List =
-                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation
                     .genere_Achats_Depuit_M11AchatOperation_List(
                         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                             .currentActiveFocuced_M14VentPeriode,
                         vents,
-                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+                        produits = viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
                     )
 
             DropdownMenu(
@@ -199,7 +199,7 @@ private fun ClearFilterButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
             text = { Text("Effacer le filtre") },
             onClick = {
                 // Clear the filter
-                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation
                     .updateFilterQuery(
                         V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation.FilterQuery.NO_FILTER
                     )
@@ -229,7 +229,7 @@ private fun Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel: Gro
 
                 keyID?.let { nonNullKeyID ->
                     viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_deleteMulti(
-                        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                        viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation
                             .datasValue.filter {
                                 it.parent_M14VentPeriod_KeyID == nonNullKeyID
                             }

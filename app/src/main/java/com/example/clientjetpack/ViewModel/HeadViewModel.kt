@@ -72,7 +72,7 @@ open class HeadViewModel(
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
-    val getter = aCentralFacade.repositorysMainGetter
+    val getter = aCentralFacade.repoMainGetter
 
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore

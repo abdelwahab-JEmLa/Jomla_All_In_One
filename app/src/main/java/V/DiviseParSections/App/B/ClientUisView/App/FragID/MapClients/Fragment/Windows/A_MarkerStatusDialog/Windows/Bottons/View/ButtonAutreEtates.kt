@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,13 +27,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import org.koin.compose.koinInject
 
 
 @Composable
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
-    aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     clickedClient: Long,
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
@@ -40,7 +41,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val context = LocalContext.current
     val relative_Etate = this
     val relative_M2Client =
-        aCentralFacade.repositorysMainGetter.repo2Client.datasValue.find { it.id == clickedClient }!!
+        aCentralFacade.repoMainGetter.repo2Client.datasValue.find { it.id == clickedClient }!!
 
     ModernToastMessage(
         toastData = toastData,
@@ -72,6 +73,13 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
                 aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
             }
+
+         /*   val target =
+                found_Or_Default_M8BonVent.found ?: found_Or_Default_M8BonVent.default_If_No_Found
+            val tar_Updated = focusedValuesGetter.active_Central_Values.copy(
+                active_M8BonVent_Pour_ReplayVocale = target
+            )
+            focusedValuesGetter.update_activeCentralValues(tar_Updated)          */
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(

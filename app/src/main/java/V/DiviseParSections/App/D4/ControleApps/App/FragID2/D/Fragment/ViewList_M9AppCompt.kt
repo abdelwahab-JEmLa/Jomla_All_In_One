@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 fun ViewList_M9AppCompt(
     viewModel: ViewModel_M9AppCompt
 ) {
-    val list_M9AppCompt = viewModel.aCentralFacade.repositorysMainGetter.repo9AppCompt.datasValue
+    val list_M9AppCompt = viewModel.aCentralFacade.repoMainGetter.repo9AppCompt.datasValue
 
     LazyColumn(
         modifier = Modifier

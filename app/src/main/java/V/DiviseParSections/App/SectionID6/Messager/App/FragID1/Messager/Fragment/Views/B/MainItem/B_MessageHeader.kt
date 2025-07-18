@@ -34,14 +34,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MessageHeader(
+    viewModel: ViewModelMessageur,
+    relative_M17MessageVocale: M17MessageVocale,
     clientName: String,
     vendorName: String,
     messageVID: Long,
     timestamp: Long,
     datesHandler: DatesHandler,
-    parentD_EtateMessageVocale: M17MessageVocale,
     etatesChildKeyIDsList: List<M17MessageVocale>,
-    viewModel: ViewModelMessageur,
     isFromActiveAccount: Boolean = false // NEW: Added parameter for styling
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -81,7 +81,17 @@ fun MessageHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                if (parentD_EtateMessageVocale.relativeAuDataBase == M17MessageVocale.TypeDeSonRelativeModel.C3_BonAchate) {
+                Text(
+                    text = relative_M17MessageVocale.getDebugInfos(),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+                if (relative_M17MessageVocale.relativeAuDataBase == M17MessageVocale.TypeDeSonRelativeModel.C3_BonAchate) {
                     Text(
                         text = clientName,
                         style = MaterialTheme.typography.titleSmall,
@@ -120,9 +130,9 @@ fun MessageHeader(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (parentD_EtateMessageVocale.nomDeSonOriginaleFichie.isNotEmpty()) {
+                if (relative_M17MessageVocale.nomDeSonOriginaleFichie.isNotEmpty()) {
                     Text(
-                        text = "Fichier: ${parentD_EtateMessageVocale.nomDeSonOriginaleFichie}",
+                        text = "Fichier: ${relative_M17MessageVocale.nomDeSonOriginaleFichie}",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isFromActiveAccount) {
                             MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
@@ -168,11 +178,11 @@ fun MessageHeader(
                 }
 
                 // Display Firebase sync status if available
-                if (parentD_EtateMessageVocale.keyID.isNotEmpty()) {
+                if (relative_M17MessageVocale.keyID.isNotEmpty()) {
                     val syncStatus =
-                        if (parentD_EtateMessageVocale.dernierTimeTampsSynchronisationAvecFireBase > 0) {
+                        if (relative_M17MessageVocale.dernierTimeTampsSynchronisationAvecFireBase > 0) {
                             val timeDiff =
-                                System.currentTimeMillis() - parentD_EtateMessageVocale.dernierTimeTampsSynchronisationAvecFireBase
+                                System.currentTimeMillis() - relative_M17MessageVocale.dernierTimeTampsSynchronisationAvecFireBase
                             when {
                                 timeDiff < 60000 -> "🟢 Synchronisé"
                                 timeDiff < 300000 -> "🟡 Sync récente"
@@ -260,7 +270,7 @@ fun MessageHeader(
     if (showDeleteConfirmation) {
         DeleteConfirmationDialog(
             onConfirm = {
-                viewModel.deleteData(parentD_EtateMessageVocale)
+                viewModel.deleteData(relative_M17MessageVocale)
                 etatesChildKeyIDsList.forEach { state ->
                     viewModel.deleteData(state)
                 }

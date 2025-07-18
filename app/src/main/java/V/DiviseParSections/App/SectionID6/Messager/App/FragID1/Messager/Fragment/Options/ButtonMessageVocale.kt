@@ -55,17 +55,16 @@ fun ButtonMessageVocale(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repoMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val relative_M17Message = focusedValuesGetter.active_Central_Values.m17Message_avec_BonVen
+    val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
         repositorysMainGetter.find_M8BonVent_By_KeyID(
             it
         )
     }
-
     val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
         .active_Current_M9AppCompt
@@ -177,19 +176,15 @@ fun ButtonMessageVocale(
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                val default_M17Message = M17MessageVocale.get_default()
-                                    .copy(
-                                        parent_M8BonVent_KeyID = relative_M17Message?.parent_M8BonVent_KeyID
-                                            ?: "null",
-                                        parent_M8BonVent_DebugInfos = relative_M17Message?.getDebugInfos()
-                                            ?: "null",
+                                val default_M17Message = relative_M17Message
+                                    ?.copy(
                                         nomDeSonOriginaleFichie = originalFileName,
                                         parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
                                         parent_M9AppCompt_DebugInfos = "Non Definie",
                                         parentMessageVID = parentMessageVID,
                                         etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
                                         creationTimestamps = datesHandler.getCurrentTimestamps()
-                                    )
+                                    )!!
 
                                 viewModel.addOrUpdateData(default_M17Message)
 
@@ -270,12 +265,10 @@ fun ButtonMessageVocale(
                                             etate = M17MessageVocale.Etate.ENVOYER,
                                             creationTimestamps = datesHandler.getCurrentTimestamps()
                                         )
-                                        
-                                        aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(updatedEtate)
 
-                                        update_M8BonVent?.let { bonVent ->
-                                            aCentralFacade.repositorysMainSetter.update_M8BonVent(bonVent)
-                                        }
+                                        aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(
+                                            updatedEtate
+                                        )
 
                                         Toast.makeText(
                                             context,

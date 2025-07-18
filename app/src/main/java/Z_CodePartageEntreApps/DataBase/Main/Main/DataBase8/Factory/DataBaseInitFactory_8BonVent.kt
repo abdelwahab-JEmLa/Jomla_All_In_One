@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base
+package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory
 
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.onLoadCategoriesFromCsv
-import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.onLoadFromFireBase
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager.Repository
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadCategoriesFromCsv
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadFromFireBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -13,16 +13,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DataBaseCreationFactoryGBonVent(
+class DataBaseInitFactory_8BonVent(
     appDatabase: AppDatabase
 ) {
     val dao = appDatabase.GBonVentDao()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
 
     val repoRef = M8BonVent.ref
-    val repoEntityName = "DataBaseCreationFactoryGBonVent"
+    val repoEntityName = "DataBaseInitFactory_8BonVent"
     val repoTAG = repoEntityName
-    val name = Repository.GBonVentEntity.name
+    val name = Repository.Entity_8BonVent.name
     var isListenerRegistered = false
 
     suspend fun init(

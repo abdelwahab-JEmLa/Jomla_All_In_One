@@ -84,7 +84,7 @@ fun Header(
             }
 
             val grossist = firstAchatOperation?.let { achat ->
-                viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+                viewModel.aCentralFacade.repoMainGetter.repo15Grossist.datasValue
                     .find { it.keyID == achat.parent_M15Grossist_KeyID }
             }
 

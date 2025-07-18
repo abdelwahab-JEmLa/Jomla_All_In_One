@@ -25,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
-    val m17Message_avec_BonVen: M17MessageVocale? =null,
+    val active_OpnerDialog_M17MessageVocale: M17MessageVocale? =null,
 ) {
     companion object{
         fun get_Default(): ActiveCentralValues {

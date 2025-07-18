@@ -268,7 +268,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListBonAchat = mutableStateListOf<M8BonVent>()
                 snapListBonAchat.addAll(bonAchatTestData)
-                DataBaseCreationFactoryGBonVent.updateMultiDatas(snapListBonAchat)
+                DataBaseInitFactory_8BonVent.updateMultiDatas(snapListBonAchat)
                 Log.d(
                     TAG,
                     "Added ${bonAchatTestData.size} hardcoded BonAchat items to repository"

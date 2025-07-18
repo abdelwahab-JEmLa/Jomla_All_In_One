@@ -267,7 +267,7 @@ class DatesHandler {
         }
     }
     companion object{
-        fun creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps: Long): String {
+        fun creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps: Long): Pair<String, String> {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = creationTimestamps
 
@@ -294,7 +294,7 @@ class DatesHandler {
             val minuteStr = if (minute < 10) "0$minute" else "$minute"
             val secondStr = if (second < 10) "0$second" else "$second"
 
-            return "$dayName $hour12:$minuteStr:$secondStr $amPm"
+            return Pair(dayName,"$hour12:$minuteStr:$secondStr $amPm")
         }
     }
 }

@@ -29,7 +29,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
-    val getter = aCentralFacade.repositorysMainGetter
+    val getter = aCentralFacade.repoMainGetter
     val setter =aCentralFacade.repositorysMainSetter
     val audioRecorderAndPlayHandler =aCentralFacade.modulesCentral.audioRecorderAndPlayHandler
 

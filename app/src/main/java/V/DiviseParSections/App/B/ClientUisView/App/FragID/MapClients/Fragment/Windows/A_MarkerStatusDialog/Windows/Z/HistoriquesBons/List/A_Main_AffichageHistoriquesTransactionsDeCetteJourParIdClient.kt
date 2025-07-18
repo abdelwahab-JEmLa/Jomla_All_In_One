@@ -2,7 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.Filter.MainFilter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -16,19 +18,22 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
+    repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repoMainGetter.repo8BonVent,
     markerStatusDialogM2Client: M2Client?=null,
 ) {
     Column {
         Text(
+            modifier =
+                Modifier
+                    .getSemanticsTag(repo8BonVent.datasValue,"")
+                    .padding(vertical = 8.dp)
+            ,
             text = buildString {
                 append((markerStatusDialogM2Client?.nom ?: "null"))
                 append(" ")
                 append("سجل المعاملات")
             },
-            style = MaterialTheme.typography.titleMedium,
-            modifier =
-                Modifier
-                    .padding(vertical = 8.dp)
+            style = MaterialTheme.typography.titleMedium
         )
 
         MainFilter(

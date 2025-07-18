@@ -105,7 +105,7 @@ fun DetailsBonVent(
                     onPrint = {
                         printHandler.printVentReceipt(
                             context = context,
-                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos ,
+                            repo13TarificationInfos = viewModel.aCentralFacade.repoMainGetter.repo13TarificationInfos ,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
                             repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,

@@ -45,7 +45,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview.Preview_DataBaseInitFactory_15Grossist
-import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
@@ -53,7 +53,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
+import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
@@ -142,7 +142,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
-    single<DataBaseCreationFactoryGBonVent> { DataBaseCreationFactoryGBonVent(get()) }
+    single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
     single { Repo17MessageVocale(androidContext(), get()) }
     single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().D_AchatOperationDao()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
@@ -159,7 +159,7 @@ val classesHandlersModule = module {
     single { PrintReceiptHandler_Juil() }
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get()) }
-    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(), get(), ) }
+    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(), get(),get(), ) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

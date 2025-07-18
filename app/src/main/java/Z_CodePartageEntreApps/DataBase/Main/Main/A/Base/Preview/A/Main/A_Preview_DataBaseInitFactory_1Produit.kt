@@ -41,7 +41,7 @@ fun Preview_DataBaseInitFactory_1Produit() {
 fun Main_DataBaseInitFactory_1Produit(
     aCentralFacade: ACentralFacade = koinInject(),
 ) {
-    val loadingProgress = aCentralFacade.repositorysMainGetter.loadingProgress ?: 0f
+    val loadingProgress = aCentralFacade.repoMainGetter.loadingProgress ?: 0f
 
     when {
         loadingProgress < 1.0f -> LoadingScreen(loadingProgress)
@@ -67,8 +67,8 @@ fun MainScreen(
         }
     }
 
-    val repoDatas = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
-    val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+    val repoDatas = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
+    val currentProducts = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
     val new_Edited_Datas = old_Datas.mapNotNull { old ->
         val m1Produit_IN_New = currentProducts.find { it.id.toInt() == old.idArticle }
         m1Produit_IN_New?.copy(quantite_Boit_Par_Carton = old.nmbrCaron)

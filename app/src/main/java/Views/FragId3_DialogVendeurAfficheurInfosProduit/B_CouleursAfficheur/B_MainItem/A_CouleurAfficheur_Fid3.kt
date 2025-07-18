@@ -85,7 +85,7 @@ fun B_CouleurAfficheur(
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
-    val vent = viewModel.aCentral.repositorysMainGetter.getVentForArticleAndColorInThisApp(
+    val vent = viewModel.aCentral.repoMainGetter.getVentForArticleAndColorInThisApp(
         article,
         colorIndex
     )
@@ -321,11 +321,11 @@ fun B_CouleurAfficheur(
     article: ArticlesBasesStatsTable,
     colorIndex: Int
 ) {
-    val couleur = viewModel.aCentral.repositorysMainGetter.relatedCouleurKeyParAncienMethod(
+    val couleur = viewModel.aCentral.repoMainGetter.relatedCouleurKeyParAncienMethod(
         article,
         colorIndex
     )
-    val vent = viewModel.aCentral.repositorysMainGetter.getVentForArticleAndColorInThisApp(
+    val vent = viewModel.aCentral.repoMainGetter.getVentForArticleAndColorInThisApp(
         article,
         colorIndex
     )

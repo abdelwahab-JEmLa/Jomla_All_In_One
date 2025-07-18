@@ -98,11 +98,14 @@ data class M17MessageVocale(
 ) {
     fun getDebugInfos(): String {
         return buildString {
-            append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
+            append("Mes_17")
+            append("[")
+            append("{${keyID.takeLast(4).uppercase()}}\n")
             append(" To ")
-            append(creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps))
+            append(creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps).second)
             append(" To ")
             append(etate)
+            append("]")
         }
     }
 

@@ -109,7 +109,7 @@ fun ViewVentCouleur_T1(
             onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
         }
     }
-    val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    val datasValue = viewModel.aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue
     val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
     val default_Tariff = M13TarificationInfos.get_default_P0(produit,start_Prix_Depuit_Ancient = produit.prixAchat)
 
@@ -243,7 +243,7 @@ fun ViewVentCouleur_T1(
                 }
 
                 if (updatedVent != null) {
-                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                    viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.addOrUpdateData(
                         updatedVent
                     )
                 }

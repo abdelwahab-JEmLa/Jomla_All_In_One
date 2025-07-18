@@ -61,10 +61,11 @@ fun View_MainItem(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8BonVent: M8BonVent,
-    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
+    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter
 ) {
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
+
 
     // Check if M17Message has an original file to play
     val hasVoiceMessage = relative_M17Message?.nomDeSonOriginaleFichie != null &&
@@ -81,7 +82,7 @@ fun View_MainItem(
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
-    val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
+    val repo17MessageVocaleData by aCentralFacade.repoMainGetter.repo17MessageVocale.datasValue.collectAsState()
 
     // State for dropdown menu
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -216,51 +217,58 @@ fun View_MainItem(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-                val rel_8 =
-                    Box {
-                        IconButton(
-                            modifier = Modifier
-                                .getSemanticsTag(
-                                    "d", "d"
-                                ),
-                            onClick = { showDropdownMenu = true }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Options de statut",
-                                tint = Color.White
-                            )
+                Box {
+                    IconButton(
+                        modifier = Modifier
+                            .getSemanticsTag(
+                                "d", "d"
+                            ),
+                        onClick = {
+                            showDropdownMenu = true
                         }
-
-                        StatusDropdownMenu(
-                            relative_M8BonVent = relative_M8BonVent,
-                            viewModel = viewModel,
-                            expanded = showDropdownMenu,
-                            onDismissRequest = { showDropdownMenu = false },
-                            onStatusSelected = { status ->
-                                val relative_M17MessageVocale = M17MessageVocale
-                                    .get_default()
-                                    .copy(
-                                        parent_M8BonVent_KeyID = relative_M8BonVent.keyID,
-                                        parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos()
-                                    )
-
-                                val new = focusedValuesGetter.active_Central_Values.copy(
-                                    m17Message_avec_BonVen = relative_M17MessageVocale,
-                                )
-                                focusedValuesGetter.update_activeCentralValues(new)
-
-                                val updatedBonVent = relative_M8BonVent
-                                    .copy(
-                                        etateActuellementEst = status,
-                                    )
-
-                                viewModel.getter.repo8BonVent.upsert(updatedBonVent)
-
-                                selectedStatus = status
-                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Options de statut",
+                            tint = Color.White
                         )
                     }
+
+                    StatusDropdownMenu(
+                        relative_M8BonVent = relative_M8BonVent,
+                        viewModel = viewModel,
+                        expanded = showDropdownMenu,
+                        onDismissRequest = { showDropdownMenu = false },
+                        onStatusSelected = { status ->
+                            val new_M17MessageVocale = M17MessageVocale
+                                .get_default()
+                                .copy(
+                                    parent_M8BonVent_KeyID = relative_M8BonVent.keyID,
+                                    parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
+                                )
+
+                            val updated_active_Central_Values =
+                                focusedValuesGetter.active_Central_Values.copy(
+                                    active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
+                                )
+
+                            focusedValuesGetter.update_activeCentralValues(
+                                updated_active_Central_Values
+                            )
+
+                            val updatedBonVent = relative_M8BonVent
+                                .copy(
+                                    etateActuellementEst = status,
+                                    parent_M17Message_KeyID = new_M17MessageVocale.keyID,
+                                    parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
+                                    )
+
+                            viewModel.getter.repo8BonVent.upsert(updatedBonVent)
+
+                            selectedStatus = status
+                        }
+                    )
+                }
             }
 
             Column(

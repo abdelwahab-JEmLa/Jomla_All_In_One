@@ -40,9 +40,9 @@ fun TariffsButtonsSec7ID2(
     val bonVentList = viewModel.getter.repo8BonVent.datasValue
     val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
     val tarificationList = repo13TarificationInfos.datasValue
-    val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+    val repo10OperationVentCouleur = viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur
     val relative_List_M10Vent = repo10OperationVentCouleur.datasValue
-    val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+    val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
 
     val focusedProduct by remember {
         derivedStateOf {

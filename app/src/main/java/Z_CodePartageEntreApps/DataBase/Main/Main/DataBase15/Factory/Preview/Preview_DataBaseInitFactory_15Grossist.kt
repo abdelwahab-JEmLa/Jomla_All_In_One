@@ -104,7 +104,7 @@ private fun Preview_DataBaseInitFactory_15Grossist() {
 private fun Main_DataBaseInitFactory_15Grossist(
     viewModel: Preview_DataBaseInitFactory_15Grossist = koinViewModel()
 ) {
-    val loadingProgress = viewModel.aCentralFacade.repositorysMainGetter.loadingProgress ?: 0f
+    val loadingProgress = viewModel.aCentralFacade.repoMainGetter.loadingProgress ?: 0f
     when {
         loadingProgress < 1.0f -> LoadingScreen(loadingProgress)
         else -> MainScreen(viewModel)
@@ -127,7 +127,7 @@ private fun MainScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Top_App_Bar_With_DropdownMenu(viewModel: Preview_DataBaseInitFactory_15Grossist) {
-    val datas = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+    val datas = viewModel.aCentralFacade.repoMainGetter.repo15Grossist.datasValue
     TopAppBar(
         modifier = Modifier.getSemanticsTag(datas, "datas"),
         title = { Text("15Grossist") },

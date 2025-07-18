@@ -10,7 +10,7 @@ fun get_UdatedDatas(
     aCentralFacade: ACentralFacade = koinInject(),
     oldDatas: List<OldDataBase_M1>,
 ): Unit {
-    val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+    val currentProducts = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
 
     oldDatas.forEach { old ->
         val m1Produit_IN_New = currentProducts.find { it.id == old.id }

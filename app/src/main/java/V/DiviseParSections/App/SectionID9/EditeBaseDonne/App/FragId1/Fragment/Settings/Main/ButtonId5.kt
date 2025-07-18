@@ -28,8 +28,8 @@ import java.io.File
 @Composable
 fun ButtonId5(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    list_M1Produit: List<ArticlesBasesStatsTable> = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
-    list_CategoriesTabelle: List<CategoriesTabelle> = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue,
+    list_M1Produit: List<ArticlesBasesStatsTable> = viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue,
+    list_CategoriesTabelle: List<CategoriesTabelle> = viewModel.aCentralFacade.repoMainGetter.repoM16CategorieProduit.datasValue,
     showLabels: Boolean,
     onImportSuccess: () -> Unit = {}
 ) {

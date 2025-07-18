@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Stable
@@ -27,7 +27,7 @@ import java.util.Objects
 @Stable
 class Repo8BonVent(
     private val context: Context,
-    val dataBaseCreationFactory: DataBaseCreationFactoryGBonVent,
+    val dataBaseCreationFactory: DataBaseInitFactory_8BonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -185,11 +185,13 @@ data class M8BonVent(
 
     fun get_DebugInfos(): String {
         return buildString {
-            append("Etate:(parentM2")
-            append(parent_M2Client_KeyID)
+            append("Bon")
+            append("[")
+            append("p.cli->")
+            append(parent_M2Client_DebugInfos)
             append(") ")
             append("[")
-            append(keyID.takeLast(3).uppercase())
+            append(keyID.takeLast(4))
             append("])")
         }
     }

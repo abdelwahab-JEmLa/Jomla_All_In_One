@@ -46,7 +46,8 @@ fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_App
 }
 // For Z_AppComptEntity CSV
 fun parseCsvLine(line: String): Z_AppCompt {
-    val values = Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.parseCsvValues(line)
+    val values =
+        Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.parseCsvValues(line)
 
     if (values.size < 12) { // Adjust based on Z_AppComptEntity fields
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")

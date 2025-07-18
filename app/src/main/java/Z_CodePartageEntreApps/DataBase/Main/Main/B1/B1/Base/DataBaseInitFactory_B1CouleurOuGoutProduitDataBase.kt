@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
+import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

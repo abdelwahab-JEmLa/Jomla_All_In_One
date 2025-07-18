@@ -25,7 +25,7 @@ fun Screen_GrossistAchatSec12FragID1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repo = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+    val repo = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar_With_DropDownMenu(viewModel, uiState)
