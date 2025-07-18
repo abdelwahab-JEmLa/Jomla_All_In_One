@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,13 +64,15 @@ fun View_MainItem(
     relative_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter
 ) {
+    val activeCentralValues by remember {
+        derivedStateOf { focusedValuesGetter.active_Central_Values }
+    }
+
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
 
-
-    // Check if M17Message has an original file to play
-    val hasVoiceMessage = relative_M17Message?.nomDeSonOriginaleFichie != null &&
-            relative_M17Message.nomDeSonOriginaleFichie != "null"
+    val hasVoiceMessage = relative_M17Message?.nomDeSonOriginaleFichie != null
+            && relative_M17Message.nomDeSonOriginaleFichie != "null"
 
     val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
@@ -159,16 +162,19 @@ fun View_MainItem(
                 .getSemanticsTag(
                     repo17MessageVocaleData,
                     "repo17MessageVocale"
-                )  // Fixed: Use properly observed data
+                )
                 .getSemanticsTag(
                     repo17MessageVocaleData
                         .sortedByDescending { it.creationTimestamps }
                         .map { it.getDebugInfos() },
                     "repo17MessageVocale_mapped"
-                ) // Fixed: Use proper data source and cleaner debug tag
+                )
+                .getSemanticsTag(
+                    activeCentralValues,
+                    "activeCentralValues"
+                )
                 .fillMaxWidth()
         ) {
-            // Delete button at top start
             IconButton(
                 onClick = {
                     viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
@@ -248,7 +254,7 @@ fun View_MainItem(
                                 )
 
                             val updated_active_Central_Values =
-                                focusedValuesGetter.active_Central_Values.copy(
+                                activeCentralValues.copy(
                                     active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
                                 )
 
@@ -261,7 +267,7 @@ fun View_MainItem(
                                     etateActuellementEst = status,
                                     parent_M17Message_KeyID = new_M17MessageVocale.keyID,
                                     parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
-                                    )
+                                )
 
                             viewModel.getter.repo8BonVent.upsert(updatedBonVent)
 
@@ -275,8 +281,9 @@ fun View_MainItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .padding(top = 32.dp)
+                    .padding(top = 32.dp) // Space for top buttons
             ) {
+                // Transaction info row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -305,7 +312,8 @@ fun View_MainItem(
                                 relative_M8BonVent.creationTimestamps
                             ).time
                         }",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -314,18 +322,21 @@ fun View_MainItem(
                         text = etateActuellementEst.nomArabe,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
+                        color = Color.White
                     )
 
                     Text(
                         text = relative_M8BonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
 
-                // Voice message player section - NOW USES M17Message original file
+                // Voice message player section - FIXED: Progress bar layout
                 if (hasVoiceMessage) {
                     Row(
                         modifier = Modifier
@@ -333,6 +344,7 @@ fun View_MainItem(
                             .padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Play/Stop button
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
@@ -352,14 +364,14 @@ fun View_MainItem(
                                         }
 
                                         else -> {
-                                            // Use the original file name from M17Message instead of vocaleKeyID
                                             val audioSource =
-                                                relative_M17Message?.nomDeSonOriginaleFichie ?: ""
+                                                relative_M17Message?.nomDeSonOriginaleFichie
+                                                    ?: ""
                                             val playResult =
                                                 audioRecorderAndPlayHandler.startPlayback(
                                                     context = context,
                                                     parentMessageVID = relative_M8BonVent.vid,
-                                                    firebaseUrl = audioSource, // Use the original file name/path
+                                                    firebaseUrl = audioSource,
                                                     onPlaybackComplete = {
                                                         if (!relative_M8BonVent.sonVocaleEstEcoute) {
                                                             val currentTimestamp =
@@ -411,68 +423,59 @@ fun View_MainItem(
                             )
                         }
 
-                        // Show original file name
-                        Text(
-                            text = relative_M17Message?.nomDeSonOriginaleFichie?.let { fileName ->
-                                if (fileName.length > 20) fileName.take(17) + "..." else fileName
-                            } ?: "Fichier audio",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
+                        // FIXED: Progress indicator with proper layout
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            when {
+                                isCurrentlyDownloading -> {
+                                    LinearProgressIndicator(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .clip(RoundedCornerShape(3.dp)),
+                                        color = Color.White,
+                                        trackColor = Color.White.copy(alpha = 0.3f)
+                                    )
+                                }
 
-                        Spacer(modifier = Modifier.weight(1f))
+                                isCurrentlyPlaying && playbackProgress.duration > 0 -> {
+                                    LinearProgressIndicator(
+                                        progress = { playbackProgress.progress.coerceIn(0f, 1f) },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .clip(RoundedCornerShape(3.dp)),
+                                        color = Color.White,
+                                        trackColor = Color.White.copy(alpha = 0.3f)
+                                    )
+                                }
 
-                        // Progress indicator
-                        when {
-                            isCurrentlyDownloading -> {
-                                LinearProgressIndicator(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(4.dp)
-                                        .padding(horizontal = 8.dp)
-                                        .clip(RoundedCornerShape(2.dp)),
-                                    color = Color.White,
-                                    trackColor = Color.White.copy(alpha = 0.3f)
-                                )
-                            }
-
-                            isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                                LinearProgressIndicator(
-                                    progress = { playbackProgress.progress.coerceIn(0f, 1f) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(4.dp)
-                                        .padding(horizontal = 8.dp)
-                                        .clip(RoundedCornerShape(2.dp)),
-                                    color = Color.White,
-                                    trackColor = Color.White.copy(alpha = 0.3f)
-                                )
-                            }
-
-                            else -> {
-                                LinearProgressIndicator(
-                                    progress = { 0f },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(4.dp)
-                                        .padding(horizontal = 8.dp)
-                                        .clip(RoundedCornerShape(2.dp)),
-                                    color = Color.White.copy(alpha = 0.5f),
-                                    trackColor = Color.White.copy(alpha = 0.2f)
-                                )
+                                else -> {
+                                    LinearProgressIndicator(
+                                        progress = { 0f },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .clip(RoundedCornerShape(3.dp)),
+                                        color = Color.White.copy(alpha = 0.5f),
+                                        trackColor = Color.White.copy(alpha = 0.2f)
+                                    )
+                                }
                             }
                         }
 
                         // Status and time display
                         Column(
-                            modifier = Modifier.padding(start = 4.dp),
+                            modifier = Modifier.padding(start = 8.dp),
                             horizontalAlignment = Alignment.End
                         ) {
                             when {
                                 isCurrentlyDownloading -> {
                                     Text(
-                                        text = "Téléchargement...",
+                                        text = "تحميل...",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color.White
                                     )
@@ -495,22 +498,25 @@ fun View_MainItem(
                                 }
 
                                 relative_M8BonVent.sonVocaleEstEcoute -> {
-                                    Column {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = "Message écouté",
-                                            tint = Color.Green,
-                                            modifier = Modifier.size(24.dp)
-                                        )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         if (relative_M8BonVent.sonEcoutementEstFaitAutimestamps > 0) {
                                             Text(
                                                 text = datesHandler.getDateAndTimString(
                                                     relative_M8BonVent.sonEcoutementEstFaitAutimestamps
                                                 ).time,
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = Color.White
+                                                color = Color.White,
+                                                modifier = Modifier.padding(end = 4.dp)
                                             )
                                         }
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = "Message écouté",
+                                            tint = Color.Green,
+                                            modifier = Modifier.size(16.dp)
+                                        )
                                     }
                                 }
 
@@ -519,7 +525,7 @@ fun View_MainItem(
                                         imageVector = Icons.Default.Warning,
                                         contentDescription = "Message non écouté",
                                         tint = Color.Yellow,
-                                        modifier = Modifier.size(24.dp)
+                                        modifier = Modifier.size(16.dp)
                                     )
                                 }
                             }
@@ -528,11 +534,11 @@ fun View_MainItem(
                 }
             }
         }
-    }
 
-    HorizontalDivider(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    )
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+    }
 }
