@@ -84,7 +84,7 @@ fun CommandButton(
                 contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(relative_Etate.name)
+            Text(relative_Etate.nomArabe)
         }
     }
 }

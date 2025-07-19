@@ -3,10 +3,18 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun StatusDropdownMenu(
@@ -22,52 +30,65 @@ fun StatusDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
-        DropdownMenuItem(
-            text = { Text("اقترح ان يتجنب لمدة اسبوعين") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.A_EVITE)
-                onDismissRequest()
-            }
+        // Helper function to create elevated card dropdown item
+        @Composable
+        fun StatusDropdownItem(
+            status: M8BonVent.EtateActuellementEst,
+            text: String
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(id = status.color)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Text(
+                            text = text,
+                            color = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                },
+                onClick = {
+                    onStatusSelected(status)
+                    onDismissRequest()
+                }
+            )
+        }
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.A_EVITE,
+            text = "اقترح ان يتجنب لمدة اسبوعين"
         )
 
-        DropdownMenuItem(
-            text = { Text("عندو سلعة") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE)
-                onDismissRequest()
-            }
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
+            text = "عندو سلعة"
         )
 
-        DropdownMenuItem(
-            text = { Text("للنظر") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.PourVoirPanie)
-                onDismissRequest()
-            }
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.PourVoirPanie,
+            text = "للنظر"
         )
 
-        DropdownMenuItem(
-            text = { Text("تم أيصال منتجاته") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI)
-                onDismissRequest()
-            }
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
+            text = "تم أيصال منتجاته"
         )
 
-        DropdownMenuItem(
-            text = { Text("الشاري غائب") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO)
-                onDismissRequest()
-            }
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
+            text = "الشاري غائب"
         )
 
-        DropdownMenuItem(
-            text = { Text("مغلق") },
-            onClick = {
-                onStatusSelected(M8BonVent.EtateActuellementEst.FERME)
-                onDismissRequest()
-            }
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.FERME,
+            text = "مغلق"
         )
     }
 }

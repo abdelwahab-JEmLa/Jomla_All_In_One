@@ -17,12 +17,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.KeyboardVoice
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
@@ -208,12 +206,10 @@ fun View_MainItem(
                 )
             }
 
-            // Status dropdown menu at top end
             Row(
                 modifier = Modifier.align(Alignment.TopEnd),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Display selected status next to the button
                 selectedStatus?.let { status ->
                     Text(
                         text = status.nomArabe,
@@ -224,19 +220,23 @@ fun View_MainItem(
                 }
                 Box {
                     IconButton(
-                        modifier = Modifier
-                            .getSemanticsTag(
-                                "d", "d"
-                            ),
+                        modifier = Modifier,
                         onClick = {
                             showDropdownMenu = true
                         }
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Options de statut",
-                            tint = Color.White
-                        )
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Options de statut",
+                                tint = Color.White
+                            )
+                            Icon(
+                                imageVector = Icons.Default.KeyboardVoice,
+                                contentDescription = "Options de statut",
+                                tint = Color.White
+                            )
+                        }
                     }
 
                     StatusDropdownMenu(
@@ -478,7 +478,7 @@ fun View_MainItem(
                             }
                         }
 
-                        Column(
+                     /*   Column(
                             modifier = Modifier.padding(start = 8.dp),
                             horizontalAlignment = Alignment.End
                         ) {
@@ -539,7 +539,7 @@ fun View_MainItem(
                                     )
                                 }
                             }
-                        }
+                        }      */
                     }
                 }
             }

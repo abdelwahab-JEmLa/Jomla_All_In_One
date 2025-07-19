@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -56,7 +55,7 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
-    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .activeonVent_M8BonVent,
@@ -174,13 +173,6 @@ fun MarkerStatusDialog(
                                         .heightIn(max = 600.dp)
                                 ) {
 
-                                    item {
-                                        M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
-                                            )
-                                    }
 
                                     item {
                                         CommandButton(
@@ -190,30 +182,6 @@ fun MarkerStatusDialog(
                                             relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
-                                        )
-                                    }
-
-                                    item {
-                                        M8BonVent.EtateActuellementEst.FERME
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
-                                            )
-                                    }
-                                    item {
-                                        M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
-                                            )
-
-                                    }
-
-                                    item {
-                                        ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
-                                            uiState = uiState,
-                                            viewModel = viewModel,
-                                            clientId = clientId,
                                         )
                                     }
 
