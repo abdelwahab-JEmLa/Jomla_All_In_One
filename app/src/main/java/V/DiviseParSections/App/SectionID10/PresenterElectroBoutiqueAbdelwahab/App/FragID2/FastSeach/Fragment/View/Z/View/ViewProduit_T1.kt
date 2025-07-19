@@ -113,9 +113,9 @@ fun ViewProduit_T1(
     if (produit != null && ouvertDialogProduit?.keyID == produit.keyID) {
         val operationForDialog = relatedVents.firstOrNull()
             ?: getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
-                parentM1ProduitInfosKeyId = produit.keyID,
-                parentM1ProduitDebugInfos = produit.nom,
-                parentM3CouleurProduitDebugInfos = "Default Color",
+                parent_M1Produit_KeyId = produit.keyID,
+                parent_M1Produit_DebugInfos = produit.nom,
+                parent_M3CouleurProduit_DebugInfos = "Default Color",
                 quantity = 0
             )
 
@@ -123,7 +123,7 @@ fun ViewProduit_T1(
             VentProduitQuantityDialog_T1(
                 produit = produit,
                 viewModel = viewModel,
-                colorName = operation.parentM3CouleurProduitDebugInfos,
+                colorName = operation.parent_M3CouleurProduit_DebugInfos,
                 currentQuantity = operation.quantity,
                 onDismiss = {
                     viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -26,12 +26,17 @@ import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
     val active_OpnerDialog_M17MessageVocale: M17MessageVocale? =null,
-    val aOpDi_SearchM1ProduitToRelationAutre: ArticlesBasesStatsTable? =null,
+    val opnerDialog_Panier_M10OperationVentCouleur: M10OperationVentCouleur? =null,
+    val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? =null,
 ) {
     companion object{
         fun get_Default(): ActiveCentralValues {
            return ActiveCentralValues()
         }
+    }
+    sealed class RoleDefinieParSourceACetteFragment() {
+        data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
+        data class SearchProduit(val produit: ArticlesBasesStatsTable) : RoleDefinieParSourceACetteFragment()
     }
 }
 
@@ -39,7 +44,7 @@ data class ActiveCentralValues(
 class FocusedValuesGetter(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1Produit,
-    repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
+    repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
 
     repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
@@ -143,8 +148,8 @@ class FocusedValuesGetter(
                     parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
                     parent_M14VentPeriod_DebugInfos = parent_M14VentPeriod_DebugInfos,
                     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
-                    parentM8BonVentKeyId = keyID,
-                    parentM8BonVentDebugInfos = get_DebugInfos(),
+                    parent_M8BonVent_KeyId = keyID,
+                    parent_M8BonVent_DebugInfos = get_DebugInfos(),
 
                 )
             }
@@ -158,7 +163,7 @@ class FocusedValuesGetter(
 
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == (active_Current_M9AppCompt?.onVentM8BonVentKey ?: "")
+            it.parent_M8BonVent_KeyId == (active_Current_M9AppCompt?.onVentM8BonVentKey ?: "")
         }
     }
 
@@ -171,12 +176,12 @@ class FocusedValuesGetter(
         produit: ArticlesBasesStatsTable
     ) = onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { ventOperation ->
-            ventOperation.parentM1ProduitInfosKeyId == produit.keyID
+            ventOperation.parent_M1Produit_KeyId == produit.keyID
         }
 
     val focused_ListM10OpeVentCouleur_Par_PD_M1Produit by derivedStateOf {
         onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.filter {
-            it.parentM1ProduitInfosKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
+            it.parent_M1Produit_KeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
         }
     }
 
@@ -229,7 +234,7 @@ class FocusedValuesGetter(
                     put(
                         "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
                         getter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map {
-                            "${it.parentM1ProduitDebugInfos} / ${it.parentM1ProduitInfosKeyId}"
+                            "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}"
                         }
                     )
                     put(

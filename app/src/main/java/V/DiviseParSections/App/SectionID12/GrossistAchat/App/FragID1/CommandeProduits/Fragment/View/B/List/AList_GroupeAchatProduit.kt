@@ -34,7 +34,7 @@ fun List_GroupeAchatProduit(
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") return@mapNotNull null
 
             val sales = achat.get_list_v_Depuit_joinedStringKeys(repo.repo10OperationVentCouleur.datasValue)
-            val produitId = sales.firstOrNull()?.parentM1ProduitInfosKeyId
+            val produitId = sales.firstOrNull()?.parent_M1Produit_KeyId
 
             if (produitId.isNullOrBlank() || produitId == "null" || produitId.length <= 5) return@mapNotNull null
 

@@ -130,9 +130,9 @@ fun View_Vent_M1Produit(
             ) {
                 items(relative_List_M10OperationVentCouleur) { vent ->
                     viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
-                        .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }?.let {
+                        .find { it.keyID == vent.parent_M3CouleurProduit_KeyID }?.let {
                             val relative_M3CouleurProduit = viewModel.aCentralFacade.repoMainGetter.repo3CouleurProduitInfos.datasValue
-                                .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }
+                                .find { it.keyID == vent.parent_M3CouleurProduit_KeyID }
                             Card(
                                 shape = RoundedCornerShape(12.dp),
                                 elevation = CardDefaults.cardElevation(if (allNonTrouve) 1.dp else 2.dp),

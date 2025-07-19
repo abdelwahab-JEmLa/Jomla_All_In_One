@@ -1,7 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
@@ -65,9 +69,12 @@ import java.io.File
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayerProtoAvantJuin3(
-    produit: ArticlesBasesStatsTable,
+    relative_M1Produit: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repoMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter,
+    focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     indexColor: Int,
     reloadKey: Any,
@@ -79,15 +86,17 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.repoMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+    val relative_M3Couleur = repoMainGetter.find_M3Couleur_By(relative_M1Produit, indexColor)
+    val enablePerformAutoClickImageDisplayer =
+        viewModel.aCentralFacade.repoMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
-        "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+        "${relative_M1Produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
 
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
 
     val produitDepuitNewDATABASE = a_ProduitModelRepository
-        .modelDatas.find { it.id == produit.id }
+        .modelDatas.find { it.id == relative_M1Produit.id }
 
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
@@ -126,7 +135,7 @@ fun ImageDisplayerProtoAvantJuin3(
         isLoading = false
     }
 
-    val imagePath by remember(viewModel.viewModelImagesPath, produit.id, indexColor) {
+    val imagePath by remember(viewModel.viewModelImagesPath, relative_M1Produit.id, indexColor) {
         derivedStateOf {
             File(viewModel.viewModelImagesPath, baseFileName)
         }
@@ -149,8 +158,12 @@ fun ImageDisplayerProtoAvantJuin3(
         if (enablePerformAutoClickImageDisplayer && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
-            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
+            focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
+                true
+            )
+            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                relative_M1Produit.nom
+            )
             onClickToOpenWindow()
         }
     }
@@ -169,13 +182,27 @@ fun ImageDisplayerProtoAvantJuin3(
                         "activeDialogSearchM1Produit",
                         get.activeDialogSearchM1Produit
                     )
-                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "produit", produit.getDebugInfos())
-                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "activeProduit", activeProduit?.getDebugInfos() ?: "null")
+                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
+                        1,
+                        "produit",
+                        relative_M1Produit.getDebugInfos()
+                    )
+                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
+                        1,
+                        "activeProduit",
+                        activeProduit?.getDebugInfos() ?: "null"
+                    )
                     .clickable {
                         // Manual click handler - always available
-                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
-                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
+                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
+                            true
+                        )
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                            relative_M1Produit.nom
+                        )
+                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                            relative_M1Produit
+                        )
 
                         onClickToOpenWindow()
                     }
@@ -195,7 +222,11 @@ fun ImageDisplayerProtoAvantJuin3(
                 contentScale = imageScale
             ) {
                 it.apply {
-                    applyImageOptions(produit, indexColor, currentQuality) { isFirstResource ->
+                    applyImageOptions(
+                        relative_M1Produit,
+                        indexColor,
+                        currentQuality
+                    ) { isFirstResource ->
                         if (isFirstResource && currentQuality < targetQuality) {
                             currentQuality = targetQuality
                         }
@@ -204,14 +235,19 @@ fun ImageDisplayerProtoAvantJuin3(
             }
         }
 
+        val new_Vent = M10OperationVentCouleur
+            .get_default(
+                onVent_M8BonVent = focusedValuesGetter.activeonVent_M8BonVent ,
+                m3CouleurProduit = relative_M3Couleur
+            )
+
         SmallFloatingActionButton(
             onClick = {
-
-                val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-                focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
-                focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
-                focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
-                onClickToOpenWindow()
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        opnerDialog_Panier_M10OperationVentCouleur = new_Vent
+                    )
+                )
             },
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -228,7 +264,8 @@ fun ImageDisplayerProtoAvantJuin3(
         }
 
         if (showOverlay) {
-            val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(produit)
+            val productImageInfos =
+                calculeCouleurHandler.getProduitInfoImageParIndex(relative_M1Produit)
             val currentColorInfo = productImageInfos.getOrNull(indexColor)
 
             currentColorInfo?.let { colorInfo ->

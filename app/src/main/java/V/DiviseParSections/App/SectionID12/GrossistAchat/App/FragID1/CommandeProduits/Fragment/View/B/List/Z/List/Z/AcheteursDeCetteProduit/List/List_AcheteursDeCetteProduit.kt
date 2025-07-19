@@ -33,7 +33,7 @@ fun List_AcheteursDeCetteProduit(
     // Group sales operations by client (through BonVent)
     val salesByClient = listFCouleurVentOperation.groupBy { ventOperation ->
         val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
-            it.keyID == ventOperation.parentM8BonVentKeyId
+            it.keyID == ventOperation.parent_M8BonVent_KeyId
         }
         gBonVent?.parent_M2Client_KeyID
     }.filterKeys { it != null } // Remove null client keys
@@ -99,7 +99,7 @@ fun List_AcheteursDeCetteProduit(
 
                                         // Add BonVent info if needed
                                         val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-                                            it.keyID == ventOperation.parentM8BonVentKeyId
+                                            it.keyID == ventOperation.parent_M8BonVent_KeyId
                                         }
                                         bonVent?.let {
                                             Text(

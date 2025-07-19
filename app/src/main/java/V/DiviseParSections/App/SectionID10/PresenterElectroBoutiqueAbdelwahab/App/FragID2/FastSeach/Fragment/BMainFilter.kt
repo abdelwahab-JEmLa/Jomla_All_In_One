@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
@@ -15,18 +16,18 @@ fun MainFilterT1(
     categories: List<CategoriesTabelle>,
     searchFilter: String,
     modifier: Modifier = Modifier,
-    sourceLenceurDeCetteFragment: ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment?,
+    sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment?,
 ) {
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
 
     val filteredProducts = remember(products, searchFilter, sourceLenceurDeCetteFragment) {
         when (sourceLenceurDeCetteFragment) {
-            is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit -> {
+            is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
                 // Filter by specific product instead of search text
                 products.filter { it.id == sourceLenceurDeCetteFragment.produit.id }
             }
-            is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
+            is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
                 // Use search text filtering for general search
                 if (searchFilter.isBlank()) {
                     emptyList() // Return empty list when no search text

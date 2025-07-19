@@ -64,7 +64,7 @@ fun QuantityDisplay_Mo_F_Panie(
         viewModel.getterFocusedVarsHandlerFacade
             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             .filter { ventOperation ->
-                ventOperation.parentM1ProduitInfosKeyId == produit.keyID
+                ventOperation.parent_M1Produit_KeyId == produit.keyID
             }   .sumOf { it.quantity }
     }
 

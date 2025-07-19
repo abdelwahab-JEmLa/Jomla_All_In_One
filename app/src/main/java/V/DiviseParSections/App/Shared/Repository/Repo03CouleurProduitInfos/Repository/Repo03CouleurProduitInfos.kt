@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository
+package V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
@@ -39,7 +39,7 @@ enum class FilterQuery {
 }
 
 @Stable
-class Repo3CouleurProduitInfos(
+class Repo03CouleurProduitInfos(
     val mainInitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     val dao = mainInitDataBase.dao
@@ -137,12 +137,26 @@ data class M3CouleurProduitInfos(
     val extensionDisponible: String = "webp", // Default extension
     var pushKey: String = getPushFireBase(ref),
 ) {
+    fun getDebugInfos(): String {
+        return buildString {
+            append("03Coul")
+            append("[")
+            append("{${keyID.takeLast(4).uppercase()}}\n")
+            append(" To ")
+            append("[")
+            append("{${parentBProduitInfosKeyID.takeLast(4).uppercase()}}\n")
+            append("]")
+            append("]")
+        }
+    }
+
     enum class Type { Nom,Image }
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
 
     companion object {
         val ref =
-            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/B1CouleurOuGoutProduitDataBase")
+            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases" +
+                    "/B1CouleurOuGoutProduitDataBase")
 
         fun compareEntre(
             ancien: M3CouleurProduitInfos,
@@ -159,7 +173,7 @@ data class M3CouleurProduitInfos(
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
     keyCouleur: String,
-    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo03CouleurProduitInfos = koinInject(),
     size: Dp = 200.dp,
     onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {}
 ) {

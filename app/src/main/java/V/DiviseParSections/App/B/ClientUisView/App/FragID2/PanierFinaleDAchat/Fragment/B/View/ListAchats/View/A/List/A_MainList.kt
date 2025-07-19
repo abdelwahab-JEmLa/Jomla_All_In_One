@@ -34,7 +34,7 @@ fun MainList(
                 fVentCouleurOperationRepository.onVentFilteredDatas
             }
 
-            filteredData.groupBy { it.parentM1ProduitInfosKeyId }
+            filteredData.groupBy { it.parent_M1Produit_KeyId }
         }
     }
 

@@ -11,7 +11,7 @@ fun updateListRelativeVentCouleurPrixVent(
 ) {
     val ventCouleursDuProduitKey =
         filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
-            .filter { it.parentM1ProduitInfosKeyId == produitKey }
+            .filter { it.parent_M1Produit_KeyId == produitKey }
 
     ventCouleursDuProduitKey.forEach { vent ->
         repo10OperationVentCouleur.addOrUpdateData(
@@ -27,7 +27,7 @@ fun ventCouleursDuProduitKey(
     filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali: List<M10OperationVentCouleur>
 ) =
     filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
-        .filter { it.parentM1ProduitInfosKeyId == produitKey }
+        .filter { it.parent_M1Produit_KeyId == produitKey }
 
 fun toggleEtateDeliveryNonTrouveVentOu(
     filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali: List<M10OperationVentCouleur>,

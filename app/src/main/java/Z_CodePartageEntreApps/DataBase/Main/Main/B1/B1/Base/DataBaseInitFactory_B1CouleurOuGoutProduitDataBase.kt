@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
@@ -252,7 +252,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
 @Composable
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
-    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo03CouleurProduitInfos = koinInject(),
     keyCouleur: String,
     onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {},
     size: Dp = 200.dp
@@ -342,7 +342,7 @@ fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     couleur?.let {
         val text = with(couleur) {
             "${keyID.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                    " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity}"
+                    " V= ${vent?.parent_M1Produit_DebugInfos ?: "NO"} ${vent?.quantity}"
         }
 
         Box(

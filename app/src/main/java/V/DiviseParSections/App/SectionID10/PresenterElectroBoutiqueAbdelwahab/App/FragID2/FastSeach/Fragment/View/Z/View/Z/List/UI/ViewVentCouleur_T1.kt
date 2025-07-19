@@ -7,7 +7,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
@@ -72,18 +72,18 @@ fun ViewVentCouleur_T1(
 
     val findVent by remember {
         derivedStateOf {
-            getter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
+            getter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find { it.parent_M3CouleurProduit_KeyID == m3Couleur.keyID }
         }
     }
 
     val defaultM10Vent = produit.let {
         getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
             //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-            parentM1ProduitInfosKeyId = produit.keyID,
-            parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
+            parent_M1Produit_KeyId = produit.keyID,
+            parent_M1Produit_DebugInfos = parentM1ProduitDebugInfos,
             //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-            parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
-            parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
+            parent_M3CouleurProduit_KeyID = m3Couleur.keyID,
+            parent_M3CouleurProduit_DebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
             setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton,
             quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
@@ -106,7 +106,7 @@ fun ViewVentCouleur_T1(
         derivedStateOf {
             val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation
 
-            onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
+            onVentM3?.parent_M3CouleurProduit_KeyID == m3Couleur.keyID
         }
     }
     val datasValue = viewModel.aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue
@@ -250,7 +250,7 @@ fun ViewVentCouleur_T1(
             }
 
             viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
-                findVent!!.parentM1ProduitInfosKeyId
+                findVent!!.parent_M1Produit_KeyId
             )
         }
     }

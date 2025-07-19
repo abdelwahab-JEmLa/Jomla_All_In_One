@@ -152,7 +152,7 @@ fun LazyColumn_Client(
         val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
             val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(allVentOperations)
             relatedVentOperations.mapNotNull { ventOperation ->
-                val bonVent = allBonVents.find { it.keyID == ventOperation.parentM8BonVentKeyId }
+                val bonVent = allBonVents.find { it.keyID == ventOperation.parent_M8BonVent_KeyId }
                 bonVent?.parent_M2Client_KeyID
             }
         }.toSet()
@@ -211,12 +211,12 @@ fun Item_Client(
 
         // Get all vent operations for this client
         val clientVentOperations = allVentOperations.filter {
-            it.parentM8BonVentKeyId in clientBonVentIds
+            it.parent_M8BonVent_KeyId in clientBonVentIds
         }
 
         // Get unique products (M1Produit) purchased by this client
         val uniqueProducts = clientVentOperations.map {
-            it.parentM1ProduitInfosKeyId
+            it.parent_M1Produit_KeyId
         }.toSet()
 
         // Calculate total quantity

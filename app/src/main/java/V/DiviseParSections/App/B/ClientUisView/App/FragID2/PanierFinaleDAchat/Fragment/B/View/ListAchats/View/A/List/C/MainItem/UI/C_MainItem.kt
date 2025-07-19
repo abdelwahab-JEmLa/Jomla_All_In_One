@@ -5,8 +5,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +47,7 @@ import java.io.File
 fun VentDisplayer_Sec2FragId2(
     modifier: Modifier = Modifier,
     ventKey: String,
-    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo03CouleurProduitInfos = koinInject(),
     size: Dp = 200.dp,
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
@@ -56,7 +56,7 @@ fun VentDisplayer_Sec2FragId2(
         .datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v ->
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find { it.keyID == v.parentM3CouleurProduitInfosKeyID }
+            .find { it.keyID == v.parent_M3CouleurProduit_KeyID }
     }
 
     if (data == null) {

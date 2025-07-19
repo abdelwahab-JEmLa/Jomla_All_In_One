@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
@@ -29,7 +29,7 @@ class PrintReceiptHandler_Juil() {
     fun printVentReceipt(
         context: Context,
         repoM1Produit: RepoM1Produit,
-        repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
+        repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
         client: M2Client?,
         scope: CoroutineScope? = null,
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
@@ -43,16 +43,16 @@ class PrintReceiptHandler_Juil() {
 
             relative_ListM10OperationVentCouleur.forEach { vent ->
                 val product = repoM1Produit.datasValue.find {
-                    it.keyID == vent.parentM1ProduitInfosKeyId
+                    it.keyID == vent.parent_M1Produit_KeyId
                 }
 
                 val colorInfo = repo3CouleurProduitInfos.datasValue.find {
-                    it.keyID == vent.parentM3CouleurProduitInfosKeyID
+                    it.keyID == vent.parent_M3CouleurProduit_KeyID
                 }
 
                 val productName = product?.nom?.takeIf { it.isNotBlank() }
                     ?: product?.nomMutable?.takeIf { it.isNotBlank() }
-                    ?: "Produit #${vent.parentM1ProduitInfosKeyId}"
+                    ?: "Produit #${vent.parent_M1Produit_KeyId}"
 
                 val colorName = colorInfo?.nomCouleurStrSiSonImageDispo ?: "Couleur standard"
                 val articleName = if (colorName != "Couleur standard") {
@@ -132,7 +132,7 @@ class PrintReceiptHandler_Juil() {
         repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
         val groupe_Produit =
-            relative_ListM10OperationVentCouleur.groupBy { it.parentM1ProduitInfosKeyId }.toList()
+            relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
 
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0

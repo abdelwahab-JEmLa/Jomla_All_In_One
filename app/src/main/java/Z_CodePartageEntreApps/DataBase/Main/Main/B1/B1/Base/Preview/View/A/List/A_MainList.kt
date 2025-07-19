@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List
 
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.CouleurDisplayer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
+    b1CouleurOuGoutProduitDataBaseRepository: Repo03CouleurProduitInfos,
 ) {
     val items = b1CouleurOuGoutProduitDataBaseRepository.datasValueFiltered
 

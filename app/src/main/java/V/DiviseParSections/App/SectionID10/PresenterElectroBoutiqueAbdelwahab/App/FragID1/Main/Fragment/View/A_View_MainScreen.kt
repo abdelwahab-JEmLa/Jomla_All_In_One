@@ -1,27 +1,48 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.DialogsSearchProduit
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
 import kotlinx.coroutines.delay
@@ -31,6 +52,8 @@ import kotlinx.coroutines.launch
 fun MainUi(
     produits: List<ArticlesBasesStatsTable>,
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     uiState: UiState,
     filterText: String,
     gridState: LazyStaggeredGridState,
@@ -59,6 +82,8 @@ fun MainUi(
     var hostSavePosition by rememberSaveable() { mutableStateOf(0) }
 
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
+
+    var showToast by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentScrollPosition) {
 
@@ -179,16 +204,76 @@ fun MainUi(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-
         DialogsSearchProduit(
             aCentralFacade = viewModel.aCentralFacade
         )
-        /* if (viewModel.aCentral.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null) {
-             Dialog_MainFastSearchProduitPourVent(
-                 focusedVarsHandlerFacade = viewModel.aCentral.focusedVarsHandlerFacade,
-                 sourceLenceurDeCetteFragment = ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits,
-             )
-        }   */
+
+        if (
+            focusedValuesGetter.active_Central_Values.opnerDialog_Panier_M10OperationVentCouleur
+            != null
+        ) {
+            Dialog(
+                onDismissRequest = {
+                    showToast = true
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = true
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = 2.dp
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AnimatedVisibility(
+                            visible = showToast,
+                            enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                                    scaleIn(
+                                        initialScale = 0.8f,
+                                        animationSpec = tween(durationMillis = 300)
+                                    ),
+                            exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
+                                    scaleOut(
+                                        targetScale = 0.8f,
+                                        animationSpec = tween(durationMillis = 300)
+                                    ),
+                            modifier = Modifier.zIndex(999f)
+                        ) {
+                            ModernToastMessageLo(
+                                message = "يرجى استخدام الأزرار لتحديد السعر",
+                                onDismiss = { showToast = false }
+                            )
+                        }
+                        PanierFinaleDAchatSec1Frag3()
+                        PressistatntMainActivityButtons_Sec8FWinID1()
+                        FloatingActionButton(
+                            onClick = {
+                                focusedValuesGetter.update_activeCentralValues(
+                                    focusedValuesGetter.active_Central_Values.copy(
+                                        roleDefinieParSourceACetteFragment = null
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp)
+                                .zIndex(100f),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "إغلاق"
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

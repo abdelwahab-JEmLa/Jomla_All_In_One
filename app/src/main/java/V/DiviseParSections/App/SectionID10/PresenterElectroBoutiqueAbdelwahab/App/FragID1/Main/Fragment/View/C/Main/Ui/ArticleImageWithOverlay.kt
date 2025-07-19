@@ -57,7 +57,7 @@ fun ArticleImageWithOverlay(
                 .fillMaxSize()
         ) {
             ImageDisplayerProtoAvantJuin3(
-                produit = article,
+                relative_M1Produit = article,
                 viewModel = viewModelHeadViewModel,
                 indexColor = colorIndex,
                 reloadKey = reloadTrigger,
@@ -85,7 +85,7 @@ private fun AfficheKeyCouleurAvecVent(
         ?.let {
             val text = with(couleur) {
                 "${keyID.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity}"
+                        " V= ${vent?.parent_M1Produit_DebugInfos ?: "NO"} ${vent?.quantity}"
             }
 
             Box(

@@ -60,8 +60,8 @@ private fun parsedData(values: List<String>) = M10OperationVentCouleur(
     keyID = values.getOrElse(0) { BsonObjectId().toHexString() },
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
     parent_M9AppCompt_KeyID = values.getOrElse(5) { "" },
-    parentM8BonVentKeyId = values.getOrElse(3) { "" },
-    parentM1ProduitInfosKeyId = values.getOrElse(4) { "" },
+    parent_M8BonVent_KeyId = values.getOrElse(3) { "" },
+    parent_M1Produit_KeyId = values.getOrElse(4) { "" },
     parentProduitInfosOldId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     etateActuellementEst = try {
         M10OperationVentCouleur.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })

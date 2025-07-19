@@ -5,7 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -44,7 +45,7 @@ class RepositorysMainGetter(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val repo1ProduitInfos: RepoM1Produit,
-    val repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
+    val repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
 
@@ -72,6 +73,26 @@ class RepositorysMainGetter(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
+        return repo8BonVent.datasValue
+            .filter {
+                (it.parent_M2Client_KeyID == m2Client.keyID)
+            }
+            .maxByOrNull { it.creationTimestamps }
+    }
+
+    //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M3Couleur_By(
+        m1Produit: ArticlesBasesStatsTable,
+        indexCouleurDansAncienProto: Int
+    ): M3CouleurProduitInfos? {
+        return repo3CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == m1Produit.keyID
+                    && it.indexCouleurDansAncienProto == indexCouleurDansAncienProto
+        }
+    }
+
     //--------------M8BonVent----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M8BonVent_By_KeyID(keyID: String): M8BonVent? =
         repo8BonVent.datasValue.find { it.keyID == keyID }
@@ -88,15 +109,6 @@ class RepositorysMainGetter(
     fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? =
         repo17MessageVocale.datasValue.value.find { it.keyID == keyID }
 
-
-    //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
-        return repo8BonVent.datasValue
-            .filter {
-                (it.parent_M2Client_KeyID == m2Client.keyID)
-            }
-            .maxByOrNull { it.creationTimestamps }
-    }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -120,7 +132,7 @@ class RepositorysMainGetter(
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.current_OnVent_M14VentPeriode_KeyID
         val matchingOperation = repo10OperationVentCouleur.datasValue.find { operation ->
-            operation.parentM3CouleurProduitInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parent_M14VentPeriod_KeyId == periodKey
+            operation.parent_M3CouleurProduit_KeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parent_M8BonVent_KeyId == bonVentKey && operation.parent_M14VentPeriod_KeyId == periodKey
         }
 
         return matchingOperation

@@ -44,7 +44,7 @@ fun QuantityButtonM1Produit_T1(
     val repo3CouleurProduitInfos = viewModel.getter.repo3CouleurProduitInfos
 
     val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { it.parentM1ProduitInfosKeyId == produit.keyID }
+        .filter { it.parent_M1Produit_KeyId == produit.keyID }
 
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -96,10 +96,10 @@ fun QuantityButtonM1Produit_T1(
 
                                 val newVent = defaultVent.copy(
                                     keyID = getPushFireBase(ref),
-                                    parentM1ProduitInfosKeyId = produit.keyID,
-                                    parentM1ProduitDebugInfos = produit.nom,
-                                    parentM3CouleurProduitInfosKeyID = color.keyID,
-                                    parentM3CouleurProduitDebugInfos = "${produit.nom}_${color.indexCouleurDansAncienProto}",
+                                    parent_M1Produit_KeyId = produit.keyID,
+                                    parent_M1Produit_DebugInfos = produit.nom,
+                                    parent_M3CouleurProduit_KeyID = color.keyID,
+                                    parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${color.indexCouleurDansAncienProto}",
                                     quantity = itemQuantity,
                                     etateActuellementEst = if (itemQuantity > 0) {
                                         M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme

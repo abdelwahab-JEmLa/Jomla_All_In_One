@@ -72,7 +72,7 @@ class Repo11AchatOperation(
             is FilterQuery.Client -> validData.filter { achat ->
                 achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
                     .any { sales ->
-                        repo8BonVent.datasValue.find { it.keyID == sales.parentM8BonVentKeyId }
+                        repo8BonVent.datasValue.find { it.keyID == sales.parent_M8BonVent_KeyId }
                             ?.parent_M2Client_KeyID == filter.m2Client.keyID
                     }
             }
@@ -89,7 +89,7 @@ class Repo11AchatOperation(
         produits: List<ArticlesBasesStatsTable>
     ): List<M11AchatOperation> {
         return filtered_ListM10Vent_BY_Curr_M14VentPeriod
-            .groupBy { it.parentM3CouleurProduitInfosKeyID }
+            .groupBy { it.parent_M3CouleurProduit_KeyID }
             .mapNotNull { (couleurId, vents) ->
                 if (!isValidKey(couleurId)) return@mapNotNull null
 
@@ -99,7 +99,7 @@ class Repo11AchatOperation(
                 val lastAchat = datasValue.filter { it.parent_M3CouleurProduit_KeyID == couleurId }
                     .maxByOrNull { it.creationTimestamp }
 
-                val produitId = vents.firstOrNull()?.parentM1ProduitInfosKeyId
+                val produitId = vents.firstOrNull()?.parent_M1Produit_KeyId
                 if (!isValidKey(produitId ?: "")) return@mapNotNull null
 
                 val produit = produits.find { it.keyID == produitId }
@@ -109,9 +109,9 @@ class Repo11AchatOperation(
                     parent_M15Grossist_DebugInfos = lastAchat?.parent_M15Grossist_DebugInfos ?: "Non Defini Gros",
                     parent_M15Grossist_KeyID = lastAchat?.parent_M15Grossist_KeyID ?: "-OUzoKE1ANl4Kt2ESAB6",
                     parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
-                    parent_M1Produit_DebugInfos = vents.firstOrNull()?.parentM1ProduitDebugInfos ?: "Unknown Product",
+                    parent_M1Produit_DebugInfos = vents.firstOrNull()?.parent_M1Produit_DebugInfos ?: "Unknown Product",
                     parent_M1Produit_KeyID = produitId ?: "null",
-                    parent_M3CouleurProduit_DebugInfos = vents.firstOrNull()?.parentM3CouleurProduitDebugInfos ?: "Unknown Color",
+                    parent_M3CouleurProduit_DebugInfos = vents.firstOrNull()?.parent_M3CouleurProduit_DebugInfos ?: "Unknown Color",
                     parent_M3CouleurProduit_KeyID = couleurId,
                     sumAchatQantity = quantity,
                     joined_Str_keys_De_Relatives_FCouleurVentOperation = vents.joinToString(",") { it.keyID }

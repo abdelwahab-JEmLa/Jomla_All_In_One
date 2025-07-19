@@ -148,7 +148,7 @@ fun ID4ClientSearchButton(
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                                     .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                                     .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
-                                    .groupBy { it.parentM1ProduitInfosKeyId }.size
+                                    .groupBy { it.parent_M1Produit_KeyId }.size
 
                             if (bon.parent_M2Client_DebugInfos.isNotEmpty() && bon.parent_M2Client_DebugInfos != "Non Defini") {
                                 "$nomClient - $timeElapsed - $totalProducts produits"

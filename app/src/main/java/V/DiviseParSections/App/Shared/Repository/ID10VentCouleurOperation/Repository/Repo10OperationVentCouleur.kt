@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import android.content.Context
@@ -36,7 +37,7 @@ class Repo10OperationVentCouleur(
 
     val onVentFilteredDatas by derivedStateOf {
         val targetKey = zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
-        datasValue.filter { it.parentM8BonVentKeyId == targetKey }
+        datasValue.filter { it.parent_M8BonVent_KeyId == targetKey }
     }
 
     init {
@@ -99,10 +100,10 @@ class Repo10OperationVentCouleur(
         val currentBonVentKey = zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
         if (currentBonVentKey.isNullOrEmpty()) return
 
-        val operationsToFix = datasValue.filter { it.parentM8BonVentKeyId.isEmpty() }
+        val operationsToFix = datasValue.filter { it.parent_M8BonVent_KeyId.isEmpty() }
         operationsToFix.forEach { operation ->
             val fixedOperation = operation.copy(
-                parentM8BonVentKeyId = currentBonVentKey,
+                parent_M8BonVent_KeyId = currentBonVentKey,
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
             addOrUpdateData(fixedOperation)
@@ -137,11 +138,11 @@ class Repo10OperationVentCouleur(
     ): M10OperationVentCouleur {
         return M10OperationVentCouleur(
             parent_M14VentPeriod_KeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
-            parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
-            parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
-            parentM1ProduitDebugInfos = relatedCouleur.parentId1ProduitInfosDebugName,
+            parent_M8BonVent_KeyId = zCompt.onVentM8BonVentKey,
+            parent_M1Produit_KeyId = relatedCouleur.parentBProduitInfosKeyID,
+            parent_M1Produit_DebugInfos = relatedCouleur.parentId1ProduitInfosDebugName,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
-            parentM3CouleurProduitInfosKeyID = relatedCouleur.keyID,
+            parent_M3CouleurProduit_KeyID = relatedCouleur.keyID,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
             quantity = quantity,
             type = M10OperationVentCouleur.Type.CommandeDeLui,
@@ -230,15 +231,15 @@ data class M10OperationVentCouleur(
     var parent_M14VentPeriod_DebugInfos: String = "null",
     var parentEPeriodVentStartDate: Long = 0,
     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
-    var parentM8BonVentKeyId: String = "null",
-    val parentM8BonVentDebugInfos: String = "null",
+    var parent_M8BonVent_KeyId: String = "null",
+    val parent_M8BonVent_DebugInfos: String = "null",
     //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-    var parentM1ProduitInfosKeyId: String = "null",
-    val parentM1ProduitDebugInfos: String = "null",
+    var parent_M1Produit_KeyId: String = "null",
+    val parent_M1Produit_DebugInfos: String = "null",
     var parentProduitInfosOldId: Long = 0,
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-    var parentM3CouleurProduitInfosKeyID: String = "null",
-    val parentM3CouleurProduitDebugInfos: String = "null",
+    var parent_M3CouleurProduit_KeyID: String = "null",
+    val parent_M3CouleurProduit_DebugInfos: String = "null",
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM13TarificationKeyID: String = "null",
     var parentM13TarificationDebugInfos: String = "null",
@@ -260,9 +261,18 @@ data class M10OperationVentCouleur(
     var quantity: Int = 0,
     var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
         SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
-    var affiche_Unite_Au_Printing: Boolean =true,
-
-    ) {
+    var affiche_Unite_Au_Printing: Boolean = true,
+) {
+    fun getDebugInfos(): String {
+        return buildString {
+            append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
+            append("Parent Product: $parent_M1Produit_DebugInfos\n")
+            append("Quantity: $quantity\n")
+            append("State: $etateActuellementEst\n")
+            append("Delivery: $etateDelivery\n")
+            append("Type: $type")
+        }
+    }
     enum class SetIN_Vent_Its_Quantity_Represent {
         quantity_Par_Boit,
         quantity_Par_Carton;
@@ -284,16 +294,7 @@ data class M10OperationVentCouleur(
             quantity
     }
 
-    fun getDebugInfos(): String {
-        return buildString {
-            append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
-            append("Parent Product: $parentM1ProduitDebugInfos\n")
-            append("Quantity: $quantity\n")
-            append("State: $etateActuellementEst\n")
-            append("Delivery: $etateDelivery\n")
-            append("Type: $type")
-        }
-    }
+
 
 
     enum class EtateDelivery {
@@ -316,6 +317,28 @@ data class M10OperationVentCouleur(
     enum class Type { SiNonDispo, CommandeDeLui }
 
     companion object {
+        fun get_default(
+            onVent_M8BonVent: M8BonVent?,
+            m3CouleurProduit: M3CouleurProduitInfos?
+        ): M10OperationVentCouleur {
+            return M10OperationVentCouleur(
+                parent_M9AppCompt_KeyID = onVent_M8BonVent?.parent_M9AppCompt_KeyID ?: "null",
+                parent_M9AppCompt_DebugInfos = onVent_M8BonVent?.parent_M9AppCompt_DebugInfos ?: "null",
+
+                parent_M14VentPeriod_KeyId = onVent_M8BonVent?.parent_M14VentPeriod_KeyId ?: "null",
+                parent_M14VentPeriod_DebugInfos = onVent_M8BonVent?.parent_M14VentPeriod_DebugInfos ?: "null",
+
+                parent_M8BonVent_KeyId = onVent_M8BonVent?.keyID ?: "null",
+                parent_M8BonVent_DebugInfos = onVent_M8BonVent?.get_DebugInfos() ?: "null",
+
+                parent_M1Produit_KeyId = m3CouleurProduit?.parentBProduitInfosKeyID ?: "null",
+                parent_M1Produit_DebugInfos = m3CouleurProduit?.parentBProduitInfosKeyID ?: "null",
+
+                parent_M3CouleurProduit_KeyID = m3CouleurProduit?.keyID ?: "null",
+                parent_M3CouleurProduit_DebugInfos = m3CouleurProduit?.getDebugInfos() ?: "null",
+            )
+        }
+
         val ref =
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas10OperationVentCouleur")
 
@@ -325,5 +348,6 @@ data class M10OperationVentCouleur(
         ): Boolean {
             return ancien.keyID == newData.keyID
         }
+
     }
 }
