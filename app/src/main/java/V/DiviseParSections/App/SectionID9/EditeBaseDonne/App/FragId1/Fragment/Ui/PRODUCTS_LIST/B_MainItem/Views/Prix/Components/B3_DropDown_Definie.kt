@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,9 +33,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TypeChoisiDropdownCard(
+    modifier: Modifier = Modifier,
+    relative_M13Tariffication: M13TarificationInfos,
     selectedType: M13TarificationInfos.TypeChoisi,
-    onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit,
-    modifier: Modifier = Modifier
+    onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -52,7 +53,6 @@ fun TypeChoisiDropdownCard(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            // Header showing current selection
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -66,14 +66,20 @@ fun TypeChoisiDropdownCard(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = selectedType.couleur_Text, // Text color from entity
+                            tint = selectedType.couleur_Text,
                             modifier = Modifier.size(20.dp)
                         )
                     }
                     Text(
                         text = selectedType.nomArabe,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = selectedType.couleur_Text, // Text color from entity
+                        color = selectedType.couleur_Text,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = relative_M13Tariffication.prixCurrency.toString(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = selectedType.couleur_Text,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -81,17 +87,15 @@ fun TypeChoisiDropdownCard(
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = null,
-                    tint = selectedType.couleur_Text // Text color from entity
+                    tint = selectedType.couleur_Text
                 )
             }
 
-            // Dropdown menu items
             if (expanded) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Divider(color = selectedType.couleur_Text.copy(alpha = 0.3f)) // Divider uses text color with transparency
+                HorizontalDivider(color = selectedType.couleur_Text.copy(alpha = 0.3f))
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Filter to only show PRIX_BASE and DefiniParGerant
                 val allowedTypes = listOf(
                     M13TarificationInfos.TypeChoisi.PRIX_BASE,
                     M13TarificationInfos.TypeChoisi.DefiniParGerant

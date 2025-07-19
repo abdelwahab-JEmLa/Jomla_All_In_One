@@ -39,7 +39,7 @@ fun Prix_Detailer_Section(
     onNextField: (() -> Unit)? = null,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
-    val relative_DefiniParGerant_M13Tariffication by derivedStateOf {
+    val relative_M13Tariffication by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull {
             it.parent_M1Produit_KeyId == produit.keyID
                     && it.typeChoisi == TypeChoisi.DefiniParGerant
@@ -58,11 +58,11 @@ fun Prix_Detailer_Section(
         val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
 
         val effectiveTariff = if (isDefiniParGerantActive) {
-            relative_DefiniParGerant_M13Tariffication.copy(
+            relative_M13Tariffication.copy(
                 prixCurrency = produit.prixVent
             )
         } else {
-            relative_DefiniParGerant_M13Tariffication
+            relative_M13Tariffication
         }
 
         Pair(effectiveTariff, isDefiniParGerantActive)
@@ -88,16 +88,16 @@ fun Prix_Detailer_Section(
                 )
 
                 TypeChoisiDropdownCard(
-
+                    relative_M13Tariffication=relative_M13Tariffication,
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
 
                         // When switching to DefiniParGerant, load the tariff price if available
                         if (newType == TypeChoisi.DefiniParGerant &&
-                            relative_DefiniParGerant_M13Tariffication.prixCurrency > 0) {
+                            relative_M13Tariffication.prixCurrency > 0) {
                             updateProduct(produit.copy(
-                                prixVent = relative_DefiniParGerant_M13Tariffication.prixCurrency
+                                prixVent = relative_M13Tariffication.prixCurrency
                             ))
                         }
                     },
