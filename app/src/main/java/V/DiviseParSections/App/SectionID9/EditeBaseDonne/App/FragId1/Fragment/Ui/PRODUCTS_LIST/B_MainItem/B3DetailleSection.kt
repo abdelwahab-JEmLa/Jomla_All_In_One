@@ -123,7 +123,7 @@ private fun TypeChoisiMenuItem(
             .fillMaxWidth()
             .clickable { onSelected() },
         shape = RoundedCornerShape(8.dp),
-        color = type.couleur.copy(alpha = 0.1f) // Background uses entity color with low alpha
+        color = type.couleur
     ) {
         Row(
             modifier = Modifier
