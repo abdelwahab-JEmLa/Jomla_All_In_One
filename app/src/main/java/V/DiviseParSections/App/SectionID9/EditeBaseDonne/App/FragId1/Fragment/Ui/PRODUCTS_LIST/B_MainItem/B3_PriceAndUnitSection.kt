@@ -35,8 +35,7 @@ import androidx.compose.ui.unit.dp
 fun PriceAndUnitSection(
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
-) {       //<--
-//TODO(1): ajout au click affiche tariffs
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
