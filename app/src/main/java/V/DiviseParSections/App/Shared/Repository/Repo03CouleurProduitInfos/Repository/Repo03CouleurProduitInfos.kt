@@ -137,7 +137,7 @@ data class M3CouleurProduitInfos(
     val extensionDisponible: String = "webp", // Default extension
     var pushKey: String = getPushFireBase(ref),
 ) {
-    fun getDebugInfos(): String {
+    fun get_DebugsInfos(): String {
         return buildString {
             append("03Coul")
             append("[")

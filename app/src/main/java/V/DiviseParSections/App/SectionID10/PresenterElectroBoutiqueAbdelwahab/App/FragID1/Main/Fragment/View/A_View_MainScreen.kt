@@ -254,7 +254,7 @@ fun MainUi(
                             onClick = {
                                 focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
-                                        roleDefinieParSourceACetteFragment = null
+                                        opnerDialog_Panier_M10OperationVentCouleur = null
                                     )
                                 )
                             },

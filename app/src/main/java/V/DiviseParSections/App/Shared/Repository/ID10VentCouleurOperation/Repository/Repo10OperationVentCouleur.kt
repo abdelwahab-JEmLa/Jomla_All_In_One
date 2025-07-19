@@ -335,7 +335,7 @@ data class M10OperationVentCouleur(
                 parent_M1Produit_DebugInfos = m3CouleurProduit?.parentBProduitInfosKeyID ?: "null",
 
                 parent_M3CouleurProduit_KeyID = m3CouleurProduit?.keyID ?: "null",
-                parent_M3CouleurProduit_DebugInfos = m3CouleurProduit?.getDebugInfos() ?: "null",
+                parent_M3CouleurProduit_DebugInfos = m3CouleurProduit?.get_DebugsInfos() ?: "null",
             )
         }
 
