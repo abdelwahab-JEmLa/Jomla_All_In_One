@@ -25,6 +25,7 @@ fun LabelEtShowButtonsButtons(
     modifier: Modifier = Modifier
 ) {
     val buttonBackgroundColor = Color.Yellow
+
     if (showButtons) {
         Row(
             modifier = modifier,
@@ -52,13 +53,14 @@ fun LabelEtShowButtonsButtons(
     }
 
     Row(
+        modifier = modifier, // Add the modifier here as well
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (showLabels) {
             Text(if (showButtons) "Hide" else "OptionsFragmentButtons") // Texte avant le bouton
         }
-        // Show buttons toggle button
+        // Show buttons toggle button - This should always be visible to toggle showButtons state
         FloatingActionButton(
             onClick = onShowButtonsToggle,
             modifier = Modifier.size(40.dp),
