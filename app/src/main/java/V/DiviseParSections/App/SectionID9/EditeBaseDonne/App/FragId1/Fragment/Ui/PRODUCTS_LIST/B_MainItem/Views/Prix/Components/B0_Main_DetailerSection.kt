@@ -18,11 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -40,6 +38,10 @@ fun Prix_Detailer_Section(
     onNextField: (() -> Unit)? = null,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
+    // FIXED: Get selectedTypeChoisi from viewModel's uiState
+    val uiState by viewModel.uiState.collectAsState()
+    val selectedTypeChoisi = uiState.selectedTypeChoisi
+
     val datasValue = repo13TarificationInfos.datasValue
     val relative_M13Tariffication by derivedStateOf {
         datasValue.lastOrNull {
@@ -54,13 +56,10 @@ fun Prix_Detailer_Section(
             )
     }
 
-    var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.DefiniParGerant) }
-
     val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
         val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
 
-        val effectiveTariff =
-            relative_M13Tariffication
+        val effectiveTariff = relative_M13Tariffication
 
         Pair(effectiveTariff, isDefiniParGerantActive)
     }
@@ -90,7 +89,8 @@ fun Prix_Detailer_Section(
                     relative_M13Tariffication = relative_M13Tariffication,
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
-                        selectedTypeChoisi = newType
+                        // FIXED: Use viewModel method to update selectedTypeChoisi
+                        viewModel.updateSelectedTypeChoisi(newType)
                         if (newType == TypeChoisi.DefiniParGerant &&
                             relative_M13Tariffication.prixCurrency > 0
                         ) {
@@ -108,7 +108,6 @@ fun Prix_Detailer_Section(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Right Card - Purchase & Profit
                     Card_Gauche_PrixAchatEtBenVendeur(
                         modifier = Modifier.weight(1f),
                         produit = relative_M1Produit,
@@ -120,7 +119,6 @@ fun Prix_Detailer_Section(
                     )
 
                     if (!shouldHideQuickInfoCards) {
-                        // Left Card - Client Sales
                         Card_Droite_PrixVentEtBClient(
                             modifier = Modifier.weight(1f),
                             repositorysMainSetter,

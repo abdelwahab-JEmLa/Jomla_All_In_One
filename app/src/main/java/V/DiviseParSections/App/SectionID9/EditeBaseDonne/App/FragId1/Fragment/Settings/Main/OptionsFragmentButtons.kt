@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.util.Log
@@ -228,8 +228,8 @@ fun OptionsFragmentButtons(
             }
         )
     }
-       //<--
-       //TODO(1): ajout sort par dernier change prix achat
+    //<--
+    //TODO(1): ajout sort par dernier change prix achat
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
@@ -249,8 +249,14 @@ fun OptionsFragmentButtons(
                 horizontalAlignment = Alignment.End
             ) {
                 if (showButtons) {
+                    Button_9(
+                        label_Datas = Label_Datas.get_Default()
+                            .copy(
+                                showLabels, "toggle_selectedTypeChoisi()"
+                            )
+                    )
 
-                    ButtonId8(showLabels,viewModel)
+                    ButtonId8(showLabels, viewModel)
 
                     ButtonId7(
                         viewModel = viewModel,
