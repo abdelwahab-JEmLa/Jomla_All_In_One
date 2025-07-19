@@ -235,33 +235,6 @@ fun ImageDisplayerProtoAvantJuin3(
             }
         }
 
-        val new_Vent = M10OperationVentCouleur
-            .get_default(
-                onVent_M8BonVent = focusedValuesGetter.activeonVent_M8BonVent ,
-                m3CouleurProduit = relative_M3Couleur
-            )
-
-        SmallFloatingActionButton(
-            onClick = {
-                focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
-                        opnerDialog_Panier_M10OperationVentCouleur = new_Vent
-                    )
-                )
-            },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(8.dp)
-                .zIndex(1f),
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Product",
-                modifier = Modifier.size(16.dp)
-            )
-        }
 
         if (showOverlay) {
             val productImageInfos =

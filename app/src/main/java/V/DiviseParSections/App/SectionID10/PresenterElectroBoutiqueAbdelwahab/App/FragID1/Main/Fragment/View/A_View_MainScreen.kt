@@ -208,68 +208,80 @@ fun MainUi(
             aCentralFacade = viewModel.aCentralFacade
         )
 
-        if (
-            focusedValuesGetter.active_Central_Values.opnerDialog_Panier_M10OperationVentCouleur
-            != null
+        Dialog_Panie(focusedValuesGetter, showToast)
+    }
+}
+
+@Composable
+private fun Dialog_Panie(
+    focusedValuesGetter: FocusedValuesGetter,
+    showToast: Boolean
+) {
+    var showToast1 = showToast
+    if (
+        focusedValuesGetter.active_Central_Values.opnerDialog_Panier_M10OperationVentCouleur
+        != null
+    ) {
+        Dialog(
+            onDismissRequest = {
+                showToast1 = true
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = true
+            )
         ) {
-            Dialog(
-                onDismissRequest = {
-                    showToast = true
-                },
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    decorFitsSystemWindows = true
-                )
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = 2.dp
             ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp),
-                    shape = MaterialTheme.shapes.large,
-                    tonalElevation = 2.dp
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        AnimatedVisibility(
-                            visible = showToast,
-                            enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
-                                    scaleIn(
-                                        initialScale = 0.8f,
-                                        animationSpec = tween(durationMillis = 300)
-                                    ),
-                            exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
-                                    scaleOut(
-                                        targetScale = 0.8f,
-                                        animationSpec = tween(durationMillis = 300)
-                                    ),
-                            modifier = Modifier.zIndex(999f)
-                        ) {
-                            ModernToastMessageLo(
-                                message = "يرجى استخدام الأزرار لتحديد السعر",
-                                onDismiss = { showToast = false }
-                            )
-                        }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AnimatedVisibility(
+                        visible = showToast1,
+                        enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                                scaleIn(
+                                    initialScale = 0.8f,
+                                    animationSpec = tween(durationMillis = 300)
+                                ),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
+                                scaleOut(
+                                    targetScale = 0.8f,
+                                    animationSpec = tween(durationMillis = 300)
+                                ),
+                        modifier = Modifier.zIndex(999f)
+                    ) {
+                        ModernToastMessageLo(
+                            message = "يرجى استخدام الأزرار لتحديد السعر",
+                            onDismiss = { showToast1 = false }
+                        )
+                    }
+                    Column {
+
                         PanierFinaleDAchatSec1Frag3()
-                        PressistatntMainActivityButtons_Sec8FWinID1()
-                        FloatingActionButton(
-                            onClick = {
-                                focusedValuesGetter.update_activeCentralValues(
-                                    focusedValuesGetter.active_Central_Values.copy(
-                                        opnerDialog_Panier_M10OperationVentCouleur = null
-                                    )
+                    }
+                    PressistatntMainActivityButtons_Sec8FWinID1()
+                    FloatingActionButton(
+                        onClick = {
+                            focusedValuesGetter.update_activeCentralValues(
+                                focusedValuesGetter.active_Central_Values.copy(
+                                    opnerDialog_Panier_M10OperationVentCouleur = null
                                 )
-                            },
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(16.dp)
-                                .zIndex(100f),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "إغلاق"
                             )
-                        }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                            .zIndex(100f),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "إغلاق"
+                        )
                     }
                 }
             }

@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -8,15 +11,21 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
@@ -26,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.bumptech.glide.Priority
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -36,6 +46,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
+import org.koin.compose.koinInject
 import java.io.File
 
 @SuppressLint("CheckResult")
@@ -43,6 +54,8 @@ import java.io.File
 @Composable
 fun ImageDisplayerGlide_Sec2FragID2(
     modifier: Modifier = Modifier,
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     imageFile: File? = null,
     colorName: String = "",
     contentScale: ContentScale = ContentScale.Fit,
@@ -58,6 +71,7 @@ fun ImageDisplayerGlide_Sec2FragID2(
     )
 
     val imageExists = imageFile?.exists() == true
+
 
     Surface(
         modifier = modifier,
@@ -120,6 +134,28 @@ fun ImageDisplayerGlide_Sec2FragID2(
                     modifier = Modifier.fillMaxSize(),
                     colorName = colorName,
                     onClickToOpenWindow = onClickToOpenWindow
+                )
+            }
+
+            SmallFloatingActionButton(
+                onClick = {
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            opnerDialog_Panier_M10OperationVentCouleur = new_Vent
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+                    .zIndex(1f),
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Product",
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }

@@ -48,8 +48,8 @@ import java.io.File
 @Composable
 fun ViewVentCouleur_Module(
     modifier: Modifier = Modifier,
-    relative_M3CouleurProduit: M3CouleurProduitInfos,
     relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M3CouleurProduit: M3CouleurProduitInfos,
     aCentralFacade: ACentralFacade = koinInject(),
     size: Dp = 200.dp
 ) {
