@@ -33,7 +33,7 @@ fun Button_10(
     ) {
         if (button_State.showLabels) {
             Text(
-                text = button_State.textLable,
+                text = button_State.text_Label,
                 color = Color.Black,
                 modifier = Modifier
                     .background(

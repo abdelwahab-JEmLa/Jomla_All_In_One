@@ -55,13 +55,14 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
+
 data class Button_State(
     val showLabels: Boolean = true,
     val active_Str: String = "",
     val desactive_Str: String = "",
     val description_Functionement: String = "",
-    val its_OnClick_presistantn: Boolean = false,
-    val textLable: String = "",
+    val its_OnClick_presistant: Boolean = false,
+    val text_Label: String = "",
     val its_Active: Boolean = false,
 ) {
     companion object {
@@ -291,7 +292,7 @@ fun OptionsFragmentButtons(
                                 label_Datas = Button_State(
                                     showLabels,
                                     "toggle_selectedTypeChoisi()",
-                                    its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                    its_OnClick_presistant = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
                                 )
                             ) {
                                 if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
@@ -308,7 +309,7 @@ fun OptionsFragmentButtons(
                                     label_Datas = Button_State(
                                         showLabels,
                                         "toggle_selectedTypeChoisi()",
-                                        its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                        its_OnClick_presistant = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
                                     )
                                 ) {
                                     button9AlwaysVisible =true
@@ -321,7 +322,7 @@ fun OptionsFragmentButtons(
                                 button_State = Button_State.get_Default()
                                     .copy(
                                         showLabels = showLabels,
-                                        textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                        text_Label = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
                                             true -> "Persistent_AlwaysShowed()"
                                             false -> "Desactive"
                                         }
