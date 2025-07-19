@@ -36,13 +36,14 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
     fun get_Edited_Tariff(newPrixVent: Double): M13TarificationInfos {
         return relative_Definie_Tariff.copy(
             prixCurrency = newPrixVent,
-            creationTimestamps = System.currentTimeMillis()
+            creationTimestamps = System.currentTimeMillis(),
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 
-    // Helper function to save tariff
+    // FIXED: Use upsert instead of add to ensure proper state updates
     fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
-        repositorysMainSetter.add_M13TarificationInfos(relative_Definie_Tariff)
+        repositorysMainSetter.upsert_M13TarificationInfos(relative_Definie_Tariff)
     }
 
     val vertTurq = Color(0xFF066C62)
@@ -78,10 +79,10 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                     onPriceUpdate = { newBenefice ->
                         if (itsActiveTariff) {
                             val newPrixVent = produit.prixAchat + newBenefice
-                            updateProduct(produit.copy(prixVent = newPrixVent))
 
-                            val updatedTariff = get_Edited_Tariff(newPrixVent)
-                            add_Definie_Tariff(updatedTariff)
+                            // Update both the product and the tariff
+                            updateProduct(produit.copy(prixVent = newPrixVent))
+                            add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
                         }
                     },
                     textColor = if (benefice > 0) {

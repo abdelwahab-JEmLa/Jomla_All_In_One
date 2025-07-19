@@ -40,7 +40,7 @@ fun TypeChoisiDropdownCard(
     selectedType: M13TarificationInfos.TypeChoisi,
     onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(true) }
+    var expanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier

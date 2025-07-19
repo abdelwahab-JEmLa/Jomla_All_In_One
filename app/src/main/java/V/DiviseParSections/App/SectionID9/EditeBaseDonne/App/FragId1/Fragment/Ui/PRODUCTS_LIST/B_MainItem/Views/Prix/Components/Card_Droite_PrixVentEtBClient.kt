@@ -35,20 +35,30 @@ fun Card_Droite_PrixVentEtBClient(
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
 ) {
     val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
+
     fun get_Edited_Tariff(newPrixVent: Double): M13TarificationInfos {
         return relative_Definie_Tariff.copy(
             prixCurrency = newPrixVent,
-            creationTimestamps = System.currentTimeMillis()
+            creationTimestamps = System.currentTimeMillis(),
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 
+    // FIXED: Use upsert instead of add to ensure proper state updates
     fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
-        repositorysMainSetter.add_M13TarificationInfos(relative_Definie_Tariff)
+        repositorysMainSetter.upsert_M13TarificationInfos(relative_Definie_Tariff)
+    }
+
+    val currentPrice = when (itsActiveTariff) {
+        true -> relative_Definie_Tariff.prixCurrency
+        false -> produit.prixVent
     }
 
     Card(
         modifier = modifier
-            .getSemanticsTag(get_Edited_Tariff(250.0), "get_Edited_Tariff"),
+            .getSemanticsTag(get_Edited_Tariff(250.0), "get_Edited_Tariff")
+            .getSemanticsTag(itsActiveTariff, "itsActiveTariff")
+        ,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -77,7 +87,7 @@ fun Card_Droite_PrixVentEtBClient(
 
             // Client benefit calculation with proper logic
             val beneficeClient =
-                (produit.clientPrixVentUnite * produit.nombreUniteInt) - produit.prixVent
+                (produit.clientPrixVentUnite * produit.nombreUniteInt) - currentPrice
             PriceEditor(
                 currentPrice = beneficeClient,
                 label = "ربح الزبون",
@@ -87,7 +97,10 @@ fun Card_Droite_PrixVentEtBClient(
                         if (produit.nombreUniteInt > 0) {
                             val newPrixVent =
                                 (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
+
+                            // Update both the product and the tariff
                             updateProduct(produit.copy(prixVent = newPrixVent))
+                            add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
                         }
                     }
                 },
@@ -99,7 +112,7 @@ fun Card_Droite_PrixVentEtBClient(
             // Unit sale price (if units > 0)
             if (produit.nombreUniteInt > 1) {
                 val prixUnitVente =
-                    round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+                    round((currentPrice / produit.nombreUniteInt) * 100.0) / 100.0
                 PriceEditor(
                     currentPrice = prixUnitVente,
                     label = "Unité",
@@ -107,7 +120,10 @@ fun Card_Droite_PrixVentEtBClient(
                         if (itsActiveTariff) {
                             // Only allow editing if DefiniParGerant tariff is active
                             val newPrixVent = newPrixUnit * produit.nombreUniteInt
+
+                            // Update both the product and the tariff
                             updateProduct(produit.copy(prixVent = newPrixVent))
+                            add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
                         }
                     },
                     textColor = MaterialTheme.colorScheme.secondary
@@ -115,11 +131,15 @@ fun Card_Droite_PrixVentEtBClient(
             }
 
             PriceEditor(
-                currentPrice = produit.prixVent,
+                currentPrice = currentPrice,
                 label = "Prix Vent Pack",
                 onPriceUpdate = { newPrix_Vent ->
                     if (itsActiveTariff) {
+                        // Update the tariff using upsert for proper recomposition
                         add_Definie_Tariff(get_Edited_Tariff(newPrix_Vent))
+
+                        // Also update the product if needed
+                        updateProduct(produit.copy(prixVent = newPrix_Vent))
                     } else {
                         updateProduct(
                             produit.copy(
@@ -131,7 +151,6 @@ fun Card_Droite_PrixVentEtBClient(
                                         .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                             )
                         )
-
                     }
                 },
                 textColor = Color.Red

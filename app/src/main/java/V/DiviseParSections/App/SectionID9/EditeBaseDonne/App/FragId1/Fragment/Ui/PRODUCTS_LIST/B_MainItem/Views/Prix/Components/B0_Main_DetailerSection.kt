@@ -93,8 +93,6 @@ fun Prix_Detailer_Section(
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
-
-                        // When switching to DefiniParGerant, load the tariff price if available
                         if (newType == TypeChoisi.DefiniParGerant &&
                             relative_M13Tariffication.prixCurrency > 0) {
                             updateProduct(relative_M1Produit.copy(
