@@ -33,6 +33,7 @@ fun Button_9(
         "",
         description_Functionement = "",
     ),
+    onClicked: () -> Unit = {} // Add this parameter
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -57,6 +58,7 @@ fun Button_9(
         FloatingActionButton(
             onClick = {
                 viewModel.toggle_selectedTypeChoisi()
+                onClicked() // Call this when clicked
             },
             modifier = Modifier.size(48.dp),
             containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
