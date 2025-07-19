@@ -265,7 +265,7 @@ fun OptionsFragmentButtons(
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .height(400.dp) // Set a reasonable height for scrolling
+                    .height(700.dp) // Set a reasonable height for scrolling
             ) {
                 LazyColumn(
                     modifier = Modifier
@@ -285,21 +285,7 @@ fun OptionsFragmentButtons(
                             onShowButtonsToggle = { showButtons = !showButtons }
                         )
                     }
-                    item {
-                        Button_10(
-                            button_State = Button_State.get_Default()
-                                .copy(
-                                    showLabels = showLabels,
-                                    textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                        true -> "Persistent_AlwaysShowed()"
-                                        false -> "Desactive"
-                                    }
-                                )
-                        ) {
-                            mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
-                                !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                        }
-                    }
+
 
                     item {
                         if (button9AlwaysVisible) {
@@ -318,6 +304,35 @@ fun OptionsFragmentButtons(
                     }
 
                     if (showButtons) {
+                        if(!button9AlwaysVisible) {
+                            item {
+                                Button_9(
+                                    label_Datas = Button_State(
+                                        showLabels,
+                                        "toggle_selectedTypeChoisi()",
+                                        its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                    )
+                                ) {
+                                    button9AlwaysVisible =true
+                                }
+                            }
+                        }
+
+                        item {
+                            Button_10(
+                                button_State = Button_State.get_Default()
+                                    .copy(
+                                        showLabels = showLabels,
+                                        textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                            true -> "Persistent_AlwaysShowed()"
+                                            false -> "Desactive"
+                                        }
+                                    )
+                            ) {
+                                mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
+                                    !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                            }
+                        }
                         item {
                             ButtonId5(
                                 viewModel = viewModel,
@@ -405,19 +420,6 @@ fun OptionsFragmentButtons(
                             ButtonId8(showLabels, viewModel)
                         }
 
-                        if(!button9AlwaysVisible) {
-                            item {
-                                Button_9(
-                                    label_Datas = Button_State(
-                                        showLabels,
-                                        "toggle_selectedTypeChoisi()",
-                                        its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                                    )
-                                ) {
-                                    button9AlwaysVisible =true
-                                }
-                            }
-                        }
 
                     }
                 }
