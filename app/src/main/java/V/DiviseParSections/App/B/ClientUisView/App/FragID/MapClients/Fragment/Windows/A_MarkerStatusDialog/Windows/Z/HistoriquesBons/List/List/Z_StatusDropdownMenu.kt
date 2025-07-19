@@ -63,22 +63,12 @@ fun StatusDropdownMenu(
 
         StatusDropdownItem(
             status = M8BonVent.EtateActuellementEst.A_EVITE,
-            text = "اقترح ان يتجنب لمدة اسبوعين"
+            text = "ارى انه لا يريد التعامل معنا بسبب "
         )
 
         StatusDropdownItem(
             status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             text = "عندو سلعة"
-        )
-
-        StatusDropdownItem(
-            status = M8BonVent.EtateActuellementEst.PourVoirPanie,
-            text = "للنظر"
-        )
-
-        StatusDropdownItem(
-            status = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
-            text = "تم أيصال منتجاته"
         )
 
         StatusDropdownItem(

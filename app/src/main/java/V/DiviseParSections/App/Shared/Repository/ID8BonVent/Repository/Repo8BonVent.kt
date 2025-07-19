@@ -180,7 +180,6 @@ data class M8BonVent(
     var vid: Long = 0L,
 
     // Section keyFireBase et Update Version Id
-
 ) {
 
     fun get_DebugInfos(): String {
@@ -202,6 +201,8 @@ data class M8BonVent(
 
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, " تنفيذ المطلوب في تحسين الوضع معه"),
         Speciale(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
+        Probleme(R.color.c3, "حدث مشكل معه"),
+        Ordre_Gerant(R.color.c4, "توجيه المسير"),
 
         A_COMMANDE_CONFIRME(
             android.R.color.holo_purple, "تم تاكيد الطلبية"

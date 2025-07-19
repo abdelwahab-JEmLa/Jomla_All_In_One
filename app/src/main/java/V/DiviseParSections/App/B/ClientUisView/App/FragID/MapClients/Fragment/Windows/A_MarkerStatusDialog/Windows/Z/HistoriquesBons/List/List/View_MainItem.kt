@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardVoice
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
@@ -218,7 +218,8 @@ fun View_MainItem(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-                Box {
+                Box {        //<--
+                //TODO(1): fait que au creation d affiche le drop down on open
                     IconButton(
                         modifier = Modifier,
                         onClick = {
@@ -232,7 +233,7 @@ fun View_MainItem(
                                 tint = Color.White
                             )
                             Icon(
-                                imageVector = Icons.Default.KeyboardVoice,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Options de statut",
                                 tint = Color.White
                             )
