@@ -98,6 +98,7 @@ data class M13TarificationInfos(
     val id: Long = 0L,
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+    var new_Entre: Boolean = true,
 
     val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,
@@ -130,7 +131,7 @@ data class M13TarificationInfos(
             Color(0xFFFF9800),
             "فائدة محققة مع لاضا كثير من الزيناء"
         ),
-        DefiniParGerant(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B), "محدد من المحل",Color.Black),
+        DefiniParGerant(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B), "محدد من المحل", Color.Black),
         Historique(Icons.Filled.History, Color(0xFF9C27B0), "السعر الذي وصلنا له"),
         PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
         Tariff_Achat_Depuit_Grossisst(

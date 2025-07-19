@@ -54,14 +54,12 @@ fun Prix_Detailer_Section(
 
     var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.PRIX_BASE) }
 
-    // Check if DefiniParGerant tariff is active and display its price in produit.prixVent
     val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
         val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
 
-        // If DefiniParGerant is active, use the tariff price for display
         val effectiveTariff = if (isDefiniParGerantActive) {
             relative_DefiniParGerant_M13Tariffication.copy(
-                prixCurrency = produit.prixVent // Sync with current product price
+                prixCurrency = produit.prixVent
             )
         } else {
             relative_DefiniParGerant_M13Tariffication
@@ -90,6 +88,7 @@ fun Prix_Detailer_Section(
                 )
 
                 TypeChoisiDropdownCard(
+
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
