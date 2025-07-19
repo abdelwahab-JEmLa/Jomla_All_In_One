@@ -57,8 +57,7 @@ fun Card_Droite_PrixVentEtBClient(
     Card(
         modifier = modifier
             .getSemanticsTag(get_Edited_Tariff(250.0), "get_Edited_Tariff")
-            .getSemanticsTag(itsActiveTariff, "itsActiveTariff")
-        ,
+            .getSemanticsTag(itsActiveTariff, "itsActiveTariff"),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -117,13 +116,11 @@ fun Card_Droite_PrixVentEtBClient(
                     currentPrice = prixUnitVente,
                     label = "Unité",
                     onPriceUpdate = { newPrixUnit ->
-                        if (itsActiveTariff) {
-                            // Only allow editing if DefiniParGerant tariff is active
-                            val newPrixVent = newPrixUnit * produit.nombreUniteInt
+                        val newPrixVent = newPrixUnit * produit.nombreUniteInt
 
-                            // Update both the product and the tariff
-                            updateProduct(produit.copy(prixVent = newPrixVent))
-                            add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
+                        when (itsActiveTariff) {
+                            true -> add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
+                            false -> updateProduct(produit.copy(prixVent = newPrixVent))
                         }
                     },
                     textColor = MaterialTheme.colorScheme.secondary
@@ -134,23 +131,18 @@ fun Card_Droite_PrixVentEtBClient(
                 currentPrice = currentPrice,
                 label = "Prix Vent Pack",
                 onPriceUpdate = { newPrix_Vent ->
-                    if (itsActiveTariff) {
-                        // Update the tariff using upsert for proper recomposition
-                        add_Definie_Tariff(get_Edited_Tariff(newPrix_Vent))
-
-                        // Also update the product if needed
-                        updateProduct(produit.copy(prixVent = newPrix_Vent))
-                    } else {
-                        updateProduct(
-                            produit.copy(
-                                prixVent = newPrix_Vent,
-                                etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
-                                    ArticlesBasesStatsTable
-                                        .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
-                                    ArticlesBasesStatsTable
-                                        .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                    when (itsActiveTariff) {
+                        true -> add_Definie_Tariff(get_Edited_Tariff(newPrix_Vent))
+                        false -> updateProduct(
+                                produit.copy(
+                                    prixVent = newPrix_Vent,
+                                    etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
+                                        ArticlesBasesStatsTable
+                                            .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
+                                        ArticlesBasesStatsTable
+                                            .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                                )
                             )
-                        )
                     }
                 },
                 textColor = Color.Red
