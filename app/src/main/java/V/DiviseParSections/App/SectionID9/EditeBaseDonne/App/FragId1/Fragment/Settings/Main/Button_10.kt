@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeviceUnknown
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,22 +24,20 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun Button_10(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    label_Datas: Label_Datas = Label_Datas(),
+    button_State: Button_State = Button_State(),
     onClick:  () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (label_Datas.showLabels) {
+        if (button_State.showLabels) {
             Text(
-                text = if (uiState.showDetailsExpandedPourTout) label_Datas.active_Str else label_Datas.desactive_Str,
+                text = button_State.textLable,
                 color = Color.Black,
                 modifier = Modifier
                     .background(
-                        color = if (uiState.showDetailsExpandedPourTout)
+                        color = if (button_State.its_Active)
                             Color.Red else
                             Color.Green,
                         shape = RoundedCornerShape(4.dp)
@@ -54,11 +50,11 @@ fun Button_10(
                 onClick()
             },
             modifier = Modifier.size(48.dp),
-            containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
+            containerColor = if (button_State.its_Active) Color.Green else Color.Gray
         ) {
             Icon(
-                imageVector = if (uiState.showDetailsExpandedPourTout) Icons.Default.Done else Icons.Default.DeviceUnknown,
-                contentDescription = label_Datas.active_Str,
+                imageVector = if (button_State.its_Active) Icons.Default.GetApp else Icons.Default.DeviceUnknown,
+                contentDescription = button_State.active_Str,
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )

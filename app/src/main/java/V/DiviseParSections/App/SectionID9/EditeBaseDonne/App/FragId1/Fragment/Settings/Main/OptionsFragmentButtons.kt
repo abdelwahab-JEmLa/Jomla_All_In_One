@@ -54,13 +54,21 @@ import kotlin.math.roundToInt
 
 enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
 
-data class Label_Datas(
+data class Button_State(
     val showLabels: Boolean = true,
     val active_Str: String = "",
     val desactive_Str: String = "",
     val description_Functionement: String = "",
     val its_OnClick_presistantn: Boolean = false,
-) { companion object { fun get_Default(): Label_Datas { return Label_Datas() } } }
+    val textLable: String = "",
+    val its_Active: Boolean = false,
+) {
+    companion object {
+        fun get_Default(): Button_State {
+            return Button_State()
+        }
+    }
+}
 
 @Composable
 fun OptionsFragmentButtons(
@@ -79,7 +87,7 @@ fun OptionsFragmentButtons(
 
     var mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed by remember { mutableStateOf(false) }
 
-    var button9AlwaysVisible by remember { mutableStateOf(false) }
+    var button9AlwaysVisible by remember { mutableStateOf(true) }
     var button8AlwaysVisible by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
@@ -259,34 +267,16 @@ fun OptionsFragmentButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                    Button_10(
-                        label_Datas = Label_Datas.get_Default()
-                            .copy(
-                                showLabels, "click active button()", "click desacive button()"
-                            )
-                    ) {
-                        mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
-                            !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                    }
-                }
 
                 if (button9AlwaysVisible && !showButtons) {
                     Button_9(
-                        label_Datas = Label_Datas.get_Default()
-                            .copy(showLabels,
-                                "toggle_selectedTypeChoisi()",
-                                its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                            )
-                    ) {
-                            button9AlwaysVisible = true
-                    }
+                        label_Datas = Button_State(
+                            showLabels,
+                            "toggle_selectedTypeChoisi()",
+                            its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                        )
+                    ) {}
                 }
-
-                if (button8AlwaysVisible && !showButtons) {
-                    ButtonId8(showLabels, viewModel) { button9AlwaysVisible = false }
-                }
-
 
                 if (!showButtons) {
                     Row(
@@ -311,19 +301,26 @@ fun OptionsFragmentButtons(
                 }
 
                 if (showButtons) {
-                    if (!mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                        Button_10(
-                            label_Datas = Label_Datas.get_Default()
-                                .copy(showLabels, "mode_Click()")
-                        ) {
-                            mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
-                                !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                        }
+                    Button_10(
+                        button_State = Button_State.get_Default()
+                            .copy(
+                                showLabels = showLabels,
+                                textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                    true -> "click active Persistent_AlwaysShowed()"
+                                    false -> "click DesActive Persistent_AlwaysShowed()"
+                                }
+                            )
+                    ) {
+                        mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
+                            !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
                     }
 
                     Button_9(
-                        label_Datas = Label_Datas.get_Default()
-                            .copy(showLabels, "toggle_selectedTypeChoisi()")
+                        label_Datas = Button_State(
+                            showLabels,
+                            "toggle_selectedTypeChoisi()",
+                            its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                        )
                     ) {
                         if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
                             button9AlwaysVisible = true

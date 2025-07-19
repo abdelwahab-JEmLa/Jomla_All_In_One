@@ -26,13 +26,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun Button_9(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    label_Datas: Label_Datas = Label_Datas(
-        true,
-        "",
-        "",
-        description_Functionement = "",
-    ),
-    onClicked: () -> Unit = {} // Add this parameter
+    label_Datas: Button_State,
+    onClicked: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

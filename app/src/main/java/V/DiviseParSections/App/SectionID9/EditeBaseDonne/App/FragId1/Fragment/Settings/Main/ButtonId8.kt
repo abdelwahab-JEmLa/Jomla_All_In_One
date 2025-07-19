@@ -23,7 +23,6 @@ fun ButtonId8(
     showLabels: Boolean,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     onClicked: () -> Unit = {} // Add this parameter
-
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -46,7 +45,6 @@ fun ButtonId8(
         FloatingActionButton(
             onClick = {
                 viewModel.toggleEntreEntitiesClickItemMode()
-                onClicked()
             },
             modifier = Modifier.size(48.dp),
             containerColor = uiState.clickItemMode.couleur
