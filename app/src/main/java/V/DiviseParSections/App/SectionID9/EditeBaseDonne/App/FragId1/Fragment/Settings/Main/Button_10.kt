@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Grass
-import androidx.compose.material.icons.filled.Toll
+import androidx.compose.material.icons.filled.DeviceUnknown
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,16 +23,11 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 
-
 @Composable
-fun Button_9(
+fun Button_10(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    label_Datas: Label_Datas = Label_Datas(
-        true,
-        "",
-        "",
-        description_Functionement = "",
-    ),
+    label_Datas: Label_Datas = Label_Datas(),
+    onClick:  () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -56,14 +51,14 @@ fun Button_9(
         }
         FloatingActionButton(
             onClick = {
-                viewModel.toggle_selectedTypeChoisi()
+                onClick()
             },
             modifier = Modifier.size(48.dp),
             containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
         ) {
             Icon(
-                imageVector = if (uiState.showDetailsExpandedPourTout) Icons.Default.Toll else Icons.Default.Grass,
-                contentDescription = "Toggle product details expansion",
+                imageVector = if (uiState.showDetailsExpandedPourTout) Icons.Default.Done else Icons.Default.DeviceUnknown,
+                contentDescription = label_Datas.active_Str,
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )

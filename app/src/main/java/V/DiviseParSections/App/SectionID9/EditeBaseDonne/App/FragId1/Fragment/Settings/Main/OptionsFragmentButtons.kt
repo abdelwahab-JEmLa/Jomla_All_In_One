@@ -54,6 +54,24 @@ import kotlin.math.roundToInt
 
 enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
 
+data class Label_Datas(
+    val showLabels: Boolean = true,
+    val active_Str: String = "",
+    val desactive_Str: String = "",
+    val description_Functionement: String = "",
+) {
+    companion object {
+        fun get_Default(): Label_Datas {
+            return Label_Datas(
+                true,
+                "",
+                "",
+                description_Functionement = "",
+            )
+        }
+    }
+}
+
 @Composable
 fun OptionsFragmentButtons(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
@@ -68,6 +86,8 @@ fun OptionsFragmentButtons(
 
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
+
+    var mode_Click_Mete_Le_Clicked_Button_AlwaysShowed by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -151,7 +171,6 @@ fun OptionsFragmentButtons(
         )
     }
 
-    // Catalogue selection dialog
     if (showCatalogueDialog) {
         AlertDialog(
             onDismissRequest = { showCatalogueDialog = false },
@@ -228,8 +247,7 @@ fun OptionsFragmentButtons(
             }
         )
     }
-    //<--
-    //TODO(1): ajout sort par dernier change prix achat
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
@@ -248,7 +266,33 @@ fun OptionsFragmentButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
+                // FIXED: Button_10 is shown when either showButtons is true OR mode_Click_Mete_Le_Clicked_Button_AlwaysShowed is true
+                if (mode_Click_Mete_Le_Clicked_Button_AlwaysShowed) {
+                    Button_10(
+                        label_Datas = Label_Datas.get_Default()
+                            .copy(
+                                showLabels, "mode_Click_()"
+                            )
+                    ) {
+                        mode_Click_Mete_Le_Clicked_Button_AlwaysShowed =
+                            !mode_Click_Mete_Le_Clicked_Button_AlwaysShowed
+                    }
+                }
+
                 if (showButtons) {
+                    // Only show Button_10 here if it's not already shown above
+                    if (!mode_Click_Mete_Le_Clicked_Button_AlwaysShowed) {
+                        Button_10(
+                            label_Datas = Label_Datas.get_Default()
+                                .copy(
+                                    showLabels, "mode_Click()"
+                                )
+                        ) {
+                            mode_Click_Mete_Le_Clicked_Button_AlwaysShowed =
+                                !mode_Click_Mete_Le_Clicked_Button_AlwaysShowed
+                        }
+                    }
+
                     Button_9(
                         label_Datas = Label_Datas.get_Default()
                             .copy(
@@ -269,7 +313,6 @@ fun OptionsFragmentButtons(
                     )
 
                     But1(showDialog = showDialog, showLabels = showLabels) { showDialog = true }
-
 
                     But2(
                         showLabels = showLabels,
