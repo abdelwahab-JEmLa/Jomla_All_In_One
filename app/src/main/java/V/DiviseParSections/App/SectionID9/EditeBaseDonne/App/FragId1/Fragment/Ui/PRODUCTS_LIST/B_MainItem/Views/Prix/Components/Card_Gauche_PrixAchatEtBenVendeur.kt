@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -32,10 +33,10 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
 ) {
     val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
 
-    // Helper function to create updated tariff
-    fun create_Definie_Tariff(newPrixVent: Double): M13TarificationInfos {
+    fun get_Edited_Tariff(newPrixVent: Double): M13TarificationInfos {
         return relative_Definie_Tariff.copy(
-            prixCurrency = newPrixVent
+            prixCurrency = newPrixVent,
+            creationTimestamps = System.currentTimeMillis()
         )
     }
 
@@ -47,7 +48,9 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
     val vertTurq = Color(0xFF066C62)
 
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .getSemanticsTag(get_Edited_Tariff(280.0),"get_Edited_Tariff")
+        ,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
@@ -77,7 +80,7 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                             val newPrixVent = produit.prixAchat + newBenefice
                             updateProduct(produit.copy(prixVent = newPrixVent))
 
-                            val updatedTariff = create_Definie_Tariff(newPrixVent)
+                            val updatedTariff = get_Edited_Tariff(newPrixVent)
                             add_Definie_Tariff(updatedTariff)
                         }
                     },

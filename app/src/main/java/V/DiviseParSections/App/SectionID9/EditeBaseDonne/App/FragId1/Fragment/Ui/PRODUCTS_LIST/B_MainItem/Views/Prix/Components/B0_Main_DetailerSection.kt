@@ -52,7 +52,7 @@ fun Prix_Detailer_Section(
             )
     }
 
-    var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.PRIX_BASE) }
+    var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.DefiniParGerant) }
 
     val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
         val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
@@ -122,8 +122,9 @@ fun Prix_Detailer_Section(
 
                     if (!shouldHideQuickInfoCards) {
                         // Left Card - Client Sales
-                        Card_Droit_PrixVentEtBClient(
+                        Card_Droite_PrixVentEtBClient(
                             modifier = Modifier.weight(1f),
+                            repositorysMainSetter,
                             produit = relative_M1Produit,
                             relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
                             updateProduct = updateProduct

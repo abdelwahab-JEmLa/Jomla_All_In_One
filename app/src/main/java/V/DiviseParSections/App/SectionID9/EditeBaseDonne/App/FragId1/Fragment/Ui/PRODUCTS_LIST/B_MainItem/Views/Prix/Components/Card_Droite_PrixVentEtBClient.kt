@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
@@ -25,16 +27,28 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.round
 
 @Composable
-fun Card_Droit_PrixVentEtBClient(
+fun Card_Droite_PrixVentEtBClient(
     modifier: Modifier = Modifier,
+    repositorysMainSetter: RepositorysMainSetter,
     produit: ArticlesBasesStatsTable,
     relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff: Pair<M13TarificationInfos, Boolean>,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
 ) {
     val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
+    fun get_Edited_Tariff(newPrixVent: Double): M13TarificationInfos {
+        return relative_Definie_Tariff.copy(
+            prixCurrency = newPrixVent,
+            creationTimestamps = System.currentTimeMillis()
+        )
+    }
+
+    fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
+        repositorysMainSetter.add_M13TarificationInfos(relative_Definie_Tariff)
+    }
 
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .getSemanticsTag(get_Edited_Tariff(250.0), "get_Edited_Tariff"),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -102,18 +116,22 @@ fun Card_Droit_PrixVentEtBClient(
 
             PriceEditor(
                 currentPrice = produit.prixVent,
-                label = "Prix Pack",
-                onPriceUpdate = { newPrix ->
+                label = "Prix Vent Pack",
+                onPriceUpdate = { newPrix_Vent ->
                     if (itsActiveTariff) {
-                        // Only allow editing if DefiniParGerant tariff is active
-                        updateProduct(produit.copy(
-                            prixVent = newPrix,
-                            etateActuelleOnFusionAvecBaseDonne = if(produit.prixAchat == 0.0)
-                                ArticlesBasesStatsTable
-                                    .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
-                                ArticlesBasesStatsTable
-                                    .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                        ))
+                        add_Definie_Tariff(get_Edited_Tariff(newPrix_Vent))
+                    } else {
+                        updateProduct(
+                            produit.copy(
+                                prixVent = newPrix_Vent,
+                                etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
+                                    ArticlesBasesStatsTable
+                                        .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
+                                    ArticlesBasesStatsTable
+                                        .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                            )
+                        )
+
                     }
                 },
                 textColor = Color.Red
