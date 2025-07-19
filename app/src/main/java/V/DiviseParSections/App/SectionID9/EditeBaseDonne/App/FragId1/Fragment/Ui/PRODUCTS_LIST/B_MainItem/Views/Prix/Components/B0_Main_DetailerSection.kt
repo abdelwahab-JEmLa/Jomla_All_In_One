@@ -3,7 +3,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.PriceAndUnitSection
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import android.annotation.SuppressLint
@@ -29,6 +31,7 @@ fun Prix_Detailer_Section(
     modifier: Modifier,
     viewModel: Sec9FragId1ViewId2ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     repo13TarificationInfos: Repo13TarificationInfos = aCentralFacade.repoMainGetter.repo13TarificationInfos,
     produit: ArticlesBasesStatsTable,
     shouldHideQuickInfoCards: Boolean,
@@ -36,16 +39,39 @@ fun Prix_Detailer_Section(
     onNextField: (() -> Unit)? = null,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
-    val relative_DefiniParGerant_Tariff by derivedStateOf {
+    val relative_DefiniParGerant_M13Tariffication by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull {
             it.parent_M1Produit_KeyId == produit.keyID
                     && it.typeChoisi == TypeChoisi.DefiniParGerant
+        } ?: M13TarificationInfos
+            .get_default()
+            .copy(
+                typeChoisi = TypeChoisi.DefiniParGerant,
+                parent_M1Produit_KeyId = produit.keyID,
+                parent_M1Produit_DebugInfos = produit.getDebugInfos(),
+            )
+    }
+
+    var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.PRIX_BASE) }
+
+    // Check if DefiniParGerant tariff is active and display its price in produit.prixVent
+    val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
+        val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
+
+        // If DefiniParGerant is active, use the tariff price for display
+        val effectiveTariff = if (isDefiniParGerantActive) {
+            relative_DefiniParGerant_M13Tariffication.copy(
+                prixCurrency = produit.prixVent // Sync with current product price
+            )
+        } else {
+            relative_DefiniParGerant_M13Tariffication
         }
+
+        Pair(effectiveTariff, isDefiniParGerantActive)
     }
 
     val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
     val shouldShowDetails = showDetailsExpanded && isIndividuallyExpanded
-    var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.PRIX_BASE) }
 
     if (shouldShowDetails) {
         Surface(
@@ -67,6 +93,14 @@ fun Prix_Detailer_Section(
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
+
+                        // When switching to DefiniParGerant, load the tariff price if available
+                        if (newType == TypeChoisi.DefiniParGerant &&
+                            relative_DefiniParGerant_M13Tariffication.prixCurrency > 0) {
+                            updateProduct(produit.copy(
+                                prixVent = relative_DefiniParGerant_M13Tariffication.prixCurrency
+                            ))
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -77,19 +111,22 @@ fun Prix_Detailer_Section(
                 ) {
                     // Right Card - Purchase & Profit
                     CardDroitPrixAchatEtBenVendeur(
-                        shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                        modifier = Modifier.weight(1f),
                         produit = produit,
+                        relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
+                        repositorysMainSetter = repositorysMainSetter,
                         updateProduct = updateProduct,
                         onNextField = onNextField,
-                        modifier = Modifier.weight(1f)
+                        shouldHideQuickInfoCards = shouldHideQuickInfoCards
                     )
 
                     if (!shouldHideQuickInfoCards) {
                         // Left Card - Client Sales
                         CardGauchePrixVentEtBClient(
+                            modifier = Modifier.weight(1f),
                             produit = produit,
-                            updateProduct = updateProduct,
-                            modifier = Modifier.weight(1f)
+                            relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
+                            updateProduct = updateProduct
                         )
                     }
                 }

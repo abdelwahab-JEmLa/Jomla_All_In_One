@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -19,12 +21,29 @@ import kotlin.math.round
 
 @Composable
 fun CardDroitPrixAchatEtBenVendeur(
+    modifier: Modifier = Modifier,
+    repositorysMainSetter: RepositorysMainSetter,
     produit: ArticlesBasesStatsTable,
+    relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff:
+    Pair<M13TarificationInfos, Boolean>,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     onNextField: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
     shouldHideQuickInfoCards: Boolean
 ) {
+    val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
+
+    // Helper function to create updated tariff
+    fun create_Definie_Tariff(newPrixVent: Double): M13TarificationInfos {
+        return relative_Definie_Tariff.copy(
+            prixCurrency = newPrixVent
+        )
+    }
+
+    // Helper function to save tariff
+    fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
+        repositorysMainSetter.upsert_M13TarificationInfos(relative_Definie_Tariff)
+    }
+
     val vertTurq = Color(0xFF066C62)
 
     Card(
@@ -54,12 +73,19 @@ fun CardDroitPrixAchatEtBenVendeur(
                     currentPrice = benefice,
                     label = "ربحي الخاص",
                     onPriceUpdate = { newBenefice ->
-                        val newPrixVent = produit.prixAchat + newBenefice
-                        updateProduct(produit.copy(prixVent = newPrixVent))
+                        if (itsActiveTariff) {
+                            // Only allow editing if DefiniParGerant tariff is active
+                            val newPrixVent = produit.prixAchat + newBenefice
+                            updateProduct(produit.copy(prixVent = newPrixVent))
+
+                            // Update the tariff in the database
+                            val updatedTariff = create_Definie_Tariff(newPrixVent)
+                            add_Definie_Tariff(updatedTariff)
+                        }
                     },
                     textColor = if (benefice > 0) {
                         vertTurq
-                    } else MaterialTheme.colorScheme.error,
+                    } else MaterialTheme.colorScheme.error
                 )
             }
 
@@ -71,33 +97,39 @@ fun CardDroitPrixAchatEtBenVendeur(
                     currentPrice = prixUnitAchat,
                     label = "Unité",
                     onPriceUpdate = { newPrixUnit ->
-                        val newPrixAchat = newPrixUnit * produit.nombreUniteInt
-                        updateProduct(
-                            produit.copy(
-                                prixAchat = newPrixAchat,
-                                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                        if (itsActiveTariff) {
+                            // Only allow editing if DefiniParGerant tariff is active
+                            val newPrixAchat = newPrixUnit * produit.nombreUniteInt
+                            updateProduct(
+                                produit.copy(
+                                    prixAchat = newPrixAchat,
+                                    prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                                )
                             )
-                        )
+                        }
                     },
-                    textColor = MaterialTheme.colorScheme.secondary,
+                    textColor = MaterialTheme.colorScheme.secondary
                 )
             }
 
             // Total purchase price
             PriceEditor(
                 currentPrice = produit.prixAchat,
-                label = "Prix Pack",
+                label = "Prix Achat Pack",
                 onPriceUpdate = { newPrix ->
-                    val newPrd = produit.copy(
-                        prixAchat = newPrix,
-                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
-                        etateActuelleOnFusionAvecBaseDonne= if(produit.prixAchat==0.0)
-                            ArticlesBasesStatsTable
-                            .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
-                            ArticlesBasesStatsTable
-                                .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                    )
-                    updateProduct(newPrd)
+                    if (itsActiveTariff) {
+                        // Only allow editing if DefiniParGerant tariff is active
+                        val newPrd = produit.copy(
+                            prixAchat = newPrix,
+                            prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
+                            etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
+                                ArticlesBasesStatsTable
+                                    .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
+                                ArticlesBasesStatsTable
+                                    .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                        )
+                        updateProduct(newPrd)
+                    }
                 },
                 textColor = vertTurq,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,

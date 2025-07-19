@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +26,13 @@ import kotlin.math.round
 
 @Composable
 fun CardGauchePrixVentEtBClient(
-    produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
+    produit: ArticlesBasesStatsTable,
+    relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff: Pair<M13TarificationInfos, Boolean>,
+    updateProduct: (ArticlesBasesStatsTable) -> Unit,
 ) {
+    val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -56,6 +60,7 @@ fun CardGauchePrixVentEtBClient(
                     tint = Color.Green
                 )
             }
+
             // Client benefit calculation with proper logic
             val beneficeClient =
                 (produit.clientPrixVentUnite * produit.nombreUniteInt) - produit.prixVent
@@ -63,10 +68,13 @@ fun CardGauchePrixVentEtBClient(
                 currentPrice = beneficeClient,
                 label = "ربح الزبون",
                 onPriceUpdate = { newBenClient ->
-                    if (produit.nombreUniteInt > 0) {
-                        val newPrixVent =
-                            (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
-                        updateProduct(produit.copy(prixVent = newPrixVent))
+                    if (itsActiveTariff) {
+                        // Only allow editing if DefiniParGerant tariff is active
+                        if (produit.nombreUniteInt > 0) {
+                            val newPrixVent =
+                                (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
+                            updateProduct(produit.copy(prixVent = newPrixVent))
+                        }
                     }
                 },
                 textColor = if (beneficeClient > 0)
@@ -82,29 +90,34 @@ fun CardGauchePrixVentEtBClient(
                     currentPrice = prixUnitVente,
                     label = "Unité",
                     onPriceUpdate = { newPrixUnit ->
-                        val newPrixVent = newPrixUnit * produit.nombreUniteInt
-                        updateProduct(produit.copy(prixVent = newPrixVent))
+                        if (itsActiveTariff) {
+                            // Only allow editing if DefiniParGerant tariff is active
+                            val newPrixVent = newPrixUnit * produit.nombreUniteInt
+                            updateProduct(produit.copy(prixVent = newPrixVent))
+                        }
                     },
                     textColor = MaterialTheme.colorScheme.secondary
                 )
             }
+
             PriceEditor(
                 currentPrice = produit.prixVent,
                 label = "Prix Pack",
                 onPriceUpdate = { newPrix ->
-                    updateProduct(produit.copy(
-                        prixVent = newPrix,
-                        etateActuelleOnFusionAvecBaseDonne= if(produit.prixAchat==0.0)
-                            ArticlesBasesStatsTable
-                                .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
-                            ArticlesBasesStatsTable
-                                .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                    ))
+                    if (itsActiveTariff) {
+                        // Only allow editing if DefiniParGerant tariff is active
+                        updateProduct(produit.copy(
+                            prixVent = newPrix,
+                            etateActuelleOnFusionAvecBaseDonne = if(produit.prixAchat == 0.0)
+                                ArticlesBasesStatsTable
+                                    .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
+                                ArticlesBasesStatsTable
+                                    .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                        ))
+                    }
                 },
                 textColor = Color.Red
             )
-
-
         }
     }
 }

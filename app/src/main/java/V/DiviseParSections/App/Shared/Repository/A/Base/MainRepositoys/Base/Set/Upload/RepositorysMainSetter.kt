@@ -170,6 +170,8 @@ class RepositorysMainSetter(
         repo11AchatOperation.update_If_Exist(data)
 
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
+    fun upsert_M13TarificationInfos(data: M13TarificationInfos) = repo13TarificationInfos.upsert(data)
+    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.update_If_Exist(data)
 
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
