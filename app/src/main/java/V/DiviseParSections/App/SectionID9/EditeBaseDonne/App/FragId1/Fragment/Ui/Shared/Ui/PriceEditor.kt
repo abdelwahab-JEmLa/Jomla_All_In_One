@@ -38,7 +38,7 @@ fun PriceEditor(
     additionalInfo: (@Composable () -> Unit)? = null,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     shouldHideQuickInfoCards: Boolean = false,
-    onNextField: (() -> Unit)? = null // New parameter for navigation to next field
+    onNextField: (() -> Unit)? = null,
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var tempText by remember { mutableStateOf("") }

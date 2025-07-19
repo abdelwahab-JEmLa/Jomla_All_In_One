@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.round
 
 @Composable
-fun CardDroitPrixAchatEtBenVendeur(
+fun Card_Gauche_PrixAchatEtBenVendeur(
     modifier: Modifier = Modifier,
     repositorysMainSetter: RepositorysMainSetter,
     produit: ArticlesBasesStatsTable,
@@ -41,7 +41,7 @@ fun CardDroitPrixAchatEtBenVendeur(
 
     // Helper function to save tariff
     fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
-        repositorysMainSetter.upsert_M13TarificationInfos(relative_Definie_Tariff)
+        repositorysMainSetter.add_M13TarificationInfos(relative_Definie_Tariff)
     }
 
     val vertTurq = Color(0xFF066C62)
@@ -74,11 +74,9 @@ fun CardDroitPrixAchatEtBenVendeur(
                     label = "ربحي الخاص",
                     onPriceUpdate = { newBenefice ->
                         if (itsActiveTariff) {
-                            // Only allow editing if DefiniParGerant tariff is active
                             val newPrixVent = produit.prixAchat + newBenefice
                             updateProduct(produit.copy(prixVent = newPrixVent))
 
-                            // Update the tariff in the database
                             val updatedTariff = create_Definie_Tariff(newPrixVent)
                             add_Definie_Tariff(updatedTariff)
                         }

@@ -110,7 +110,7 @@ fun Prix_Detailer_Section(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     // Right Card - Purchase & Profit
-                    CardDroitPrixAchatEtBenVendeur(
+                    Card_Gauche_PrixAchatEtBenVendeur(
                         modifier = Modifier.weight(1f),
                         produit = relative_M1Produit,
                         relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
@@ -122,7 +122,7 @@ fun Prix_Detailer_Section(
 
                     if (!shouldHideQuickInfoCards) {
                         // Left Card - Client Sales
-                        CardGauchePrixVentEtBClient(
+                        Card_Droit_PrixVentEtBClient(
                             modifier = Modifier.weight(1f),
                             produit = relative_M1Produit,
                             relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,

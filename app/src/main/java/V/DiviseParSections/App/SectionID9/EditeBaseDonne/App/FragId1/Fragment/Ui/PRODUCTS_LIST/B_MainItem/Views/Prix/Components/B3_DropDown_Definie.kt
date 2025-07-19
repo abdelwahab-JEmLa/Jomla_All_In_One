@@ -44,6 +44,7 @@ fun TypeChoisiDropdownCard(
 
     Card(
         modifier = modifier
+            .getSemanticsTag(relative_M13Tariffication,"relative_M13Tariffication")
             .fillMaxWidth()
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
@@ -96,7 +97,10 @@ fun TypeChoisiDropdownCard(
                     relative_M1Produit = relative_M1Produit,
                     relative_M13Tariffication = relative_M13Tariffication,
                     selectedType = selectedType,
-                    onSelected = onTypeSelected
+                    onSelected = {
+                        onTypeSelected(it)
+                        expanded=false
+                    }
                 )
             }
         }
@@ -161,7 +165,7 @@ fun DropDownItems(
     M13TarificationInfos.TypeChoisi.DefiniParGerant.let { type ->
         Card(
             modifier = Modifier
-                .getSemanticsTag(relative_M13Tariffication,"relative_M13Tariffication")
+                .getSemanticsTag(relative_M13Tariffication, "relative_M13Tariffication")
                 .fillMaxWidth()
                 .clickable {
                     onSelected(type)

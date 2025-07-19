@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.round
 
 @Composable
-fun CardGauchePrixVentEtBClient(
+fun Card_Droit_PrixVentEtBClient(
     modifier: Modifier = Modifier,
     produit: ArticlesBasesStatsTable,
     relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff: Pair<M13TarificationInfos, Boolean>,
