@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -12,7 +12,7 @@ fun upsertBonVent(
     keyByParentBonVentOnClickButton: String = "",
     gBonVentRepository: Repo8BonVent,
     hClientRepository: Repo2Client,
-    parametresAppComptNonSaved: ParametresAppComptNonSaved,
+    parametresAppComptNonSaved: Repo18ParametresAppComptNonSaved,
 ) {
     val activePeriodKeyByParent = "parametresAppComptNonSaved.keyIdId7VentPeriod"
     val keyModelToOnVentHVentPeriodKeyByParent =

@@ -15,7 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
@@ -54,7 +54,7 @@ class FocusedValuesGetter(
         _activeCentralValues.value= new
     }
     val active_Current_M9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
+        repo9AppCompt.datasValue.firstOrNull { it.keyID == Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
@@ -121,8 +121,8 @@ class FocusedValuesGetter(
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
-            parent_M9AppCompt_KeyID = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
-            parent_M9AppCompt_DebugInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
+            parent_M9AppCompt_KeyID = Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
+            parent_M9AppCompt_DebugInfos = Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
             parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
             parent_M14VentPeriod_DebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()
                 ?: "null"),
