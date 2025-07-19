@@ -33,7 +33,7 @@ fun Prix_Detailer_Section(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     repo13TarificationInfos: Repo13TarificationInfos = aCentralFacade.repoMainGetter.repo13TarificationInfos,
-    produit: ArticlesBasesStatsTable,
+    relative_M1Produit: ArticlesBasesStatsTable,
     shouldHideQuickInfoCards: Boolean,
     showDetailsExpanded: Boolean,
     onNextField: (() -> Unit)? = null,
@@ -41,14 +41,14 @@ fun Prix_Detailer_Section(
 ) {
     val relative_M13Tariffication by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull {
-            it.parent_M1Produit_KeyId == produit.keyID
+            it.parent_M1Produit_KeyId == relative_M1Produit.keyID
                     && it.typeChoisi == TypeChoisi.DefiniParGerant
         } ?: M13TarificationInfos
             .get_default()
             .copy(
                 typeChoisi = TypeChoisi.DefiniParGerant,
-                parent_M1Produit_KeyId = produit.keyID,
-                parent_M1Produit_DebugInfos = produit.getDebugInfos(),
+                parent_M1Produit_KeyId = relative_M1Produit.keyID,
+                parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
             )
     }
 
@@ -59,7 +59,7 @@ fun Prix_Detailer_Section(
 
         val effectiveTariff = if (isDefiniParGerantActive) {
             relative_M13Tariffication.copy(
-                prixCurrency = produit.prixVent
+                prixCurrency = relative_M1Produit.prixVent
             )
         } else {
             relative_M13Tariffication
@@ -68,7 +68,7 @@ fun Prix_Detailer_Section(
         Pair(effectiveTariff, isDefiniParGerantActive)
     }
 
-    val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
+    val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(relative_M1Produit.bsonObjectId)
     val shouldShowDetails = showDetailsExpanded && isIndividuallyExpanded
 
     if (shouldShowDetails) {
@@ -83,11 +83,12 @@ fun Prix_Detailer_Section(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 PriceAndUnitSection(
-                    produit = produit,
+                    produit = relative_M1Produit,
                     updateProduct = updateProduct
                 )
 
                 TypeChoisiDropdownCard(
+                    relative_M1Produit=relative_M1Produit,
                     relative_M13Tariffication=relative_M13Tariffication,
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
@@ -96,7 +97,7 @@ fun Prix_Detailer_Section(
                         // When switching to DefiniParGerant, load the tariff price if available
                         if (newType == TypeChoisi.DefiniParGerant &&
                             relative_M13Tariffication.prixCurrency > 0) {
-                            updateProduct(produit.copy(
+                            updateProduct(relative_M1Produit.copy(
                                 prixVent = relative_M13Tariffication.prixCurrency
                             ))
                         }
@@ -111,7 +112,7 @@ fun Prix_Detailer_Section(
                     // Right Card - Purchase & Profit
                     CardDroitPrixAchatEtBenVendeur(
                         modifier = Modifier.weight(1f),
-                        produit = produit,
+                        produit = relative_M1Produit,
                         relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
                         repositorysMainSetter = repositorysMainSetter,
                         updateProduct = updateProduct,
@@ -123,7 +124,7 @@ fun Prix_Detailer_Section(
                         // Left Card - Client Sales
                         CardGauchePrixVentEtBClient(
                             modifier = Modifier.weight(1f),
-                            produit = produit,
+                            produit = relative_M1Produit,
                             relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff,
                             updateProduct = updateProduct
                         )

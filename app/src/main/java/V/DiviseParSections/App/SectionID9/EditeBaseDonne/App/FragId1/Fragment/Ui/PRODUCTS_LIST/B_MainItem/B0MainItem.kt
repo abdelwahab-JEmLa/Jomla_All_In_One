@@ -159,7 +159,7 @@ fun ProductItem(
             Prix_Detailer_Section(
                 modifier = modifierWithDefinedPadding,
                 viewModel = viewModel,
-                produit = produit,
+                relative_M1Produit = produit,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 showDetailsExpanded = uiState.showDetailsExpandedPourTout,
                 onNextField = onNextField,

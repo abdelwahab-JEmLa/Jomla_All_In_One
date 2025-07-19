@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +20,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TypeChoisiDropdownCard(
     modifier: Modifier = Modifier,
+    relative_M1Produit: ArticlesBasesStatsTable,
     relative_M13Tariffication: M13TarificationInfos,
     selectedType: M13TarificationInfos.TypeChoisi,
     onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit
@@ -46,7 +47,7 @@ fun TypeChoisiDropdownCard(
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = selectedType.couleur // Background color from entity
+            containerColor = selectedType.couleur
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -76,12 +77,6 @@ fun TypeChoisiDropdownCard(
                         color = selectedType.couleur_Text,
                         fontWeight = FontWeight.Medium
                     )
-                    Text(
-                        text = relative_M13Tariffication.prixCurrency.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = selectedType.couleur_Text,
-                        fontWeight = FontWeight.Medium
-                    )
                 }
 
                 Icon(
@@ -96,60 +91,116 @@ fun TypeChoisiDropdownCard(
                 HorizontalDivider(color = selectedType.couleur_Text.copy(alpha = 0.3f))
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val allowedTypes = listOf(
-                    M13TarificationInfos.TypeChoisi.PRIX_BASE,
-                    M13TarificationInfos.TypeChoisi.DefiniParGerant
+                DropDownItems(
+                    relative_M1Produit = relative_M1Produit,
+                    relative_M13Tariffication = relative_M13Tariffication,
+                    selectedType = selectedType,
+                    onSelected = onTypeSelected
                 )
-
-                allowedTypes.forEach { type ->
-                    if (type != selectedType) {
-                        TypeChoisiMenuItem(
-                            type = type,
-                            onSelected = {
-                                onTypeSelected(type)
-                                expanded = false
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
             }
         }
     }
 }
 
 @Composable
-private fun TypeChoisiMenuItem(
-    type: M13TarificationInfos.TypeChoisi,
-    onSelected: () -> Unit
+fun DropDownItems(
+    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M13Tariffication: M13TarificationInfos,
+    selectedType: M13TarificationInfos.TypeChoisi,
+    onSelected: (M13TarificationInfos.TypeChoisi) -> Unit
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSelected() },
-        shape = RoundedCornerShape(8.dp),
-        color = type.couleur
-    ) {
-        Row(
+    // PRIX_BASE option
+    M13TarificationInfos.TypeChoisi.PRIX_BASE.let { type ->
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .clickable {
+                    onSelected(type)
+                },
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = type.couleur
+            )
         ) {
-            type.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = type.couleur_Text, // Icon color from entity text color
-                    modifier = Modifier.size(18.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                type.iconVector?.let { icon ->
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = type.couleur_Text,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Text(
+                    text = type.nomArabe,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = type.couleur_Text
+                )
+
+                val prixCurrency = relative_M1Produit.prixVent
+
+                Text(
+                    text = prixCurrency.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = type.couleur_Text,
+                    fontWeight = FontWeight.Medium
                 )
             }
-            Text(
-                text = type.nomArabe,
-                style = MaterialTheme.typography.bodySmall,
-                color = type.couleur_Text // Text color from entity
-            )
         }
+        Spacer(modifier = Modifier.height(4.dp))
+    }
+
+    // DefiniParGerant option
+    M13TarificationInfos.TypeChoisi.DefiniParGerant.let { type ->
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onSelected(type)
+                },
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = type.couleur
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                type.iconVector?.let { icon ->
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = type.couleur_Text,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Text(
+                    text = type.nomArabe,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = type.couleur_Text
+                )
+
+                val prixCurrency = relative_M13Tariffication.prixCurrency.takeIf { it > 0.0 }
+                    ?: relative_M1Produit.prixVent
+
+                Text(
+                    text = prixCurrency.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = type.couleur_Text,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
