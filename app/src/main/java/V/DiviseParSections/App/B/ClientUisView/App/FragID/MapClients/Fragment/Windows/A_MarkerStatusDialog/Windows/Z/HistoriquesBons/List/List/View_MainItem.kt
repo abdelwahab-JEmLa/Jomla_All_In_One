@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -62,18 +63,16 @@ fun View_MainItem(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8BonVent: M8BonVent,
-    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter
+    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter,
+    repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
 ) {
-    val activeCentralValues by remember {
-        derivedStateOf { focusedValuesGetter.active_Central_Values }
-    }
-
+    val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
 
-    val hasVoiceMessage = relative_M17Message?.nomDeSonOriginaleFichie != null
-            && relative_M17Message.nomDeSonOriginaleFichie != "null"
 
+    val hasVoiceMessage =
+        relative_M17Message?.nomDeSonOriginaleFichie != null && relative_M17Message.nomDeSonOriginaleFichie != "null"
     val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
     val etateActuellementEst = relative_M8BonVent.etateActuellementEst
@@ -335,7 +334,14 @@ fun View_MainItem(
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
-
+                fun update_etate_Listening_relative_M17Message(): Unit {
+                    val new = relative_M17Message?.copy(
+                        etate = M17MessageVocale.Etate.ECOUTE
+                    )
+                    if (new != null) {
+                        repositorysMainSetter.upsert_M17MessageVocale(new)
+                    }
+                }
                 // Voice message player section - FIXED: Progress bar layout
                 if (hasVoiceMessage) {
                     Row(
@@ -367,12 +373,15 @@ fun View_MainItem(
                                             val audioSource =
                                                 relative_M17Message?.nomDeSonOriginaleFichie
                                                     ?: ""
+// In View_MainItem.kt, replace the startPlayback call with this fixed version:
+
                                             val playResult =
                                                 audioRecorderAndPlayHandler.startPlayback(
                                                     context = context,
                                                     parentMessageVID = relative_M8BonVent.vid,
                                                     firebaseUrl = audioSource,
                                                     onPlaybackComplete = {
+                                                        // Update M8BonVent as before
                                                         if (!relative_M8BonVent.sonVocaleEstEcoute) {
                                                             val currentTimestamp =
                                                                 datesHandler.getCurrentTimestamps()
@@ -383,6 +392,9 @@ fun View_MainItem(
                                                                 )
                                                             ) {}
                                                         }
+
+                                                        // NEW: Update M17MessageVocale to ECOUTE state
+                                                        update_etate_Listening_relative_M17Message()
                                                     },
                                                     onPlaybackError = { errorMessage ->
                                                         Toast.makeText(
@@ -392,7 +404,6 @@ fun View_MainItem(
                                                         ).show()
                                                     }
                                                 )
-
                                             if (playResult.isFailure) {
                                                 val errorMessage =
                                                     "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
@@ -467,7 +478,6 @@ fun View_MainItem(
                             }
                         }
 
-                        // Status and time display
                         Column(
                             modifier = Modifier.padding(start = 8.dp),
                             horizontalAlignment = Alignment.End
