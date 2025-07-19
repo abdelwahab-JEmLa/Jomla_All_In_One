@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
@@ -267,6 +268,9 @@ fun OptionsFragmentButtons(
                     .height(400.dp) // Set a reasonable height for scrolling
             ) {
                 LazyColumn(
+                    modifier = Modifier
+                        .getSemanticsTag(button9AlwaysVisible,"button9AlwaysVisible")
+                    ,
                     state = lazyListState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.End,
@@ -281,8 +285,38 @@ fun OptionsFragmentButtons(
                             onShowButtonsToggle = { showButtons = !showButtons }
                         )
                     }
+                    item {
+                        Button_10(
+                            button_State = Button_State.get_Default()
+                                .copy(
+                                    showLabels = showLabels,
+                                    textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                        true -> "Persistent_AlwaysShowed()"
+                                        false -> "Desactive"
+                                    }
+                                )
+                        ) {
+                            mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
+                                !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                        }
+                    }
 
-                    // Conditional items - only show when showButtons is true
+                    item {
+                        if (button9AlwaysVisible) {
+                            Button_9(
+                                label_Datas = Button_State(
+                                    showLabels,
+                                    "toggle_selectedTypeChoisi()",
+                                    its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                )
+                            ) {
+                                if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                    button9AlwaysVisible = !button9AlwaysVisible
+                                }
+                            }
+                        }
+                    }
+
                     if (showButtons) {
                         item {
                             ButtonId5(
@@ -345,7 +379,9 @@ fun OptionsFragmentButtons(
                         }
 
                         item {
-                            But1(showDialog = showDialog, showLabels = showLabels) { showDialog = true }
+                            But1(showDialog = showDialog, showLabels = showLabels) {
+                                showDialog = true
+                            }
                         }
 
                         item {
@@ -369,37 +405,20 @@ fun OptionsFragmentButtons(
                             ButtonId8(showLabels, viewModel)
                         }
 
-                        item {
-                            Button_9(
-                                label_Datas = Button_State(
-                                    showLabels,
-                                    "toggle_selectedTypeChoisi()",
-                                    its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                                )
-                            ) {
-                                button9AlwaysVisible =
-                                    when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                        true -> false
-                                        false -> true
-                                    }
+                        if(!button9AlwaysVisible) {
+                            item {
+                                Button_9(
+                                    label_Datas = Button_State(
+                                        showLabels,
+                                        "toggle_selectedTypeChoisi()",
+                                        its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                    )
+                                ) {
+                                    button9AlwaysVisible =true
+                                }
                             }
                         }
 
-                        item {
-                            Button_10(
-                                button_State = Button_State.get_Default()
-                                    .copy(
-                                        showLabels = showLabels,
-                                        textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                            true -> "click active Persistent_AlwaysShowed()"
-                                            false -> "click DesActive Persistent_AlwaysShowed()"
-                                        }
-                                    )
-                            ) {
-                                mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
-                                    !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                            }
-                        }
                     }
                 }
             }

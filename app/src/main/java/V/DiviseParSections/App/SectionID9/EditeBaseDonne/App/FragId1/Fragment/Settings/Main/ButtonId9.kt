@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -50,13 +51,13 @@ fun Button_9(
             )
         }
         FloatingActionButton(
+            modifier = Modifier
+                .getSemanticsTag(label_Datas,"label_Datas")
+                .size(48.dp),
             onClick = {
-                when (label_Datas.its_OnClick_presistantn) {
-                    true -> onClicked()
-                    false -> viewModel.toggle_selectedTypeChoisi()
-                }
+                 onClicked()
+                   viewModel.toggle_selectedTypeChoisi()
             },
-            modifier = Modifier.size(48.dp),
             containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
         ) {
             Icon(
