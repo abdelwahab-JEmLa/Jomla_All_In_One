@@ -140,7 +140,7 @@ data class M13TarificationInfos(
             Color(0xFF2196F3)
         ),
 
-        DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B), "fd "),
+        DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "fd "),
     }
 
     fun withProperDefaults(): M13TarificationInfos {

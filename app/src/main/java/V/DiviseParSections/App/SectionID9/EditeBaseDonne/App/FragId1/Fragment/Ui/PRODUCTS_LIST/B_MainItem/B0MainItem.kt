@@ -159,10 +159,10 @@ fun ProductItem(
             Prix_Detailer_Section(
                 modifier = modifierWithDefinedPadding,
                 viewModel = viewModel,
+                produit = produit,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 showDetailsExpanded = uiState.showDetailsExpandedPourTout,
                 onNextField = onNextField,
-                produit = produit,
                 updateProduct = ::updateProduct // Added viewModel parameter
             )
         }

@@ -1,17 +1,18 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class Sec9FragId1ViewId2ViewModel(
-    a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
+   val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,
-        var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet()
+        var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet(),
+
     )
 
     private val _uiState = MutableStateFlow(UiState())

@@ -14,7 +14,7 @@ fun testD_TarificationInfosT2(): List<M13TarificationInfos> {
                 hour = 14,
                 minute = 30
             ),
-            typeChoisi = M13TarificationInfos.TypeChoisi.DEFINI,
+            typeChoisi = M13TarificationInfos.TypeChoisi.DEFIN_OLd,
             prixCurrency = 65.75
         ),
     )

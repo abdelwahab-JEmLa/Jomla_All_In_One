@@ -99,7 +99,7 @@ fun TariffButtonItem(
     val focusRequester = remember { FocusRequester() }
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
-    val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
+    val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
             typeTarification == TypeChoisi.DefiniParGerant
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
