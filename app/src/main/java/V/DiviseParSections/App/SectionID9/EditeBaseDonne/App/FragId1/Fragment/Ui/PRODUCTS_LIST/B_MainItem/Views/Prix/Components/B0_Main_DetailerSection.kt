@@ -22,20 +22,15 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DetailleSection(
     modifier: Modifier,
+    viewModel: Sec9FragId1ViewId2ViewModel,
     shouldHideQuickInfoCards: Boolean,
     showDetailsExpanded: Boolean,
     onNextField: (() -> Unit)? = null,
     produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
-    viewModel: Sec9FragId1ViewId2ViewModel
+    updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
-    // RepositorysMainGetter individual product expansion state
     val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
-
-    // Final expansion state: global setting AND individual setting
     val shouldShowDetails = showDetailsExpanded && isIndividuallyExpanded
-
-    // State for TypeChoisi selection
     var selectedTypeChoisi by remember { mutableStateOf(TypeChoisi.PRIX_BASE) }
 
     if (shouldShowDetails) {
@@ -49,19 +44,15 @@ fun DetailleSection(
                 modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Unit section with better styling
                 PriceAndUnitSection(
                     produit = produit,
                     updateProduct = updateProduct
                 )
 
-                // TypeChoisi Dropdown Card
                 TypeChoisiDropdownCard(
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
-                        // You can also update the product here if needed
-                        // updateProduct(produit.copy(someField = newType))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )

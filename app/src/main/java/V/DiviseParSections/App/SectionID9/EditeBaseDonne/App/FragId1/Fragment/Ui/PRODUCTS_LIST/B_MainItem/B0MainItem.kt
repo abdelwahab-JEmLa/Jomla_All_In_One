@@ -157,13 +157,13 @@ fun ProductItem(
 
             // Details Section - Pass viewModel to enable individual expand/collapse
             DetailleSection(
-                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 modifier = modifierWithDefinedPadding,
+                viewModel = viewModel,
+                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 showDetailsExpanded = uiState.showDetailsExpandedPourTout,
-                produit = produit,
-                updateProduct = ::updateProduct,
                 onNextField = onNextField,
-                viewModel = viewModel // Added viewModel parameter
+                produit = produit,
+                updateProduct = ::updateProduct // Added viewModel parameter
             )
         }
     }
