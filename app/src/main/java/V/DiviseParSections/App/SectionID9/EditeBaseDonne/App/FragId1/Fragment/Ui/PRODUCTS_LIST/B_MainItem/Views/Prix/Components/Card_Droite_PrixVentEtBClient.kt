@@ -44,9 +44,13 @@ fun Card_Droite_PrixVentEtBClient(
         )
     }
 
-    // FIXED: Use upsert instead of add to ensure proper state updates
-    fun add_Definie_Tariff(relative_Definie_Tariff: M13TarificationInfos) {
-        repositorysMainSetter.upsert_M13TarificationInfos(relative_Definie_Tariff)
+    fun add_Definie_Tariff_Or_Update_M1Produit(newPrixVent: Double) {
+        when (itsActiveTariff) {
+            true ->
+                repositorysMainSetter.upsert_M13TarificationInfos(get_Edited_Tariff(newPrixVent))
+
+            false -> updateProduct(produit.copy(prixVent = newPrixVent))
+        }
     }
 
     val currentPrice = when (itsActiveTariff) {
@@ -56,6 +60,7 @@ fun Card_Droite_PrixVentEtBClient(
 
     Card(
         modifier = modifier
+            .getSemanticsTag(relative_Definie_Tariff, "relative_Definie_Tariff")
             .getSemanticsTag(get_Edited_Tariff(250.0), "get_Edited_Tariff")
             .getSemanticsTag(itsActiveTariff, "itsActiveTariff"),
         shape = RoundedCornerShape(12.dp),
@@ -84,24 +89,15 @@ fun Card_Droite_PrixVentEtBClient(
                 )
             }
 
-            // Client benefit calculation with proper logic
             val beneficeClient =
                 (produit.clientPrixVentUnite * produit.nombreUniteInt) - currentPrice
             PriceEditor(
                 currentPrice = beneficeClient,
                 label = "ربح الزبون",
                 onPriceUpdate = { newBenClient ->
-                    if (itsActiveTariff) {
-                        // Only allow editing if DefiniParGerant tariff is active
-                        if (produit.nombreUniteInt > 0) {
-                            val newPrixVent =
-                                (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
-
-                            // Update both the product and the tariff
-                            updateProduct(produit.copy(prixVent = newPrixVent))
-                            add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
-                        }
-                    }
+                    val newPrixVent =
+                        (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
+                    add_Definie_Tariff_Or_Update_M1Produit(newPrixVent)
                 },
                 textColor = if (beneficeClient > 0)
                     Color(0xFFFF8C00)
@@ -118,10 +114,7 @@ fun Card_Droite_PrixVentEtBClient(
                     onPriceUpdate = { newPrixUnit ->
                         val newPrixVent = newPrixUnit * produit.nombreUniteInt
 
-                        when (itsActiveTariff) {
-                            true -> add_Definie_Tariff(get_Edited_Tariff(newPrixVent))
-                            false -> updateProduct(produit.copy(prixVent = newPrixVent))
-                        }
+                        add_Definie_Tariff_Or_Update_M1Produit(newPrixVent)
                     },
                     textColor = MaterialTheme.colorScheme.secondary
                 )
@@ -131,19 +124,7 @@ fun Card_Droite_PrixVentEtBClient(
                 currentPrice = currentPrice,
                 label = "Prix Vent Pack",
                 onPriceUpdate = { newPrix_Vent ->
-                    when (itsActiveTariff) {
-                        true -> add_Definie_Tariff(get_Edited_Tariff(newPrix_Vent))
-                        false -> updateProduct(
-                                produit.copy(
-                                    prixVent = newPrix_Vent,
-                                    etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
-                                        ArticlesBasesStatsTable
-                                            .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
-                                        ArticlesBasesStatsTable
-                                            .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                                )
-                            )
-                    }
+                    add_Definie_Tariff_Or_Update_M1Produit(newPrix_Vent)
                 },
                 textColor = Color.Red
             )

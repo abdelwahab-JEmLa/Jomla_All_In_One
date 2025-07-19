@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.PriceAndUnitSection
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -39,8 +40,9 @@ fun Prix_Detailer_Section(
     onNextField: (() -> Unit)? = null,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
+    val datasValue = repo13TarificationInfos.datasValue
     val relative_M13Tariffication by derivedStateOf {
-        repo13TarificationInfos.datasValue.lastOrNull {
+        datasValue.lastOrNull {
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID
                     && it.typeChoisi == TypeChoisi.DefiniParGerant
         } ?: M13TarificationInfos
@@ -57,13 +59,8 @@ fun Prix_Detailer_Section(
     val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
         val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
 
-        val effectiveTariff = if (isDefiniParGerantActive) {
-            relative_M13Tariffication.copy(
-                prixCurrency = relative_M1Produit.prixVent
-            )
-        } else {
+        val effectiveTariff =
             relative_M13Tariffication
-        }
 
         Pair(effectiveTariff, isDefiniParGerantActive)
     }
@@ -74,6 +71,7 @@ fun Prix_Detailer_Section(
     if (shouldShowDetails) {
         Surface(
             modifier = Modifier
+                .getSemanticsTag(datasValue, "datasValue")
                 .fillMaxWidth(),
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
             shape = RoundedCornerShape(16.dp)
@@ -88,16 +86,19 @@ fun Prix_Detailer_Section(
                 )
 
                 TypeChoisiDropdownCard(
-                    relative_M1Produit=relative_M1Produit,
-                    relative_M13Tariffication=relative_M13Tariffication,
+                    relative_M1Produit = relative_M1Produit,
+                    relative_M13Tariffication = relative_M13Tariffication,
                     selectedType = selectedTypeChoisi,
                     onTypeSelected = { newType ->
                         selectedTypeChoisi = newType
                         if (newType == TypeChoisi.DefiniParGerant &&
-                            relative_M13Tariffication.prixCurrency > 0) {
-                            updateProduct(relative_M1Produit.copy(
-                                prixVent = relative_M13Tariffication.prixCurrency
-                            ))
+                            relative_M13Tariffication.prixCurrency > 0
+                        ) {
+                            updateProduct(
+                                relative_M1Produit.copy(
+                                    prixVent = relative_M13Tariffication.prixCurrency
+                                )
+                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()

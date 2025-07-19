@@ -20,6 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.text.DecimalFormat
+
+// Helper function to format numbers without unnecessary decimals
+fun formatPrice(price: Double): String {
+    return if (price == price.toInt().toDouble()) {
+        price.toInt().toString()
+    } else {
+        DecimalFormat("#.##").format(price)
+    }
+}
 
 @Composable
 fun QuickInfoSection(
@@ -49,7 +59,7 @@ fun QuickInfoSection(
                 if (benefice != 0.0 && !shouldHideQuickInfoCards) {
                     QuickInfoCard(
                         title = "Bénéfice",
-                        value = "$benefice DA",
+                        value = "${formatPrice(benefice)} DA",
                         icon = if (benefice > 0) "📈" else "📉",
                         color = if (benefice > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1f)
@@ -59,7 +69,7 @@ fun QuickInfoSection(
                 if (!shouldHideQuickInfoCards) {
                     QuickInfoCard(
                         title = "Prix Vente",
-                        value = "${produit.prixVent} DA",
+                        value = "${formatPrice(produit.prixVent)} DA",
                         icon = "💰",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
