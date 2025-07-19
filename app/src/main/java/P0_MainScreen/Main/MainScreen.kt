@@ -274,7 +274,8 @@ fun MainScreen(
                     }
                 }
 
-                if (productDisplayController.searchWindowsDisplaye.isNotEmpty() && shouldShowContent && !hideAppScreen) {
+                if (productDisplayController.searchWindowsDisplaye.isNotEmpty()
+                    && shouldShowContent && !hideAppScreen) {
                     SearchArticle(
                         dsipayeText = productDisplayController.searchWindowsDisplaye
                     )
@@ -301,12 +302,12 @@ fun MainScreen(
                             .zIndex(10f)
                     ) {
                         panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
-                        panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
+                        panelsGroupeButtonHandler.AfficheDialogesHeadApps()
                     }
                 }
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
-                        PressistatntMainActivityButtons_Sec8FWinID1()
+                    PressistatntMainActivityButtons_Sec8FWinID1()
                 }
             }
         }

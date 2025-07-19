@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
     val active_OpnerDialog_M17MessageVocale: M17MessageVocale? =null,
+    val aOpDi_SearchM1ProduitToRelationAutre: ArticlesBasesStatsTable? =null,
 ) {
     companion object{
         fun get_Default(): ActiveCentralValues {

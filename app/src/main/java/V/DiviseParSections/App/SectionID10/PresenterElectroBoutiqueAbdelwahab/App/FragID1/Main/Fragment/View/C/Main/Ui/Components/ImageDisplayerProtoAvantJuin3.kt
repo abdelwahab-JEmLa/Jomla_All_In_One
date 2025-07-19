@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
@@ -38,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -196,6 +202,29 @@ fun ImageDisplayerProtoAvantJuin3(
                     }
                 }
             }
+        }
+
+        SmallFloatingActionButton(
+            onClick = {
+
+                val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
+                focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
+                focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
+                focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
+                onClickToOpenWindow()
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp)
+                .zIndex(1f),
+            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Product",
+                modifier = Modifier.size(16.dp)
+            )
         }
 
         if (showOverlay) {
