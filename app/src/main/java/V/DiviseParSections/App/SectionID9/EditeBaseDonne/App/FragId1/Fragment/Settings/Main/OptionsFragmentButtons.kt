@@ -94,7 +94,7 @@ fun OptionsFragmentButtons(
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
@@ -274,7 +274,6 @@ fun OptionsFragmentButtons(
                     state = lazyListState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.End,
-                    reverseLayout = true // This makes items appear from bottom, like the original Column
                 ) {
                     // Always visible item - LabelEtShowButtonsButtons
                     item {
@@ -285,7 +284,6 @@ fun OptionsFragmentButtons(
                             onShowButtonsToggle = { showButtons = !showButtons }
                         )
                     }
-
 
                     item {
                         if (button9AlwaysVisible) {
@@ -419,8 +417,6 @@ fun OptionsFragmentButtons(
                         item {
                             ButtonId8(showLabels, viewModel)
                         }
-
-
                     }
                 }
             }
