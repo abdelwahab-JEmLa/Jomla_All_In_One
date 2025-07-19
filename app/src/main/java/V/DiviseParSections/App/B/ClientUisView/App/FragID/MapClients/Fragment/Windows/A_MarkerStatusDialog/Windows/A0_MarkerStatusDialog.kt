@@ -192,8 +192,16 @@ fun MarkerStatusDialog(
                                                 clickedClient = clientId,
                                             )
                                     }
+
                                     item {
-                                        M8BonVent.EtateActuellementEst.Speciale
+                                        M8BonVent.EtateActuellementEst.Ordre_Gerant
+                                            .ButtonAutreEtates(
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+                                    }
+                                    item {
+                                        M8BonVent.EtateActuellementEst.Rapport
                                             .ButtonAutreEtates(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,

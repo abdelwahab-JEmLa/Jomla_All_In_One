@@ -68,7 +68,6 @@ fun View_MainItem(
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
 
-
     val hasVoiceMessage =
         relative_M17Message?.nomDeSonOriginaleFichie != null && relative_M17Message.nomDeSonOriginaleFichie != "null"
     val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
@@ -87,6 +86,17 @@ fun View_MainItem(
     // State for dropdown menu
     var showDropdownMenu by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf<M8BonVent.EtateActuellementEst?>(null) }
+
+    // Auto-show dropdown for recently created items (within 10 seconds)
+    LaunchedEffect(relative_M8BonVent.creationTimestamps) {
+        val currentTime = System.currentTimeMillis()
+        val timeDifference = currentTime - relative_M8BonVent.creationTimestamps
+
+        // If created within the last 10 seconds (10000 milliseconds)
+        if (timeDifference <= 10000) {
+            showDropdownMenu = true
+        }
+    }
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
@@ -218,8 +228,7 @@ fun View_MainItem(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-                Box {        //<--
-                //TODO(1): fait que au creation d affiche le drop down on open
+                Box {
                     IconButton(
                         modifier = Modifier,
                         onClick = {
@@ -335,6 +344,7 @@ fun View_MainItem(
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+
                 fun update_etate_Listening_relative_M17Message(): Unit {
                     val new = relative_M17Message?.copy(
                         etate = M17MessageVocale.Etate.ECOUTE
@@ -343,6 +353,7 @@ fun View_MainItem(
                         repositorysMainSetter.upsert_M17MessageVocale(new)
                     }
                 }
+
                 // Voice message player section - FIXED: Progress bar layout
                 if (hasVoiceMessage) {
                     Row(
@@ -374,7 +385,6 @@ fun View_MainItem(
                                             val audioSource =
                                                 relative_M17Message?.nomDeSonOriginaleFichie
                                                     ?: ""
-// In View_MainItem.kt, replace the startPlayback call with this fixed version:
 
                                             val playResult =
                                                 audioRecorderAndPlayHandler.startPlayback(
@@ -478,69 +488,6 @@ fun View_MainItem(
                                 }
                             }
                         }
-
-                     /*   Column(
-                            modifier = Modifier.padding(start = 8.dp),
-                            horizontalAlignment = Alignment.End
-                        ) {
-                            when {
-                                isCurrentlyDownloading -> {
-                                    Text(
-                                        text = "تحميل...",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White
-                                    )
-                                }
-
-                                isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                                    Text(
-                                        text = "${
-                                            audioRecorderAndPlayHandler.formatTimeFromMillis(
-                                                playbackProgress.currentPosition
-                                            )
-                                        } / ${
-                                            audioRecorderAndPlayHandler.formatTimeFromMillis(
-                                                playbackProgress.duration
-                                            )
-                                        }",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White
-                                    )
-                                }
-
-                                relative_M8BonVent.sonVocaleEstEcoute -> {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        if (relative_M8BonVent.sonEcoutementEstFaitAutimestamps > 0) {
-                                            Text(
-                                                text = datesHandler.getDateAndTimString(
-                                                    relative_M8BonVent.sonEcoutementEstFaitAutimestamps
-                                                ).time,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = Color.White,
-                                                modifier = Modifier.padding(end = 4.dp)
-                                            )
-                                        }
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = "Message écouté",
-                                            tint = Color.Green,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-
-                                else -> {
-                                    Icon(
-                                        imageVector = Icons.Default.Warning,
-                                        contentDescription = "Message non écouté",
-                                        tint = Color.Yellow,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                        }      */
                     }
                 }
             }

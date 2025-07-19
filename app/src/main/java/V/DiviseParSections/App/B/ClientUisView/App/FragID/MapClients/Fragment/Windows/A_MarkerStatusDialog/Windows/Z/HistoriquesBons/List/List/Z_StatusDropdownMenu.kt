@@ -61,9 +61,16 @@ fun StatusDropdownMenu(
             )
         }
 
+        M8BonVent.EtateActuellementEst.Ordre_Gerant.let { etate ->
+            StatusDropdownItem(
+                status = etate,
+                text = etate.nomArabe
+            )
+        }
+        val etate = M8BonVent.EtateActuellementEst.Probleme
         StatusDropdownItem(
-            status = M8BonVent.EtateActuellementEst.A_EVITE,
-            text = "ارى انه لا يريد التعامل معنا بسبب "
+            status = etate,
+            text = etate.nomArabe
         )
 
         StatusDropdownItem(

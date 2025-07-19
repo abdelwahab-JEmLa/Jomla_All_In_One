@@ -200,38 +200,35 @@ data class M8BonVent(
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, " تنفيذ المطلوب في تحسين الوضع معه"),
-        Speciale(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
+        Rapport(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
         Probleme(R.color.c3, "حدث مشكل معه"),
         Ordre_Gerant(R.color.c4, "توجيه المسير"),
 
         A_COMMANDE_CONFIRME(
             android.R.color.holo_purple, "تم تاكيد الطلبية"
         ),
-
-
-        PourVoirPanie(
-            android.R.color.holo_red_light, "للنظر"
-        ),
-
-
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
 
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
+        AVEC_MARCHANDISE(R.color.c5, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
 
 
-        RAPPORT_AU_ENREGESTREMENT_VOCALE(android.R.color.black, "التقرير قي التسجيل الصوتي "),
 
-        ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 
         Cible(android.R.color.holo_orange_dark, "معين من المسير"),
         CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
         CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
 
+        PourVoirPanie(
+            android.R.color.holo_red_light, "للنظر"
+        ),
+        RAPPORT_AU_ENREGESTREMENT_VOCALE(android.R.color.black, "التقرير قي التسجيل الصوتي "),
+        ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
         A_EVITE(android.R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
-        AVEC_MARCHANDISE(android.R.color.darker_gray, "عندو سلعة"),
+
 
         ;
 
