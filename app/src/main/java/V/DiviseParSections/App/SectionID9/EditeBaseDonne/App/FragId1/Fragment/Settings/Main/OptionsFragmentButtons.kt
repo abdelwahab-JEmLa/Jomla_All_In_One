@@ -11,15 +11,16 @@ import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Visibility
@@ -53,7 +54,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
-
 data class Button_State(
     val showLabels: Boolean = true,
     val active_Str: String = "",
@@ -86,8 +86,7 @@ fun OptionsFragmentButtons(
     var showLabels by remember { mutableStateOf(true) }
 
     var mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed by remember { mutableStateOf(false) }
-
-    var button9AlwaysVisible by remember { mutableStateOf(true) }
+    var button9AlwaysVisible by remember { mutableStateOf(false) }
     var button8AlwaysVisible by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
@@ -101,6 +100,7 @@ fun OptionsFragmentButtons(
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
     val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val lazyListState = rememberLazyListState()
 
     val onToggle = {
         maskedElements = if (maskedElements.contains(AfficheElements.APP_BAR)) {
@@ -183,60 +183,59 @@ fun OptionsFragmentButtons(
                 )
             },
             text = {
-                Column {
-                    Text(
-                        "Select add_New catalogue to move ${selectedCategories.size} selected categories:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                LazyColumn {
+                    item {
+                        Text(
+                            "Select add_New catalogue to move ${selectedCategories.size} selected categories:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
 
-                    LazyColumn {
-                        items(catalogues) { catalogue ->
-                            Card(
+                    items(catalogues) { catalogue ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            onClick = {
+                                viewModel.moveCategoriesAuCatalogue(catalogue.id)
+
+                                onCategoriesUpdated(
+                                    viewModel.a_CentralDatasHandlerProtoJuin9.repoM16CategorieProduit
+                                        .datasValue
+                                )
+
+                                showCatalogueDialog = false
+
+                                Log.d(
+                                    "CatalogueMove",
+                                    "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}"
+                                )
+                            }
+                        ) {
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                onClick = {
-                                    viewModel.moveCategoriesAuCatalogue(catalogue.id)
-
-                                    onCategoriesUpdated(
-                                        viewModel.a_CentralDatasHandlerProtoJuin9.repoM16CategorieProduit
-                                            .datasValue
-                                    )
-
-                                    showCatalogueDialog = false
-
-                                    Log.d(
-                                        "CatalogueMove",
-                                        "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}"
-                                    )
-                                }
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Category,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = catalogue.nom,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium,
-                                        textAlign = TextAlign.Start
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Category,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = catalogue.nom,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    textAlign = TextAlign.Start
+                                )
                             }
                         }
-
                     }
                 }
             },
@@ -262,182 +261,146 @@ fun OptionsFragmentButtons(
                 }
                 .padding(16.dp)
         ) {
-            // Create a list of button composables for LazyColumn
-            val buttonItems = mutableListOf<@Composable () -> Unit>()
-
-            // Add buttons based on conditions
-            if (button9AlwaysVisible && !showButtons) {
-                buttonItems.add {
-                    Button_9(
-                        label_Datas = Button_State(
-                            showLabels,
-                            "toggle_selectedTypeChoisi()",
-                            its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                        )
-                    ) {}
-                }
-            }
-
-            if (!showButtons) {
-                buttonItems.add {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        if (showLabels) Text("AfficheElements")
-                        FloatingActionButton(
-                            onClick = {
-                                viewModelScope.launch { onToggle() }
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = Color.Red
-                        ) {
-                            Icon(
-                                if (maskedElements.contains(AfficheElements.APP_BAR)) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                "Toggle Mask Elements",
-                                tint = Color.Black
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (showButtons) {
-                buttonItems.addAll(listOf(
-                    {
-                        Button_10(
-                            button_State = Button_State.get_Default()
-                                .copy(
-                                    showLabels = showLabels,
-                                    textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                        true -> "click active Persistent_AlwaysShowed()"
-                                        false -> "click DesActive Persistent_AlwaysShowed()"
-                                    }
-                                )
-                        ) {
-                            mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
-                                !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                        }
-                    },
-                    {
-                        Button_9(
-                            label_Datas = Button_State(
-                                showLabels,
-                                "toggle_selectedTypeChoisi()",
-                                its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
-                            )
-                        ) {
-                            if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                button9AlwaysVisible = true
-                            }
-                        }
-                    },
-                    {
-                        ButtonId8(showLabels, viewModel)
-                    },
-                    {
-                        ButtonId7(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                        )
-                    },
-                    {
-                        CameraFABProtoJuin3(
-                            activeCatalogue = uiState.activeCatalogue,
-                        )
-                    },
-                    {
-                        ButtonId6(
-                            showLabels = showLabels,
-                        )
-                    },
-                    {
-                        But1(
-                            showDialog = showDialog,
-                            showLabels = showLabels,
-                            onShowDialog = { showDialog = true },
-                        )
-                    },
-                    {
-                        But2(
-                            showLabels = showLabels,
-                            selectedCount = selectedProducts.size,
-                            onBulkMove = onShowBulkMoveDialog,
-                        )
-                    },
-                    {
-                        ButtonId3(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                            selectedCount = selectedCategories.size,
-                            onCatalogueMove = { showCatalogueDialog = true },
-                        )
-                    },
-                    {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            if (showLabels) Text("AfficheElements")
-                            FloatingActionButton(
-                                onClick = {
-                                    viewModelScope.launch { onToggle() }
-                                    if (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
-                                    }
-                                },
-                                modifier = Modifier.size(40.dp),
-                                containerColor = Color.Red
-                            ) {
-                                Icon(
-                                    if (maskedElements.contains(AfficheElements.APP_BAR)) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    "Toggle Mask Elements",
-                                    tint = Color.Black
-                                )
-                            }
-                        }
-                    },
-                    {
-                        ButtonId3(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                            selectedCount = selectedCategories.size,
-                            onCatalogueMove = { }
-                        )
-                    },
-                    {
-                        ButtonId4(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                        )
-                    },
-                    {
-                        ButtonId5(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                        )
-                    }
-                ))
-            }
-
-            // Always add the control buttons at the end
-            buttonItems.add {
-                LabelEtShowButtonsButtons(
-                    showLabels = showLabels,
-                    showButtons = showButtons,
-                    onShowLabelsToggle = { showLabels = !showLabels },
-                    onShowButtonsToggle = { showButtons = !showButtons },
-                    modifier = Modifier
-                )
-            }
-
-            LazyColumn(
-                modifier = Modifier.align(Alignment.BottomEnd),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.End,
-                reverseLayout = true // This keeps the control buttons at the bottom
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .height(400.dp) // Set a reasonable height for scrolling
             ) {
-                items(buttonItems.size) { index ->
-                    buttonItems[index]()
+                LazyColumn(
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.End,
+                    reverseLayout = true // This makes items appear from bottom, like the original Column
+                ) {
+                    // Always visible item - LabelEtShowButtonsButtons
+                    item {
+                        LabelEtShowButtonsButtons(
+                            showLabels = showLabels,
+                            showButtons = showButtons,
+                            onShowLabelsToggle = { showLabels = !showLabels },
+                            onShowButtonsToggle = { showButtons = !showButtons }
+                        )
+                    }
+
+                    // Conditional items - only show when showButtons is true
+                    if (showButtons) {
+                        item {
+                            ButtonId5(
+                                viewModel = viewModel,
+                                showLabels = showLabels,
+                            )
+                        }
+
+                        item {
+                            ButtonId4(
+                                viewModel = viewModel,
+                                showLabels = showLabels,
+                            )
+                        }
+
+                        item {
+                            ButtonId3(
+                                viewModel = viewModel,
+                                showLabels = showLabels,
+                                selectedCount = selectedCategories.size,
+                                onCatalogueMove = { }
+                            )
+                        }
+
+                        item {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (showLabels) Text("AfficheElements")
+                                FloatingActionButton(
+                                    onClick = { viewModelScope.launch { onToggle() } },
+                                    modifier = Modifier.size(40.dp),
+                                    containerColor = Color.Red
+                                ) {
+                                    Icon(
+                                        if (maskedElements.contains(AfficheElements.APP_BAR)) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                        "Toggle Mask Elements",
+                                        tint = Color.Black
+                                    )
+                                }
+                            }
+                        }
+
+                        item {
+                            ButtonId3(
+                                viewModel = viewModel,
+                                showLabels = showLabels,
+                                selectedCount = selectedCategories.size,
+                                onCatalogueMove = { showCatalogueDialog = true }
+                            )
+                        }
+
+                        item {
+                            But2(
+                                showLabels = showLabels,
+                                selectedCount = selectedProducts.size,
+                                onBulkMove = onShowBulkMoveDialog
+                            )
+                        }
+
+                        item {
+                            But1(showDialog = showDialog, showLabels = showLabels) { showDialog = true }
+                        }
+
+                        item {
+                            ButtonId6(
+                                showLabels = showLabels,
+                            )
+                        }
+
+                        item {
+                            CameraFABProtoJuin3(activeCatalogue = uiState.activeCatalogue)
+                        }
+
+                        item {
+                            ButtonId7(
+                                viewModel = viewModel,
+                                showLabels = showLabels,
+                            )
+                        }
+
+                        item {
+                            ButtonId8(showLabels, viewModel)
+                        }
+
+                        item {
+                            Button_9(
+                                label_Datas = Button_State(
+                                    showLabels,
+                                    "toggle_selectedTypeChoisi()",
+                                    its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                                )
+                            ) {
+                                button9AlwaysVisible =
+                                    when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                        true -> false
+                                        false -> true
+                                    }
+                            }
+                        }
+
+                        item {
+                            Button_10(
+                                button_State = Button_State.get_Default()
+                                    .copy(
+                                        showLabels = showLabels,
+                                        textLable = when (mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed) {
+                                            true -> "click active Persistent_AlwaysShowed()"
+                                            false -> "click DesActive Persistent_AlwaysShowed()"
+                                        }
+                                    )
+                            ) {
+                                mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed =
+                                    !mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                            }
+                        }
+                    }
                 }
             }
         }

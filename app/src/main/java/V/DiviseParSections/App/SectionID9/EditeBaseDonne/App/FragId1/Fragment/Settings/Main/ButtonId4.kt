@@ -12,7 +12,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,16 +37,26 @@ fun ButtonId4(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var clickCount by remember { mutableStateOf(0) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (showLabels) Text("Export Categories, Articles & Clients ")
+        if (showLabels)
+            Text(
+                when (clickCount) {
+                    0 -> "Delete ADD l_Produit Et l_Categorie"
+                    else -> "T Sure"
+                }
+            )
         FloatingActionButton(
             onClick = {
-                coroutineScope.launch {
-                    exportAllDataToCsv(context, AppDatabase)
+                when (clickCount) {
+                    0 -> clickCount++
+                    1 -> coroutineScope.launch {
+                        exportAllDataToCsv(context, AppDatabase)
+                    }
                 }
             },
             modifier = Modifier.size(40.dp),
@@ -57,7 +71,8 @@ private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabas
     withContext(Dispatchers.IO) {
         try {
             // Create the specific directory path
-            val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
+            val imagesProduitsLocalExternalStorageBasePath =
+                "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
             val exportDir = File(imagesProduitsLocalExternalStorageBasePath)
 
             // Create directory if it doesn't exist
@@ -99,7 +114,11 @@ private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabas
     }
 }
 
-private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+private suspend fun exportCategoriesToCsv(
+    context: Context,
+    appDatabase: AppDatabase,
+    exportDir: File
+) {
     // Get all categories from database
     val categories = appDatabase.categoriesModelDao().getAll()
 
@@ -115,7 +134,14 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
         csvContent.append("\"${category.bsonObjectId?.replace("\"", "\"\"") ?: ""}\",")
         csvContent.append("${category.dernierTimeTampsSynchronisationAvecFireBase},")
         csvContent.append("${category.catalogueParentId},")
-        csvContent.append("\"${category.parentCatalogueIdObject?.replace("\"", "\"\"") ?: ""}\",")
+        csvContent.append(
+            "\"${
+                category.parentCatalogueIdObject?.replace(
+                    "\"",
+                    "\"\""
+                ) ?: ""
+            }\","
+        )
         csvContent.append("\"${category.nom.replace("\"", "\"\"")}\",")
         csvContent.append("${category.position},")
         csvContent.append("${category.displayedHeader},")
@@ -133,7 +159,11 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
     }
 }
 
-private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+private suspend fun exportArticlesToCsv(
+    context: Context,
+    appDatabase: AppDatabase,
+    exportDir: File
+) {
     // Get all articles from database
     val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
 
@@ -141,7 +171,9 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
     val csvContent = StringBuilder()
 
     // Add CSV header - aligned with complete ArticlesBasesStatsTable schema
-    csvContent.append("id,keyID,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,dernierFireBaseUpdateTimestamps,processPositioningInFactory,idParentCategorie,positionDonSonCesFrereCategorieProduits,nom,nomMutable,etateActuelleOnFusionAvecBaseDonne,nombreUniteInt,nombreProduitDonSonCarton,heldPrioriteDemandAuGrossist,prixDefiniParGerant,prixVent,cachePrixVent,prixAchat,prixAchatDernierTimeTempUpdate,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,afficheCesDetailPourComptBsonId,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles,setIN_Vent_Its_Quantity_Represent,quantite_Boit_Par_Carton\n")
+    csvContent.append(
+        "id,keyID,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,dernierFireBaseUpdateTimestamps,processPositioningInFactory,idParentCategorie,positionDonSonCesFrereCategorieProduits,nom,nomMutable,etateActuelleOnFusionAvecBaseDonne,nombreUniteInt,nombreProduitDonSonCarton,heldPrioriteDemandAuGrossist,prixDefiniParGerant,prixVent,cachePrixVent,prixAchat,prixAchatDernierTimeTempUpdate,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,afficheCesDetailPourComptBsonId,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles,setIN_Vent_Its_Quantity_Represent,quantite_Boit_Par_Carton\n"
+    )
 
     // Add article data
     articles.forEach { article ->
@@ -167,7 +199,14 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
         csvContent.append("${article.clientPrixVentUnite},")
         csvContent.append("${article.actualiseSonImage},")
         csvContent.append("${article.actualiseSonImageTest2},")
-        csvContent.append("\"${article.afficheCesDetailPourComptBsonId.replace("\"", "\"\"")}\",")
+        csvContent.append(
+            "\"${
+                article.afficheCesDetailPourComptBsonId.replace(
+                    "\"",
+                    "\"\""
+                )
+            }\","
+        )
         csvContent.append("\"${article.disponibilityEtates.name}\",")
         csvContent.append("\"${article.keyFireBase.replace("\"", "\"\"")}\",")
         csvContent.append("\"${article.nomArab.replace("\"", "\"\"")}\",")
@@ -219,7 +258,11 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
     }
 }
 
-private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+private suspend fun exportClientsToCsv(
+    context: Context,
+    appDatabase: AppDatabase,
+    exportDir: File
+) {
     // Get all clients from database
     val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll()
 

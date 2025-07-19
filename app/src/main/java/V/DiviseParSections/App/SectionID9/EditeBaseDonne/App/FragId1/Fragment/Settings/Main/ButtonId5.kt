@@ -14,7 +14,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +39,17 @@ fun ButtonId5(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var clickCount by remember { mutableStateOf(0) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val text = "Delete ADD l_Produit Et l_Categorie"
+        val text =
+            when (clickCount) {
+              0->  "Delete ADD l_Produit Et l_Categorie"
+              else ->  "T Sure"
+            }
 
         if (showLabels) {
             Text(text)
@@ -48,10 +57,13 @@ fun ButtonId5(
 
         FloatingActionButton(
             onClick = {
-                coroutineScope.launch {
-                    viewModel.deleteAddMultiCategories(list_CategoriesTabelle)
-                    viewModel.deleteAddMultiProduits(list_M1Produit)
-                  //  viewModel.deleteAddMultiClients()
+                when (clickCount) {
+                    0 -> clickCount++
+                    1 -> coroutineScope.launch {
+                        viewModel.deleteAddMultiCategories(list_CategoriesTabelle)
+                        viewModel.deleteAddMultiProduits(list_M1Produit)
+                        //  viewModel.deleteAddMultiClients()
+                    }
                 }
             },
             modifier = Modifier.size(40.dp),
