@@ -59,6 +59,7 @@ data class Label_Datas(
     val active_Str: String = "",
     val desactive_Str: String = "",
     val description_Functionement: String = "",
+    val its_OnClick_presistantn: Boolean = false,
 ) { companion object { fun get_Default(): Label_Datas { return Label_Datas() } } }
 
 @Composable
@@ -273,67 +274,17 @@ fun OptionsFragmentButtons(
                 if (button9AlwaysVisible && !showButtons) {
                     Button_9(
                         label_Datas = Label_Datas.get_Default()
-                            .copy(showLabels, "toggle_selectedTypeChoisi()")
+                            .copy(showLabels,
+                                "toggle_selectedTypeChoisi()",
+                                its_OnClick_presistantn = mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed
+                            )
                     ) {
-                        if(mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed){
-                            button9AlwaysVisible = !button9AlwaysVisible
-                        }
+                            button9AlwaysVisible = true
                     }
                 }
 
                 if (button8AlwaysVisible && !showButtons) {
                     ButtonId8(showLabels, viewModel) { button9AlwaysVisible = false }
-                }
-
-                if (!showButtons) {
-                    ButtonId7(
-                        viewModel = viewModel,
-                        showLabels = showLabels,
-                    )
-                }
-
-                if (!showButtons) {
-                    ButtonId6(
-                        showLabels = showLabels,
-                    )
-                }
-
-                if (!showButtons) {
-                    CameraFABProtoJuin3(
-                        activeCatalogue = uiState.activeCatalogue,
-                    )
-                }
-
-                if (!showButtons) {
-                    But1(
-                        showDialog = showDialog,
-                        showLabels = showLabels,
-                        onShowDialog = { showDialog = true },
-                    )
-                }
-
-                if (!showButtons) {
-                    But2(
-                        showLabels = showLabels,
-                        selectedCount = selectedProducts.size,
-                        onBulkMove = onShowBulkMoveDialog,
-                    )
-                }
-
-                if (!showButtons) {
-                    ButtonId3(
-                        viewModel = viewModel,
-                        showLabels = showLabels,
-                        selectedCount = selectedCategories.size,
-                        onCatalogueMove = { showCatalogueDialog = true },
-                    )
-                }
-
-                if (!showButtons) {
-                    ButtonId4(
-                        viewModel = viewModel,
-                        showLabels = showLabels,
-                    )
                 }
 
 
@@ -370,7 +321,6 @@ fun OptionsFragmentButtons(
                         }
                     }
 
-                    // When in click mode, clicking a button makes it persistent
                     Button_9(
                         label_Datas = Label_Datas.get_Default()
                             .copy(showLabels, "toggle_selectedTypeChoisi()")

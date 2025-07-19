@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 
-
 @Composable
 fun Button_9(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
@@ -57,8 +56,10 @@ fun Button_9(
         }
         FloatingActionButton(
             onClick = {
-                viewModel.toggle_selectedTypeChoisi()
-                onClicked() // Call this when clicked
+                when (label_Datas.its_OnClick_presistantn) {
+                    true -> onClicked()
+                    false -> viewModel.toggle_selectedTypeChoisi()
+                }
             },
             modifier = Modifier.size(48.dp),
             containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
