@@ -177,7 +177,7 @@ fun MarkerStatusDialog(
                                     item {
                                         CommandButton(
                                             relative_M2Client = relative_M2Client!!,
-                                            modifier = Modifier.height(60.dp),
+                                            modifier = Modifier,
                                             viewModel = viewModel,
                                             relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,

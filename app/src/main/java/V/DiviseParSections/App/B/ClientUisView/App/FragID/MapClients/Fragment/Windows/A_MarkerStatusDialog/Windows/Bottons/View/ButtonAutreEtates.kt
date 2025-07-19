@@ -64,12 +64,12 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 aCentralFacade.repositorysMainSetter
                     .addNew_M8BonVent(found_Or_Default_M8BonVent.default_If_No_Found)
             }
+            aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
 
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
             }
         },
         colors = ButtonDefaults.filledTonalButtonColors(

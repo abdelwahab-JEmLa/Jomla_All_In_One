@@ -200,12 +200,14 @@ data class M8BonVent(
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
-        ON_MODE_COMMEND_ACTUELLEMENT(
-            android.R.color.holo_green_light, "في طور تنفيذ المطلوب"
-        ),
+        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, " تنفيذ المطلوب في تحسين الوضع معه"),
+        Speciale(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
+
         A_COMMANDE_CONFIRME(
             android.R.color.holo_purple, "تم تاكيد الطلبية"
         ),
+
+
         PourVoirPanie(
             android.R.color.holo_red_light, "للنظر"
         ),
@@ -222,12 +224,11 @@ data class M8BonVent(
 
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 
-        Cible(android.R.color.holo_red_light, "Cible"),
+        Cible(android.R.color.holo_orange_dark, "معين من المسير"),
         CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
         CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
 
-        Speciale(R.color.couleur1, "حالة خاصة"),
         A_EVITE(android.R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
         AVEC_MARCHANDISE(android.R.color.darker_gray, "عندو سلعة"),
 
