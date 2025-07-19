@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.ActionButtons
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components.DetailleSection
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components.Prix_Detailer_Section
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.HeaderSection
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.QuickInfoSection
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -156,7 +156,7 @@ fun ProductItem(
             )
 
             // Details Section - Pass viewModel to enable individual expand/collapse
-            DetailleSection(
+            Prix_Detailer_Section(
                 modifier = modifierWithDefinedPadding,
                 viewModel = viewModel,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,

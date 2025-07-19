@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailleSection(
+fun Prix_Detailer_Section(
     modifier: Modifier,
     viewModel: Sec9FragId1ViewId2ViewModel,
     shouldHideQuickInfoCards: Boolean,
