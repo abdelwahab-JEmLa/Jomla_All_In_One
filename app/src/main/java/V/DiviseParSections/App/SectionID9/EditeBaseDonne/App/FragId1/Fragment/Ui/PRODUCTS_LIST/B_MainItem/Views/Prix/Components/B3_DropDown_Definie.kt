@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.clickable
@@ -39,7 +40,7 @@ fun TypeChoisiDropdownCard(
     selectedType: M13TarificationInfos.TypeChoisi,
     onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
 
     Card(
         modifier = modifier
@@ -160,6 +161,7 @@ fun DropDownItems(
     M13TarificationInfos.TypeChoisi.DefiniParGerant.let { type ->
         Card(
             modifier = Modifier
+                .getSemanticsTag(relative_M13Tariffication,"relative_M13Tariffication")
                 .fillMaxWidth()
                 .clickable {
                     onSelected(type)
@@ -191,10 +193,9 @@ fun DropDownItems(
                 )
 
                 val prixCurrency = relative_M13Tariffication.prixCurrency.takeIf { it > 0.0 }
-                    ?: relative_M1Produit.prixVent
 
                 Text(
-                    text = prixCurrency.toString(),
+                    text =" ${prixCurrency ?: "non definie"}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = type.couleur_Text,
                     fontWeight = FontWeight.Medium

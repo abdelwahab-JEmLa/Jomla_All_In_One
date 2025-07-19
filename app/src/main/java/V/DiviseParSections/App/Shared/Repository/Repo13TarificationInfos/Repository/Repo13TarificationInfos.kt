@@ -98,7 +98,7 @@ data class M13TarificationInfos(
     val id: Long = 0L,
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var new_Entre: Boolean = true,
+    var defaultNonSaved_Entre: Boolean = true,
 
     val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,

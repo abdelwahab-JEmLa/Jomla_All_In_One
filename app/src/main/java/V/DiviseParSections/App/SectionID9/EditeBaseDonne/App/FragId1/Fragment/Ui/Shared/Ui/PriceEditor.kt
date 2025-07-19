@@ -55,6 +55,10 @@ fun PriceEditor(
         } catch (e: Exception) { null }
     }
 
+    fun formatPrice(price: Double): String {
+        return "%.2f DA".format(price)
+    }
+
     fun savePrice() {
         val newPrice = parsePrice(tempText) ?: currentPrice
         onPriceUpdate(newPrice)
@@ -62,14 +66,12 @@ fun PriceEditor(
         tempText = ""
 
         if (shouldHideQuickInfoCards && onNextField != null) {
-            // Navigate to next field instead of hiding keyboard
             onNextField()
         } else {
             keyboardController?.hide()
         }
     }
 
-    // Fixed condition: Always show the PriceEditorFragID2 (removed currentPrice > 0 check)
     if (currentPrice >= 0 || isEditing) {
         Column(modifier = modifier) {
             if (isEditing) {
@@ -85,7 +87,7 @@ fun PriceEditor(
                             tempText = filtered
                         }
                     },
-                    label = { Text("Ancien: $currentPrice DA") },
+                    label = { Text("Ancien: ${formatPrice(currentPrice)}") },
                     placeholder = { Text("Nouveau prix") },
                     suffix = { Text("DA") },
                     keyboardOptions = KeyboardOptions(
@@ -116,7 +118,7 @@ fun PriceEditor(
                                 tempText = filtered
                             }
                         },
-                        label = { Text("$label: $currentPrice DA") },
+                        label = { Text("$label: ${formatPrice(currentPrice)}") },
                         placeholder = { Text("Nouveau prix") },
                         suffix = { Text("DA") },
                         keyboardOptions = KeyboardOptions(
@@ -134,7 +136,6 @@ fun PriceEditor(
                         shape = RoundedCornerShape(12.dp)
                     )
                 } else {
-                    // Normal surface display mode
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -153,7 +154,7 @@ fun PriceEditor(
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = "$currentPrice DA",
+                                text = formatPrice(currentPrice),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = textColor,
                                 fontWeight = FontWeight.SemiBold,
