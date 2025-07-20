@@ -31,7 +31,7 @@ fun Prix_Detailer_Section(
     viewModel: Sec9FragId1ViewId2ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
-    repo13TarificationInfos: Repo13TarificationInfos = aCentralFacade.repoMainGetter.repo13TarificationInfos,
+    repo13TarificationInfos: Repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
     relative_M1Produit: ArticlesBasesStatsTable,
     shouldHideQuickInfoCards: Boolean,
     showDetailsExpanded: Boolean,

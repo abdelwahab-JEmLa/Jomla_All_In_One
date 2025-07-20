@@ -42,7 +42,7 @@ fun Item_3_Menu(
     isLoading: Boolean = false,
     dataToExport: List<ArticlesBasesStatsTable> = emptyList(),
     aCentralFacade: ACentralFacade = koinInject(),
-    repoM1Produit: RepoM1Produit = aCentralFacade.repoMainGetter.repo1ProduitInfos,
+    repoM1Produit: RepoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
     onClick_TO_Close_Menu: () -> Unit,
 ) {
     var safeCountClick by remember { mutableIntStateOf(0) }

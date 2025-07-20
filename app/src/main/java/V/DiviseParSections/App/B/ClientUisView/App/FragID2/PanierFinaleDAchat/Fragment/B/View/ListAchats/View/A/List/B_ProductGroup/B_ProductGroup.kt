@@ -35,13 +35,13 @@ fun View_Vent_M1Produit(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
     val bProduitDataBase_SubClassFunctionality =
-        viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos
+        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
 
     val relative_First_OF_ListM13Tariffication =
-        viewModel.aCentralFacade.repoMainGetter.m13Tarification_By_KeyID(
+        viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         )
 
@@ -131,7 +131,7 @@ fun View_Vent_M1Produit(
                 items(relative_List_M10OperationVentCouleur) { vent ->
                     viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
                         .find { it.keyID == vent.parent_M3CouleurProduit_KeyID }?.let {
-                            val relative_M3CouleurProduit = viewModel.aCentralFacade.repoMainGetter.repo3CouleurProduitInfos.datasValue
+                            val relative_M3CouleurProduit = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue
                                 .find { it.keyID == vent.parent_M3CouleurProduit_KeyID }
                             Card(
                                 shape = RoundedCornerShape(12.dp),

@@ -11,7 +11,7 @@ import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPl
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 
 class ACentralFacade(
-    val repoMainGetter: RepositorysMainGetter,
+    val repositorysMainGetter: RepositorysMainGetter,
     val repositorysMainSetter: RepositorysMainSetter,
     val focusedActiveValuesFacade: FocusedActiveValuesFacade,
     val modulesCentral: ModulesCentral

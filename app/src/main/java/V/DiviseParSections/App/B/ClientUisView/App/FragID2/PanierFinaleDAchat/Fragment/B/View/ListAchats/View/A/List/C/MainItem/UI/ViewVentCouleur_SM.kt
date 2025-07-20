@@ -118,7 +118,7 @@ fun ViewVentCouleur_Module(
         }
     }
     val datasValue =
-        aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue
+        aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff =
         M13TarificationInfos.findTariff(datasValue, relative_M1Produit, TypeChoisi.DefiniParGerant)
     val default_Tariff =
@@ -260,7 +260,7 @@ fun ViewVentCouleur_Module(
                 }
 
                 if (updatedVent != null) {
-                    aCentralFacade.repoMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                    aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
                         updatedVent
                     )
                 }

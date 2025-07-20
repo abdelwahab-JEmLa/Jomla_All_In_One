@@ -27,7 +27,7 @@ fun List_AcheteursDeCetteProduit(
     achatCouleur: M11AchatOperation
 ) {
     // Get sales operations data
-    val repo10OperationVentCouleur = viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue
+    val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
     val listFCouleurVentOperation = achatCouleur.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur)
 
     // Group sales operations by client (through BonVent)

@@ -45,7 +45,7 @@ fun Item_2_Menu(
         else -> "Es-tu sûr de faire cela ?"
     }
 
-    val currentProducts = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
+    val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
 
     val new_Edited_Datas = old_Datas.mapNotNull { old ->
         val m1Produit_IN_New = currentProducts.find { it.id.toInt() == old.idArticle }

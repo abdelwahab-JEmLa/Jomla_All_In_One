@@ -61,7 +61,7 @@ fun View_MainItem(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8BonVent: M8BonVent,
-    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter,
+    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
 ) {
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
@@ -81,7 +81,7 @@ fun View_MainItem(
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
-    val repo17MessageVocaleData by aCentralFacade.repoMainGetter.repo17MessageVocale.datasValue.collectAsState()
+    val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
 
     // State for dropdown menu
     var showDropdownMenu by remember { mutableStateOf(false) }

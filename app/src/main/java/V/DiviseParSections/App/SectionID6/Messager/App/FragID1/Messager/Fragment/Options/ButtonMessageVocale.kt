@@ -55,7 +55,7 @@ fun ButtonMessageVocale(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repoMainGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
     val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale

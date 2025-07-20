@@ -38,7 +38,7 @@ fun MainList_Frag_Panie(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    fVentCouleurOperationRepository: Repo10OperationVentCouleur = aCentralFacade.repoMainGetter.repo10OperationVentCouleur,
+    fVentCouleurOperationRepository: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     its_From_SearchPrd: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -106,7 +106,7 @@ fun Search_Prd(
     var searchText by rememberSaveable { mutableStateOf("") }
 
     val bProduitDataBase_SubClassFunctionality =
-        aCentralFacade.repoMainGetter.repo1ProduitInfos
+        aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 
     val filteredResults by remember {
         derivedStateOf {

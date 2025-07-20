@@ -142,11 +142,11 @@ fun LazyColumn_VentPeriod(
 ) {
     // Get all vent periods and filter those that have associated achat operations
     val periodsWithAchats = remember(
-        viewModel.aCentralFacade.repoMainGetter.repo14VentPeriode.datasValue,
-        viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
+        viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
     ) {
-        val allPeriods = viewModel.aCentralFacade.repoMainGetter.repo14VentPeriode.datasValue
-        val allAchatOperations = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
+        val allPeriods = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
+        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
 
         // Get all period IDs that have associated achat operations
         val periodIdsWithAchats = allAchatOperations.map { 
@@ -193,9 +193,9 @@ fun Item_VentPeriod(
     // Calculate statistics for this period
     val periodStats = remember(
         period.keyID,
-        viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
     ) {
-        val achatOperations = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
+        val achatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
             .filter { it.parent_M14VentPeriod_KeyID == period.keyID }
 
         val totalOperations = achatOperations.size

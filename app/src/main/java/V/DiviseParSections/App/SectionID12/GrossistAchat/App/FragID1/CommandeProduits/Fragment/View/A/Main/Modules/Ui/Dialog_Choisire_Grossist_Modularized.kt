@@ -53,8 +53,8 @@ fun Dialog_Choisire_Grossist_Modularized(
     list_M11AchatOperation: List<M11AchatOperation> = emptyList(),
     onDismiss: (M15Grossist?) -> Unit
 ) {
-    val datasValue_repo11AchatOperation = viewModel.aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
-    val grossists = viewModel.aCentralFacade.repoMainGetter.repo15Grossist.datasValue
+    val datasValue_repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+    val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     val focusManager = LocalFocusManager.current
 
     val grossistsWithPurchaseCount = grossists.map { grossist ->

@@ -50,7 +50,7 @@ fun ProductHeader_T1(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
 ) {
-    val repositorysMainGetter = viewModel.aCentralFacade.repoMainGetter
+    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
@@ -220,7 +220,7 @@ fun ProductHeader_T1(
                         nombreUniteInt = new_Qyt
 
                     }.also {
-                        viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
 
                     viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
@@ -240,7 +240,7 @@ fun ProductHeader_T1(
                     produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
                     }.also {
-                        viewModel.aCentralFacade.repoMainGetter.repo1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
                 }
 

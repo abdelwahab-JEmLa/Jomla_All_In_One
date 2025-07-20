@@ -23,7 +23,7 @@ fun MainFilter(
     onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
-    val relative_List_M10Vent = viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.datasValue
+    val relative_List_M10Vent = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
 
     val relative_M1Produit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()

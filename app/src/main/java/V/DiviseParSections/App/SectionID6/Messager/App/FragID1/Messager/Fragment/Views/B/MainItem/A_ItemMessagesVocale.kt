@@ -50,7 +50,7 @@ fun B_ItemMessagesVocale(
     relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repoMainGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     list_D_EtateMessageVocale: List<M17MessageVocale>,
     uiState: UiState,
 ) {

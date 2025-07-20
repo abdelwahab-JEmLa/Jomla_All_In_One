@@ -101,6 +101,10 @@ class RepositorysMainGetter(
     fun find_M9AppCompt_By_KeyID(keyID: String): Z_AppCompt? =
         repo9AppCompt.datasValue.find { it.keyID == keyID }
 
+    //--------------M10----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M10OperationVentCouleur(keyID: String): M10OperationVentCouleur? =
+        repo10OperationVentCouleur.datasValue.find { it.keyID == keyID }
+
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun m13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }

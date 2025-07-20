@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
@@ -19,11 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
@@ -47,7 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -73,7 +66,7 @@ fun ImageDisplayerProtoAvantJuin3(
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    repoMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repoMainGetter,
+    repoMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     indexColor: Int,
@@ -88,7 +81,7 @@ fun ImageDisplayerProtoAvantJuin3(
 ) {
     val relative_M3Couleur = repoMainGetter.find_M3Couleur_By(relative_M1Produit, indexColor)
     val enablePerformAutoClickImageDisplayer =
-        viewModel.aCentralFacade.repoMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+        viewModel.aCentralFacade.repositorysMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${relative_M1Produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"

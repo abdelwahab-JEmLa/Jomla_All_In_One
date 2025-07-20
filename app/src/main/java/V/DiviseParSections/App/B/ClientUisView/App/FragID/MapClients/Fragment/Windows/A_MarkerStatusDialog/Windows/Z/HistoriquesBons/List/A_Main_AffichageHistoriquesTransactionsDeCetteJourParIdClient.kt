@@ -18,7 +18,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
-    repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repoMainGetter.repo8BonVent,
+    repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent,
     markerStatusDialogM2Client: M2Client?=null,
 ) {
     Column {

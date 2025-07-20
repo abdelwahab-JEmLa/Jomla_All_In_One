@@ -44,7 +44,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     val aCentralFacade: ACentralFacade,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
-    val a_CentralDatasHandlerProtoJuin9 = aCentralFacade.repoMainGetter
+    val a_CentralDatasHandlerProtoJuin9 = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
 
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.repoM16CategorieProduit

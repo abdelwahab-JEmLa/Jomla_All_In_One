@@ -28,7 +28,7 @@ fun DialogsSearchProduit(aCentralFacade: ACentralFacade) {
 
     if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeDialogSearchM1Produit) {
         // FIXED: Safe handling of the find operation
-        val foundProduct = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
+        val foundProduct = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
             .find { it.nom == produitName }
 
         // Only show dialog if product is found

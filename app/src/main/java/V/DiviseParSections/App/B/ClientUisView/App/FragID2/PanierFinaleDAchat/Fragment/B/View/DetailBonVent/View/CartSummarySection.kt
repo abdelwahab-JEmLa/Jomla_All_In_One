@@ -43,7 +43,7 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
 
             val totalValue = ventsTrouve.sumOf {
                 val provisoireMonPrix =
-                    viewModel.aCentralFacade.repoMainGetter.m13Tarification_By_KeyID(it.keyID)
+                    viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(it.keyID)
                         ?.prixCurrency
                         ?: 0.0
 
@@ -106,7 +106,7 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 }
                 val totalValue = ventsTrouve.sumOf {
                     val provisoireMonPrix =
-                        viewModel.aCentralFacade.repoMainGetter.m13Tarification_By_KeyID(it.parentM13TarificationKeyID)
+                        viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(it.parentM13TarificationKeyID)
                             ?.prixCurrency
                             ?: 0.0
 

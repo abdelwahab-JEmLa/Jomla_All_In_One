@@ -25,7 +25,7 @@ fun MainList(
     relative_M1Produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue,
+    list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
     context: Context = LocalContext.current,
     showLabels: Boolean,
     maxPrixArriveDuProduit: Double?,

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class GrossistAchatSec12FragID1_ViewModel(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentralFacade.repoMainGetter
+    val getter = aCentralFacade.repositorysMainGetter
     val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur
 
     data class UiState(
@@ -32,9 +32,9 @@ class GrossistAchatSec12FragID1_ViewModel(
     // Add a method to validate data integrity
     fun validateDataIntegrity(): Boolean {
         return try {
-            val achatOperations = aCentralFacade.repoMainGetter.repo11AchatOperation.datasValue
-            val couleurData = aCentralFacade.repoMainGetter.repo3CouleurProduitInfos.datasValue
-            val produitData = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
+            val achatOperations = aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+            val couleurData = aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue
+            val produitData = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
 
             // Check if all referenced data exists
             achatOperations.all { achat ->

@@ -14,7 +14,7 @@ import java.io.File
 class ViewModelsProduit_T1(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentralFacade.repoMainGetter
+    val getter = aCentralFacade.repositorysMainGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
 
     val getterFocusedVarsHandlerFacade =
