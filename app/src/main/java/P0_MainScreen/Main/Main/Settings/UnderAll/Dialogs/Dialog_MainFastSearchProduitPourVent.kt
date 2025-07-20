@@ -4,6 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -12,10 +13,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +39,7 @@ import androidx.compose.ui.zIndex
 @Composable
 fun Dialog_MainFastSearchProduitPourVent(
     focusedVarsHandlerFacade: FocusedActiveValuesFacade,
+    focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment
 ) {
     var showToast by remember { mutableStateOf(false) }
@@ -76,30 +81,79 @@ fun Dialog_MainFastSearchProduitPourVent(
                     )
                 }
 
-                MainFastSearchProduitPourVent(sourceLenceurDeCetteFragment = sourceLenceurDeCetteFragment)
+                MainFastSearchProduitPourVent(
+                    sourceLenceurDeCetteFragment = sourceLenceurDeCetteFragment,
+                )
 
                 PressistatntMainActivityButtons_Sec8FWinID1()
 
-                FloatingActionButton(
-                    onClick = {
-                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
-                            ""
-                        )
-                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
-                        focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
-                    },
+                Row(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
                         .zIndex(100f),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "إغلاق"
-                    )
+
+                    FloatingActionButton(
+                        onClick = {
+                            val activeCentralValues = focusedValuesGetter.active_Central_Values
+                            focusedValuesGetter.update_activeCentralValues(
+                                activeCentralValues
+                                    .copy(
+                                        affiche_Panier_au_Search_Dialog = !activeCentralValues.affiche_Panier_au_Search_Dialog
+                                    )
+                            )
+                        },
+
+                        containerColor = if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        },
+                        contentColor = if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSecondary
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
+                                Icons.Filled.ShoppingCart
+                            } else {
+                                Icons.Outlined.ShoppingCart
+                            },
+                            contentDescription = if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
+                                "إخفاء السلة"
+                            } else {
+                                "إظهار السلة"
+                            }
+                        )
+                    }
+
+                    FloatingActionButton(
+                        onClick = {
+                            focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
+                            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                                ""
+                            )
+                            focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+                            focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
+                            focusedValuesGetter.update_activeCentralValues(
+                                focusedValuesGetter.active_Central_Values
+                                    .copy(
+                                        affiche_Panier_au_Search_Dialog = false
+                                    )
+                            )
+                        },
+
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "إغلاق"
+                        )
+                    }
                 }
             }
         }

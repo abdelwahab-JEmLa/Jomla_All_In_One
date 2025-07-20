@@ -27,13 +27,17 @@ fun DialogsSearchProduit(aCentralFacade: ACentralFacade) {
             )
 
     if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeDialogSearchM1Produit) {
-        Dialog_MainFastSearchProduitPourVent(
-            sourceLenceurDeCetteFragment =
-                ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit(
-                    aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
-                        .find { it.nom == produitName }!!
-                ),
-            focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade,
-        )
+        // FIXED: Safe handling of the find operation
+        val foundProduct = aCentralFacade.repoMainGetter.repo1ProduitInfos.datasValue
+            .find { it.nom == produitName }
+
+        // Only show dialog if product is found
+        foundProduct?.let { product ->
+            Dialog_MainFastSearchProduitPourVent(
+                sourceLenceurDeCetteFragment =
+                    ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit(product),
+                focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade,
+            )
+        }
     }
 }

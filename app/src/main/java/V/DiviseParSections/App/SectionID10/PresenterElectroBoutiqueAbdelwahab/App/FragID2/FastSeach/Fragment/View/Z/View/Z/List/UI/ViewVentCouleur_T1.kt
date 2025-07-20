@@ -260,7 +260,7 @@ fun ViewVentCouleur_T1(
                         relative_M10OperationVentCouleur
                     ) {
                         derivedStateOf {
-                            focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur == relative_M10OperationVentCouleur
+                           relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo ?:false
                         }
                     }
 
@@ -268,11 +268,14 @@ fun ViewVentCouleur_T1(
                         modifier = Modifier
                             .getSemanticsTag(relative_M10OperationVentCouleur,
                                 "relative_M10OperationVentCouleur")
+                            .getSemanticsTag(isLinked,
+                                "isLinked")
                             .align(Alignment.TopStart)
                             .padding(8.dp)
                             .zIndex(1f),
                     ) {
                         SmallFloatingActionButton(
+
                             onClick = {
                                 val currentLinkedVent =
                                     focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
