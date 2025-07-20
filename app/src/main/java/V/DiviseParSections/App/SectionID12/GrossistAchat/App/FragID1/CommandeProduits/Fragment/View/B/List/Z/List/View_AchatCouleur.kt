@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,8 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -109,35 +110,41 @@ fun View_AchatCouleur(
                         )
                     }
                 }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .background(
-                            color = Color.White.copy(alpha = 0.70f),
-                            shape = RoundedCornerShape(10.dp)
-                        ),
-                ) {
-                    Text(
-                        text = "Qté: ${relative_M11AchatOperation.sumAchatQantity}",
-                        fontSize = 50.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-
-                val relative_list_Vents = relative_M11AchatOperation
-                    .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
-                        repositorysMainGetter.repo10OperationVentCouleur.datasValue
-                    )
-
-                relative_list_Vents.forEach {
-                    ElevatedCard() {
-                        Text(it.getDebugInfos())
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                            .background(
+                                color = Color.White.copy(alpha = 0.70f),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                    ) {
+                        Text(
+                            text = "Qté: ${relative_M11AchatOperation.sumAchatQantity}",
+                            fontSize = 50.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(4.dp)
+                        )
                     }
-                    HorizontalDivider()
+
+                    val relative_list_Vents = relative_M11AchatOperation
+                        .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
+                            repositorysMainGetter.repo10OperationVentCouleur.datasValue
+                        )
+
+                    relative_list_Vents.forEach {
+                        ElevatedCard() {
+                            Row {
+                                Text(it.getDebugInfos())
+                               Spacer(Modifier.padding(4.dp))
+
+                                Text(it.quantity.toString())
+                            }
+                        }
+                        VerticalDivider()
+                    }
                 }
             }
 
