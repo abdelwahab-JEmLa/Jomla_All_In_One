@@ -267,6 +267,12 @@ fun ViewVentCouleur_T1(
                                     .zIndex(1f),
                             ) {
                                 SmallFloatingActionButton(
+                                    modifier = Modifier
+                                        .getSemanticsTag(
+                                            relative_M10OperationVentCouleur,
+                                            "relative_M10OperationVentCouleur"
+                                        )
+                                    ,
                                     onClick = {
                                         val new_Data =
                                             focusedValuesGetter.active_Central_Values.copy(
