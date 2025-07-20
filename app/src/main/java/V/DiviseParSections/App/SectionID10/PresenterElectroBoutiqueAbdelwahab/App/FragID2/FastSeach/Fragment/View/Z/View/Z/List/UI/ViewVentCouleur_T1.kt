@@ -266,11 +266,10 @@ fun ViewVentCouleur_T1(
                         onClick = {
                             val currentLinkedVent = focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
 
-                            // Toggle: if currently linked to this vent, unlink it; otherwise, link to this vent
                             val newLinkedVent = if (currentLinkedVent == relative_M10OperationVentCouleur) {
-                                null // Unlink
+                                null
                             } else {
-                                relative_M10OperationVentCouleur // Link to this vent
+                                relative_M10OperationVentCouleur
                             }
 
                             focusedValuesGetter.update_activeCentralValues(
