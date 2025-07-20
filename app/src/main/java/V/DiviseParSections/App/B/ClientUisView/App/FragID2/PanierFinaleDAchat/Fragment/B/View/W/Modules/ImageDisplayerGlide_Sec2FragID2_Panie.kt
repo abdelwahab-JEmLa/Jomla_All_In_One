@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ifFalse
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ImageDisplayerGlide_Sec2FragID2_SearchProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -147,9 +148,10 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
             }
             val activeCentralValues = focusedValuesGetter
                 .active_Central_Values
-            val afficheur_Panier_Pour_Link_M10OperationVentCouleur = activeCentralValues.handled_M10OperationVent_Pour_Link
+            val afficheur_Panier_Pour_Link_M10OperationVentCouleur =
+                activeCentralValues.handled_M10OperationVent_Pour_Link
+
             if (afficheur_Panier_Pour_Link_M10OperationVentCouleur != null
-                && activeCentralValues.affiche_Panier_au_Search_Dialog
             ) {
                 SmallFloatingActionButton(
                     onClick = {
@@ -167,8 +169,8 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
 
                         focusedValuesGetter.update_activeCentralValues(
                             activeCentralValues.copy(
-                                    handled_M10OperationVent_Pour_Link =null
-                                )
+                                handled_M10OperationVent_Pour_Link = null
+                            )
                         )
 
                     },
@@ -185,7 +187,14 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                         modifier = Modifier.size(16.dp)
                     )
                 }
-                View_LikedTo(relative_M10OperationVentCouleur,imageFile=imageFile,relative_M3CouleurProduit=relative_M3CouleurProduit,)
+            }
+
+            activeCentralValues.affiche_Panier_au_Search_Dialog.ifFalse {
+                View_LikedTo(
+                    relative_M10OperationVentCouleur,
+                    imageFile = imageFile,
+                    relative_M3CouleurProduit = relative_M3CouleurProduit,
+                )
             }
         }
     }
