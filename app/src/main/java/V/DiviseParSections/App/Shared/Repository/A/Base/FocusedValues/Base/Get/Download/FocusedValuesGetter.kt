@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
     val active_OpnerDialog_M17MessageVocale: M17MessageVocale? =null,
-    val opnerDialog_Panier_M10OperationVentCouleur: M10OperationVentCouleur? =null,
+    val afficheur_Panier_Pour_Link_M10OperationVentCouleur: M10OperationVentCouleur? =null,
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? =null,
 ) {
     companion object{

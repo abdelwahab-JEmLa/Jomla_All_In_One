@@ -142,7 +142,7 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                 onClick = {
                     focusedValuesGetter.update_activeCentralValues(
                         focusedValuesGetter.active_Central_Values.copy(
-                            opnerDialog_Panier_M10OperationVentCouleur = relative_M10OperationVentCouleur
+                            afficheur_Panier_Pour_Link_M10OperationVentCouleur = relative_M10OperationVentCouleur
                         )
                     )
                 },
