@@ -139,13 +139,12 @@ fun ViewVentCouleur_T1(
         }
     }
     val datasValue = viewModel.aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue
-    val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
-    val default_Tariff = M13TarificationInfos.get_default_P0(produit,start_Prix_Depuit_Ancient = produit.prixAchat)
-
+    val findTariff =
+        M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
+    val default_Tariff =
+        M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
     val finale_Tariff = findTariff ?: default_Tariff.first
 
-
-    // Main container with proper layout structure
     Column(
         modifier = modifier
             .getSemanticsTag(
