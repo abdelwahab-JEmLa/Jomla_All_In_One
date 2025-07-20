@@ -37,7 +37,7 @@ private fun Dialog_Panie(
 ) {
     var showToast by remember { mutableStateOf(false) }
 
-    if (focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur != null) {
+    if (focusedValuesGetter.active_Central_Values.handled_M10OperationVent_Pour_Link != null) {
         Dialog(
             onDismissRequest = {
                 showToast = true
@@ -84,7 +84,7 @@ private fun Dialog_Panie(
                         onClick = {
                             focusedValuesGetter.update_activeCentralValues(
                                 focusedValuesGetter.active_Central_Values.copy(
-                                    afficheur_Panier_Pour_Link_M10OperationVentCouleur = null
+                                    handled_M10OperationVent_Pour_Link = null
                                 )
                             )
                         },

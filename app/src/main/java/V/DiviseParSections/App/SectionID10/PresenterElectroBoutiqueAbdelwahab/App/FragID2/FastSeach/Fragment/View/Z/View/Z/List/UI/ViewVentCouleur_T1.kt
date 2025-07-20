@@ -21,8 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.LinkOff
+import androidx.compose.material.icons.filled.BackHand
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -237,62 +237,70 @@ fun ViewVentCouleur_T1(
                             Box(modifier = Modifier.size(16.dp))
                         }
                     }
-                    val isLinked by remember {
+
+                    val handled_M10OperationVent_Pour_Link by remember {
                         derivedStateOf {
-                            relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo == true
+                            focusedValuesGetter.active_Central_Values.handled_M10OperationVent_Pour_Link
+                        }
+                    }
+                    val its_Pour_Link by remember {
+                        derivedStateOf {
+                            handled_M10OperationVent_Pour_Link == relative_M10OperationVentCouleur
                         }
                     }
 
                     focusedValuesGetter.active_Central_Values
                         .affiche_Panier_au_Search_Dialog.ifTrue {
-                        Column(
-                            modifier = Modifier
-                                .getSemanticsTag(
-                                    relative_M10OperationVentCouleur,
-                                    "relative_M10OperationVentCouleur"
-                                )
-                                .getSemanticsTag(isLinked, "isLinked")
-                                .align(Alignment.TopStart)
-                                .padding(8.dp)
-                                .zIndex(1f),
-                        ) {
-                            SmallFloatingActionButton(
-                                onClick = {
-                                    relative_M10OperationVentCouleur?.let { currentVent ->
-                                        val updatedVent = currentVent.copy(
-                                            its_Linked_To_Autre_Vent_Si_NonDispo = !currentVent.its_Linked_To_Autre_Vent_Si_NonDispo,
+
+                            Column(
+                                modifier = Modifier
+                                    .getSemanticsTag(
+                                        relative_M10OperationVentCouleur,
+                                        "relative_M10OperationVentCouleur"
+                                    )
+                                    .getSemanticsTag(its_Pour_Link, "isLinked")
+                                    .align(Alignment.TopStart)
+                                    .padding(8.dp)
+                                    .zIndex(1f),
+                            ) {
+                                SmallFloatingActionButton(
+                                    onClick = {
+
+                                        val new_Data =
+                                            focusedValuesGetter.active_Central_Values.copy(
+                                                handled_M10OperationVent_Pour_Link = relative_M10OperationVentCouleur
+                                            )
+                                        focusedValuesGetter.update_activeCentralValues(
+                                            new_Data
                                         )
 
-                                        repositorysMainSetter.update_M10OperationVentCouleur(updatedVent)
-
                                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    },
+                                    containerColor = if (its_Pour_Link) {
+                                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
+                                    } else {
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                    },
+                                    contentColor = if (its_Pour_Link) {
+                                        MaterialTheme.colorScheme.onSecondary
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimary
                                     }
-                                },
-                                containerColor = if (isLinked) {
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
-                                } else {
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
-                                },
-                                contentColor = if (isLinked) {
-                                    MaterialTheme.colorScheme.onSecondary
-                                } else {
-                                    MaterialTheme.colorScheme.onPrimary
+                                ) {
+                                    Icon(
+                                        imageVector = if (its_Pour_Link) Icons.Default.Close else Icons.Default.BackHand,
+                                        contentDescription = if (its_Pour_Link) "Unlink from cart" else "Link to cart",
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = if (isLinked) Icons.Default.LinkOff else Icons.Default.Link,
-                                    contentDescription = if (isLinked) "Unlink from cart" else "Link to cart",
-                                    modifier = Modifier.size(16.dp)
-                                )
                             }
                         }
-                    }
 
                     relative_M10OperationVentCouleur?.let {
                         val text = it.linked_To_M10OperationVent_DebugInfos
                         if (text.isNotEmpty()) {
                             Text(
-                                text = "si $text est non dispot",
+                                text = "si $text est non dispo",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                 modifier = Modifier.padding(top = 4.dp)
