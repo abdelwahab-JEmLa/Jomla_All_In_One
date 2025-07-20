@@ -255,45 +255,40 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
-                    val isLinked by remember(
-                        focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur,
-                        relative_M10OperationVentCouleur
-                    ) {
+                    // Fix for the link functionality in ViewVentCouleur_T1
+
+// Replace the existing SmallFloatingActionButton section with this:
+
+                    val isLinked by remember {
                         derivedStateOf {
-                           relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo ?:false
+                            relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo == true
                         }
                     }
 
                     Column(
                         modifier = Modifier
-                            .getSemanticsTag(relative_M10OperationVentCouleur,
-                                "relative_M10OperationVentCouleur")
-                            .getSemanticsTag(isLinked,
-                                "isLinked")
+                            .getSemanticsTag(relative_M10OperationVentCouleur, "relative_M10OperationVentCouleur")
+                            .getSemanticsTag(isLinked, "isLinked")
                             .align(Alignment.TopStart)
                             .padding(8.dp)
                             .zIndex(1f),
                     ) {
                         SmallFloatingActionButton(
-
                             onClick = {
-                                val currentLinkedVent =
-                                    focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
-
-                                val newLinkedVent =
-                                    if (currentLinkedVent == relative_M10OperationVentCouleur) {
-                                        null
-                                    } else {
-                                        relative_M10OperationVentCouleur
-                                    }
-
-                                focusedValuesGetter.update_activeCentralValues(
-                                    focusedValuesGetter.active_Central_Values.copy(
-                                        afficheur_Panier_Pour_Link_M10OperationVentCouleur = newLinkedVent
+                                // Toggle the link state
+                                relative_M10OperationVentCouleur?.let { currentVent ->
+                                    val updatedVent = currentVent.copy(
+                                        its_Linked_To_Autre_Vent_Si_NonDispo = !currentVent.its_Linked_To_Autre_Vent_Si_NonDispo,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
-                                )
-                            },
 
+                                    // Update the data through the repository
+                                    viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.addOrUpdateData(updatedVent)
+
+                                    // Provide haptic feedback
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                }
+                            },
                             containerColor = if (isLinked) {
                                 MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
                             } else {
@@ -311,8 +306,17 @@ fun ViewVentCouleur_T1(
                                 modifier = Modifier.size(16.dp)
                             )
                         }
+
+                        // Debug info display
                         relative_M10OperationVentCouleur?.let {
-                            Text(it.linked_To_M10OperationVent_DebugInfos)
+                            if (it.linked_To_M10OperationVent_DebugInfos != "null" && it.linked_To_M10OperationVent_DebugInfos.isNotEmpty()) {
+                                Text(
+                                    text = it.linked_To_M10OperationVent_DebugInfos,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
