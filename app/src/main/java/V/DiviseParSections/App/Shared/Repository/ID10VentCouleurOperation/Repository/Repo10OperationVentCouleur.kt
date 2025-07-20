@@ -225,8 +225,8 @@ data class M10OperationVentCouleur(
 
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
-    val linked_To_M10OperationVent_KeyID: String = "null",
-    val linked_To_M10OperationVent_DebugInfos: String = "null",
+    val linked_To_M10OperationVent_KeyID: String = "",
+    val linked_To_M10OperationVent_DebugInfos: String = "",
 
     //---------------------------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "null",

@@ -11,15 +11,9 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,16 +33,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -59,18 +48,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.bumptech.glide.Priority
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.signature.ObjectKey
-import org.koin.compose.koinInject
-import java.io.File
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -255,9 +232,6 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
-                    // Fix for the link functionality in ViewVentCouleur_T1
-
-// Replace the existing SmallFloatingActionButton section with this:
 
                     val isLinked by remember {
                         derivedStateOf {
@@ -275,17 +249,14 @@ fun ViewVentCouleur_T1(
                     ) {
                         SmallFloatingActionButton(
                             onClick = {
-                                // Toggle the link state
                                 relative_M10OperationVentCouleur?.let { currentVent ->
                                     val updatedVent = currentVent.copy(
                                         its_Linked_To_Autre_Vent_Si_NonDispo = !currentVent.its_Linked_To_Autre_Vent_Si_NonDispo,
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
 
-                                    // Update the data through the repository
                                     viewModel.aCentralFacade.repoMainGetter.repo10OperationVentCouleur.addOrUpdateData(updatedVent)
 
-                                    // Provide haptic feedback
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 }
                             },
@@ -301,7 +272,7 @@ fun ViewVentCouleur_T1(
                             }
                         ) {
                             Icon(
-                                imageVector = if (isLinked) Icons.Default.LinkOff else Icons.Default.Link,
+                                imageVector = if (isLinked) Icons.Default.Link else Icons.Default.LinkOff,
                                 contentDescription = if (isLinked) "Unlink from cart" else "Link to cart",
                                 modifier = Modifier.size(16.dp)
                             )
@@ -309,9 +280,10 @@ fun ViewVentCouleur_T1(
 
                         // Debug info display
                         relative_M10OperationVentCouleur?.let {
-                            if (it.linked_To_M10OperationVent_DebugInfos != "null" && it.linked_To_M10OperationVent_DebugInfos.isNotEmpty()) {
+                            val text = it.linked_To_M10OperationVent_DebugInfos
+                            if ( text.isNotEmpty()) {
                                 Text(
-                                    text = it.linked_To_M10OperationVent_DebugInfos,
+                                    text = "si $text est non dispot",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     modifier = Modifier.padding(top = 4.dp)
@@ -351,95 +323,3 @@ fun ViewVentCouleur_T1(
     }
 }
 
-@SuppressLint("CheckResult")
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
-    modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    imageFile: File? = null,
-    colorName: String = "",
-    contentScale: ContentScale = ContentScale.Fit,
-    imageSize: DpSize,
-    colorFilter: ColorFilter? = null,
-    onClickToOpenWindow: () -> Unit = {},
-) {
-    var isLoading by remember { mutableStateOf(true) }
-    val blurRadius by animateFloatAsState(
-        targetValue = if (isLoading) 25f else 0f,
-        animationSpec = tween(700),
-        label = "blur"
-    )
-
-    val imageExists = imageFile?.exists() == true
-
-
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        shadowElevation = 4.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .size(imageSize.width, imageSize.height)
-        ) {
-            if (imageExists && imageFile != null) {
-                GlideImage(
-                    model = imageFile,
-                    contentDescription = "Color image for $colorName",
-                    contentScale = contentScale,
-                    colorFilter = colorFilter, // Apply the colorFilter here
-                    modifier = Modifier
-                        .clickable {
-                            onClickToOpenWindow()
-                        }
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(4.dp))
-                        .graphicsLayer {
-                            if (blurRadius > 0f) {
-                                renderEffect =
-                                    BlurEffect(blurRadius, blurRadius, TileMode.Decal)
-                            }
-                        }
-                ) { request ->
-                    request.apply {
-                        thumbnail(0.1f)
-                        transition(DrawableTransitionOptions.withCrossFade())
-                        diskCacheStrategy(DiskCacheStrategy.ALL)
-                        priority(Priority.HIGH)
-                        signature(ObjectKey(imageFile.absolutePath))
-                        listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>,
-                                isFirstResource: Boolean
-                            ) = false
-
-                            override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                if (isFirstResource) isLoading = false
-                                return false
-                            }
-                        })
-                    }
-                }
-            } else {
-                ColorNameDisplayer(
-                    modifier = Modifier.fillMaxSize(),
-                    colorName = colorName,
-                    onClickToOpenWindow = onClickToOpenWindow
-                )
-            }
-
-
-        }
-    }
-}
