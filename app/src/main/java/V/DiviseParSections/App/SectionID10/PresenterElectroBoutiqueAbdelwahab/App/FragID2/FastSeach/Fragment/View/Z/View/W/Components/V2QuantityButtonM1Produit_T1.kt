@@ -41,7 +41,7 @@ fun QuantityButtonM1Produit_T1(
     onClick: (Int) -> Unit = {}
 ) {
     val repo10OperationVentCouleur = viewModel.getter.repo10OperationVentCouleur
-    val repo3CouleurProduitInfos = viewModel.getter.repo3CouleurProduitInfos
+    val repo3CouleurProduitInfos = viewModel.getter.repo03CouleurProduitInfos
 
     val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.parent_M1Produit_KeyId == produit.keyID }

@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BackHand
@@ -313,8 +315,6 @@ fun ViewVentCouleur_T1(
 
                     View_LikedTo_FragSearcher(
                         relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                        relative_M3Couleur = m3Couleur,
-                        imageFile = imageFile,
                         viewModel = viewModel
                     )
                 }
@@ -348,12 +348,15 @@ fun ViewVentCouleur_T1(
         }
     }
 }
+
+@SuppressLint("UnrememberedMutableState")
 @Composable
 private fun View_LikedTo_FragSearcher(
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
-    viewModel: ViewModelsProduit_T1
+    viewModel: ViewModelsProduit_T1,
+    modifier: Modifier = Modifier // AJOUTÉ: Paramètre modifier
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -361,6 +364,10 @@ private fun View_LikedTo_FragSearcher(
         val parent_linkVent_M10Vent = repositorysMainGetter.find_M10OperationVentCouleur(
             ventOperation.linked_To_M10OperationVent_KeyID
         )
+        val parent_linkVent_M10Vent_Relative_M3Couleur = repositorysMainGetter.find_M3CouleurProduitInfos(
+            parent_linkVent_M10Vent?.parent_M3CouleurProduit_KeyID ?: ""
+        )
+
         val text = ventOperation.linked_To_M10OperationVent_DebugInfos
         if (text.isNotEmpty()) {
 
@@ -375,20 +382,24 @@ private fun View_LikedTo_FragSearcher(
             }
 
             Card(
-                modifier = Modifier
+                modifier = modifier // CORRECTION 3: Utilise le modifier passé
                     .padding(top = 4.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .wrapContentHeight(), // AJOUTÉ: Limite explicitement la hauteur
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 4.dp
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .wrapContentHeight() // AJOUTÉ: Limite la hauteur de la colonne
                 ) {
                     // Header with delete button
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .wrapContentHeight() // AJOUTÉ: Limite la hauteur du header
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -397,7 +408,8 @@ private fun View_LikedTo_FragSearcher(
                             text = "si ${parent_linkVent_M10Vent?.parent_M1Produit_DebugInfos} est non dispo",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            maxLines = 2 // AJOUTÉ: Limite le nombre de lignes
                         )
 
                         SmallFloatingActionButton(
@@ -413,30 +425,47 @@ private fun View_LikedTo_FragSearcher(
                             )
                         }
                     }
-                    val relative_M3Couleur= repositorysMainGetter
-                    imageFile: File?,
-                    when (relative_M3Couleur.aAffiche) {
-                        M3CouleurProduitInfos.Type.Image -> {
-                            ImageDisplayerGlide_Sec2FragID2_SearchProduit(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable { handleDeleteLink() },
-                                imageFile = imageFile,
-                                colorName = relative_M3Couleur.nomCouleurStrSiSonImageDispo,
-                                contentScale = ContentScale.Crop,
-                                imageSize = DpSize(60.dp, 60.dp),
-                                onClickToOpenWindow = { handleDeleteLink() }
+
+                    val imageFile by derivedStateOf {
+                        parent_linkVent_M10Vent_Relative_M3Couleur?.let {
+                            viewModel.getImageFile(
+                                it.nomImageFichieSansEtansion, it.extensionDisponible
                             )
                         }
+                    }
 
-                        M3CouleurProduitInfos.Type.Nom -> {
-                            ColorNameDisplayer_Sec2FragID2(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable { handleDeleteLink() },
-                                colorName = relative_M3Couleur.nomCouleurStrSiSonImageDispo,
-                                onClickToOpenWindow = { handleDeleteLink() }
-                            )
+                    // CORRECTION 4: Container avec hauteur fixe pour l'image/couleur
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp), // AJOUTÉ: Hauteur fixe
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (parent_linkVent_M10Vent_Relative_M3Couleur != null) {
+                            when (parent_linkVent_M10Vent_Relative_M3Couleur.aAffiche) {
+                                M3CouleurProduitInfos.Type.Image -> {
+                                    ImageDisplayerGlide_Sec2FragID2_SearchProduit(
+                                        modifier = Modifier
+                                            .size(60.dp)
+                                            .clickable { handleDeleteLink() },
+                                        imageFile = imageFile,
+                                        colorName = parent_linkVent_M10Vent_Relative_M3Couleur.nomCouleurStrSiSonImageDispo,
+                                        contentScale = ContentScale.Crop,
+                                        imageSize = DpSize(60.dp, 60.dp),
+                                        onClickToOpenWindow = { handleDeleteLink() }
+                                    )
+                                }
+
+                                M3CouleurProduitInfos.Type.Nom -> {
+                                    ColorNameDisplayer_Sec2FragID2(
+                                        modifier = Modifier
+                                            .size(60.dp)
+                                            .clickable { handleDeleteLink() },
+                                        colorName = parent_linkVent_M10Vent_Relative_M3Couleur.nomCouleurStrSiSonImageDispo,
+                                        onClickToOpenWindow = { handleDeleteLink() }
+                                    )
+                                }
+                            }
                         }
                     }
                 }

@@ -107,7 +107,7 @@ fun DetailsBonVent(
                             context = context,
                             repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos ,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
-                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
+                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                             scope = scope,
                             relative_ListM10OperationVentCouleur = it

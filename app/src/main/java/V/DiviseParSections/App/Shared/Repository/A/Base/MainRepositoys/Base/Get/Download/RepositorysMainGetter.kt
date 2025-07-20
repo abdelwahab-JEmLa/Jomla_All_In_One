@@ -5,14 +5,14 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -45,7 +45,7 @@ class RepositorysMainGetter(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val repo1ProduitInfos: RepoM1Produit,
-    val repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
+    val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
 
@@ -82,12 +82,15 @@ class RepositorysMainGetter(
             .maxByOrNull { it.creationTimestamps }
     }
 
-    //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------M3Couleur----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M3CouleurProduitInfos(keyId: String): M3CouleurProduitInfos? =
+        repo03CouleurProduitInfos.datasValue.find { it.keyID == keyId }
+
     fun find_M3Couleur_By(
         m1Produit: ArticlesBasesStatsTable,
         indexCouleurDansAncienProto: Int
     ): M3CouleurProduitInfos? {
-        return repo3CouleurProduitInfos.datasValue.find {
+        return repo03CouleurProduitInfos.datasValue.find {
             it.parentBProduitInfosKeyID == m1Produit.keyID
                     && it.indexCouleurDansAncienProto == indexCouleurDansAncienProto
         }
@@ -119,7 +122,7 @@ class RepositorysMainGetter(
 
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable, colorIndex: Int
-    ) = repo3CouleurProduitInfos.datasValue.find {
+    ) = repo03CouleurProduitInfos.datasValue.find {
         it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
     }!!
 
@@ -143,7 +146,7 @@ class RepositorysMainGetter(
     }
 
     fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
-        repo3CouleurProduitInfos.datasValue.find {
+        repo03CouleurProduitInfos.datasValue.find {
             it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
         }
 

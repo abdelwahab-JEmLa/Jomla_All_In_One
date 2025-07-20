@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ class ViewModelMainFastSearchProduitPourVent(
             bProduitInfosRepository = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
             id8BonVentRepository = aCentralFacade.repositorysMainGetter.repo8BonVent,
             iD2ClientRepository = aCentralFacade.repositorysMainGetter.repo2Client,
-            b1CouleurOuGoutProduitDataBaseRepository = aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos,
+            b1CouleurOuGoutProduitDataBaseRepository = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
             zAppComptRepositoryComposable = aCentralFacade.repositorysMainGetter.repo9AppCompt,
         )
     )

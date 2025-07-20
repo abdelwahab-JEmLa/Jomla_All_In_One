@@ -33,7 +33,7 @@ class GrossistAchatSec12FragID1_ViewModel(
     fun validateDataIntegrity(): Boolean {
         return try {
             val achatOperations = aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
-            val couleurData = aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue
+            val couleurData = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.datasValue
             val produitData = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
 
             // Check if all referenced data exists

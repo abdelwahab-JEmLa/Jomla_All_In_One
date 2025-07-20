@@ -151,7 +151,7 @@ fun ProductImageCaptureButton(
             parentId1ProduitInfosDebugName = product.nom,
             processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
         )
-        viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.addOrUpdateData(
+        viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
             newCouleurP
         )
     }
