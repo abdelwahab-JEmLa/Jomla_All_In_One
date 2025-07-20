@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -134,16 +133,44 @@ fun View_AchatCouleur(
                             repositorysMainGetter.repo10OperationVentCouleur.datasValue
                         )
 
-                    relative_list_Vents.forEach {
-                        ElevatedCard() {
-                            Row {
-                                Text(it.getDebugInfos())
-                               Spacer(Modifier.padding(4.dp))
-
-                                Text(it.quantity.toString())
+                    relative_list_Vents.forEach { vent ->
+                        Box {
+                            val relative_linkedParentVent =
+                                repositorysMainGetter.find_M10OperationVentCouleur(vent.linked_To_M10OperationVent_KeyID)
+                            val relative_M3Couleur =
+                                relative_linkedParentVent?.parent_M3CouleurProduit_KeyID
+                            if (relative_M3Couleur != null) {
+                                CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 80.dp)
                             }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                                    .background(
+                                        color = Color.White.copy(alpha = 0.70f),
+                                        shape = RoundedCornerShape(10.dp)
+                                    ),
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "Si ParentNon /n " +
+                                                "dispo: Cherche",
+                                        fontSize = 7.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(4.dp)
+                                    )
+                                    Text(
+                                        text = "${vent.quantity}",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(4.dp)
+                                    )
+                                }
+                            }
+                            VerticalDivider()
                         }
-                        VerticalDivider()
                     }
                 }
             }
