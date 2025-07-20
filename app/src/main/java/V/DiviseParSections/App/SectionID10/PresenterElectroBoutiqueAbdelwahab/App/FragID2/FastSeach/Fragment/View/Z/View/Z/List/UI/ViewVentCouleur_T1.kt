@@ -142,11 +142,12 @@ fun ViewVentCouleur_T1(
         }
     }
     val datasValue = viewModel.aCentralFacade.repoMainGetter.repo13TarificationInfos.datasValue
-    val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
-    val default_Tariff = M13TarificationInfos.get_default_P0(produit,start_Prix_Depuit_Ancient = produit.prixAchat)
+    val findTariff =
+        M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
+    val default_Tariff =
+        M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
 
     val finale_Tariff = findTariff ?: default_Tariff.first
-
 
     Column(
         modifier = modifier
@@ -160,9 +161,7 @@ fun ViewVentCouleur_T1(
         // Image/Color display card
         Card(
             modifier = Modifier
-                .getSemanticsTag(
-                    nomVal = "defaultM3CouleurProduitInfos", data = defaultM10Vent
-                )
+                .getSemanticsTag(relative_M10OperationVentCouleur,"relative_M10OperationVentCouleur")
                 .fillMaxWidth()
         ) {
             Column(
@@ -256,48 +255,62 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
-                    val isLinked by remember(focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur, relative_M10OperationVentCouleur) {
+                    val isLinked by remember(
+                        focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur,
+                        relative_M10OperationVentCouleur
+                    ) {
                         derivedStateOf {
                             focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur == relative_M10OperationVentCouleur
                         }
                     }
 
-                    SmallFloatingActionButton(
-                        onClick = {
-                            val currentLinkedVent = focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
-
-                            val newLinkedVent = if (currentLinkedVent == relative_M10OperationVentCouleur) {
-                                null
-                            } else {
-                                relative_M10OperationVentCouleur
-                            }
-
-                            focusedValuesGetter.update_activeCentralValues(
-                                focusedValuesGetter.active_Central_Values.copy(
-                                    afficheur_Panier_Pour_Link_M10OperationVentCouleur = newLinkedVent
-                                )
-                            )
-                        },
+                    Column(
                         modifier = Modifier
+                            .getSemanticsTag(relative_M10OperationVentCouleur,
+                                "relative_M10OperationVentCouleur")
                             .align(Alignment.TopStart)
                             .padding(8.dp)
                             .zIndex(1f),
-                        containerColor = if (isLinked) {
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
-                        } else {
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
-                        },
-                        contentColor = if (isLinked) {
-                            MaterialTheme.colorScheme.onSecondary
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
-                        }
                     ) {
-                        Icon(
-                            imageVector = if (isLinked) Icons.Default.LinkOff else Icons.Default.Link,
-                            contentDescription = if (isLinked) "Unlink from cart" else "Link to cart",
-                            modifier = Modifier.size(16.dp)
-                        )
+                        SmallFloatingActionButton(
+                            onClick = {
+                                val currentLinkedVent =
+                                    focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
+
+                                val newLinkedVent =
+                                    if (currentLinkedVent == relative_M10OperationVentCouleur) {
+                                        null
+                                    } else {
+                                        relative_M10OperationVentCouleur
+                                    }
+
+                                focusedValuesGetter.update_activeCentralValues(
+                                    focusedValuesGetter.active_Central_Values.copy(
+                                        afficheur_Panier_Pour_Link_M10OperationVentCouleur = newLinkedVent
+                                    )
+                                )
+                            },
+
+                            containerColor = if (isLinked) {
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
+                            } else {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                            },
+                            contentColor = if (isLinked) {
+                                MaterialTheme.colorScheme.onSecondary
+                            } else {
+                                MaterialTheme.colorScheme.onPrimary
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (isLinked) Icons.Default.LinkOff else Icons.Default.Link,
+                                contentDescription = if (isLinked) "Unlink from cart" else "Link to cart",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        relative_M10OperationVentCouleur?.let {
+                            Text(it.linked_To_M10OperationVent_DebugInfos)
+                        }
                     }
                 }
             }

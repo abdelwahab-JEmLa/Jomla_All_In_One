@@ -223,7 +223,12 @@ data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
+    var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
+    val linked_To_M10OperationVent_KeyID: String = "null",
+    val linked_To_M10OperationVent_DebugInfos: String = "null",
+
+    //---------------------------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "null",
     val parent_M9AppCompt_DebugInfos: String = "null",
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
@@ -265,12 +270,12 @@ data class M10OperationVentCouleur(
 ) {
     fun getDebugInfos(): String {
         return buildString {
-            append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
-            append("Parent Product: $parent_M1Produit_DebugInfos\n")
-            append("Quantity: $quantity\n")
-            append("State: $etateActuellementEst\n")
-            append("Delivery: $etateDelivery\n")
-            append("Type: $type")
+            append("[")
+            append("10Vent")
+            append("{${keyID.takeLast(4).uppercase()}}\n")
+            append(" To ")
+            append(parent_M1Produit_DebugInfos)
+            append("]")
         }
     }
     enum class SetIN_Vent_Its_Quantity_Represent {
@@ -293,9 +298,6 @@ data class M10OperationVentCouleur(
         else
             quantity
     }
-
-
-
 
     enum class EtateDelivery {
         Trouve,

@@ -54,8 +54,10 @@ fun MainListT1(
             }
         }
 
-        item {
-            MainList_Frag_Panie(its_From_SearchPrd = true)
+        if (focusedValuesGetter.active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur != null) {
+            item {
+                MainList_Frag_Panie(its_From_SearchPrd = true)
+            }
         }
     }
 }

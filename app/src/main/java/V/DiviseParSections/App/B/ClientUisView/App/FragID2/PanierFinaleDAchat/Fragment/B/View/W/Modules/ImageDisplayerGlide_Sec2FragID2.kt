@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
@@ -137,27 +137,40 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                     onClickToOpenWindow = onClickToOpenWindow
                 )
             }
-
-            SmallFloatingActionButton(
-                onClick = {
-                    focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
-                            afficheur_Panier_Pour_Link_M10OperationVentCouleur = relative_M10OperationVentCouleur
-                        )
-                    )
-                },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(8.dp)
-                    .zIndex(1f),
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-                contentColor = MaterialTheme.colorScheme.onPrimary
+            val afficheur_Panier_Pour_Link_M10OperationVentCouleur = focusedValuesGetter
+                .active_Central_Values.afficheur_Panier_Pour_Link_M10OperationVentCouleur
+            if (afficheur_Panier_Pour_Link_M10OperationVentCouleur != null
+                || relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo == true
             ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Product",
-                    modifier = Modifier.size(16.dp)
-                )
+                SmallFloatingActionButton(
+                    onClick = {
+                        if (afficheur_Panier_Pour_Link_M10OperationVentCouleur != null) {
+                            relative_M10OperationVentCouleur?.copy(
+                                its_Linked_To_Autre_Vent_Si_NonDispo = true,
+                                linked_To_M10OperationVent_KeyID = afficheur_Panier_Pour_Link_M10OperationVentCouleur
+                                    .keyID,
+                                linked_To_M10OperationVent_DebugInfos = afficheur_Panier_Pour_Link_M10OperationVentCouleur
+                                    .getDebugInfos()
+                            )?.let {
+                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
+                                    it
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(8.dp)
+                        .zIndex(1f),
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Link,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }

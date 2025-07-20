@@ -155,6 +155,8 @@ class RepositorysMainSetter(
     fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.update(data)
 
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
+    fun update_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+
     fun m10_delete(ventOperationsForProduct: List<M10OperationVentCouleur>) {
         ventOperationsForProduct.map {
             repo10OperationVentCouleur.delete(it)
