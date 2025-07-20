@@ -114,7 +114,10 @@ class Repo11AchatOperation(
                     parent_M3CouleurProduit_DebugInfos = vents.firstOrNull()?.parent_M3CouleurProduit_DebugInfos ?: "Unknown Color",
                     parent_M3CouleurProduit_KeyID = couleurId,
                     sumAchatQantity = quantity,
-                    joined_Str_keys_De_Relatives_FCouleurVentOperation = vents.joinToString(",") { it.keyID }
+                    joined_Str_keys_De_Relatives_FCouleurVentOperation = vents.joinToString(",") { it.keyID } ,
+                    joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve =vents
+                        .filter { it.its_Linked_To_Autre_Vent_Si_NonDispo }
+                        .joinToString(",") { it.keyID },
                 )
             }
     }
@@ -123,7 +126,7 @@ class Repo11AchatOperation(
         val updated = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         scope.launch {
             withContext(Dispatchers.Main.immediate) {
-                _datas.value = _datas.value + updated
+                _datas.value += updated
             }
             dataBaseCreationFactory.addOrUpdatedAncienRepo(-1, updated)
         }
@@ -192,7 +195,8 @@ data class M11AchatOperation(
 
     val prix_Achat_De_Cette_Grossist: Double = 0.0,
     val sumAchatQantity: Int = 0,
-    val joined_Str_keys_De_Relatives_FCouleurVentOperation: String = ""
+    val joined_Str_keys_De_Relatives_FCouleurVentOperation: String = "",
+    val joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve :String = "",
 ) {
     fun get_DebugInfos(): String = "(M11=[${keyID.takeLast(3).uppercase()}])"
 
@@ -201,6 +205,19 @@ data class M11AchatOperation(
             emptyList()
         } else {
             val keyIds = joined_Str_keys_De_Relatives_FCouleurVentOperation
+                .split(",")
+                .map { it.trim() }
+                .filter { it.isNotBlank() && it != "null" }
+
+            repo10datas.filter { it.keyID in keyIds }
+        }
+    }
+
+    fun get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(repo10datas: List<M10OperationVentCouleur>): List<M10OperationVentCouleur> {
+        return if (joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve.isBlank()) {
+            emptyList()
+        } else {
+            val keyIds = joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve
                 .split(",")
                 .map { it.trim() }
                 .filter { it.isNotBlank() && it != "null" }
