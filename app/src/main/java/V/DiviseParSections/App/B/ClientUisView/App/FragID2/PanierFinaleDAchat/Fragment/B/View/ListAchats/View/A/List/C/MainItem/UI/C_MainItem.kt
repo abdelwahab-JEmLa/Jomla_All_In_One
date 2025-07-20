@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
@@ -94,7 +93,7 @@ fun VentDisplayer_Sec2FragId2(
             Box(modifier = Modifier.fillMaxWidth()) {
                 when (data.aAffiche) {
                     M3CouleurProduitInfos.Type.Image -> {
-                        ImageDisplayerGlide_Sec2FragID2(
+                      /*  ImageDisplayerGlide_Sec2FragID2(
                             modifier = Modifier.size(size),
                             imageFile = imageFile,
                             colorName = data.nomCouleurStrSiSonImageDispo,
@@ -105,7 +104,7 @@ fun VentDisplayer_Sec2FragId2(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 showQuantityDialog = true
                             }
-                        )
+                        )     */
                     }
                     M3CouleurProduitInfos.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(

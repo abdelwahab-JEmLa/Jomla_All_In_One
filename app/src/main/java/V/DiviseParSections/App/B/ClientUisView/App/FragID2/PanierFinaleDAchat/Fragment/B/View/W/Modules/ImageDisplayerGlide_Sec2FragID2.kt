@@ -52,10 +52,11 @@ import java.io.File
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ImageDisplayerGlide_Sec2FragID2(
+fun ImageDisplayerGlide_Sec2FragID2_Panie(
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     imageFile: File? = null,
     colorName: String = "",
     contentScale: ContentScale = ContentScale.Fit,
@@ -141,7 +142,7 @@ fun ImageDisplayerGlide_Sec2FragID2(
                 onClick = {
                     focusedValuesGetter.update_activeCentralValues(
                         focusedValuesGetter.active_Central_Values.copy(
-                            opnerDialog_Panier_M10OperationVentCouleur = new_Vent
+                            opnerDialog_Panier_M10OperationVentCouleur = relative_M10OperationVentCouleur
                         )
                     )
                 },

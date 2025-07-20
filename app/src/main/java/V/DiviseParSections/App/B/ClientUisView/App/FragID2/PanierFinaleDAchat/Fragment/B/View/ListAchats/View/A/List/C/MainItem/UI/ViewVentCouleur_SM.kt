@@ -1,10 +1,12 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -48,13 +50,19 @@ import java.io.File
 @Composable
 fun ViewVentCouleur_Module(
     modifier: Modifier = Modifier,
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedVarsHandlerFacade: FocusedActiveValuesFacade =  aCentralFacade.focusedActiveValuesFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M1Produit: ArticlesBasesStatsTable,
     relative_M3CouleurProduit: M3CouleurProduitInfos,
-    aCentralFacade: ACentralFacade = koinInject(),
     size: Dp = 200.dp
 ) {
-    val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-    val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
+    val relative_M10OperationVentCouleur by remember {
+        derivedStateOf {
+            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find {
+                it.parent_M3CouleurProduit_KeyID == relative_M3CouleurProduit.keyID }
+        }
+    }
 
     val getterFocusedVarsHandlerFacade =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -75,11 +83,6 @@ fun ViewVentCouleur_Module(
         )
     }
 
-    val findVent by remember {
-        derivedStateOf {
-            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find { it.parent_M3CouleurProduit_KeyID == relative_M3CouleurProduit.keyID }
-        }
-    }
 
     val defaultM10Vent = relative_M1Produit.let {
         getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
@@ -99,15 +102,15 @@ fun ViewVentCouleur_Module(
         )
     }
 
-    val ventUIState = remember(findVent) {
+    val ventUIState = remember(relative_M10OperationVentCouleur) {
         derivedStateOf {
             calculateUIState(
-                relative_M1Produit, findVent,
+                relative_M1Produit, relative_M10OperationVentCouleur,
             )
         }
     }.value
 
-    val shouldShowDialog by remember(findVent, relative_M3CouleurProduit.keyID) {
+    val shouldShowDialog by remember(relative_M10OperationVentCouleur, relative_M3CouleurProduit.keyID) {
         derivedStateOf {
             val onVentM3 = getterFocusedVarsHandlerFacade.onVentM10VentOperation
 
@@ -132,7 +135,7 @@ fun ViewVentCouleur_Module(
             )
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
-            .graphicsLayer(alpha = if (findVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
+            .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
         // Image/Color display card
         Card(
@@ -148,7 +151,7 @@ fun ViewVentCouleur_Module(
                     .padding(5.dp)
             ) {
                 fun lenceVent() {
-                    findVent?.let { findVent ->
+                    relative_M10OperationVentCouleur?.let { findVent ->
                         aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                             finale_Tariff,
                             buildList { add(findVent) }
@@ -170,8 +173,9 @@ fun ViewVentCouleur_Module(
                 Box(modifier = Modifier.fillMaxWidth()) {
                     when (relative_M3CouleurProduit.aAffiche) {
                         M3CouleurProduitInfos.Type.Image -> {
-                            ImageDisplayerGlide_Sec2FragID2(
+                            ImageDisplayerGlide_Sec2FragID2_Panie(
                                 modifier = Modifier.size(size),
+                                relative_M10OperationVentCouleur=relative_M10OperationVentCouleur,
                                 imageFile = imageFile,
                                 colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
                                 contentScale = ContentScale.Crop,
@@ -223,7 +227,7 @@ fun ViewVentCouleur_Module(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Text(
-                                        text = findVent?.quantity
+                                        text = relative_M10OperationVentCouleur?.quantity
                                             .toString(),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold
@@ -241,13 +245,13 @@ fun ViewVentCouleur_Module(
 
     if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
-            old_quantity = findVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
             setIN_Vent_Its_Quantity_Represent=relative_M1Produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_M1Produit.quantite_Boit_Par_Carton,
             label = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
 
-            findVent?.let { existingVent ->
+            relative_M10OperationVentCouleur?.let { existingVent ->
                 val updatedVent = new_Qyt?.let {
                     existingVent.copy(
                         quantity = it,
@@ -262,7 +266,7 @@ fun ViewVentCouleur_Module(
             }
 
             focusedValuesSetter.fermeDialogChoisireQuantityDeVentCouleur(
-                findVent!!.parent_M1Produit_KeyId
+                relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
             )
         }
     }

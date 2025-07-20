@@ -85,5 +85,5 @@ fun MainFilterT1(
         }
     }
 
-    MainListT1(modifier, searchFilter, sortedProducts)
+    MainListT1(modifier=modifier, searchFilter=searchFilter, sortedProducts=sortedProducts)
 }
