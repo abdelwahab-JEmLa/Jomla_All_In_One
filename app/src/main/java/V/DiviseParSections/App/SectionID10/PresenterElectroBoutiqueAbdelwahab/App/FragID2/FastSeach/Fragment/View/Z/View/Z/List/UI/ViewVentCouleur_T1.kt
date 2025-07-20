@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import java.io.File
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -304,17 +306,13 @@ fun ViewVentCouleur_T1(
                             }
                         }
 
-                    relative_M10OperationVentCouleur?.let {
-                        val text = it.linked_To_M10OperationVent_DebugInfos
-                        if (text.isNotEmpty()) {
-                            Text(
-                                text = "si $text est non dispo",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                        }
-                    }
+
+                    View_LikedTo_FragSearcher(
+                        relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                        m3Couleur = m3Couleur,
+                        imageFile = imageFile,
+                        viewModel = viewModel
+                    )
                 }
             }
         }
@@ -347,3 +345,62 @@ fun ViewVentCouleur_T1(
     }
 }
 
+@Composable
+private fun View_LikedTo_FragSearcher(
+    relative_M10OperationVentCouleur: M10OperationVentCouleur?,
+    m3Couleur: M3CouleurProduitInfos,
+    imageFile: File?,
+    viewModel: ViewModelsProduit_T1
+) {
+    relative_M10OperationVentCouleur?.let { ventOperation ->
+        val text = ventOperation.linked_To_M10OperationVent_DebugInfos
+        if (text.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    // Display linked text
+                    Text(
+                        text = "si $text est non dispo",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    // Display image or color name based on type
+                    when (m3Couleur.aAffiche) {
+                        M3CouleurProduitInfos.Type.Image -> {
+                            ImageDisplayerGlide_Sec2FragID2_SearchProduit(
+                                modifier = Modifier.size(60.dp),
+                                imageFile = imageFile,
+                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                contentScale = ContentScale.Crop,
+                                imageSize = DpSize(60.dp, 60.dp),
+                                onClickToOpenWindow = {
+                                    // Optional: Add click handling for linked item
+                                }
+                            )
+                        }
+
+                        M3CouleurProduitInfos.Type.Nom -> {
+                            ColorNameDisplayer_Sec2FragID2(
+                                modifier = Modifier.size(60.dp),
+                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                onClickToOpenWindow = {
+                                    // Optional: Add click handling for linked item
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
