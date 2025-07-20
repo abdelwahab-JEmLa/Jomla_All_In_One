@@ -140,23 +140,27 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
             val afficheur_Panier_Pour_Link_M10OperationVentCouleur = focusedValuesGetter
                 .active_Central_Values.handled_M10OperationVent_Pour_Link
             if (afficheur_Panier_Pour_Link_M10OperationVentCouleur != null
-                || relative_M10OperationVentCouleur?.its_Linked_To_Autre_Vent_Si_NonDispo == true
             ) {
                 SmallFloatingActionButton(
                     onClick = {
-                        if (afficheur_Panier_Pour_Link_M10OperationVentCouleur != null) {
-                            relative_M10OperationVentCouleur?.copy(
-                                its_Linked_To_Autre_Vent_Si_NonDispo = true,
-                                linked_To_M10OperationVent_KeyID = afficheur_Panier_Pour_Link_M10OperationVentCouleur
-                                    .keyID,
-                                linked_To_M10OperationVent_DebugInfos = afficheur_Panier_Pour_Link_M10OperationVentCouleur
-                                    .getDebugInfos()
-                            )?.let {
-                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
-                                    it
-                                )
-                            }
+                        relative_M10OperationVentCouleur?.copy(
+                            its_Linked_To_Autre_Vent_Si_NonDispo = true,
+                            linked_To_M10OperationVent_KeyID = afficheur_Panier_Pour_Link_M10OperationVentCouleur
+                                .keyID,
+                            linked_To_M10OperationVent_DebugInfos = afficheur_Panier_Pour_Link_M10OperationVentCouleur
+                                .getDebugInfos()
+                        )?.let {
+                            aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
+                                it
+                            )
                         }
+                        focusedValuesGetter.update_activeCentralValues(
+                            focusedValuesGetter
+                                .active_Central_Values.copy(
+                                    handled_M10OperationVent_Pour_Link =null
+                                )
+                        )
+
                     },
                     modifier = Modifier
                         .align(Alignment.TopStart)

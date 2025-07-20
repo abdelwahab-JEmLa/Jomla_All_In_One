@@ -245,7 +245,7 @@ fun ViewVentCouleur_T1(
                     }
                     val its_Pour_Link by remember {
                         derivedStateOf {
-                            handled_M10OperationVent_Pour_Link == relative_M10OperationVentCouleur
+                            handled_M10OperationVent_Pour_Link?.keyID == relative_M10OperationVentCouleur?.keyID
                         }
                     }
 
@@ -258,14 +258,16 @@ fun ViewVentCouleur_T1(
                                         relative_M10OperationVentCouleur,
                                         "relative_M10OperationVentCouleur"
                                     )
-                                    .getSemanticsTag(its_Pour_Link, "isLinked")
+                                    .getSemanticsTag(
+                                        handled_M10OperationVent_Pour_Link,
+                                        "handled_M10OperationVent_Pour_Link"
+                                    )
                                     .align(Alignment.TopStart)
                                     .padding(8.dp)
                                     .zIndex(1f),
                             ) {
                                 SmallFloatingActionButton(
                                     onClick = {
-
                                         val new_Data =
                                             focusedValuesGetter.active_Central_Values.copy(
                                                 handled_M10OperationVent_Pour_Link = relative_M10OperationVentCouleur
