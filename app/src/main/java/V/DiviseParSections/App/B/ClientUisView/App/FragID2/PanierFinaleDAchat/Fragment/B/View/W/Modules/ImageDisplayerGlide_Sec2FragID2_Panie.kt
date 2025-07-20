@@ -155,16 +155,18 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
             ) {
                 SmallFloatingActionButton(
                     onClick = {
-                        afficheur_Panier_Pour_Link_M10OperationVentCouleur.copy(
-                            its_Linked_To_Autre_Vent_Si_NonDispo = true,
-                            linked_To_M10OperationVent_KeyID = afficheur_Panier_Pour_Link_M10OperationVentCouleur
-                                .keyID,
-                            linked_To_M10OperationVent_DebugInfos = afficheur_Panier_Pour_Link_M10OperationVentCouleur
-                                .getDebugInfos()
-                        ).let {
-                            aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
-                                it
-                            )
+                        if (relative_M10OperationVentCouleur != null) {
+                            afficheur_Panier_Pour_Link_M10OperationVentCouleur.copy(
+                                its_Linked_To_Autre_Vent_Si_NonDispo = true,
+                                linked_To_M10OperationVent_KeyID = relative_M10OperationVentCouleur
+                                    .keyID,
+                                linked_To_M10OperationVent_DebugInfos = relative_M10OperationVentCouleur
+                                    .getDebugInfos()
+                            ).let {
+                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
+                                    it
+                                )
+                            }
                         }
 
                         focusedValuesGetter.update_activeCentralValues(

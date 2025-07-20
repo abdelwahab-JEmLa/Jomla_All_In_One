@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import org.koin.compose.koinInject
 
@@ -129,7 +131,8 @@ fun ViewVentCouleur_T1(
             onVentM3?.parent_M3CouleurProduit_KeyID == m3Couleur.keyID
         }
     }
-    val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    val datasValue =
+        viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff =
         M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
     val default_Tariff =
@@ -279,8 +282,7 @@ fun ViewVentCouleur_T1(
                                         .getSemanticsTag(
                                             relative_M10OperationVentCouleur,
                                             "relative_M10OperationVentCouleur"
-                                        )
-                                    ,
+                                        ),
                                     onClick = {
                                         val new_Data =
                                             focusedValuesGetter.active_Central_Values.copy(
@@ -352,11 +354,11 @@ fun ViewVentCouleur_T1(
 @SuppressLint("UnrememberedMutableState")
 @Composable
 private fun View_LikedTo_FragSearcher(
+    modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
-    viewModel: ViewModelsProduit_T1,
-    modifier: Modifier = Modifier // AJOUTÉ: Paramètre modifier
+    viewModel: ViewModelsProduit_T1
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -364,9 +366,10 @@ private fun View_LikedTo_FragSearcher(
         val parent_linkVent_M10Vent = repositorysMainGetter.find_M10OperationVentCouleur(
             ventOperation.linked_To_M10OperationVent_KeyID
         )
-        val parent_linkVent_M10Vent_Relative_M3Couleur = repositorysMainGetter.find_M3CouleurProduitInfos(
-            parent_linkVent_M10Vent?.parent_M3CouleurProduit_KeyID ?: ""
-        )
+        val parent_linkVent_M10Vent_Relative_M3Couleur =
+            repositorysMainGetter.find_M3CouleurProduitInfos(
+                parent_linkVent_M10Vent?.parent_M3CouleurProduit_KeyID ?: ""
+            )
 
         val text = ventOperation.linked_To_M10OperationVent_DebugInfos
         if (text.isNotEmpty()) {
@@ -382,35 +385,28 @@ private fun View_LikedTo_FragSearcher(
             }
 
             Card(
-                modifier = modifier // CORRECTION 3: Utilise le modifier passé
+                modifier = modifier
                     .padding(top = 4.dp)
                     .fillMaxWidth()
-                    .wrapContentHeight(), // AJOUTÉ: Limite explicitement la hauteur
+                    .wrapContentHeight(),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 4.dp
                 )
             ) {
                 Column(
                     modifier = Modifier
+                        .getSemanticsTag(relative_M10OperationVentCouleur, "")
                         .padding(8.dp)
-                        .wrapContentHeight() // AJOUTÉ: Limite la hauteur de la colonne
+                        .wrapContentHeight()
                 ) {
-                    // Header with delete button
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight() // AJOUTÉ: Limite la hauteur du header
+                            .wrapContentHeight()
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "si ${parent_linkVent_M10Vent?.parent_M1Produit_DebugInfos} est non dispo",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            modifier = Modifier.weight(1f),
-                            maxLines = 2 // AJOUTÉ: Limite le nombre de lignes
-                        )
 
                         SmallFloatingActionButton(
                             onClick = { handleDeleteLink() },
@@ -434,11 +430,10 @@ private fun View_LikedTo_FragSearcher(
                         }
                     }
 
-                    // CORRECTION 4: Container avec hauteur fixe pour l'image/couleur
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(60.dp), // AJOUTÉ: Hauteur fixe
+                            .height(60.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         if (parent_linkVent_M10Vent_Relative_M3Couleur != null) {
@@ -467,8 +462,26 @@ private fun View_LikedTo_FragSearcher(
                                 }
                             }
                         }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "si ${
+                                    parent_linkVent_M10Vent?.parent_M1Produit_KeyId?.takeLast(
+                                        4
+                                    )
+                                } est non dispo",
+                                color = Color.White,
+                                fontSize = 8.sp,
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
+
             }
         }
     }
