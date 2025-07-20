@@ -1,3 +1,4 @@
+// ORIGINAL CODE WITH POTENTIAL FIXES
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
@@ -21,13 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    achatCouleur: M11AchatOperation
+    achatCouleur: M11AchatOperation,
+    modifier: Modifier = Modifier // ADD: Accept modifier parameter
 ) {
     // Get sales operations data
     val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
@@ -53,20 +56,20 @@ fun List_AcheteursDeCetteProduit(
         gBonVent?.parent_M2Client_KeyID
     }.filterKeys { it != null }
 
+    // FIX: Use Box with fillMaxSize and add vertical scrolling if needed
     Column(
-        modifier = Modifier
+        modifier = modifier
             .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = listFCouleurVentOperation)
-            .fillMaxWidth()
+            .fillMaxWidth() // KEEP: This is fine for width
             .padding(vertical = 4.dp)
+        // ADD: Only add vertical scroll if this component can grow vertically
+        // .verticalScroll(rememberScrollState()) // Uncomment if needed
     ) {
         // Direct Sales Section
         if (directSalesByClient.isNotEmpty()) {
-            Text(
-                text = "Ventes Directes",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+            SectionHeader(
+                title = "Ventes Directes",
+                color = MaterialTheme.colorScheme.primary
             )
 
             directSalesByClient.forEach { (clientKeyID, ventOperations) ->
@@ -82,16 +85,13 @@ fun List_AcheteursDeCetteProduit(
             }
         }
 
-        // Linked Sales Section (in separate cards as requested)
+        // Linked Sales Section
         if (linkedSalesByClient.isNotEmpty()) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Ventes Liées (Alternatives)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+            SectionHeader(
+                title = "Ventes Liées (Alternatives)",
+                color = MaterialTheme.colorScheme.secondary
             )
 
             linkedSalesByClient.forEach { (clientKeyID, ventOperations) ->
@@ -109,22 +109,43 @@ fun List_AcheteursDeCetteProduit(
 
         // No sales message
         if (directSalesByClient.isEmpty() && linkedSalesByClient.isEmpty()) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                )
-            ) {
-                Text(
-                    text = "Aucun client trouvé pour ce produit",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            EmptyStateCard()
         }
+    }
+}
+
+// EXTRACTED: Section header for better reusability
+@Composable
+private fun SectionHeader(
+    title: String,
+    color: Color
+) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = color,
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+    )
+}
+
+// EXTRACTED: Empty state for better code organization
+@Composable
+private fun EmptyStateCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Text(
+            text = "Aucun client trouvé pour ce produit",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
@@ -132,7 +153,7 @@ fun List_AcheteursDeCetteProduit(
 private fun ClientSalesCard(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     clientKeyID: String,
-    ventOperations: List<M10OperationVentCouleur>, // Replace with proper type
+    ventOperations: List<M10OperationVentCouleur>,
     cardColor: Color,
     isLinked: Boolean
 ) {
@@ -154,6 +175,8 @@ private fun ClientSalesCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
+                    .h
+
             ) {
                 // Client header with linked indicator
                 Row(
@@ -161,14 +184,19 @@ private fun ClientSalesCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // FIX: Add weight to prevent overflow and add text overflow handling
                     Text(
                         text = client.nom,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f), // ADD: Prevent text overflow
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     if (isLinked) {
+                        Spacer(modifier = Modifier.width(8.dp)) // ADD: Space between text and badge
                         Card(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.secondary
@@ -208,7 +236,8 @@ private fun ClientSalesCard(
                             text = "Total pour ce client:",
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f) // ADD: Prevent overflow
                         )
                         Text(
                             text = "$totalQuantity",
@@ -228,7 +257,7 @@ private fun ClientSalesCard(
 @Composable
 private fun SalesOperationRow(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    ventOperation: M10OperationVentCouleur, // Replace with proper type
+    ventOperation: M10OperationVentCouleur,
     isLinked: Boolean
 ) {
     Row(
@@ -238,8 +267,10 @@ private fun SalesOperationRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // FIX: Use weight to prevent overflow issues
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = if (isLinked) "→" else "•",
@@ -251,7 +282,9 @@ private fun SalesOperationRow(
             Text(
                 text = "Qté: ${ventOperation.quantity}",
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -266,7 +299,8 @@ private fun SalesOperationRow(
                 Text(
                     text = "Bon: ${it.keyID.takeLast(6)}",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    maxLines = 1
                 )
 
                 if (isLinked) {
