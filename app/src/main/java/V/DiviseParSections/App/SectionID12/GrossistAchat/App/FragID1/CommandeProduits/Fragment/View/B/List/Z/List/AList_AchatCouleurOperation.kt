@@ -3,7 +3,11 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.W.Ui.AfficheIconVentMultiItems
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,29 +23,36 @@ fun List_AchatCouleurOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     listAchatCouleur: List<M11AchatOperation>,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = Modifier.fillMaxWidth()
     ) {
         LazyRow(
             state = rememberLazyListState(),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(listAchatCouleur) { achatCouleur ->
                 VerticalDivider(
                     thickness = 9.dp,
-                    color = Color.Red
+                    color = Color.Red,
+                    modifier = Modifier.width(9.dp)
                 )
 
                 View_AchatCouleur(
-                    achatCouleur,
-                    viewModel,
+                    relative_M11AchatOperation = achatCouleur,
+                    viewModel = viewModel,
                 )
             }
         }
 
         if (listAchatCouleur.size > 1) {
-            AfficheIconVentMultiItems()
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
+            ) {
+                AfficheIconVentMultiItems()
+            }
         }
     }
 }
-
