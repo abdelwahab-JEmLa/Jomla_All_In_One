@@ -169,6 +169,7 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                             }
                         }
 
+
                         focusedValuesGetter.update_activeCentralValues(
                             activeCentralValues.copy(
                                 handled_M10OperationVent_Pour_Link = null
