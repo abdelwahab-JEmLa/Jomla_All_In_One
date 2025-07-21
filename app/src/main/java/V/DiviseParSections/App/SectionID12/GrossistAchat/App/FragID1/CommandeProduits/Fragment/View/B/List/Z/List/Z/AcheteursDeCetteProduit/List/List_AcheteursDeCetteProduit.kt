@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -165,7 +166,9 @@ private fun ClientSalesCard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 2.dp),
+                .padding(vertical = 2.dp)
+                .heightIn(max =300.dp)
+            ,
             colors = CardDefaults.cardColors(containerColor = cardColor),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = if (isLinked) 3.dp else 1.dp
@@ -175,8 +178,6 @@ private fun ClientSalesCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
-                    .h
-
             ) {
                 // Client header with linked indicator
                 Row(

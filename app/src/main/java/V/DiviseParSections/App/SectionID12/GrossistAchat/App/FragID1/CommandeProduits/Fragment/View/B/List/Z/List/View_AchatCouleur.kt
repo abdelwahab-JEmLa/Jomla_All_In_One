@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -91,15 +94,21 @@ fun View_AchatCouleur(
     val sumAchatQantity = relative_M11AchatOperation.sumAchatQantity - relative_list_Vents.sumOf { it.quantity }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .size(200.dp)
+            .fillMaxWidth()
+            .wrapContentHeight(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
-            // Main product color display
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             ) {
                 val couleurKey = relative_M11AchatOperation.parent_M3CouleurProduit_KeyID
                 if (couleurKey.isNotEmpty()) {
@@ -108,6 +117,7 @@ fun View_AchatCouleur(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .wrapContentHeight()
                             .padding(8.dp)
                             .background(
                                 color = Color.Gray.copy(alpha = 0.3f),
@@ -126,7 +136,6 @@ fun View_AchatCouleur(
                     }
                 }
 
-                // Available quantity overlay
                 Card(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -145,7 +154,6 @@ fun View_AchatCouleur(
                 }
             }
 
-            // Alternative sales options (if parent not available)
             if (relative_list_Vents.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -153,10 +161,14 @@ fun View_AchatCouleur(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
                     ) {
                         Text(
                             text = "Alternatives disponibles:",
@@ -166,19 +178,23 @@ fun View_AchatCouleur(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
 
-                        // Fixed: Constrain the LazyRow width properly
-                        LazyRow(
-                            state = rememberLazyListState(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp) // Fixed height to prevent infinite constraints
+                                .height(100.dp)
                         ) {
-                            items(relative_list_Vents) { vent ->
-                                AlternativeVentItem(
-                                    vent = vent,
-                                    repositorysMainGetter = repositorysMainGetter
-                                )
+                            LazyRow(
+                                state = rememberLazyListState(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                items(relative_list_Vents) { vent ->
+                                    AlternativeVentItem(
+                                        vent = vent,
+                                        repositorysMainGetter = repositorysMainGetter
+                                    )
+                                }
                             }
                         }
                     }
@@ -187,7 +203,19 @@ fun View_AchatCouleur(
 
             // Buyers list
             Spacer(modifier = Modifier.height(8.dp))
-            List_AcheteursDeCetteProduit(viewModel, relative_M11AchatOperation)
+
+            // FIXED: Pass a constrained modifier to prevent infinite constraints
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                List_AcheteursDeCetteProduit(
+                    viewModel = viewModel,
+                    achatCouleur = relative_M11AchatOperation,
+                    modifier = Modifier.fillMaxWidth() // Constrain the width
+                )
+            }
         }
     }
 }
@@ -199,15 +227,16 @@ private fun AlternativeVentItem(
 ) {
     Card(
         modifier = Modifier
-            .width(120.dp) // Fixed width instead of size with both dimensions
-            .height(80.dp),
+            .width(120.dp) // FIXED: Use specific width instead of size()
+            .height(80.dp), // FIXED: Use specific height
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize() // FIXED: Fill the card's constrained size
         ) {
             // Alternative color display
             val relative_linkedParentVent =
@@ -216,7 +245,13 @@ private fun AlternativeVentItem(
                 relative_linkedParentVent?.parent_M3CouleurProduit_KeyID
 
             if (relative_M3Couleur != null) {
-                CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 60.dp)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(60.dp) // FIXED: Explicit size constraint
+                ) {
+                    CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 60.dp)
+                }
             }
 
             // Quantity overlay
