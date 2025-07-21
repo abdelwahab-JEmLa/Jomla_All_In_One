@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.CouleurDisplayer
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.background
@@ -90,7 +89,19 @@ fun View_AchatCouleur(
                     }
 
                     relative_list_Vents.forEach { relative_M10Vent ->
-                        View_Parent_Dispo_Vent( relative_M10Vent)
+                        val relative_linkedParent_M10Vent =
+                            repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
+                        val relative_M3Couleur_KeyId =
+                            relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
+                        val client = repositorysMainGetter.find_M2Client_By_M10Vent(
+                            relative_M10Vent
+                        )
+
+                        View_Parent_Dispo_Vent(
+                            client_nom = client?.nom ?: "Client inconnu",
+                            quantity = "Quantité: ${relative_M10Vent.quantity}",
+                            relative_M3Couleur_KeyId = relative_M3Couleur_KeyId
+                        )
                     }
                 }
             }
@@ -105,19 +116,11 @@ fun View_AchatCouleur(
 
 @Composable
 private fun View_Parent_Dispo_Vent(
-    relative_M10Vent: M10OperationVentCouleur,
-    aCentralFacade: ACentralFacade= koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
+    client_nom: String,
+    quantity: String,
+    relative_M3Couleur_KeyId: String?
 ) {
     Card {
-        val relative_linkedParent_M10Vent =
-            repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
-
-        val relative_M3Couleur_KeyId =
-            relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
-        val client = repositorysMainGetter.find_M2Client_By_M10Vent(
-            relative_M10Vent
-        )
 
         Box(
             modifier = Modifier
@@ -135,7 +138,7 @@ private fun View_Parent_Dispo_Vent(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = client?.nom ?: "Client inconnu",
+                    text = client_nom,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
@@ -147,7 +150,7 @@ private fun View_Parent_Dispo_Vent(
                 )
 
                 Text(
-                    text = "Quantité: ${relative_M10Vent.quantity}",
+                    text = quantity,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
