@@ -171,7 +171,7 @@ fun Button_ID2_Menagerie_Telegram(
     }
 
     LaunchedEffect(non_Lu_Messages_Size) {
-        if (!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount) {
+        if (!current_Compt_Et_Admin!! && non_Lu_Messages_Size > previousMessageCount) {
             playNotificationSound()
         }
         previousMessageCount = non_Lu_Messages_Size

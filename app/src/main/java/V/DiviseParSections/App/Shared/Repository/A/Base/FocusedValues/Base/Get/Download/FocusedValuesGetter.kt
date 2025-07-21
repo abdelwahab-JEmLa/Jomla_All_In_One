@@ -93,7 +93,7 @@ class FocusedValuesGetter(
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     val current_Compt_Et_Admin by derivedStateOf {
-        active_Current_M9AppCompt?.its_Admin
+        active_Current_M9AppCompt?.its_Admin ==true
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,21 +110,19 @@ class FocusedValuesGetter(
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {
         repo2Client.datasValue.filter { client ->
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter {
                     (it.parent_M2Client_KeyID == client.keyID
-                            && it.parent_M9AppCompt_KeyID == (active_Current_M9AppCompt?.keyID
-                        ?: ""))
+                            && it.parent_M9AppCompt_KeyID == (active_Current_M9AppCompt?.keyID ?: ""))
                 }
                 .maxByOrNull { it.creationTimestamps }
 
-            lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+                    lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport
         }
     }
-
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

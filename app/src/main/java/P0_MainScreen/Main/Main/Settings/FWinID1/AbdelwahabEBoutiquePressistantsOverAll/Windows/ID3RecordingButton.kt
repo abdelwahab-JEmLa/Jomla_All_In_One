@@ -34,7 +34,6 @@ fun ID3RecordingButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Labels toggle button
         FloatingActionButton(
             onClick = {
                 if (enable) {
@@ -55,23 +54,22 @@ fun ID3RecordingButton(
 
         if (showLabels) {
             // Use the pre-cached value
-            val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            val focusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
-                get.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
+                focusedValuesGetter.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
 
             val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT =
-                get.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
+                focusedValuesGetter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
 
-
-            val remainM2 = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size +
+            val remain_M2Client_Size = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size +
                     filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT.size
 
             Text(
-                "$displayTime | بقي $remainM2 زبون",
+                "$displayTime | بقي $remain_M2Client_Size زبون",
                 modifier = Modifier
                     .getSemanticsTag(
                         nomVal = "parent_M9AppCompt_KeyID",
-                        data = get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID
+                        data = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID
                     )
                     .getSemanticsTag(
                         nomVal = "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible",
