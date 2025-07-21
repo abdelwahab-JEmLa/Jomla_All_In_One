@@ -28,25 +28,30 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
-    repositorysMainGetter: RepositorysMainGetter =aCentralFacade.repositorysMainGetter,
-    repo10OperationVentCouleur: Repo10OperationVentCouleur =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     relative_M11AchatOperation: M11AchatOperation
 ) {
-    val relative_ListM10VentOperation = relative_M11AchatOperation.get_list_v_Depuit_joinedStringKeys(
-        repo10OperationVentCouleur.datasValue
-    )
+    val relative_ListM10VentOperation =
+        relative_M11AchatOperation.get_list_v_Depuit_joinedStringKeys(
+            repo10OperationVentCouleur.datasValue
+        )
 
-    val relative_Map_M2Client_To_ListM10Vent = relative_ListM10VentOperation.groupBy { ventOperation ->
-        val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
-            it.keyID == ventOperation.parent_M8BonVent_KeyId
-        }
-        gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it) }
-    }.filterKeys { it != null }
+    val relative_Map_M2Client_To_ListM10Vent =
+        relative_ListM10VentOperation.groupBy { ventOperation ->
+            val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
+                it.keyID == ventOperation.parent_M8BonVent_KeyId
+            }
+            gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it) }
+        }.filterKeys { it != null }
 
     Column(
         modifier = Modifier
-            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = relative_ListM10VentOperation)
+            .getSemanticsTag(
+                nomVal = "listFCouleurVentOperation",
+                data = relative_ListM10VentOperation
+            )
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
@@ -90,33 +95,38 @@ fun List_AcheteursDeCetteProduit(
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 relative_ListM10Vent.forEach { relative_M10Vent ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "• Qté: ${relative_M10Vent.quantity}",
-                                            fontSize = 14.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                    when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {
+                                        false -> {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = "• Qté: ${relative_M10Vent.quantity}",
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
 
-                                        Spacer(modifier = Modifier.width(16.dp))
+                                                Spacer(modifier = Modifier.width(16.dp))
 
-                                        val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-                                            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
+                                                val bonVent =
+                                                    viewModel.getter.repo8BonVent.datasValue.find {
+                                                        it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
+                                                    }
+                                                bonVent?.let {
+                                                    Text(
+                                                        text = "Bon: ${it.keyID.takeLast(6)}",
+                                                        fontSize = 12.sp,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                            alpha = 0.7f
+                                                        )
+                                                    )
+                                                }
+                                            }
                                         }
-                                        bonVent?.let {
-                                            Text(
-                                                text = "Bon: ${it.keyID.takeLast(6)}",
-                                                fontSize = 12.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                            )
-                                        }
+
+                                        true -> Parent_Dispo_Vent_StateFull(relative_M10Vent)
                                     }
-
-                                    Parent_Dispo_Vent_StateFull(
-                                        relative_M10Vent
-                                    )
                                 }
 
                                 val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }

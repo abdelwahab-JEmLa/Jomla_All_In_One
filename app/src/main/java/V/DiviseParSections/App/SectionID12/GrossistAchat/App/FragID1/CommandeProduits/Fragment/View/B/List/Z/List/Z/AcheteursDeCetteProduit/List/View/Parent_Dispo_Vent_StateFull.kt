@@ -10,17 +10,15 @@ fun Parent_Dispo_Vent_StateFull(
     relative_M10Vent: M10OperationVentCouleur,
     repositorysMainGetter: RepositorysMainGetter= koinInject()
 ) {
-    val relative_linkedParent_M10Vent =
-        repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
-    val relative_M3Couleur_KeyId =
-        relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
-    val relative_M2Client = repositorysMainGetter.find_M2Client_By_M10Vent(
-        relative_M10Vent
-    )
+    val relative_linkedParent_M10Vent = repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
+    val relative_M3Couleur_KeyId = relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
+    val relative_M2Client = repositorysMainGetter.find_M2Client_By_M10Vent(relative_M10Vent)
+    val relative_M1= relative_linkedParent_M10Vent?.let { repositorysMainGetter.find_M1Produit(it.parent_M1Produit_KeyId) }
 
     Parent_Dispo_Vent_StateLess(
         relative_M2Client_nom = relative_M2Client?.nom ?: "Client inconnu",
         quantity = "Quantité: ${relative_M10Vent.quantity}",
-        relative_M3CouleurInfos_KeyId = relative_M3Couleur_KeyId
+        relative_M3CouleurInfos_KeyId = relative_M3Couleur_KeyId,
+        relative_M1Produit_Nom = relative_M1?.nom ?:""
     )
 }
