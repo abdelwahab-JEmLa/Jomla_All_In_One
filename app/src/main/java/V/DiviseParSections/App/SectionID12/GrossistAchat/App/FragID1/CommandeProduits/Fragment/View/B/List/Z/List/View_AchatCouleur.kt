@@ -96,35 +96,38 @@ fun View_AchatCouleur(
                         )
                     }
 
-
-                    relative_list_Vents.forEach { vent ->        //<--
+                    relative_list_Vents.forEach { vent ->
                         Box {
-                            val relative_linkedParentVent =
+                            val relative_linkedParent_M10Vent =
                                 repositorysMainGetter.find_M10OperationVentCouleur(vent.linked_To_M10OperationVent_KeyID)
+
                             val relative_M3Couleur =
-                                relative_linkedParentVent?.parent_M3CouleurProduit_KeyID
+                                relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
+
                             if (relative_M3Couleur != null) {
                                 CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 80.dp)
-
                             }
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(10.dp)
                                     .background(
-                                        color = Color.White.copy(alpha = 0.70f),
+                                        color = Color.White.copy(alpha = 0.40f),
                                         shape = RoundedCornerShape(10.dp)
                                     ),
                             ) {
+                                val client=
                                 Row {
                                     Text(
-                                        text = "Si ParentNon /n " +
+                                        text = "Si ParentNon \n " +
                                                 "dispo: Cherche",
-                                        fontSize = 7.sp,
+                                        fontSize =5.sp,
                                         fontWeight = FontWeight.Bold,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.padding(4.dp)
                                     )
+
                                     Text(
                                         text = "${vent.quantity}",
                                         fontSize = 20.sp,
