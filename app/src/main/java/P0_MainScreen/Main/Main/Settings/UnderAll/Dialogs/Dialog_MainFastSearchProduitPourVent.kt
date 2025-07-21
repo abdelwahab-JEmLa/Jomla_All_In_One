@@ -141,7 +141,8 @@ fun Dialog_MainFastSearchProduitPourVent(
                             focusedValuesGetter.update_activeCentralValues(
                                 focusedValuesGetter.active_Central_Values
                                     .copy(
-                                        affiche_Panier_au_Search_Dialog = false
+                                        affiche_Panier_au_Search_Dialog = false ,
+                                                handled_M10OperationVent_Pour_Link=null
                                     )
                             )
                         },

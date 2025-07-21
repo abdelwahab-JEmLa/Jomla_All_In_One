@@ -12,7 +12,7 @@ class Sec9FragId1ViewId2ViewModel(
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,
-        var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant,
+        var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.PRIX_BASE,
         var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet(),
     )
 

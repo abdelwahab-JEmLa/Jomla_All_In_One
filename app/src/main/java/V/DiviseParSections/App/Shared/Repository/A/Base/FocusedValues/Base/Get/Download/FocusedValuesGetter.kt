@@ -25,9 +25,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
-    val active_OpnerDialog_M17MessageVocale: M17MessageVocale? = null,
-    val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
+    val active_OpnerDialog_M17MessageVocale: M17MessageVocale? = null,
+
+    val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
 ) {
     companion object {
