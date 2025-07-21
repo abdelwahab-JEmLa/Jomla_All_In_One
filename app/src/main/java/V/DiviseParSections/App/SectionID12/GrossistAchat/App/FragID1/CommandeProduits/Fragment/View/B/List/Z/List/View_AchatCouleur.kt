@@ -9,7 +9,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,16 +96,16 @@ fun View_AchatCouleur(
                         )
                     }
 
-                    relative_list_Vents.forEach { vent ->
+                    relative_list_Vents.forEach { relative_M10Vent ->
                         Box {
                             val relative_linkedParent_M10Vent =
-                                repositorysMainGetter.find_M10OperationVentCouleur(vent.linked_To_M10OperationVent_KeyID)
+                                repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
 
-                            val relative_M3Couleur =
+                            val relative_M3Couleur_KeyId =
                                 relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
 
-                            if (relative_M3Couleur != null) {
-                                CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 80.dp)
+                            if (relative_M3Couleur_KeyId != null) {
+                                CouleurDisplayer(keyCouleur = relative_M3Couleur_KeyId, size = 80.dp)
                             }
 
                             Box(
@@ -117,23 +117,36 @@ fun View_AchatCouleur(
                                         shape = RoundedCornerShape(10.dp)
                                     ),
                             ) {
-                                val client=
-                                Row {
+                                val client= repositorysMainGetter.find_M2Client_By_M10Vent(
+                                    relative_M10Vent
+                                )
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp)
+                                ) {
                                     Text(
-                                        text = "Si ParentNon \n " +
-                                                "dispo: Cherche",
-                                        fontSize =5.sp,
+                                        text = client?.nom ?: "Client inconnu",
+                                        fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(4.dp)
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
                                     )
 
                                     Text(
-                                        text = "${vent.quantity}",
-                                        fontSize = 20.sp,
+                                        text = "Quantité: ${relative_M10Vent.quantity}",
+                                        fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold,
                                         textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(4.dp)
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }

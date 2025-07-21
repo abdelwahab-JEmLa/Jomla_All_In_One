@@ -73,7 +73,20 @@ class RepositorysMainGetter(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    //--------------M1----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M1Produit(keyId: String): ArticlesBasesStatsTable? =
+        repo1ProduitInfos.datasValue.find { it.keyID == keyId }
+
+
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M2Client(keyID: String): M2Client? =
+        repo2Client.datasValue.find { it.keyID == keyID }
+    fun find_M2Client_By_M10Vent(key: M10OperationVentCouleur): M2Client? =
+        repo2Client.datasValue.find {
+            it.keyID == find_M8BonVent(key.parent_M8BonVent_KeyId)
+            ?.parent_M2Client_KeyID
+        }
+
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
         return repo8BonVent.datasValue
             .filter {
@@ -97,7 +110,7 @@ class RepositorysMainGetter(
     }
 
     //--------------M8BonVent----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M8BonVent_By_KeyID(keyID: String): M8BonVent? =
+    fun find_M8BonVent(keyID: String): M8BonVent? =
         repo8BonVent.datasValue.find { it.keyID == keyID }
 
     //--------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------------------------------

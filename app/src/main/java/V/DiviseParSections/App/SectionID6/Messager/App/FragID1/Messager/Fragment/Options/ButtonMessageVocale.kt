@@ -61,7 +61,7 @@ fun ButtonMessageVocale(
     val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
-        repositorysMainGetter.find_M8BonVent_By_KeyID(
+        repositorysMainGetter.find_M8BonVent(
             it
         )
     }
