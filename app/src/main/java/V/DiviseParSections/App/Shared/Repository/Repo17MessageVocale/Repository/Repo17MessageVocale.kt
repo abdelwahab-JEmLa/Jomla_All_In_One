@@ -30,6 +30,7 @@ class Repo17MessageVocale(
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
+    // Fixed: Convert to StateFlow to properly observe state changes in Compose
     val datasValue: StateFlow<List<M17MessageVocale>> =
         repoState.map { state ->
             state?.modelListFlow ?: emptyList()
