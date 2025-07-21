@@ -14,3 +14,4 @@ data class Repo18ParametresAppComptNonSaved(
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 )
+
