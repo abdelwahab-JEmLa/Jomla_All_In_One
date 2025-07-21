@@ -255,8 +255,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             }
                         }
 
-                        ID2MesasgerieTelegramme(
-                            showMessageurDialog = showMessageurDialog,
+                        Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                             onTelegramClick = { showMessageurDialog = true }
                         )
