@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List
 
-// Add these imports to your existing imports
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.List_AcheteursDeCetteProduit
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -41,7 +40,6 @@ private fun View_AchatCouleurPrv(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
 ) {
-    // Use derivedStateOf for reactive data access
     val firstAchatOperation by remember {
         derivedStateOf {
             repositorysMainGetter.repo11AchatOperation.datasValue.firstOrNull()
@@ -80,6 +78,12 @@ fun View_AchatCouleur(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
 ) {
+    val relative_list_Vents = relative_M11AchatOperation
+        .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
+            repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        )
+    val sumAchatQantity = relative_M11AchatOperation.sumAchatQantity  - relative_list_Vents.sumOf { it.quantity }
+
     Card(
         modifier = Modifier.background(Color.Red)
     ) {
@@ -120,20 +124,16 @@ fun View_AchatCouleur(
                             ),
                     ) {
                         Text(
-                            text = "Qté: ${relative_M11AchatOperation.sumAchatQantity}",
-                            fontSize = 50.sp,
+                            text = "Sans ProbableVent Q: $sumAchatQantity",
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(4.dp)
                         )
                     }
 
-                    val relative_list_Vents = relative_M11AchatOperation
-                        .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
-                            repositorysMainGetter.repo10OperationVentCouleur.datasValue
-                        )
 
-                    relative_list_Vents.forEach { vent ->
+                    relative_list_Vents.forEach { vent ->        //<--
                         Box {
                             val relative_linkedParentVent =
                                 repositorysMainGetter.find_M10OperationVentCouleur(vent.linked_To_M10OperationVent_KeyID)
@@ -141,6 +141,7 @@ fun View_AchatCouleur(
                                 relative_linkedParentVent?.parent_M3CouleurProduit_KeyID
                             if (relative_M3Couleur != null) {
                                 CouleurDisplayer(keyCouleur = relative_M3Couleur, size = 80.dp)
+
                             }
                             Box(
                                 modifier = Modifier
