@@ -1,11 +1,11 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.View
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.runtime.Composable
 
 @Composable
-fun StateFull(
+fun Parent_Dispo_Vent_StateFull(
     repositorysMainGetter: RepositorysMainGetter,
     relative_M10Vent: M10OperationVentCouleur
 ) {
@@ -17,7 +17,7 @@ fun StateFull(
         relative_M10Vent
     )
 
-    StateLess_Parent_Dispo_Vent(
+    Parent_Dispo_Vent_StateLess(
         client_nom = client?.nom ?: "Client inconnu",
         quantity = "Quantité: ${relative_M10Vent.quantity}",
         relative_M3Couleur_KeyId = relative_M3Couleur_KeyId
