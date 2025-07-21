@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.View
 
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.CouleurDisplayer
 import androidx.compose.foundation.background
@@ -67,3 +67,4 @@ fun StateLess_Parent_Dispo_Vent(
         VerticalDivider()
     }
 }
+
