@@ -1,17 +1,13 @@
-// ORIGINAL CODE WITH POTENTIAL FIXES
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -21,295 +17,114 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    achatCouleur: M11AchatOperation,
-    modifier: Modifier = Modifier // ADD: Accept modifier parameter
+    relative_M11AchatOperation: M11AchatOperation
 ) {
     // Get sales operations data
     val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-    val listFCouleurVentOperation = achatCouleur.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur)
+    val listFCouleurVentOperation = relative_M11AchatOperation.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur)
 
-    // Separate direct sales from linked sales
-    val directSales = listFCouleurVentOperation.filter { it.linked_To_M10OperationVent_KeyID.isEmpty() }
-    val linkedSales = listFCouleurVentOperation.filter { it.linked_To_M10OperationVent_KeyID.isNotEmpty() }
-
-    // Group direct sales by client
-    val directSalesByClient = directSales.groupBy { ventOperation ->
+    // Group sales operations by client (through BonVent)
+    val salesByClient = listFCouleurVentOperation.groupBy { ventOperation ->
         val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
             it.keyID == ventOperation.parent_M8BonVent_KeyId
         }
         gBonVent?.parent_M2Client_KeyID
-    }.filterKeys { it != null }
+    }.filterKeys { it != null } // Remove null client keys
 
-    // Group linked sales by client
-    val linkedSalesByClient = linkedSales.groupBy { ventOperation ->
-        val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
-            it.keyID == ventOperation.parent_M8BonVent_KeyId
-        }
-        gBonVent?.parent_M2Client_KeyID
-    }.filterKeys { it != null }
-
-    // FIX: Use Box with fillMaxSize and add vertical scrolling if needed
     Column(
-        modifier = modifier
-            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = listFCouleurVentOperation)
-            .fillMaxWidth() // KEEP: This is fine for width
-            .padding(vertical = 4.dp)
-        // ADD: Only add vertical scroll if this component can grow vertically
-        // .verticalScroll(rememberScrollState()) // Uncomment if needed
-    ) {
-        // Direct Sales Section
-        if (directSalesByClient.isNotEmpty()) {
-            SectionHeader(
-                title = "Ventes Directes",
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            directSalesByClient.forEach { (clientKeyID, ventOperations) ->
-                if (clientKeyID != null) {
-                    ClientSalesCard(
-                        viewModel = viewModel,
-                        clientKeyID = clientKeyID,
-                        ventOperations = ventOperations,
-                        cardColor = MaterialTheme.colorScheme.surfaceVariant,
-                        isLinked = false
-                    )
-                }
-            }
-        }
-
-        // Linked Sales Section
-        if (linkedSalesByClient.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(12.dp))
-
-            SectionHeader(
-                title = "Ventes Liées (Alternatives)",
-                color = MaterialTheme.colorScheme.secondary
-            )
-
-            linkedSalesByClient.forEach { (clientKeyID, ventOperations) ->
-                if (clientKeyID != null) {
-                    ClientSalesCard(
-                        viewModel = viewModel,
-                        clientKeyID = clientKeyID,
-                        ventOperations = ventOperations,
-                        cardColor = MaterialTheme.colorScheme.secondaryContainer,
-                        isLinked = true
-                    )
-                }
-            }
-        }
-
-        // No sales message
-        if (directSalesByClient.isEmpty() && linkedSalesByClient.isEmpty()) {
-            EmptyStateCard()
-        }
-    }
-}
-
-// EXTRACTED: Section header for better reusability
-@Composable
-private fun SectionHeader(
-    title: String,
-    color: Color
-) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = color,
-        modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
-    )
-}
-
-// EXTRACTED: Empty state for better code organization
-@Composable
-private fun EmptyStateCard() {
-    Card(
         modifier = Modifier
+            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = listFCouleurVentOperation)
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+            .padding(vertical = 4.dp)
     ) {
-        Text(
-            text = "Aucun client trouvé pour ce produit",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Composable
-private fun ClientSalesCard(
-    viewModel: GrossistAchatSec12FragID1_ViewModel,
-    clientKeyID: String,
-    ventOperations: List<M10OperationVentCouleur>,
-    cardColor: Color,
-    isLinked: Boolean
-) {
-    val client = viewModel.getter.repo2Client.datasValue.find {
-        it.keyID == clientKeyID
-    }
-
-    if (client != null) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 2.dp)
-                .heightIn(max =300.dp)
-            ,
-            colors = CardDefaults.cardColors(containerColor = cardColor),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = if (isLinked) 3.dp else 1.dp
+        if (salesByClient.isEmpty()) {
+            Text(
+                text = "Aucun client trouvé pour ce produit",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(16.dp)
             )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-                // Client header with linked indicator
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // FIX: Add weight to prevent overflow and add text overflow handling
-                    Text(
-                        text = client.nom,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f), // ADD: Prevent text overflow
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+        } else {
+            salesByClient.forEach { (clientKeyID, ventOperations) ->
+                if (clientKeyID != null) {
+                    val client = viewModel.getter.repo2Client.datasValue.find {
+                        it.keyID == clientKeyID
+                    }
 
-                    if (isLinked) {
-                        Spacer(modifier = Modifier.width(8.dp)) // ADD: Space between text and badge
+                    if (client != null) {
                         Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.secondary
-                            )
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                         ) {
-                            Text(
-                                text = "Lié",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                // Client name
+                                Text(
+                                    text = client.nom,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Sales details for this client
+                                ventOperations.forEach { ventOperation ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "• Qté: ${ventOperation.quantity}",
+                                            fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+
+                                        Spacer(modifier = Modifier.width(16.dp))
+
+                                        // Add BonVent info if needed
+                                        val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
+                                            it.keyID == ventOperation.parent_M8BonVent_KeyId
+                                        }
+                                        bonVent?.let {
+                                            Text(
+                                                text = "Bon: ${it.keyID.takeLast(6)}",
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Total quantity for this client
+                                val totalQuantity = ventOperations.sumOf { it.quantity }
+                                if (ventOperations.size > 1) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Total: $totalQuantity",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Sales details
-                ventOperations.forEach { ventOperation ->
-                    SalesOperationRow(
-                        viewModel = viewModel,
-                        ventOperation = ventOperation,
-                        isLinked = isLinked
-                    )
-                }
-
-                // Total quantity for this client
-                val totalQuantity = ventOperations.sumOf { it.quantity }
-                if (ventOperations.size > 1) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Total pour ce client:",
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.weight(1f) // ADD: Prevent overflow
-                        )
-                        Text(
-                            text = "$totalQuantity",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = if (isLinked) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-    }
-}
-
-@Composable
-private fun SalesOperationRow(
-    viewModel: GrossistAchatSec12FragID1_ViewModel,
-    ventOperation: M10OperationVentCouleur,
-    isLinked: Boolean
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        // FIX: Use weight to prevent overflow issues
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = if (isLinked) "→" else "•",
-                fontSize = 16.sp,
-                color = if (isLinked) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-
-            Text(
-                text = "Qté: ${ventOperation.quantity}",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-
-        // BonVent info
-        val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-            it.keyID == ventOperation.parent_M8BonVent_KeyId
-        }
-        bonVent?.let {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Bon: ${it.keyID.takeLast(6)}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    maxLines = 1
-                )
-
-                if (isLinked) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "🔗",
-                        fontSize = 10.sp
-                    )
                 }
             }
         }

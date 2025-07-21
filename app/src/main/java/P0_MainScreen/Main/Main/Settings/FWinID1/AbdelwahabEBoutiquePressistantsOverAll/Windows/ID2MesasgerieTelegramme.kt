@@ -21,7 +21,8 @@ fun ID2MesasgerieTelegramme(
     showMessageurDialog: Boolean,
     showLabels: Boolean,
     onTelegramClick: () -> Unit = {}
-) {
+) {         //<--
+//TODO(1): affiche un rond infof bull comm roug back blanch text contien nombre des messages non lus
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)

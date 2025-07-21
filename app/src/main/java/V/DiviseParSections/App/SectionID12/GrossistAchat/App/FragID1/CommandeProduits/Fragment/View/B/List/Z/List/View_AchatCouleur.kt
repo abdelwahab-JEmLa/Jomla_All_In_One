@@ -25,60 +25,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-
-@Preview
-@Composable
-private fun View_AchatCouleurPrv(
-    aCentralFacade: ACentralFacade = koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-) {
-    val firstAchatOperation by remember {
-        derivedStateOf {
-            repositorysMainGetter.repo11AchatOperation.datasValue.firstOrNull()
-        }
-    }
-
-    firstAchatOperation?.let { data ->
-        View_AchatCouleur(relative_M11AchatOperation = data)
-    } ?: run {
-        // Show loading state
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Aucune donnée d'achat disponible",
-                    color = Color.Gray,
-                    fontSize = 14.sp
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun View_AchatCouleur(
@@ -87,15 +45,15 @@ fun View_AchatCouleur(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
 ) {
-    val relative_list_Vents = relative_M11AchatOperation
+    val relative_list_M10Vents = relative_M11AchatOperation
         .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
             repositorysMainGetter.repo10OperationVentCouleur.datasValue
         )
-    val sumAchatQantity = relative_M11AchatOperation.sumAchatQantity - relative_list_Vents.sumOf { it.quantity }
+    val sumAchatQantity = relative_M11AchatOperation.sumAchatQantity - relative_list_M10Vents.sumOf { it.quantity }
 
     Card(
         modifier = Modifier
-            .size(200.dp)
+            .size(400.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -108,7 +66,6 @@ fun View_AchatCouleur(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
             ) {
                 val couleurKey = relative_M11AchatOperation.parent_M3CouleurProduit_KeyID
                 if (couleurKey.isNotEmpty()) {
@@ -117,7 +74,6 @@ fun View_AchatCouleur(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
                             .padding(8.dp)
                             .background(
                                 color = Color.Gray.copy(alpha = 0.3f),
@@ -154,7 +110,7 @@ fun View_AchatCouleur(
                 }
             }
 
-            if (relative_list_Vents.isNotEmpty()) {
+            if (relative_list_M10Vents.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Card(
@@ -163,7 +119,6 @@ fun View_AchatCouleur(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
                 ) {
                     Column(
                         modifier = Modifier
@@ -189,7 +144,7 @@ fun View_AchatCouleur(
                                 modifier = Modifier
                                     .fillMaxSize()
                             ) {
-                                items(relative_list_Vents) { vent ->
+                                items(relative_list_M10Vents) { vent ->
                                     AlternativeVentItem(
                                         vent = vent,
                                         repositorysMainGetter = repositorysMainGetter
@@ -200,20 +155,15 @@ fun View_AchatCouleur(
                     }
                 }
             }
-
-            // Buyers list
             Spacer(modifier = Modifier.height(8.dp))
 
-            // FIXED: Pass a constrained modifier to prevent infinite constraints
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
             ) {
                 List_AcheteursDeCetteProduit(
                     viewModel = viewModel,
-                    achatCouleur = relative_M11AchatOperation,
-                    modifier = Modifier.fillMaxWidth() // Constrain the width
+                    relative_M11AchatOperation = relative_M11AchatOperation
                 )
             }
         }
@@ -284,3 +234,4 @@ private fun AlternativeVentItem(
         }
     }
 }
+
