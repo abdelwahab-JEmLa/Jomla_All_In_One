@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -43,105 +44,101 @@ fun List_AcheteursDeCetteProduit(
             val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
                 it.keyID == ventOperation.parent_M8BonVent_KeyId
             }
-            gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it) }
+            gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it)}
         }.filterKeys { it != null }
 
-    Column(
+    LazyRow(
         modifier = Modifier
             .getSemanticsTag(
                 nomVal = "listFCouleurVentOperation",
                 data = relative_ListM10VentOperation
             )
-            .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        if (relative_Map_M2Client_To_ListM10Vent.isEmpty()) {
-            Text(
-                text = "Aucun client trouvé pour ce produit",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(16.dp)
-            )
-        } else {
-            relative_Map_M2Client_To_ListM10Vent.forEach { (relative_M2Client, relative_ListM10Vent) ->
+        item {
+            Column {
+                relative_Map_M2Client_To_ListM10Vent.forEach { (relative_M2Client, relative_ListM10Vent) ->
+                    if (relative_M2Client != null) {
+                        val client = viewModel.getter.repo2Client.datasValue.find {
+                            it.keyID == relative_M2Client.keyID
+                        }
 
-                if (relative_M2Client != null) {
-                    val client = viewModel.getter.repo2Client.datasValue.find {
-                        it.keyID == relative_M2Client.keyID
-                    }
-
-                    if (client != null) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                        ) {
-                            Column(
+                        if (client != null) {
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp)
+                                    .padding(vertical = 2.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                             ) {
-                                Text(
-                                    text = client.nom,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = client.nom,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
 
-                                relative_ListM10Vent.forEach { relative_M10Vent ->
-                                    when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {
-                                        false -> {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(
-                                                    text = "• Qté: ${relative_M10Vent.quantity}",
-                                                    fontSize = 14.sp,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-
-                                                Spacer(modifier = Modifier.width(16.dp))
-
-                                                val bonVent =
-                                                    viewModel.getter.repo8BonVent.datasValue.find {
-                                                        it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
-                                                    }
-                                                bonVent?.let {
+                                    relative_ListM10Vent.forEach { relative_M10Vent ->
+                                        when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {
+                                            false -> {
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
                                                     Text(
-                                                        text = "Bon: ${it.keyID.takeLast(6)}",
-                                                        fontSize = 12.sp,
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                            alpha = 0.7f
-                                                        )
+                                                        text = "• Qté: ${relative_M10Vent.quantity}",
+                                                        fontSize = 14.sp,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                                     )
+
+                                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                                    val bonVent =
+                                                        viewModel.getter.repo8BonVent.datasValue.find {
+                                                            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
+                                                        }
+                                                    bonVent?.let {
+                                                        Text(
+                                                            text = "Bon: ${it.keyID.takeLast(6)}",
+                                                            fontSize = 12.sp,
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                                alpha = 0.7f
+                                                            )
+                                                        )
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        true -> Parent_Dispo_Vent_StateFull(
-                                            relative_M10Vent=relative_M10Vent,
-                                            relative_M2Client = relative_M2Client,
-                                            relative_M1Produit = repositorysMainGetter.find_M1Produit(relative_M10Vent.parent_M1Produit_KeyId)
+                                            true -> Parent_Dispo_Vent_StateFull(
+                                                relative_M10Vent = relative_M10Vent,
+                                                relative_M2Client = relative_M2Client,
+                                                relative_M1Produit = repositorysMainGetter.find_M1Produit(
+                                                    relative_M10Vent.parent_M1Produit_KeyId
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    val totalQuantity =
+                                        relative_ListM10Vent.sumOf { it.quantity }
+                                    if (relative_ListM10Vent.size > 1) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = "Total: $totalQuantity",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
-                                }
-
-                                val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }
-                                if (relative_ListM10Vent.size > 1) {
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "Total: $totalQuantity",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
                                 }
                             }
                         }

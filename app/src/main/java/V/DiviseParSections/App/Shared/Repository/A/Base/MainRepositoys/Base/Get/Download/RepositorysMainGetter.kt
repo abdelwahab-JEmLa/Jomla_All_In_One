@@ -235,6 +235,9 @@ class RepositorysMainGetter(
         inline fun Boolean.ifFalse(block: () -> Unit) {
             if (!this) block()
         }
+        fun String?.empty_If_Null(value: String=""): String {
+            return this ?: value
+        }
 
 
         // Version that returns Result for better error handling

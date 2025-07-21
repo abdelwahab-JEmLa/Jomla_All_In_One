@@ -45,13 +45,7 @@ class ZViewModel_Sec1Frag3(
     fun toggelePanierFilterNonTrouve() { _uiState.update { currentState -> currentState.copy(filterNonTrouve = !currentState.filterNonTrouve) } }
 }
 
-inline fun Boolean.ifTrue(block: () -> Unit) {
-    if (this) block()
-}
 
-inline fun Boolean.ifFalse(block: () -> Unit) {
-    if (!this) block()
-}
 
 enum class ClickUpdate {
     CouleurQua,

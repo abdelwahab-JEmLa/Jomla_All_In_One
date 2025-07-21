@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.empty_If_Null
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.CouleurDisplayer
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.background
@@ -69,42 +70,43 @@ fun View_AchatCouleur(
                     }
                 }
                 Column {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .background(
-                                color = Color.White.copy(alpha = 0.70f),
-                                shape = RoundedCornerShape(10.dp)
-                            ),
-                    ) {
-                        Text(
-                            text = "Sans ProbableVent Q: $sumAchatQantity",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(4.dp)
-                        )
+                    if(sumAchatQantity!=0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0.70f),
+                                    shape = RoundedCornerShape(10.dp)
+                                ),
+                        ) {
+                            Text(
+                                text = "Sans ProbableVent Q: $sumAchatQantity",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
                     }
-
-                    val map_siNonDispo_M3CouleurInfos_To_SiNonDispoListM10Vent = list_NonDispo_M10Vent
+                    val map_SiNonDispoM3CouleurInfos_To_List_SNC_M10Vent = list_NonDispo_M10Vent
                         .groupBy {
                             repositorysMainGetter.find_M3CouleurInfos_By_KeyID(it.siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId)
                         }
 
-                    map_siNonDispo_M3CouleurInfos_To_SiNonDispoListM10Vent.forEach { (m3CouleurInfos, list_M10Vent) ->
-                        list_M10Vent.map { m10Vent ->
-                            val quantity = list_M10Vent.sumOf { it.quantity }
+                    map_SiNonDispoM3CouleurInfos_To_List_SNC_M10Vent.forEach { (m3CouleurInfos, list_M10Vent) ->
+                        val quantity = list_M10Vent.sumOf { it.quantity }
+                        if (m3CouleurInfos != null) {
                             Parent_Dispo_Vent_View(
                                 quantity = "Quantité: $quantity",
-                                relative_M3CouleurInfos_KeyId = m3CouleurInfos?.keyID?:"non",
-                                relative_M1Produit_Nom = m10Vent.siNonDispoParentM10Vent_it_parent_M1Produit_Nom
+                                relative_M3CouleurInfos_KeyId = m3CouleurInfos.keyID,
+                                relative_M1Produit_Nom = repositorysMainGetter
+                                    .find_M1Produit(m3CouleurInfos.parentBProduitInfosKeyID)?.nom.empty_If_Null("")
                             )
                         }
                     }
                 }
             }
-
             List_AcheteursDeCetteProduit(
                 viewModel,
                 relative_M11AchatOperation = relative_M11AchatOperation
