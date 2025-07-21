@@ -4,31 +4,24 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.CouleurDisplayer
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
@@ -97,61 +90,7 @@ fun View_AchatCouleur(
                     }
 
                     relative_list_Vents.forEach { relative_M10Vent ->
-                        Box {
-                            val relative_linkedParent_M10Vent =
-                                repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
-
-                            val relative_M3Couleur_KeyId =
-                                relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
-
-                            if (relative_M3Couleur_KeyId != null) {
-                                CouleurDisplayer(keyCouleur = relative_M3Couleur_KeyId, size = 80.dp)
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                                    .background(
-                                        color = Color.White.copy(alpha = 0.40f),
-                                        shape = RoundedCornerShape(10.dp)
-                                    ),
-                            ) {
-                                val client= repositorysMainGetter.find_M2Client_By_M10Vent(
-                                    relative_M10Vent
-                                )
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(4.dp)
-                                ) {
-                                    Text(
-                                        text = client?.nom ?: "Client inconnu",
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                        softWrap = true
-                                    )
-
-                                    Text(
-                                        text = "Quantité: ${relative_M10Vent.quantity}",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                            VerticalDivider()
-                        }
+                        MainViewAchats(repositorysMainGetter, relative_M10Vent)
                     }
                 }
             }
@@ -164,39 +103,60 @@ fun View_AchatCouleur(
     }
 }
 
-@Preview
 @Composable
-private fun View_AchatCouleurPrv(
-    aCentralFacade: ACentralFacade = koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+private fun MainViewAchats(
+    repositorysMainGetter: RepositorysMainGetter,
+    relative_M10Vent: M10OperationVentCouleur
 ) {
-    val firstAchatOperation by remember {
-        derivedStateOf {
-            repositorysMainGetter.repo11AchatOperation.datasValue.firstOrNull()
-        }
-    }
+    Card {
+        val relative_linkedParent_M10Vent =
+            repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
 
-    firstAchatOperation?.let { data ->
-        View_AchatCouleur(relative_M11AchatOperation = data)
-    } ?: run {
-        // Show loading state
+        val relative_M3Couleur_KeyId =
+            relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
+        val client = repositorysMainGetter.find_M2Client_By_M10Vent(
+            relative_M10Vent
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+                .padding(10.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.40f),
+                    shape = RoundedCornerShape(10.dp)
+                ),
         ) {
+            if (relative_M3Couleur_KeyId != null) {
+                CouleurDisplayer(keyCouleur = relative_M3Couleur_KeyId, size = 80.dp)
+            }
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.fillMaxWidth()
             ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Aucune donnée d'achat disponible",
-                    color = Color.Gray,
-                    fontSize = 14.sp
+                    text = client?.nom ?: "Client inconnu",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = "Quantité: ${relative_M10Vent.quantity}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
                 )
             }
         }
+        VerticalDivider()
     }
 }
+
