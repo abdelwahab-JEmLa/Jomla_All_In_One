@@ -90,7 +90,7 @@ fun View_AchatCouleur(
                     }
 
                     relative_list_Vents.forEach { relative_M10Vent ->
-                        MainViewAchats(repositorysMainGetter, relative_M10Vent)
+                        View_Parent_Dispo_Vent( relative_M10Vent)
                     }
                 }
             }
@@ -104,9 +104,10 @@ fun View_AchatCouleur(
 }
 
 @Composable
-private fun MainViewAchats(
-    repositorysMainGetter: RepositorysMainGetter,
-    relative_M10Vent: M10OperationVentCouleur
+private fun View_Parent_Dispo_Vent(
+    relative_M10Vent: M10OperationVentCouleur,
+    aCentralFacade: ACentralFacade= koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
 ) {
     Card {
         val relative_linkedParent_M10Vent =
