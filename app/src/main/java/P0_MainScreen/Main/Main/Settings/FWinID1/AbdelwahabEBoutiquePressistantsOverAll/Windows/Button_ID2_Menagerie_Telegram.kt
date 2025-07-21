@@ -53,7 +53,7 @@ fun Button_ID2_Menagerie_Telegram(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     showLabels: Boolean,
 ) {
-    val  current_Compt_Et_Vendeur = focusedValuesGetter.active_Current_M9AppCompt?.its_Admin ==false
+    val  current_Compt_Et_Admin = focusedValuesGetter.current_Compt_Et_Admin
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -171,7 +171,7 @@ fun Button_ID2_Menagerie_Telegram(
     }
 
     LaunchedEffect(non_Lu_Messages_Size) {
-        if (current_Compt_Et_Vendeur && non_Lu_Messages_Size > previousMessageCount) {
+        if (!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount) {
             playNotificationSound()
         }
         previousMessageCount = non_Lu_Messages_Size
@@ -204,6 +204,7 @@ fun Button_ID2_Menagerie_Telegram(
         Box {
             FloatingActionButton(
                 modifier = Modifier
+                    .getSemanticsTag(current_Compt_Et_Admin, "current_Compt_Et_Admin")
                     .getSemanticsTag(latestStatesForEachMessage, "latestStatesForEachMessage")
                     .getSemanticsTag(
                         repo17MessageVocaleData
