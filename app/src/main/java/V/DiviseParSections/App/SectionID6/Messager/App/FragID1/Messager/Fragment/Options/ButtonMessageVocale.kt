@@ -58,13 +58,13 @@ fun ButtonMessageVocale(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
+    // Fixed: Get relative_M17Message but don't return early - allow button to show even if null
     val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
-        repositorysMainGetter.find_M8BonVent(
-            it
-        )
+        repositorysMainGetter.find_M8BonVent(it)
     }
+
     val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
         .active_Current_M9AppCompt
@@ -149,19 +149,33 @@ fun ButtonMessageVocale(
                 )
             }
 
-            val update_M8BonVent = relative_M8BonVent?.copy(
-                parent_M17Message_KeyID = relative_M17Message.keyID,
-                parent_M17Message_DebugInfos = relative_M17Message.getDebugInfos(),
-            )
+            // Fixed: Add null safety for update_M8BonVent creation and semantics tags
+            val update_M8BonVent = relative_M8BonVent?.let { bonVent ->
+                relative_M17Message?.let { message ->
+                    bonVent.copy(
+                        parent_M17Message_KeyID = message.keyID,
+                        parent_M17Message_DebugInfos = message.getDebugInfos(),
+                    )
+                }
+            }
 
             FloatingActionButton(
                 modifier = Modifier
                     .getSemanticsTag(relative_M8BonVent, "relative_M8BonVent")
                     .getSemanticsTag(update_M8BonVent, "update_M8")
-                    .getSemanticsTag(relative_M17Message?.getDebugInfos(), "relative_M17Message")
-
+                    .getSemanticsTag(relative_M17Message?.getDebugInfos(), "relative_M17Message") // Safe null check
                     .size(56.dp),
                 onClick = {
+                    // Check if relative_M17Message is available for recording
+                    if (relative_M17Message == null) {
+                        Toast.makeText(
+                            context,
+                            "Aucun message vocal configuré",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@FloatingActionButton
+                    }
+
                     if (!hasRecordPermission) {
                         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                         return@FloatingActionButton
@@ -176,27 +190,24 @@ fun ButtonMessageVocale(
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                val default_M17Message = relative_M17Message
-                                    ?.copy(
-                                        nomDeSonOriginaleFichie = originalFileName,
-                                        parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
-                                        parent_M9AppCompt_DebugInfos = "Non Definie",
-                                        parentMessageVID = parentMessageVID,
-                                        etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
-                                        creationTimestamps = datesHandler.getCurrentTimestamps()
-                                    )!!
+                                // Fixed: Since we already checked for null, we can safely use relative_M17Message
+                                val default_M17Message = relative_M17Message.copy(
+                                    nomDeSonOriginaleFichie = originalFileName,
+                                    parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
+                                    parent_M9AppCompt_DebugInfos = "Non Definie",
+                                    parentMessageVID = parentMessageVID,
+                                    etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
+                                    creationTimestamps = datesHandler.getCurrentTimestamps()
+                                )
 
                                 viewModel.addOrUpdateData(default_M17Message)
-
                                 currentRecordingEtate = default_M17Message
 
-                                val startResult = default_M17Message.let {
-                                    audioHandler.startRecording(
-                                        context,
-                                        it.parentMessageVID,
-                                        currentTransaction = null
-                                    )
-                                }
+                                val startResult = audioHandler.startRecording(
+                                    context,
+                                    default_M17Message.parentMessageVID,
+                                    currentTransaction = null
+                                )
 
                                 if (startResult.isFailure) {
                                     Toast.makeText(
@@ -208,8 +219,8 @@ fun ButtonMessageVocale(
                                 }
 
                                 isRecording = true
-
                                 recordingTimeSeconds = 0
+
                                 while (isRecording) {
                                     delay(1000)
                                     recordingTimeSeconds++
@@ -225,8 +236,6 @@ fun ButtonMessageVocale(
                                 currentRecordingEtate = null
                             }
                         } else {
-
-
                             try {
                                 val stopResult = audioHandler.stopRecording()
 
@@ -296,7 +305,6 @@ fun ButtonMessageVocale(
                                 currentRecordingEtate = null
                             }
                         }
-
                     }
                 },
                 containerColor = when {

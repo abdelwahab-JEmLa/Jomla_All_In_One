@@ -1,7 +1,13 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import android.media.MediaPlayer
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +20,18 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,11 +47,55 @@ fun Button_ID2_Menagerie_Telegram(
     onTelegramClick: () -> Unit = {}
 ) {
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
+    val context = LocalContext.current
 
     val non_Lu_Messages_Size = repo17MessageVocaleData
-        .filter {
-            it.etate == M17MessageVocale.Etate.ECOUTE
-        }.size
+        .size
+
+    val non_Lu_Messages_SizeT = 2
+
+    var previousMessageCount by remember { mutableIntStateOf(non_Lu_Messages_Size) }
+
+    fun playNotificationSound() {
+        try {
+            val mediaPlayer = MediaPlayer.create(context, android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)
+            mediaPlayer?.let { player ->
+                player.start()
+                player.setOnCompletionListener { mp ->
+                    mp.release()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    LaunchedEffect(non_Lu_Messages_Size) {
+        if (previousMessageCount in 0..<non_Lu_Messages_Size) {
+            playNotificationSound()
+        }
+        previousMessageCount = non_Lu_Messages_Size
+    }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "badge_animation")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale_animation"
+    )
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha_animation"
+    )
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -47,8 +103,12 @@ fun Button_ID2_Menagerie_Telegram(
     ) {
         Box {
             FloatingActionButton(
+                modifier = Modifier
+                    .getSemanticsTag(repo17MessageVocaleData,"repo17MessageVocaleData")
+                    .getSemanticsTag(repo17MessageVocaleData
+                        .map { it.keyID.takeLast(4) },"map")
+                    .size(40.dp),
                 onClick = onTelegramClick,
-                modifier = Modifier.size(40.dp),
                 containerColor = Color(0xFF0088CC),
             ) {
                 Icon(
@@ -58,15 +118,15 @@ fun Button_ID2_Menagerie_Telegram(
                 )
             }
 
-            // Notification badge - only show if there are unread messages
             if (non_Lu_Messages_Size > 0) {
                 Box(
                     modifier = Modifier
-                        .size(20.dp)
-                        .offset(x = 8.dp, y = (-8).dp)
+                        .size(25.dp)
+                        .offset(x = (-8).dp, y = (-10).dp)
+                        .scale(scale)
                         .clip(CircleShape)
-                        .background(Color.Red)
-                        .align(Alignment.TopEnd),
+                        .background(Color.Red.copy(alpha = alpha)) // Animation d'opacité
+                        .align(Alignment.TopStart),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
