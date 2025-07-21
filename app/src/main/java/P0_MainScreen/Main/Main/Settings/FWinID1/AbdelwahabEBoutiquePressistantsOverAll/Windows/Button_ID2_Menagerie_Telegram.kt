@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +52,26 @@ fun Button_ID2_Menagerie_Telegram(
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
 
-    val non_Lu_Messages_Size = repo17MessageVocaleData
+    val groupedD_EtateMessageVocaleParParentMessage by remember(repo17MessageVocaleData) {
+        derivedStateOf {
+            repo17MessageVocaleData.groupBy { it.parentMessageVID }
+        }
+    }
+
+    val latestStatesForEachMessage by remember(groupedD_EtateMessageVocaleParParentMessage) {
+        derivedStateOf {
+            groupedD_EtateMessageVocaleParParentMessage.mapNotNull { (parentMessageVID, etatesList) ->
+                val sortedEtates = etatesList.sortedBy { it.creationTimestamps }
+                val latestEtate = sortedEtates.firstOrNull()
+
+                if (latestEtate != null) {
+                    Pair(latestEtate, etatesList)
+                } else null
+            }.sortedBy { it.first.creationTimestamps }
+        }
+    }
+
+    val non_Lu_Messages_Size = latestStatesForEachMessage
         .size
 
     val non_Lu_Messages_SizeT = 2
