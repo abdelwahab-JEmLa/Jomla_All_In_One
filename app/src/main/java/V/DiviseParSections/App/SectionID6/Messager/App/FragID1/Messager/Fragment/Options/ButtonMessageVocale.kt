@@ -58,7 +58,6 @@ fun ButtonMessageVocale(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    // Fixed: Get relative_M17Message but don't return early - allow button to show even if null
     val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
@@ -139,7 +138,6 @@ fun ButtonMessageVocale(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Replay Card for M8BonVent (left side)
             relative_M8BonVent?.let { bonVent ->
                 BonVentReplayCard(
                     bonVent = bonVent,
@@ -149,7 +147,6 @@ fun ButtonMessageVocale(
                 )
             }
 
-            // Fixed: Add null safety for update_M8BonVent creation and semantics tags
             val update_M8BonVent = relative_M8BonVent?.let { bonVent ->
                 relative_M17Message?.let { message ->
                     bonVent.copy(
@@ -190,7 +187,6 @@ fun ButtonMessageVocale(
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                // Fixed: Since we already checked for null, we can safely use relative_M17Message
                                 val default_M17Message = relative_M17Message.copy(
                                     nomDeSonOriginaleFichie = originalFileName,
                                     parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
@@ -344,7 +340,6 @@ fun BonVentReplayCard(
 ) {
     val context = LocalContext.current
 
-    // Function to get color from resource
     fun getColorFromResource(colorRes: Int): Color {
         return try {
             Color(ContextCompat.getColor(context, colorRes))
