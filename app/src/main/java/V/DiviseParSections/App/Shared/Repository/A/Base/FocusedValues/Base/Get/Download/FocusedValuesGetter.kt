@@ -25,19 +25,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
-    val active_OpnerDialog_M17MessageVocale: M17MessageVocale? =null,
-    val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? =null,
-    val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? =null,
-    val affiche_Panier_au_Search_Dialog: Boolean=false,
+    val active_OpnerDialog_M17MessageVocale: M17MessageVocale? = null,
+    val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
+    val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
+    val affiche_Panier_au_Search_Dialog: Boolean = false,
 ) {
-    companion object{
+    companion object {
         fun get_Default(): ActiveCentralValues {
-           return ActiveCentralValues()
+            return ActiveCentralValues()
         }
     }
+
     sealed class RoleDefinieParSourceACetteFragment() {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
-        data class SearchProduit(val produit: ArticlesBasesStatsTable) : RoleDefinieParSourceACetteFragment()
+        data class SearchProduit(val produit: ArticlesBasesStatsTable) :
+            RoleDefinieParSourceACetteFragment()
     }
 }
 
@@ -55,11 +57,12 @@ class FocusedValuesGetter(
 ) {
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
-    val active_Central_Values by derivedStateOf { _activeCentralValues.value}
+    val active_Central_Values by derivedStateOf { _activeCentralValues.value }
 
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
-        _activeCentralValues.value= new
+        _activeCentralValues.value = new
     }
+
     val active_Current_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull { it.keyID == Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
     }
@@ -87,10 +90,12 @@ class FocusedValuesGetter(
                 ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
         }
     }
+
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val  current_Compt_Et_Admin by derivedStateOf {
-           active_Current_M9AppCompt?.its_Admin
+    val current_Compt_Et_Admin by derivedStateOf {
+        active_Current_M9AppCompt?.its_Admin
     }
+
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
@@ -100,7 +105,7 @@ class FocusedValuesGetter(
                     compt.keyID == it.parent_M9AppCompt_KeyID
                 }
 
-            it.parent_M14VentPeriod_KeyId ==currentActiveFocuced_M14VentPeriode?.keyID
+            it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID
         }
     }
 
@@ -111,7 +116,8 @@ class FocusedValuesGetter(
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter {
                     (it.parent_M2Client_KeyID == client.keyID
-                            && it.parent_M9AppCompt_KeyID == (active_Current_M9AppCompt?.keyID ?: ""))
+                            && it.parent_M9AppCompt_KeyID == (active_Current_M9AppCompt?.keyID
+                        ?: ""))
                 }
                 .maxByOrNull { it.creationTimestamps }
 
@@ -156,7 +162,7 @@ class FocusedValuesGetter(
                     parent_M8BonVent_KeyId = keyID,
                     parent_M8BonVent_DebugInfos = get_DebugInfos(),
 
-                )
+                    )
             }
         }
 
@@ -201,7 +207,8 @@ class FocusedValuesGetter(
     val focused_M13TarificationInfos_Pour_Produit by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull { tariff ->
             tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
-                    tariff.parent_M1Produit_KeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
+                    tariff.parent_M1Produit_KeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID
+                ?: "")
         }
     }
 
