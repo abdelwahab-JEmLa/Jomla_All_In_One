@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -44,20 +46,40 @@ fun List_AcheteursDeCetteProduit(
             val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
                 it.keyID == ventOperation.parent_M8BonVent_KeyId
             }
-            gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it)}
+            gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it) }
         }.filterKeys { it != null }
 
-    LazyRow(
+    val clientsList = relative_Map_M2Client_To_ListM10Vent.entries.toList()
+
+    Card(
         modifier = Modifier
-            .getSemanticsTag(
-                nomVal = "listFCouleurVentOperation",
-                data = relative_ListM10VentOperation
-            )
-            .padding(vertical = 4.dp)
+            .fillMaxWidth()
+            .heightIn(max = 150.dp)
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        item {
-            Column {
-                relative_Map_M2Client_To_ListM10Vent.forEach { (relative_M2Client, relative_ListM10Vent) ->
+        LazyColumn(
+            modifier = Modifier
+                .getSemanticsTag(
+                    nomVal = "listFCouleurVentOperation",
+                    data = relative_ListM10VentOperation
+                )
+                .fillMaxWidth()
+        ) {
+            if (clientsList.isEmpty()) {
+                item {
+                    Text(
+                        text = "Aucun client trouvé pour ce produit",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            } else {
+                items(clientsList) { (relative_M2Client, relative_ListM10Vent) ->
                     if (relative_M2Client != null) {
                         val client = viewModel.getter.repo2Client.datasValue.find {
                             it.keyID == relative_M2Client.keyID
@@ -67,7 +89,7 @@ fun List_AcheteursDeCetteProduit(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 2.dp),
+                                    .padding(horizontal = 8.dp, vertical = 2.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 ),
@@ -128,8 +150,7 @@ fun List_AcheteursDeCetteProduit(
                                         }
                                     }
 
-                                    val totalQuantity =
-                                        relative_ListM10Vent.sumOf { it.quantity }
+                                    val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }
                                     if (relative_ListM10Vent.size > 1) {
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
