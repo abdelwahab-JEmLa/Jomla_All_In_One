@@ -367,7 +367,7 @@ private fun View_LikedTo_FragSearcher(
             ventOperation.linked_To_M10OperationVent_KeyID
         )
         val parent_linkVent_M10Vent_Relative_M3Couleur =
-            repositorysMainGetter.find_M3CouleurProduitInfos(
+            repositorysMainGetter.find_M3CouleurInfos_By_KeyID(
                 parent_linkVent_M10Vent?.parent_M3CouleurProduit_KeyID ?: ""
             )
 
@@ -378,7 +378,9 @@ private fun View_LikedTo_FragSearcher(
                 val updatedVent = relative_M10OperationVentCouleur.copy(
                     its_Linked_To_Autre_Vent_Si_NonDispo = false,
                     linked_To_M10OperationVent_KeyID = "",
-                    linked_To_M10OperationVent_DebugInfos = ""
+                    linked_To_M10OperationVent_DebugInfos = "",
+                    siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId = "",
+                    siNonDispoParentM10Vent_it_parent_M1Produit_Nom = "",
                 )
                 aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(updatedVent)
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)

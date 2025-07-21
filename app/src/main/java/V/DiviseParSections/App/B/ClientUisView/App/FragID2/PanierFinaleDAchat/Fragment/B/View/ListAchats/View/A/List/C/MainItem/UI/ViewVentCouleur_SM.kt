@@ -175,8 +175,8 @@ fun ViewVentCouleur_Module(
                         M3CouleurProduitInfos.Type.Image -> {
                             ImageDisplayerGlide_Sec2FragID2_Panie(
                                 modifier = Modifier.size(size),
-                                relative_M10OperationVentCouleur=relative_M10OperationVentCouleur,
-                                relative_M3CouleurProduit=relative_M3CouleurProduit,
+                                relative_M10OperationVentCouleur =relative_M10OperationVentCouleur,
+                                relative_M3CouleurProduit =relative_M3CouleurProduit,
                                 imageFile = imageFile,
                                 colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
                                 contentScale = ContentScale.Crop,

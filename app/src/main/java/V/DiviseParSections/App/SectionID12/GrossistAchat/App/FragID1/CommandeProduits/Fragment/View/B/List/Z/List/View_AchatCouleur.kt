@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.List_AcheteursDeCetteProduit
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View.Parent_Dispo_Vent_View
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -31,11 +32,12 @@ fun View_AchatCouleur(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
 ) {
-    val relative_list_Vents = relative_M11AchatOperation
+    val list_NonDispo_M10Vent = relative_M11AchatOperation
         .get_Vents_Depuit_joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve(
             repositorysMainGetter.repo10OperationVentCouleur.datasValue
         )
-    val sumAchatQantity = relative_M11AchatOperation.sumAchatQantity  - relative_list_Vents.sumOf { it.quantity }
+    val sumAchatQantity =
+        relative_M11AchatOperation.sumAchatQantity - list_NonDispo_M10Vent.sumOf { it.quantity }
 
     Card(
         modifier = Modifier.background(Color.Red)
@@ -83,6 +85,22 @@ fun View_AchatCouleur(
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(4.dp)
                         )
+                    }
+
+                    val map_siNonDispo_M3CouleurInfos_To_SiNonDispoListM10Vent = list_NonDispo_M10Vent
+                        .groupBy {
+                            repositorysMainGetter.find_M3CouleurInfos_By_KeyID(it.siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId)
+                        }
+
+                    map_siNonDispo_M3CouleurInfos_To_SiNonDispoListM10Vent.forEach { (m3CouleurInfos, list_M10Vent) ->
+                        list_M10Vent.map { m10Vent ->
+                            val quantity = list_M10Vent.sumOf { it.quantity }
+                            Parent_Dispo_Vent_View(
+                                quantity = "Quantité: $quantity",
+                                relative_M3CouleurInfos_KeyId = m3CouleurInfos?.keyID?:"non",
+                                relative_M1Produit_Nom = m10Vent.siNonDispoParentM10Vent_it_parent_M1Produit_Nom
+                            )
+                        }
                     }
                 }
             }

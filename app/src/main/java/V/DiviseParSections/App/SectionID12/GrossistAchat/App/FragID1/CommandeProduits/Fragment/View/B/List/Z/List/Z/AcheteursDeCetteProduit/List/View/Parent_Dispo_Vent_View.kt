@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Parent_Dispo_Vent_StateLess(
-    relative_M2Client_nom: String,
+fun Parent_Dispo_Vent_View(
+    relative_M2Client_nom: String?=null,
     quantity: String,
     relative_M3CouleurInfos_KeyId: String?,
     relative_M1Produit_Nom: String
@@ -53,17 +53,19 @@ fun Parent_Dispo_Vent_StateLess(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = relative_M2Client_nom,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = 2.dp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (relative_M2Client_nom != null) {
+                    Text(
+                        text = relative_M2Client_nom,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Text(
                     text = quantity,

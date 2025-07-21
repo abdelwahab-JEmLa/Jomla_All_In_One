@@ -227,6 +227,9 @@ data class M10OperationVentCouleur(
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
     val linked_To_M10OperationVent_KeyID: String = "",
     val linked_To_M10OperationVent_DebugInfos: String = "",
+    //---------------------------------LinkedVent.FastInfos----------------------------------------------------------------------------------------------------------------------------------
+    val siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId: String = "",
+    val siNonDispoParentM10Vent_it_parent_M1Produit_Nom: String = "",
 
     //---------------------------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "null",
@@ -241,7 +244,11 @@ data class M10OperationVentCouleur(
     //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parent_M1Produit_KeyId: String = "null",
     val parent_M1Produit_DebugInfos: String = "null",
+    //---------------------------------New.Proto----------------------------------------------------------------------------------------------------------------------------------
+    val parent_M1Produit_Nom: String = "",
+    //---------------------------------Old.Proto----------------------------------------------------------------------------------------------------------------------------------
     var parentProduitInfosOldId: Long = 0,
+
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parent_M3CouleurProduit_KeyID: String = "null",
     val parent_M3CouleurProduit_DebugInfos: String = "null",

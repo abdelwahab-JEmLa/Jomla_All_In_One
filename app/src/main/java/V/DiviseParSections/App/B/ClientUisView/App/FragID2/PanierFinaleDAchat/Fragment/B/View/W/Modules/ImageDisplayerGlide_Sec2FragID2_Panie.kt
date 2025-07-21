@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ImageDisplayerGlide_Sec2FragID2_SearchProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -64,6 +65,7 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     relative_M3CouleurProduit: M3CouleurProduitInfos,
     imageFile: File? = null,
@@ -156,12 +158,21 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                 SmallFloatingActionButton(
                     onClick = {
                         if (relative_M10OperationVentCouleur != null) {
+                            val m1Produit= repositorysMainGetter.find_M1Produit(
+                                relative_M10OperationVentCouleur
+                                    .parent_M1Produit_KeyId
+                            )
+
                             afficheur_Panier_Pour_Link_M10OperationVentCouleur.copy(
                                 its_Linked_To_Autre_Vent_Si_NonDispo = true,
                                 linked_To_M10OperationVent_KeyID = relative_M10OperationVentCouleur
                                     .keyID,
                                 linked_To_M10OperationVent_DebugInfos = relative_M10OperationVentCouleur
-                                    .getDebugInfos()
+                                    .getDebugInfos(),
+                                siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId = relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID
+                                    ?:"",
+                                siNonDispoParentM10Vent_it_parent_M1Produit_Nom =m1Produit?.nom ?:""
+
                             ).let {
                                 aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
                                     it
