@@ -94,7 +94,7 @@ fun Button_ID2_Menagerie_Telegram(
         if (non_Lu_Messages_Size <= previousMessageCount) return
 
         val numberOfNewMessages = non_Lu_Messages_Size - previousMessageCount
-        val soundDuration = 700 * numberOfNewMessages
+        val soundDuration = 1200
         try {
             val vibrator =
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
