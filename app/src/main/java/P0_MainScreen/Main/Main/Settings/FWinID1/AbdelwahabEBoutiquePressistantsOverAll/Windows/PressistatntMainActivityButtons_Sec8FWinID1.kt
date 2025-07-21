@@ -178,13 +178,16 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    val m17Message_avec_BonVen = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
+    val m17Message_avec_BonVen =
+        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     if (m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
             onDismiss = {
                 focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(active_OpnerDialog_M17MessageVocale = null)
+                    focusedValuesGetter.active_Central_Values.copy(
+                        active_OpnerDialog_M17MessageVocale = null
+                    )
                 )
             }
         )
@@ -271,19 +274,21 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     }
 
-                    ID4ClientSearchButton(
-                        uiState = uiState,
-                        hClientRepository = uiState.hClientRepository,
-                        showLabels = showLabels,
-                        onClientSelectedToToast = { selectedClient ->
-                            currentToast = ToastData(
-                                message = "Client sélectionné: ${selectedClient.nom}",
-                                type = ToastType.SUCCESS,
-                                duration = 2000L
-                            )
-                        },
-                        viewModel = viewModel
-                    )
+                    focusedValuesGetter.current_Compt_Et_Admin.ifTrue {
+                        ID4ClientSearchButton(
+                            uiState = uiState,
+                            hClientRepository = uiState.hClientRepository,
+                            showLabels = showLabels,
+                            onClientSelectedToToast = { selectedClient ->
+                                currentToast = ToastData(
+                                    message = "Client sélectionné: ${selectedClient.nom}",
+                                    type = ToastType.SUCCESS,
+                                    duration = 2000L
+                                )
+                            },
+                            viewModel = viewModel
+                        )
+                    }
                 }
                 val dialogAboveAll_OutlinedSearchListProduits =
                     viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt

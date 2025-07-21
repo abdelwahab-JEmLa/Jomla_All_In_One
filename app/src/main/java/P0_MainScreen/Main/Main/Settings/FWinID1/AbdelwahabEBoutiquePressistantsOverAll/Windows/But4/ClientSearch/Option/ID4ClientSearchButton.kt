@@ -111,8 +111,7 @@ fun ID4ClientSearchButton(
         }
     }
 
-    Row(          //<--
-    //TODO(1): enleve pour momen
+    Row(
         modifier = Modifier
             .getSemanticsTag(nomVal = "hClientRepository", data = hClientRepository.datasValue.filter { it.nom.contains("rach") }
                 .map { it.keyID }.takeLast(4))
