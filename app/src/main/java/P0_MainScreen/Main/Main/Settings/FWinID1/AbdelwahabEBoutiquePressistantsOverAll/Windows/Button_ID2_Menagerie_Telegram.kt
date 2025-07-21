@@ -4,7 +4,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -71,31 +75,131 @@ fun Button_ID2_Menagerie_Telegram(
         }
     }
 
-    val non_Lu_Messages_Size = latestStatesForEachMessage
-        .size
-
-    val non_Lu_Messages_SizeT = 2
+    val non_Lu_Messages_Size by remember(latestStatesForEachMessage) {
+        derivedStateOf {
+            latestStatesForEachMessage.count { (_, etatesList) ->
+                // Check if none of the messages in this group have "ECOUTE" state
+                etatesList.none {
+                    it.etate == M17MessageVocale.Etate.ECOUTE
+                            && it.parent_M9AppCompt_KeyID == aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                        .active_Current_M9AppCompt?.keyID
+                }
+            }
+        }
+    }
 
     var previousMessageCount by remember { mutableIntStateOf(non_Lu_Messages_Size) }
 
+    @SuppressLint("ObsoleteSdkInt")
     fun playNotificationSound() {
+        // Debug logs to understand the issue
+        println("DEBUG: previousMessageCount = $previousMessageCount, non_Lu_Messages_Size = $non_Lu_Messages_Size")
+
+        // Only play sound if the count has INCREASED (new messages arrived)
+        if (non_Lu_Messages_Size <= previousMessageCount) {
+            println("DEBUG: No sound played - count didn't increase")
+            return
+        }
+
+        // Calculate sound duration: 700ms * number of new messages
+        val numberOfNewMessages = non_Lu_Messages_Size - previousMessageCount
+        val soundDuration = 700 * numberOfNewMessages
+
+        println("DEBUG: Playing sound for $numberOfNewMessages new messages, duration: ${soundDuration}ms")
+
+        // Add vibration with duration proportional to new messages
         try {
-            val mediaPlayer = MediaPlayer.create(context, android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)
-            mediaPlayer?.let { player ->
-                player.start()
-                player.setOnCompletionListener { mp ->
-                    mp.release()
+            val vibrator =
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    val vibratorManager =
+                        context.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    vibratorManager.defaultVibrator
+                } else {
+                    @Suppress("DEPRECATION")
+                    context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as Vibrator
                 }
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                // Dynamic vibration pattern based on number of messages
+                val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
+                val repeatedPattern = mutableListOf<Long>().apply {
+                    add(0) // Initial delay
+                    repeat(numberOfNewMessages) { index ->
+                        if (index > 0) add(150) // Pause between repetitions
+                        addAll(basePattern.drop(1)) // Add pattern without initial delay
+                    }
+                }
+                val effect = VibrationEffect.createWaveform(repeatedPattern.toLongArray(), -1)
+                vibrator.vibrate(effect)
+            } else {
+                // Legacy vibration - repeat pattern for each message
+                val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
+                val repeatedPattern = mutableListOf<Long>().apply {
+                    add(0) // Initial delay
+                    repeat(numberOfNewMessages) { index ->
+                        if (index > 0) add(150) // Pause between repetitions
+                        addAll(basePattern.drop(1)) // Add pattern without initial delay
+                    }
+                }
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(repeatedPattern.toLongArray(), -1)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        try {
+            // Use custom forest bird sound from res/raw/forest_bird.mp3
+            val mediaPlayer = MediaPlayer.create(context, R.raw.forest_bird)
+            mediaPlayer?.let { player ->
+                player.start()
+
+                // Stop playback after completion
+                player.setOnCompletionListener { mp ->
+                    mp.release()
+                }
+
+                // Schedule stop after calculated duration (700ms * number of new messages)
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    try {
+                        if (player.isPlaying) {
+                            player.stop()
+                        }
+                        player.release()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }, soundDuration.toLong())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Fallback to default notification sound if custom sound fails
+            try {
+                val fallbackPlayer = MediaPlayer.create(
+                    context,
+                    android.provider.Settings.System.DEFAULT_NOTIFICATION_URI
+                )
+                fallbackPlayer?.let { player ->
+                    player.start()
+                    player.setOnCompletionListener { mp ->
+                        mp.release()
+                    }
+                }
+            } catch (fallbackException: Exception) {
+                fallbackException.printStackTrace()
+            }
+        }
     }
 
     LaunchedEffect(non_Lu_Messages_Size) {
-        if (previousMessageCount in 0..<non_Lu_Messages_Size) {
+        println("DEBUG: LaunchedEffect triggered - non_Lu_Messages_Size changed to $non_Lu_Messages_Size")
+
+        // Play sound only when count increases
+        if (non_Lu_Messages_Size > previousMessageCount) {
             playNotificationSound()
         }
+
+        // Always update the previous count after checking
         previousMessageCount = non_Lu_Messages_Size
     }
 
@@ -126,10 +230,10 @@ fun Button_ID2_Menagerie_Telegram(
         Box {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTag(repo17MessageVocaleData, "repo17MessageVocaleData")
+                    .getSemanticsTag(latestStatesForEachMessage, "latestStatesForEachMessage")
                     .getSemanticsTag(
                         repo17MessageVocaleData
-                        .map { it.keyID.takeLast(4) }, "map"
+                            .map { it.keyID.takeLast(4) }, "map"
                     )
                     .size(40.dp),
                 onClick = {
