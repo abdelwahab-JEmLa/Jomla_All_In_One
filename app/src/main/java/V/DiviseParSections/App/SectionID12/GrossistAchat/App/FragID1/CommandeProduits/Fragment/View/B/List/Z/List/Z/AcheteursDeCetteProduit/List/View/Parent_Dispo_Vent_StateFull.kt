@@ -13,12 +13,12 @@ fun Parent_Dispo_Vent_StateFull(
         repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
     val relative_M3Couleur_KeyId =
         relative_linkedParent_M10Vent?.parent_M3CouleurProduit_KeyID
-    val client = repositorysMainGetter.find_M2Client_By_M10Vent(
+    val relative_M2Client = repositorysMainGetter.find_M2Client_By_M10Vent(
         relative_M10Vent
     )
 
     Parent_Dispo_Vent_StateLess(
-        client_nom = client?.nom ?: "Client inconnu",
+        client_nom = relative_M2Client?.nom ?: "Client inconnu",
         quantity = "Quantité: ${relative_M10Vent.quantity}",
         relative_M3Couleur_KeyId = relative_M3Couleur_KeyId
     )
