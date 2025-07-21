@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View.Parent_Dispo_Vent_StateFull
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -57,7 +58,7 @@ fun List_AcheteursDeCetteProduit(
                 modifier = Modifier.padding(16.dp)
             )
         } else {
-            relative_Map_M2Client_To_ListM10Vent.forEach { (relative_M2Client, relative_M10Vent) ->
+            relative_Map_M2Client_To_ListM10Vent.forEach { (relative_M2Client, relative_ListM10Vent) ->
 
                 if (relative_M2Client != null) {
                     val client = viewModel.getter.repo2Client.datasValue.find {
@@ -88,13 +89,13 @@ fun List_AcheteursDeCetteProduit(
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
-                                relative_M10Vent.forEach { m10Vent ->
+                                relative_ListM10Vent.forEach { relative_M10Vent ->
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "• Qté: ${m10Vent.quantity}",
+                                            text = "• Qté: ${relative_M10Vent.quantity}",
                                             fontSize = 14.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -102,7 +103,7 @@ fun List_AcheteursDeCetteProduit(
                                         Spacer(modifier = Modifier.width(16.dp))
 
                                         val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-                                            it.keyID == m10Vent.parent_M8BonVent_KeyId
+                                            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
                                         }
                                         bonVent?.let {
                                             Text(
@@ -112,10 +113,14 @@ fun List_AcheteursDeCetteProduit(
                                             )
                                         }
                                     }
+
+                                    Parent_Dispo_Vent_StateFull(
+                                        relative_M10Vent
+                                    )
                                 }
 
-                                val totalQuantity = relative_M10Vent.sumOf { it.quantity }
-                                if (relative_M10Vent.size > 1) {
+                                val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }
+                                if (relative_ListM10Vent.size > 1) {
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = "Total: $totalQuantity",

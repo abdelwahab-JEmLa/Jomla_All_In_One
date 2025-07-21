@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Parent_Dispo_Vent_StateLess(
-    client_nom: String,
+    relative_M2Client_nom: String,
     quantity: String,
-    relative_M3Couleur_KeyId: String?
+    relative_M3CouleurInfos_KeyId: String?
 ) {
     Card {
         Box(
@@ -35,14 +35,14 @@ fun Parent_Dispo_Vent_StateLess(
                     shape = RoundedCornerShape(10.dp)
                 ),
         ) {
-            if (relative_M3Couleur_KeyId != null) {
-                CouleurDisplayer(keyCouleur = relative_M3Couleur_KeyId, size = 80.dp)
+            if (relative_M3CouleurInfos_KeyId != null) {
+                CouleurDisplayer(keyCouleur = relative_M3CouleurInfos_KeyId, size = 80.dp)
             }
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = client_nom,
+                    text = relative_M2Client_nom,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,

@@ -3,11 +3,12 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.runtime.Composable
+import org.koin.compose.koinInject
 
 @Composable
 fun Parent_Dispo_Vent_StateFull(
-    repositorysMainGetter: RepositorysMainGetter,
-    relative_M10Vent: M10OperationVentCouleur
+    relative_M10Vent: M10OperationVentCouleur,
+    repositorysMainGetter: RepositorysMainGetter= koinInject()
 ) {
     val relative_linkedParent_M10Vent =
         repositorysMainGetter.find_M10OperationVentCouleur(relative_M10Vent.linked_To_M10OperationVent_KeyID)
@@ -18,8 +19,8 @@ fun Parent_Dispo_Vent_StateFull(
     )
 
     Parent_Dispo_Vent_StateLess(
-        client_nom = relative_M2Client?.nom ?: "Client inconnu",
+        relative_M2Client_nom = relative_M2Client?.nom ?: "Client inconnu",
         quantity = "Quantité: ${relative_M10Vent.quantity}",
-        relative_M3Couleur_KeyId = relative_M3Couleur_KeyId
+        relative_M3CouleurInfos_KeyId = relative_M3Couleur_KeyId
     )
 }
