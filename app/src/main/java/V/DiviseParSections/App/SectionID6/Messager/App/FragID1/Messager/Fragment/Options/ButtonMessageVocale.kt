@@ -148,7 +148,7 @@ fun ButtonMessageVocale(
             }
 
             val update_M8BonVent = relative_M8BonVent?.let { bonVent ->
-                relative_M17Message?.let { message ->
+                relative_M17Message.let { message ->
                     bonVent.copy(
                         parent_M17Message_KeyID = message.keyID,
                         parent_M17Message_DebugInfos = message.getDebugInfos(),
@@ -163,7 +163,6 @@ fun ButtonMessageVocale(
                     .getSemanticsTag(relative_M17Message?.getDebugInfos(), "relative_M17Message") // Safe null check
                     .size(56.dp),
                 onClick = {
-                    // Check if relative_M17Message is available for recording
                     if (relative_M17Message == null) {
                         Toast.makeText(
                             context,

@@ -2,6 +2,8 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import android.media.MediaPlayer
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -43,8 +45,8 @@ import org.koin.compose.koinInject
 @Composable
 fun Button_ID2_Menagerie_Telegram(
     aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     showLabels: Boolean,
-    onTelegramClick: () -> Unit = {}
 ) {
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -104,11 +106,20 @@ fun Button_ID2_Menagerie_Telegram(
         Box {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTag(repo17MessageVocaleData,"repo17MessageVocaleData")
-                    .getSemanticsTag(repo17MessageVocaleData
-                        .map { it.keyID.takeLast(4) },"map")
+                    .getSemanticsTag(repo17MessageVocaleData, "repo17MessageVocaleData")
+                    .getSemanticsTag(
+                        repo17MessageVocaleData
+                        .map { it.keyID.takeLast(4) }, "map"
+                    )
                     .size(40.dp),
-                onClick = onTelegramClick,
+                onClick = {
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            active_OpnerDialog_M17MessageVocale =
+                                M17MessageVocale.get_default()
+                        )
+                    )
+                },
                 containerColor = Color(0xFF0088CC),
             ) {
                 Icon(

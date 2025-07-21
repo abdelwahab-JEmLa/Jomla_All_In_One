@@ -79,7 +79,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
-    var showMessageurDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -180,10 +179,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     )
 
     val m17Message_avec_BonVen = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
-    if (showMessageurDialog || m17Message_avec_BonVen != null) {
+
+    if (m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
             onDismiss = {
-                showMessageurDialog = false
                 focusedValuesGetter.update_activeCentralValues(
                     focusedValuesGetter.active_Central_Values.copy(active_OpnerDialog_M17MessageVocale = null)
                 )
@@ -257,7 +256,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
-                            onTelegramClick = { showMessageurDialog = true }
                         )
 
                         if (!cLenceDepuitFragmentsSepecialisteDeVents) {

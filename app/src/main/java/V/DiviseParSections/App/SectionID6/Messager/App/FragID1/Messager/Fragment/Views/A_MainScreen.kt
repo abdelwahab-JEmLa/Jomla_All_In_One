@@ -39,15 +39,12 @@ fun A_MessageurTelegram_MainScreen(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    // Show dialog at start
     LaunchedEffect(Unit) {
         showDialog = true
     }
 
-    // Container Box
     Box(modifier = modifier.fillMaxSize()) {
 
-        // Dialog implementation
         if (showDialog) {
             Dialog(
                 onDismissRequest = {
