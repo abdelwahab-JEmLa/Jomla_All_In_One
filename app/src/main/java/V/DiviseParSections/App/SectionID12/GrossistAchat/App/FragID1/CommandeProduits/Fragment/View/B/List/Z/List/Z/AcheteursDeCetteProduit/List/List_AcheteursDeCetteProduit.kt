@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,14 +25,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     relative_M11AchatOperation: M11AchatOperation
 ) {
-    // Get sales operations data
-    val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-    val listFCouleurVentOperation = relative_M11AchatOperation.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur)
+    val relativeList_M10VentOperation = relative_M11AchatOperation.get_list_v_Depuit_joinedStringKeys(
+        repo10OperationVentCouleur.datasValue
+    )
 
-    // Group sales operations by client (through BonVent)
-    val salesByClient = listFCouleurVentOperation.groupBy { ventOperation ->
+    val salesByClient = relativeList_M10VentOperation.groupBy { ventOperation ->
         val gBonVent = viewModel.getter.repo8BonVent.datasValue.find {
             it.keyID == ventOperation.parent_M8BonVent_KeyId
         }
@@ -40,7 +41,7 @@ fun List_AcheteursDeCetteProduit(
 
     Column(
         modifier = Modifier
-            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = listFCouleurVentOperation)
+            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = relativeList_M10VentOperation)
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
