@@ -53,6 +53,7 @@ class MapClientsViewModel(
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
 ) : ViewModel() {
+    val repo2Client = aCentralFacade.repositorysMainGetter.repo2Client
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
     // Repository references
@@ -65,14 +66,13 @@ class MapClientsViewModel(
 
     // Compose States
     val transactionsState = getter.repo8BonVent
-    val clientsState = getter.repo2Client
     val appState = getter.repo9AppCompt
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     val bProto_ClientsDataBase: List<M2Client>
-        get() = clientsState.datasState.value
+        get() = this.repo2Client.datasState.value
 
     // UI State variables
     var auClickeCaUpdateClientPar by mutableStateOf(M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
@@ -84,10 +84,10 @@ class MapClientsViewModel(
 
     private fun updateUiState() {
         _uiState.value = _uiState.value.copy(
-            b_ClientInfosProtoJuin3List = clientsState.datasState.value,
+            b_ClientInfosProtoJuin3List = this.repo2Client.datasState.value,
             c3_TransactionCommercialList = transactionsState.datasValue,
             mainLoadingProgress = getter.loadingProgress!!,
-            isLoading = clientsState.isLoading,
+            isLoading = this.repo2Client.isLoading,
             error = null
         )
     }
@@ -127,7 +127,7 @@ class MapClientsViewModel(
                 masterModel?.let { model ->
                     val clients =
                         model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
-                    clientsState.updateClients(clients)
+                    this@MapClientsViewModel.repo2Client.updateClients(clients)
 
                     // Update UI State
                     updateUiState()
@@ -146,7 +146,7 @@ class MapClientsViewModel(
     fun updateData(client: M2Client) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.addOrUpdateData(client)
-            clientsState.updateClient(client)
+            this@MapClientsViewModel.repo2Client.updateClient(client)
             updateUiState()
         }
         mapReloadTrigger++
@@ -157,10 +157,10 @@ class MapClientsViewModel(
         if (center.latitude == 0.0) return
 
         try {
-            val newID = if (clientsState.isEmpty) {
+            val newID = if (this.repo2Client.isEmpty) {
                 1L
             } else {
-                clientsState.maxId + 1
+                this.repo2Client.maxId + 1
             }
 
             val newnom = "ز.$newID"
@@ -178,7 +178,7 @@ class MapClientsViewModel(
 
             viewModelScope.launch {
                 b_ClientDataBaseRepository.addOrUpdateData(newClientAchteur)
-                clientsState.addClient(newClientAchteur)
+                this@MapClientsViewModel.repo2Client.addClient(newClientAchteur)
                 updateUiState()
             }
         } catch (e: Exception) {
@@ -189,7 +189,7 @@ class MapClientsViewModel(
     fun deleteUnSeulData(data: M2Client) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
-            clientsState.removeClient(data.id)
+            this@MapClientsViewModel.repo2Client.removeClient(data.id)
             updateUiState()
         }
     }

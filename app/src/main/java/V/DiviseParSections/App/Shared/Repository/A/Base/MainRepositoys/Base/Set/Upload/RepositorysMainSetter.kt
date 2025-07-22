@@ -10,6 +10,8 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -34,6 +36,7 @@ class RepositorysMainSetter(
     private val produitOperations: ProduitOperations,
     private val clientOperations: ClientOperations,
     private val repoM1Produit: RepoM1Produit,
+    private val repo2Client: Repo2Client,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
@@ -134,6 +137,9 @@ class RepositorysMainSetter(
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
+
+    //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
+    fun upsert_M2Client(data: M2Client) = repo2Client.upsert(data)
 
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) =

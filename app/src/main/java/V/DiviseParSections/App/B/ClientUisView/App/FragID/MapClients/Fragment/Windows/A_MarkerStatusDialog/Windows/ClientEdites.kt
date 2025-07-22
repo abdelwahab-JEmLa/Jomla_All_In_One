@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,10 +28,11 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun ClientEdites(
     viewModel: MapClientsViewModel,
+    repo2Client: Repo2Client = viewModel.aCentralFacade.repositorysMainGetter.repo2Client,
     marqueClick: Marker,
     marqueClickRelativeClient: M2Client?,
     onDismiss: () -> Unit,
-    onClickToEditeMarquerPosition: (Long) -> Unit,
+    onClickToEditeMarquerPosition: (M2Client) -> Unit,
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
     onClientTypeModeChange: (M2Client.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
@@ -61,7 +63,9 @@ fun ClientEdites(
             modifier = Modifier
                 .padding(end = 8.dp)
                 .clickable {
-                    onClickToEditeMarquerPosition(marqueClick.id.toLong())
+                    val m2Client = repo2Client.datasValue.find { it.id == marqueClick.id.toLong() }
+
+                    m2Client?.let { onClickToEditeMarquerPosition(m2Client) }
                     onDismiss()
                 }
         ) {

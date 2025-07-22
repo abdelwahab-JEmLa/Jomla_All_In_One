@@ -63,7 +63,7 @@ fun MarkerStatusDialog(
     mapView: MapView,
     uiState: UiState,
     onUpdateLongAppSetting: () -> Unit = {},
-    onClickToEditeMarquerPosition: (Long) -> Unit,
+    onClickToEditeMarquerPosition: (M2Client) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
 ) {
     val marqueClick = mapView.overlays

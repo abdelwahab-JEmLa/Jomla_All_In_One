@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -73,18 +74,18 @@ fun MarkerEditModeOverlay(
 }
 
 fun handleMarkerPositionUpdate(
+    m2Client: M2Client,
     uiState: UiState,
-    viewModel: MapClientsViewModel,
     mapView: MapView,
-    editingMarkerId: Long,
+    viewModel: MapClientsViewModel,
+    repositorysMainSetter: RepositorysMainSetter =viewModel.aCentralFacade.repositorysMainSetter,
 ) {
     val clientToUpdate = uiState.b_ClientInfosProtoJuin3List.find {
-        it.id == editingMarkerId
+        it.id == m2Client.id
     }
-
     clientToUpdate?.let { client ->
         val centerPoint = mapView.mapCenter
-        val updatedClient = M2Client().apply {
+        val updatedClient = m2Client.apply {
             id = client.id
             nom = client.nom
             numTelephone = client.numTelephone
@@ -104,6 +105,7 @@ fun handleMarkerPositionUpdate(
             actuelleEtat = client.actuelleEtat
         }
 
+        repositorysMainSetter.upsert_M2Client(updatedClient)
         viewModel.updateData(updatedClient)
     }
 }

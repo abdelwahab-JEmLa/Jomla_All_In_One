@@ -83,7 +83,7 @@ class Repo2Client(
         this._datas.value += client
     }
 
-    fun upsertData(data: M2Client) {
+    fun upsert(data: M2Client) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
@@ -158,7 +158,9 @@ data class M2Client(
     var title: String = "",
     var snippet: String = "",
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
+
     //Etates Mutable
+    var edite_Exact_Gps_est_fait: Boolean = false,
 
     // Section Centralization Valeurs Pour Injection add_New TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",

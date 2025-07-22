@@ -10,6 +10,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
 import androidx.compose.foundation.background
@@ -23,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,7 +60,7 @@ fun MapContent(
             }
         )
     }
-    var editingMarkerId by remember { mutableLongStateOf(0L) }
+    var editingMarkerKeyId by remember { mutableStateOf<M2Client?>(null) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -146,22 +146,23 @@ fun MapContent(
             }
         )
 
-        // Marker edit mode overlay
         if (showEditMarkerMode) {
             MarkerEditModeOverlay(
                 onCancel = {
                     showEditMarkerMode = false
-                    editingMarkerId = 0L
+                    editingMarkerKeyId = null
                 },
                 onConfirm = {
-                    handleMarkerPositionUpdate(
-                        uiState = uiState,
-                        viewModel = viewModel,
-                        mapView,
-                        editingMarkerId,
-                    )
+                    editingMarkerKeyId?.let {
+                        handleMarkerPositionUpdate(
+                            m2Client = it,
+                            uiState = uiState,
+                            viewModel = viewModel,
+                            mapView = mapView,
+                        )
+                    }
                     showEditMarkerMode = false
-                    editingMarkerId = 0L
+                    editingMarkerKeyId = null
                 }
             )
         }
@@ -175,8 +176,8 @@ fun MapContent(
                 mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
-                onClickToEditeMarquerPosition = { clientId ->
-                    editingMarkerId = clientId
+                onClickToEditeMarquerPosition = { client ->
+                    editingMarkerKeyId = client
                     showEditMarkerMode = true
                 },
                 onRemoveMark = { marker ->

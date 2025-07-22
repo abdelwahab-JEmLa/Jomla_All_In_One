@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
-
 @Composable
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
@@ -55,7 +54,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     FilledTonalButton(
         modifier = Modifier,
         onClick = {
-
             if (found_Or_Default_M8BonVent.found != null) {
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(
                     found_Or_Default_M8BonVent.found
@@ -70,6 +68,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+
             }
         },
         colors = ButtonDefaults.filledTonalButtonColors(

@@ -136,6 +136,7 @@ fun Dialog_MainFastSearchProduitPourVent(
                             focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
                                 ""
                             )
+
                             focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
                             focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
                             focusedValuesGetter.update_activeCentralValues(
