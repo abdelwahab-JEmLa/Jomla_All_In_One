@@ -72,8 +72,6 @@ fun MapContent(
     }
 
     // Marker editing state
-    var editingMarkerKeyId by remember { mutableStateOf<M2Client?>(null) }
-    var showEditMarkerMode by remember { mutableStateOf(false) }
 
     // Location tracker initialization
     val locationTracker = remember {
@@ -200,21 +198,20 @@ fun MapContent(
         )
 
         // Marker edit mode overlay
-        if (showEditMarkerMode) {
+        if (uiState.m2Client_In_ShowEditMarkerMode != null) {
             MarkerEditModeOverlay(
                 onCancel = {
-                    showEditMarkerMode = false
-                    editingMarkerKeyId = null
+                    viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null)
                     mapView.controller.setZoom(defaultZoom)
                 },
                 onConfirm = {
                     handleEditGps(
-                        markerToEdit = editingMarkerKeyId,
+                        markerToEdit = uiState.m2Client_In_ShowEditMarkerMode,
                         uiState = uiState,
                         viewModel = viewModel,
                         mapView = mapView,
-                        onEditModeChange = { showEditMarkerMode = it },
-                        onMarkerKeyIdChange = { editingMarkerKeyId = it },
+                        onEditModeChange = { },
+                        onMarkerKeyIdChange = { viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null) },
                         zoomLevel = defaultZoom
                     )
                 },
@@ -237,8 +234,7 @@ fun MapContent(
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { client ->
-                    editingMarkerKeyId = client
-                    showEditMarkerMode = true
+                    viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(client)
                 },
                 onRemoveMark = { marker ->
                     marker?.let {
@@ -246,17 +242,6 @@ fun MapContent(
                         mapView.invalidate()
                     }
                 },
-                onPourEdite_Gps_Client = {
-                    handleEditGps(
-                        markerToEdit = editingMarkerKeyId,
-                        uiState = uiState,
-                        viewModel = viewModel,
-                        mapView = mapView,
-                        onEditModeChange = { showEditMarkerMode = it },
-                        onMarkerKeyIdChange = { editingMarkerKeyId = it },
-                        zoomLevel = defaultZoom
-                    )
-                }
             )
         }
 

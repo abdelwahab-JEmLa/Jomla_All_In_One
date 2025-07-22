@@ -4,8 +4,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,7 +35,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
-    onPourEdite_Gps_Client: (M2Client) -> Unit = {},
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
@@ -79,7 +78,10 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                onPourEdite_Gps_Client(relative_M2Client)
+                relative_M2Client.edite_Exact_Gps_est_fait.ifFalse {
+                    viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(relative_M2Client)
+                }
+
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
             }
 

@@ -44,7 +44,8 @@ data class UiState(
     val markerStatusDialogActiveM2Client: M2Client? = null,
     val mainLoadingProgress: Float = 0f,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val m2Client_In_ShowEditMarkerMode: M2Client? = null,
 )
 
 class MapClientsViewModel(
@@ -56,6 +57,7 @@ class MapClientsViewModel(
     val repo2Client = aCentralFacade.repositorysMainGetter.repo2Client
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
+
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
@@ -86,6 +88,12 @@ class MapClientsViewModel(
             mainLoadingProgress = getter.loadingProgress!!,
             isLoading = this.repo2Client.isLoading,
             error = null
+        )
+    }
+
+     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client?=null) {
+        _uiState.value = _uiState.value.copy(
+            m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
     }
 

@@ -76,15 +76,13 @@ fun AfficheurRegleOuvert(
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
-                    ) {
-                       onPourEdite_Gps_Client(it)
-                    }
+                    )
 
                 M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
-                    ) {}
+                    )
 
                 TextButton(
                     onClick = {
