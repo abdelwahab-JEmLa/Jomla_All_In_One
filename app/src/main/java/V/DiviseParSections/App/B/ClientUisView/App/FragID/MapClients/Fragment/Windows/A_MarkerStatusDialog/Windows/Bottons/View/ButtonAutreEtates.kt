@@ -4,6 +4,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -31,7 +34,9 @@ import androidx.core.content.ContextCompat
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
+    onPourEdite_Gps_Client: (M2Client) -> Unit={},
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
@@ -63,14 +68,25 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                     .addNew_M8BonVent(found_Or_Default_M8BonVent.default_If_No_Found)
             }
 
-            aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
 
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                found_Or_Default_M8BonVent.found?.let {
+                    val it_Have_Buy = repo10OperationVentCouleur.datasValue.any {
+                        it.parent_M8BonVent_KeyId == found_Or_Default_M8BonVent.found.keyID
+                    }
 
+                    (it_Have_Buy && !relative_M2Client.edite_Exact_Gps_est_fait).ifTrue {
+                        onPourEdite_Gps_Client(relative_M2Client)
+                    }
+                }
+
+                viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
             }
+
+            aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(

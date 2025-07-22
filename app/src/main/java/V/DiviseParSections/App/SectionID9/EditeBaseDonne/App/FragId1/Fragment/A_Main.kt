@@ -1,8 +1,5 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
-import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.A_MainFilter
@@ -16,6 +13,9 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.EditeInfosMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -249,7 +249,6 @@ fun EditeBaseDonneMainScreenIdS9(
 private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
     return if (contains(product)) this - product else this + product
 }
-
 private fun applySortOrder(
     products: List<ArticlesBasesStatsTable>,
     sortOrder: SortOrder,
@@ -260,6 +259,8 @@ private fun applySortOrder(
         SortOrder.ID_ASC -> products.sortedBy { it.id }
         SortOrder.NAME_ASC -> products.sortedBy { it.nom.lowercase() }
         SortOrder.NAME_DESC -> products.sortedByDescending { it.nom.lowercase() }
+        SortOrder.PRIX_ACHAT_TIME_DESC -> products.sortedByDescending { it.prixAchatDernierTimeTempUpdate }
+        SortOrder.PRIX_ACHAT_TIME_ASC -> products.sortedBy { it.prixAchatDernierTimeTempUpdate }
         SortOrder.CATEGORY_GROUPED -> {
             categoryGroupedSortedProducts.filter { categoryProduct ->
                 products.any { it.id == categoryProduct.id }

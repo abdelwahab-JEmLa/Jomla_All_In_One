@@ -140,9 +140,26 @@ fun FilterDropdownMenu(
                     )
                 }
 
+                // NEW: Prix Achat Time Sort Options
                 item {
                     SortOption(
-                        label = "Etate A-Z",
+                        label = "Prix achat récemment mis à jour",
+                        selected = filterState.sortOrder == SortOrder.PRIX_ACHAT_TIME_DESC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.PRIX_ACHAT_TIME_DESC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Prix achat anciennement mis à jour",
+                        selected = filterState.sortOrder == SortOrder.PRIX_ACHAT_TIME_ASC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.PRIX_ACHAT_TIME_ASC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Nom A-Z",
                         selected = filterState.sortOrder == SortOrder.NAME_ASC,
                         onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_ASC)) }
                     )
@@ -150,7 +167,7 @@ fun FilterDropdownMenu(
 
                 item {
                     SortOption(
-                        label = "Etate Z-A",
+                        label = "Nom Z-A",
                         selected = filterState.sortOrder == SortOrder.NAME_DESC,
                         onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_DESC)) }
                     )
@@ -290,7 +307,7 @@ fun FilterDropdownMenu(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         supportingText = {
                             Text(
-                                text = "ClickOuvre seulement les produits dont le prix d'achat add_New été mis à jour il y add_New X jours ou plus",
+                                text = "Affiche seulement les produits dont le prix d'achat a été mis à jour il y a X jours ou plus",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

@@ -23,7 +23,8 @@ fun AfficheurRegleOuvert(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClients: M2Client?,
-) {
+    onPourEdite_Gps_Client: (M2Client) -> Unit,
+    ) {
     val clientId = relatedClients?.id ?: 0L
 
     fun getLatestTransactionForClient(clientId: Long): M8BonVent? {
@@ -75,13 +76,15 @@ fun AfficheurRegleOuvert(
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
-                    )
+                    ) {
+                        onPourEdite_Gps_Client(it)
+                    }
 
                 M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
-                    )
+                    ) {}
 
                 TextButton(
                     onClick = {

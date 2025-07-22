@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.addOuUpdateMapMarkers
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
@@ -43,6 +44,10 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import androidx.compose.ui.graphics.Color as ComposeColor
 
+/**
+ * Main MapContent composable that displays an interactive OSM map with client markers
+ * Handles marker editing, location tracking, and various UI overlays
+ */
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -52,10 +57,12 @@ fun MapContent(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val default_Zoom = 18.2
-    val currentZoom by remember { mutableDoubleStateOf(default_Zoom) }
+    val defaultZoom = 18.2
+    val currentZoom by remember { mutableDoubleStateOf(defaultZoom) }
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
+
+    // Filter mode state
     var currentFilterMode by remember {
         mutableStateOf(
             if ((viewModel.getter.repo9AppCompt.currentAppCompt?.keyID
@@ -67,24 +74,29 @@ fun MapContent(
             }
         )
     }
+
+    // Marker editing state
     var editingMarkerKeyId by remember { mutableStateOf<M2Client?>(null) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
+    // Location tracker initialization
     val locationTracker = remember {
         LocationTracker(
             context = context,
             mapView = mapView,
-            radius = 25.0, // 10 meters proximity circle
+            radius = 25.0, // 25 meters proximity circle
             xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
         )
     }
 
+    // Initialize map and start location tracking
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
         locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
     }
 
+    // Map configuration and cleanup
     DisposableEffect(context) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -97,6 +109,7 @@ fun MapContent(
         }
     }
 
+    // Update markers when data changes
     LaunchedEffect(
         viewModel.getter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
@@ -115,9 +128,38 @@ fun MapContent(
         ensureLocationOverlayIsAtBottom(mapView)
     }
 
+    /**
+     * Handles GPS marker editing operations
+     * Fixed version that properly manages state through callbacks
+     */
+    fun handleEditGps(
+        markerToEdit: M2Client?,
+        uiState: UiState,
+        viewModel: MapClientsViewModel,
+        mapView: MapView,
+        onEditModeChange: (Boolean) -> Unit,
+        onMarkerKeyIdChange: (M2Client?) -> Unit,
+        zoomLevel: Double
+    ) {
+        markerToEdit?.let { marker ->
+            handleMarkerPositionUpdate(
+                m2Client = marker,
+                uiState = uiState,
+                viewModel = viewModel,
+                mapView = mapView,
+            )
+        }
+
+        // Reset editing state through callbacks
+        onEditModeChange(false)
+        onMarkerKeyIdChange(null)
+        mapView.controller.setZoom(zoomLevel)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         val markerStatusDialogActiveM2Client = uiState.markerStatusDialogActiveM2Client
 
+        // Main map view
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,7 +170,7 @@ fun MapContent(
             factory = { mapView }
         )
 
-        // Center marker indicator
+        // Center crosshair indicator
         Box(
             modifier = Modifier
                 .size(8.dp)
@@ -136,8 +178,8 @@ fun MapContent(
                 .align(Alignment.Center)
         )
 
+        // Secteurs button handler
         val panelsGroupeButtonHandler = koinInject<PanelsGroupeButtonHandler>()
-
         val isSecteursButtonVisible = panelsGroupeButtonHandler
             ._paneleGroupeButtonList.value
             .find {
@@ -150,6 +192,7 @@ fun MapContent(
             // MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
+        // Global options and controls
         A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             viewModel = viewModel,
             mapView = mapView,
@@ -165,25 +208,24 @@ fun MapContent(
             }
         )
 
+        // Marker edit mode overlay
         if (showEditMarkerMode) {
             MarkerEditModeOverlay(
                 onCancel = {
                     showEditMarkerMode = false
                     editingMarkerKeyId = null
-                    mapView.controller.setZoom(default_Zoom)
+                    mapView.controller.setZoom(defaultZoom)
                 },
                 onConfirm = {
-                    editingMarkerKeyId?.let {
-                        handleMarkerPositionUpdate(
-                            m2Client = it,
-                            uiState = uiState,
-                            viewModel = viewModel,
-                            mapView = mapView,
-                        )
-                    }
-                    showEditMarkerMode = false
-                    editingMarkerKeyId = null
-                    mapView.controller.setZoom(default_Zoom)
+                    handleEditGps(
+                        markerToEdit = editingMarkerKeyId,
+                        uiState = uiState,
+                        viewModel = viewModel,
+                        mapView = mapView,
+                        onEditModeChange = { showEditMarkerMode = it },
+                        onMarkerKeyIdChange = { editingMarkerKeyId = it },
+                        zoomLevel = defaultZoom
+                    )
                 },
                 onCenterToGPS = {
                     locationTracker.centerMapOnCurrentLocation()
@@ -192,6 +234,7 @@ fun MapContent(
             )
         }
 
+        // Marker status dialog
         val activeOnVentM2ClientInfos =
             viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
 
@@ -212,8 +255,21 @@ fun MapContent(
                         mapView.invalidate()
                     }
                 },
+                onPourEdite_Gps_Client = { m2Client ->
+                    handleEditGps(
+                        markerToEdit = m2Client,
+                        uiState = uiState,
+                        viewModel = viewModel,
+                        mapView = mapView,
+                        onEditModeChange = { showEditMarkerMode = it },
+                        onMarkerKeyIdChange = { editingMarkerKeyId = it },
+                        zoomLevel = defaultZoom
+                    )
+                }
             )
         }
+
+        // Floating button for client targeting
         val affiche_Floating_Button_Cible_Client =
             focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client
         affiche_Floating_Button_Cible_Client.ifTrue {
@@ -222,6 +278,10 @@ fun MapContent(
     }
 }
 
+/**
+ * Ensures location overlay stays at the bottom of the overlay stack
+ * This prevents location marker from appearing above client markers
+ */
 private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
     val locationOverlay = mapView.overlays.find { overlay ->
         overlay.javaClass.simpleName.contains("Location") ||
@@ -230,6 +290,6 @@ private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
 
     locationOverlay?.let { overlay ->
         mapView.overlays.remove(overlay)
-        mapView.overlays.add(0, overlay)
+        mapView.overlays.add(0, overlay) // Add at index 0 to keep it at bottom
     }
 }

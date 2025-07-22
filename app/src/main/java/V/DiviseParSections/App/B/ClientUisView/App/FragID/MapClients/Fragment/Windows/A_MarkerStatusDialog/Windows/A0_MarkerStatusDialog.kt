@@ -65,6 +65,7 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (M2Client) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
+    onPourEdite_Gps_Client: (M2Client) -> Unit = {},
 ) {
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
@@ -146,7 +147,9 @@ fun MarkerStatusDialog(
                                     uiState = uiState,
                                     viewModel = viewModel,
                                     relatedClients = relative_M2Client,
-                                )
+                                ) {
+                                    onPourEdite_Gps_Client(it)
+                                }
                             }
                         }
                     }
@@ -172,8 +175,6 @@ fun MarkerStatusDialog(
                                         .fillMaxWidth()
                                         .heightIn(max = 600.dp)
                                 ) {
-
-
                                     item {
                                         CommandButton(
                                             relative_M2Client = relative_M2Client!!,
@@ -183,14 +184,6 @@ fun MarkerStatusDialog(
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )
-                                    }
-
-                                    item {
-                                        M8BonVent.EtateActuellementEst.Cible
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
-                                            )
                                     }
 
                                     item {
