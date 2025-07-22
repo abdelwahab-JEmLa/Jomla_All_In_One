@@ -42,7 +42,7 @@ class Repo2Client(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<M2Client>>(emptyList())
-    private val datasState: State<List<M2Client>> = this._datas
+    val datasState: State<List<M2Client>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
     private val _loadingProgress = mutableFloatStateOf(0f)

@@ -43,7 +43,7 @@ data class Button_State(
     val text_Label: String = "",
     val colors: Pair<Color, Color> = Pair(Color.White, Color.White),
     val icons: Pair<ImageVector, ImageVector> = Pair(Icons.Default.Remove, Icons.Default.Add),
-    val description_Functionement: String = "Toggle product details expansion",
+    val description_Functionement: String = "",
 ) {
     companion object {
         fun get_Default(): Button_State {
