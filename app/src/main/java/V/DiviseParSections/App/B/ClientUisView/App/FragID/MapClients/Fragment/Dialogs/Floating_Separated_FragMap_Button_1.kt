@@ -141,12 +141,14 @@ fun Floating_Separated_FragMap_Button_1(
 
 enum class Click_On_Marque {
     Standart,
-    ADD_Au_Ciblage_Clients;
+    ADD_Au_Ciblage_Clients,
+    Delete_Ciblage_Client_Et_Qui_Son_Apre;
 
     fun toggle_retrn(): Click_On_Marque {
         return when (this) {
             Standart -> ADD_Au_Ciblage_Clients
-            ADD_Au_Ciblage_Clients -> Standart
+            ADD_Au_Ciblage_Clients -> Delete_Ciblage_Client_Et_Qui_Son_Apre
+            Delete_Ciblage_Client_Et_Qui_Son_Apre -> Standart
         }
     }
 }

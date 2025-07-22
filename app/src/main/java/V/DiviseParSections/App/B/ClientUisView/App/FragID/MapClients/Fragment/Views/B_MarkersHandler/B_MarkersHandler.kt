@@ -8,7 +8,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -84,7 +83,6 @@ fun createAndAddMarker(
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     mapView: MapView,
     context: Context,
     showMarkerDetails: Boolean,
@@ -111,23 +109,16 @@ fun createAndAddMarker(
 
         setOnMarkerClickListener { clickedMarker, _ ->
             val current_ADD_Au_Ciblage_Clients = focusedValuesGetter.active_Central_Values
-                .click_On_Marque == Click_On_Marque.ADD_Au_Ciblage_Clients
+                .click_On_Marque
+            val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
+                focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+
             when (current_ADD_Au_Ciblage_Clients) {
-                false -> {
-                    val clickedMarkerM2Client =
-                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
-
-                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
-
-                    if (showMarkerDetails) clickedMarker.showInfoWindow()
-                    true
-                }
-
-                true -> {
-                    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-
+                Click_On_Marque.ADD_Au_Ciblage_Clients -> {
                     val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
-                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod } ?: 0
+                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+                            .maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
+                            ?: 0
 
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
@@ -147,6 +138,33 @@ fun createAndAddMarker(
                     true
                 }
 
+                Click_On_Marque.Delete_Ciblage_Client_Et_Qui_Son_Apre -> {
+                    filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.forEach {
+                        if (it.position_Don_Lis_Cible_Clients_au_VentPeriod >
+                            viewModel.getLastTransaction(m2Client)?.position_Don_Lis_Cible_Clients_au_VentPeriod!!
+                        ) {
+                            aCentralFacade.repositorysMainSetter.upsertM8BonVent(
+                                it.copy(
+                                    position_Don_Lis_Cible_Clients_au_VentPeriod = 0
+                                )
+                            )
+
+                        }
+                    }
+                    true
+                }
+
+                else -> {
+                    val clickedMarkerM2Client =
+                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
+
+                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
+
+                    if (showMarkerDetails) clickedMarker.showInfoWindow()
+                    true
+                }
+
+
             }
         }
     }
@@ -157,6 +175,7 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
+
 // Fix 2: Title display - don't show date/time when position is displayed
 private fun Marker.title(
     viewModel: MapClientsViewModel,
@@ -166,33 +185,34 @@ private fun Marker.title(
     val position = latestTransaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
-    title = if (viewModel.afficheLesJoursAuNoms && position == 0) { // Only show date/time if no position
-        val dateHandler = DatesHandler()
-        val timeStr = latestTransaction?.creationTimestamps?.let {
-            dateHandler.getDateAndTimString(it).time
-        }
-        val dayName = dateHandler.getArabicDayNameFromTimestamp(
-            latestTransaction?.creationTimestamps ?: 0
-        )
-        val distanceSemain =
-            dateHandler.getAbrgDistanceSemain(latestTransaction?.creationTimestamps)
+    title =
+        if (viewModel.afficheLesJoursAuNoms && position == 0) { // Only show date/time if no position
+            val dateHandler = DatesHandler()
+            val timeStr = latestTransaction?.creationTimestamps?.let {
+                dateHandler.getDateAndTimString(it).time
+            }
+            val dayName = dateHandler.getArabicDayNameFromTimestamp(
+                latestTransaction?.creationTimestamps ?: 0
+            )
+            val distanceSemain =
+                dateHandler.getAbrgDistanceSemain(latestTransaction?.creationTimestamps)
 
-        if (latestTransaction != null) {
-            "$distanceSemain.$dayName (${timeStr})" +
-                    "\n${latestTransaction.etateActuellementEst.nomArabe}" +
-                    "\n${m2Client.nom}"
+            if (latestTransaction != null) {
+                "$distanceSemain.$dayName (${timeStr})" +
+                        "\n${latestTransaction.etateActuellementEst.nomArabe}" +
+                        "\n${m2Client.nom}"
+            } else {
+                m2Client.nom
+            }
         } else {
-            m2Client.nom
+            // Show position or just client name
+            if (position != 0 && latestTransaction != null) {
+                "$positionPrefix${latestTransaction.etateActuellementEst.nomArabe}" +
+                        "\n${m2Client.nom}"
+            } else {
+                "$positionPrefix${m2Client.nom}"
+            }
         }
-    } else {
-        // Show position or just client name
-        if (position != 0 && latestTransaction != null) {
-            "$positionPrefix${latestTransaction.etateActuellementEst.nomArabe}" +
-                    "\n${m2Client.nom}"
-        } else {
-            "$positionPrefix${m2Client.nom}"
-        }
-    }
 }
 
 fun configureMarkerInfoWindow(
