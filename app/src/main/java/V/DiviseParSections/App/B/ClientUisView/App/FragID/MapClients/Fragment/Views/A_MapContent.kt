@@ -70,8 +70,8 @@ fun MapContent(
         LocationTracker(
             context = context,
             mapView = mapView,
-            radius = 25.0,
-            xmlResources = listOf("location_person" to R.drawable.ic_person_location)
+            radius = 25.0, // 10 meters proximity circle
+            xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
         )
     }
 
@@ -143,6 +143,7 @@ fun MapContent(
             ?.isVisible ?: false
 
         if (isSecteursButtonVisible) {
+            // MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
         A_GlobalOptionsControlsFloatingActionButtons_FragId1(

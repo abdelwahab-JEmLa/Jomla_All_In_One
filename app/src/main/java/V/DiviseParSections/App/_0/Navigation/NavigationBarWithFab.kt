@@ -1,6 +1,7 @@
 // Updated NavigationBarWithFab.kt
 package V.DiviseParSections.App._0.Navigation
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.Image
@@ -43,6 +44,8 @@ private const val TAG = "NavigationBarWithFab"
 
 @Composable
 fun NavigationBarWithFab(
+    viewModelInitApp: ViewModelInitApp,
+    aCentralFacade: ACentralFacade =viewModelInitApp.aCentralFacade,
     items: List<Screen>,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
@@ -50,7 +53,6 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp,
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
@@ -100,7 +102,7 @@ fun NavigationBarWithFab(
             }
         }
 
-        // Image FAB positioned above the navigation bar
+        //df
         Surface(
             modifier = Modifier
                 .offset(y = (-28).dp)

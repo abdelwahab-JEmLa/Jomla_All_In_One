@@ -36,7 +36,7 @@ data class UiState(
 
 
 class ViewModelInitApp(
-    aCentral: ACentralFacade,
+   val aCentralFacade: ACentralFacade,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val produitModelRepository: A_ProduitRepository,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
@@ -44,7 +44,7 @@ class ViewModelInitApp(
     val _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
     val repo_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
-    val getter = aCentral.repositorysMainGetter
+    val getter = aCentralFacade.repositorysMainGetter
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
