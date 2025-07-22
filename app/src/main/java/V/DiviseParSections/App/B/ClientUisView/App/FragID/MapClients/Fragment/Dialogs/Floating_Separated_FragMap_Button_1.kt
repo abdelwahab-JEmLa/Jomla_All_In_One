@@ -59,7 +59,7 @@ fun Floating_Separated_FragMap_Button_1(
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "Toggle Button",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add),
-        colors = Pair(Color.Red, Color.Green) // Different colors for active/inactive states
+        colors = Pair(Color.Red, Color.Green)
     )
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
@@ -139,7 +139,6 @@ fun Floating_Separated_FragMap_Button_1(
     }
 }
 
-// Fixed Click_On_Marque enum
 enum class Click_On_Marque {
     Standart,
     ADD_Au_Ciblage_Clients;
