@@ -23,6 +23,7 @@ suspend fun initializeMapPosition(
     context: Context,
     mapView: MapView,
     currentZoom: Double,
+    shouldCenterOnLocation: Boolean = true // Only center on first load
 ) {
     val location = getCurrentLocation(context)
 
@@ -38,8 +39,11 @@ suspend fun initializeMapPosition(
         setTileSource(TileSourceFactory.MAPNIK)
         controller.setZoom(currentZoom)
 
-        withContext(Dispatchers.Main) {
-            controller.animateTo(geoPoint)
+        // Only center the map on initial load, not on subsequent updates
+        if (shouldCenterOnLocation) {
+            withContext(Dispatchers.Main) {
+                controller.animateTo(geoPoint)
+            }
         }
     }
 }

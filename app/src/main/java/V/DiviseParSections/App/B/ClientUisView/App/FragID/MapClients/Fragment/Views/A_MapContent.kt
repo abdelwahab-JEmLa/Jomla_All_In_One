@@ -9,6 +9,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.handleMarkerPositionUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
+import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
@@ -32,11 +33,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.clientjetpack.R
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import androidx.compose.ui.graphics.Color as ComposeColor
+
+// Updated MapContent function with location tracking
 
 @Composable
 fun MapContent(
@@ -46,7 +50,8 @@ fun MapContent(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val currentZoom by remember { mutableDoubleStateOf(18.2) }
+    val default_Zoom = 18.2
+    val currentZoom by remember { mutableDoubleStateOf(default_Zoom) }
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
@@ -63,8 +68,21 @@ fun MapContent(
     var editingMarkerKeyId by remember { mutableStateOf<M2Client?>(null) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
+    val locationTracker = remember {
+        LocationTracker(
+            context = context,
+            mapView = mapView,
+            radius = 25.0, // 10 meters proximity circle
+            xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
+        )
+    }
+
     LaunchedEffect(Unit) {
-        initializeMapPosition(context, mapView, currentZoom)
+        // Initialize map position only once on first load
+        initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
+        // Start location tracking without auto-following
+        locationTracker.startTracking()           //<--
+        //TODO(1): fait que la position ce mete under les infos bull
     }
 
     DisposableEffect(context) {
@@ -74,6 +92,8 @@ fun MapContent(
         mapView.setMultiTouchControls(true)
 
         onDispose {
+            // Stop location tracking when disposing
+            locationTracker.stopTracking()
             cleanupMapResources(mapView, viewModel)
         }
     }
@@ -93,7 +113,6 @@ fun MapContent(
             showMarkerDetails = showMarkerDetails
         )
     }
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         val markerStatusDialogActiveM2Client = uiState.markerStatusDialogActiveM2Client
@@ -151,6 +170,7 @@ fun MapContent(
                 onCancel = {
                     showEditMarkerMode = false
                     editingMarkerKeyId = null
+                    mapView.controller.setZoom(default_Zoom)
                 },
                 onConfirm = {
                     editingMarkerKeyId?.let {
@@ -163,6 +183,11 @@ fun MapContent(
                     }
                     showEditMarkerMode = false
                     editingMarkerKeyId = null
+                    mapView.controller.setZoom(default_Zoom)
+                },
+                onCenterToGPS = {
+                    locationTracker.centerMapOnCurrentLocation()
+                    mapView.controller.setZoom(19.2)
                 }
             )
         }

@@ -26,7 +26,7 @@ import org.osmdroid.views.overlay.Polygon
 class LocationTracker(
     private val context: Context,
     private val mapView: MapView,
-    private val radius: Double,
+    private val radius: Double = 50.0,
     private val xmlResources: List<Pair<String, Int>>?
 ) : SensorEventListener, LocationListener {
 
@@ -39,7 +39,7 @@ class LocationTracker(
     private var directionMarker: Marker? = null
     private var proximityCircle: Polygon? = null
     private var isTracking = false
-    private var followLocation = true
+    private var followLocation = false // Changed to false to prevent auto-following
 
     var currentBearing by mutableStateOf(0f)
         private set
@@ -70,14 +70,24 @@ class LocationTracker(
         }
     }
 
-    // RepositorysMainGetter current latitude
+    // Get current latitude
     fun getCurrentLatitude(): Double {
         return getCurrentPosition()?.latitude ?: 0.0
     }
 
-    // RepositorysMainGetter current longitude
+    // Get current longitude
     fun getCurrentLongitude(): Double {
         return getCurrentPosition()?.longitude ?: 0.0
+    }
+
+    // Method to manually center map on current location (for button clicks)
+    fun centerMapOnCurrentLocation() {
+        getCurrentPosition()?.let { location ->
+            val geoPoint = GeoPoint(location.latitude, location.longitude)
+            mainHandler.post {
+                mapView.controller.animateTo(geoPoint)
+            }
+        }
     }
 
     private fun createProximityCircle(center: GeoPoint): Polygon {
@@ -125,9 +135,8 @@ class LocationTracker(
                 mapView.overlays.add(marker)
             }
 
-            if (followLocation) {
-                mapView.controller.animateTo(geoPoint)
-            }
+            // Only center if explicitly requested (not automatically)
+            // The map will stay where the user positioned it
 
             mapView.invalidate()
         }
@@ -153,7 +162,6 @@ class LocationTracker(
 
     fun startTracking() {
         if (!isTracking) {
-            // Créer le marker de direction avec l'icône personnalisée
             directionMarker = Marker(mapView).apply {
                 icon = ContextCompat.getDrawable(
                     context, xmlResources
@@ -173,7 +181,7 @@ class LocationTracker(
                 mapView.overlays.add(directionMarker)
             }
 
-            // Démarrer les mises à jour du capteur
+            // Démarrer les mises à jour du capteur (keep normal frequency for compass)
             sensorManager.registerListener(
                 this,
                 rotationSensor,
@@ -181,17 +189,17 @@ class LocationTracker(
             )
 
             try {
-                // Demander les mises à jour de localisation
+                // Demander les mises à jour de localisation avec 3 secondes d'intervalle
                 locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
-                    LOCATION_UPDATE_INTERVAL,
+                    LOCATION_UPDATE_INTERVAL, // 3000ms = 3 seconds
                     LOCATION_UPDATE_DISTANCE,
                     this
                 )
 
                 locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
-                    LOCATION_UPDATE_INTERVAL,
+                    LOCATION_UPDATE_INTERVAL, // 3000ms = 3 seconds
                     LOCATION_UPDATE_DISTANCE,
                     this
                 )
@@ -233,8 +241,8 @@ class LocationTracker(
     }
 
     companion object {
-        private const val LOCATION_UPDATE_INTERVAL = 1000L // 1 second
-        private const val LOCATION_UPDATE_DISTANCE = 1f    // 1 meter
+        private const val LOCATION_UPDATE_INTERVAL = 3000L // 3 seconds (battery saving)
+        private const val LOCATION_UPDATE_DISTANCE = 5f    // 5 meters (slightly increased to reduce updates)
     }
 }
 

@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,17 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 @Composable
 fun MarkerEditModeOverlay(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
+    onCenterToGPS: () -> Unit = {},
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
+        modifier = Modifier.fillMaxSize()
     ) {
         Text(
             text = "Mode Édition de Marqueur",
@@ -64,6 +66,13 @@ fun MarkerEditModeOverlay(
             }
 
             FloatingActionButton(
+                onClick = onCenterToGPS,
+                containerColor = MaterialTheme.colorScheme.secondary
+            ) {
+                Icon(Icons.Default.LocationOn, "Center to GPS")
+            }
+
+            FloatingActionButton(
                 onClick = onConfirm,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
@@ -78,7 +87,7 @@ fun handleMarkerPositionUpdate(
     uiState: UiState,
     mapView: MapView,
     viewModel: MapClientsViewModel,
-    repositorysMainSetter: RepositorysMainSetter =viewModel.aCentralFacade.repositorysMainSetter,
+    repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
 ) {
     val clientToUpdate = uiState.b_ClientInfosProtoJuin3List.find {
         it.id == m2Client.id
@@ -109,3 +118,5 @@ fun handleMarkerPositionUpdate(
         viewModel.updateData(updatedClient)
     }
 }
+
+

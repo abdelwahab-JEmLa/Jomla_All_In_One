@@ -363,8 +363,7 @@ fun ControlButton(
                 ) {
                     Icon(icon, contentDescription)
                 }
-            }//<--
-            //TODO(1): ajout filter pour  last command etatae == confirme pour livration
+            }
             is LottieJsonGetterR_Raw_Icons -> {
                 Box(
                     modifier = Modifier
