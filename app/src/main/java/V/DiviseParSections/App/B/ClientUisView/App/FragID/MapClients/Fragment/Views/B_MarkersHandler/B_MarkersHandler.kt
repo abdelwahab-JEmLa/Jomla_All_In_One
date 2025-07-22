@@ -8,6 +8,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -83,6 +84,7 @@ fun createAndAddMarker(
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     mapView: MapView,
     context: Context,
     showMarkerDetails: Boolean,
@@ -110,14 +112,13 @@ fun createAndAddMarker(
         setOnMarkerClickListener { clickedMarker, _ ->
             val current_ADD_Au_Ciblage_Clients = focusedValuesGetter.active_Central_Values
                 .click_On_Marque
-            val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
-                focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-
             when (current_ADD_Au_Ciblage_Clients) {
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
+                    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
+                        focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+
                     val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
-                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-                            .maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
+                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
                             ?: 0
 
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
@@ -138,22 +139,7 @@ fun createAndAddMarker(
                     true
                 }
 
-                ActiveCentralValues.Click_On_Marque.Delete_Ciblage_Client_Et_Qui_Son_Apre -> {
-                    filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.forEach {
-                        if (it.position_Don_Lis_Cible_Clients_au_VentPeriod >
-                            viewModel.getLastTransaction(m2Client)?.position_Don_Lis_Cible_Clients_au_VentPeriod!!
-                        ) {
-                            aCentralFacade.repositorysMainSetter.upsertM8BonVent(
-                                it.copy(
-                                    position_Don_Lis_Cible_Clients_au_VentPeriod = 0
-                                )
-                            )
-                        }
-                    }
-                    true
-                }
-
-                else -> {
+                ActiveCentralValues.Click_On_Marque.Standart -> {
                     val clickedMarkerM2Client =
                         repo.datasValue.find { it.id.toString() == clickedMarker.id }
 
@@ -162,8 +148,6 @@ fun createAndAddMarker(
                     if (showMarkerDetails) clickedMarker.showInfoWindow()
                     true
                 }
-
-
             }
         }
     }

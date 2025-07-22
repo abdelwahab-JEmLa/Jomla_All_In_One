@@ -58,8 +58,7 @@ fun Floating_Separated_FragMap_Button_1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
-        // Fixed: Display the current Click_On_Marque state as label
-        text_Label = focusedValuesGetter.active_Central_Values.click_On_Marque.getDisplayName(),
+        text_Label = "Toggle Button",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add),
         colors = Pair(Color.Red, Color.Green)
     )
@@ -67,11 +66,7 @@ fun Floating_Separated_FragMap_Button_1(
     val currentValues = focusedValuesGetter.active_Central_Values
     val isActive = currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
-    // Update button state with current Click_On_Marque display name
-    val updatedButtonState = buttonState.copy(
-        its_Active = isActive,
-        text_Label = currentValues.click_On_Marque.getDisplayName()
-    )
+    val updatedButtonState = buttonState.copy(its_Active = isActive)
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -142,14 +137,5 @@ fun Floating_Separated_FragMap_Button_1(
                 }
             }
         }
-    }
-}
-
-// Add this extension function to make the enum values more user-friendly
-fun ActiveCentralValues.Click_On_Marque.getDisplayName(): String {
-    return when (this) {
-        ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
-        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Target"
-        ActiveCentralValues.Click_On_Marque.Delete_Ciblage_Client_Et_Qui_Son_Apre -> "Delete Target"
     }
 }

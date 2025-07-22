@@ -43,14 +43,12 @@ data class ActiveCentralValues(
     }
     enum class Click_On_Marque {
         Standart,
-        ADD_Au_Ciblage_Clients,
-        Delete_Ciblage_Client_Et_Qui_Son_Apre;
+        ADD_Au_Ciblage_Clients;
 
         fun toggle_retrn(): Click_On_Marque {
             return when (this) {
                 Standart -> ADD_Au_Ciblage_Clients
-                ADD_Au_Ciblage_Clients -> Delete_Ciblage_Client_Et_Qui_Son_Apre
-                Delete_Ciblage_Client_Et_Qui_Son_Apre -> Standart
+                ADD_Au_Ciblage_Clients -> Standart
             }
         }
     }
