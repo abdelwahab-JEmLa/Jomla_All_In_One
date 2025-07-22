@@ -127,7 +127,7 @@ fun createAndAddMarker(
                     val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
 
                     val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
-                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOf { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
+                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod } ?: 0
 
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
@@ -143,7 +143,7 @@ fun createAndAddMarker(
                                 )
                         )
 
-                    true 
+                    true
                 }
             }
         }
