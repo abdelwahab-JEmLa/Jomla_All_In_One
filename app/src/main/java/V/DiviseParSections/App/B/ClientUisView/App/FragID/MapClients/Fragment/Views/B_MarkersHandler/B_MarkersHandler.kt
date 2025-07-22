@@ -110,24 +110,22 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            val current_ADD_Au_Ciblage_Clients = focusedValuesGetter.active_Central_Values
+            val activeCentralValues = focusedValuesGetter.active_Central_Values
+            val current_ADD_Au_Ciblage_Clients = activeCentralValues
                 .click_On_Marque
+
+            val actuelle_Ciblage_MaxPosition = activeCentralValues
+                .actuelle_Ciblage_MaxPosition
+
+            val newPosition = actuelle_Ciblage_MaxPosition + 1
+
             when (current_ADD_Au_Ciblage_Clients) {
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
-                    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
-                        focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-
-                    val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
-                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
-                            ?: 0
-
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
                         relative_M2Client = m2Client,
                         etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
                     )
-
-                    val newPosition = max_position_Don_Lis_Cible_Clients_au_VentPeriod + 1
 
                     aCentralFacade.repositorysMainSetter
                         .addNew_M8BonVent(
@@ -136,6 +134,13 @@ fun createAndAddMarker(
                                     position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
                                 )
                         )
+
+                    focusedValuesGetter.update_activeCentralValues(
+                        activeCentralValues.copy(
+                            actuelle_Ciblage_MaxPosition = newPosition
+                        )
+                    )
+
                     true
                 }
 

@@ -30,8 +30,9 @@ data class ActiveCentralValues(
 
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
-    //-----------------Fabs.Affichage----------------------------------------------------------------------------
+    //-----------------Bon8----------------------------------------------------------------------------
    val click_On_Marque : Click_On_Marque  =Click_On_Marque.Standart,
+   val actuelle_Ciblage_MaxPosition : Int  =1,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_Cible_Client: Boolean = false,
 ) {
