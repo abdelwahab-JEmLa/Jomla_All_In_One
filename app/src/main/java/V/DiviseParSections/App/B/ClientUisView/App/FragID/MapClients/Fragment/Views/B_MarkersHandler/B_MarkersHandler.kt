@@ -135,16 +135,18 @@ fun createAndAddMarker(
                         etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
                     )
 
+                    val newPosition = max_position_Don_Lis_Cible_Clients_au_VentPeriod + 1
+
                     aCentralFacade.repositorysMainSetter
                         .addNew_M8BonVent(
                             found_Or_Default_M8BonVent.default_If_No_Found
                                 .copy(
-                                    position_Don_Lis_Cible_Clients_au_VentPeriod = max_position_Don_Lis_Cible_Clients_au_VentPeriod + 1
+                                    position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
                                 )
                         )
-
                     true
                 }
+
             }
         }
     }
@@ -155,6 +157,7 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
+// Fix 2: Title display - don't show date/time when position is displayed
 private fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
@@ -163,7 +166,7 @@ private fun Marker.title(
     val position = latestTransaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
-    title = if (viewModel.afficheLesJoursAuNoms) {
+    title = if (viewModel.afficheLesJoursAuNoms && position == 0) { // Only show date/time if no position
         val dateHandler = DatesHandler()
         val timeStr = latestTransaction?.creationTimestamps?.let {
             dateHandler.getDateAndTimString(it).time
@@ -175,14 +178,20 @@ private fun Marker.title(
             dateHandler.getAbrgDistanceSemain(latestTransaction?.creationTimestamps)
 
         if (latestTransaction != null) {
-            "$positionPrefix$distanceSemain.$dayName (${timeStr})" +
+            "$distanceSemain.$dayName (${timeStr})" +
                     "\n${latestTransaction.etateActuellementEst.nomArabe}" +
+                    "\n${m2Client.nom}"
+        } else {
+            m2Client.nom
+        }
+    } else {
+        // Show position or just client name
+        if (position != 0 && latestTransaction != null) {
+            "$positionPrefix${latestTransaction.etateActuellementEst.nomArabe}" +
                     "\n${m2Client.nom}"
         } else {
             "$positionPrefix${m2Client.nom}"
         }
-    } else {
-        "$positionPrefix${m2Client.nom}"
     }
 }
 
