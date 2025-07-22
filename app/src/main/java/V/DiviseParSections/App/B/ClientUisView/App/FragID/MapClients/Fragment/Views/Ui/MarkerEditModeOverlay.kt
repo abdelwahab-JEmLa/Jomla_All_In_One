@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 @Composable
@@ -112,6 +110,7 @@ fun handleMarkerPositionUpdate(
             title = client.title
             snippet = client.snippet
             actuelleEtat = client.actuelleEtat
+            edite_Exact_Gps_est_fait = true
         }
 
         repositorysMainSetter.upsert_M2Client(updatedClient)

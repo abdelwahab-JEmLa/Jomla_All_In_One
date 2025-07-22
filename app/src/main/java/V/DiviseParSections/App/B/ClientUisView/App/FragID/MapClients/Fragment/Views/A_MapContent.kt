@@ -44,10 +44,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-/**
- * Main MapContent composable that displays an interactive OSM map with client markers
- * Handles marker editing, location tracking, and various UI overlays
- */
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -84,7 +80,7 @@ fun MapContent(
         LocationTracker(
             context = context,
             mapView = mapView,
-            radius = 25.0, // 25 meters proximity circle
+            radius = 25.0,
             xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
         )
     }
@@ -128,10 +124,6 @@ fun MapContent(
         ensureLocationOverlayIsAtBottom(mapView)
     }
 
-    /**
-     * Handles GPS marker editing operations
-     * Fixed version that properly manages state through callbacks
-     */
     fun handleEditGps(
         markerToEdit: M2Client?,
         uiState: UiState,

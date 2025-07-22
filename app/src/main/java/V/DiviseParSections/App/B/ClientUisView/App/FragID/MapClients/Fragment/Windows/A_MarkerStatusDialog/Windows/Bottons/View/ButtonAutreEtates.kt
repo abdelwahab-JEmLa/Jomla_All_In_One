@@ -41,8 +41,17 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
     val context = LocalContext.current
     val relative_Etate = this
-    val relative_M2Client =
-        aCentralFacade.repositorysMainGetter.repo2Client.datasValue.find { it.id == clickedClient }!!
+
+    val relative_M2Client = aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+        .find { it.id == clickedClient }
+
+    // Early return if client not found
+    if (relative_M2Client == null) {
+        toastData = ToastData(
+            message = "Client non trouvé",
+        )
+        return
+    }
 
     ModernToastMessage(
         toastData = toastData,
@@ -54,7 +63,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         onClick = {
             val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                 aCentralFacade,
-                relative_M2Client,
+                relative_M2Client, // This is now guaranteed to be non-null
                 etateActuellementEst = relative_Etate,
             )
 
@@ -67,7 +76,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                     .addNew_M8BonVent(found_Or_Default_M8BonVent.default_If_No_Found)
             }
 
-
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
@@ -76,7 +84,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             }
 
             aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
-
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
@@ -106,6 +113,4 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             Text(relative_Etate.nomArabe)
         }
     }
-
 }
-
