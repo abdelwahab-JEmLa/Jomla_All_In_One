@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -36,7 +37,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
-    onPourEdite_Gps_Client: (M2Client) -> Unit={},
+    onPourEdite_Gps_Client: (M2Client) -> Unit = {},
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
@@ -49,16 +50,21 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         toastData = toastData,
         onDismiss = { toastData = null }
     )
+    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+        aCentralFacade,
+        relative_M2Client,
+    )
+
+    val it_Have_Buy = repo10OperationVentCouleur.datasValue.any {
+        it.parent_M8BonVent_KeyId == (found_Or_Default_M8BonVent.found?.keyID ?: false)
+    }
 
     FilledTonalButton(
-        modifier = Modifier,
+        modifier = Modifier
+            .getSemanticsTag(it_Have_Buy,"it_Have_Buy")
+            .getSemanticsTag(found_Or_Default_M8BonVent.found,"found_Or_Default_M8BonVent.found")
+        ,
         onClick = {
-            val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
-                aCentralFacade,
-                relative_M2Client,
-                etateActuellementEst = relative_Etate,
-            )
-
             if (found_Or_Default_M8BonVent.found != null) {
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(
                     found_Or_Default_M8BonVent.found
@@ -72,13 +78,13 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                found_Or_Default_M8BonVent.found?.let {
-                    val it_Have_Buy = repo10OperationVentCouleur.datasValue.any {
-                        it.parent_M8BonVent_KeyId == found_Or_Default_M8BonVent.found.keyID
-                    }
+                (relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME).ifTrue {
+                    found_Or_Default_M8BonVent.found?.let {
 
-                    (it_Have_Buy && !relative_M2Client.edite_Exact_Gps_est_fait).ifTrue {
-                        onPourEdite_Gps_Client(relative_M2Client)
+
+                        (it_Have_Buy && !relative_M2Client.edite_Exact_Gps_est_fait).ifTrue {
+                            onPourEdite_Gps_Client(relative_M2Client)
+                        }
                     }
                 }
 

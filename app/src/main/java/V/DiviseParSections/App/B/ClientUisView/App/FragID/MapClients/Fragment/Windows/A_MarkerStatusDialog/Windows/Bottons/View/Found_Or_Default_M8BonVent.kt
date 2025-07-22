@@ -14,7 +14,7 @@ data class Found_Or_Default_M8BonVent(
 fun get_Found_Or_Default_M8BonVent(
     aCentralFacade: ACentralFacade,
     relative_M2Client: M2Client,
-    etateActuellementEst: M8BonVent.EtateActuellementEst,
+    etateActuellementEst: M8BonVent.EtateActuellementEst?=null,
     onShowToast: (ToastData) -> Unit = {}
 ): Found_Or_Default_M8BonVent {
     val getFocusedVars = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter

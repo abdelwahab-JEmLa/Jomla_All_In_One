@@ -202,7 +202,7 @@ fun WorkCompletionAlertDialog(
                             )
                         }
 
-                        val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 || false
+                        val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 || true
 
                         if (canConfirm) {
                             Button(

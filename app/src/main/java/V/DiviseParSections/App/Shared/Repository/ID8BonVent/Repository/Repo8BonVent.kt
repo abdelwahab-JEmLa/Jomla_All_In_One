@@ -269,7 +269,7 @@ data class M8BonVent(
             parent_M14VentPeriod_KeyId: String,
             parent_M2Client_KeyID: String,
             parent_M2Client_DebugInfos: String,
-            etateActuellementEst: EtateActuellementEst,
+            etateActuellementEst: EtateActuellementEst? = null,
         ): M8BonVent {
             return M8BonVent(
                 parent_M9AppCompt_DebugInfos = parent_M9AppCompt_DebugInfos,
@@ -279,6 +279,7 @@ data class M8BonVent(
                 parent_M2Client_KeyID = parent_M2Client_KeyID,
                 parent_M2Client_DebugInfos = parent_M2Client_DebugInfos,
                 etateActuellementEst = etateActuellementEst
+                    ?: EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
 
@@ -286,7 +287,7 @@ data class M8BonVent(
             data_List: List<M8BonVent>,
             parent_M14VentPeriod_DebugInfos: String,
             parent_M2Client_KeyID: String,
-            relative_Etate: EtateActuellementEst,
+            relative_Etate: EtateActuellementEst? = null,
         ) = data_List
             .find { data ->
                 val match_MainValuesKeys =
