@@ -45,15 +45,15 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         onDismiss = { toastData = null }
     )
 
-    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
-        aCentralFacade,
-        relative_M2Client,
-        relative_Etate = relative_Etate,
-    )
-
     FilledTonalButton(
         modifier = Modifier,
         onClick = {
+            val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+                aCentralFacade,
+                relative_M2Client,
+                etateActuellementEst = relative_Etate,
+            )
+
             if (found_Or_Default_M8BonVent.found != null) {
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(
                     found_Or_Default_M8BonVent.found
@@ -62,6 +62,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 aCentralFacade.repositorysMainSetter
                     .addNew_M8BonVent(found_Or_Default_M8BonVent.default_If_No_Found)
             }
+
             aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
 
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI

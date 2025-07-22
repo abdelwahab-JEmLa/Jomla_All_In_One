@@ -170,8 +170,10 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
-    // Section Centralization Valeurs Pour Injection add_New TOu modules
+    //Mutable
+    var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
 
+    // Section Centralization Valeurs Pour Injection add_New TOu modules
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
 
@@ -199,7 +201,10 @@ data class M8BonVent(
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
-        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, " تنفيذ المطلوب في تحسين الوضع معه"),
+        ON_MODE_COMMEND_ACTUELLEMENT(
+            android.R.color.holo_green_light,
+            " تنفيذ المطلوب في تحسين الوضع معه"
+        ),
         Rapport(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
 
         Probleme(R.color.c3, "حدث مشكل معه"),
@@ -214,8 +219,6 @@ data class M8BonVent(
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
         AVEC_MARCHANDISE(R.color.c5, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
-
-
 
 
         Cible(android.R.color.holo_orange_dark, "معين من المسير"),

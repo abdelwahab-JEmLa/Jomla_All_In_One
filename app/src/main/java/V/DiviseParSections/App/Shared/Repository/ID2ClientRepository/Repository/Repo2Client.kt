@@ -161,7 +161,6 @@ data class M2Client(
 
     //Etates Mutable
     var edite_Exact_Gps_est_fait: Boolean = false,
-    var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
 
     // Section Centralization Valeurs Pour Injection add_New TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",

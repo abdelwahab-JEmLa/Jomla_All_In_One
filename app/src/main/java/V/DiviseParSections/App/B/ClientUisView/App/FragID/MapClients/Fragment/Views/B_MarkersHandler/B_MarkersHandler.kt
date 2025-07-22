@@ -4,9 +4,13 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Di
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -62,9 +66,9 @@ fun addMarkersForFilteredClients(
     clientsToShow.forEach { client ->
         try {
             createAndAddMarker(
+                m2Client = client,
                 viewModel,
                 mapView = mapView,
-                client = client,
                 context = context,
                 showMarkerDetails = showMarkerDetails,
             )
@@ -76,30 +80,32 @@ fun addMarkersForFilteredClients(
 }
 
 fun createAndAddMarker(
+    m2Client: M2Client,
     viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     mapView: MapView,
-    client: M2Client,
     context: Context,
     showMarkerDetails: Boolean,
 ) {
     val repo = viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
-        id = client.id.toString()
+        id = m2Client.id.toString()
         position = GeoPoint(
-            client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
-            client.longitude
+            m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
+            m2Client.longitude
         )
 
-        title(viewModel, client)
+        title(viewModel, m2Client)
 
-        snippet = if (client.cUnClientTemporaire)
+        snippet = if (m2Client.cUnClientTemporaire)
             "ClientAchteur temporaire" else "ClientAchteur permanent"
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
         try {
-            configureMarkerInfoWindow(this, mapView, context, viewModel, client)
+            configureMarkerInfoWindow(this, mapView, context, viewModel, m2Client)
         } catch (_: Exception) {
         }
 
@@ -118,7 +124,26 @@ fun createAndAddMarker(
                 }
 
                 true -> {
+                    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
 
+                    val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
+                        filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.maxOf { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
+
+                    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+                        aCentralFacade = aCentralFacade,
+                        relative_M2Client = m2Client,
+                        etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
+                    )
+
+                    aCentralFacade.repositorysMainSetter
+                        .addNew_M8BonVent(
+                            found_Or_Default_M8BonVent.default_If_No_Found
+                                .copy(
+                                    position_Don_Lis_Cible_Clients_au_VentPeriod = max_position_Don_Lis_Cible_Clients_au_VentPeriod + 1
+                                )
+                        )
+
+                    true 
                 }
             }
         }
@@ -130,31 +155,34 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
-
 private fun Marker.title(
     viewModel: MapClientsViewModel,
-    client: M2Client,
+    m2Client: M2Client,
 ) {
+    val latestTransaction = viewModel.getLastTransaction(m2Client)
+    val position = latestTransaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
+    val positionPrefix = if (position != 0) "[$position] " else ""
+
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
-        val timeStr = viewModel.getLastTransaction(client)?.creationTimestamps?.let {
+        val timeStr = latestTransaction?.creationTimestamps?.let {
             dateHandler.getDateAndTimString(it).time
         }
         val dayName = dateHandler.getArabicDayNameFromTimestamp(
-            viewModel.getLastTransaction(client)?.creationTimestamps ?: 0
+            latestTransaction?.creationTimestamps ?: 0
         )
         val distanceSemain =
-            dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.creationTimestamps)
+            dateHandler.getAbrgDistanceSemain(latestTransaction?.creationTimestamps)
 
-        if (viewModel.getLastTransaction(client) != null) {
-            "$distanceSemain.$dayName (${timeStr})" +
-                    "\n${viewModel.getLastTransaction(client)!!.etateActuellementEst.nomArabe}" +
-                    "\n${client.nom}"
+        if (latestTransaction != null) {
+            "$positionPrefix$distanceSemain.$dayName (${timeStr})" +
+                    "\n${latestTransaction.etateActuellementEst.nomArabe}" +
+                    "\n${m2Client.nom}"
         } else {
-            client.nom
+            "$positionPrefix${m2Client.nom}"
         }
     } else {
-        client.nom
+        "$positionPrefix${m2Client.nom}"
     }
 }
 
