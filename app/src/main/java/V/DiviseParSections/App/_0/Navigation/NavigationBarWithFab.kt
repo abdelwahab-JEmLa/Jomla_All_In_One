@@ -1,22 +1,29 @@
-// Updated NavigationBarWithFab.kt
+// Fixed NavigationBarWithFab.kt
 package V.DiviseParSections.App._0.Navigation
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +31,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +52,8 @@ private const val TAG = "NavigationBarWithFab"
 @Composable
 fun NavigationBarWithFab(
     viewModelInitApp: ViewModelInitApp,
-    aCentralFacade: ACentralFacade =viewModelInitApp.aCentralFacade,
+    aCentralFacade: ACentralFacade = viewModelInitApp.aCentralFacade,
+    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
     items: List<Screen>,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
@@ -56,7 +64,8 @@ fun NavigationBarWithFab(
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
-    val fragmentNavigationHandler: FragmentNavigationHandler = koinInject()
+    val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+    var showFabDropdown by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -102,7 +111,9 @@ fun NavigationBarWithFab(
             }
         }
 
-        //df
+        val its_Targeted_Frag =
+            activeFragment == Screen.A_Clients_LocationGps
+
         Surface(
             modifier = Modifier
                 .offset(y = (-28).dp)
@@ -111,11 +122,18 @@ fun NavigationBarWithFab(
         ) {
             Box {
                 Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable(onClick = onToggleFabVisibility),
+                        .clickable {
+                            when (its_Targeted_Frag) {
+                                false -> onToggleFabVisibility()
+                                true -> {
+                                    showFabDropdown = true
+                                }
+                            }
+                        },
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
                 Icon(
@@ -127,7 +145,6 @@ fun NavigationBarWithFab(
             }
         }
 
-        // Catalog selection dialog
         if (showCatalogDialog) {
             CatalogSelectionDialog(
                 onDismiss = {
@@ -142,71 +159,68 @@ fun NavigationBarWithFab(
             )
         }
 
-        // Dialog Tests - Show as dialog instead of navigation
         if (showDialogTests) {
             TestScreens(
                 onDismiss = { showDialogTests = false },
                 fragmentNavigationHandler = fragmentNavigationHandler
             )
         }
+
+        if (showFabDropdown) {
+            Box(
+                modifier = Modifier
+                    .offset(y = (-90).dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+                DropdownMenu(
+                    expanded = showFabDropdown,
+                    onDismissRequest = { showFabDropdown = false },
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                ) {
+                    // Fixed: Added required parameters and proper function call
+                    DropDownItem_1(
+                        viewModel = koinInject(), // or get from appropriate source
+                        nomFun = "Toggle Client Button", // or get from resources
+                        onDismissDropdown = { showFabDropdown = false }
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun CatalogSelectionDialog(
-    onDismiss: () -> Unit,
-    onCatalogSelected: (Long) -> Unit,
-    viewModelInitApp: ViewModelInitApp
+private fun DropDownItem_1(
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    nomFun: String,
+    onDismissDropdown: () -> Unit,
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Sélectionner un catalogue") },
-        text = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    TextButton(
-                        onClick = { onCatalogSelected(148L) }
-                    ) {
-                        Text("Catalogue Cosmétiques")
-                    }
-
-                    TextButton(
-                        onClick = { onCatalogSelected(149L) }
-                    ) {
-                        Text("Catalogue Confiseries")
-                    }
-
-                    TextButton(
-                        onClick = { onCatalogSelected(150L) }
-                    ) {
-                        Text("Catalogue Téléphones")
-                    }
-                }
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Execute function",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = { Text(nomFun) },
+            onClick = {
+                val currentValues = focusedValuesGetter.active_Central_Values
+                val newValues = currentValues.copy(
+                    affiche_Floating_Button_Cible_Client = !currentValues.affiche_Floating_Button_Cible_Client
+                )
+                focusedValuesGetter.update_activeCentralValues(newValues)
+                onDismissDropdown()
             }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Annuler")
-            }
-        }
-    )
+        )
+    }
 }
-
-// Navigation Items
-object NavigationItems {
-    fun getItems() = listOf(
-        ScreensApp2.A_ClientsLocationGps,
-        Screen.FacadePresentoireProduits,
-        Screen.FragmentProduitFastSearchDialog,
-        Screen.Screen1PanieVentsFinale,
-        Screen.TravailleTempRecorder,
-        Screen.Achats_Produits_Chez_Grossists,
-        Screen.ToggleFab,
-        Screen.EditDatabaseWithCreateNewArticles,
-        Screen.DialogTests
-    )
-}
-

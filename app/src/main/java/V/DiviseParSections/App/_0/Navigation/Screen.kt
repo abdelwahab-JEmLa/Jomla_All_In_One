@@ -21,10 +21,10 @@ sealed class Screen(
     val title: String,
     val color: Color
 ) {
-    data object A_ClientsLocationGps : Screen(
-        route = "A_ClientsLocationGps",
+    data object A_Clients_LocationGps : Screen(
+        route = "A_Clients_LocationGps",
         icon = Icons.Default.MapsHomeWork,
-        title = "A_ClientsLocationGps",
+        title = "A_Clients_LocationGps",
         color = Color(0xFFFF5722)
     )
 

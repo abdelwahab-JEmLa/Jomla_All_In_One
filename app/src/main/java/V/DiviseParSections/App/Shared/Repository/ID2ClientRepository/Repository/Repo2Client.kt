@@ -42,7 +42,7 @@ class Repo2Client(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<M2Client>>(emptyList())
-    val datasState: State<List<M2Client>> = this._datas
+    private val datasState: State<List<M2Client>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -161,6 +161,7 @@ data class M2Client(
 
     //Etates Mutable
     var edite_Exact_Gps_est_fait: Boolean = false,
+    var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
 
     // Section Centralization Valeurs Pour Injection add_New TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",

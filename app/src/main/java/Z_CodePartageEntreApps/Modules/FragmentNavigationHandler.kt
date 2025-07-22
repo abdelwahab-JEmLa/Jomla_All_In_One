@@ -106,7 +106,7 @@ class FragmentNavigationHandler {
     // Helper function to get all screen instances
     private fun getAllScreens(): List<Screen> {
         return listOf(
-            Screen.A_ClientsLocationGps,
+            Screen.A_Clients_LocationGps,
             Screen.FacadePresentoireProduits,
             Screen.EditDatabaseWithCreateNewArticles,
             Screen.Screen1PanieVentsFinale,

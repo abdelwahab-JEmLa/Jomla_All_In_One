@@ -309,7 +309,7 @@ fun AppNavHost(
             // Handle client selection navigation logic
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
                 LaunchedEffect(Unit) {
-                    navController.navigate(Screen.A_ClientsLocationGps.route) {
+                    navController.navigate(Screen.A_Clients_LocationGps.route) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
@@ -363,7 +363,7 @@ fun NavGraphBuilder.app2(
     fragmentNavigationHandler: FragmentNavigationHandler,
 ) {
     composable(
-        route = Screen.A_ClientsLocationGps.route,
+        route = Screen.A_Clients_LocationGps.route,
     ) { backStackEntry ->
         // Create add_New more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
@@ -395,7 +395,7 @@ private fun navigateToMainScreen(
 ) {
     navController.navigate(Screen.FacadePresentoireProduits.route) {
         // Pop the current fragment off the back stack
-        popUpTo(Screen.A_ClientsLocationGps.route) {
+        popUpTo(Screen.A_Clients_LocationGps.route) {
             inclusive = true
         }
         launchSingleTop = true
@@ -428,5 +428,5 @@ private fun CleanupEffect(onCleanup: () -> Unit) {
 }
 
 object ScreensApp2 {
-    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
+    val A_ClientsLocationGps = Screen.A_Clients_LocationGps
 }
