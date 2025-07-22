@@ -150,7 +150,6 @@ fun MapContent(
             )
         }
 
-        // Reset editing state through callbacks
         onEditModeChange(false)
         onMarkerKeyIdChange(null)
         mapView.controller.setZoom(zoomLevel)
@@ -255,9 +254,9 @@ fun MapContent(
                         mapView.invalidate()
                     }
                 },
-                onPourEdite_Gps_Client = { m2Client ->
+                onPourEdite_Gps_Client = {
                     handleEditGps(
-                        markerToEdit = m2Client,
+                        markerToEdit = editingMarkerKeyId,
                         uiState = uiState,
                         viewModel = viewModel,
                         mapView = mapView,
