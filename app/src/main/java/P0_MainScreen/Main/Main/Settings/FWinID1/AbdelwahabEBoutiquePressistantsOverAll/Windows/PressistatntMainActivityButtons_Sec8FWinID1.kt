@@ -221,7 +221,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.aCentralFacade
+                        .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }

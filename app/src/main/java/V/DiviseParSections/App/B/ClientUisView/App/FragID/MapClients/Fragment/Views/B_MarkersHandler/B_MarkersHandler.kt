@@ -1,9 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Click_On_Marque
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
@@ -35,7 +37,8 @@ fun addOuUpdateMapMarkers(
     val locationOverlay = preserveLocationOverlay(mapView)
 
     // Filter clientAchteurs based on the current mode
-    val clientsToShow = filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
+    val clientsToShow =
+        filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
 
     // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(
@@ -60,10 +63,10 @@ fun addMarkersForFilteredClients(
         try {
             createAndAddMarker(
                 viewModel,
-                mapView,
-                client,
-                context,
-                showMarkerDetails,
+                mapView = mapView,
+                client = client,
+                context = context,
+                showMarkerDetails = showMarkerDetails,
             )
         } catch (e: Exception) {
         }
@@ -74,12 +77,13 @@ fun addMarkersForFilteredClients(
 
 fun createAndAddMarker(
     viewModel: MapClientsViewModel,
+    focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     mapView: MapView,
     client: M2Client,
     context: Context,
     showMarkerDetails: Boolean,
 ) {
-    val repo= viewModel.getter.repo2Client
+    val repo = viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
         id = client.id.toString()
@@ -100,12 +104,23 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            val clickedMarkerM2Client= repo.datasValue.find { it.id.toString()==clickedMarker.id }
+            val current_ADD_Au_Ciblage_Clients = focusedValuesGetter.active_Central_Values
+                .click_On_Marque == Click_On_Marque.ADD_Au_Ciblage_Clients
+            when (current_ADD_Au_Ciblage_Clients) {
+                false -> {
+                    val clickedMarkerM2Client =
+                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
 
-            viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
+                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
 
-            if (showMarkerDetails) clickedMarker.showInfoWindow()
-            true
+                    if (showMarkerDetails) clickedMarker.showInfoWindow()
+                    true
+                }
+
+                true -> {
+
+                }
+            }
         }
     }
 
@@ -167,7 +182,7 @@ fun configureMarkerInfoWindow(
     }
 
     val container = marker.infoWindow.view.findViewById<LinearLayout>(containerResourceId)
-    container?.let {
+    container?.let { it ->
         val backgroundColor = viewModel.getLastTransaction(client)?.let {
             ContextCompat.getColor(
                 context,
