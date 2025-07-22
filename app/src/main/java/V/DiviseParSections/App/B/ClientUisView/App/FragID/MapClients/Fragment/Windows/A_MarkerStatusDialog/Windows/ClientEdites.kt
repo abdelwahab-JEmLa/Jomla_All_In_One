@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun ClientEdites(
     viewModel: MapClientsViewModel,
+    focusedValuesSetter: FocusedValuesSetter =viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     repo2Client: Repo2Client = viewModel.aCentralFacade.repositorysMainGetter.repo2Client,
     marqueClick: Marker,
     marqueClickRelativeClient: M2Client?,
@@ -64,9 +66,10 @@ fun ClientEdites(
                 .padding(end = 8.dp)
                 .clickable {
                     val m2Client = repo2Client.datasValue.find { it.id == marqueClick.id.toLong() }
-
                     m2Client?.let { onClickToEditeMarquerPosition(m2Client) }
                     onDismiss()
+                    viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                    focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                 }
         ) {
             Icon(
