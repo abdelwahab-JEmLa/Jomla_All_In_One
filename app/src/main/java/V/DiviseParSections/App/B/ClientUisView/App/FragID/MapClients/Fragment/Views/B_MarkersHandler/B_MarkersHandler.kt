@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Click_On_Marque
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -114,7 +114,7 @@ fun createAndAddMarker(
                 focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
 
             when (current_ADD_Au_Ciblage_Clients) {
-                Click_On_Marque.ADD_Au_Ciblage_Clients -> {
+                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
                     val max_position_Don_Lis_Cible_Clients_au_VentPeriod =
                         filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                             .maxOfOrNull { it.position_Don_Lis_Cible_Clients_au_VentPeriod }
@@ -138,7 +138,7 @@ fun createAndAddMarker(
                     true
                 }
 
-                Click_On_Marque.Delete_Ciblage_Client_Et_Qui_Son_Apre -> {
+                ActiveCentralValues.Click_On_Marque.Delete_Ciblage_Client_Et_Qui_Son_Apre -> {
                     filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.forEach {
                         if (it.position_Don_Lis_Cible_Clients_au_VentPeriod >
                             viewModel.getLastTransaction(m2Client)?.position_Don_Lis_Cible_Clients_au_VentPeriod!!
@@ -148,7 +148,6 @@ fun createAndAddMarker(
                                     position_Don_Lis_Cible_Clients_au_VentPeriod = 0
                                 )
                             )
-
                         }
                     }
                     true

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Click_On_Marque
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -40,13 +39,27 @@ data class ActiveCentralValues(
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()
         }
-    }
 
+    }
+    enum class Click_On_Marque {
+        Standart,
+        ADD_Au_Ciblage_Clients,
+        Delete_Ciblage_Client_Et_Qui_Son_Apre;
+
+        fun toggle_retrn(): Click_On_Marque {
+            return when (this) {
+                Standart -> ADD_Au_Ciblage_Clients
+                ADD_Au_Ciblage_Clients -> Delete_Ciblage_Client_Et_Qui_Son_Apre
+                Delete_Ciblage_Client_Et_Qui_Son_Apre -> Standart
+            }
+        }
+    }
     sealed class RoleDefinieParSourceACetteFragment() {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
             RoleDefinieParSourceACetteFragment()
     }
+
 }
 
 @Stable
