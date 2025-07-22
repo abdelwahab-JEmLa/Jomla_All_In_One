@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.addOuUpdateMapMarkers
@@ -11,6 +12,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
@@ -43,6 +46,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
+    focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
 ) {
@@ -119,8 +123,7 @@ fun MapContent(
                 .getSemanticsTag(
                     nomVal = "markerStatusDialogActiveM2Client",
                     data = markerStatusDialogActiveM2Client
-                )
-            ,
+                ),
             factory = { mapView }
         )
 
@@ -188,9 +191,10 @@ fun MapContent(
             )
         }
 
-        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
+        val activeOnVentM2ClientInfos =
+            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
 
-        if (activeOnVentM2ClientInfos != null ||  markerStatusDialogActiveM2Client != null) {
+        if (activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
@@ -208,6 +212,11 @@ fun MapContent(
                     }
                 },
             )
+        }
+        val affiche_Floating_Button_Cible_Client =
+            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client
+        affiche_Floating_Button_Cible_Client.ifTrue {
+            Floating_Separated_FragMap_Button_1()
         }
     }
 }
