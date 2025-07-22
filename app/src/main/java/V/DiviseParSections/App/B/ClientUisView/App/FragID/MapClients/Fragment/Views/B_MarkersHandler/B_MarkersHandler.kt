@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 fun addOuUpdateMapMarkers(
@@ -31,6 +32,8 @@ fun addOuUpdateMapMarkers(
         .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
     mapView.overlays.removeAll(markersToRemove)
 
+    val locationOverlay = preserveLocationOverlay(mapView)
+
     // Filter clientAchteurs based on the current mode
     val clientsToShow = filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
 
@@ -41,6 +44,8 @@ fun addOuUpdateMapMarkers(
         viewModel,
         showMarkerDetails,
     )
+
+    restoreLocationOverlayAtBottom(mapView, locationOverlay)
 }
 
 fun addMarkersForFilteredClients(
@@ -61,7 +66,6 @@ fun addMarkersForFilteredClients(
                 showMarkerDetails,
             )
         } catch (e: Exception) {
-            // Error handling
         }
     }
 
@@ -75,7 +79,7 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
 ) {
-   val repo= viewModel.getter.repo2Client
+    val repo= viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
         id = client.id.toString()
@@ -182,5 +186,19 @@ fun configureMarkerInfoWindow(
                 marker.infoWindow.view.findViewById<android.widget.TextView>(titleId)
             titleTextView?.gravity = android.view.Gravity.CENTER
         }
+    }
+}
+
+private fun preserveLocationOverlay(mapView: MapView): Any? {
+    return mapView.overlays.find { overlay ->
+        overlay.javaClass.simpleName.contains("Location") ||
+                overlay.toString().contains("location", ignoreCase = true)
+    }
+}
+
+private fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
+    locationOverlay?.let { overlay ->
+        mapView.overlays.remove(overlay)
+        mapView.overlays.add(0, overlay as Overlay?)
     }
 }

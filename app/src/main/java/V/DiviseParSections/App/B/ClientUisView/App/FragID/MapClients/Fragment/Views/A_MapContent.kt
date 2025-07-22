@@ -40,8 +40,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-// Updated MapContent function with location tracking
-
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -72,17 +70,15 @@ fun MapContent(
         LocationTracker(
             context = context,
             mapView = mapView,
-            radius = 25.0, // 10 meters proximity circle
-            xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
+            radius = 25.0,
+            xmlResources = listOf("location_person" to R.drawable.ic_person_location)
         )
     }
 
     LaunchedEffect(Unit) {
-        // Initialize map position only once on first load
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
-        // Start location tracking without auto-following
-        locationTracker.startTracking()           //<--
-        //TODO(1): fait que la position ce mete under les infos bull
+        locationTracker.startTracking()
+        ensureLocationOverlayIsAtBottom(mapView)
     }
 
     DisposableEffect(context) {
@@ -92,7 +88,6 @@ fun MapContent(
         mapView.setMultiTouchControls(true)
 
         onDispose {
-            // Stop location tracking when disposing
             locationTracker.stopTracking()
             cleanupMapResources(mapView, viewModel)
         }
@@ -112,6 +107,7 @@ fun MapContent(
             currentFilterMode = currentFilterMode,
             showMarkerDetails = showMarkerDetails
         )
+        ensureLocationOverlayIsAtBottom(mapView)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -147,7 +143,6 @@ fun MapContent(
             ?.isVisible ?: false
 
         if (isSecteursButtonVisible) {
-            // MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
         A_GlobalOptionsControlsFloatingActionButtons_FragId1(
@@ -213,5 +208,17 @@ fun MapContent(
                 },
             )
         }
+    }
+}
+
+private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
+    val locationOverlay = mapView.overlays.find { overlay ->
+        overlay.javaClass.simpleName.contains("Location") ||
+                overlay.toString().contains("location", ignoreCase = true)
+    }
+
+    locationOverlay?.let { overlay ->
+        mapView.overlays.remove(overlay)
+        mapView.overlays.add(0, overlay)
     }
 }
