@@ -1,45 +1,48 @@
+// File 1: Fixed Button State and Floating Button Component
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
-import kotlin.math.roundToInt
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-  //<--
-  //TODO(1): fix le code 
+import kotlin.math.roundToInt
+
+// Fixed Button_State data class with proper logic
 data class Button_State(
     val showLabels: Boolean = true,
     val its_Active: Boolean = false,
     val text_Label: String = "",
-    val colors: Pair<Color,Color> =,
-    val colors: Pair<Icons.Default,Icons.Default> =,
+    val colors: Pair<Color, Color> = Pair(Color.White, Color.White),
+    val icons: Pair<ImageVector, ImageVector> = Pair(Icons.Default.Remove, Icons.Default.Add),
     val description_Functionement: String = "Toggle product details expansion",
 ) {
     companion object {
@@ -51,18 +54,25 @@ data class Button_State(
 
 @Composable
 fun Floating_Separated_FragMap_Button_1(
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    buttonState: Button_State = Button_State.get_Default()
+    buttonState: Button_State = Button_State.get_Default().copy(
+        text_Label = "Toggle Button",
+        icons = Pair(Icons.Default.Remove, Icons.Default.Add),
+        colors = Pair(Color.Red, Color.Green) // Different colors for active/inactive states
+    )
 ) {
-    var showLabels by remember { mutableStateOf(buttonState.showLabels) }
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val isActive = currentValues.click_On_Marque == Click_On_Marque.ADD_Au_Ciblage_Clients
+
+    val updatedButtonState = buttonState.copy(its_Active = isActive)
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 200f)) } // Fixed: Better initial position
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 200f) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -74,7 +84,6 @@ fun Floating_Separated_FragMap_Button_1(
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
 
-                        // Optional: Add boundary constraints
                         offsetX = offsetX.coerceIn(0f, screenWidth.value - 100f)
                         offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 100f)
                     }
@@ -85,16 +94,16 @@ fun Floating_Separated_FragMap_Button_1(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (buttonState.showLabels) {
+                if (updatedButtonState.showLabels) {
                     Text(
-                        text = "its_Active text_Label",
-                        color = Color.White, // Better contrast
+                        text = updatedButtonState.text_Label,
+                        color = Color.White,
                         modifier = Modifier
                             .background(
-                                color = if ()
-                                    Color.Red.copy(alpha = 0.8f)
+                                color = if (updatedButtonState.its_Active)
+                                    updatedButtonState.colors.first.copy(alpha = 0.8f)
                                 else
-                                    Color.Green.copy(alpha = 0.8f),
+                                    updatedButtonState.colors.second.copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -102,25 +111,25 @@ fun Floating_Separated_FragMap_Button_1(
                 }
                 FloatingActionButton(
                     modifier = Modifier
-
-                        .getSemanticsTag(buttonState, "buttonState")
+                        .getSemanticsTag(updatedButtonState, "buttonState")
                         .size(48.dp),
                     onClick = {
-                        val currentValues = focusedValuesGetter.active_Central_Values
                         val newValues = currentValues.copy(
-                            click_On_Marque = toggle_retrn()
+                            click_On_Marque = currentValues.click_On_Marque.toggle_retrn()
                         )
                         focusedValuesGetter.update_activeCentralValues(newValues)
                     },
-                    containerColor = if ()
-                        Color.Red
+                    containerColor = if (updatedButtonState.its_Active)
+                        updatedButtonState.colors.first
                     else
-                        Color.Green
+                        updatedButtonState.colors.second
                 ) {
                     Icon(
-                        imageVector = if ()
-                          ,
-                        contentDescription = null,
+                        imageVector = if (updatedButtonState.its_Active)
+                            updatedButtonState.icons.first
+                        else
+                            updatedButtonState.icons.second,
+                        contentDescription = updatedButtonState.description_Functionement,
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -129,12 +138,16 @@ fun Floating_Separated_FragMap_Button_1(
         }
     }
 }
+
+// Fixed Click_On_Marque enum
 enum class Click_On_Marque {
-      Standart,
-      ADD_Au_Ciblage_Clients;
+    Standart,
+    ADD_Au_Ciblage_Clients;
 
     fun toggle_retrn(): Click_On_Marque {
-          //<--
-          //TODO(1): regle
+        return when (this) {
+            Standart -> ADD_Au_Ciblage_Clients
+            ADD_Au_Ciblage_Clients -> Standart
+        }
     }
 }
