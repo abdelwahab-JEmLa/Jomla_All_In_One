@@ -5,11 +5,15 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,13 +31,17 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,7 +53,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -53,9 +63,76 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
+private fun CustomStatusDropdownMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest
+    ) {
+        // Helper function to create elevated card dropdown item
+        @Composable
+        fun StatusDropdownItem(
+            status: M8BonVent.EtateActuellementEst,
+            text: String
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(id = status.color)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Text(
+                            text = text,
+                            color = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                },
+                onClick = {
+                    onStatusSelected(status)
+                    onDismissRequest()
+                }
+            )
+        }
+
+        // Available status options when current state is "Probleme"
+        M8BonVent.EtateActuellementEst.Ordre_Gerant.let { etate ->
+            StatusDropdownItem(
+                status = etate,
+                text = etate.nomArabe
+            )
+        }
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
+            text = "عندو سلعة"
+        )
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
+            text = "الشاري غائب"
+        )
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.FERME,
+            text = "مغلق"
+        )
+    }
+}
+
+@Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .activeonVent_M8BonVent,
@@ -80,6 +157,7 @@ fun MarkerStatusDialog(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
+    var showStatusDropdown by remember { mutableStateOf(false) }
 
     val clientId = relative_M2Client?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(relative_M2Client?.clientTypeMode) }
@@ -92,7 +170,6 @@ fun MarkerStatusDialog(
     fun handleDismiss() {
         showExitConfirmationDialog = true
     }
-
 
     Dialog(
         onDismissRequest = { handleDismiss() },
@@ -193,12 +270,90 @@ fun MarkerStatusDialog(
                                                 clickedClient = clientId,
                                             )
                                     }
+
                                     item {
-                                        M8BonVent.EtateActuellementEst.Rapport
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
+                                        Box {
+                                            Card(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = MaterialTheme.colorScheme.secondary
+                                                ),
+                                                elevation = CardDefaults.cardElevation(
+                                                    defaultElevation = 4.dp
+                                                )
+                                            ) {
+                                                IconButton(
+                                                    onClick = { showStatusDropdown = true },
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(8.dp)
+                                                ) {
+                                                    Column(
+                                                        Modifier.background(Color.Red),
+                                                        horizontalAlignment = Alignment.CenterHorizontally
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.DeveloperMode,
+                                                            contentDescription = null,
+                                                            tint = Color.White
+                                                        )
+                                                        Text(
+                                                            text = ":تقرير الدخول معه في حالة انسداد في التجارة بسبب",
+                                                            color = Color.White,
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            CustomStatusDropdownMenu(
+                                                expanded = showStatusDropdown,
+                                                onDismissRequest = { showStatusDropdown = false },
+                                                onStatusSelected = { selectedStatus ->
+
+                                                    val foundOrDefaultResult = relative_M2Client?.let {
+                                                        get_Found_Or_Default_M8BonVent(
+                                                            aCentralFacade,
+                                                            it,
+                                                            etateActuellementEst = selectedStatus,
+                                                        )
+                                                    }
+
+                                                    val relative_M8BonVent = foundOrDefaultResult?.found ?: foundOrDefaultResult?.default_If_No_Found
+
+                                                    val new_M17MessageVocale = relative_M8BonVent?.let {
+                                                        M17MessageVocale
+                                                            .get_default()
+                                                            .copy(
+                                                                parent_M8BonVent_KeyID = it.keyID,
+                                                                parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
+                                                            )
+                                                    }
+
+                                                    val updatedBonVent = new_M17MessageVocale?.let {
+                                                        relative_M8BonVent
+                                                            .copy(
+                                                                etateActuellementEst = selectedStatus,
+                                                                parent_M17Message_KeyID = it.keyID,
+                                                                parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
+                                                            )
+                                                    }
+
+                                                    if (updatedBonVent != null) {
+                                                        viewModel.getter.repo8BonVent.updateIfExist(updatedBonVent)
+                                                    }
+
+                                                    val updated_active_Central_Values =
+                                                        focusedValuesGetter.active_Central_Values.copy(
+                                                            active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
+                                                        )
+
+                                                    focusedValuesGetter.update_activeCentralValues(
+                                                        updated_active_Central_Values
+                                                    )
+                                                }
                                             )
+                                        }
                                     }
 
                                     activeCompt?.let { activeCompt ->

@@ -20,11 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -87,23 +85,7 @@ fun View_MainItem(
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
 
-    // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
-
-    // State for dropdown menu
-    var showDropdownMenu by remember { mutableStateOf(false) }
-    var selectedStatus by remember { mutableStateOf<M8BonVent.EtateActuellementEst?>(null) }
-
-    // Auto-show dropdown for recently created items (within 10 seconds)
-    LaunchedEffect(relative_M8BonVent.creationTimestamps) {
-        val currentTime = System.currentTimeMillis()
-        val timeDifference = currentTime - relative_M8BonVent.creationTimestamps
-
-        // If created within the last 10 seconds (10000 milliseconds)
-        if (timeDifference <= 10000) {
-            showDropdownMenu = true
-        }
-    }
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
@@ -222,79 +204,6 @@ fun View_MainItem(
                     tint = Color.White
                 )
             }
-
-            Row(
-                modifier = Modifier.align(Alignment.TopEnd),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                selectedStatus?.let { status ->
-                    Text(
-                        text = status.nomArabe,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                Box {
-                    IconButton(
-                        modifier = Modifier,
-                        onClick = {
-                            showDropdownMenu = true
-                        }
-                    ) {
-                        Row {
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = "Options de statut",
-                                tint = Color.White
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Options de statut",
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    StatusDropdownMenu(
-                        relative_M8BonVent = relative_M8BonVent,
-                        viewModel = viewModel,
-                        expanded = showDropdownMenu,
-                        onDismissRequest = { showDropdownMenu = false },
-                        onStatusSelected = { status ->
-                            val new_M17MessageVocale = M17MessageVocale
-                                .get_default()
-                                .copy(
-                                    parent_M8BonVent_KeyID = relative_M8BonVent.keyID,
-                                    parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
-                                )
-
-                            val updatedBonVent = relative_M8BonVent
-                                .copy(
-                                    etateActuellementEst = status,
-                                    parent_M17Message_KeyID = new_M17MessageVocale.keyID,
-                                    parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
-                                )
-
-                            // FIX: Use the new immediate update method
-                            viewModel.getter.repo8BonVent.updateWithImmediateUIRefresh(updatedBonVent)
-
-                            val updated_active_Central_Values =
-                                activeCentralValues.copy(
-                                    active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
-                                )
-
-                            focusedValuesGetter.update_activeCentralValues(
-                                updated_active_Central_Values
-                            )
-
-                            selectedStatus = status
-                            showDropdownMenu = false // Close the dropdown
-                        }
-                    )
-                }
-            }
-
 
             Column(
                 modifier = Modifier
