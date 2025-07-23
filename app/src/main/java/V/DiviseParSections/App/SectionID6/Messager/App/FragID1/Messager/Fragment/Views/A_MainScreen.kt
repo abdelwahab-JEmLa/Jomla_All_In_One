@@ -160,10 +160,17 @@ fun MainList(
         }
     }
 
-    // Scroll to the last item when the list changes
+    // Scroll to the last item when the list changes and at startup
     LaunchedEffect(latestStatesForEachMessage.size) {
         if (latestStatesForEachMessage.isNotEmpty()) {
-            listState.animateScrollToItem(latestStatesForEachMessage.size - 1)
+            listState.scrollToItem(latestStatesForEachMessage.size - 1)
+        }
+    }
+
+    // Scroll to bottom at startup
+    LaunchedEffect(Unit) {
+        if (latestStatesForEachMessage.isNotEmpty()) {
+            listState.scrollToItem(latestStatesForEachMessage.size - 1)
         }
     }
 
