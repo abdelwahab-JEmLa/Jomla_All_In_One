@@ -310,7 +310,7 @@ fun ButtonMessageVocale(
             ) {
                 when {
                     isUploading -> Icon(
-                        painter = painterResource(id = R.drawable.ic_telegram_send),
+                        painter = painterResource(id = R.drawable.location_arrow),
                         contentDescription = "Envoi en cours via Telegram",
                         tint = Color.White
                     )
@@ -322,7 +322,7 @@ fun ButtonMessageVocale(
                     )
 
                     else -> Icon(
-                        painter = painterResource(id = R.drawable.ic_telegram_mic),
+                        painter = painterResource(id = R.drawable.ic_telegram_send),
                         contentDescription = "Commencer l'enregistrement vocal",
                         tint = Color.White
                     )

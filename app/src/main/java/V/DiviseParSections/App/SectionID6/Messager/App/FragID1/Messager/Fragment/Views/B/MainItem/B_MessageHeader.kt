@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -97,6 +98,7 @@ fun MessageHeader(
                                 }
                             }
                         }
+
                         true -> when (state.etate) {
                             M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
                             M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
@@ -116,6 +118,7 @@ fun MessageHeader(
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
                                 M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
                             }
+
                             else -> when (state.etate) {
                                 M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
                                 M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
@@ -136,23 +139,27 @@ fun MessageHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Delete button
-                IconButton(
-                    onClick = {
-                        showDeleteConfirmation = true
-                    },
-                    modifier = Modifier.size(28.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Supprimer le message",
-                        tint = when {
-                            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
-                            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                            else -> MaterialTheme.colorScheme.error
+                focusedValuesGetter.currentApp_Est_Admin.ifTrue {
+                    IconButton(
+                        onClick = {
+                            showDeleteConfirmation = true
                         },
-                        modifier = Modifier.size(16.dp)
-                    )
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Supprimer le message",
+                            tint = when {
+                                isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
+                                isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(
+                                    alpha = 0.8f
+                                )
+
+                                else -> MaterialTheme.colorScheme.error
+                            },
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
 
                 Column(
@@ -180,6 +187,7 @@ fun MessageHeader(
                                 isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(
                                     alpha = 0.5f
                                 )
+
                                 else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             },
                             maxLines = 1,

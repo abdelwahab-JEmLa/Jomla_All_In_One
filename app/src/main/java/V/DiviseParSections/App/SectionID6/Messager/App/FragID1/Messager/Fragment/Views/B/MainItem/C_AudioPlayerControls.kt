@@ -220,6 +220,7 @@ private fun ProgressSection(
 
             // Status indicator
             StatusIndicator(
+                isAdminMessage=isAdminMessage,
                 isListened = isListened,
                 latestTimestamp = latestTimestamp,
                 datesHandler = datesHandler
@@ -272,10 +273,12 @@ private fun StatusIndicator(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     isListened: Boolean,
     latestTimestamp: Long,
-    datesHandler: DatesHandler
+    datesHandler: DatesHandler,
+    isAdminMessage: Boolean
 ) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
-    currentApp_Est_Admin.ifTrue {
+
+    (isAdminMessage || currentApp_Est_Admin).ifTrue {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
