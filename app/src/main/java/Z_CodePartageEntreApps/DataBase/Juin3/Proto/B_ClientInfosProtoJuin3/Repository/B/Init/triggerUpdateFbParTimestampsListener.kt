@@ -9,9 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsListener() { //<--
-//TODO(1): regle le add et delete tigger
+fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsListener() {
     if (isListenerRegistered) return
     isListenerRegistered = true
 
@@ -19,31 +17,50 @@ fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsList
         override fun onDataChange(snapshot: DataSnapshot) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    var updateCount = 0
+                    var addCount = 0
+                    var deleteCount = 0
+                    val currentLocalEntities = dao.getAll()
+                    val currentLocalKeys = currentLocalEntities.map { it.keyFireBase }.toSet()
+                    val firebaseKeys = mutableSetOf<String>()
+
+                    // Process Firebase data and detect additions
                     for (child in snapshot.children) {
                         try {
-                            child.getValue(M2Client::class.java)?.let { entity ->
-                                val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
-                                val shouldUpdate = try {
-                                    val localEntity = dao.getAll().find { it.keyFireBase == entityWithKey.keyFireBase }
-                                    if (localEntity == null) {
-                                        true
-                                    } else {
-                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
-                                    }
-                                } catch (e: Exception) {
-                                    true
-                                }
+                            val firebaseKey = child.key ?: ""
+                            firebaseKeys.add(firebaseKey)
 
-                                if (shouldUpdate) {
+                            child.getValue(M2Client::class.java)?.let { entity ->
+                                val entityWithKey = entity.copy(keyFireBase = firebaseKey)
+                                val localEntity = currentLocalEntities.find { it.keyFireBase == firebaseKey }
+
+                                if (localEntity == null) {
+                                    // New entity - this is an addition
                                     dao.upsert(entityWithKey)
-                                    updateCount++
+                                    addCount++
+                                } else {
+                                    // Existing entity - only update if timestamp is newer (but don't count as add/delete)
+                                    val shouldUpdate = entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
+                                    if (shouldUpdate) {
+                                        dao.upsert(entityWithKey)
+                                    } else {
+
+                                    }
                                 }
                             }
                         } catch (e: Exception) {}
                     }
 
-                    if (updateCount > 0) {
+                    // Detect deletions - entities that exist locally but not in Firebase
+                    val deletedKeys = currentLocalKeys - firebaseKeys
+                    if (deletedKeys.isNotEmpty()) {
+                        for (deletedKey in deletedKeys) {
+                            dao.deleteByKeyId(deletedKey) // You'll need to implement this method in your DAO
+                            deleteCount++
+                        }
+                    }
+
+                    // Only trigger repository state update if there were actual additions or deletions
+                    if (addCount > 0 || deleteCount > 0) {
                         val allData = dao.getAll()
                         withContext(Dispatchers.Main) {
                             val newRepoState = dataBaseCreationFactoryMID2ClientRepository.RepoState(

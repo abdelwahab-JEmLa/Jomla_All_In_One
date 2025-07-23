@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface B_ClientInfosProtoJuin3Dao {
+    @Query("DELETE FROM M2Client WHERE keyID = :keyId")
+    suspend fun deleteByKeyId(keyId: String)
+
     @Query("SELECT * FROM M2Client ")
     suspend fun getAll(): MutableList<M2Client>
 
