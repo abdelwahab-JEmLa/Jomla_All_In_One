@@ -101,7 +101,8 @@ class DataBaseInitFactory_8BonVent(
                                     } else {
                                         // UPDATE operation - check timestamp
                                         if (entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase) {
-                                            dao.update(entityWithKey)
+                                            // Use upsert instead of update to ensure the entity is properly saved
+                                            dao.upsert(entityWithKey)
                                             updateCount++
                                             Log.d(repoTAG, "onDataChange() - UPDATE: ${entityWithKey.keyID} (FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase}, Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase})")
                                         } else {

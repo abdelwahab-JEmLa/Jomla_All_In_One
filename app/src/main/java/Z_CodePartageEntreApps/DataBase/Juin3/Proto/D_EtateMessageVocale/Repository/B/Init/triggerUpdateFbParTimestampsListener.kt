@@ -18,7 +18,6 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
         override fun onDataChange(snapshot: DataSnapshot) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    // Get current local data to compare with Firebase data
                     val localData = dao.getAll()
                     val localKeyIds = localData.map { it.keyID }.toSet()
                     val firebaseKeyIds = mutableSetOf<String>()
@@ -26,7 +25,6 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
                     var updateCount = 0
                     var addCount = 0
 
-                    // Process Firebase data - handle updates and additions
                     for (child in snapshot.children) {
                         try {
                             child.getValue(M17MessageVocale::class.java)?.let { entity ->
@@ -37,24 +35,20 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
 
                                 val shouldUpdate = if (localEntity == null) {
                                     addCount++
-                                    true // New item - add it
+                                    true
                                 } else {
-                                    // Existing item - check if it needs update
                                     entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
                                 }
 
                                 if (shouldUpdate) {
-                                    dao.upsert(entityWithKey) //<--
-                                    //TODO(1): pk ca ne tiggre pas quend un
+                                    dao.upsert(entityWithKey)
                                     updateCount++
                                 }
                             }
                         } catch (e: Exception) {
-                            // Log error if needed but continue processing
                         }
                     }
 
-                    // Handle deletions - remove items that exist locally but not in Firebase
                     val itemsToDelete = localKeyIds - firebaseKeyIds
                     var deleteCount = 0
 
@@ -63,11 +57,9 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
                             dao.deleteByKeyId(keyToDelete)
                             deleteCount++
                         } catch (e: Exception) {
-                            // Log error if needed but continue processing
                         }
                     }
 
-                    // Update repository state if any changes occurred
                     if (updateCount > 0 || deleteCount > 0 || addCount > 0) {
                         val allData = dao.getAll()
                         withContext(Dispatchers.Main) {
@@ -78,7 +70,6 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
                             _repoState.value = newRepoState
                         }
 
-                        // Optional: Log the changes for debugging
                         println("$repoTAG: Changes detected - Added: $addCount, Updated: ${updateCount - addCount}, Deleted: $deleteCount")
                     }
                 } catch (e: Exception) {
