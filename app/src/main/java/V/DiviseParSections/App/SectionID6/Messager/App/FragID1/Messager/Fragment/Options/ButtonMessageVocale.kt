@@ -273,7 +273,8 @@ fun ButtonMessageVocale(
                                         aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(
                                             updatedEtate
                                         )
-
+                                    //<--
+                                    //TODO(1): todo sr haire regle tarifficationon pour grossist et le max prix 
                                         Toast.makeText(
                                             context,
                                             "Message vocal envoyé via Telegram!",
