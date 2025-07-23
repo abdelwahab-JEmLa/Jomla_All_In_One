@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -34,6 +35,7 @@ fun MessageHeader(
     relative_M9AppCompt: Z_AppCompt?,
     relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
+    focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     clientName: String,
     vendorName: String,
     messageVID: Long,
@@ -43,6 +45,7 @@ fun MessageHeader(
     isFromActiveAccount: Boolean = false,
     isAdminMessage: Boolean = false // Add this parameter
 ) {
+    val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     Row(
@@ -66,9 +69,7 @@ fun MessageHeader(
                 Text(
                     modifier = Modifier
                         .getSemanticsTag(
-                            relative_M9AppCompt
-
-                            ,""
+                            relative_M9AppCompt, ""
                         ),
                     text = arabNom,
                     style = MaterialTheme.typography.titleSmall,
@@ -82,11 +83,26 @@ fun MessageHeader(
 
                 val currentState = etatesChildKeyIDsList.maxByOrNull { it.creationTimestamps }
                 currentState?.let { state ->
-                    val stateText = when (state.etate) {
-                        M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
-                        M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
-                        M17MessageVocale.Etate.VUE -> "👁️ Vu"
-                        M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
+
+                    val stateText = when (currentApp_Est_Admin) {
+                        false -> {
+                            if (isFromActiveAccount) {
+                                "📤 Envoyé"
+                            } else {
+                                when (state.etate) {
+                                    M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
+                                    M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
+                                    M17MessageVocale.Etate.VUE -> "👁️ Vu"
+                                    M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
+                                }
+                            }
+                        }
+                        true -> when (state.etate) {
+                            M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
+                            M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
+                            M17MessageVocale.Etate.VUE -> "👁️ Vu"
+                            M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
+                        }
                     }
 
                     Text(
@@ -100,7 +116,6 @@ fun MessageHeader(
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
                                 M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
                             }
-
                             else -> when (state.etate) {
                                 M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
                                 M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
@@ -165,7 +180,6 @@ fun MessageHeader(
                                 isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(
                                     alpha = 0.5f
                                 )
-
                                 else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             },
                             maxLines = 1,

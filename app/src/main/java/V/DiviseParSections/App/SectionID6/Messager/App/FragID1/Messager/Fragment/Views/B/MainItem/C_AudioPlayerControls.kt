@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioHandlerInterface
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
+import org.koin.compose.koinInject
 
 @Composable
 fun AudioPlayerControls(
@@ -172,6 +176,7 @@ private fun ProgressSection(
                     trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
                 )
             }
+
             isCurrentlyPlaying && playbackProgress.duration > 0 -> {
                 LinearProgressIndicator(
                     progress = { playbackProgress.progress.coerceIn(0f, 1f) },
@@ -183,6 +188,7 @@ private fun ProgressSection(
                     trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 )
             }
+
             else -> {
                 LinearProgressIndicator(
                     progress = { 0f },
@@ -237,13 +243,19 @@ private fun TimeDisplay(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+
         isCurrentlyPlaying && playbackProgress.duration > 0 -> {
             Text(
-                text = "${audioHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioHandler.formatTimeFromMillis(playbackProgress.duration)}",
+                text = "${audioHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${
+                    audioHandler.formatTimeFromMillis(
+                        playbackProgress.duration
+                    )
+                }",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+
         else -> {
             Text(
                 text = "Prêt à lire",
@@ -256,35 +268,40 @@ private fun TimeDisplay(
 
 @Composable
 private fun StatusIndicator(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     isListened: Boolean,
     latestTimestamp: Long,
     datesHandler: DatesHandler
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (isListened) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Message écouté",
-                tint = Color.Green,
-                modifier = Modifier.size(16.dp)
-            )
-            if (latestTimestamp > 0) {
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = datesHandler.getDateAndTimString(latestTimestamp).time,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+    val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
+    currentApp_Est_Admin.ifTrue {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isListened) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Message écouté",
+                    tint = Color.Green,
+                    modifier = Modifier.size(16.dp)
+                )
+                if (latestTimestamp > 0) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = datesHandler.getDateAndTimString(latestTimestamp).time,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Message non écouté",
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(16.dp)
                 )
             }
-        } else {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = "Message non écouté",
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(16.dp)
-            )
         }
     }
 }

@@ -110,7 +110,7 @@ class FocusedValuesGetter(
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val current_Compt_Et_Admin by derivedStateOf {
+    val currentApp_Est_Admin by derivedStateOf {
         active_Current_M9AppCompt?.its_Admin ==true
     }
 

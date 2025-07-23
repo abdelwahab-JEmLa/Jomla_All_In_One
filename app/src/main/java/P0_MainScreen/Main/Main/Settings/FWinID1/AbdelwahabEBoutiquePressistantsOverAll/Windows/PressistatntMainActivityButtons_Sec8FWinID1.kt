@@ -275,7 +275,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     }
 
-                    focusedValuesGetter.current_Compt_Et_Admin.ifTrue {
+                    focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,
