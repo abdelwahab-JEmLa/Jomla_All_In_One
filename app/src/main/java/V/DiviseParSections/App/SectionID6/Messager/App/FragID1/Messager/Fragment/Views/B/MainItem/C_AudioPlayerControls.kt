@@ -48,12 +48,16 @@ fun AudioPlayerControls(
     datesHandler: DatesHandler,
     context: Context,
     coroutineScope: CoroutineScope,
-    isFromActiveAccount: Boolean = false // NEW: Added parameter for styling
+    isFromActiveAccount: Boolean = false,
+    isAdminMessage: Boolean = false // Add this parameter
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
+            else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        }
     ) {
         Column(
             modifier = Modifier.padding(12.dp)
@@ -62,10 +66,11 @@ fun AudioPlayerControls(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Play/Pause/Stop ButtonAutreEtates
+                // Play/Pause/Stop Button
                 PlaybackButton(
                     isCurrentlyPlaying = isCurrentlyPlaying,
                     isCurrentlyDownloading = isCurrentlyDownloading,
+                    isAdminMessage = isAdminMessage, // Add this parameter
                     onPlayClick = {
                         handlePlaybackClick(
                             isCurrentlyPlaying = isCurrentlyPlaying,
@@ -90,7 +95,8 @@ fun AudioPlayerControls(
                     audioHandler = audioHandler,
                     isListened = isListened,
                     latestTimestamp = latestTimestamp,
-                    datesHandler = datesHandler
+                    datesHandler = datesHandler,
+                    isAdminMessage = isAdminMessage // Add this parameter
                 )
             }
         }
@@ -101,11 +107,15 @@ fun AudioPlayerControls(
 private fun PlaybackButton(
     isCurrentlyPlaying: Boolean,
     isCurrentlyDownloading: Boolean,
+    isAdminMessage: Boolean = false, // Add this parameter
     onPlayClick: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(50),
         color = when {
+            isAdminMessage && isCurrentlyPlaying -> MaterialTheme.colorScheme.onError
+            isAdminMessage && isCurrentlyDownloading -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)
             isCurrentlyPlaying -> MaterialTheme.colorScheme.error
             isCurrentlyDownloading -> MaterialTheme.colorScheme.secondary
             else -> MaterialTheme.colorScheme.primary
@@ -127,7 +137,10 @@ private fun PlaybackButton(
                     isCurrentlyPlaying -> "Arrêter la lecture"
                     else -> "Lecture du message vocal"
                 },
-                tint = Color.White,
+                tint = when {
+                    isAdminMessage -> MaterialTheme.colorScheme.error
+                    else -> Color.White
+                },
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -142,7 +155,8 @@ private fun ProgressSection(
     audioHandler: AudioRecorderAndPlayHandler,
     isListened: Boolean,
     latestTimestamp: Long,
-    datesHandler: DatesHandler
+    datesHandler: DatesHandler,
+    isAdminMessage: Boolean
 ) {
     Column(
     ) {

@@ -132,7 +132,7 @@ private fun QuantityRepresentationDropdown(
 
     Column(modifier = modifier) {
         Text(
-            text = "Représentation",
+            text = "startup Affiche Par->",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface

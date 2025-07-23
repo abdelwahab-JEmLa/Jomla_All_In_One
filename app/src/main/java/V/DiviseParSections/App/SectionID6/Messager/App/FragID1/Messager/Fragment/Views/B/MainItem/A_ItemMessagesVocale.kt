@@ -59,6 +59,7 @@ fun B_ItemMessagesVocale(
     val relative_M8BonVent = repositorysMainGetter.find_M8BonVent(relative_M17MessageVocale.parent_M8BonVent_KeyID)
 
     val its_ViewMessage_Du_Active_M9AppCompt = relative_M9AppCompt?.keyID == activeCurrent_M9AppCompt?.keyID
+    val its_Admin_Message = relative_M9AppCompt?.its_Admin ?:false
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -141,21 +142,27 @@ fun B_ItemMessagesVocale(
                             end = if (its_ViewMessage_Du_Active_M9AppCompt) 0.dp else 40.dp
                         ),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (its_ViewMessage_Du_Active_M9AppCompt) {
-                            // Green bubble for sent messages (like Telegram)
-                            when {
-                                isListened -> MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
-                                isViewed -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                isBeingRecorded -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                                else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        containerColor = when {
+                            // Admin messages get red background
+                            its_Admin_Message -> MaterialTheme.colorScheme.error
+                            // Regular styling for sent/received messages
+                            its_ViewMessage_Du_Active_M9AppCompt -> {
+                                // Green bubble for sent messages (like Telegram)
+                                when {
+                                    isListened -> MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                    isViewed -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                    isBeingRecorded -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                    else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                                }
                             }
-                        } else {
-                            // Light gray bubble for received messages (like Telegram)
-                            when {
-                                isListened -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
-                                isViewed -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-                                isBeingRecorded -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+                            else -> {
+                                // Light gray bubble for received messages (like Telegram)
+                                when {
+                                    isListened -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                                    isViewed -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                    isBeingRecorded -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+                                }
                             }
                         }
                     ),
@@ -172,31 +179,37 @@ fun B_ItemMessagesVocale(
                             .padding(12.dp)
                     ) {
                         MessageHeader(
+                            relative_M9AppCompt=relative_M9AppCompt,
+                            relative_M17MessageVocale = relative_M17MessageVocale,
                             viewModel = viewModel,
                             clientName = clientName,
                             vendorName = vendorName,
                             messageVID = relative_M17MessageVocale.parentMessageVID,
                             timestamp = relative_M17MessageVocale.creationTimestamps,
                             datesHandler = datesHandler,
-                            relative_M17MessageVocale = relative_M17MessageVocale,
                             etatesChildKeyIDsList = list_D_EtateMessageVocale,
-                            isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
-                        )
+                            isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                            isAdminMessage=its_Admin_Message,
+                            )
 
                         // FIXED: BonVentInfoCard moved to the top after MessageHeader
                         relative_M8BonVent?.let { m8BonVent ->
                             Spacer(modifier = Modifier.height(12.dp))
                             BonVentInfoCard(
-                                m8BonVent = m8BonVent,
-                                isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
-                            )
+                                    m8BonVent = m8BonVent,
+                                    isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt ,
+                                    isAdminMessage = its_Admin_Message,
+                                )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         when {
                             isBeingRecorded && !isSent -> {
-                                RecordingIndicator(isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt)
+                                RecordingIndicator(
+                                        isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                                        isAdminMessage=its_Admin_Message
+                                    )
                             }
 
                             isSent -> {
@@ -212,7 +225,8 @@ fun B_ItemMessagesVocale(
                                     datesHandler = datesHandler,
                                     context = context,
                                     coroutineScope = coroutineScope,
-                                    isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
+                                    isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                                    isAdminMessage = its_Admin_Message
                                 )
                             }
                         }
@@ -231,21 +245,21 @@ fun B_ItemMessagesVocale(
         )
     }
 }
-
 @Composable
 private fun BonVentInfoCard(
     m8BonVent: M8BonVent,
-    isFromActiveAccount: Boolean
+    isFromActiveAccount: Boolean,
+    isAdminMessage: Boolean = false // Add this parameter
 ) {
     val context = LocalContext.current
 
     // Updated styling to fit better inside the message bubble
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = if (isFromActiveAccount) {
-            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
-        } else {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
+            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+            else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
         },
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -264,10 +278,10 @@ private fun BonVentInfoCard(
                     text = "État: ${m8BonVent.etateActuellementEst.nomArabe}",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
-                    color = if (isFromActiveAccount) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                    } else {
-                        androidx.compose.ui.graphics.Color(
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                        else -> androidx.compose.ui.graphics.Color(
                             context.getColor(m8BonVent.etateActuellementEst.color)
                         )
                     }
@@ -276,10 +290,10 @@ private fun BonVentInfoCard(
                 Text(
                     text = m8BonVent.get_DebugInfos(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isFromActiveAccount) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
             }
@@ -294,20 +308,20 @@ private fun BonVentInfoCard(
                 Text(
                     text = "Début: ${m8BonVent.heurDebutInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isFromActiveAccount) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
 
                 Text(
                     text = "Fin: ${m8BonVent.heurFinInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isFromActiveAccount) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
             }
@@ -325,14 +339,18 @@ private fun BonVentInfoCard(
                             Icons.Default.VolumeOff
                         },
                         contentDescription = null,
-                        tint = if (isFromActiveAccount) {
-                            if (m8BonVent.sonVocaleEstEcoute) {
+                        tint = when {
+                            isAdminMessage -> if (m8BonVent.sonVocaleEstEcoute) {
+                                MaterialTheme.colorScheme.onError
+                            } else {
+                                MaterialTheme.colorScheme.onError.copy(alpha = 0.6f)
+                            }
+                            isFromActiveAccount -> if (m8BonVent.sonVocaleEstEcoute) {
                                 MaterialTheme.colorScheme.onPrimary
                             } else {
                                 MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                             }
-                        } else {
-                            if (m8BonVent.sonVocaleEstEcoute) {
+                            else -> if (m8BonVent.sonVocaleEstEcoute) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -344,10 +362,10 @@ private fun BonVentInfoCard(
                     Text(
                         text = if (m8BonVent.sonVocaleEstEcoute) "Message vocal écouté" else "Message vocal non écouté",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isFromActiveAccount) {
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                        color = when {
+                            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
+                            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
                         }
                     )
                 }
@@ -359,10 +377,10 @@ private fun BonVentInfoCard(
                 Text(
                     text = "Client: ${m8BonVent.parent_M2Client_DebugInfos}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isFromActiveAccount) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
             }
@@ -370,15 +388,20 @@ private fun BonVentInfoCard(
     }
 }
 
+
+// Update RecordingIndicator function:
 @Composable
-private fun RecordingIndicator(isFromActiveAccount: Boolean) {
+private fun RecordingIndicator(
+    isFromActiveAccount: Boolean,
+    isAdminMessage: Boolean = false // Add this parameter
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        color = if (isFromActiveAccount) {
-            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
-        } else {
-            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.2f)
+            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+            else -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
         }
     ) {
         Row(
@@ -391,10 +414,10 @@ private fun RecordingIndicator(isFromActiveAccount: Boolean) {
             Icon(
                 imageVector = Icons.Default.Stop,
                 contentDescription = "Enregistrement",
-                tint = if (isFromActiveAccount) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.error
+                tint = when {
+                    isAdminMessage -> MaterialTheme.colorScheme.onError
+                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                    else -> MaterialTheme.colorScheme.error
                 },
                 modifier = Modifier.size(16.dp)
             )
@@ -403,10 +426,10 @@ private fun RecordingIndicator(isFromActiveAccount: Boolean) {
                 text = "Enregistrement en cours...",
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
-                color = if (isFromActiveAccount) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onErrorContainer
+                color = when {
+                    isAdminMessage -> MaterialTheme.colorScheme.onError
+                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                    else -> MaterialTheme.colorScheme.onErrorContainer
                 }
             )
         }
