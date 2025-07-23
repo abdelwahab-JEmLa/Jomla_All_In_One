@@ -53,7 +53,9 @@ fun Button_ID2_Menagerie_Telegram(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     showLabels: Boolean,
 ) {
-    val  current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
+    val  current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin   //<--
+    //TODO(1): enleve ca et fait que si le message est depuit un autre compt que celila 
+    //la notification s afficeh avec le nombre exact et le son se mete
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current

@@ -91,7 +91,7 @@ class MapClientsViewModel(
         )
     }
 
-     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client?=null) {
+    fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client? = null) {
         _uiState.value = _uiState.value.copy(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
@@ -182,8 +182,7 @@ class MapClientsViewModel(
             }
 
             viewModelScope.launch {
-                b_ClientDataBaseRepository.addOrUpdateData(newClientAchteur)
-                this@MapClientsViewModel.repo2Client.addClient(newClientAchteur)
+                repo2Client.upsert(newClientAchteur)
                 updateUiState()
             }
         } catch (e: Exception) {
