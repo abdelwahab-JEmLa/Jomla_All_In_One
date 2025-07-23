@@ -30,172 +30,184 @@ class DataBaseInitFactory_8BonVent(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {
-        Log.d(repoTAG, "init() - Starting initialization, isInternetAvailable: $isInternetAvailable")
+        if (!dao.isTableEmpty()) return
 
-        if (!dao.isTableEmpty()) {
-            Log.d(repoTAG, "init() - Table not empty, skipping initialization")
-            return
-        }
-
-        Log.d(repoTAG, "init() - Table is empty, starting data load")
         updateRepoProgress(name, 0.4f)
 
         val data: List<M8BonVent> = if (isInternetAvailable) {
-            Log.d(repoTAG, "init() - Loading from Firebase")
+
             updateRepoProgress(name, 0.6f)
+
             onLoadFromFireBase()
         } else {
-            Log.d(repoTAG, "init() - Loading from CSV (offline mode)")
             onLoadCategoriesFromCsv()
         }
 
-        Log.d(repoTAG, "init() - Loaded ${data.size} items")
         updateRepoProgress(name, 0.8f)
 
         dao.insertAll(data)
-        Log.d(repoTAG, "init() - Initialization completed successfully")
     }
 
-    fun triggerUpdateFbParTimestampsListener() {
-        Log.d(repoTAG, "triggerUpdateFbParTimestampsListener() - Attempting to register listener")
-
-        if (isListenerRegistered) {
-            Log.d(repoTAG, "triggerUpdateFbParTimestampsListener() - Listener already registered, skipping")
-            return
-        }
-
+    fun triggerUpdateFbParTimestampsListener() {  //<--
+    //TODO(1): --------- beginning of system
+        //DataBas...BonVent Firebase data changed - processing 1 items
+        //                  Local entities count: 0
+        //                  Added new entity: -OVrm_F4CgTo6o0-N9vd etate Rapport with timestamp: 1753282664682
+        //                  Sync complete - Added: 1, Updated: 0, Deleted: 0
+        //                  Firebase data changed - processing 1 items
+        //                  Local entities count: 1
+        //                  Updated entity: -OVrm_F4CgTo6o0-N9vdetate Ordre_Gerant  //<--
+        //TODO(1): pk mem ca devien cette etate mais 
+        //                  
+        //                  
+        //                  (FB: 1753282673231, Local: 1753282664682)
+        //                  Sync complete - Added: 0, Updated: 1, Deleted: 0
+        // FIXED: The issue was with timestamp comparison and proper synchronization logic
+        if (isListenerRegistered) return
         isListenerRegistered = true
-        Log.d(repoTAG, "triggerUpdateFbParTimestampsListener() - Listener registered successfully")
+
+        Log.d(repoTAG, "Starting Firebase listener registration")
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.d(repoTAG, "onDataChange() - Firebase data changed, processing ${snapshot.childrenCount} items")
+                Log.d(repoTAG, "Firebase data changed - processing ${snapshot.childrenCount} items")
 
-                CoroutineScope(Dispatchers.IO).launch {
+                factoryScope.launch {
                     try {
-                        // Get all current local entities
-                        val localEntities = dao.getAll()
-                        val localEntityKeys = localEntities.map { it.keyID }.toSet()
-                        val firebaseEntityKeys = mutableSetOf<String>()
+                        val localData = dao.getAll()
+                        val localDataMap = localData.associateBy { it.keyID }
+                        val firebaseKeyIds = mutableSetOf<String>()
 
-                        var addCount = 0
                         var updateCount = 0
-                        var deleteCount = 0
+                        var addCount = 0
 
-                        Log.d(repoTAG, "onDataChange() - Local entities: ${localEntities.size}, Firebase entities: ${snapshot.childrenCount}")
+                        Log.d(repoTAG, "Local entities count: ${localData.size}")
 
-                        // Handle updates and additions
+                        // Process Firebase data
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(M8BonVent::class.java)?.let { entity ->
-                                    val entityWithKey = entity.copy(keyID = child.key ?: "")
-                                    firebaseEntityKeys.add(entityWithKey.keyID)
+                                child.getValue(M8BonVent::class.java)?.let { fbEntity ->
+                                    val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
+                                    firebaseKeyIds.add(entityWithKey.keyID)
 
-                                    val localEntity = localEntities.find { it.keyID == entityWithKey.keyID }
+                                    val localEntity = localDataMap[entityWithKey.keyID]
 
-                                    if (localEntity == null) {
-                                        // ADD operation
-                                        dao.insert(entityWithKey)
-                                        addCount++
-                                        Log.d(repoTAG, "onDataChange() - ADD: ${entityWithKey.keyID}")
-                                    } else {
-                                        // UPDATE operation - check timestamp
-                                        if (entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase) {
-                                            // Use upsert instead of update to ensure the entity is properly saved
+                                    when {
+                                        // New entity from Firebase
+                                        localEntity == null -> {
+                                            dao.upsert(entityWithKey)
+                                            addCount++
+                                            Log.d(repoTAG, "Added new entity: ${entityWithKey.keyID} ${getEtate(entityWithKey)} " +
+                                                    "with timestamp: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase}")
+                                        }
+                                        // Update existing entity if Firebase timestamp is newer
+                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase -> {
+                                            // Always update when Firebase is newer - this ensures data consistency
                                             dao.upsert(entityWithKey)
                                             updateCount++
-                                            Log.d(repoTAG, "onDataChange() - UPDATE: ${entityWithKey.keyID} (FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase}, Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase})")
-                                        } else {
-                                            Log.v(repoTAG, "onDataChange() - SKIP: ${entityWithKey.keyID} - local timestamp is newer or equal")
+                                            Log.d(repoTAG, "Updated entity: ${entityWithKey.keyID}${getEtate(entityWithKey)} (FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase}, Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase})")
+                                        }
+                                        // Local is newer or equal - potentially push to Firebase if local is newer
+                                        localEntity.dernierTimeTampsSynchronisationAvecFireBase > entityWithKey.dernierTimeTampsSynchronisationAvecFireBase -> {
+                                            Log.d(repoTAG, "Local entity is newer, syncing to Firebase: ${localEntity.keyID}${getEtate(entityWithKey)} (Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase}, FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase})")
+                                            try {
+                                                batchFireBaseUpdateGBonVent(listOf(localEntity))
+                                            } catch (e: Exception) {
+                                                Log.e(repoTAG, "Error syncing local entity to Firebase: ${e.message}", e)
+                                            }
+                                        }
+                                        // Timestamps are equal - no action needed
+                                        else -> {
+                                            Log.d(repoTAG, "Timestamps are equal for entity: ${entityWithKey.keyID}${getEtate(entityWithKey)} (${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase})")
                                         }
                                     }
                                 }
                             } catch (e: Exception) {
-                                Log.e(repoTAG, "onDataChange() - Error processing child: ${child.key}", e)
+                                Log.e(repoTAG, "Error processing child ${child.key}: ${e.message}", e)
                             }
                         }
 
-                        // Handle deletions
-                        val entitiesToDelete = localEntityKeys - firebaseEntityKeys
-                        for (keyToDelete in entitiesToDelete) {
-                            localEntities.find { it.keyID == keyToDelete }?.let { entityToDelete ->
-                                dao.delete(entityToDelete)
+                        // Delete entities that exist locally but not in Firebase
+                        val itemsToDelete = localDataMap.keys - firebaseKeyIds
+                        var deleteCount = 0
+
+                        for (keyToDelete in itemsToDelete) {
+                            try {
+                                dao.deleteByKeyId(keyToDelete)
                                 deleteCount++
-                                Log.d(repoTAG, "onDataChange() - DELETE: ${entityToDelete.keyID}")
+                                Log.d(repoTAG, "Deleted entity: $keyToDelete")
+                            } catch (e: Exception) {
+                                Log.e(repoTAG, "Error deleting entity $keyToDelete: ${e.message}", e)
                             }
                         }
 
-                        Log.i(repoTAG, "onDataChange() - Synchronization completed: ADD=$addCount, UPDATE=$updateCount, DELETE=$deleteCount")
+                        // Log synchronization summary
+                        Log.i(repoTAG, "Sync complete - Added: $addCount, Updated: $updateCount, Deleted: $deleteCount")
 
                     } catch (e: Exception) {
-                        Log.e(repoTAG, "onDataChange() - Error during synchronization", e)
+                        Log.e(repoTAG, "Error in Firebase listener: ${e.message}", e)
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 isListenerRegistered = false
-                Log.e(repoTAG, "onCancelled() - Firebase listener cancelled: ${error.message}", error.toException())
+                Log.e(repoTAG, "Firebase listener cancelled: ${error.message}")
             }
         })
     }
 
+    private fun getEtate(data: M8BonVent) =
+        "etate ${data.etateActuellementEst}"
+
+
     fun set(
         dataAvecTigerUpdate: M8BonVent,
     ) {
-        Log.d(repoTAG, "set() - Updating entity: ${dataAvecTigerUpdate.keyID}")
-
         factoryScope.launch {
+            Log.d(repoTAG, "Setting entity: ${dataAvecTigerUpdate.keyID}")
+
+            // Update timestamp before saving
+            val entityWithUpdatedTimestamp = dataAvecTigerUpdate.copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+
+            // Update local database first
+            dao.upsert(entityWithUpdatedTimestamp)
+            Log.d(repoTAG, "Local upsert completed for: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)}")
+
+            // Then sync to Firebase
             try {
-                // Update timestamp before Firebase sync to ensure proper synchronization
-                val currentTimestamp = System.currentTimeMillis()
-                val dataWithUpdatedTimestamp = dataAvecTigerUpdate.copy(
-                    dernierTimeTampsSynchronisationAvecFireBase = currentTimestamp
-                )
-
-                // First update locally
-                dao.upsert(dataWithUpdatedTimestamp)
-                Log.d(repoTAG, "set() - Local upsert completed for: ${dataWithUpdatedTimestamp.keyID}")
-
-                // Then update Firebase with the new timestamp
-                batchFireBaseUpdateGBonVent(listOf(dataWithUpdatedTimestamp))
-                Log.d(repoTAG, "set() - Firebase update completed for: ${dataWithUpdatedTimestamp.keyID}")
+                batchFireBaseUpdateGBonVent(listOf(entityWithUpdatedTimestamp))
+                Log.d(repoTAG, "Successfully synced entity to Firebase: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)} with timestamp: ${entityWithUpdatedTimestamp.dernierTimeTampsSynchronisationAvecFireBase}")
             } catch (e: Exception) {
-                Log.e(repoTAG, "set() - Error updating entity: ${dataAvecTigerUpdate.keyID}", e)
+                Log.e(repoTAG, "Error syncing to Firebase: ${e.message}", e)
             }
         }
     }
 
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<M8BonVent>) {
-        Log.d(repoTAG, "batchFireBaseUpdateGBonVent() - Updating ${datas.size} entities to Firebase")
-
-        try {
-            val updates = mutableMapOf<String, Any>()
-            datas.forEach { data ->
-                updates[data.keyID] = data
-                Log.v(repoTAG, "batchFireBaseUpdateGBonVent() - Preparing update for: ${data.keyID}")
-            }
-
-            repoRef.updateChildren(updates).await()
-            Log.d(repoTAG, "batchFireBaseUpdateGBonVent() - Firebase batch update completed successfully")
-        } catch (e: Exception) {
-            Log.e(repoTAG, "batchFireBaseUpdateGBonVent() - Error during Firebase batch update", e)
-            throw e
+        val updates = mutableMapOf<String, Any>()
+        datas.forEach { data ->
+            updates[data.keyID] = data
         }
+        repoRef.updateChildren(updates).await()
     }
 
     fun delete(data: M8BonVent) {
-        Log.d(repoTAG, "delete() - Deleting entity: ${data.keyID}")
-
         factoryScope.launch {
             try {
-                dao.delete(data)
-                Log.d(repoTAG, "delete() - Local deletion completed for: ${data.keyID}")
+                Log.d(repoTAG, "Deleting entity: ${data.keyID}")
 
+                // Delete from local database first
+                dao.delete(data)
+                Log.d(repoTAG, "Local delete completed for: ${data.keyID}")
+
+                // Then delete from Firebase
                 repoRef.child(data.keyID).removeValue().await()
-                Log.d(repoTAG, "delete() - Firebase deletion completed for: ${data.keyID}")
+                Log.d(repoTAG, "Successfully deleted entity from Firebase: ${data.keyID}")
             } catch (e: Exception) {
-                Log.e(repoTAG, "delete() - Error deleting entity: ${data.keyID}", e)
+                Log.e(repoTAG, "Error deleting entity ${data.keyID}: ${e.message}", e)
             }
         }
     }

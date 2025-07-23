@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GBonVentDao {
+    @Query("DELETE FROM M8BonVent WHERE keyID = :keyId")
+    suspend fun deleteByKeyId(keyId: String)
+
     @Upsert
     suspend fun upsert(data: M8BonVent)
 
