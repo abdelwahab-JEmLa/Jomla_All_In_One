@@ -106,7 +106,13 @@ class Repo2Client(
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M2Client) {
         dataBaseCreationFactory.set(dataUpdate)
     }
-
+    //<--
+    //TODO(1): regle couleur bon de message
+    //ajout activation gps au ouvrire etate
+                                //<--
+                                //TODO(1): ajout ilter client marques ou npon regle
+//<--
+//TODO(1): affiche totale vent mnt
     fun updateClient(updatedClient: M2Client) {
         this._datas.value = this._datas.value.map { client ->
             if (client.id == updatedClient.id)
