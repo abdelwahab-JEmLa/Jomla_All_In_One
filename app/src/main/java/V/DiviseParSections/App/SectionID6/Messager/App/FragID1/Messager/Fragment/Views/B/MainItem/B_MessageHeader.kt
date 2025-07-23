@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -54,12 +55,21 @@ fun MessageHeader(
             modifier = Modifier.weight(1f)
         ) {
             Column {
-                val arabNom = relative_M9AppCompt?.getList_autres_Noms_SepareParComma()
+                val arabNom = relative_M9AppCompt
+                    ?.getList_autres_Noms_SepareParComma()
                     ?.firstOrNull { nom ->
                         nom.any { char -> char in '\u0600'..'\u06FF' || char in '\u0750'..'\u077F' }
-                    } ?: "???"
+                    }
+                    ?: relative_M9AppCompt?.nom
+                    ?: "???"
 
                 Text(
+                    modifier = Modifier
+                        .getSemanticsTag(
+                            relative_M9AppCompt
+
+                            ,""
+                        ),
                     text = arabNom,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
