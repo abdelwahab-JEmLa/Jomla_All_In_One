@@ -59,14 +59,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.koin.compose.koinInject
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 private fun CustomStatusDropdownMenu(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
+    relative_M2Client: M2Client?,
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -97,7 +100,47 @@ private fun CustomStatusDropdownMenu(
                     }
                 },
                 onClick = {
-                    onStatusSelected(status)
+                    val foundOrDefaultResult = relative_M2Client?.let {
+                        get_Found_Or_Default_M8BonVent(
+                            aCentralFacade,
+                            it,
+                            etateActuellementEst = status,
+                        )
+                    }
+
+                    val relative_M8BonVent =
+                        foundOrDefaultResult?.found ?: foundOrDefaultResult?.default_If_No_Found
+
+                    val new_M17MessageVocale = relative_M8BonVent?.let {
+                        M17MessageVocale
+                            .get_default()
+                            .copy(
+                                parent_M8BonVent_KeyID = it.keyID,
+                                parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
+                            )
+                    }
+
+                    val updatedBonVent = new_M17MessageVocale?.let {
+                        relative_M8BonVent
+                            .copy(
+                                etateActuellementEst = status,
+                                parent_M17Message_KeyID = it.keyID,
+                                parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
+                            )
+                    }
+
+                    if (updatedBonVent != null) {
+                        aCentralFacade.repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+                    }
+
+                    val updated_active_Central_Values =
+                        focusedValuesGetter.active_Central_Values.copy(
+                            active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
+                        )
+
+                    focusedValuesGetter.update_activeCentralValues(
+                        updated_active_Central_Values
+                    )
                     onDismissRequest()
                 }
             )
@@ -274,7 +317,9 @@ fun MarkerStatusDialog(
                                     item {
                                         Box {
                                             Card(
-                                                modifier = Modifier.fillMaxWidth(),
+                                                modifier = Modifier
+
+                                                    .fillMaxWidth(),
                                                 colors = CardDefaults.cardColors(
                                                     containerColor = MaterialTheme.colorScheme.secondary
                                                 ),
@@ -309,49 +354,7 @@ fun MarkerStatusDialog(
                                             CustomStatusDropdownMenu(
                                                 expanded = showStatusDropdown,
                                                 onDismissRequest = { showStatusDropdown = false },
-                                                onStatusSelected = { selectedStatus ->
-
-                                                    val foundOrDefaultResult = relative_M2Client?.let {
-                                                        get_Found_Or_Default_M8BonVent(
-                                                            aCentralFacade,
-                                                            it,
-                                                            etateActuellementEst = selectedStatus,
-                                                        )
-                                                    }
-
-                                                    val relative_M8BonVent = foundOrDefaultResult?.found ?: foundOrDefaultResult?.default_If_No_Found
-
-                                                    val new_M17MessageVocale = relative_M8BonVent?.let {
-                                                        M17MessageVocale
-                                                            .get_default()
-                                                            .copy(
-                                                                parent_M8BonVent_KeyID = it.keyID,
-                                                                parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
-                                                            )
-                                                    }
-
-                                                    val updatedBonVent = new_M17MessageVocale?.let {
-                                                        relative_M8BonVent
-                                                            .copy(
-                                                                etateActuellementEst = selectedStatus,
-                                                                parent_M17Message_KeyID = it.keyID,
-                                                                parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
-                                                            )
-                                                    }
-
-                                                    if (updatedBonVent != null) {
-                                                        viewModel.getter.repo8BonVent.updateIfExist(updatedBonVent)
-                                                    }
-
-                                                    val updated_active_Central_Values =
-                                                        focusedValuesGetter.active_Central_Values.copy(
-                                                            active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
-                                                        )
-
-                                                    focusedValuesGetter.update_activeCentralValues(
-                                                        updated_active_Central_Values
-                                                    )
-                                                }
+                                                relative_M2Client = relative_M2Client,
                                             )
                                         }
                                     }
