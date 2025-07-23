@@ -13,6 +13,5 @@ data class Repo18ParametresAppComptNonSaved(
     val devStartUpScree: Screen = Screen.A_Clients_LocationGps,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
-    val ce_Telephone_Est_Admin: Boolean?= true,
 )
 

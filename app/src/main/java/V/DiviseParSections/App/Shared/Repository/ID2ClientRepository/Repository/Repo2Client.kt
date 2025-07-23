@@ -86,6 +86,7 @@ class Repo2Client(
     fun upsert(data: M2Client) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
         composScope.launch {
@@ -110,6 +111,7 @@ class Repo2Client(
         this._datas.value = this._datas.value.map { client ->
             if (client.id == updatedClient.id)
                 updatedClient.withProperKeyFireBaseAndTimeTamp()
+                    .copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             else client
         }
     }
