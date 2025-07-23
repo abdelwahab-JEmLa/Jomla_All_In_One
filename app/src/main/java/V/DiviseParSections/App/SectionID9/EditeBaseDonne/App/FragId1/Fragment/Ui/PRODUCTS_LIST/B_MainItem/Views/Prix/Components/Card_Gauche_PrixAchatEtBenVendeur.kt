@@ -50,8 +50,7 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
 
     Card(
         modifier = modifier
-            .getSemanticsTag(get_Edited_Tariff(280.0),"get_Edited_Tariff")
-        ,
+            .getSemanticsTag(get_Edited_Tariff(280.0), "get_Edited_Tariff"),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
@@ -91,7 +90,6 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                 )
             }
 
-            // Unit purchase price (if units > 0)
             if (produit.nombreUniteInt > 1) {
                 val prixUnitAchat =
                     round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
@@ -119,19 +117,16 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                 currentPrice = produit.prixAchat,
                 label = "Prix Achat Pack",
                 onPriceUpdate = { newPrix ->
-                    if (itsActiveTariff) {
-                        // Only allow editing if DefiniParGerant tariff is active
-                        val newPrd = produit.copy(
-                            prixAchat = newPrix,
-                            prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
-                            etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
-                                ArticlesBasesStatsTable
-                                    .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
-                                ArticlesBasesStatsTable
-                                    .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                        )
-                        updateProduct(newPrd)
-                    }
+                    val newPrd = produit.copy(
+                        prixAchat = newPrix,
+                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
+                        etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
+                            ArticlesBasesStatsTable
+                                .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
+                            ArticlesBasesStatsTable
+                                .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                    )
+                    updateProduct(newPrd)
                 },
                 textColor = vertTurq,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
