@@ -311,7 +311,7 @@ fun ButtonMessageVocale(
             ) {
                 when {
                     isUploading -> Icon(
-                        painter = painterResource(id = R.drawable.location_arrow),
+                        painter = painterResource(id = R.drawable.ic_telegram),
                         contentDescription = "Envoi en cours via Telegram",
                         tint = Color.White
                     )
