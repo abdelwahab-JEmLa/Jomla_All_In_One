@@ -121,6 +121,9 @@ private fun CustomStatusDropdownMenu(
             status = M8BonVent.EtateActuellementEst.FERME,
             text = "مغلق"
         )
+
+        // Note: Removed "Probleme" from dropdown since user is already in that state
+        // and wants to change to a different state
     }
 }
 
