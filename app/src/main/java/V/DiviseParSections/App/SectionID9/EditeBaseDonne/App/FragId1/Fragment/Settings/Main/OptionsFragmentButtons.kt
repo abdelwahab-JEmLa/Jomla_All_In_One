@@ -88,7 +88,7 @@ fun OptionsFragmentButtons(
     var showLabels by remember { mutableStateOf(true) }
 
     var mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed by remember { mutableStateOf(false) }
-    var button9AlwaysVisible by remember { mutableStateOf(true) }
+    var button9AlwaysVisible by remember { mutableStateOf(false) }
     var button8AlwaysVisible by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
