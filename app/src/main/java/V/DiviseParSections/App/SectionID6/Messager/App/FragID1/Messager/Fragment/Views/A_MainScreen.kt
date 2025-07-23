@@ -4,7 +4,9 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_MessageurTelegram_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur = koinViewModel(),
+    repo17MessageVocale: Repo17MessageVocale = viewModel.aCentralFacade.repositorysMainGetter.repo17MessageVocale,
     onDismiss: () -> Unit = {}
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -81,9 +84,12 @@ fun A_MessageurTelegram_MainScreen(
                     ) {
                         // Background image
                         Image(
+                            modifier = Modifier
+                                .getSemanticsTag(repo17MessageVocale.datasValue
+                                    ,"")
+                                .fillMaxSize(),
                             painter = painterResource(id = R.drawable.background_mess),
                             contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
@@ -147,7 +153,9 @@ fun MainList(
         }
     }
 
-    val latestStatesForEachMessage by remember(groupedD_EtateMessageVocaleParParentMessage) {
+    val latestStatesForEachMessage by remember(
+        groupedD_EtateMessageVocaleParParentMessage
+    ) {
         derivedStateOf {
             groupedD_EtateMessageVocaleParParentMessage.mapNotNull { (parentMessageVID, etatesList) ->
                 val sortedEtates = etatesList.sortedBy { it.creationTimestamps }
@@ -185,10 +193,11 @@ private fun List_Messages(
     uiState: UiState
 ) {
     LazyColumn(
-        state = listState,
         modifier = Modifier
+            .getSemanticsTag(latestStatesForEachMessage,"")
             .fillMaxWidth()
-            .padding(bottom = 80.dp)
+            .padding(bottom = 80.dp),
+        state = listState
     ) {
         items(latestStatesForEachMessage) { (latestEtate, allEtatesForMessage) ->
             B_ItemMessagesVocale(

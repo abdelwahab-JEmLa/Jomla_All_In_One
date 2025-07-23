@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface M17MessageVocaleDao {
+    @Query("DELETE FROM M17MessageVocale WHERE keyID = :keyId")
+    suspend fun deleteByKeyId(keyId: String)
+
     @Query("SELECT * FROM M17MessageVocale ")
     suspend fun getAll(): MutableList<M17MessageVocale>
 

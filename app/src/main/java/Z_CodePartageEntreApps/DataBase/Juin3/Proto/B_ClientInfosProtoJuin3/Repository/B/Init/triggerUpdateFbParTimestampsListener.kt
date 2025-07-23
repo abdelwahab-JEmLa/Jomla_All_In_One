@@ -10,7 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsListener() {
+fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsListener() { //<--
+//TODO(1): regle le add et delete tigger
     if (isListenerRegistered) return
     isListenerRegistered = true
 

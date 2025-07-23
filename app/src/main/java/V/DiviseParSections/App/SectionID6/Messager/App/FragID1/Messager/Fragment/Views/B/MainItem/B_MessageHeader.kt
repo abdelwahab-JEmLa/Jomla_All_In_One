@@ -95,6 +95,7 @@ fun MessageHeader(
                                     M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
                                     M17MessageVocale.Etate.VUE -> "👁️ Vu"
                                     M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
+                                    M17MessageVocale.Etate.Premier_Test_Envoi ->"📤 Envoyé"
                                 }
                             }
                         }
@@ -104,6 +105,8 @@ fun MessageHeader(
                             M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
                             M17MessageVocale.Etate.VUE -> "👁️ Vu"
                             M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
+                            M17MessageVocale.Etate.Premier_Test_Envoi ->"📤 Envoyé"
+
                         }
                     }
 
@@ -117,6 +120,7 @@ fun MessageHeader(
                                 M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.onPrimary
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
                                 M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
+                                else -> {MaterialTheme.colorScheme.onPrimary}
                             }
 
                             else -> when (state.etate) {
@@ -124,6 +128,7 @@ fun MessageHeader(
                                 M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.secondary
                                 M17MessageVocale.Etate.ECOUTE -> Color.Green
+                                else -> {MaterialTheme.colorScheme.onPrimary}
                             }
                         },
                         maxLines = 1,

@@ -8,10 +8,13 @@ import kotlinx.coroutines.launch
 
 fun Repo17MessageVocale.addOrUpdateData(data: M17MessageVocale) {
     CoroutineScope(Dispatchers.IO).launch {
-        dao.upsert(data)
+        val dataAvecCurrentTime =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        dao.upsert(dataAvecCurrentTime)
         val allData = dao.getAll()
         updateRepoState(allData)
-        repoRef.child(data.keyID).setValue(data)
+        repoRef.child(data.keyID).setValue(dataAvecCurrentTime)
     }
 }
 

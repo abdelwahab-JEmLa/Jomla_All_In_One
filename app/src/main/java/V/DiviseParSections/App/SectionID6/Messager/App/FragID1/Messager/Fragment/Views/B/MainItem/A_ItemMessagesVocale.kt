@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 @Composable
-fun B_ItemMessagesVocale(  //<--
+fun B_ItemMessagesVocale(
     relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
@@ -68,14 +68,12 @@ fun B_ItemMessagesVocale(  //<--
     val clientName = relative_M8BonVent?.parent_M2Client_DebugInfos ?: "Client inconnu"
     val vendorName = relative_M17MessageVocale.parent_M9AppCompt_DebugInfos.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 
-    // FIXED: Better state detection logic
-    val currentState = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
-        ?: relative_M17MessageVocale.etate
+    val currentState =
+        list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
+        ?: relative_M17MessageVocale.etate      //<--
+        //TODO(1): fait que soit un deruved qui recompose le 
 
     val isListened = currentState == M17MessageVocale.Etate.ECOUTE
-    val isViewed = currentState == M17MessageVocale.Etate.VUE
-    val isBeingRecorded = currentState == M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT
-    val isSent = currentState == M17MessageVocale.Etate.ENVOYER
 
     val latestTimestamp = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.creationTimestamps ?: 0L
 
@@ -152,6 +150,7 @@ fun B_ItemMessagesVocale(  //<--
                                     M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                                     M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                                     M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                                    M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                                 }
                             }
                             else -> {
@@ -161,6 +160,7 @@ fun B_ItemMessagesVocale(  //<--
                                     M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
                                     M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                                     M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+                                    M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                                 }
                             }
                         }
@@ -231,6 +231,8 @@ fun B_ItemMessagesVocale(  //<--
                                     isAdminMessage = its_Admin_Message
                                 )
                             }
+
+                            M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         }
                     }
                 }

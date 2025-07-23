@@ -65,6 +65,7 @@ class Repo17MessageVocale(
             _repoState.value = newRepoState
         }
 
+
         if (!isListenerRegistered) {
             triggerUpdateFbParTimestampsListener()
         }
@@ -116,6 +117,7 @@ data class M17MessageVocale(
 
     enum class Etate(val nomArabe: String? = null) {
         EN_COURT_ENREGESTREMENT,
+        Premier_Test_Envoi,
         ENVOYER,
         VUE,
         ECOUTE,

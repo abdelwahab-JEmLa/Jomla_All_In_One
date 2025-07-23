@@ -18,31 +18,57 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
         override fun onDataChange(snapshot: DataSnapshot) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    // Get current local data to compare with Firebase data
+                    val localData = dao.getAll()
+                    val localKeyIds = localData.map { it.keyID }.toSet()
+                    val firebaseKeyIds = mutableSetOf<String>()
+
                     var updateCount = 0
+                    var addCount = 0
+
+                    // Process Firebase data - handle updates and additions
                     for (child in snapshot.children) {
                         try {
                             child.getValue(M17MessageVocale::class.java)?.let { entity ->
                                 val entityWithKey = entity.copy(keyID = child.key ?: "")
-                                val shouldUpdate = try {
-                                    val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
-                                    if (localEntity == null) {
-                                        true
-                                    } else {
-                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
-                                    }
-                                } catch (e: Exception) {
-                                    true
+                                firebaseKeyIds.add(entityWithKey.keyID)
+
+                                val localEntity = localData.find { it.keyID == entityWithKey.keyID }
+
+                                val shouldUpdate = if (localEntity == null) {
+                                    addCount++
+                                    true // New item - add it
+                                } else {
+                                    // Existing item - check if it needs update
+                                    entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
                                 }
 
                                 if (shouldUpdate) {
-                                    dao.upsert(entityWithKey)
+                                    dao.upsert(entityWithKey) //<--
+                                    //TODO(1): pk ca ne tiggre pas quend un
                                     updateCount++
                                 }
                             }
-                        } catch (e: Exception) {}
+                        } catch (e: Exception) {
+                            // Log error if needed but continue processing
+                        }
                     }
 
-                    if (updateCount > 0) {
+                    // Handle deletions - remove items that exist locally but not in Firebase
+                    val itemsToDelete = localKeyIds - firebaseKeyIds
+                    var deleteCount = 0
+
+                    for (keyToDelete in itemsToDelete) {
+                        try {
+                            dao.deleteByKeyId(keyToDelete)
+                            deleteCount++
+                        } catch (e: Exception) {
+                            // Log error if needed but continue processing
+                        }
+                    }
+
+                    // Update repository state if any changes occurred
+                    if (updateCount > 0 || deleteCount > 0 || addCount > 0) {
                         val allData = dao.getAll()
                         withContext(Dispatchers.Main) {
                             val newRepoState = Repo17MessageVocale.RepoState(
@@ -51,13 +77,19 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
                             )
                             _repoState.value = newRepoState
                         }
+
+                        // Optional: Log the changes for debugging
+                        println("$repoTAG: Changes detected - Added: $addCount, Updated: ${updateCount - addCount}, Deleted: $deleteCount")
                     }
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                    println("$repoTAG: Error in Firebase listener: ${e.message}")
+                }
             }
         }
 
         override fun onCancelled(error: DatabaseError) {
             isListenerRegistered = false
+            println("$repoTAG: Firebase listener cancelled: ${error.message}")
         }
     })
 }

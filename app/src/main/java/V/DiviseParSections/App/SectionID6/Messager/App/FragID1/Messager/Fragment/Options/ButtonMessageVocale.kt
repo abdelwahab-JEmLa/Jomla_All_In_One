@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.pm.PackageManager
@@ -57,8 +58,10 @@ fun ButtonMessageVocale(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repo17MessageVocale: Repo17MessageVocale = viewModel.aCentralFacade.repositorysMainGetter.repo17MessageVocale,
 ) {
-    val relative_M17Message = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
+    val relative_M17Message =
+        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
         repositorysMainGetter.find_M8BonVent(it)
@@ -158,9 +161,13 @@ fun ButtonMessageVocale(
 
             FloatingActionButton(
                 modifier = Modifier
+                    .getSemanticsTag(repo17MessageVocale.datasValue, "repo17MessageVocale")
                     .getSemanticsTag(relative_M8BonVent, "relative_M8BonVent")
                     .getSemanticsTag(update_M8BonVent, "update_M8")
-                    .getSemanticsTag(relative_M17Message?.getDebugInfos(), "relative_M17Message") // Safe null check
+                    .getSemanticsTag(
+                        relative_M17Message?.getDebugInfos(),
+                        "relative_M17Message"
+                    ) // Safe null check
                     .size(56.dp),
                 onClick = {
                     if (relative_M17Message == null) {
@@ -191,7 +198,7 @@ fun ButtonMessageVocale(
                                     parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
                                     parent_M9AppCompt_DebugInfos = "Non Definie",
                                     parentMessageVID = parentMessageVID,
-                                    etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
+                                    etate = M17MessageVocale.Etate.ENVOYER,
                                     creationTimestamps = datesHandler.getCurrentTimestamps()
                                 )
 
@@ -265,21 +272,32 @@ fun ButtonMessageVocale(
                                     isUploading = false
 
                                     if (uploadResult.isSuccess) {
-                                        val updatedEtate = etate.copy(
-                                            etate = M17MessageVocale.Etate.ENVOYER,
+                                        val updatedEtate_Premier_Test_Envoi = etate.copy(
+                                            etate = M17MessageVocale.Etate.Premier_Test_Envoi,
                                             creationTimestamps = datesHandler.getCurrentTimestamps()
                                         )
 
                                         aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(
-                                            updatedEtate
+                                            updatedEtate_Premier_Test_Envoi
                                         )
-                                    //<--
-                                    //TODO(1): todo sr haire regle tarifficationon pour grossist et le max prix 
+
                                         Toast.makeText(
                                             context,
                                             "Message vocal envoyé via Telegram!",
                                             Toast.LENGTH_SHORT
                                         ).show()
+
+                                        delay(2000)
+
+                                        val updatedEtate = etate.copy(
+                                            etate = M17MessageVocale.Etate.ENVOYER,
+                                            creationTimestamps = datesHandler.getCurrentTimestamps(),
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
+
+                                        aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(
+                                            updatedEtate
+                                        )
                                     } else {
                                         Toast.makeText(
                                             context,
