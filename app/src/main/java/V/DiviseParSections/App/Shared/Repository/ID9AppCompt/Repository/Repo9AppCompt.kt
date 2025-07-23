@@ -132,7 +132,7 @@ data class Z_AppCompt(
 
     // Section InfosDeBase
     var nom: String = "",
-    var nomsMutableTags: String = "",
+    var autres_Noms_SepareParComma: String = "",
 
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
@@ -211,8 +211,8 @@ data class Z_AppCompt(
     }
 
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
-        val currentTags = if (nomsMutableTags.isNotEmpty()) {
-            nomsMutableTags.split(",").map { it.trim() }
+        val currentTags = if (autres_Noms_SepareParComma.isNotEmpty()) {
+            autres_Noms_SepareParComma.split(",").map { it.trim() }
         } else {
             emptyList()
         }
@@ -224,10 +224,10 @@ data class Z_AppCompt(
         }
     }
 
-    // Updated getListNomsMutableTags function in Z_AppCompt class
-    fun getListNomsMutableTags(): List<String> {
-        return if (nomsMutableTags.isNotEmpty()) {
-            nomsMutableTags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    // Updated getList_autres_Noms_SepareParComma function in Z_AppCompt class
+    fun getList_autres_Noms_SepareParComma(): List<String> {
+        return if (autres_Noms_SepareParComma.isNotEmpty()) {
+            autres_Noms_SepareParComma.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         } else {
             emptyList()
         }

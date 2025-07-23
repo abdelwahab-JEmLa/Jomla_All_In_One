@@ -7,19 +7,13 @@ import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,34 +53,14 @@ fun MessageHeader(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = when {
-                    isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.2f)
-                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
-                    else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                },
-                modifier = Modifier.size(28.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.GraphicEq,
-                    contentDescription = "Message vocal",
-                    tint = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
-                        else -> MaterialTheme.colorScheme.primary
-                    },
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(2.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
             Column {
+                val arabNom = relative_M9AppCompt?.getList_autres_Noms_SepareParComma()
+                    ?.firstOrNull { nom ->
+                        nom.any { char -> char in '\u0600'..'\u06FF' || char in '\u0750'..'\u077F' }
+                    } ?: "???"
+
                 Text(
-                    text = relative_M9AppCompt?.nom?:"???",
+                    text = arabNom,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = when {
@@ -96,34 +70,6 @@ fun MessageHeader(
                     },
                 )
 
-
-                Text(
-                    text = "Vendeur: $vendorName",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Text(
-                    text = "Message vocal #$messageVID",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.6f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-
-
-                // Display current state information
                 val currentState = etatesChildKeyIDsList.maxByOrNull { it.creationTimestamps }
                 currentState?.let { state ->
                     val stateText = when (state.etate) {
@@ -144,39 +90,13 @@ fun MessageHeader(
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
                                 M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
                             }
+
                             else -> when (state.etate) {
                                 M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
                                 M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
                                 M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.secondary
                                 M17MessageVocale.Etate.ECOUTE -> Color.Green
                             }
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                if (relative_M17MessageVocale.keyID.isNotEmpty()) {
-                    val syncStatus =
-                        if (relative_M17MessageVocale.dernierTimeTampsSynchronisationAvecFireBase > 0) {
-                            val timeDiff =
-                                System.currentTimeMillis() - relative_M17MessageVocale.dernierTimeTampsSynchronisationAvecFireBase
-                            when {
-                                timeDiff < 60000 -> "🟢 Synchronisé"
-                                timeDiff < 300000 -> "🟡 Sync récente"
-                                else -> "🔴 Sync ancienne"
-                            }
-                        } else {
-                            "⚪ Non synchronisé"
-                        }
-
-                    Text(
-                        text = syncStatus,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = when {
-                            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.4f)
-                            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -232,7 +152,10 @@ fun MessageHeader(
                             style = MaterialTheme.typography.bodySmall,
                             color = when {
                                 isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.5f)
-                                isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                                isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(
+                                    alpha = 0.5f
+                                )
+
                                 else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             },
                             maxLines = 1,

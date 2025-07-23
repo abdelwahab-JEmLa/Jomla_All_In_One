@@ -5,6 +5,8 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,9 +28,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.clientjetpack.R
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -67,14 +74,29 @@ fun A_MessageurTelegram_MainScreen(
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
-                    Box(modifier = Modifier.padding(16.dp)) {
-                        MessageurDialogContent(
-                            viewModel = viewModel,
-                            onDismiss = {
-                                showDialog = false
-                                onDismiss()
-                            }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0xFFADD8E6)) // Bleu clair
+                    ) {
+                        // Background image
+                        Image(
+                            painter = painterResource(id = R.drawable.background_mess),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
+
+                        // Content overlay
+                        Box(modifier = Modifier.padding(16.dp)) {
+                            MessageurDialogContent(
+                                viewModel = viewModel,
+                                onDismiss = {
+                                    showDialog = false
+                                    onDismiss()
+                                }
+                            )
+                        }
                     }
                 }
             }
