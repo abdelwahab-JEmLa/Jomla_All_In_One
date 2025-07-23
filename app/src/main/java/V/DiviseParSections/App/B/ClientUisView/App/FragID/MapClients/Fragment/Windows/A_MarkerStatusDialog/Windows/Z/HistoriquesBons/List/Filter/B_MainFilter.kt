@@ -7,6 +7,9 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -16,14 +19,18 @@ fun MainFilter(
     vm: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier,
 ) {
-    val datasValue = vm.getter.repo8BonVent.datasValue
-    val filtered = datasValue.filter {
-        it.parent_M2Client_KeyID == (markerStatusDialogM2Client?.keyID ?: "")
-    }.sortedByDescending { it.creationTimestamps }
+    val filtered by remember(markerStatusDialogM2Client?.keyID) {
+        derivedStateOf {
+            val datasValue = vm.getter.repo8BonVent.datasValue
+            datasValue.filter {
+                it.parent_M2Client_KeyID == (markerStatusDialogM2Client?.keyID ?: "")
+            }.sortedByDescending { it.creationTimestamps }
+        }
+    }
 
     ElevatedCard(
         Modifier
-            .getSemanticsTag(nomVal = "datasValue", data = datasValue)
+            .getSemanticsTag(nomVal = "datasValue", data = filtered)
             .padding(2.dp)
     ) {
         View_MainList(filtered, vm)

@@ -28,12 +28,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,12 +49,80 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+
+@Composable
+private fun CustomStatusDropdownMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest
+    ) {
+        // Helper function to create elevated card dropdown item
+        @Composable
+        fun StatusDropdownItem(
+            status: M8BonVent.EtateActuellementEst,
+            text: String
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(id = status.color)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Text(
+                            text = text,
+                            color = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                },
+                onClick = {
+                    onStatusSelected(status)
+                    onDismissRequest()
+                }
+            )
+        }
+
+        // Available status options when current state is "Probleme"
+        M8BonVent.EtateActuellementEst.Ordre_Gerant.let { etate ->
+            StatusDropdownItem(
+                status = etate,
+                text = etate.nomArabe
+            )
+        }
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
+            text = "عندو سلعة"
+        )
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
+            text = "الشاري غائب"
+        )
+
+        StatusDropdownItem(
+            status = M8BonVent.EtateActuellementEst.FERME,
+            text = "مغلق"
+        )
+    }
+}
 
 @Composable
 fun MarkerStatusDialog(
@@ -80,6 +152,7 @@ fun MarkerStatusDialog(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
+    var showStatusDropdown by remember { mutableStateOf(false) }
 
     val clientId = relative_M2Client?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(relative_M2Client?.clientTypeMode) }
@@ -92,7 +165,6 @@ fun MarkerStatusDialog(
     fun handleDismiss() {
         showExitConfirmationDialog = true
     }
-
 
     Dialog(
         onDismissRequest = { handleDismiss() },
@@ -199,6 +271,47 @@ fun MarkerStatusDialog(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
+                                    }
+
+                                    item {
+                                        Box {
+                                            Card(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = MaterialTheme.colorScheme.secondary
+                                                ),
+                                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                            ) {
+                                                IconButton(
+                                                    onClick = { showStatusDropdown = true },
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(8.dp)
+                                                ) {
+                                                    Column(
+                                                        horizontalAlignment = Alignment.CenterHorizontally
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.MoreVert,
+                                                            contentDescription = "المزيد من الحالات",
+                                                            tint = Color.White
+                                                        )
+                                                        Text(
+                                                            text = "حالات أخرى",
+                                                            color = Color.White,
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            CustomStatusDropdownMenu(
+                                                expanded = showStatusDropdown,
+                                                onDismissRequest = { showStatusDropdown = false },
+                                                onStatusSelected = { selectedStatus ->
+                                                }
+                                            )
+                                        }
                                     }
 
                                     activeCompt?.let { activeCompt ->
