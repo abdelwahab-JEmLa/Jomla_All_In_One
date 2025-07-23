@@ -30,9 +30,8 @@ fun View_MainList(
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
             key(transaction.keyID) {
                 View_MainItem(
-
                     viewModel = viewModel,
-                    relative_M8BonVent = transaction,
+                    relativeINIT_M8BonVent = transaction,
                 )
             }
         }

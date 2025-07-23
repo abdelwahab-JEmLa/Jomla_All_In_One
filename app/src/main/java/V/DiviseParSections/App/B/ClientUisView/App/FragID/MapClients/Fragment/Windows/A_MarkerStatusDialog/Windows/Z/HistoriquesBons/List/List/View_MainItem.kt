@@ -60,10 +60,17 @@ fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    relative_M8BonVent: M8BonVent,
+    relativeINIT_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
 ) {
+    val relative_M8BonVent by remember(relativeINIT_M8BonVent.keyID) {
+        derivedStateOf {
+            viewModel.getter.repo8BonVent.datasValue
+                .find { it.keyID == relativeINIT_M8BonVent.keyID }
+                ?: relativeINIT_M8BonVent
+        }
+    }
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
@@ -262,6 +269,16 @@ fun View_MainItem(
                                     parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos(),
                                 )
 
+                            val updatedBonVent = relative_M8BonVent
+                                .copy(
+                                    etateActuellementEst = status,
+                                    parent_M17Message_KeyID = new_M17MessageVocale.keyID,
+                                    parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
+                                )
+
+                            // FIX: Use the new immediate update method
+                            viewModel.getter.repo8BonVent.updateWithImmediateUIRefresh(updatedBonVent)
+
                             val updated_active_Central_Values =
                                 activeCentralValues.copy(
                                     active_OpnerDialog_M17MessageVocale = new_M17MessageVocale,
@@ -271,20 +288,13 @@ fun View_MainItem(
                                 updated_active_Central_Values
                             )
 
-                            val updatedBonVent = relative_M8BonVent
-                                .copy(
-                                    etateActuellementEst = status,
-                                    parent_M17Message_KeyID = new_M17MessageVocale.keyID,
-                                    parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
-                                )
-
-                            viewModel.getter.repo8BonVent.upsert(updatedBonVent)
-
                             selectedStatus = status
+                            showDropdownMenu = false // Close the dropdown
                         }
                     )
                 }
             }
+
 
             Column(
                 modifier = Modifier

@@ -124,15 +124,50 @@ class Repo8BonVent(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
 
+        // FIX: Update local state immediately for UI responsiveness
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
-                _datas.value = datasValue.toMutableList().apply {
+                _datas.value = _datas.value.toMutableList().apply {
                     this[existingIndex] = updatedItem
                 }
             }
+
+            // Then persist to database
+            withContext(Dispatchers.IO) {
+                dataBaseCreationFactory.set(updatedItem)
+            }
+        }
+    }
+
+    // 2. Alternative: Add a new method for immediate UI updates
+    fun updateWithImmediateUIRefresh(data: M8BonVent) {
+        val existingIndex = _datas.value.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
         }
 
-        dataBaseCreationFactory.set(updatedItem)
+        if (existingIndex < 0) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        // Immediate UI update
+        _datas.value = _datas.value.toMutableList().apply {
+            this[existingIndex] = updatedItem
+        }
+
+        // Background database update
+        composScope.launch {
+            dataBaseCreationFactory.set(updatedItem)
+        }
     }
 }
 

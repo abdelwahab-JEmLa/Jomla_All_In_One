@@ -86,7 +86,8 @@ fun MapContent(
     // Initialize map and start location tracking
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
-        locationTracker.startTracking()
+
+       // locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
     }
 

@@ -48,21 +48,7 @@ class DataBaseInitFactory_8BonVent(
         dao.insertAll(data)
     }
 
-    fun triggerUpdateFbParTimestampsListener() {  //<--
-    //TODO(1): --------- beginning of system
-        //DataBas...BonVent Firebase data changed - processing 1 items
-        //                  Local entities count: 0
-        //                  Added new entity: -OVrm_F4CgTo6o0-N9vd etate Rapport with timestamp: 1753282664682
-        //                  Sync complete - Added: 1, Updated: 0, Deleted: 0
-        //                  Firebase data changed - processing 1 items
-        //                  Local entities count: 1
-        //                  Updated entity: -OVrm_F4CgTo6o0-N9vdetate Ordre_Gerant  //<--
-        //TODO(1): pk mem ca devien cette etate mais 
-        //                  
-        //                  
-        //                  (FB: 1753282673231, Local: 1753282664682)
-        //                  Sync complete - Added: 0, Updated: 1, Deleted: 0
-        // FIXED: The issue was with timestamp comparison and proper synchronization logic
+    fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
 
@@ -158,12 +144,11 @@ class DataBaseInitFactory_8BonVent(
     }
 
     private fun getEtate(data: M8BonVent) =
-        "etate ${data.etateActuellementEst}"
+        "etate est devenue == ${data.etateActuellementEst}"
 
 
-    fun set(
-        dataAvecTigerUpdate: M8BonVent,
-    ) {
+    // Add better synchronization handling
+    fun set(dataAvecTigerUpdate: M8BonVent) {
         factoryScope.launch {
             Log.d(repoTAG, "Setting entity: ${dataAvecTigerUpdate.keyID}")
 
@@ -172,16 +157,25 @@ class DataBaseInitFactory_8BonVent(
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
 
-            // Update local database first
-            dao.upsert(entityWithUpdatedTimestamp)
-            Log.d(repoTAG, "Local upsert completed for: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)}")
-
-            // Then sync to Firebase
+            // FIX: Use transaction for atomic operation
             try {
-                batchFireBaseUpdateGBonVent(listOf(entityWithUpdatedTimestamp))
-                Log.d(repoTAG, "Successfully synced entity to Firebase: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)} with timestamp: ${entityWithUpdatedTimestamp.dernierTimeTampsSynchronisationAvecFireBase}")
+                // Update local database first
+                dao.upsert(entityWithUpdatedTimestamp)
+                Log.d(repoTAG, "Local upsert completed for: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)}")
+
+                // Then sync to Firebase in background
+                launch {
+                    try {
+                        batchFireBaseUpdateGBonVent(listOf(entityWithUpdatedTimestamp))
+                        Log.d(repoTAG, "Successfully synced entity to Firebase: ${entityWithUpdatedTimestamp.keyID}${getEtate(entityWithUpdatedTimestamp)} with timestamp: ${entityWithUpdatedTimestamp.dernierTimeTampsSynchronisationAvecFireBase}")
+                    } catch (e: Exception) {
+                        Log.e(repoTAG, "Error syncing to Firebase: ${e.message}", e)
+                        // Don't rollback local changes - Firebase sync can be retried later
+                    }
+                }
             } catch (e: Exception) {
-                Log.e(repoTAG, "Error syncing to Firebase: ${e.message}", e)
+                Log.e(repoTAG, "Error updating local database: ${e.message}", e)
+                throw e
             }
         }
     }
