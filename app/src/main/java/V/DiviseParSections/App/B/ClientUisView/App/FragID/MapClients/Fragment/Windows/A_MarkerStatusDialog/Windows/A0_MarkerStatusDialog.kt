@@ -123,8 +123,6 @@ private fun CustomStatusDropdownMenu(
                         relative_M8BonVent
                             .copy(
                                 etateActuellementEst = status,
-                                parent_M17Message_KeyID = it.keyID,
-                                parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
                             )
                     }
 

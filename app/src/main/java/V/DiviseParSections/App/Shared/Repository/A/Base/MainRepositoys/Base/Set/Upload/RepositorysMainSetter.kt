@@ -150,7 +150,7 @@ class RepositorysMainSetter(
 
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
-    fun update_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
+    fun update_M8BonVent(data: M8BonVent?) = data?.let { repo8BonVent.upsert(it) }
     fun upsertM8BonVent(data: M8BonVent) { repo8BonVent.upsert(data) }
 
     fun delete_M8BonVent(data: M8BonVent) {

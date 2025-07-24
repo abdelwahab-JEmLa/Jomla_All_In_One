@@ -91,42 +91,10 @@ class DataBaseInitFactory_8BonVent(
                                             )
                                         }
 
-                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase -> {
+                                        else -> {
                                             dao.upsert(entityWithKey)
                                             updateCount++
-                                            Log.d(
-                                                repoTAG,
-                                                "Updated entity: ${entityWithKey.keyID}${
-                                                    getEtate(entityWithKey)
-                                                } (FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase}, Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase})"
-                                            )
-                                        }
 
-                                        localEntity.dernierTimeTampsSynchronisationAvecFireBase > entityWithKey.dernierTimeTampsSynchronisationAvecFireBase -> {
-                                            Log.d(
-                                                repoTAG,
-                                                "Local entity is newer, syncing to Firebase: ${localEntity.keyID}${
-                                                    getEtate(entityWithKey)
-                                                } (Local: ${localEntity.dernierTimeTampsSynchronisationAvecFireBase}, FB: ${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase})"
-                                            )
-                                            try {
-                                                batchFireBaseUpdateGBonVent(listOf(localEntity))
-                                            } catch (e: Exception) {
-                                                Log.e(
-                                                    repoTAG,
-                                                    "Error syncing local entity to Firebase: ${e.message}",
-                                                    e
-                                                )
-                                            }
-                                        }
-
-                                        else -> {
-                                            Log.d(
-                                                repoTAG,
-                                                "Timestamps are equal for entity: ${entityWithKey.keyID}${
-                                                    getEtate(entityWithKey)
-                                                } (${entityWithKey.dernierTimeTampsSynchronisationAvecFireBase})"
-                                            )
                                         }
                                     }
                                 }

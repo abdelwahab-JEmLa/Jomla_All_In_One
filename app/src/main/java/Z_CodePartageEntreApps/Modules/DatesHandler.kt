@@ -14,9 +14,6 @@ data class DateAndTimString(
 )
 
 class DatesHandler {
-
-
-
     fun getCurrentTimestamps(): Long {
         return System.currentTimeMillis()
     }
@@ -267,6 +264,25 @@ class DatesHandler {
         }
     }
     companion object{
+
+        fun Long.getDateAndTimStringAvecSecondsP2(): DateAndTimString {
+            try {
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = this
+
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()) // Added seconds format
+
+                val date = dateFormat.format(calendar.time)
+                val timeString = timeFormat.format(calendar.time)
+                val time = timeString.formatTimeToArabicWithSeconds() // Use new extension function with seconds
+
+                return DateAndTimString(date, time)
+            } catch (e: Exception) {
+                return DateAndTimString()
+            }
+        }
+
         fun creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps: Long): Pair<String, String> {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = creationTimestamps
