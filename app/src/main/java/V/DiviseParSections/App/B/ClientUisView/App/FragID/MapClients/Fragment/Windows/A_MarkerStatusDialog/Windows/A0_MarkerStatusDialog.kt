@@ -75,7 +75,6 @@ private fun CustomStatusDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
-        // Helper function to create elevated card dropdown item
         @Composable
         fun StatusDropdownItem(
             status: M8BonVent.EtateActuellementEst,
