@@ -92,9 +92,9 @@ class DataBaseInitFactory_8BonVent(
                                         }
 
                                         else -> {
-                                            dao.upsert(entityWithKey)
+                                            dao.deleteByKeyId(entityWithKey.keyID)
+                                            dao.insert(entityWithKey)
                                             updateCount++
-
                                         }
                                     }
                                 }

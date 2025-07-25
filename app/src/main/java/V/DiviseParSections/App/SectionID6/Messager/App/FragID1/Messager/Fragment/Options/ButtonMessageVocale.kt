@@ -264,61 +264,52 @@ fun ButtonMessageVocale(
                                     Toast.LENGTH_SHORT
                                 ).show()
 
-                                if (relative_M8BonVent != null) {
-                                    currentRecordingEtate?.let { etate ->
-                                        isUploading = true
+                                currentRecordingEtate?.let { etate ->
+                                    isUploading = true
 
-                                        val uploadResult = audioHandler.uploadAudioFile(
-                                            recordedFile,
-                                            etate.parentMessageVID
+                                    val uploadResult = audioHandler.uploadAudioFile(
+                                        recordedFile,
+                                        etate.parentMessageVID
+                                    )
+
+                                    isUploading = false
+
+                                    if (uploadResult.isSuccess) {
+                                        val updatedEtate_Premier_Test_Envoi = etate.copy(
+                                            etate = M17MessageVocale.Etate.Premier_Test_Envoi,
+                                            creationTimestamps = datesHandler.getCurrentTimestamps()
                                         )
 
-                                        isUploading = false
 
-                                        if (uploadResult.isSuccess) {
-                                            val updatedEtate_Premier_Test_Envoi = etate.copy(
-                                                etate = M17MessageVocale.Etate.Premier_Test_Envoi,
-                                                creationTimestamps = datesHandler.getCurrentTimestamps()
-                                            )
+                                        repositorysMainSetter.upsert_M17MessageVocale(
+                                            updatedEtate_Premier_Test_Envoi
+                                        )
 
+                                        Toast.makeText(
+                                            context,
+                                            "Message vocal envoyé via Telegram!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
 
-                                            repositorysMainSetter.upsert_M17MessageVocale(
-                                                updatedEtate_Premier_Test_Envoi
-                                            )
+                                        delay(2000)
 
-                                            Toast.makeText(
-                                                context,
-                                                "Message vocal envoyé via Telegram!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                        val updatedEtate = etate.copy(
+                                            etate = M17MessageVocale.Etate.ENVOYER,
+                                            creationTimestamps = datesHandler.getCurrentTimestamps(),
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
 
-                                            delay(2000)
+                                        repositorysMainSetter.upsert_M17MessageVocale(
+                                            updatedEtate
+                                        )
+                                        repositorysMainSetter.update_M8BonVent(relative_M8BonVent)
 
-                                            val updatedEtate = etate.copy(
-                                                etate = M17MessageVocale.Etate.ENVOYER,
-                                                creationTimestamps = datesHandler.getCurrentTimestamps(),
-                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                            )
-
-                                            repositorysMainSetter.upsert_M17MessageVocale(
-                                                updatedEtate
-                                            )
-
-                                            repositorysMainSetter.update_M8BonVent(
-                                                relative_M8BonVent.copy(
-                                                    parent_M17Message_KeyID = relative_M17Message.keyID,
-                                                    parent_M17Message_DebugInfos = relative_M17Message.getDebugInfos(),
-                                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                                )
-                                            )
-
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                     }
                                 }
 

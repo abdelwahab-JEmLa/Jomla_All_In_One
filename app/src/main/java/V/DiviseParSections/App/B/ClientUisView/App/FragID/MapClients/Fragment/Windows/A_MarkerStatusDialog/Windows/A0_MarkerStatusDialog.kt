@@ -10,6 +10,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
@@ -123,6 +124,8 @@ private fun CustomStatusDropdownMenu(
                         relative_M8BonVent
                             .copy(
                                 etateActuellementEst = status,
+                                parent_M17Message_KeyID = it.keyID,
+                                parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
                             )
                     }
 
@@ -303,19 +306,20 @@ fun MarkerStatusDialog(
                                         )
                                     }
 
-                                    item {
-                                        M8BonVent.EtateActuellementEst.Ordre_Gerant
-                                            .ButtonAutreEtates(
-                                                viewModel = viewModel,
-                                                clickedClient = clientId,
-                                            )
+                                    focusedValuesGetter.currentApp_Est_Admin.ifTrue {
+                                        item {
+                                            M8BonVent.EtateActuellementEst.Ordre_Gerant
+                                                .ButtonAutreEtates(
+                                                    viewModel = viewModel,
+                                                    clickedClient = clientId,
+                                                )
+                                        }
                                     }
 
                                     item {
                                         Box {
                                             Card(
                                                 modifier = Modifier
-
                                                     .fillMaxWidth(),
                                                 colors = CardDefaults.cardColors(
                                                     containerColor = MaterialTheme.colorScheme.secondary
@@ -328,21 +332,29 @@ fun MarkerStatusDialog(
                                                     onClick = { showStatusDropdown = true },
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .padding(8.dp)
+                                                        .padding(4.dp) // Reduced padding
                                                 ) {
                                                     Column(
-                                                        Modifier.background(Color.Red),
-                                                        horizontalAlignment = Alignment.CenterHorizontally
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(horizontal = 8.dp, vertical = 4.dp), // Better padding control
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        verticalArrangement = Arrangement.Center
                                                     ) {
                                                         Icon(
                                                             imageVector = Icons.Default.DeveloperMode,
                                                             contentDescription = null,
                                                             tint = Color.White
                                                         )
+                                                        Spacer(modifier = Modifier.height(4.dp))
                                                         Text(
-                                                            text = ":تقرير الدخول معه في حالة انسداد في التجارة بسبب",
+                                                            text = "تقرير الدخول معه في حالة انسداد في التجارة بسبب:",
                                                             color = Color.White,
-                                                            style = MaterialTheme.typography.bodySmall
+                                                            style = MaterialTheme.typography.bodySmall,
+                                                            textAlign = TextAlign.Center,
+                                                            maxLines = 2, // Allow text to wrap to 2 lines
+                                                            overflow = TextOverflow.Ellipsis,
+                                                            modifier = Modifier.fillMaxWidth()
                                                         )
                                                     }
                                                 }

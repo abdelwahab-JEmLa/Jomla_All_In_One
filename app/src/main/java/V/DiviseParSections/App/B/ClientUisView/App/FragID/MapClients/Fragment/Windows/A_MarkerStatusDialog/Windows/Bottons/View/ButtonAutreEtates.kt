@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -33,6 +34,7 @@ import androidx.core.content.ContextCompat
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
 ) {
@@ -44,7 +46,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val relative_M2Client = aCentralFacade.repositorysMainGetter.repo2Client.datasValue
         .find { it.id == clickedClient }
 
-    // Early return if client not found
     if (relative_M2Client == null) {
         toastData = ToastData(
             message = "Client non trouvé",
@@ -62,7 +63,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         onClick = {
             val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                 aCentralFacade,
-                relative_M2Client, // This is now guaranteed to be non-null
+                relative_M2Client,
                 etateActuellementEst = relative_Etate,
             )
 

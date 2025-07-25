@@ -19,7 +19,10 @@ fun MainFilter(
     vm: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier,
 ) {
-    val filtered by remember(markerStatusDialogM2Client?.keyID) {
+    val filtered by remember(
+        vm.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        markerStatusDialogM2Client?.keyID
+    ) {
         derivedStateOf {
             val datasValue = vm.getter.repo8BonVent.datasValue
             datasValue.filter {

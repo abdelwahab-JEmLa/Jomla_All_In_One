@@ -9,7 +9,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.getDateAndTimStringAvecSecondsP2
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,17 +58,10 @@ fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    relativeINIT_M8BonVent: M8BonVent,
+    relative_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
 ) {
-    val relative_M8BonVent by remember(relativeINIT_M8BonVent.keyID) {
-        derivedStateOf {
-            viewModel.getter.repo8BonVent.datasValue
-                .find { it.keyID == relativeINIT_M8BonVent.keyID }
-                ?: relativeINIT_M8BonVent
-        }
-    }
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
@@ -85,7 +78,11 @@ fun View_MainItem(
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
 
+    // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
+
+    // State for dropdown menu
+    var selectedStatus by remember { mutableStateOf<M8BonVent.EtateActuellementEst?>(null) }
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
@@ -205,6 +202,7 @@ fun View_MainItem(
                 )
             }
 
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -255,17 +253,7 @@ fun View_MainItem(
                     )
 
                     Text(
-                        text = relative_M8BonVent.dernierTimeTampsSynchronisationAvecFireBase
-                            .toString().takeLast(3),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                    Text(
-                        text = relative_M8BonVent.dernierTimeTampsSynchronisationAvecFireBase
-                            .getDateAndTimStringAvecSecondsP2().time,
+                        text = relative_M8BonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
