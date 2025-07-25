@@ -14,6 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -57,8 +57,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.koin.compose.koinInject
@@ -320,43 +320,37 @@ fun MarkerStatusDialog(
                                         Box {
                                             Card(
                                                 modifier = Modifier
-                                                    .fillMaxWidth(),
+                                                    .fillMaxWidth()
+                                                    .clickable { showStatusDropdown = true },
                                                 colors = CardDefaults.cardColors(
-                                                    containerColor = MaterialTheme.colorScheme.secondary
+                                                    containerColor = Color.Red
                                                 ),
                                                 elevation = CardDefaults.cardElevation(
                                                     defaultElevation = 4.dp
                                                 )
                                             ) {
-                                                IconButton(
-                                                    onClick = { showStatusDropdown = true },
+                                                Column(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .padding(4.dp)
+                                                        .padding(12.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
                                                 ) {
-                                                    Column(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                                        verticalArrangement = Arrangement.Center
-                                                    ) {
-                                                        Icon(
-                                                            imageVector = Icons.Default.DeveloperMode,
-                                                            contentDescription = null,
-                                                            tint = Color.White
-                                                        )
-                                                        Spacer(modifier = Modifier.height(4.dp))
-                                                        Text(
-                                                            text = "تقرير الدخول معه في حالة انسداد في التجارة بسبب:",
-                                                            color = Color.White,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            textAlign = TextAlign.Center,
-                                                            maxLines = 2,
-                                                            overflow = TextOverflow.Ellipsis,
-                                                            modifier = Modifier.fillMaxWidth()
-                                                        )
-                                                    }
+                                                    Icon(
+                                                        imageVector = Icons.Default.DeveloperMode,
+                                                        contentDescription = null,
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    Text(
+                                                        text = "تقرير الدخول معه في حالة انسداد في التجارة بسبب:",
+                                                        color = Color.White,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        textAlign = TextAlign.Center,
+                                                        lineHeight = 16.sp,
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    )
                                                 }
                                             }
 
