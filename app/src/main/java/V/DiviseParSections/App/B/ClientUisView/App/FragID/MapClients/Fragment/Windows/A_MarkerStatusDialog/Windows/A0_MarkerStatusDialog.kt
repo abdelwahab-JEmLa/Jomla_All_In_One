@@ -147,7 +147,6 @@ private fun CustomStatusDropdownMenu(
             )
         }
 
-        // Available status options when current state is "Probleme"
         M8BonVent.EtateActuellementEst.Ordre_Gerant.let { etate ->
             StatusDropdownItem(
                 status = etate,
@@ -333,12 +332,12 @@ fun MarkerStatusDialog(
                                                     onClick = { showStatusDropdown = true },
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .padding(4.dp) // Reduced padding
+                                                        .padding(4.dp)
                                                 ) {
                                                     Column(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
-                                                            .padding(horizontal = 8.dp, vertical = 4.dp), // Better padding control
+                                                            .padding(horizontal = 8.dp, vertical = 4.dp),
                                                         horizontalAlignment = Alignment.CenterHorizontally,
                                                         verticalArrangement = Arrangement.Center
                                                     ) {
@@ -353,7 +352,7 @@ fun MarkerStatusDialog(
                                                             color = Color.White,
                                                             style = MaterialTheme.typography.bodySmall,
                                                             textAlign = TextAlign.Center,
-                                                            maxLines = 2, // Allow text to wrap to 2 lines
+                                                            maxLines = 2,
                                                             overflow = TextOverflow.Ellipsis,
                                                             modifier = Modifier.fillMaxWidth()
                                                         )
