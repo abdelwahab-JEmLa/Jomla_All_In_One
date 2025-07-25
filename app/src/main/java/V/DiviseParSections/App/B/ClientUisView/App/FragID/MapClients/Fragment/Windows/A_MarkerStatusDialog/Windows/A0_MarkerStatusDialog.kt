@@ -206,8 +206,8 @@ fun MarkerStatusDialog(
     var clientTypeMode by remember { mutableStateOf(relative_M2Client?.clientTypeMode) }
 
     if (editedName.isEmpty() && relative_M2Client != null) {
-        editedName = relative_M2Client.nom ?: ""
-        editedPhone = relative_M2Client.numTelephone ?: ""
+        editedName = relative_M2Client.nom
+        editedPhone = relative_M2Client.numTelephone
     }
 
     fun handleDismiss() {
