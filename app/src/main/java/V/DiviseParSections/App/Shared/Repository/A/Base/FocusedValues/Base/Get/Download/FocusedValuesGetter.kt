@@ -137,8 +137,8 @@ class FocusedValuesGetter(
                 }
                 .maxByOrNull { it.creationTimestamps }
 
-            lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
-                    lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport
+            lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    || lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport_Entre_On_Etate_De_Bloquage
         }
     }
 

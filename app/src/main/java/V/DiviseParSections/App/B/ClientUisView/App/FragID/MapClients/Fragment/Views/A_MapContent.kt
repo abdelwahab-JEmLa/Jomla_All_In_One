@@ -71,8 +71,6 @@ fun MapContent(
         )
     }
 
-    // Marker editing state
-
     // Location tracker initialization
     val locationTracker = remember {
         LocationTracker(

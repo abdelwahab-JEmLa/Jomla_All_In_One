@@ -205,9 +205,9 @@ data class M8BonVent(
             android.R.color.holo_green_light,
             " تنفيذ المطلوب في تحسين الوضع معه"
         ),
-        Rapport(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
 
-        Probleme(R.color.c3, "حدث مشكل معه"),
+        Rapport_Entre_On_Etate_De_Bloquage(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
+        Bloque_Probleme(R.color.c3, "حدث مشكل معه"),
         Ordre_Gerant(R.color.c4, "توجيه المسير"),
 
         A_COMMANDE_CONFIRME(

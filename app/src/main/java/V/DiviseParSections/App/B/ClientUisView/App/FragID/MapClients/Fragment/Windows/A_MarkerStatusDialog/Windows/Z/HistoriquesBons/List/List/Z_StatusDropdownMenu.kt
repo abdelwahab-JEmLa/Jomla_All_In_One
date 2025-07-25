@@ -67,7 +67,7 @@ fun StatusDropdownMenu(
                 text = etate.nomArabe
             )
         }
-        val etate = M8BonVent.EtateActuellementEst.Probleme
+        val etate = M8BonVent.EtateActuellementEst.Bloque_Probleme
         StatusDropdownItem(
             status = etate,
             text = etate.nomArabe

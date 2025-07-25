@@ -111,6 +111,8 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport_Entre_On_Etate_De_Bloquage
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Bloque_Probleme
 
             }
         }
@@ -124,6 +126,8 @@ fun filterClientsBasedOnMode(
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.FERME
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport_Entre_On_Etate_De_Bloquage
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Bloque_Probleme
             }
         }
 

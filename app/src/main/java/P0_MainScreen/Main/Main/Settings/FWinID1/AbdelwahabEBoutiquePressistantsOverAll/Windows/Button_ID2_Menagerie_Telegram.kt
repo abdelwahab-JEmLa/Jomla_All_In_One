@@ -18,8 +18,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,10 +35,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.R
 import org.koin.compose.koinInject
 
@@ -46,9 +53,8 @@ fun Button_ID2_Menagerie_Telegram(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     showLabels: Boolean,
 ) {
-    val  current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin   //<--
-    //TODO(1): enleve ca et fait que si le message est depuit un autre compt que celila 
-    //la notification s afficeh avec le nombre exact et le son se mete
+    val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
+    val currentAppComptKeyID = focusedValuesGetter.active_Current_M9AppCompt?.keyID
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -82,13 +88,22 @@ fun Button_ID2_Menagerie_Telegram(
         }
     }
 
+    // Separate count for messages from other accounts
+    val messages_From_Other_Accounts_Size by remember(latestStatesForEachMessage, currentAppComptKeyID) {
+        derivedStateOf {
+            latestStatesForEachMessage.count { (latestMessage, etatesList) ->
+                val isFromOtherAccount = latestMessage.parent_M9AppCompt_KeyID != currentAppComptKeyID
+                val isUnread = etatesList.none { it.etate == M17MessageVocale.Etate.ECOUTE }
+                isFromOtherAccount && isUnread
+            }
+        }
+    }
+
     var previousMessageCount by remember { mutableIntStateOf(non_Lu_Messages_Size) }
+    var previousOtherAccountsCount by remember { mutableIntStateOf(messages_From_Other_Accounts_Size) }
 
     @SuppressLint("ObsoleteSdkInt")
-    fun playNotificationSound() {
-        if (non_Lu_Messages_Size <= previousMessageCount) return
-
-        val numberOfNewMessages = non_Lu_Messages_Size - previousMessageCount
+    fun playNotificationSound(messageCount: Int) {
         val soundDuration = 1200
         try {
             val vibrator =
@@ -105,7 +120,7 @@ fun Button_ID2_Menagerie_Telegram(
                 val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
                 val repeatedPattern = mutableListOf<Long>().apply {
                     add(0)
-                    repeat(numberOfNewMessages) { index ->
+                    repeat(messageCount) { index ->
                         if (index > 0) add(150)
                         addAll(basePattern.drop(1))
                     }
@@ -116,7 +131,7 @@ fun Button_ID2_Menagerie_Telegram(
                 val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
                 val repeatedPattern = mutableListOf<Long>().apply {
                     add(0)
-                    repeat(numberOfNewMessages) { index ->
+                    repeat(messageCount) { index ->
                         if (index > 0) add(150)
                         addAll(basePattern.drop(1))
                     }
@@ -165,11 +180,22 @@ fun Button_ID2_Menagerie_Telegram(
         }
     }
 
+    // Handle notifications for current account (non-admin only)
     LaunchedEffect(non_Lu_Messages_Size) {
-        if (!current_Compt_Et_Admin!! && non_Lu_Messages_Size > previousMessageCount) {
-            playNotificationSound()
+        if (current_Compt_Et_Admin == false && non_Lu_Messages_Size > previousMessageCount) {
+            val newMessages = non_Lu_Messages_Size - previousMessageCount
+            playNotificationSound(newMessages)
         }
         previousMessageCount = non_Lu_Messages_Size
+    }
+
+    // Handle notifications for messages from other accounts (always play)
+    LaunchedEffect(messages_From_Other_Accounts_Size) {
+        if (messages_From_Other_Accounts_Size > previousOtherAccountsCount) {
+            val newMessagesFromOthers = messages_From_Other_Accounts_Size - previousOtherAccountsCount
+            playNotificationSound(newMessagesFromOthers)
+        }
+        previousOtherAccountsCount = messages_From_Other_Accounts_Size
     }
 
     val infiniteTransition = rememberInfiniteTransition(label = "badge_animation")
@@ -191,6 +217,9 @@ fun Button_ID2_Menagerie_Telegram(
         ),
         label = "alpha_animation"
     )
+
+    // Display total unread count (including messages from other accounts)
+    val totalUnreadCount = non_Lu_Messages_Size + messages_From_Other_Accounts_Size
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -223,8 +252,8 @@ fun Button_ID2_Menagerie_Telegram(
                 )
             }
 
-            if (non_Lu_Messages_Size > 0) {
-               /* Box(
+            if (totalUnreadCount > 0) {
+                Box(
                     modifier = Modifier
                         .size(25.dp)
                         .offset(x = (-8).dp, y = (-10).dp)
@@ -235,13 +264,13 @@ fun Button_ID2_Menagerie_Telegram(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (non_Lu_Messages_Size > 99) "99+" else non_Lu_Messages_Size.toString(),
+                        text = if (totalUnreadCount > 99) "99+" else totalUnreadCount.toString(),
                         color = Color.White,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
-                }     */
+                }
             }
         }
 
