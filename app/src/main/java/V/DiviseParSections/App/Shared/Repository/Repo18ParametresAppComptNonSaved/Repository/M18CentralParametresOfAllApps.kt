@@ -18,20 +18,19 @@ import kotlinx.coroutines.launch
 class Repo18CentralParametresOfAllApps {
     val repoTAG = "Repo18CentralParametresOfAllApps"
 
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    private val repoScope = CoroutineScope(Dispatchers.IO)
     private val refRepo = M18CentralParametresOfAllApps.ref
     private val _data = mutableStateOf<M18CentralParametresOfAllApps?>(null)
     val dataValue by derivedStateOf { _data.value }
 
     init {
-        composScope.launch {
+        repoScope.launch {
             refRepo.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     try {
                         val data = snapshot.getValue(M18CentralParametresOfAllApps::class.java)
-                            ?: M18CentralParametresOfAllApps.get_Default()
                         _data.value = data
-                        Log.d(repoTAG, "Data loaded successfully")
+                        Log.d(repoTAG, "Data loaded successfully ${data?.au_Lence_Set_Compt_Ac_KeyId}")
                     } catch (e: Exception) {
                         Log.e(repoTAG, "Error parsing data from Firebase", e)
                         throw RuntimeException("Failed to parse central parameters from Firebase", e)
@@ -54,7 +53,6 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
     val au_Lence_Set_Compt_Ac_KeyId: String = "",
-    val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,
     val devStartUpScree: Screen = Screen.FacadePresentoireProduits,
