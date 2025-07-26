@@ -23,8 +23,6 @@ fun MainFilter(
     onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
-    val relative_List_M10Vent = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-
     val relative_M1Produit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
     }
@@ -35,12 +33,6 @@ fun MainFilter(
 
     val relative_M2Client = remember(list_M8BonVent, filterBonID) {
         list_M8BonVent.find { it.vid == filterBonID }
-    }
-
-    val maxPrixArriveDuProduit = remember(tarificationList, relative_M1Produit) {
-        relative_List_M10Vent
-            .filter { it.parentProduitInfosOldId == relative_M1Produit.id }
-            .maxOfOrNull { it.provisoireMonPrix }
     }
 
     val clientDefiniTariffs = remember(tarificationList, relative_M1Produit, relative_M8BonVent) {
@@ -55,10 +47,9 @@ fun MainFilter(
             viewModel = viewModel,
             relative_M1Produit = relative_M1Produit,
             showLabels = showLabels,
-            max_Prix = maxPrixArriveDuProduit,
             clientDefiniTariffs = clientDefiniTariffs,
             onClickPrixButton = onClickPrixButton,
-            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
+            onClickAnulationButton = onClickAnulationButton
         )
     }
 }

@@ -34,7 +34,6 @@ fun MainList(
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
-    
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
@@ -165,13 +164,13 @@ fun MainList(
             }
         }
 
-        val priceToUse = if (max_Prix != null && max_Prix != 0.0) {
+        val priceToUse = if (max_Prix != 0.0) {
             max_Prix
         } else {
             relative_M1Produit.prixVent
         }
 
-        val typeToUse = if (max_Prix != null && max_Prix != 0.0) {
+        val typeToUse = if (max_Prix != 0.0) {
             TypeChoisi.LeMaxPrixArrive
         } else {
             TypeChoisi.PRIX_BASE

@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -214,6 +215,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     )
 
+    val activeDialogSearchM1Produit =
+        focusedValuesGetter.currentActive_M9AppCompt?.activeDialogSearchM1Produit
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -222,7 +226,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
                     && viewModel.aCentralFacade
-                        .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -249,14 +253,15 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 if (showButtons) {
                     if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
-                        (activeFragment != Screen.EditDatabaseWithCreateNewArticles).ifTrue {
-                            B1CataloguesAffiche(
-                                appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                                showLabels = showLabels,
-                            ) {
-                                showCatalogueDialog = true
+                        (activeFragment != Screen.EditDatabaseWithCreateNewArticles
+                                        && activeDialogSearchM1Produit == false).ifTrue {
+                                B1CataloguesAffiche(
+                                    appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+                                    showLabels = showLabels,
+                                ) {
+                                    showCatalogueDialog = true
+                                }
                             }
-                        }
 
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
@@ -291,40 +296,42 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
                 }
-                val dialogAboveAll_OutlinedSearchListProduits =
-                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-                        ?.dialogAboveAll_OutlinedSearchListProduits
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                                .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(true)
-                        },
-                        modifier = Modifier.size(40.dp),
-                        containerColor = MaterialTheme.colorScheme.primary,
+                activeDialogSearchM1Produit?.ifFalse {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Rechercher Produit",
-                            tint = Color.White
-                        )
-                    }
-
-                    if (showLabels) {
-                        Text(
-                            text = "Rechercher Produit",
+                        FloatingActionButton(
                             modifier = Modifier
-                                .background(MaterialTheme.colorScheme.primary)
-                                .padding(4.dp),
-                            color = Color.White
-                        )
+                                .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
+                                .size(40.dp),
+                            onClick = {
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+                                    .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(
+                                        true
+                                    )
+                            },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Rechercher Produit",
+                                tint = Color.White
+                            )
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                text = "Rechercher Produit",
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
                     }
                 }
-
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     fermeDialog = {
