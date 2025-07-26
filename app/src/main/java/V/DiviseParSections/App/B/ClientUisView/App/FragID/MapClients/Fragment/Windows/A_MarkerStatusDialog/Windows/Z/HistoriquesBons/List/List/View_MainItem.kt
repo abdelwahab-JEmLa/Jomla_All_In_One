@@ -106,6 +106,7 @@ fun View_MainItem(
                         break
                     }
                 }
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
