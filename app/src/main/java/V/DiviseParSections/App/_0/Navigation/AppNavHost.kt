@@ -5,9 +5,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
@@ -67,10 +67,10 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val itsDevMode = viewModel.getter.parametresAppComptNonSaved.itsDevMode
+    val itsDevMode = viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode
 
     val startUpScreen = when {
-        itsDevMode -> viewModel.getter.parametresAppComptNonSaved.devStartUpScree
+        itsDevMode == true -> viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.devStartUpScree
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
@@ -84,7 +84,9 @@ fun AppNavHost(
 
     // RepositorysMainSetter startup screen when component initializes
     LaunchedEffect(startUpScreen) {
-        fragmentNavigationHandler.setStartupScreen(startUpScreen)
+        if (startUpScreen != null) {
+            fragmentNavigationHandler.setStartupScreen(startUpScreen)
+        }
     }
 
     val currentClientId = uiState.appSettingsSaverModel
@@ -116,194 +118,196 @@ fun AppNavHost(
             .padding(bottom = bottomNavHeight + bottomPadding)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            NavHost(
-                navController = navController,
-                startDestination = startUpScreen.route,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                composable(
-                    route = Screen.FacadePresentoireProduits.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
-                                viewModelHeadViewModel = viewModel,
-                                viewModelInitApp = viewModelInitApp,
-                                onToggleNavBar = onToggleNavBar,
-                                reloadTrigger = reloadTrigger,
-                                onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-                                    relatedArticleBaseStats = articleDataBaseOn
-                                    pendingIndexColor = indexColor
-
-                                    if (currentClientId == 0L) {
-                                        showClientSelection = true
-                                    } else {
-                                        viewModel.openWindowsNewSaleWithUpdateCurrent(
-                                            relatedArticleBaseStats!!.id.toLong(),
-                                            currentClientId,
-                                            pendingIndexColor
-                                        )
-                                        opnerSaleWindows = true
-                                        viewModel.sendOrderToClientDisplayer(
-                                            WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
-                                            relatedArticleBaseStats!!.id.toLong()
-                                        )
-                                    }
-                                },
-                                onClickToOpenClientsW = {
-                                    showClientSelectionWithoutCondition = true
-                                },
-                                isFabVisibleInit = isFabVisible,
-                                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                                onToggleLockHost = onToggleLockHost,
-                                onToggleLockExpandedPricex = {
-                                    lockExpandedPrices = !lockExpandedPrices
-                                },
-                                currentClient = currentClient,
-                                targetCategoryId = targetCategoryId,
-                                lockHost = lockHost,
-                                onClickImageToShowControles = onClickImageToShowControles
-                            )
-                        }
-
-                        if (uiState.isLoading) {
-                            LoadingOverlay(
-                                progress = uiState.loadingProgress / 100f,
-                                modifier = Modifier.matchParentSize()
-                            )
-                        }
-                    }
-                }
-
-                composable(
-                    route = Screen.FragmentProduitFastSearchDialog.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-
-                    CleanupEffect {
-                    }
-
-                    LaunchedEffect(Unit) {
-                        scrollTiger++
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            MainFastSearchProduitPourVent()
-                        }
-                    }
-                }
-
-                composable(
-                    route = Screen.Screen1PanieVentsFinale.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-
-                    CleanupEffect {
-                    }
-
-                    LaunchedEffect(Unit) {
-                        scrollTiger++
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            PanierFinaleDAchatSec1Frag3()
-                        }
-                    }
-                }
-
-                // Work time recorder screen
-                composable(
-                    route = Screen.TravailleTempRecorder.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-
-                    CleanupEffect {
-                        // Any cleanup needed for this screen
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            A_APP3FragID1_MainScreen()
-                        }
-                    }
-                }
-
-                composable(
-                    route = Screen.Achats_Produits_Chez_Grossists.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-
-                    CleanupEffect {
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            Screen_GrossistAchatSec12FragID1()
-                        }
-                    }
-                }
-
-                // Product ordering screen
-                composable(
-                    route = Screen.EditDatabaseWithCreateNewArticles.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            EditeBaseDonneMainScreenIdS9()
-                        }
-                    }
-                }
-
-                // Database Init Factory screen - NEW
-                composable(
-                    route = Screen.Main_DataBaseInitFactory_1Produit.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                                Main_DataBaseInitFactory_1Produit()
-                        }
-                    }
-                }
-
-                // Test fragment screen (empty implementation)
-                composable(
-                    route = Screen.NewFragTest.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
-                        }
-                    }
-                }
-
-                app2(
-                    viewModelInitApp = viewModelInitApp,
-                    clientEnCourDeVent = clientEnCourDeVent,
+            if (startUpScreen != null) {
+                NavHost(
                     navController = navController,
-                    onClear = {
-                        viewModel.viewModelScope.launch {
-                            viewModel._uiState.update { currentState ->
-                                currentState.copy(soldArticlesModel = emptyList())
+                    startDestination = startUpScreen.route,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    composable(
+                        route = Screen.FacadePresentoireProduits.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
+                                    viewModelHeadViewModel = viewModel,
+                                    viewModelInitApp = viewModelInitApp,
+                                    onToggleNavBar = onToggleNavBar,
+                                    reloadTrigger = reloadTrigger,
+                                    onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                                        relatedArticleBaseStats = articleDataBaseOn
+                                        pendingIndexColor = indexColor
+
+                                        if (currentClientId == 0L) {
+                                            showClientSelection = true
+                                        } else {
+                                            viewModel.openWindowsNewSaleWithUpdateCurrent(
+                                                relatedArticleBaseStats!!.id.toLong(),
+                                                currentClientId,
+                                                pendingIndexColor
+                                            )
+                                            opnerSaleWindows = true
+                                            viewModel.sendOrderToClientDisplayer(
+                                                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
+                                                relatedArticleBaseStats!!.id.toLong()
+                                            )
+                                        }
+                                    },
+                                    onClickToOpenClientsW = {
+                                        showClientSelectionWithoutCondition = true
+                                    },
+                                    isFabVisibleInit = isFabVisible,
+                                    onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                                    onToggleLockHost = onToggleLockHost,
+                                    onToggleLockExpandedPricex = {
+                                        lockExpandedPrices = !lockExpandedPrices
+                                    },
+                                    currentClient = currentClient,
+                                    targetCategoryId = targetCategoryId,
+                                    lockHost = lockHost,
+                                    onClickImageToShowControles = onClickImageToShowControles
+                                )
                             }
 
-                            // Clear the database in add_New coroutine
-                            viewModel.database.soldArticlesModelDao().deleteAll()
-
-                            // Clear Firebase references
-                            val database = Firebase.database
-                            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-                            database.getReference("O_SoldArticlesTabelle").removeValue()
+                            if (uiState.isLoading) {
+                                LoadingOverlay(
+                                    progress = uiState.loadingProgress / 100f,
+                                    modifier = Modifier.matchParentSize()
+                                )
+                            }
                         }
-                    },
-                    mapReloadTrigger = mapReloadTrigger.intValue,
-                    fragmentNavigationHandler = fragmentNavigationHandler
-                )
+                    }
+
+                    composable(
+                        route = Screen.FragmentProduitFastSearchDialog.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+
+                        CleanupEffect {
+                        }
+
+                        LaunchedEffect(Unit) {
+                            scrollTiger++
+                        }
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                MainFastSearchProduitPourVent()
+                            }
+                        }
+                    }
+
+                    composable(
+                        route = Screen.Screen1PanieVentsFinale.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+
+                        CleanupEffect {
+                        }
+
+                        LaunchedEffect(Unit) {
+                            scrollTiger++
+                        }
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                PanierFinaleDAchatSec1Frag3()
+                            }
+                        }
+                    }
+
+                    // Work time recorder screen
+                    composable(
+                        route = Screen.TravailleTempRecorder.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+
+                        CleanupEffect {
+                            // Any cleanup needed for this screen
+                        }
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                A_APP3FragID1_MainScreen()
+                            }
+                        }
+                    }
+
+                    composable(
+                        route = Screen.Achats_Produits_Chez_Grossists.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+
+                        CleanupEffect {
+                        }
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                Screen_GrossistAchatSec12FragID1()
+                            }
+                        }
+                    }
+
+                    // Product ordering screen
+                    composable(
+                        route = Screen.EditDatabaseWithCreateNewArticles.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                EditeBaseDonneMainScreenIdS9()
+                            }
+                        }
+                    }
+
+                    // Database Init Factory screen - NEW
+                    composable(
+                        route = Screen.Main_DataBaseInitFactory_1Produit.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                Main_DataBaseInitFactory_1Produit()
+                            }
+                        }
+                    }
+
+                    // Test fragment screen (empty implementation)
+                    composable(
+                        route = Screen.NewFragTest.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
+                            }
+                        }
+                    }
+
+                    app2(
+                        viewModelInitApp = viewModelInitApp,
+                        clientEnCourDeVent = clientEnCourDeVent,
+                        navController = navController,
+                        onClear = {
+                            viewModel.viewModelScope.launch {
+                                viewModel._uiState.update { currentState ->
+                                    currentState.copy(soldArticlesModel = emptyList())
+                                }
+
+                                // Clear the database in add_New coroutine
+                                viewModel.database.soldArticlesModelDao().deleteAll()
+
+                                // Clear Firebase references
+                                val database = Firebase.database
+                                database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                                database.getReference("O_SoldArticlesTabelle").removeValue()
+                            }
+                        },
+                        mapReloadTrigger = mapReloadTrigger.intValue,
+                        fragmentNavigationHandler = fragmentNavigationHandler
+                    )
+                }
             }
 
             // Handle client selection navigation logic

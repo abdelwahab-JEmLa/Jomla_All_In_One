@@ -20,6 +20,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -28,11 +29,13 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
+    single { Repo18CentralParametresOfAllApps() }
+
     single { Repo15Grossist(context = androidContext(),get(),) }
 
     single { Repo14VentPeriode(get(),get(),) }
     single { Repo13TarificationInfos(get(),get(),) }
-    single { Repo9AppCompt(context = androidContext(),get()) }
+    single { Repo9AppCompt(context = androidContext(),get(),get(),) }
 
     single { Repo2Client(get(), get(), get(),get(), ) }
     single { RepoM16CategorieProduit(get()) }
@@ -53,11 +56,11 @@ val composRepositorysModule = module {
     single { ProduitOperations(get()) }
 
 
-    single { FocusedValuesGetter(get(), get(),get(),get(),get(),get(),get(),get(),) }
+    single { FocusedValuesGetter(get(), get(),get(),get(),get(),get(),get(),get(),get(),) }
     single { FocusedValuesSetter(get(), get(), get(), get(), get(),get(), ) }
     single { FocusedActiveValuesFacade(get(), get()) }
 
-    single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(),get(), ) }
+    single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(),get(),get(), ) }
 
     single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),get(),) }

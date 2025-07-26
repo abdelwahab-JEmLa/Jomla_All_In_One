@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
-import V.DiviseParSections.App.D4.ControleApps.App.FragID2.D.Fragment.Screen_M9AppCompt
+import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.Screen_M9AppCompt
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
@@ -52,7 +52,7 @@ import kotlin.math.roundToInt
 class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
     private var _showVendeursDialog = mutableStateOf(false)
-    private var _show_Dialog_M9ComptApp_List = mutableStateOf(false) // Changed to false by default
+    private var _show_Dialog_M9ComptApp_List = mutableStateOf(true)
 
     var _paneleGroupeButtonList = mutableStateOf(
         listOf(
@@ -128,7 +128,6 @@ class PanelsGroupeButtonHandler {
                         )
                     }
 
-                    // Menu ButtonAutreEtates - Inlined from MenuButton function
                     ControlButton(
                         onClick = { showMenu = !showMenu },
                         icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.Warning,

@@ -168,6 +168,13 @@ private fun CustomStatusDropdownMenu(
             status = M8BonVent.EtateActuellementEst.FERME,
             text = "مغلق"
         )
+
+        focusedValuesGetter.currentApp_Est_Admin.ifTrue {
+            StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.Ordre_Gerant,
+                text = M8BonVent.EtateActuellementEst.Ordre_Gerant.nomArabe
+            )
+        }
     }
 }
 
@@ -304,16 +311,6 @@ fun MarkerStatusDialog(
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )
-                                    }
-
-                                    focusedValuesGetter.currentApp_Est_Admin.ifTrue {
-                                        item {
-                                            M8BonVent.EtateActuellementEst.Ordre_Gerant
-                                                .ButtonAutreEtates(
-                                                    viewModel = viewModel,
-                                                    clickedClient = clientId,
-                                                )
-                                        }
                                     }
 
                                     item {

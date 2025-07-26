@@ -46,15 +46,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.R
 import org.koin.compose.koinInject
-
 @Composable
 fun Button_ID2_Menagerie_Telegram(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     showLabels: Boolean,
-) {
+) {   //<--
+//TODO(1): fait au premier affiche de ne pas affiche les messages sont et vibr
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.active_Current_M9AppCompt?.keyID
+
+    android.util.Log.d("TelegramButton", """
+        🏗️ Button Init:
+        - Current Account KeyID: ${currentAppComptKeyID?.takeLast(4) ?: "null"}
+        - Is Admin: $current_Compt_Et_Admin
+    """.trimIndent())
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -91,11 +97,26 @@ fun Button_ID2_Menagerie_Telegram(
     // Separate count for messages from other accounts
     val messages_From_Other_Accounts_Size by remember(latestStatesForEachMessage, currentAppComptKeyID) {
         derivedStateOf {
-            latestStatesForEachMessage.count { (latestMessage, etatesList) ->
+            val result = latestStatesForEachMessage.count { (latestMessage, etatesList) ->
                 val isFromOtherAccount = latestMessage.parent_M9AppCompt_KeyID != currentAppComptKeyID
                 val isUnread = etatesList.none { it.etate == M17MessageVocale.Etate.ECOUTE }
+
+                // Debug logs
+                android.util.Log.d("TelegramButton", """
+                    Message Debug:
+                    - Message KeyID: ${latestMessage.keyID.takeLast(4)}
+                    - Message Account ID: ${latestMessage.parent_M9AppCompt_KeyID?.takeLast(4) ?: "null"}
+                    - Current Account ID: ${currentAppComptKeyID?.takeLast(4) ?: "null"}
+                    - Is From Other Account: $isFromOtherAccount
+                    - Is Unread: $isUnread
+                    - Will Count: ${isFromOtherAccount && isUnread}
+                """.trimIndent())
+
                 isFromOtherAccount && isUnread
             }
+
+            android.util.Log.d("TelegramButton", "Messages from other accounts count: $result")
+            result
         }
     }
 
@@ -104,6 +125,7 @@ fun Button_ID2_Menagerie_Telegram(
 
     @SuppressLint("ObsoleteSdkInt")
     fun playNotificationSound(messageCount: Int) {
+        android.util.Log.d("TelegramButton", "🔊 Playing notification sound for $messageCount messages")
         val soundDuration = 1200
         try {
             val vibrator =
@@ -182,8 +204,17 @@ fun Button_ID2_Menagerie_Telegram(
 
     // Handle notifications for current account (non-admin only)
     LaunchedEffect(non_Lu_Messages_Size) {
+        android.util.Log.d("TelegramButton", """
+            Current Account Notification Check:
+            - Is Admin: $current_Compt_Et_Admin
+            - New Message Count: $non_Lu_Messages_Size
+            - Previous Count: $previousMessageCount
+            - Should Play: ${current_Compt_Et_Admin == false && non_Lu_Messages_Size > previousMessageCount}
+        """.trimIndent())
+
         if (current_Compt_Et_Admin == false && non_Lu_Messages_Size > previousMessageCount) {
             val newMessages = non_Lu_Messages_Size - previousMessageCount
+            android.util.Log.d("TelegramButton", "Playing notification for $newMessages current account messages")
             playNotificationSound(newMessages)
         }
         previousMessageCount = non_Lu_Messages_Size
@@ -191,8 +222,16 @@ fun Button_ID2_Menagerie_Telegram(
 
     // Handle notifications for messages from other accounts (always play)
     LaunchedEffect(messages_From_Other_Accounts_Size) {
+        android.util.Log.d("TelegramButton", """
+            Other Accounts Notification Check:
+            - Messages from others: $messages_From_Other_Accounts_Size
+            - Previous count: $previousOtherAccountsCount
+            - Should Play: ${messages_From_Other_Accounts_Size > previousOtherAccountsCount}
+        """.trimIndent())
+
         if (messages_From_Other_Accounts_Size > previousOtherAccountsCount) {
             val newMessagesFromOthers = messages_From_Other_Accounts_Size - previousOtherAccountsCount
+            android.util.Log.d("TelegramButton", "Playing notification for $newMessagesFromOthers messages from other accounts")
             playNotificationSound(newMessagesFromOthers)
         }
         previousOtherAccountsCount = messages_From_Other_Accounts_Size

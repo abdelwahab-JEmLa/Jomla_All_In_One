@@ -9,7 +9,5 @@ class BonVentOperations(
     private val gBonVentRepository: Repo8BonVent,
     private val zAppComptRepositoryComposable: Repo9AppCompt
 ) {
-    val hClientRepository = getter.repo2Client
-    val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
 
 }

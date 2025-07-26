@@ -3,7 +3,7 @@ package P0_MainScreen.Main
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -60,10 +60,6 @@ fun MainScreen(
     viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
-    val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
-
-    val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
-
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
@@ -105,7 +101,7 @@ fun MainScreen(
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
-    var isControleFabVisible by remember { mutableStateOf(Repo18ParametresAppComptNonSaved().isControleFabVisible) }
+    var isControleFabVisible by remember { mutableStateOf(M18CentralParametresOfAllApps().isControleFabVisible) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null

@@ -81,7 +81,8 @@ fun ImageDisplayerProtoAvantJuin3(
 ) {
     val relative_M3Couleur = repoMainGetter.find_M3Couleur_By(relative_M1Produit, indexColor)
     val enablePerformAutoClickImageDisplayer =
-        viewModel.aCentralFacade.repositorysMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+
+        viewModel.aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${relative_M1Produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -148,7 +149,7 @@ fun ImageDisplayerProtoAvantJuin3(
     }
 
     LaunchedEffect(imageLoaded, isLoading, enablePerformAutoClickImageDisplayer) {
-        if (enablePerformAutoClickImageDisplayer && imageLoaded && !isLoading && !hasPerformedAutoClick) {
+        if (enablePerformAutoClickImageDisplayer == true && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(

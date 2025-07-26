@@ -15,7 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
@@ -72,6 +72,7 @@ class FocusedValuesGetter(
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
+    private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
@@ -82,7 +83,7 @@ class FocusedValuesGetter(
     }
 
     val active_Current_M9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.keyID == Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
+        repo9AppCompt.datasValue.firstOrNull { it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId }
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
@@ -154,8 +155,8 @@ class FocusedValuesGetter(
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
-            parent_M9AppCompt_KeyID = Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
-            parent_M9AppCompt_DebugInfos = Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
+            parent_M9AppCompt_KeyID = active_Current_M9AppCompt?.keyID?:"",
+            parent_M9AppCompt_DebugInfos = active_Current_M9AppCompt?.get_DebugInfos()?:"",
             parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
             parent_M14VentPeriod_DebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()
                 ?: "null"),

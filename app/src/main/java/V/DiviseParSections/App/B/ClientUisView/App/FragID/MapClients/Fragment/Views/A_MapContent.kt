@@ -58,15 +58,11 @@ fun MapContent(
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
 
-    // Filter mode state
     var currentFilterMode by remember {
         mutableStateOf(
-            if ((viewModel.getter.repo9AppCompt.currentAppCompt?.keyID
-                    ?: "") == viewModel.getter.parametresAppComptNonSaved.currentActiveFocucedM9AppComptKeyID
-            ) {
-                MapClientsViewModel.VisibleClientsNow.showAll
-            } else {
-                MapClientsViewModel.VisibleClientsNow.showAll
+            when (focusedValuesGetter.currentApp_Est_Admin) {
+                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                true -> MapClientsViewModel.VisibleClientsNow.showAll
             }
         )
     }
@@ -85,7 +81,7 @@ fun MapContent(
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
 
-       // locationTracker.startTracking()
+        // locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
     }
 
@@ -210,7 +206,11 @@ fun MapContent(
                         viewModel = viewModel,
                         mapView = mapView,
                         onEditModeChange = { },
-                        onMarkerKeyIdChange = { viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null) },
+                        onMarkerKeyIdChange = {
+                            viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(
+                                null
+                            )
+                        },
                         zoomLevel = defaultZoom
                     )
                 },

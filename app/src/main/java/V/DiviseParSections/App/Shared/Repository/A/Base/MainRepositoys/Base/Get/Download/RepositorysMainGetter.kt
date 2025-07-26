@@ -21,7 +21,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo1
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -64,11 +64,13 @@ class RepositorysMainGetter(
     val repo15Grossist: Repo15Grossist,
     val repoM16CategorieProduit: RepoM16CategorieProduit,
     val repo17MessageVocale: Repo17MessageVocale,
+    val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: FocusedValuesGetter,
 ) {
-    val parametresAppComptNonSaved = Repo18ParametresAppComptNonSaved()
+    val parametresAppComptNonSaved = repo18CentralParametresOfAllApps
+
     val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }

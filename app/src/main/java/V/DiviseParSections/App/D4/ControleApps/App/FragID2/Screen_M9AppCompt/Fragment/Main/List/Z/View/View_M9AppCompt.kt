@@ -1,7 +1,8 @@
-package V.DiviseParSections.App.D4.ControleApps.App.FragID2.D.Fragment
+package V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.Main.List.Z.View
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.ViewModel_M9AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -63,7 +64,7 @@ fun View_M9AppCompt(
     ) {
         if (active) {
             Text(
-                text = "Selected Periode",
+                text = "Selected Data",
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium
             )
@@ -73,7 +74,7 @@ fun View_M9AppCompt(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "m14VentPeriode: ${relative_M9AppCompt.get_DebugInfos()}",
+                text = "data: ${relative_M9AppCompt.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)

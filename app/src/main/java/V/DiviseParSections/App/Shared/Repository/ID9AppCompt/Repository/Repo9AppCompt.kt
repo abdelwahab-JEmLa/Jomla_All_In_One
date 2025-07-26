@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import android.os.Build
@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 class Repo9AppCompt(
     private val context: Context,
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
+    private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -32,7 +33,10 @@ class Repo9AppCompt(
     val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
-        datasValue.firstOrNull { it.keyID == Repo18ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
+        datasValue.firstOrNull {
+            it.keyID ==
+                    (repo18CentralParametresOfAllApps.dataValue?.currentActiveFocucedM9AppComptKeyID ?: "")
+        }
     }
 
     init {
