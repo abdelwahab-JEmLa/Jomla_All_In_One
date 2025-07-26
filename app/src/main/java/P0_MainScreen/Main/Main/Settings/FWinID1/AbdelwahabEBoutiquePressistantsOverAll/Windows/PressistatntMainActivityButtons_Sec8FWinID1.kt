@@ -102,7 +102,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         activeFragment == Screen.FragmentProduitFastSearchDialog
 
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
@@ -292,7 +292,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
                 }
                 val dialogAboveAll_OutlinedSearchListProduits =
-                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
+                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
                         ?.dialogAboveAll_OutlinedSearchListProduits
 
                 Row(

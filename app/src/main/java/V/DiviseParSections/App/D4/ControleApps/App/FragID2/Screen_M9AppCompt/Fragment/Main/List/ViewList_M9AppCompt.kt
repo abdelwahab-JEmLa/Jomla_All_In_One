@@ -33,7 +33,6 @@ fun ViewList_M9AppCompt(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Add debug info to see what's happening
             Text(
                 text = "Count: ${list_M9AppCompt.size}",
                 style = MaterialTheme.typography.bodySmall,
@@ -43,7 +42,6 @@ fun ViewList_M9AppCompt(
             SectionDivider()
         }
 
-        // Show periods if they exist
         if (list_M9AppCompt.isNotEmpty()) {
             items(list_M9AppCompt) {
                 View_M9AppCompt(

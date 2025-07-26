@@ -29,7 +29,7 @@ fun ScreenM14VentPeriod(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     list_M14VentPeriode: List<M14VentPeriode> = aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
     relative_M9AppCompt: Z_AppCompt? =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt,
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Surface(

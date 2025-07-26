@@ -5,6 +5,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.ViewModel_M9AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,15 +41,19 @@ import org.koin.compose.koinInject
 fun View_M9AppCompt(
     relative_M9AppCompt: Z_AppCompt,
     viewModel: ViewModel_M9AppCompt,
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
+    val currentActive_AppCompt =focusedValuesGetter.currentActive_M9AppCompt
+    val relative_Compt_its_The_Active_One =
+        relative_M9AppCompt.keyID == (currentActive_AppCompt?.keyID ?: "")
+
     var showDialog by remember { mutableStateOf(false) }
 
-    val focusedActiveValuesFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-    val currentActiveFocuced_M14VentPeriode = focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-    val active = (currentActiveFocuced_M14VentPeriode?.keyID ?: "") == relative_M9AppCompt.keyID
+    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
     val backgroundColor = when {
-        active -> Color.Red  // Red background when active
+        relative_Compt_its_The_Active_One -> Color.Red
         else -> MaterialTheme.colorScheme.surface
     }
 
@@ -63,7 +68,7 @@ fun View_M9AppCompt(
             .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
             .padding(8.dp)
     ) {
-        if (active) {
+        if (relative_Compt_its_The_Active_One) {
             Text(
                 text = "Selected Data",
                 color = Color.White,  // White text for better contrast on red background
@@ -78,7 +83,7 @@ fun View_M9AppCompt(
                 text = "data: ${relative_M9AppCompt.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (active) Color.White else MaterialTheme.colorScheme.onSurface,  // Adjust text color for contrast
+                color = if (relative_Compt_its_The_Active_One) Color.White else MaterialTheme.colorScheme.onSurface,  // Adjust text color for contrast
                 modifier = Modifier.weight(1f)
             )
         }
@@ -87,7 +92,7 @@ fun View_M9AppCompt(
             text = "Heure de début: $heurDebutInString",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (active) Color.White else MaterialTheme.colorScheme.onSurface  // Adjust text color for contrast
+            color = if (relative_Compt_its_The_Active_One) Color.White else MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(8.dp))

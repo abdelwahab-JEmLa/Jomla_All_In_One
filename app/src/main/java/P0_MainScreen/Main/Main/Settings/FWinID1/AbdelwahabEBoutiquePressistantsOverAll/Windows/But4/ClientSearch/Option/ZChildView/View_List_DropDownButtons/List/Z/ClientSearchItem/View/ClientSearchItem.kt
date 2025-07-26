@@ -71,7 +71,7 @@ fun get_Edited_M8BonVent(
     }
 
     val newBonVent = M8BonVent().copy(
-        parent_M9AppCompt_KeyID = getFocusedVars.active_Current_M9AppCompt?.keyID ?: "",
+        parent_M9AppCompt_KeyID = getFocusedVars.currentActive_M9AppCompt?.keyID ?: "",
         parent_M14VentPeriod_KeyId = currentPeriodKeyID,
         parent_M2Client_KeyID = relative_M2Client.keyID,
         parent_M2Client_DebugInfos = relative_M2Client.nom,

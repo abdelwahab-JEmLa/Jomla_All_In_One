@@ -279,7 +279,7 @@ private fun CreateNewClientIcon(
         parent_M2Client_DebugInfos = newClient.nom
     )
 
-    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.active_Current_M9AppCompt?.copy(
+    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentActive_M9AppCompt?.copy(
         onVentM8BonVentKey = addedDefaultOnVentID8BonVentEtAdd.keyID,
         onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.get_DebugInfos()
     )

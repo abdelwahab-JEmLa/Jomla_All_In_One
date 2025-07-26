@@ -93,11 +93,11 @@ fun QuantityDisplay_Mo_F_Panie(
                 }
                 .getSemanticsTag(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
-                    data = getter.active_Current_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
+                    data = getter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
                 )
                 .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
                     1,
-                    "dialogChoisireQuantityM1ProduitInfosKeyID", getter.active_Current_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
+                    "dialogChoisireQuantityM1ProduitInfosKeyID", getter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
                 )
         ) {
             Row(

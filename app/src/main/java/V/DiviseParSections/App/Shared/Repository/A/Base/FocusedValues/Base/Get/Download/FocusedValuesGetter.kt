@@ -82,12 +82,12 @@ class FocusedValuesGetter(
         _activeCentralValues.value = new
     }
 
-    val active_Current_M9AppCompt by derivedStateOf {
+    val currentActive_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull { it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId }
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
-        repo14VentPeriode.datasValue.find { it.keyID == active_Current_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
+        repo14VentPeriode.datasValue.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
             ?: repo14VentPeriode.datasValue.lastOrNull()
     }
 
@@ -97,7 +97,7 @@ class FocusedValuesGetter(
     }
 
     val activeonVent_M8BonVent by derivedStateOf {
-        repo8BonVent.datasValue.find { it.keyID == active_Current_M9AppCompt?.onVentM8BonVentKey }
+        repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }
     }
 
     //----------------------------------Section.M2Client------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ class FocusedValuesGetter(
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     val currentApp_Est_Admin by derivedStateOf {
-        active_Current_M9AppCompt?.its_Admin ==true
+        currentActive_M9AppCompt?.its_Admin ==true
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ class FocusedValuesGetter(
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter {
                     (it.parent_M2Client_KeyID == client.keyID
-                            && it.parent_M9AppCompt_KeyID == (active_Current_M9AppCompt?.keyID ?: ""))
+                            && it.parent_M9AppCompt_KeyID == (currentActive_M9AppCompt?.keyID ?: ""))
                 }
                 .maxByOrNull { it.creationTimestamps }
 
@@ -155,8 +155,8 @@ class FocusedValuesGetter(
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
-            parent_M9AppCompt_KeyID = active_Current_M9AppCompt?.keyID?:"",
-            parent_M9AppCompt_DebugInfos = active_Current_M9AppCompt?.get_DebugInfos()?:"",
+            parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID?:"",
+            parent_M9AppCompt_DebugInfos = currentActive_M9AppCompt?.get_DebugInfos()?:"",
             parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
             parent_M14VentPeriod_DebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()
                 ?: "null"),
@@ -186,17 +186,17 @@ class FocusedValuesGetter(
     }
 
     val onVentM10VentOperation by derivedStateOf {
-        repo10OperationVentCouleur.datasValue.find { it.keyID == active_Current_M9AppCompt?.onVentM3CouleurProduitInfosKeyID }
+        repo10OperationVentCouleur.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM3CouleurProduitInfosKeyID }
     }
 
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            it.parent_M8BonVent_KeyId == (active_Current_M9AppCompt?.onVentM8BonVentKey ?: "")
+            it.parent_M8BonVent_KeyId == (currentActive_M9AppCompt?.onVentM8BonVentKey ?: "")
         }
     }
 
     val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
-        repoM1ProduitInfos.datasValue.find { it.keyID == active_Current_M9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }
+        repoM1ProduitInfos.datasValue.find { it.keyID == currentActive_M9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }
     }
     //---------------------------------Parent m10OperationVentCouleurs----------------------------------------------------------------------------------------------------------------------------------
 
@@ -217,7 +217,7 @@ class FocusedValuesGetter(
 
     val active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find {
-            it.keyID == (active_Current_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
+            it.keyID == (currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
         }
     }
 
@@ -230,7 +230,7 @@ class FocusedValuesGetter(
     }
 
     val activeDialogSearchM1Produit by derivedStateOf {
-        active_Current_M9AppCompt?.activeDialogSearchM1Produit ?: false
+        currentActive_M9AppCompt?.activeDialogSearchM1Produit ?: false
     }
 
     companion object {

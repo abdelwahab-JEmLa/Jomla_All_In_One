@@ -72,7 +72,7 @@ fun ButtonMessageVocale(
 
     val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
-        .active_Current_M9AppCompt
+        .currentActive_M9AppCompt
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current

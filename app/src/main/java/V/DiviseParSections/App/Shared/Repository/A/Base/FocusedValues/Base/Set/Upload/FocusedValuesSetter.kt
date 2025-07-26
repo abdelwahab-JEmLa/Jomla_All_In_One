@@ -102,7 +102,7 @@ class FocusedValuesSetter(
 
 
     fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
-        getterFocusedValues.active_Current_M9AppCompt?.let {
+        getterFocusedValues.currentActive_M9AppCompt?.let {
             repo9AppCompt.upsert(
                 it.copy(
                     onVentM8BonVentKey = bonVent.keyID,
@@ -114,7 +114,7 @@ class FocusedValuesSetter(
 
 
     fun desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent(): Unit {
-        getterFocusedValues.active_Current_M9AppCompt?.let {
+        getterFocusedValues.currentActive_M9AppCompt?.let {
             repo9AppCompt.upsert(
                 it.copy(
                     onVentM8BonVentKey = "null",
@@ -135,7 +135,7 @@ class FocusedValuesSetter(
     }
 
     private fun setIn_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -147,7 +147,7 @@ class FocusedValuesSetter(
     }
 
     fun clear_CurrentApp_activeDialogSearchM1Produit() {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -159,7 +159,7 @@ class FocusedValuesSetter(
     }
 
     fun set_Current_startTextSearchM1Produit(nom: String) {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -171,7 +171,7 @@ class FocusedValuesSetter(
     }
 
     fun setIN_M9CurrentApp_onVentM8BonVentKey(m8BonVent: M8BonVent) {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -191,7 +191,7 @@ class FocusedValuesSetter(
     private fun setIN_CurrentApp_M9_ActiveKeyId(
         current_OnVent_M14VentPeriode_KeyID: String?
     ) {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 current_OnVent_M14VentPeriode_KeyID?.let { current_OnVent_M14VentPeriode_KeyID ->
                     it.copy(
@@ -207,7 +207,7 @@ class FocusedValuesSetter(
     }
 
     fun active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(value: Boolean) {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.update(
                     it.copy(
@@ -218,7 +218,7 @@ class FocusedValuesSetter(
         }
     }
     fun desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits() {
-        getterFocusedValues.active_Current_M9AppCompt.let {
+        getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.update(
                     it.copy(

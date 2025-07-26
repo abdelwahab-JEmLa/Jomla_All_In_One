@@ -36,7 +36,7 @@ fun MainList(
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
