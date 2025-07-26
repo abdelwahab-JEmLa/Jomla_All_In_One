@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
 import android.widget.Toast
@@ -252,8 +254,6 @@ data class M8BonVent(
     )
 
     companion object {
-
-
         const val keyModel = "ID8"
 
         val ref = Firebase.database.getReference(
@@ -278,6 +278,20 @@ data class M8BonVent(
                 parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
                 parent_M2Client_KeyID = parent_M2Client_KeyID,
                 parent_M2Client_DebugInfos = parent_M2Client_DebugInfos,
+                etateActuellementEst = etateActuellementEst
+                    ?: EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            )
+        }
+
+        fun get_default_Par_VentPeriod_Et_Client(
+            m14VentPeriode: M14VentPeriode,
+            m2Client: M2Client,
+            etateActuellementEst: EtateActuellementEst? = null,
+        ): M8BonVent {
+            return M8BonVent(
+                parent_M9AppCompt_DebugInfos = m14VentPeriode.parent_M9AppCompt_KeyID,
+                parent_M14VentPeriod_DebugInfos = m14VentPeriode.keyID,
+                parent_M2Client_KeyID = m2Client.keyID,
                 etateActuellementEst = etateActuellementEst
                     ?: EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )

@@ -1,8 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent.Companion.generePushKey
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent.EtateActuellementEst
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,13 +30,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun ConfirmationButton(
     showLabel: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter
 ) {
-    val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
+    val relative_M8BonVent =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
         viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
@@ -62,51 +72,50 @@ fun ConfirmationButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val aCommandeConfirme = M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-        val onModeCommendActuellement = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        val etateActuellementEst = currentBonVent?.etateActuellementEst
+        val etateActuellementEst = relative_M8BonVent?.etateActuellementEst
             ?: M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
 
-        if (etateActuellementEst == aCommandeConfirme || etateActuellementEst == onModeCommendActuellement) {
+        if (etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME ||
+            etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+            focusedValuesGetter.currentApp_Est_Admin
+        ) {
             FloatingActionButton(
                 modifier = Modifier
                     .getSemanticsTagFocucedVars(viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter)
                     .size(48.dp),
                 onClick = {
-                    currentBonVent?.let { bonVent ->
+                    relative_M8BonVent?.let { bonVent ->
                         when (bonVent.etateActuellementEst) {
-                            aCommandeConfirme -> {
-                                updateBonVent(
-                                    bonVent,
-                                    onModeCommendActuellement
-                                )
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.active_currentApp_M8BonVent(
-                                    bonVent
-                                )
-                            }
-
-                            onModeCommendActuellement -> {
-                                updateBonVent(
-                                    bonVent,
-                                    aCommandeConfirme
-                                )
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
+                                val Bon_Ac_Confirme =
+                                    bonVent.copy(
+                                        keyID = generePushKey(),
+                                        etateActuellementEst = EtateActuellementEst.COMMANDE_LIVRAI,
+                                    )
+                                repositorysMainSetter.addNew_M8BonVent(Bon_Ac_Confirme)
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                             }
 
-                            else -> {
-                                updateBonVent(
-                                    bonVent,
-                                    aCommandeConfirme
-                                )
+                            EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> {
+                                val Bon_Ac_Confirme =
+                                    bonVent.copy(
+                                        keyID = generePushKey(),
+                                        etateActuellementEst = EtateActuellementEst.A_COMMANDE_CONFIRME,
+                                    )
+                                repositorysMainSetter.addNew_M8BonVent(Bon_Ac_Confirme)
+
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                             }
+
+                            else -> {}
                         }
                     }
                 },
-                containerColor = getStateColor(currentBonVent?.etateActuellementEst)
+                containerColor = getStateColor(relative_M8BonVent?.etateActuellementEst)
             ) {
                 Icon(
-                    imageVector = getStateIcon(currentBonVent?.etateActuellementEst),
-                    contentDescription = when (currentBonVent?.etateActuellementEst) {
+                    imageVector = getStateIcon(relative_M8BonVent?.etateActuellementEst),
+                    contentDescription = when (relative_M8BonVent?.etateActuellementEst) {
                         M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
                         M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
                         M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> "Commande en cours"
@@ -120,15 +129,15 @@ fun ConfirmationButton(
 
             if (showLabel) {
                 Text(
-                    text = when (currentBonVent?.etateActuellementEst) {
+                    text = when (relative_M8BonVent?.etateActuellementEst) {
                         M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> etateActuellementEst.nomArabe
                         M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> etateActuellementEst.nomArabe
                         M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> etateActuellementEst.nomArabe
-                        else -> currentBonVent?.etateActuellementEst?.nomArabe ?: "حالة أخرى"
+                        else -> relative_M8BonVent?.etateActuellementEst?.nomArabe ?: "حالة أخرى"
                     },
                     modifier = Modifier
                         .background(
-                            color = getStateColor(currentBonVent?.etateActuellementEst),
+                            color = getStateColor(relative_M8BonVent?.etateActuellementEst),
                             shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp),

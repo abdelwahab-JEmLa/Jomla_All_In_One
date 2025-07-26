@@ -14,7 +14,6 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import androidx.compose.runtime.Stable
 
@@ -182,11 +181,6 @@ class FocusedValuesSetter(
             }
         }
     }
-
-    fun setIN_CurrentApp_current_OnVent_M14VentPeriode_KeyID(m14VentPeriode: M14VentPeriode) {
-        setIN_CurrentApp_M9_ActiveKeyId(current_OnVent_M14VentPeriode_KeyID = m14VentPeriode.keyID)
-    }
-
 
     private fun setIN_CurrentApp_M9_ActiveKeyId(
         current_OnVent_M14VentPeriode_KeyID: String?

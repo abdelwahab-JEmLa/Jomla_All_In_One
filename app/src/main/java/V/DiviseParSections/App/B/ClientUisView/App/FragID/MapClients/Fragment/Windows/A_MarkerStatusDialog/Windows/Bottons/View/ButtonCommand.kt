@@ -28,7 +28,7 @@ fun CommandButton(
     modifier: Modifier = Modifier,
     relative_M2Client: M2Client,
     relative_Etate: M8BonVent.EtateActuellementEst,
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
@@ -49,10 +49,12 @@ fun CommandButton(
             }
 
             if (relative_Etate == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
-                aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
-                    found_Or_Default_M8BonVent.found
-                        ?: found_Or_Default_M8BonVent.default_If_No_Found
-                )
+                aCentralFacade.focusedActiveValuesFacade
+                    .focusedValuesSetter
+                    .setIN_M9CurrentApp_onVentM8BonVentKey(
+                        found_Or_Default_M8BonVent.found
+                            ?: found_Or_Default_M8BonVent.default_If_No_Found
+                    )
             }
 
             viewModel.startRecordIfNot()

@@ -245,11 +245,11 @@ fun Button_ID2_Menagerie_Telegram(
             - Is Admin: $current_Compt_Et_Admin
             - New Message Count: $non_Lu_Messages_Size
             - Previous Count: $previousMessageCount
-            - Should Play: ${current_Compt_Et_Admin == false && non_Lu_Messages_Size > previousMessageCount}
+            - Should Play: ${!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount}
         """.trimIndent()
         )
 
-        if (current_Compt_Et_Admin == false && non_Lu_Messages_Size > previousMessageCount) {
+        if (!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount) {
             val newMessages = non_Lu_Messages_Size - previousMessageCount
             android.util.Log.d(
                 "TelegramButton",

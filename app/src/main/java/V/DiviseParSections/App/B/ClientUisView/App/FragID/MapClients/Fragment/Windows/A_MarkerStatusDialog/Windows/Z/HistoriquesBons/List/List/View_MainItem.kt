@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +60,8 @@ fun View_MainItem(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
-    repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
+    repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
+    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler
 ) {
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
@@ -80,9 +81,6 @@ fun View_MainItem(
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
-
-    // State for dropdown menu
-    var selectedStatus by remember { mutableStateOf<M8BonVent.EtateActuellementEst?>(null) }
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
@@ -202,7 +200,6 @@ fun View_MainItem(
                 )
             }
 
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -217,7 +214,13 @@ fun View_MainItem(
                     if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
-                                viewModel.openTransaction(relative_M8BonVent)
+                                aCentralFacade.focusedActiveValuesFacade
+                                    .focusedValuesSetter
+                                    .setIN_M9CurrentApp_onVentM8BonVentKey(
+                                        relative_M8BonVent
+                                    )
+
+                                fragmentNavigationHandler.navigateToCartScreen()
                             }
                         ) {
                             Icon(
