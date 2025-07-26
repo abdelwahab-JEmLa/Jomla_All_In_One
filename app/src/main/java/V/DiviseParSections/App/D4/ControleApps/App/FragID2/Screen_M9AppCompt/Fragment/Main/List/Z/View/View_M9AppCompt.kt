@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -47,7 +48,7 @@ fun View_M9AppCompt(
     val active = (currentActiveFocuced_M14VentPeriode?.keyID ?: "") == relative_M9AppCompt.keyID
 
     val backgroundColor = when {
-        active -> MaterialTheme.colorScheme.surfaceVariant
+        active -> Color.Red  // Red background when active
         else -> MaterialTheme.colorScheme.surface
     }
 
@@ -65,7 +66,7 @@ fun View_M9AppCompt(
         if (active) {
             Text(
                 text = "Selected Data",
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,  // White text for better contrast on red background
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -77,6 +78,7 @@ fun View_M9AppCompt(
                 text = "data: ${relative_M9AppCompt.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
+                color = if (active) Color.White else MaterialTheme.colorScheme.onSurface,  // Adjust text color for contrast
                 modifier = Modifier.weight(1f)
             )
         }
@@ -84,7 +86,8 @@ fun View_M9AppCompt(
         Text(
             text = "Heure de début: $heurDebutInString",
             fontSize = 18.sp,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (active) Color.White else MaterialTheme.colorScheme.onSurface  // Adjust text color for contrast
         )
 
         Spacer(modifier = Modifier.height(8.dp))
