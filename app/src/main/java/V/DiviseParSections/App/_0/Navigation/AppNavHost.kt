@@ -1,4 +1,4 @@
-// Updated AppNavHost.kt - Added Database Init route
+// Fixed AppNavHost.kt - Corrected startup screen determination logic
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
@@ -70,7 +70,10 @@ fun AppNavHost(
     val itsDevMode = viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode
 
     val startUpScreen = when {
-        itsDevMode == true -> viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.devStartUpScree
+        itsDevMode == true -> {
+            val devStartUpRoute = viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.devStartUpScree
+            getScreenFromRoute(devStartUpRoute) ?: Screen.FacadePresentoireProduits
+        }
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
@@ -352,6 +355,23 @@ fun AppNavHost(
                 )
             }
         }
+    }
+}
+
+private fun getScreenFromRoute(route: String?): Screen? {
+    return when (route) {
+        Screen.FacadePresentoireProduits.route -> Screen.FacadePresentoireProduits
+        Screen.FragmentProduitFastSearchDialog.route -> Screen.FragmentProduitFastSearchDialog
+        Screen.Screen1PanieVentsFinale.route -> Screen.Screen1PanieVentsFinale
+        Screen.TravailleTempRecorder.route -> Screen.TravailleTempRecorder
+        Screen.Achats_Produits_Chez_Grossists.route -> Screen.Achats_Produits_Chez_Grossists
+        Screen.EditDatabaseWithCreateNewArticles.route -> Screen.EditDatabaseWithCreateNewArticles
+        Screen.Main_DataBaseInitFactory_1Produit.route -> Screen.Main_DataBaseInitFactory_1Produit
+        Screen.NewFragTest.route -> Screen.NewFragTest
+        Screen.A_Clients_LocationGps.route -> Screen.A_Clients_LocationGps
+        Screen.DialogTests.route -> Screen.DialogTests
+        Screen.ToggleFab.route -> Screen.ToggleFab
+        else -> null
     }
 }
 

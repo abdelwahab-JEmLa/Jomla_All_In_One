@@ -29,7 +29,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    single { Repo18CentralParametresOfAllApps() }
+    single { Repo18CentralParametresOfAllApps(get(),) }
 
     single { Repo15Grossist(context = androidContext(),get(),) }
 

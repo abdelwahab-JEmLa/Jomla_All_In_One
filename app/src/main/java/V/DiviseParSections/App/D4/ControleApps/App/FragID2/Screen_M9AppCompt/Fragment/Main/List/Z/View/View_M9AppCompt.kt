@@ -103,7 +103,6 @@ fun View_M9AppCompt(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Settings button
         Button(
             onClick = { showDialog = true },
             modifier = Modifier.align(Alignment.End)
