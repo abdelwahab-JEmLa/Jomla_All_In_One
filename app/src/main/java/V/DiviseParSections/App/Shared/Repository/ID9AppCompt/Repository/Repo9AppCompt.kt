@@ -35,7 +35,7 @@ class Repo9AppCompt(
     val currentAppCompt by derivedStateOf {
         datasValue.firstOrNull {
             it.keyID ==
-                    (repo18CentralParametresOfAllApps.dataValue?.currentActiveFocucedM9AppComptKeyID ?: "")
+                    (repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId ?: "")
         }
     }
 

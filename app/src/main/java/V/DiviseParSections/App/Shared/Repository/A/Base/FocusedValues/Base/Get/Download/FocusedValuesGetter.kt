@@ -83,7 +83,10 @@ class FocusedValuesGetter(
     }
 
     val currentActive_M9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId }
+        repo9AppCompt.datasValue.firstOrNull { it.keyID == repo18CentralParametresOfAllApps
+            .dataValue
+            ?.au_Lence_Set_Compt_Ac_KeyId
+        }
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {

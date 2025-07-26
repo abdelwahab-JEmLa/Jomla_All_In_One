@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -24,22 +25,22 @@ class Repo18CentralParametresOfAllApps {
 
     init {
         composScope.launch {
-            // Get data from Firebase reference and set it to _data
             refRepo.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     try {
                         val data = snapshot.getValue(M18CentralParametresOfAllApps::class.java)
                             ?: M18CentralParametresOfAllApps.get_Default()
                         _data.value = data
+                        Log.d(repoTAG, "Data loaded successfully")
                     } catch (e: Exception) {
-                        // If parsing fails, use default values
-                        _data.value = M18CentralParametresOfAllApps.get_Default()
+                        Log.e(repoTAG, "Error parsing data from Firebase", e)
+                        throw RuntimeException("Failed to parse central parameters from Firebase", e)
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error by setting default values
-                    _data.value = M18CentralParametresOfAllApps.get_Default()
+                    Log.e(repoTAG, "Firebase listener cancelled: ${error.message}", error.toException())
+                    throw RuntimeException("Firebase connection cancelled: ${error.message}", error.toException())
                 }
             })
         }
@@ -52,8 +53,7 @@ data class M18CentralParametresOfAllApps(
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabCompt_KeyId_DPL,
-    val currentActiveFocucedM9AppComptKeyID: String = abdelwahabCompt_KeyId_DPL,
+    val au_Lence_Set_Compt_Ac_KeyId: String = "",
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,

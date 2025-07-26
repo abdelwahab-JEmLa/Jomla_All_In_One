@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,16 +42,20 @@ import org.koin.compose.koinInject
 fun View_M9AppCompt(
     relative_M9AppCompt: Z_AppCompt,
     viewModel: ViewModel_M9AppCompt,
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps,
 ) {
-    val currentActive_AppCompt =focusedValuesGetter.currentActive_M9AppCompt
+    val au_Lence_Set_Compt_Ac_KeyId =
+        repo18CentralParametresOfAllApps
+            .dataValue
+            ?.au_Lence_Set_Compt_Ac_KeyId
+
+    val currentActive_AppCompt = focusedValuesGetter.currentActive_M9AppCompt
     val relative_Compt_its_The_Active_One =
         relative_M9AppCompt.keyID == (currentActive_AppCompt?.keyID ?: "")
 
     var showDialog by remember { mutableStateOf(false) }
-
-    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
     val backgroundColor = when {
         relative_Compt_its_The_Active_One -> Color.Red
@@ -61,7 +66,8 @@ fun View_M9AppCompt(
 
     Column(
         modifier = Modifier
-            .getSemanticsTag(relative_M9AppCompt,"")
+            .getSemanticsTag(au_Lence_Set_Compt_Ac_KeyId, "au_Lence_Set_Compt_Ac_KeyId")
+            .getSemanticsTag(relative_M9AppCompt, "")
             .fillMaxWidth()
             .clickable {
             }
@@ -109,7 +115,7 @@ fun View_M9AppCompt(
     // Settings Dialog
     if (showDialog) {
         SettingsDialog(
-            viewModel=viewModel,
+            viewModel = viewModel,
             relative_M9AppCompt = relative_M9AppCompt,
             onDismiss = { showDialog = false },
             onUpdateAppCompt = { updatedAppCompt ->
@@ -274,7 +280,7 @@ private fun SettingsDialog(
                     ScreenM14VentPeriod(
                         modifier = Modifier.weight(1f),
                         viewModel = koinInject<ViewModel_M14VentPeriod>(),
-                        relative_M9AppCompt =relative_M9AppCompt,
+                        relative_M9AppCompt = relative_M9AppCompt,
                     )
                 }
             }

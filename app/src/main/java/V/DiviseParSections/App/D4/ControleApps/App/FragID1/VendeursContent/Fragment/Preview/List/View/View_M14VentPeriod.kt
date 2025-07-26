@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -29,7 +30,7 @@ fun View_M14VentPeriod(
     val active = (active_M14VentPeriode ?: "") == relative_M14VentPeriode.keyID
 
     val backgroundColor = when {
-        active -> MaterialTheme.colorScheme.surfaceVariant
+        active -> Color.Red  // Changed to red for active state
         else -> MaterialTheme.colorScheme.surface
     }
 

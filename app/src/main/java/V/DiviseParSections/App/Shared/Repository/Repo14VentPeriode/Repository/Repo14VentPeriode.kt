@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import android.content.Context
 import android.widget.Toast
@@ -134,7 +133,7 @@ data class M14VentPeriode(
             append("(M14=")
             append(parent_M9AppCompt_DebugInfos)
             append("[")
-            append(keyID.takeLast(3).uppercase())
+            append(keyID.takeLast(3))
             append("])")
         }
     }
