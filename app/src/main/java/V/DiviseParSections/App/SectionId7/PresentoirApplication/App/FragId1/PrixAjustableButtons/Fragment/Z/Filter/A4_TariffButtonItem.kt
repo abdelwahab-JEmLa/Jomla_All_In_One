@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -143,7 +142,6 @@ fun TariffButtonItem(
             // Update the product in the repository
             viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
 
-            // Update the tariff with the new purchase price
             latestTariffLocalData = latestTariffLocalData.copy(
                 prixCurrency = newPurchasePrice
             )
@@ -260,7 +258,6 @@ fun TariffButtonItem(
                                 IconButton(
                                     onClick = {
                                         isEditingUnitPrice = !isEditingUnitPrice
-                                        // Start with empty text when switching modes
                                         editablePriceText = ""
                                     }
                                 ) {
@@ -427,23 +424,8 @@ fun TariffButtonItem(
             couleurButton
         }
 
-        val m10OperationVentCouleurs_Tag =
-            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
-
         FloatingActionButton(
-            modifier = Modifier
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
-                    0,
-                    "latestTariffLocalData",
-                    latestTariffLocalData
-                )
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
-                    1,
-                    "m10OperationVentCouleurs",
-                    m10OperationVentCouleurs
-                )
-                .size(40.dp),
+            modifier = Modifier.size(40.dp),
             onClick = {
                 handelClick()
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)

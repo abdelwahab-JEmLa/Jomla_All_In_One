@@ -50,29 +50,12 @@ fun MainFilter(
         }
     }
 
-    val last_M10Vent = relative_List_M10Vent.lastOrNull { operation ->
-        operation.parent_M9AppCompt_KeyID == relative_M1Produit.keyID &&
-                operation.parentClientInfosKeyID == (relative_M2Client?.parent_M2Client_KeyID ?: "null")
-    }
-
-    val relative_Tariff_Historique = M13TarificationInfos.get_default().copy(
-        typeChoisi = M13TarificationInfos.TypeChoisi.Historique,
-        prixCurrency = last_M10Vent?.provisoireMonPrix?: 0.0,
-        parent_M1Produit_KeyId = relative_M1Produit.keyID,
-        parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
-        parent_M2Client_KeyId = relative_M2Client?.keyID ?: "null",
-        parent_M2Client_DebugInfos = relative_M2Client?.get_DebugInfos() ?: "null",
-        parent_M8BonVent_KeyId = relative_M8BonVent.keyID ,
-        parent_M8BonVent_DebugInfos = relative_M8BonVent.get_DebugInfos() ?: "null",
-        creationTimestamps = System.currentTimeMillis()
-    )
-
     Column(modifier = modifier) {
         MainList(
             viewModel = viewModel,
             relative_M1Produit = relative_M1Produit,
             showLabels = showLabels,
-            maxPrixArriveDuProduit = maxPrixArriveDuProduit,
+            max_Prix = maxPrixArriveDuProduit,
             clientDefiniTariffs = clientDefiniTariffs,
             onClickPrixButton = onClickPrixButton,
             onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback

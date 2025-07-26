@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -25,14 +26,15 @@ fun MainList(
     relative_M1Produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
     context: Context = LocalContext.current,
     showLabels: Boolean,
-    maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<M13TarificationInfos>,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
+    
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
@@ -40,6 +42,10 @@ fun MainList(
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
+    val max_Prix = list_M13TarificationInfos
+        .filter { it.parent_M1Produit_KeyId == relative_M1Produit.keyID }
+        .maxOfOrNull { it.prixCurrency } ?: 0.0
+    
     val last_list_M13TarificationInfos = list_M13TarificationInfos.lastOrNull {
         it.parent_M2Client_KeyId == relative_M2Client?.keyID
     }
@@ -73,7 +79,7 @@ fun MainList(
 
     val standardTariffs = remember(
         relative_M1Produit,
-        maxPrixArriveDuProduit,
+        max_Prix,
         clientDefiniTariffs,
         travailleChezGrossisst3Ali
     ) {
@@ -84,11 +90,11 @@ fun MainList(
                 add(relative_Tariff_Historique)
             }
 
-            if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0 && maxPrixArriveDuProduit != relative_M1Produit.prixVent) {
+            if (max_Prix != 0.0 && max_Prix != relative_M1Produit.prixVent) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.LeMaxPrixArrive,
-                        prixCurrency = maxPrixArriveDuProduit,
+                        prixCurrency = max_Prix,
                     )
                 )
             }
@@ -100,7 +106,7 @@ fun MainList(
                     )
                 )
             }
-            if (relative_M1Produit.prixAchat != 0.0) {
+            if (relative_M1Produit.prixAchat != 0.0|| focusedValuesGetter.currentApp_Est_Admin) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
@@ -110,7 +116,6 @@ fun MainList(
                     )
                 )
             }
-
         }
     }
 
@@ -160,13 +165,13 @@ fun MainList(
             }
         }
 
-        val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
-            maxPrixArriveDuProduit
+        val priceToUse = if (max_Prix != null && max_Prix != 0.0) {
+            max_Prix
         } else {
             relative_M1Produit.prixVent
         }
 
-        val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
+        val typeToUse = if (max_Prix != null && max_Prix != 0.0) {
             TypeChoisi.LeMaxPrixArrive
         } else {
             TypeChoisi.PRIX_BASE

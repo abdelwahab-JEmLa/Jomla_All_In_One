@@ -52,7 +52,7 @@ import kotlin.math.roundToInt
 class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
     private var _showVendeursDialog = mutableStateOf(false)
-    private var _show_Dialog_M9ComptApp_List = mutableStateOf(true)
+    private var _show_Dialog_M9ComptApp_List = mutableStateOf(false)
 
     var _paneleGroupeButtonList = mutableStateOf(
         listOf(
