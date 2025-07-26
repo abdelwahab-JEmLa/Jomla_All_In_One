@@ -58,7 +58,7 @@ class Repo18CentralParametresOfAllApps
                     }
                 }
             }
-        }.addOnFailureListener { exception ->
+        }.addOnFailureListener {
             repoScope.launch {
                 _data.value = dao.getAll()
             }
