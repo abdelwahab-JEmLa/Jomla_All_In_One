@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,8 +23,7 @@ import androidx.compose.ui.unit.dp
 fun Main(
     modifier: Modifier = Modifier,
 ) {
-    val produitListLocal by remember { mutableStateOf(testData()) }
-    MainFilter(produitList = produitListLocal)
+
 }
 
 @Composable
@@ -79,9 +76,6 @@ fun testData(): List<M8BonVent> {
             heurDebutInString = "05:22",
             etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
             vid = 10L,
-            parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         M8BonVent(
             creationTimestamps = 1748029628555L,
@@ -97,9 +91,6 @@ fun testData(): List<M8BonVent> {
             sonEcoutementEstFaitAutimestamps = 0L,
             cActive = false,
             vid = 5L,
-            parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         M8BonVent(
             creationTimestamps = 1748027276129L,
@@ -110,7 +101,6 @@ fun testData(): List<M8BonVent> {
             etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
             vid = 4L,
             parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
             parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         M8BonVent(
@@ -121,9 +111,6 @@ fun testData(): List<M8BonVent> {
             heurDebutInString = "20:47",
             etateActuellementEst = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             vid = 6L,
-            parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         )
     )
 }

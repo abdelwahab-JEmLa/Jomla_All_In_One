@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class SecID5FragID2UiState(
-    val activeCompt: Z_AppCompt? = Z_AppCompt(),
+    val activeCompt: Z_AppCompt? =null,
     val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 )

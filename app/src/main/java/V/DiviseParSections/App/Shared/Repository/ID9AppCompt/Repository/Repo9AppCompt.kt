@@ -243,6 +243,8 @@ data class Z_AppCompt(
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
+        fun get_Default() = Z_AppCompt()
+
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"

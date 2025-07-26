@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import android.content.Context
 import android.widget.Toast
@@ -149,5 +150,7 @@ data class M14VentPeriode(
         )
 
         fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
+
+        fun get_Default() = M14VentPeriode()
     }
 }
