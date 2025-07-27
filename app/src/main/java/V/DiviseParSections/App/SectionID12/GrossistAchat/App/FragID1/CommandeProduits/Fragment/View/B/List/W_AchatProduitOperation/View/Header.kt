@@ -48,10 +48,12 @@ fun Header(
         priceFormatter.format(firstAchatOperation?.prix_Achat_De_Cette_Grossist)
 
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = Modifier
+            .getSemanticsTag(produit,"produit")
+            .getSemanticsTag(list_M11AchatOperation,"list_M11AchatOperation")
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             modifier = Modifier

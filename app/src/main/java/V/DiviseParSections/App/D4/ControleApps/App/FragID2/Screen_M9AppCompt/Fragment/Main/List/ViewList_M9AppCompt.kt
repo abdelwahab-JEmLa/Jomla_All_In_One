@@ -30,6 +30,7 @@ fun ViewList_M9AppCompt(
     val dataValue = repo18CentralParametresOfAllApps.dataValue
 
     val au_Lence_Set_Compt_Ac_KeyId =
+
         dataValue
             ?.au_Lence_Set_Compt_Ac_KeyId
 

@@ -65,18 +65,18 @@ import org.koin.compose.koinInject
 @Composable
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
+    relative_M3CouleurInfos: M3CouleurProduitInfos,
+    produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    m3Couleur: M3CouleurProduitInfos,
-    produit: ArticlesBasesStatsTable,
     size: Dp = 200.dp
 ) {
     val relative_M10OperationVentCouleur by remember {
         derivedStateOf {
             focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                .find { it.parent_M3CouleurProduit_KeyID == m3Couleur.keyID }
+                .find { it.parent_M3CouleurProduit_KeyID == relative_M3CouleurInfos.keyID }
         }
     }
 
@@ -94,18 +94,16 @@ fun ViewVentCouleur_T1(
 
     val imageFile by derivedStateOf {
         viewModel.getImageFile(
-            m3Couleur.nomImageFichieSansEtansion, m3Couleur.extensionDisponible
+            relative_M3CouleurInfos.nomImageFichieSansEtansion,
+            relative_M3CouleurInfos.extensionDisponible
         )
     }
 
     val defaultM10Vent = produit.let {
-        getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
-            //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-            parent_M1Produit_KeyId = produit.keyID,
-            parent_M1Produit_DebugInfos = parentM1ProduitDebugInfos,
-            //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-            parent_M3CouleurProduit_KeyID = m3Couleur.keyID,
-            parent_M3CouleurProduit_DebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
+        M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
+            focusedValuesGetter.activeonVent_M8BonVent,
+            relative_M3CouleurInfos
+        ).copy(
             setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton,
             quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
@@ -124,11 +122,14 @@ fun ViewVentCouleur_T1(
         }
     }.value
 
-    val shouldShowDialog by remember(relative_M10OperationVentCouleur, m3Couleur.keyID) {
+    val shouldShowDialog by remember(
+        relative_M10OperationVentCouleur,
+        relative_M3CouleurInfos.keyID
+    ) {
         derivedStateOf {
             val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation
 
-            onVentM3?.parent_M3CouleurProduit_KeyID == m3Couleur.keyID
+            onVentM3?.parent_M3CouleurProduit_KeyID == relative_M3CouleurInfos.keyID
         }
     }
     val datasValue =
@@ -142,9 +143,6 @@ fun ViewVentCouleur_T1(
 
     Column(
         modifier = modifier
-            .getSemanticsTag(
-                nomVal = "defaultM3CouleurProduitInfos", data = defaultM10Vent
-            )
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
@@ -152,6 +150,18 @@ fun ViewVentCouleur_T1(
         // Image/Color display card
         Card(
             modifier = Modifier
+                .getSemanticsTag(
+                    defaultM10Vent,
+                    "defaultM10Vent"
+                )
+                .getSemanticsTag(
+                    produit,
+                    "produit"
+                )
+                .getSemanticsTag(
+                    relative_M3CouleurInfos,
+                    "relative_M3CouleurInfos"
+                )
                 .getSemanticsTag(
                     relative_M10OperationVentCouleur,
                     "relative_M10OperationVentCouleur"
@@ -182,12 +192,12 @@ fun ViewVentCouleur_T1(
                 }
 
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    when (m3Couleur.aAffiche) {
+                    when (relative_M3CouleurInfos.aAffiche) {
                         M3CouleurProduitInfos.Type.Image -> {
                             ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                                 modifier = Modifier.size(size),
                                 imageFile = imageFile,
-                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                colorName = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
                                 contentScale = ContentScale.Crop,
                                 imageSize = DpSize(size, size),
                                 colorFilter = ventUIState.colorMatrix?.let {
@@ -205,7 +215,7 @@ fun ViewVentCouleur_T1(
                         M3CouleurProduitInfos.Type.Nom -> {
                             ColorNameDisplayer_Sec2FragID2(
                                 modifier = Modifier.size(size),
-                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                colorName = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
                                 onClickToOpenWindow = {
                                     lenceVent()
                                     handelUiAction(haptic)
@@ -327,7 +337,7 @@ fun ViewVentCouleur_T1(
     if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
-            label = m3Couleur.nomCouleurStrSiSonImageDispo,
+            label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
 
             relative_M10OperationVentCouleur?.let { existingVent ->

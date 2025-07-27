@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.Windows
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 fun WorkCompletionAlertDialog(
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps,
     related_M14VentPeriode: M14VentPeriode? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
     showDialog: Boolean,
     onDismiss: () -> Unit,
@@ -202,7 +204,8 @@ fun WorkCompletionAlertDialog(
                             )
                         }
 
-                        val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 || true
+                        val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 ||
+                                repo18CentralParametresOfAllApps.dataValue?.itsDevMode ?: false
 
                         if (canConfirm) {
                             Button(

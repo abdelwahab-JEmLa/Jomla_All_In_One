@@ -2,6 +2,9 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -52,11 +55,15 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun TopAppBar_With_DropDownMenu(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     uiState: GrossistAchatSec12FragID1_ViewModel.UiState
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
@@ -89,6 +96,7 @@ fun TopAppBar_With_DropDownMenu(
 
             val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
+
             val achats_Depuit_M11AchatOperation_List =
                 viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
                     .genere_Achats_Depuit_M11AchatOperation_List(
@@ -100,6 +108,10 @@ fun TopAppBar_With_DropDownMenu(
 
             DropdownMenu(
                 modifier = Modifier
+                    .getSemanticsTag(
+                        data = vents,
+                        nomVal = "vents"
+                    )
                     .getSemanticsTag(
                         data = vents,
                         nomVal = "vents"
@@ -119,9 +131,28 @@ fun TopAppBar_With_DropDownMenu(
 
                 Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel)
 
-                //  dropdown item - Add operations
+
+                val datas= repo10OperationVentCouleur.datasValue
+                val currentActiveFocuced_M14VentPeriode= focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                 Card(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier
+                        .getSemanticsTag(
+                            datas.map { it.parent_M14VentPeriod_KeyId },
+                            "datasmap"
+                        )
+                        .getSemanticsTag(
+                            datas,
+                            "datas"
+                        )
+                        .getSemanticsTag(
+                            currentActiveFocuced_M14VentPeriode,
+                            "currentActiveFocuced_M14VentPeriode"
+                        )
+                        .getSemanticsTag(
+                            vents,
+                            "vents"
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     ),
@@ -129,10 +160,7 @@ fun TopAppBar_With_DropDownMenu(
                 ) {
                     DropdownMenuItem(
                         modifier = Modifier
-                            .getSemanticsTag(
-                                data = achats_Depuit_M11AchatOperation_List,
-                                nomVal = "achats_Depuit_M11AchatOperation_List"
-                            ),
+                           ,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Add,

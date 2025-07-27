@@ -61,7 +61,7 @@ fun Button_ID2_Menagerie_Telegram(
 
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID
-    val isDevMode = repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode == true
+    val isDevMode = repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode == false
 
     android.util.Log.d(
         "TelegramButton", """

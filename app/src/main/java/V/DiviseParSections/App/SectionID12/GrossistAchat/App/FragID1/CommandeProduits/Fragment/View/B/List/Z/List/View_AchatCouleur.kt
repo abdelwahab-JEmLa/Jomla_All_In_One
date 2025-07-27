@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.List_AcheteursDeCetteProduit
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View.Parent_Dispo_Vent_View
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.empty_If_Null
@@ -46,9 +47,43 @@ fun View_AchatCouleur(
         Column {
             Box {
                 val couleurKey = relative_M11AchatOperation.parent_M3CouleurProduit_KeyID
-                if (couleurKey.isNotEmpty()) {
-                    CouleurDisplayer(keyCouleur = couleurKey)
+                val couleur_Par_Nom = null
+
+                if (couleurKey.isNotEmpty() && couleurKey.isNotBlank()) {
+                    val couleurExists =
+                        repositorysMainGetter.find_M3CouleurInfos_By_KeyID(couleurKey) != null
+                    if (couleurExists) {
+                        CouleurDisplayer(keyCouleur = couleurKey)
+                    } else if (couleur_Par_Nom != null) {
+
+
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .getSemanticsTag(
+                                    relative_M11AchatOperation,
+                                    "relative_M11AchatOperation"
+                                )
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .background(
+                                    color = Color.Gray.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "Couleur introuvable (ID: ${couleurKey.takeLast(8)})",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            )
+                        }
+                    }
                 } else {
+                    // Original fallback for empty/blank keys
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -69,8 +104,9 @@ fun View_AchatCouleur(
                         )
                     }
                 }
+
                 Column {
-                    if(sumAchatQantity!=0) {
+                    if (sumAchatQantity != 0) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -89,6 +125,7 @@ fun View_AchatCouleur(
                             )
                         }
                     }
+
                     val map_SiNonDispoM3CouleurInfos_To_List_SNC_M10Vent = list_NonDispo_M10Vent
                         .groupBy {
                             repositorysMainGetter.find_M3CouleurInfos_By_KeyID(it.siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId)
@@ -101,7 +138,9 @@ fun View_AchatCouleur(
                                 quantity = "Quantité: $quantity",
                                 relative_M3CouleurInfos_KeyId = m3CouleurInfos.keyID,
                                 relative_M1Produit_Nom = repositorysMainGetter
-                                    .find_M1Produit(m3CouleurInfos.parentBProduitInfosKeyID)?.nom.empty_If_Null("")
+                                    .find_M1Produit(m3CouleurInfos.parentBProduitInfosKeyID)?.nom.empty_If_Null(
+                                        ""
+                                    )
                             )
                         }
                     }
@@ -114,4 +153,3 @@ fun View_AchatCouleur(
         }
     }
 }
-

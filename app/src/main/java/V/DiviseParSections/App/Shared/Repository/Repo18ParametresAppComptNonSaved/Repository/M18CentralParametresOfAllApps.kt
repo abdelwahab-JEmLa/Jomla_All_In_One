@@ -31,15 +31,13 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
     val dataValue by derivedStateOf { _data.value }
 
     init {
-        repoScope.launch {
-            // First, try to load from local database
-            val localData = dao.getAll()
-            if (localData != null) {
-                _data.value = localData
-                Log.d(repoTAG, "Loaded data from local database: $localData")
-            }
+        extracted()
+    }
 
-            // Then setup Firebase sync
+    private fun extracted() {
+        repoScope.launch {
+            val localData = dao.getAll()
+            _data.value = localData
             setupFirebaseGet()
         }
     }
@@ -78,36 +76,21 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
         }
     }
 
-    // Additional helper methods
-    suspend fun getCurrentData(): M18CentralParametresOfAllApps? {
-        return dao.getAll()
-    }
-
-    suspend fun refreshFromDatabase() {
-        val dbData = dao.getAll()
-        _data.value = dbData
-        Log.d(repoTAG, "Refreshed data from database: $dbData")
-    }
-
-    suspend fun forceRefreshFromFirebase() {
-        setupFirebaseGet()
-    }
 }
 
 @Entity
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
-    val itsDevMode: Boolean = false,
+    val itsDevMode: Boolean = true,
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
-    // Updated to match the actual Firebase data
-    val au_Lence_Set_Compt_Ac_KeyId: String = "",
+    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabCompt_KeyId_DPL,
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
+    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 ) {

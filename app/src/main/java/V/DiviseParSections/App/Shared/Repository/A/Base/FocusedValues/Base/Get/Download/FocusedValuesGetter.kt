@@ -4,12 +4,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -91,7 +89,6 @@ class FocusedValuesGetter(
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
         repo14VentPeriode.datasValue.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
-            ?: repo14VentPeriode.datasValue.lastOrNull()
     }
 
     //----------------------------------Section.M8BonVent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -122,12 +119,7 @@ class FocusedValuesGetter(
 
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            val parent_M9AppCompt =
-                repo9AppCompt.datasValue.find { compt ->
-                    compt.keyID == it.parent_M9AppCompt_KeyID
-                }
-
-            it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID
+            it.parent_M14VentPeriod_DebugInfos == currentActiveFocuced_M14VentPeriode?.keyID
         }
     }
 
@@ -159,10 +151,7 @@ class FocusedValuesGetter(
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
             parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID?:"",
-            parent_M9AppCompt_DebugInfos = currentActive_M9AppCompt?.get_DebugInfos()?:"",
             parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
-            parent_M14VentPeriod_DebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()
-                ?: "null"),
         )
     }
 
@@ -177,11 +166,9 @@ class FocusedValuesGetter(
                 M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
                     parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
-                    parent_M14VentPeriod_DebugInfos = parent_M14VentPeriod_DebugInfos,
                     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
                     parent_M8BonVent_KeyId = keyID,
                     parent_M8BonVent_DebugInfos = get_DebugInfos(),
-
                     )
             }
         }
@@ -235,6 +222,9 @@ class FocusedValuesGetter(
     val activeDialogSearchM1Produit by derivedStateOf {
         currentActive_M9AppCompt?.activeDialogSearchM1Produit ?: false
     }
+    val its_Developing_Mode by derivedStateOf {
+        repo18CentralParametresOfAllApps.dataValue?.itsDevMode ?: false
+    }
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
@@ -281,26 +271,4 @@ class FocusedValuesGetter(
             }
         }
     }
-}
-
-fun get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
-    m2Client: M2Client,
-    defaultM8BonVent: M8BonVent,
-    onVentM8BonVent: M8BonVent?,
-    currentM9AppCompt: Z_AppCompt?,
-    newEtate: M8BonVent.EtateActuellementEst,
-): Pair<M8BonVent, Z_AppCompt?> {
-    val onVentM8BonVentWithDefault = onVentM8BonVent ?: defaultM8BonVent
-
-    val editedM8BonVent = onVentM8BonVentWithDefault.copy(
-        parent_M2Client_KeyID = m2Client.keyID,
-        parent_M2Client_DebugInfos = m2Client.nom,
-        etateActuellementEst = newEtate
-    )
-
-    val editedM9CurrCompt = currentM9AppCompt?.copy(
-        onVentM8BonVentKey = editedM8BonVent.keyID,
-        onVentM8BonVentDebugInfos = editedM8BonVent.get_DebugInfos()
-    )
-    return Pair(editedM8BonVent, editedM9CurrCompt)
 }

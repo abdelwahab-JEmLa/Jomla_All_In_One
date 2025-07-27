@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -46,6 +48,7 @@ import java.io.File
 @Composable
 fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
     modifier: Modifier = Modifier,
+    relative_M3CouleurInfos: M3CouleurProduitInfos? = null,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     imageFile: File? = null,
@@ -77,11 +80,8 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
         ) {
             if (imageExists && imageFile != null) {
                 GlideImage(
-                    model = imageFile,
-                    contentDescription = "Color image for $colorName",
-                    contentScale = contentScale,
-                    colorFilter = colorFilter, // Apply the colorFilter here
                     modifier = Modifier
+                        .getSemanticsTag(relative_M3CouleurInfos,"")
                         .clickable {
                             onClickToOpenWindow()
                         }
@@ -92,7 +92,11 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                                 renderEffect =
                                     BlurEffect(blurRadius, blurRadius, TileMode.Decal)
                             }
-                        }
+                        },
+                    model = imageFile,
+                    contentDescription = "Color image for $colorName",
+                    contentScale = contentScale,
+                    colorFilter = colorFilter // Apply the colorFilter here
                 ) { request ->
                     request.apply {
                         thumbnail(0.1f)

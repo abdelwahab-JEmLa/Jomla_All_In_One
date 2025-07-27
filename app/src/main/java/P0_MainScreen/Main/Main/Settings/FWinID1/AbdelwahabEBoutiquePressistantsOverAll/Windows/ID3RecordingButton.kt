@@ -54,18 +54,25 @@ fun ID3RecordingButton(
 
         if (showLabels) {
             // Use the pre-cached value
-            val focusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            val focusedValuesGetter =
+                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
                 focusedValuesGetter.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
 
             val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT =
                 focusedValuesGetter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
 
-            val remain_M2Client_Size = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size +
-                    filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT.size
+            val remain_M2Client_Size =
+                filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size +
+                        filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT.size
 
+            val warped_displayTime = if (!focusedValuesGetter.its_Developing_Mode) {
+                displayTime
+            } else {
+                ""
+            }
             Text(
-                "$displayTime | بقي $remain_M2Client_Size زبون",
+                "$warped_displayTime | بقي $remain_M2Client_Size زبون",
                 modifier = Modifier
                     .getSemanticsTag(
                         nomVal = "parent_M9AppCompt_KeyID",

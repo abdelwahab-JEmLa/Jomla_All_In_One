@@ -326,7 +326,7 @@ data class M10OperationVentCouleur(
     enum class Type { SiNonDispo, CommandeDeLui }
 
     companion object {
-        fun get_default(
+        fun get_default_By_BonVentEtCouleur(
             onVent_M8BonVent: M8BonVent?,
             m3CouleurProduit: M3CouleurProduitInfos?
         ): M10OperationVentCouleur {

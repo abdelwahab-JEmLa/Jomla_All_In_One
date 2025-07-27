@@ -61,10 +61,8 @@ fun ProductHeader_T1(
     val allNonTrouve =
         listFiltered_M10OperationVentCouleurs_By_M1Produit.isNotEmpty() && listFiltered_M10OperationVentCouleurs_By_M1Produit.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
-
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
         viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
@@ -92,6 +90,9 @@ fun ProductHeader_T1(
     ) {
         Row(
             modifier = Modifier
+                .getSemanticsTag(
+                    produit,"produit"
+                )
                 .getSemanticsTag(
                     nomVal = "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
                     data = onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent

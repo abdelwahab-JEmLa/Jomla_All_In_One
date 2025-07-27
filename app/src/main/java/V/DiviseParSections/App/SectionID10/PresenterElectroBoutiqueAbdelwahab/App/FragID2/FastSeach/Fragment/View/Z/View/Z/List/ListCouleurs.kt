@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.Arrangement
@@ -23,14 +24,16 @@ fun ListCouleurs(
     val colors = produitWithColors.second
 
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .getSemanticsTag(produitWithColors,"")
+            .fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(colors, key = { it.keyID }) { color ->
             ViewVentCouleur_T1(
                 modifier = Modifier.padding(4.dp),
-                m3Couleur = color,
+                relative_M3CouleurInfos = color,
                 produit = produit,
                 viewModel = viewModel,
                 size = 120.dp
