@@ -81,7 +81,7 @@ fun MapContent(
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
 
-        // locationTracker.startTracking()
+        locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
     }
 
