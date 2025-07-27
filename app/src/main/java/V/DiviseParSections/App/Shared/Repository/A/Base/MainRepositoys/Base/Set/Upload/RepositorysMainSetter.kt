@@ -52,7 +52,6 @@ class RepositorysMainSetter(
         m13TarificationInfos_Pour_Produit: M13TarificationInfos?,
         m10OperationVentCouleurs: List<M10OperationVentCouleur>
     ) {
-
         m13TarificationInfos_Pour_Produit?.let {
             addOrUpdateGroAliTariff(it)
 

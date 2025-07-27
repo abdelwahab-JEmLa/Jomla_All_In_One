@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +34,10 @@ import java.util.SortedMap
 
 @Composable
 fun GerantButton(
+    relative_Tariff: M13TarificationInfos?,
+    relative_M1Produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
-    tarificationInfo: M13TarificationInfos,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     showLabels: Boolean,
     tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     onClickPrixButton: () -> Unit,
@@ -56,13 +60,41 @@ fun GerantButton(
         maxOf(calculatedHeight, minHeight).dp
     }
 
+    val m10OperationVentCouleurs =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+
+    val edited_Tariff =
+        relative_Tariff
+            ?.copy(
+            parent_M1Produit_KeyId = relative_M1Produit.keyID,
+            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+            parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .activeOnVent_M2Client?.keyID ?: "null",
+            parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .activeOnVent_M2Client?.get_DebugInfos() ?: "null",
+            parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .activeonVent_M8BonVent?.keyID ?: "null",
+            parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .activeonVent_M8BonVent?.get_DebugInfos() ?: "null",
+        )
+
+    fun handelClick() {
+        viewModel.aCentralFacade.repositorysMainSetter
+            .saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                m13TarificationInfos_Pour_Produit = edited_Tariff,
+                m10OperationVentCouleurs = m10OperationVentCouleurs
+            )
+
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+            .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box {
-
-            // Main manager button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -71,6 +103,7 @@ fun GerantButton(
                     ElevatedCard(
                         Modifier.clickable {
                             onClickPrixButton()
+                            handelClick()
                         }
                     ) {
                         Box(

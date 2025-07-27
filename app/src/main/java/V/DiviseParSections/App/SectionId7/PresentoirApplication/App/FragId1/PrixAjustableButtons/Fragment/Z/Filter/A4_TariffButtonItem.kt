@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -49,7 +50,8 @@ import androidx.compose.ui.unit.sp
 fun TariffButtonItem(
     produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
-    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     typeTarification: TypeChoisi,
     tariffs: List<M13TarificationInfos>,
     showLabels: Boolean,
@@ -57,6 +59,7 @@ fun TariffButtonItem(
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
 ) {
+    val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
 
@@ -73,13 +76,13 @@ fun TariffButtonItem(
                 parent_M1Produit_KeyId = produit.keyID,
                 parent_M1Produit_DebugInfos = produit.nom,
                 parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeOnVent_M2Client?.keyID ?:"null"  ,
+                    .activeOnVent_M2Client?.keyID ?: "null",
                 parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeOnVent_M2Client?.get_DebugInfos() ?:"null",
+                    .activeOnVent_M2Client?.get_DebugInfos() ?: "null",
                 parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeonVent_M8BonVent?.keyID ?:"null",
+                    .activeonVent_M8BonVent?.keyID ?: "null",
                 parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeonVent_M8BonVent?.get_DebugInfos() ?:"null",
+                    .activeonVent_M8BonVent?.get_DebugInfos() ?: "null",
             )
         )
     }
@@ -103,6 +106,11 @@ fun TariffButtonItem(
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 
+    // Hide purchase price tariff if user is not admin
+    if (isPurchasePriceTariff && !currentApp_Est_Admin) {
+        return
+    }
+
     fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -110,7 +118,8 @@ fun TariffButtonItem(
                 m10OperationVentCouleurs = m10OperationVentCouleurs
             )
 
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+            .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
     fun handlePriceEditDone() {
@@ -149,8 +158,6 @@ fun TariffButtonItem(
         }
         isEditingPurchasePrice = false
     }
-       //<--
-       //TODO(1): regle pour que si on edite affiche ben et autres
     Row(
         modifier = Modifier
             .getSemanticsTag(nomVal = "produit", data = produit.nom),
@@ -275,8 +282,7 @@ fun TariffButtonItem(
                             keyboardActions = KeyboardActions(
                                 onDone = { handlePriceEditDone() }
                             ),
-
-                            )
+                        )
 
                         LaunchedEffect(isEditingPrice) {
                             if (isEditingPrice) {
@@ -345,8 +351,11 @@ fun TariffButtonItem(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
                             )
-                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
-                            latestTariffLocalData = latestTariffLocalData.copy(prixCurrency = newPrice)
+                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(
+                                updatedProduit
+                            )
+                            latestTariffLocalData =
+                                latestTariffLocalData.copy(prixCurrency = newPrice)
                         },
                         modifier = Modifier.size(16.dp)
                     ) {
@@ -371,8 +380,11 @@ fun TariffButtonItem(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
                             )
-                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
-                            latestTariffLocalData = latestTariffLocalData.copy(prixCurrency = newPrice)
+                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(
+                                updatedProduit
+                            )
+                            latestTariffLocalData =
+                                latestTariffLocalData.copy(prixCurrency = newPrice)
                         }
                     }
                 ) {

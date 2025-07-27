@@ -44,7 +44,7 @@ fun MainList(
     val max_Prix = list_M13TarificationInfos
         .filter { it.parent_M1Produit_KeyId == relative_M1Produit.keyID }
         .maxOfOrNull { it.prixCurrency } ?: 0.0
-    
+
     val last_list_M13TarificationInfos = list_M13TarificationInfos.lastOrNull {
         it.parent_M2Client_KeyId == relative_M2Client?.keyID
     }
@@ -105,7 +105,7 @@ fun MainList(
                     )
                 )
             }
-            if (relative_M1Produit.prixAchat != 0.0|| focusedValuesGetter.currentApp_Est_Admin) {
+            if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
@@ -158,7 +158,7 @@ fun MainList(
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
-                    nombreUnite = relative_M1Produit.nombreUniteInt
+                    nombreUnite = relative_M1Produit.nombreUniteInt,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -182,8 +182,9 @@ fun MainList(
         )
 
         GerantButton(
+            relative_M1Produit = relative_M1Produit,
+            relative_Tariff = standardTariffs.find { it.typeChoisi == TypeChoisi.LeMaxPrixArrive },
             viewModel = viewModel,
-            tarificationInfo = tarificationInfo,
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {

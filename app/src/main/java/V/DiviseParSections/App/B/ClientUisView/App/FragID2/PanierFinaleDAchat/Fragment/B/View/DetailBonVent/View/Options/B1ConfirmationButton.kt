@@ -76,7 +76,7 @@ fun ConfirmationButton(
             ?: M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
 
         if (etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME ||
-            etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+            etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT &&
             focusedValuesGetter.currentApp_Est_Admin
         ) {
             FloatingActionButton(
