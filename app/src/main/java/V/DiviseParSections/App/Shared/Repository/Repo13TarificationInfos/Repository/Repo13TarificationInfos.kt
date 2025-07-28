@@ -175,17 +175,5 @@ data class M13TarificationInfos(
         fun get_default(): M13TarificationInfos {
             return M13TarificationInfos()
         }
-
-        fun findTariff(
-            datasValue: List<M13TarificationInfos>,
-            produit: ArticlesBasesStatsTable,
-            typeChoisi: TypeChoisi = TypeChoisi.DefiniParGerant
-        ) = datasValue
-            .lastOrNull { tariff ->
-                val match =
-                    tariff.typeChoisi == typeChoisi &&
-                            tariff.parent_M1Produit_KeyId == produit.keyID
-                match
-            }
     }
 }

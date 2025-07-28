@@ -93,15 +93,17 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            relative_Tariff_DefiniParGerant?.let {
-                add(it)
-            }
+            add(relative_Tariff_DefiniParGerant)
 
             if (relative_Tariff_Historique != null) {
                 add(relative_Tariff_Historique)
             }
 
-            if (max_Prix != 0.0 && max_Prix > relative_M1Produit.prixVent) {
+            if (
+                max_Prix != 0.0
+                && max_Prix > relative_M1Produit.prixVent
+                && max_Prix > relative_Tariff_DefiniParGerant.prixCurrency
+            ) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.LeMaxPrixArrive,
@@ -109,6 +111,7 @@ fun MainList(
                     )
                 )
             }
+
             if (!travailleChezGrossisst3Ali!!) {
                 add(
                     M13TarificationInfos(
