@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.W_AchatProduitOperation.View.updated_Achats
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.background

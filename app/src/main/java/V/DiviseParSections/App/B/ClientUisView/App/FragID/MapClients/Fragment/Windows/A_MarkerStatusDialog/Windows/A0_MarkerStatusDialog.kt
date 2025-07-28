@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -254,7 +254,7 @@ fun MarkerStatusDialog(
                         ClientEdites(
                             viewModel = viewModel,
                             marqueClick = marqueClick,
-                            marqueClickRelativeClient = relative_M2Client,
+                            relative_Client = relative_M2Client,
                             onDismiss = { },
                             onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                             onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },

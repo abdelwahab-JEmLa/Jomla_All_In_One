@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.Filter.MainFilter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import androidx.compose.foundation.layout.Column
@@ -21,11 +21,14 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent,
     markerStatusDialogM2Client: M2Client?=null,
 ) {
-    Column {
+    Column (
+        modifier =
+            Modifier
+                .getSemanticsTag(repo8BonVent.datasValue,"")
+    ){
         Text(
             modifier =
                 Modifier
-                    .getSemanticsTag(repo8BonVent.datasValue,"")
                     .padding(vertical = 8.dp)
             ,
             text = buildString {

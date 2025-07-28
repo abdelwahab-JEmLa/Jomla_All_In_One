@@ -10,7 +10,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug
+import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.runtime_throw_Erreur_Pour_Regle_Le_Real_Bug
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
@@ -78,13 +78,13 @@ fun AppNavHost(
     val startUpScreen = when {
         itsDevMode -> {
             val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
-            getScreenFromRoute(devStartUpRoute) ?: throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug("getScreenFromRoute")
+            getScreenFromRoute(devStartUpRoute) ?: runtime_throw_Erreur_Pour_Regle_Le_Real_Bug("getScreenFromRoute")
         }
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
-        else ->  throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug("else")
+        else ->  runtime_throw_Erreur_Pour_Regle_Le_Real_Bug("else")
     }
 
     LaunchedEffect(currentRoute) {

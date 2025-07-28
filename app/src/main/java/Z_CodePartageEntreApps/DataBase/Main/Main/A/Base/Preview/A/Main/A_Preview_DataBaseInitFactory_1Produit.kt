@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Item_2_Menu

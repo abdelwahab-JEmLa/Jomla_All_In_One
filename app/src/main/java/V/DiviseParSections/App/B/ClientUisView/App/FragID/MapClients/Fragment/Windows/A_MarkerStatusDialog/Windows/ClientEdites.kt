@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.runtime_throw_Erreur_Pour_Regle_Le_Real_Bug
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import androidx.compose.foundation.background
@@ -32,7 +34,7 @@ fun ClientEdites(
     focusedValuesSetter: FocusedValuesSetter =viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     repo2Client: Repo2Client = viewModel.aCentralFacade.repositorysMainGetter.repo2Client,
     marqueClick: Marker,
-    marqueClickRelativeClient: M2Client?,
+    relative_Client: M2Client?,
     onDismiss: () -> Unit,
     onClickToEditeMarquerPosition: (M2Client) -> Unit,
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
@@ -40,7 +42,7 @@ fun ClientEdites(
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
 ) {
-    val clientTypeMode = marqueClickRelativeClient?.clientTypeMode
+    val clientTypeMode = relative_Client?.clientTypeMode
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +92,7 @@ fun ClientEdites(
                     }
 
                     // Update the client's type mode
-                    marqueClickRelativeClient?.let { client ->
+                    relative_Client?.let { client ->
                         client.clientTypeMode = newClientTypeMode
                         viewModel.updateData(client)
                     }
@@ -118,16 +120,17 @@ fun ClientEdites(
         ) {
 
             Text(
-                text = marqueClickRelativeClient?.nom ?: "ClientAchteur",
+                modifier = Modifier.getSemanticsTag(relative_Client,""),
+                text = relative_Client?.nom ?: runtime_throw_Erreur_Pour_Regle_Le_Real_Bug("relative_Client?.nom"),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
 
 
-            if (!marqueClickRelativeClient?.numTelephone.isNullOrEmpty()) {
+            if (!relative_Client?.numTelephone.isNullOrEmpty()) {
                 Text(
-                    text = marqueClickRelativeClient?.numTelephone ?: "",
+                    text = relative_Client?.numTelephone ?: "",
                     modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
