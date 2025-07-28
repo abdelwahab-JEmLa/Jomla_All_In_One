@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.View_Vent_M1Produit
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -82,23 +82,38 @@ fun MainList_Frag_Panie(
             }
         }
     } else {
-        val key = groupedVents.entries.toList().first().key
-        val relative_FirstVent_Produit=
-            repositorysMainGetter.find_M1Produit(key)
+        // Fix: Check if groupedVents is not empty before accessing first()
+        if (groupedVents.isNotEmpty()) {
+            val key = groupedVents.entries.toList().first().key
+            val relative_FirstVent_Produit = repositorysMainGetter.find_M1Produit(key)
 
-        LazyColumn(
-            modifier = modifier
-                .getSemanticsTag(relative_FirstVent_Produit,"relative_FirstVent_Produit")
-                .getSemanticsTag(groupedVents.entries.toList(),"")
-                .fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(groupedVents.entries.toList()) { (productKeyId, achatGroup) ->
-                View_Vent_M1Produit(
-                    viewModel = viewModel,
-                    productKeyId = productKeyId,
-                    relative_List_M10OperationVentCouleur = achatGroup
+            LazyColumn(
+                modifier = modifier
+                    .getSemanticsTag(relative_FirstVent_Produit, "relative_FirstVent_Produit")
+                    .getSemanticsTag(groupedVents.entries.toList(), "")
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(groupedVents.entries.toList()) { (productKeyId, achatGroup) ->
+                    View_Vent_M1Produit(
+                        viewModel = viewModel,
+                        productKeyId = productKeyId,
+                        relative_List_M10OperationVentCouleur = achatGroup
+                    )
+                }
+            }
+        } else {
+            // Handle empty state - show appropriate UI
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Aucun produit disponible",
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
