@@ -286,7 +286,7 @@ data class M2Client(
 
         val ref = parent.child("B_ClientInfosProtoJuin3")
 
-        fun safeRemoveRef(onDone: () -> Unit={}) { ref.removeValue().addOnSuccessListener { onDone() } }
+        fun safe_Remove_MainDatas_Ref(onDone: () -> Unit={}) { ref.removeValue().addOnSuccessListener { onDone() } }
 
         fun removeRef(preparedData: M2Client) {
             ref.child(preparedData.keyID).removeValue()

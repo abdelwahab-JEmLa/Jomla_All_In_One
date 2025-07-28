@@ -42,7 +42,7 @@ class ClientOperations(
             hClientRepository.dataBaseCreationFactory.dao.deleteAll()
             hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
-            M2Client.safeRemoveRef()
+            M2Client.safe_Remove_MainDatas_Ref()
 
             hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas

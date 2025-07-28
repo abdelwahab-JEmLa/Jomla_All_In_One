@@ -30,8 +30,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Preview
@@ -90,6 +97,14 @@ fun MainScreen(
                     ) {
                         Item_1_Menu(
                             repo2Client = repo2Client,
+                            title = "deleteRef",
+                            isLoading = isLoading,
+                        ) {
+                            showMenu = false
+                        }
+
+                        Item_2_Menu(
+                            repo2Client = repo2Client,
                             title = "batchFireBaseUpdate",
                             isLoading = isLoading,
                         ) {
@@ -124,32 +139,11 @@ fun Item_1_Menu(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        val datas = repo2Client.datasValue
-        val new_datas = repo2Client.datasValue.map {
-            it.apply {
-                keyID = M2Client.generePushKey()
-            }
-        }
-        val updates = new_Data(new_datas)
-
         DropdownMenuItem(
             text = {
                 Text(
                     title_Ac_Securite,
                     modifier = Modifier
-                        .getSemanticsTag(datas.filter {
-                            it.nom.contains("abde")
-                        }, "")
-                        .getSemanticsTag(
-                            datas
-                                .filter { it.nom.contains("abde") }
-                                .map { " ${it.nom} to ${it.keyID}" }, "datas_map"
-                        )
-                        .getSemanticsTag(
-                            new_datas
-                                .filter { it.nom.contains("abde") }
-                                .map { it.keyID }, "new_datas"
-                        )
                 )
             },
             leadingIcon = {
@@ -164,8 +158,85 @@ fun Item_1_Menu(
                 if (safeCountClick == 0) {
                     safeCountClick++
                 } else {
-                    batchFireBaseUpdate(updates)
+                    M2Client.safe_Remove_MainDatas_Ref()
                     onClick_TO_Close_Menu()
+                    safeCountClick = 0
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun Item_2_Menu(
+    repo2Client: Repo2Client,
+    title: String,
+    isLoading: Boolean = false,
+    onClick_TO_Close_Menu: () -> Unit,
+) {
+    var safeCountClick by remember { mutableIntStateOf(0) }
+
+    val title_Ac_Securite = when {
+        safeCountClick == 0 -> title
+        else -> "Es-tu sûr de faire cela ?"
+    }
+
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        val new_datas = repo2Client.datasValue.map {
+            it.apply {
+                keyID = M2Client.generePushKey()
+            }
+        }
+
+        val newDatas_distinct_by_keyId = new_datas.distinctBy {
+            it.id
+        }
+        val nd_dist_map = newDatas_distinct_by_keyId
+            .filter {
+                it.nom.contains("abderrahman")
+            }
+            .map { " ${it.nom} to ${it.id} to ${it.keyID}" }
+
+        DropdownMenuItem(
+            text = {
+                Text(
+                    title_Ac_Securite,
+                    modifier = Modifier
+                        .semantics(mergeDescendants = true) {
+                            set(SemanticsPropertyKey("a"), nd_dist_map)
+                        }
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Inventory,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            onClick = {
+                val updates = new_Data(newDatas_distinct_by_keyId)
+
+                if (isLoading) return@DropdownMenuItem
+                if (safeCountClick == 0) {
+                    safeCountClick++
+                } else {
+                    M2Client.safe_Remove_MainDatas_Ref {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            delay(5000)
+                            withContext(Dispatchers.Main) {
+                                batchFireBaseUpdate(updates)
+                                onClick_TO_Close_Menu()
+                            }
+                        }
+                    }
                     safeCountClick = 0
                 }
             }
