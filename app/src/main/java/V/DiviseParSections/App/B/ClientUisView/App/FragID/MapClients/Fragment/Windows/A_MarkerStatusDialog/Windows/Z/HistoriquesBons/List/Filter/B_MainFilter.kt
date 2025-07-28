@@ -19,13 +19,13 @@ fun MainFilter(
     vm: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier,
 ) {
+    val datasValue_repo8BonVent = vm.getter.repo8BonVent.datasValue
     val filtered by remember(
-        vm.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        datasValue_repo8BonVent.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         markerStatusDialogM2Client?.keyID
     ) {
         derivedStateOf {
-            val datasValue = vm.getter.repo8BonVent.datasValue
-            datasValue.filter {
+            datasValue_repo8BonVent.filter {
                 it.parent_M2Client_KeyID == (markerStatusDialogM2Client?.keyID ?: "")
             }.sortedByDescending { it.creationTimestamps }
         }
@@ -33,7 +33,7 @@ fun MainFilter(
 
     ElevatedCard(
         Modifier
-            .getSemanticsTag(nomVal = "datasValue", data = filtered)
+            .getSemanticsTag(datasValue_repo8BonVent,"")
             .padding(2.dp)
     ) {
         View_MainList(filtered, vm)

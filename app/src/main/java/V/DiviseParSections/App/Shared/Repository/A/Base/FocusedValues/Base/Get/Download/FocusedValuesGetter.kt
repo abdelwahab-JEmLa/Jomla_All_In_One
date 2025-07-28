@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
@@ -222,9 +223,9 @@ class FocusedValuesGetter(
     val activeDialogSearchM1Produit by derivedStateOf {
         currentActive_M9AppCompt?.activeDialogSearchM1Produit ?: false
     }
-    val its_Developing_Mode by derivedStateOf {
-        repo18CentralParametresOfAllApps.dataValue?.itsDevMode ?: false
-    }
+
+    val its_Developing_Mode by derivedStateOf { M18CentralParametresOfAllApps().itsDevMode }
+    val m18CentralParametresOfAllApps by derivedStateOf { M18CentralParametresOfAllApps() }
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")

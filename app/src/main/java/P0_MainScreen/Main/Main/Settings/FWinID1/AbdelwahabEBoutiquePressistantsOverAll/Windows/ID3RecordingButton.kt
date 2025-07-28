@@ -71,9 +71,12 @@ fun ID3RecordingButton(
             } else {
                 ""
             }
+
             Text(
                 "$warped_displayTime | بقي $remain_M2Client_Size زبون",
                 modifier = Modifier
+                    .getSemanticsTag(focusedValuesGetter.its_Developing_Mode,"focusedValuesGetter.its_Developing_Mode")
+
                     .getSemanticsTag(
                         nomVal = "parent_M9AppCompt_KeyID",
                         data = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID

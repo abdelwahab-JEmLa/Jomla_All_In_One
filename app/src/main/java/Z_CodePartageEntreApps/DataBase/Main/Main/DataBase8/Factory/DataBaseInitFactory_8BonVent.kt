@@ -31,16 +31,71 @@ class DataBaseInitFactory_8BonVent(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {
-        if (!dao.isTableEmpty()) return
-        updateRepoProgress(name, 0.4f)
-        val data: List<M8BonVent> = if (isInternetAvailable) {
-            updateRepoProgress(name, 0.6f)
-            onLoadFromFireBase()
+        val isTableEmpty = dao.isTableEmpty()
+
+        // Get items from Firebase that are either not available locally or have different timestamps
+        val datas_With_Diffrent_Time_or_Non_Dispo_Au_Locale = if (isInternetAvailable && !isTableEmpty) {
+            try {
+                updateRepoProgress(name, 0.2f)
+
+                // Get all local data
+                val localData = dao.getAll()
+                val localDataMap = localData.associateBy { it.keyID }
+
+                updateRepoProgress(name, 0.4f)
+
+                // Get Firebase data
+                val firebaseData = onLoadFromFireBase()
+
+                updateRepoProgress(name, 0.6f)
+
+                // Filter Firebase items that need to be updated/added locally
+                val itemsToSync = firebaseData.filter { fireBase_Data ->
+                    val local_Data = localDataMap[fireBase_Data.keyID]
+
+                    // Include if:
+                    // 1. Item doesn't exist locally
+                    // 2. Firebase item has newer timestamp than local item
+                    local_Data == null ||
+                            fireBase_Data.dernierTimeTampsSynchronisationAvecFireBase >= local_Data.dernierTimeTampsSynchronisationAvecFireBase
+                }
+
+                Log.d(repoTAG, "Found ${itemsToSync.size} items to sync from Firebase")
+                itemsToSync
+
+            } catch (e: Exception) {
+                Log.e(repoTAG, "Error getting Firebase data for sync: ${e.message}", e)
+                emptyList()
+            }
         } else {
-            onLoadCategoriesFromCsv()
+            emptyList()
         }
-        updateRepoProgress(name, 0.8f)
-        dao.insertAll(data)
+
+        // If table is empty, load initial data
+        if (isTableEmpty) {
+            updateRepoProgress(name, 0.4f)
+            val data: List<M8BonVent> = if (isInternetAvailable) {
+                updateRepoProgress(name, 0.6f)
+                onLoadFromFireBase()
+            } else {
+                onLoadCategoriesFromCsv()
+            }
+            updateRepoProgress(name, 0.8f)
+            dao.insertAll(data)
+        }
+        // If we have items to sync, update them
+        else if (datas_With_Diffrent_Time_or_Non_Dispo_Au_Locale.isNotEmpty()) {
+            updateRepoProgress(name, 0.8f)
+
+            // Use upsert to insert new items or update existing ones
+            datas_With_Diffrent_Time_or_Non_Dispo_Au_Locale.forEach { item ->
+                dao.upsert(item)
+            }
+
+            Log.d(repoTAG, "Synced ${datas_With_Diffrent_Time_or_Non_Dispo_Au_Locale.size} items from Firebase")
+        }
+
+        updateRepoProgress(name, 1.0f)
     }
 
     suspend fun onLoadFromFireBase(): MutableList<M8BonVent> {

@@ -8,6 +8,9 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.throw_Runtime_Erreur
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
@@ -53,6 +56,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel = koinViewModel(),
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     isFabVisible: Boolean,
@@ -71,14 +76,14 @@ fun AppNavHost(
 
     val startUpScreen = when {
         itsDevMode == true -> {
-            val devStartUpRoute = viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.devStartUpScree
-            getScreenFromRoute(devStartUpRoute) ?: Screen.FacadePresentoireProduits
+            val devStartUpRoute = focusedValuesGetter.m18CentralParametresOfAllApps.devStartUpScree
+            getScreenFromRoute(devStartUpRoute) ?: throw_Runtime_Erreur("getScreenFromRoute")
         }
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
-        else -> Screen.FacadePresentoireProduits
+        else ->  throw_Runtime_Erreur("else")
     }
 
     LaunchedEffect(currentRoute) {
