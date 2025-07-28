@@ -210,7 +210,7 @@ fun Item_2_Menu(
                     title_Ac_Securite,
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
-                            set(SemanticsPropertyKey("a"), nd_dist_map)
+                            set(SemanticsPropertyKey("_a"), nd_dist_map)
                         }
                 )
             },
