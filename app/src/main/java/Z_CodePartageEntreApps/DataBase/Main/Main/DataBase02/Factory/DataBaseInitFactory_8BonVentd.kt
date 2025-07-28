@@ -1,8 +1,7 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory
+package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,13 +13,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 
-class DataBaseInitFactory_8BonVent(
+class DataBaseInitFactory_2ClientProtoJuil28(
     appDatabase: AppDatabase
 ) {
-    val dao = appDatabase.GBonVentDao()
+    val dao = appDatabase.DaoM2Client()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
-    val repoRef = M8BonVent.ref
-    val name = Repository.Entity_8BonVent.name
+    val repoRef = M2Client.ref
+    val name = Repository.Entity_2Client.name
     var isListenerRegistered = false
 
     suspend fun init(
@@ -29,34 +28,35 @@ class DataBaseInitFactory_8BonVent(
     ) {
         val isTableEmpty = dao.isTableEmpty()
 
-        val datas_ac_Deffirent_Time_or_Non_Dispo_Au_Locale = if (isInternetAvailable && !isTableEmpty) {
-            try {
-                updateRepoProgress(name, 0.2f)
-                val localData = dao.getAll()
-                val localDataMap = localData.associateBy { it.keyID }
-                updateRepoProgress(name, 0.4f)
-                val firebaseData = onLoadFromFireBase()
-                updateRepoProgress(name, 0.6f)
+        val datas_ac_Deffirent_Time_or_Non_Dispo_Au_Locale =
+            if (isInternetAvailable && !isTableEmpty) {
+                try {
+                    updateRepoProgress(name, 0.2f)
+                    val localData = dao.getAll()
+                    val localDataMap = localData.associateBy { it.keyID }
+                    updateRepoProgress(name, 0.4f)
+                    val firebaseData = onLoadFromFireBase()
+                    updateRepoProgress(name, 0.6f)
 
-                firebaseData.filter { fireBase_Data ->
-                    val local_Data = localDataMap[fireBase_Data.keyID]
-                    local_Data == null ||
-                            fireBase_Data.dernierTimeTampsSynchronisationAvecFireBase >= local_Data.dernierTimeTampsSynchronisationAvecFireBase
+                    firebaseData.filter { fireBase_Data ->
+                        val local_Data = localDataMap[fireBase_Data.keyID]
+                        local_Data == null ||
+                                fireBase_Data.dernierTimeTampsSynchronisationAvecFireBase >= local_Data.dernierTimeTampsSynchronisationAvecFireBase
+                    }
+                } catch (e: Exception) {
+                    emptyList()
                 }
-            } catch (e: Exception) {
+            } else {
                 emptyList()
             }
-        } else {
-            emptyList()
-        }
 
         if (isTableEmpty) {
             updateRepoProgress(name, 0.4f)
-            val data: List<M8BonVent> = if (isInternetAvailable) {
+            val data: List<M2Client> = if (isInternetAvailable) {
                 updateRepoProgress(name, 0.6f)
                 onLoadFromFireBase()
             } else {
-                onLoadCategoriesFromCsv()
+                emptyList()
             }
             updateRepoProgress(name, 0.8f)
             dao.insertAll(data)
@@ -70,13 +70,13 @@ class DataBaseInitFactory_8BonVent(
         updateRepoProgress(name, 1.0f)
     }
 
-    suspend fun onLoadFromFireBase(): MutableList<M8BonVent> {
+    suspend fun onLoadFromFireBase(): MutableList<M2Client> {
         return suspendCancellableCoroutine { continuation ->
             repoRef.get()
                 .addOnSuccessListener { snapshot ->
-                    val dataList = mutableListOf<M8BonVent>()
+                    val dataList = mutableListOf<M2Client>()
                     snapshot.children.forEach { child ->
-                        child.getValue(M8BonVent::class.java)?.let { item ->
+                        child.getValue(M2Client::class.java)?.let { item ->
                             dataList.add(item)
                         }
                     }
@@ -95,41 +95,33 @@ class DataBaseInitFactory_8BonVent(
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 factoryScope.launch {
-                    try {
-                        val localData = dao.getAll()
-                        val localDataMap = localData.associateBy { it.keyID }
-                        val firebaseKeyIds = mutableSetOf<String>()
+                    val localData = dao.getAll()
+                    val localDataMap = localData.associateBy { it.keyID }
+                    val firebaseKeyIds = mutableSetOf<String>()
 
-                        for (child in snapshot.children) {
-                            try {
-                                child.getValue(M8BonVent::class.java)?.let { fbEntity ->
-                                    val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
-                                    firebaseKeyIds.add(entityWithKey.keyID)
+                    for (child in snapshot.children) {
+                        child.getValue(M2Client::class.java)?.let { fbEntity ->
+                            val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
+                            firebaseKeyIds.add(entityWithKey.keyID)
 
-                                    val localEntity = localDataMap[entityWithKey.keyID]
+                            val localEntity = localDataMap[entityWithKey.keyID]
 
-                                    when {
-                                        localEntity == null -> {
-                                            dao.upsert(entityWithKey)
-                                        }
-                                        else -> {
-                                            dao.deleteByKeyId(entityWithKey.keyID)
-                                            dao.insert(entityWithKey)
-                                        }
-                                    }
+                            when {
+                                localEntity == null -> {
+                                    dao.upsert(entityWithKey)
                                 }
-                            } catch (e: Exception) {
-                            }
-                        }
 
-                        val itemsToDelete = localDataMap.keys - firebaseKeyIds
-                        for (keyToDelete in itemsToDelete) {
-                            try {
-                                dao.deleteByKeyId(keyToDelete)
-                            } catch (e: Exception) {
+                                else -> {
+                                    dao.deleteByKeyId(entityWithKey.keyID)
+                                    dao.insert(entityWithKey)
+                                }
                             }
                         }
-                    } catch (e: Exception) {
+                    }
+
+                    val itemsToDelete = localDataMap.keys - firebaseKeyIds
+                    for (keyToDelete in itemsToDelete) {
+                        dao.deleteByKeyId(keyToDelete)
                     }
                 }
             }
@@ -140,7 +132,7 @@ class DataBaseInitFactory_8BonVent(
         })
     }
 
-    fun set(dataAvecTigerUpdate: M8BonVent) {
+    fun set(dataAvecTigerUpdate: M2Client) {
         factoryScope.launch {
             val entityWithUpdatedTimestamp = dataAvecTigerUpdate.copy(
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -150,7 +142,7 @@ class DataBaseInitFactory_8BonVent(
         }
     }
 
-    private suspend fun batchFireBaseUpdateGBonVent(datas: List<M8BonVent>) {
+    private suspend fun batchFireBaseUpdateGBonVent(datas: List<M2Client>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.keyID] = data
@@ -158,7 +150,7 @@ class DataBaseInitFactory_8BonVent(
         repoRef.updateChildren(updates).await()
     }
 
-    fun delete(data: M8BonVent) {
+    fun delete(data: M2Client) {
         factoryScope.launch {
             try {
                 dao.delete(data)

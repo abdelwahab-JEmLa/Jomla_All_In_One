@@ -32,12 +32,12 @@ class Repo8BonVent(
     val dataBaseCreationFactory: DataBaseInitFactory_8BonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M8BonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
 
     init {
-        composScope.launch {
+        repoScope.launch {
             dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
     }
@@ -47,7 +47,7 @@ class Repo8BonVent(
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     if (existingIndex >= 0) {
@@ -65,7 +65,7 @@ class Repo8BonVent(
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     add(dataUpdate)
@@ -81,7 +81,7 @@ class Repo8BonVent(
     }
 
     fun delete(data: M8BonVent) {
-        composScope.launch {
+        repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
                 dataBaseCreationFactory.delete(data)
@@ -95,7 +95,7 @@ class Repo8BonVent(
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     add(dataUpdate)
@@ -112,7 +112,7 @@ class Repo8BonVent(
         }
 
         if (existingIndex < 0) {
-            composScope.launch {
+            repoScope.launch {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
                         .show()
@@ -126,7 +126,7 @@ class Repo8BonVent(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = datasValue.toMutableList().apply {
                     this[existingIndex] = updatedItem

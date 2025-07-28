@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G
 
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.initializeDataReturn
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.triggerUpdateFbParTimestampsListener
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.setupLocalDbUpdateTracker
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Init.initializeDataReturn
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Init.triggerUpdateFbParTimestampsListener
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Test.setupLocalDbUpdateTracker
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ class dataBaseCreationFactoryMID2ClientRepository(
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.B_ClientInfosProtoJuin3Dao()
+    val dao = appDatabase.DaoM2Client()
     val repoRef = M2Client.ref
     var isListenerRegistered = false
 

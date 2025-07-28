@@ -6,8 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.deleteData
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons

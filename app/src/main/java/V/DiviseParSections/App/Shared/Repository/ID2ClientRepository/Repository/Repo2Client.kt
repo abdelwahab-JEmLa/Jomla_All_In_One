@@ -3,12 +3,14 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
@@ -33,43 +35,70 @@ import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class Repo2Client(
+    private val context: Context,
+    val dataBaseCreationFactoryProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
     val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: Repo9AppCompt,
-    val id8BonVentRepository: Repo8BonVent,
 ) {
-    val TAG_REPO = "Repo2Client"
-    private val composScope = CoroutineScope(Dispatchers.IO)
-
+    val TAG = "Repo2Client"
+    private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M2Client>>(emptyList())
-    val datasState: State<List<M2Client>> = this._datas
-    val datasValue by derivedStateOf { this._datas.value }
-
-    private val _loadingProgress = mutableFloatStateOf(0f)
-    val loadingProgress: State<Float> = _loadingProgress
-    val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
-    private val _isInitialized = mutableStateOf(false)
-    val isInitialized: State<Boolean> = _isInitialized
-
-    val isEmpty: Boolean by derivedStateOf { this._datas.value.isEmpty() }
-    val size: Int by derivedStateOf { this._datas.value.size }
-    val maxId: Long by derivedStateOf {
-        this._datas.value.maxOfOrNull { it.id } ?: 0L
-    }
+    val datasValue by derivedStateOf { _datas.value }
 
     init {
-        composScope.launch {
-            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
-                masterModel?.let { model ->
-                    val clients =
-                        model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
-                    updateClients(clients)
+        repoScope.launch {
+            dataBaseCreationFactoryProtoJuil28.dao.getAllFlow().collect { _datas.value = it }
+        }
+    }
+
+    fun addNew(data: M2Client) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
                 }
             }
         }
 
+        dataBaseCreationFactory.set(dataUpdate)
     }
 
+    fun updateIfExist(data: M2Client) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            repoScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        dataBaseCreationFactory.set(updatedItem)
+    }
+
+    //--------------------------------------------------------------------------
     fun removeClient(clientId: Long) {
         this._datas.value = this._datas.value.filter { it.id != clientId }
     }
@@ -89,7 +118,7 @@ class Repo2Client(
 
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     if (existingIndex >= 0) {
@@ -106,9 +135,6 @@ class Repo2Client(
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M2Client) {
         dataBaseCreationFactory.set(dataUpdate)
     }
-    //<--
-    //ajout activation gps au ouvrire etate
-
 
     fun updateClient(updatedClient: M2Client) {
         this._datas.value = this._datas.value.map { client ->
@@ -129,6 +155,17 @@ class Repo2Client(
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
             ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
     }
+    private val _loadingProgress = mutableFloatStateOf(0f)
+    val loadingProgress: State<Float> = _loadingProgress
+    val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
+    private val _isInitialized = mutableStateOf(false)
+    val isInitialized: State<Boolean> = _isInitialized
+    val isEmpty: Boolean by derivedStateOf { this._datas.value.isEmpty() }
+    val size: Int by derivedStateOf { this._datas.value.size }
+    val maxId: Long by derivedStateOf {
+        this._datas.value.maxOfOrNull { it.id } ?: 0L
+    }
+    val datasState: State<List<M2Client>> = _datas
 
 }
 

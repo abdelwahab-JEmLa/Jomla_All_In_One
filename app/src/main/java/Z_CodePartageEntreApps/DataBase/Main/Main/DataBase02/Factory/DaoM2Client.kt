@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL
+package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.room.Dao
@@ -11,7 +11,10 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface B_ClientInfosProtoJuin3Dao {
+interface DaoM2Client {
+    @Query("SELECT COUNT(*) FROM M2Client")
+    suspend fun isTableEmpty(): Boolean = getCount() == 0
+
     @Query("DELETE FROM M2Client WHERE keyID = :keyId")
     suspend fun deleteByKeyId(keyId: String)
 

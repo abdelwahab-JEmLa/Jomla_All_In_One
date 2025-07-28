@@ -11,7 +11,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
@@ -37,7 +36,7 @@ val composRepositorysModule = module {
     single { Repo13TarificationInfos(get(),get(),) }
     single { Repo9AppCompt(context = androidContext(),get(),get(),) }
 
-    single { Repo2Client(get(), get(), get(),get(), ) }
+    single { Repo2Client(context = androidContext(), get(), get(), get(), get(), ) }
     single { RepoM16CategorieProduit(context = androidContext(), get(), ) }
     single { Z_AutreStatesCompoRepository(get()) }
 

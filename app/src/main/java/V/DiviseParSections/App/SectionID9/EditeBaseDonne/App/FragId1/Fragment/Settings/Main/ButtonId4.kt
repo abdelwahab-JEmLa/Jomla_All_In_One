@@ -267,7 +267,7 @@ private suspend fun exportClientsToCsv(
     exportDir: File
 ) {
     // Get all clients from database
-    val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll()
+    val clients = appDatabase.DaoM2Client().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()

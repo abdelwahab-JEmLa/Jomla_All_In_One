@@ -20,7 +20,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllAppsDao
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DaoM2Client
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
@@ -144,7 +144,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun ArticlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun Dao16CategorieProduit(): Dao16CategorieProduit
 
-    abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
+    abstract fun DaoM2Client(): DaoM2Client
 
     abstract fun D_AchatOperationDao(): D_AchatOperationDao
     abstract fun Z_AppComptDao(): Z_AppComptDao

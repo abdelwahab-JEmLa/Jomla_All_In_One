@@ -27,8 +27,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Test.B_ClientInfosProtoJuin3PreviewViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
@@ -41,6 +41,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.P
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL.G_RoomOperationsHandler
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
@@ -118,6 +119,7 @@ val centralDataBasesModule = module {
 }
 
 val factoryDataBaseProtoAvantJuin3Module = module {
+    single { DataBaseInitFactory_2ClientProtoJuil28(get()) }
     single { DataBaseInitFactory_16CategorieProduit(get()) }
     single { DataBaseInitFactory_11AchatOperation(get()) }
     single { DataBaseInitFactory_15Grossist(get()) }
@@ -161,7 +163,7 @@ val classesHandlersModule = module {
     single { PrintReceiptHandler_Juil() }
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get()) }
-    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(), get(),get(),get(), ) }
+    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(), get(),get(),get(),get(), ) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }
