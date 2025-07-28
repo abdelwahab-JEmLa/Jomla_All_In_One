@@ -3,7 +3,6 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadCategoriesFromCsv
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
@@ -12,7 +11,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
 
 class DataBaseInitFactory_8BonVent(
     appDatabase: AppDatabase
@@ -31,21 +32,33 @@ class DataBaseInitFactory_8BonVent(
         updateRepoProgress: (String, Float) -> Unit
     ) {
         if (!dao.isTableEmpty()) return
-
         updateRepoProgress(name, 0.4f)
-
         val data: List<M8BonVent> = if (isInternetAvailable) {
-
             updateRepoProgress(name, 0.6f)
-
             onLoadFromFireBase()
         } else {
             onLoadCategoriesFromCsv()
         }
-
         updateRepoProgress(name, 0.8f)
-
         dao.insertAll(data)
+    }
+
+    suspend fun onLoadFromFireBase(): MutableList<M8BonVent> {
+        return suspendCancellableCoroutine { continuation ->
+            repoRef.get()
+                .addOnSuccessListener { snapshot ->
+                    val dataList = mutableListOf<M8BonVent>()
+                    snapshot.children.forEach { child ->
+                        child.getValue(M8BonVent::class.java)?.let { item ->
+                            dataList.add(item)
+                        }
+                    }
+                    continuation.resume(dataList)
+                }
+                .addOnFailureListener {
+                    throw IllegalStateException("No data available from Firebase or CSV")
+                }
+        }
     }
 
     fun triggerUpdateFbParTimestampsListener() {
