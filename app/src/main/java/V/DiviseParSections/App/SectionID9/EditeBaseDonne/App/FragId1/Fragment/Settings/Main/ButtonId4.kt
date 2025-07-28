@@ -296,7 +296,6 @@ private suspend fun exportClientsToCsv(
         csvContent.append("\"${client.snippet.replace("\"", "\"\"")}\",")
         csvContent.append("${client.actuelleEtat},")
         csvContent.append("\"${client.tagCeBonEstOuvertPourComptsIds.replace("\"", "\"\"")}\",")
-        csvContent.append("\"${client.keyFireBase.replace("\"", "\"\"")}\",")
         csvContent.append("${client.dernierTimeTampsSynchronisationAvecFireBase}\n")
     }
 

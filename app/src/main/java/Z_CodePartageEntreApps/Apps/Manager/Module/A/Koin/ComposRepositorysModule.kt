@@ -50,7 +50,6 @@ val composRepositorysModule = module {
     single { MVentPeriodeRepository(get(), get(), get()) }
 
     // Helper classes for RepositorysMainSetter
-    single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
 

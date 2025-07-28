@@ -8,7 +8,7 @@
 
     fun dataBaseCreationFactoryMID2ClientRepository.deleteData(data: M2Client) {
         CoroutineScope(Dispatchers.IO).launch {
-            val preparedData = data.withProperKeyFireBaseAndTimeTamp()
+            val preparedData = data.with_Trigger_RealTime()
 
             dao.deleteData(preparedData)
 

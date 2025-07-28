@@ -1,13 +1,12 @@
 package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.content.Context
 import android.widget.Toast
@@ -139,7 +138,7 @@ class Repo2Client(
     fun updateClient(updatedClient: M2Client) {
         this._datas.value = this._datas.value.map { client ->
             if (client.id == updatedClient.id)
-                updatedClient.withProperKeyFireBaseAndTimeTamp()
+                updatedClient.with_Trigger_RealTime()
                     .copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             else client
         }
@@ -155,6 +154,7 @@ class Repo2Client(
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
             ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
     }
+
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
     val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
@@ -166,17 +166,14 @@ class Repo2Client(
         this._datas.value.maxOfOrNull { it.id } ?: 0L
     }
     val datasState: State<List<M2Client>> = _datas
-
 }
 
 @Entity
 data class M2Client(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
-    var keyID: String = getPushFireBase(ref),
-
-    var keyByParent: String = "",
-    var bsonObjectId: String = BsonObjectId().toHexString(),
+    @PrimaryKey
+    var keyID: String = generePushKey(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
+    var creationTimestamps: Long = System.currentTimeMillis(),
 
     //Infos De Base
     var nom: String = "Non Defini",
@@ -208,8 +205,9 @@ data class M2Client(
     var tagCeBonEstOuvertPourComptsIds: String = "",
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
-    var keyFireBase: String = "",
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
+    var id: Long = 0L,
+    var keyByParent: String = "",
+    var bsonObjectId: String = BsonObjectId().toHexString(),
 ) {
     fun get_DebugInfos(): String {
         return buildString {
@@ -263,15 +261,16 @@ data class M2Client(
         )
     }
 
-    fun withProperKeyFireBaseAndTimeTamp(): M2Client {
-        val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
+    fun with_Trigger_RealTime(): M2Client {
         return this.copy(
-            keyFireBase = safeKey,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 
     companion object {
+        fun generePushKey() = CategoriesTabelle.ref.push().key
+            ?: throw IllegalStateException("Failed to generate Firebase key")
+
         const val keyModel = "ID2"
 
         fun getCurrentDefaultLatitude(): Double {
@@ -282,7 +281,6 @@ data class M2Client(
             return 0.0
         }
 
-
         val parent = Firebase.database.getReference(
             "00_DataPrototype-04-02" +
                     "/_1_developingRef" +
@@ -291,14 +289,14 @@ data class M2Client(
 
         val ref = parent.child("B_ClientInfosProtoJuin3")
 
-        fun safeRemoveRef(): Unit {
-            ref.removeValue()
+        fun safeRemoveRef(onDone: () -> Unit={}) { ref.removeValue().addOnSuccessListener { onDone() } }
+
+        fun removeRef(preparedData: M2Client) {
+            ref.child(preparedData.keyID).removeValue()
         }
 
-        fun removeRef(
-            preparedData: M2Client
-        ) {
-            ref.child(preparedData.keyFireBase).removeValue()
+        fun get_default(): M2Client {
+            return M2Client()
         }
     }
 }

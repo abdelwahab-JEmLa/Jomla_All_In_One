@@ -20,7 +20,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsList
                     var addCount = 0
                     var deleteCount = 0
                     val currentLocalEntities = dao.getAll()
-                    val currentLocalKeys = currentLocalEntities.map { it.keyFireBase }.toSet()
+                    val currentLocalKeys = currentLocalEntities.map { it.keyID }.toSet()
                     val firebaseKeys = mutableSetOf<String>()
 
                     // Process Firebase data and detect additions
@@ -30,8 +30,8 @@ fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateFbParTimestampsList
                             firebaseKeys.add(firebaseKey)
 
                             child.getValue(M2Client::class.java)?.let { entity ->
-                                val entityWithKey = entity.copy(keyFireBase = firebaseKey)
-                                val localEntity = currentLocalEntities.find { it.keyFireBase == firebaseKey }
+                                val entityWithKey = entity.copy(keyID = firebaseKey)
+                                val localEntity = currentLocalEntities.find { it.keyID == firebaseKey }
 
                                 if (localEntity == null) {
                                     // New entity - this is an addition

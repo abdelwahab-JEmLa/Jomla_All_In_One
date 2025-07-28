@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Init
 
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.FireBase.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.SQL.isRoomEmpty
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -128,7 +128,6 @@ private fun parseCsvLineToClient(line: String): M2Client {
             }
         },
         tagCeBonEstOuvertPourComptsIds = values[18],
-        keyFireBase = values[19],
         dernierTimeTampsSynchronisationAvecFireBase = values[20].toLongOrNull() ?: 0
     )
 }

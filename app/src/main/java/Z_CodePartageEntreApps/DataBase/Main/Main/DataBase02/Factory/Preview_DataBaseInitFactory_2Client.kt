@@ -3,17 +3,14 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -24,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -60,23 +56,25 @@ fun Main_DataBaseInitFactory_2Client(
 @Composable
 fun MainScreen(
     aCentralFacade: ACentralFacade = koinInject(),
+    repo2Client: Repo2Client = aCentralFacade.repositorysMainGetter.repo2Client,
 ) {
     var isLoading by remember { mutableStateOf(false) }
 
-    val repoDatas = aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+    val repoDatas = repo2Client.datasValue
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             var showMenu by remember { mutableStateOf(false) }
-            var safeCountClick by remember { mutableIntStateOf(0) }
-
             TopAppBar(
                 modifier = Modifier,
                 title = {
-                    Text("Datas",
+                    Text(
+                        "Datas",
                         modifier = Modifier.getSemanticsTag(
-                            repoDatas,""
-                        )) },
+                            repoDatas, ""
+                        )
+                    )
+                },
                 actions = {
                     IconButton(onClick = {
                         showMenu = !showMenu
@@ -91,11 +89,11 @@ fun MainScreen(
                         onDismissRequest = { showMenu = false }
                     ) {
                         Item_1_Menu(
+                            repo2Client = repo2Client,
                             title = "export",
                             isLoading = isLoading,
                         ) {
                             showMenu = false
-                            safeCountClick = 0
                         }
                     }
                 }
@@ -104,17 +102,15 @@ fun MainScreen(
     }
 }
 
-
 @Composable
 fun Item_1_Menu(
+    repo2Client: Repo2Client,
     title: String,
     isLoading: Boolean = false,
-    aCentralFacade: ACentralFacade = koinInject(),
     onClick_TO_Close_Menu: () -> Unit,
 ) {
+    val datas = repo2Client.datasValue
     var safeCountClick by remember { mutableIntStateOf(0) }
-    var isEditingRef by remember { mutableStateOf(false) }
-    var refValue by remember { mutableStateOf("07_16") }
 
     val title_Ac_Securite = when {
         safeCountClick == 0 -> title
@@ -138,62 +134,72 @@ fun Item_1_Menu(
                 )
             },
             text = {
-                if (isEditingRef) {
-                    Row {
-                        OutlinedTextField(
-                            value = refValue,
-                            onValueChange = { refValue = it },
-                            label = { Text("Référence") },
-                            singleLine = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        IconButton(
-                            onClick = {
-                                isEditingRef = false
-                                if (safeCountClick > 0) {
-                                    onClick_TO_Close_Menu()
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Confirmer",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                } else {
-                    Text(title_Ac_Securite)
-                }
+                Text(
+                    title_Ac_Securite,
+                    modifier = Modifier
+                        .getSemanticsTag(datas, "")
+                )
             },
             onClick = {
                 if (isLoading) return@DropdownMenuItem
-
                 if (safeCountClick == 0) {
                     safeCountClick++
                 } else {
-                    if (isEditingRef) {
+                    M2Client.safeRemoveRef {
+                        batchFireBaseUpdate(datas)
                         onClick_TO_Close_Menu()
-                    } else {
-                        isEditingRef = true
                     }
+                    safeCountClick = 0
                 }
             }
         )
     }
 }
-
-fun batchFireBaseUpdateArticlesBasesStatsTablet(datas: List<M2Client>) {
+fun batchFireBaseUpdate(datas: List<M2Client>) {
     if (datas.isEmpty()) {
         Log.w("batchFireBaseUpdate", "No data to update")
         return
     }
 
+    val updates = mutableMapOf<String, Any>()
+    datas.forEach { data ->
+        val preparedData = data.with_Trigger_RealTime()
+        val clientPath = preparedData.keyID
 
-        val updates = mutableMapOf<String, Any>()
+        updates[clientPath] = mapOf(
+            "keyID" to preparedData.keyID,
+            "nom" to preparedData.nom,
+            "numTelephone" to preparedData.numTelephone,
+            "currentCreditBalance" to preparedData.currentCreditBalance,
+            "dernierTimeTampsSynchronisationAvecFireBase" to preparedData.dernierTimeTampsSynchronisationAvecFireBase,
+            "creationTimestamps" to preparedData.creationTimestamps,
+            "couleur" to preparedData.couleur,
+            "bonDuClientsSu" to preparedData.bonDuClientsSu,
+            "positionDonClientsList" to preparedData.positionDonClientsList,
+            "cUnClientTemporaire" to preparedData.cUnClientTemporaire,
+            "auFilterFAB" to preparedData.auFilterFAB,
+            "typeDeSonMagasine" to preparedData.typeDeSonMagasine.name,
+            "clientTypeMode" to preparedData.clientTypeMode.name,
+            "caMarqueGpsEstOuvert" to preparedData.caMarqueGpsEstOuvert,
+            "latitude" to preparedData.latitude,
+            "longitude" to preparedData.longitude,
+            "title" to preparedData.title,
+            "snippet" to preparedData.snippet,
+            "actuelleEtat" to preparedData.actuelleEtat.name,
+            "edite_Exact_Gps_est_fait" to preparedData.edite_Exact_Gps_est_fait,
+            "tagCeBonEstOuvertPourComptsIds" to preparedData.tagCeBonEstOuvertPourComptsIds,
+            "id" to preparedData.id,
+            "keyByParent" to preparedData.keyByParent,
+            "bsonObjectId" to preparedData.bsonObjectId
+        )
+    }
 
-        datas.forEach { data ->
+    // Execute the batch update using the correct Firebase reference
+    M2Client.ref.updateChildren(updates)
+        .addOnSuccessListener {
+            Log.d("batchFireBaseUpdate", "Successfully updated ${datas.size} clients")
+        }
+        .addOnFailureListener { exception ->
+            Log.e("batchFireBaseUpdate", "Failed to update clients", exception)
         }
 }
-

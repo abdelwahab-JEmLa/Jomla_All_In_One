@@ -167,7 +167,7 @@ private suspend fun dataBaseCreationFactoryMID2ClientRepository.validateDataCons
         }
 
         // Vérifier les clés Firebase vides
-        val emptyFirebaseKeys = data.filter { it.keyFireBase.isEmpty() }
+        val emptyFirebaseKeys = data.filter { it.keyID.isEmpty() }
         if (emptyFirebaseKeys.isNotEmpty()) {
             Log.w(repoTAG, "${emptyFirebaseKeys.size} enregistrements avec clés Firebase vides")
         }
@@ -261,7 +261,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
                 // Update existing test entity with new timestamp
                 val updatedTestEntity = existingTestEntity.copy(
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                ).withProperKeyFireBaseAndTimeTamp()
+                ).with_Trigger_RealTime()
 
                 // Push update_showDetailsExpanded to Firebase to trigger listener
                 repoRef.child(updatedTestEntity.keyFireBase).setValue(updatedTestEntity)
@@ -280,7 +280,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
                     keyFireBase = "TEST_${System.currentTimeMillis()}",
                     cUnClientTemporaire = true,
                     numTelephone = "TEST_PHONE"
-                ).withProperKeyFireBaseAndTimeTamp()
+                ).with_Trigger_RealTime()
 
                 // Push new entity to Firebase to trigger listener
                 repoRef.child(testEntity.keyFireBase).setValue(testEntity)

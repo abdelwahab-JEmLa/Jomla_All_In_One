@@ -111,7 +111,7 @@ fun MainPreviewB_ClientInfosProtoJuin3(
                             )
 
                             // Indicateur pour les données de test
-                            if (data.keyFireBase.contains("TEST_")) {
+                            if (data.keyID.contains("TEST_")) {
                                 Text(
                                     text = "🧪 DONNÉE DE TEST",
                                     color = Color.Blue

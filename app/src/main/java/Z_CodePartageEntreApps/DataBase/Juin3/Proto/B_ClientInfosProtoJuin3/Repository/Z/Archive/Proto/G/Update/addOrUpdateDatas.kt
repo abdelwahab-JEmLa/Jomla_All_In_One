@@ -8,12 +8,12 @@ import kotlinx.coroutines.launch
 
 fun dataBaseCreationFactoryMID2ClientRepository.addOrUpdateDatas(datas: List<M2Client>) {
     CoroutineScope(Dispatchers.IO).launch {
-        val preparedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
+        val preparedDatas = datas.map { it.with_Trigger_RealTime() }
 
         dao.upsertAllDatas(preparedDatas)
 
         preparedDatas.forEach { data ->
-            repoRef.child(data.keyFireBase).setValue(data)
+            repoRef.child(data.keyID).setValue(data)
         }
 
         updateRepoState(preparedDatas)
