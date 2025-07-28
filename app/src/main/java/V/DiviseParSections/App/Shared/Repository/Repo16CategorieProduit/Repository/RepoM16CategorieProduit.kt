@@ -91,6 +91,7 @@ class RepoM16CategorieProduit(
     fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
         parentRepo.addOrUpdateDatas(newDatas)
     }
+
     fun deleteAddMultiDatas(newDatas: List<CategoriesTabelle>) {
         parentRepo.deleteAddMultiDatas(newDatas)
     }

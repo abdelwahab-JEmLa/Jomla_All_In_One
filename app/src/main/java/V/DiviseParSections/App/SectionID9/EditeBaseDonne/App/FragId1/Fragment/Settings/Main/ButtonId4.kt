@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -46,7 +46,7 @@ fun ButtonId4(
         if (showLabels)
             Text(
                 when (clickCount) {
-                    0 -> "Delete ADD l_Produit Et l_Categorie"
+                    0 -> "From Locale To Csv"
                     else -> "T Sure"
                 }
             )
@@ -62,7 +62,7 @@ fun ButtonId4(
             modifier = Modifier.size(40.dp),
             containerColor = Color.Blue
         ) {
-            Icon(Icons.Default.Download, "Export All Data to CSV", tint = Color.White)
+            Icon(Icons.Default.Upload, "Export All Data to CSV", tint = Color.White)
         }
     }
 }
@@ -136,7 +136,7 @@ private suspend fun exportCategoriesToCsv(
         csvContent.append("${category.catalogueParentId},")
         csvContent.append(
             "\"${
-                category.parentCatalogueIdObject?.replace(
+                category.parentCatalogueIdObject.replace(
                     "\"",
                     "\"\""
                 ) ?: ""
@@ -154,8 +154,10 @@ private suspend fun exportCategoriesToCsv(
     val file = File(exportDir, fileName)
 
     // Write CSV content to file
-    FileWriter(file).use { writer ->
-        writer.write(csvContent.toString())
+    withContext(Dispatchers.IO) {
+        FileWriter(file).use { writer ->
+            writer.write(csvContent.toString())
+        }
     }
 }
 

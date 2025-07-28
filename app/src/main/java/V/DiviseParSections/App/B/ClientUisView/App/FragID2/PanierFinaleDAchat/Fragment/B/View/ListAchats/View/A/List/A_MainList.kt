@@ -2,7 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.View_Vent_M1Produit
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +40,7 @@ fun MainList_Frag_Panie(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     fVentCouleurOperationRepository: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     its_From_SearchPrd: Boolean = false
 ) {
@@ -79,8 +82,15 @@ fun MainList_Frag_Panie(
             }
         }
     } else {
+        val key = groupedVents.entries.toList().first().key
+        val relative_FirstVent_Produit=
+            repositorysMainGetter.find_M1Produit(key)
+
         LazyColumn(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .getSemanticsTag(relative_FirstVent_Produit,"relative_FirstVent_Produit")
+                .getSemanticsTag(groupedVents.entries.toList(),"")
+                .fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

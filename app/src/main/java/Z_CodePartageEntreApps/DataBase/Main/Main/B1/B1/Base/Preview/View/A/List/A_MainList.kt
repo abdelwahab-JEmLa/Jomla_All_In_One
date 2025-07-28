@@ -1,5 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.CouleurDisplayer
@@ -20,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun MainList(
@@ -47,11 +51,17 @@ fun MainList(
 
 @Composable
 private fun LazyRowProduitGroup(
+    aCentralFacade: ACentralFacade= koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     parentId: Long?,
     items: List<M3CouleurProduitInfos>
 ) {
+    val rel_Produit =  repositorysMainGetter.find_M1Produit_By_OldId(parentId)
+
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .getSemanticsTag(rel_Produit,"")
+            .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

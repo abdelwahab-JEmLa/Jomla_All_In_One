@@ -207,8 +207,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         categoriesCompoRepository.addOrUpdateDatas(categories)
     }
 
-    fun deleteAddMultiCategories(categories: List<CategoriesTabelle>) {
-        categoriesCompoRepository.deleteAddMultiDatas(categories)
+    fun deleteAddMultiCategories(newDatas: List<CategoriesTabelle>) {
+        categoriesCompoRepository.deleteAddMultiDatas(newDatas)
     }
 
     fun deleteAddMultiProduits(list_M1Produit: List<ArticlesBasesStatsTable>) {

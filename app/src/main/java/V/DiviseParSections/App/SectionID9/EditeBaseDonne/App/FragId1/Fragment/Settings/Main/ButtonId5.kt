@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Fireplace
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -47,7 +47,7 @@ fun ButtonId5(
     ) {
         val text =
             when (clickCount) {
-              0->  "Delete ADD l_Produit Et l_Categorie"
+              0->  "from CSV To FireBase"
               else ->  "T Sure"
             }
 
@@ -60,7 +60,8 @@ fun ButtonId5(
                 when (clickCount) {
                     0 -> clickCount++
                     1 -> coroutineScope.launch {
-                        viewModel.deleteAddMultiCategories(list_CategoriesTabelle)
+                        viewModel.deleteAddMultiCategories(newDatas=list_CategoriesTabelle)
+
                         viewModel.deleteAddMultiProduits(list_M1Produit)
                         //  viewModel.deleteAddMultiClients()
                     }
@@ -69,7 +70,7 @@ fun ButtonId5(
             modifier = Modifier.size(40.dp),
             containerColor = Color.Green
         ) {
-            Icon(Icons.Default.Upload, "Import Categories from CSV", tint = Color.White)
+            Icon(Icons.Default.Fireplace, null, tint = Color.White)
         }
     }
 }

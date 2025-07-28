@@ -117,7 +117,7 @@ fun View_AchatCouleur(
                                 ),
                         ) {
                             Text(
-                                text = "Sans ProbableVent Q: $sumAchatQantity",
+                                text = "S.P Qua: $sumAchatQantity",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,

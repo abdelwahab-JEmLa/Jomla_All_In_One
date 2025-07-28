@@ -94,7 +94,7 @@ fun TopAppBar_With_DropDownMenu(
                 )
             }
 
-            val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            val filtered_ListM10Vent_BY_Curr_M14VentPeriod = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
 
             val achats_Depuit_M11AchatOperation_List =
@@ -102,18 +102,18 @@ fun TopAppBar_With_DropDownMenu(
                     .genere_Achats_Depuit_M11AchatOperation_List(
                         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                             .currentActiveFocuced_M14VentPeriode,
-                        vents,
+                        filtered_ListM10Vent_BY_Curr_M14VentPeriod,
                         produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
                     )
 
             DropdownMenu(
                 modifier = Modifier
                     .getSemanticsTag(
-                        data = vents,
+                        data = filtered_ListM10Vent_BY_Curr_M14VentPeriod,
                         nomVal = "vents"
                     )
                     .getSemanticsTag(
-                        data = vents,
+                        data = filtered_ListM10Vent_BY_Curr_M14VentPeriod,
                         nomVal = "vents"
                     )
                     .getSemanticsTag(
@@ -132,25 +132,25 @@ fun TopAppBar_With_DropDownMenu(
                 Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel)
 
 
-                val datas= repo10OperationVentCouleur.datasValue
+                val datas_repo10OperationVentCouleur= repo10OperationVentCouleur.datasValue
                 val currentActiveFocuced_M14VentPeriode= focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                 Card(
                     modifier = Modifier
                         .getSemanticsTag(
-                            datas.map { it.parent_M14VentPeriod_KeyId },
-                            "datasmap"
+                            datas_repo10OperationVentCouleur.map { it.parent_M14VentPeriod_KeyId },
+                            "map_datas_repo10OperationVentCouleu"
                         )
                         .getSemanticsTag(
-                            datas,
-                            "datas"
+                            datas_repo10OperationVentCouleur,
+                            "datas_repo10OperationVentCouleur"
                         )
                         .getSemanticsTag(
                             currentActiveFocuced_M14VentPeriode,
                             "currentActiveFocuced_M14VentPeriode"
                         )
                         .getSemanticsTag(
-                            vents,
-                            "vents"
+                            filtered_ListM10Vent_BY_Curr_M14VentPeriod,
+                            "filtered_ListM10Vent_BY_Curr_M14VentPeriod"
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(

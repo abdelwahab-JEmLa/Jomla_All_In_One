@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.compose.foundation.background
@@ -37,12 +38,12 @@ import androidx.compose.ui.zIndex
 @Composable
 internal fun MainItem(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    category: CategoriesTabelle,
+    rel_category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
 ) {
     val height = 150.dp
 
-    val categoryProducts = productsByCategory[category.id] ?: emptyList()
+    val categoryProducts = productsByCategory[rel_category.id] ?: emptyList()
     val displayProducts = categoryProducts.take(3)
 
     val selectedCategoryIds = viewModel.getSelectedCategoryIds()
@@ -50,19 +51,20 @@ internal fun MainItem(
     Box {
         Card(
             modifier = Modifier
+                .getSemanticsTag(rel_category,"")
                 .height(height) // Use fixed height instead of aspectRatio
                 .fillMaxWidth()
                 .clickable {
-                    viewModel.updateCate_cSelectionePourDeplace(category)
+                    viewModel.updateCate_cSelectionePourDeplace(rel_category)
                 },
             colors = CardDefaults.cardColors(
-                containerColor = if (category.cSelectionePourDeplace)
+                containerColor = if (rel_category.cSelectionePourDeplace)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 else
                     MaterialTheme.colorScheme.surface
             ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = if (category.cSelectionePourDeplace) 6.dp else 2.dp
+                defaultElevation = if (rel_category.cSelectionePourDeplace) 6.dp else 2.dp
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -74,11 +76,11 @@ internal fun MainItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Move Before Button
-                if (selectedCategoryIds.isNotEmpty() && !category.cSelectionePourDeplace) {
+                if (selectedCategoryIds.isNotEmpty() && !rel_category.cSelectionePourDeplace) {
                     IconButton(
                         onClick = {
                             viewModel.moveSelectedCategoriesRelativeToTarget(
-                                targetCategoryId = category.id,
+                                targetCategoryId = rel_category.id,
                                 moveBefore = true
                             )
                         },
@@ -101,21 +103,21 @@ internal fun MainItem(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(vertical = 2.dp) // Reduced padding
                 ) {
-                    val id = category.id
-                    val text = category.nom
+                    val id = rel_category.id
+                    val text = rel_category.nom
                     Text(
                         text ="$text-$id",
                         style = MaterialTheme.typography.bodySmall, // Smaller text for compact layout
-                        fontWeight = if (category.cSelectionePourDeplace)
+                        fontWeight = if (rel_category.cSelectionePourDeplace)
                             FontWeight.Bold else FontWeight.Medium,
                         textAlign = TextAlign.Center,
-                        color = if (category.cSelectionePourDeplace)
+                        color = if (rel_category.cSelectionePourDeplace)
                             MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         maxLines = 1, // Reduced to 1 line for compact layout
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    if (category.cSelectionePourDeplace) {
+                    if (rel_category.cSelectionePourDeplace) {
                         Spacer(modifier = Modifier.height(2.dp)) // Reduced spacer
                         Box(
                             modifier = Modifier
@@ -141,11 +143,11 @@ internal fun MainItem(
         }
 
         // Floating Move After Button
-        if (selectedCategoryIds.isNotEmpty() && !category.cSelectionePourDeplace) {
+        if (selectedCategoryIds.isNotEmpty() && !rel_category.cSelectionePourDeplace) {
             IconButton(
                 onClick = {
                     viewModel.moveSelectedCategoriesRelativeToTarget(
-                        targetCategoryId = category.id,
+                        targetCategoryId = rel_category.id,
                         moveBefore = false
                     )
                 },

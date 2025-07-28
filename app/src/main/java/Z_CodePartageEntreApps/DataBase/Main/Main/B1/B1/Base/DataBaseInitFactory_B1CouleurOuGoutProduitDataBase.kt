@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -258,50 +259,54 @@ fun CouleurDisplayer(
     size: Dp = 200.dp
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
-    val data = datas.find { it.keyID == keyCouleur }!!
+    val rela_CouleurProduit = datas.find { it.keyID == keyCouleur }!!
 
     val imageFile by derivedStateOf {
-        if (data.nomImageFichieSansEtansion != "Non Dispo") {
-            val fileName = "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+        if (rela_CouleurProduit.nomImageFichieSansEtansion != "Non Dispo") {
+            val fileName = "${rela_CouleurProduit.nomImageFichieSansEtansion}.${rela_CouleurProduit.extensionDisponible}"
             File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
         } else null
     }
 
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(
+        modifier = modifier
+            .getSemanticsTag(rela_CouleurProduit,"")
+        .fillMaxWidth()
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(5.dp)
         ) {
-            when (data.aAffiche) {
+            when (rela_CouleurProduit.aAffiche) {
                 M3CouleurProduitInfos.Type.Image -> {
                     // Fixed: Removed the comment and properly called the composable
                     ImageDisplayer(
                         modifier = Modifier.size(size),
                         imageFile = imageFile,
-                        colorName = data.nomCouleurStrSiSonImageDispo,
+                        colorName = rela_CouleurProduit.nomCouleurStrSiSonImageDispo,
                         contentScale = ContentScale.Crop,
                         imageSize = DpSize(size, size),
-                        onClickToOpenWindow = { onClickToOpenWindow(data) }
+                        onClickToOpenWindow = { onClickToOpenWindow(rela_CouleurProduit) }
                     )
                 }
 
                 M3CouleurProduitInfos.Type.Nom -> {
                     ColorNameDisplayer(
                         modifier = Modifier.size(size),
-                        colorName = data.nomCouleurStrSiSonImageDispo,
-                        onClickToOpenWindow = { onClickToOpenWindow(data) }
+                        colorName = rela_CouleurProduit.nomCouleurStrSiSonImageDispo,
+                        onClickToOpenWindow = { onClickToOpenWindow(rela_CouleurProduit) }
                     )
                 }
             }
 
-            if (data.keyID.isNotEmpty()) {
+            if (rela_CouleurProduit.keyID.isNotEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.TopEnd)
                 ) {
-                    AfficheKeyCouleurAvecVentDebug(data)
+                    AfficheKeyCouleurAvecVentDebug(rela_CouleurProduit)
                 }
             }
         }

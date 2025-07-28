@@ -78,6 +78,8 @@ class RepositorysMainGetter(
     //--------------M1----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M1Produit(keyId: String): ArticlesBasesStatsTable? =
         repo1ProduitInfos.datasValue.find { it.keyID == keyId }
+    fun find_M1Produit_By_OldId(oldId: Long?): ArticlesBasesStatsTable? =
+        repo1ProduitInfos.datasValue.find { it.id == oldId }
 
 
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
