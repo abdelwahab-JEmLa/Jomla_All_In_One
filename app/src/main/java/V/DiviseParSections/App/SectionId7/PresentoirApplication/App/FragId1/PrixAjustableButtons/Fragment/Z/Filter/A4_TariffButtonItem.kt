@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -69,7 +69,8 @@ fun TariffButtonItem(
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .activeOnVent_M2Client,
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .activeonVent_M8BonVent
+            .activeonVent_M8BonVent,
+
     ) {
         mutableStateOf(
             latestTariff.copy(
