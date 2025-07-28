@@ -378,7 +378,7 @@ fun MarkerStatusDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-                            markerStatusDialogM2Client = relative_M2Client,
+                            relative_Client = relative_M2Client,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

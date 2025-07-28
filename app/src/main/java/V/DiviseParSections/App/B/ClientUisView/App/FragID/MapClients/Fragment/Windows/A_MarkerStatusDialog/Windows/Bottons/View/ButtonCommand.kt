@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
@@ -35,8 +36,10 @@ fun CommandButton(
 ) {
     val found_Or_Default_M8BonVent =
         get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
+
     FilledTonalButton(
         modifier = modifier
+            .getSemanticsTag(found_Or_Default_M8BonVent.default_If_No_Found,"")
             .fillMaxWidth(),
         onClick = {
             if (found_Or_Default_M8BonVent.found != null) {

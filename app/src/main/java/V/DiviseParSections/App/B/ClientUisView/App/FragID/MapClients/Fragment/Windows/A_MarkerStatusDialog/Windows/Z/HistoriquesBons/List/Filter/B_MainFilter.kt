@@ -15,25 +15,26 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainFilter(
-    markerStatusDialogM2Client: M2Client?,
+    relative_Client: M2Client?,
     vm: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier,
 ) {
     val datasValue_repo8BonVent = vm.getter.repo8BonVent.datasValue
     val filtered by remember(
         datasValue_repo8BonVent.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        markerStatusDialogM2Client?.keyID
+        relative_Client?.keyID
     ) {
         derivedStateOf {
             datasValue_repo8BonVent.filter {
-                it.parent_M2Client_KeyID == (markerStatusDialogM2Client?.keyID ?: "")
+                it.parent_M2Client_KeyID == (relative_Client?.keyID ?: "")
             }.sortedByDescending { it.creationTimestamps }
         }
     }
 
     ElevatedCard(
         Modifier
-            .getSemanticsTag(datasValue_repo8BonVent,"")
+            .getSemanticsTag(relative_Client,"relative_Client")
+            .getSemanticsTag(datasValue_repo8BonVent,"datasValue_repo8BonVent")
             .padding(2.dp)
     ) {
         View_MainList(filtered, vm)

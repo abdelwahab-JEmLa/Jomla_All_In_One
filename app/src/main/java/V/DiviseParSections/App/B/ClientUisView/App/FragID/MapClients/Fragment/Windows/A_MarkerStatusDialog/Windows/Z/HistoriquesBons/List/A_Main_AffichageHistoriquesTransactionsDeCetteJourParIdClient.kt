@@ -19,20 +19,21 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
     repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent,
-    markerStatusDialogM2Client: M2Client?=null,
+    relative_Client: M2Client? = null,
 ) {
-    Column (
+    Column(
         modifier =
             Modifier
-                .getSemanticsTag(repo8BonVent.datasValue,"")
-    ){
+                .getSemanticsTag(repo8BonVent.datasValue, "")
+    ) {
         Text(
             modifier =
                 Modifier
-                    .padding(vertical = 8.dp)
-            ,
+
+                    .getSemanticsTag(repo8BonVent.datasValue, "")
+                    .padding(vertical = 8.dp),
             text = buildString {
-                append((markerStatusDialogM2Client?.nom ?: "null"))
+                append((relative_Client?.nom ?: "null"))
                 append(" ")
                 append("سجل المعاملات")
             },
@@ -40,7 +41,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         )
 
         MainFilter(
-            markerStatusDialogM2Client,
+            relative_Client,
             viewModel,
             Modifier,
         )

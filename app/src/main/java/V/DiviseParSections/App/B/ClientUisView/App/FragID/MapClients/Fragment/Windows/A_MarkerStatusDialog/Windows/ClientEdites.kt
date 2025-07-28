@@ -128,9 +128,9 @@ fun ClientEdites(
 
 
 
-            if (!relative_Client?.numTelephone.isNullOrEmpty()) {
+            if (!relative_Client.numTelephone.isNullOrEmpty()) {
                 Text(
-                    text = relative_Client?.numTelephone ?: "",
+                    text = relative_Client.numTelephone ?: "",
                     modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
