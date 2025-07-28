@@ -82,7 +82,11 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
+    //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true,
+    val devStartUpScree: String = Screen.A_Clients_LocationGps.route,
+
+    //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
@@ -90,7 +94,6 @@ data class M18CentralParametresOfAllApps(
     val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabCompt_KeyId_DPL,
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: String = Screen.A_Clients_LocationGps.route,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 ) {
