@@ -2,14 +2,13 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.runtime_throw_Erreur_Pour_Regle_Le_Real_Bug
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
@@ -34,7 +33,6 @@ import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class Repo2Client(
-    private val context: Context,
     val dataBaseCreationFactoryProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
     val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -74,8 +72,7 @@ class Repo2Client(
         if (existingIndex < 0) {
             repoScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
-                        .show()
+                    runtime_throw_Erreur_Pour_Regle_Le_Real_Bug("updateIfExist")
                 }
             }
             return

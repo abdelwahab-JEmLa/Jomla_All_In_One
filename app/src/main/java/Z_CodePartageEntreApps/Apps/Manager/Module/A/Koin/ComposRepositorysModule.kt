@@ -36,7 +36,7 @@ val composRepositorysModule = module {
     single { Repo13TarificationInfos(get(),get(),) }
     single { Repo9AppCompt(context = androidContext(),get(),get(),) }
 
-    single { Repo2Client(context = androidContext(), get(), get(), get(), get(), ) }
+    single { Repo2Client(get(), get(), get(), get(), ) }
     single { RepoM16CategorieProduit(context = androidContext(), get(), ) }
     single { Z_AutreStatesCompoRepository(get()) }
 
