@@ -109,7 +109,6 @@ fun Item_1_Menu(
     isLoading: Boolean = false,
     onClick_TO_Close_Menu: () -> Unit,
 ) {
-    val datas = repo2Client.datasValue
     var safeCountClick by remember { mutableIntStateOf(0) }
 
     val title_Ac_Securite = when {
@@ -125,19 +124,37 @@ fun Item_1_Menu(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        val datas = repo2Client.datasValue
+        val new_datas = repo2Client.datasValue.map {
+            it.apply {
+                keyID = M2Client.generePushKey()
+            }
+        }
+        val updates = new_Data(new_datas)
+
         DropdownMenuItem(
+            text = {
+                Text(
+                    title_Ac_Securite,
+                    modifier = Modifier
+                        .getSemanticsTag(datas.filter {
+                            it.nom.contains("abde")
+                        }, "")
+                        .getSemanticsTag(
+                            new_datas
+                                .filter {
+                                    it.nom.contains("abde")
+                                }
+                                .map { it.keyID }
+                            , "new_datas"
+                        )
+                )
+            },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Inventory,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
-                )
-            },
-            text = {
-                Text(
-                    title_Ac_Securite,
-                    modifier = Modifier
-                        .getSemanticsTag(datas, "")
                 )
             },
             onClick = {
@@ -146,7 +163,7 @@ fun Item_1_Menu(
                     safeCountClick++
                 } else {
                     M2Client.safeRemoveRef {
-                        batchFireBaseUpdate(datas)
+                        batchFireBaseUpdate(updates)
                         onClick_TO_Close_Menu()
                     }
                     safeCountClick = 0
@@ -155,12 +172,8 @@ fun Item_1_Menu(
         )
     }
 }
-fun batchFireBaseUpdate(datas: List<M2Client>) {
-    if (datas.isEmpty()) {
-        Log.w("batchFireBaseUpdate", "No data to update")
-        return
-    }
 
+private fun new_Data(datas: List<M2Client>): MutableMap<String, Any> {
     val updates = mutableMapOf<String, Any>()
     datas.forEach { data ->
         val preparedData = data.with_Trigger_RealTime()
@@ -193,13 +206,13 @@ fun batchFireBaseUpdate(datas: List<M2Client>) {
             "bsonObjectId" to preparedData.bsonObjectId
         )
     }
+    return updates
+}
 
-    // Execute the batch update using the correct Firebase reference
+fun batchFireBaseUpdate(updates: MutableMap<String, Any>) {
+    if (updates.isEmpty()) {
+        Log.w("batchFireBaseUpdate", "No data to update")
+        return
+    }
     M2Client.ref.updateChildren(updates)
-        .addOnSuccessListener {
-            Log.d("batchFireBaseUpdate", "Successfully updated ${datas.size} clients")
-        }
-        .addOnFailureListener { exception ->
-            Log.e("batchFireBaseUpdate", "Failed to update clients", exception)
-        }
 }

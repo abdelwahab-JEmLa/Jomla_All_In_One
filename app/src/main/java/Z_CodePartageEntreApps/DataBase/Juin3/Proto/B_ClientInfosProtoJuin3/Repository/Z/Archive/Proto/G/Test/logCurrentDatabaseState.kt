@@ -24,7 +24,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.logCurrentDatabaseState() {
             // Afficher quelques statistiques utiles
             val temporaryClients = currentData.count { it.cUnClientTemporaire }
             val clientsWithPhone = currentData.count { it.numTelephone.isNotEmpty() }
-            val testEntities = currentData.count { it.keyFireBase.contains("TEST_") }
+            val testEntities = currentData.count { it.keyID.contains("TEST_") }
 
             android.util.Log.d(repoTAG, "Clients temporaires: $temporaryClients")
             android.util.Log.d(repoTAG, "Clients avec téléphone: $clientsWithPhone")
@@ -103,7 +103,7 @@ private fun dataBaseCreationFactoryMID2ClientRepository.determineUpdateSource(
     dataList: List<M2Client>
 ): UpdateSource {
     return when {
-        dataList.any { it.keyFireBase.contains("TEST_") } -> UpdateSource.FIREBASE_SYNC
+        dataList.any { it.keyID.contains("TEST_") } -> UpdateSource.FIREBASE_SYNC
         dataList.isEmpty() -> UpdateSource.INITIALIZATION
         else -> UpdateSource.LOCAL_UPDATE
     }
@@ -225,7 +225,7 @@ private suspend fun dataBaseCreationFactoryMID2ClientRepository.cleanupTestDataI
     data: List<M2Client>
 ) {
     withContext(Dispatchers.IO) {
-        val testData = data.filter { it.keyFireBase.contains("TEST_") }
+        val testData = data.filter { it.keyID.contains("TEST_") }
         val oldTestData = testData.filter {
             System.currentTimeMillis() - it.cretionTimestamps > 24 * 60 * 60 * 1000 // 24 heures
         }
@@ -235,7 +235,7 @@ private suspend fun dataBaseCreationFactoryMID2ClientRepository.cleanupTestDataI
             oldTestData.forEach { testEntity ->
                 try {
                     dao.deleteData(testEntity)
-                    repoRef.child(testEntity.keyFireBase).removeValue()
+                    repoRef.child(testEntity.keyID).removeValue()
                 } catch (e: Exception) {
                     Log.e(repoTAG, "Erreur lors de la suppression des données de test", e)
                 }
@@ -253,10 +253,10 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
             Log.d(repoTAG, "Starting Firebase listener test")
 
             // Check if add_New test entity already exists
-            val existingTestEntity = dao.getAll().find { it.keyFireBase.contains("TEST_") }
+            val existingTestEntity = dao.getAll().find { it.keyID.contains("TEST_") }
 
             if (existingTestEntity != null) {
-                Log.d(repoTAG, "Updating existing test entity: ${existingTestEntity.keyFireBase}")
+                Log.d(repoTAG, "Updating existing test entity: ${existingTestEntity.keyID}")
 
                 // Update existing test entity with new timestamp
                 val updatedTestEntity = existingTestEntity.copy(
@@ -264,7 +264,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
                 ).with_Trigger_RealTime()
 
                 // Push update_showDetailsExpanded to Firebase to trigger listener
-                repoRef.child(updatedTestEntity.keyFireBase).setValue(updatedTestEntity)
+                repoRef.child(updatedTestEntity.keyID).setValue(updatedTestEntity)
                     .addOnSuccessListener {
                         Log.d(repoTAG, "Test entity updated successfully in Firebase")
                     }
@@ -277,13 +277,13 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
                 // Create new test entity
                 val testEntity = M2Client(
                     nom = "TEST_ENTITY_${System.currentTimeMillis()}",
-                    keyFireBase = "TEST_${System.currentTimeMillis()}",
+                    keyID = "TEST_${System.currentTimeMillis()}",
                     cUnClientTemporaire = true,
                     numTelephone = "TEST_PHONE"
                 ).with_Trigger_RealTime()
 
                 // Push new entity to Firebase to trigger listener
-                repoRef.child(testEntity.keyFireBase).setValue(testEntity)
+                repoRef.child(testEntity.keyID).setValue(testEntity)
                     .addOnSuccessListener {
                         Log.d(repoTAG, "New test entity created successfully in Firebase")
                     }
