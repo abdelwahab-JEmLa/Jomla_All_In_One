@@ -10,8 +10,9 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.throw_Runtime_Erreur
+import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -72,18 +73,18 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val itsDevMode = viewModel.getter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode
+    val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
     val startUpScreen = when {
-        itsDevMode == true -> {
-            val devStartUpRoute = focusedValuesGetter.m18CentralParametresOfAllApps.devStartUpScree
-            getScreenFromRoute(devStartUpRoute) ?: throw_Runtime_Erreur("getScreenFromRoute")
+        itsDevMode -> {
+            val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
+            getScreenFromRoute(devStartUpRoute) ?: throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug("getScreenFromRoute")
         }
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
-        else ->  throw_Runtime_Erreur("else")
+        else ->  throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug("else")
     }
 
     LaunchedEffect(currentRoute) {

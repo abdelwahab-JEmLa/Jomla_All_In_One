@@ -75,7 +75,7 @@ object functions_central{
         }
     }
 
-    fun throw_Runtime_Erreur(parent_Lenceur: String?=null): Nothing {
+    fun throw_Runtime_Erreur_Pour_Regle_Le_Real_Bug(parent_Lenceur: String?=null): Nothing {
         throw RuntimeException(
             "RuntimeException $parent_Lenceur"
         )

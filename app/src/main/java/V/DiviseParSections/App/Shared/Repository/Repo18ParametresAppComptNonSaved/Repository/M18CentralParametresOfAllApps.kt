@@ -90,7 +90,7 @@ data class M18CentralParametresOfAllApps(
     val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabCompt_KeyId_DPL,
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
+    val devStartUpScree: String = Screen.A_Clients_LocationGps.route,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 ) {
