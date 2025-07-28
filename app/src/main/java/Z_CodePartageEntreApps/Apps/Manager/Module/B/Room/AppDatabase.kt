@@ -28,10 +28,10 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJu
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.Dao11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.Dao16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.CategoriesModelDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
@@ -142,7 +142,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     //Proto j3
     abstract fun ArticlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
-    abstract fun categoriesModelDao(): CategoriesModelDao
+    abstract fun Dao16CategorieProduit(): Dao16CategorieProduit
 
     abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
 

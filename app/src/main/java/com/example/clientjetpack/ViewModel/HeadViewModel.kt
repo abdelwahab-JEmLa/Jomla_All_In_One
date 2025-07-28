@@ -697,7 +697,7 @@ open class HeadViewModel(
                 id = maxId + 1, nom = "NewArrivale", position = 1, displayedHeader = true
             )
 
-            database.categoriesModelDao().insert(newArrivaleCategory)
+            database.Dao16CategorieProduit().insert(newArrivaleCategory)
 
         }
     }

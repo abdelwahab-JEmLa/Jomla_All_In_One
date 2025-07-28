@@ -20,22 +20,21 @@ class Repo15Grossist(
     val context: Context,
     val dataBaseCreationFactory: DataBaseInitFactory_15Grossist,
 ) {
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M15Grossist>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     init {
-        composScope.launch {
+        repoScope.launch {
             dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
     }
-
 
     fun add_New(data: M15Grossist) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     add(dataUpdate)
@@ -52,7 +51,7 @@ class Repo15Grossist(
         }
 
         if (existingIndex < 0) {
-            composScope.launch {
+            repoScope.launch {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
                         .show()
@@ -66,7 +65,7 @@ class Repo15Grossist(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = datasValue.toMutableList().apply {
                     this[existingIndex] = updatedItem
@@ -78,7 +77,7 @@ class Repo15Grossist(
     }
 
     fun delete(data: M15Grossist) {
-        composScope.launch {
+        repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
                 dataBaseCreationFactory.delete(data)
@@ -88,7 +87,7 @@ class Repo15Grossist(
     }
 
     fun deleteMulti(datas: List<M15Grossist>?= datasValue) {
-        composScope.launch {
+        repoScope.launch {
             val keyIDsToDelete = datas!!.map { it.keyID }.toSet()
             _datas.value = datasValue.filter { it.keyID !in keyIDsToDelete }
             datas.forEach { item ->

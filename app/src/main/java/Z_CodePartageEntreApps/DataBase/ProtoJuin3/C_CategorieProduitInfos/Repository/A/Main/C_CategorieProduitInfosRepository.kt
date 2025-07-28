@@ -27,8 +27,8 @@ class C_CategorieProduitInfosRepository(
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.categoriesModelDao()
-    val repoRef = CategoriesTabelle.caRef
+    val dao = appDatabase.Dao16CategorieProduit()
+    val repoRef = CategoriesTabelle.ref
 
     init {
 

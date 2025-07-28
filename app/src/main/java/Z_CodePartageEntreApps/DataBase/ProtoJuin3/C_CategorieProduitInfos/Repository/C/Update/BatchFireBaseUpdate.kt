@@ -9,7 +9,7 @@ suspend fun Boolean.batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
         datas.forEach { data ->
             updates[data.id.toString()] = data
         }
-        val firebaseRef = CategoriesTabelle.caRef
+        val firebaseRef = CategoriesTabelle.ref
         firebaseRef.updateChildren(updates).await()
     }
 }

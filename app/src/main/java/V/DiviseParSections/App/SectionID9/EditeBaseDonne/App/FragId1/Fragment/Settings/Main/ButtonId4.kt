@@ -56,6 +56,7 @@ fun ButtonId4(
                     0 -> clickCount++
                     1 -> coroutineScope.launch {
                         exportAllDataToCsv(context, AppDatabase)
+                        clickCount=0
                     }
                 }
             },
@@ -120,7 +121,7 @@ private suspend fun exportCategoriesToCsv(
     exportDir: File
 ) {
     // Get all categories from database
-    val categories = appDatabase.categoriesModelDao().getAll()
+    val categories = appDatabase.Dao16CategorieProduit().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()

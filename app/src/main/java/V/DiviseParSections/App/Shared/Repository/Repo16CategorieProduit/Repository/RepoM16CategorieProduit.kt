@@ -1,12 +1,11 @@
 package V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.ref
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.deleteAddMultiDatas
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -18,29 +17,24 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 @Stable
 class RepoM16CategorieProduit(
-    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
+    val context: Context,
+    val dataBaseCreationFactory: DataBaseInitFactory_16CategorieProduit,
 ) {
     val TAG = "RepoM16CategorieProduit"
-    val parentRepo = a_MasterRepositorysGrpProtoJuin3.repoC_CategorieProduitInfos
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    private val repoScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
     val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 
     init {
-        composScope.launch {
-            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
-                masterModel?.let { model ->
-                    model.repoStateC_CategorieProduitInfos?.modelListFlow
-                    val newDataList =
-                        model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList()
-                    _datas.value = newDataList
-                }
-            }
+        repoScope.launch {
+            dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
     }
 
@@ -48,25 +42,32 @@ class RepoM16CategorieProduit(
         data.let { dataSansProper ->
             val newData = dataSansProper.withDernierTimeTampsSynchronisationAvecFireBase()
 
-            val updatedList = _datas.value.map {
-                if (it.id == newData.id)
-                    newData
-                else it
+            // Find existing index in current list
+            val existingIndex = _datas.value.indexOfFirst { it.id == newData.id }
+
+            val updatedList = if (existingIndex >= 0) {
+                // Update existing item
+                _datas.value.map {
+                    if (it.id == newData.id) newData else it
+                }
+            } else {
+                // Add new item
+                _datas.value + newData
             }
+
             CategoriesTabelle.logCategory(newData, TAG)
             _datas.value = updatedList
 
-            composScope.launch {
-                updateSonRepositoryProtoJuin3(newData)
+            repoScope.launch {
+                dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, newData)
             }
         }
     }
 
-    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) {
-        parentRepo.addOrUpdateData(newData)
-    }
-
-    fun addOrUpdateDatas(datas: List<CategoriesTabelle>) {
+    fun addOrUpdateDatas(
+        datas: List<CategoriesTabelle> ,
+        avec_BatchFireBase :Boolean=false
+    ) {
         val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
 
         val currentList = _datas.value.toMutableList()
@@ -83,17 +84,105 @@ class RepoM16CategorieProduit(
 
         _datas.value = currentList
 
-        composScope.launch {
-            updateDatasDonSonRepositoryProtoJuin3(processedDatas)
+        repoScope.launch {
+            processedDatas.forEach { processedData ->
+                val existingIndex = currentList.indexOfFirst { it.id == processedData.id }
+                dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, processedData,avec_BatchFireBase)
+            }
         }
     }
 
-    fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
-        parentRepo.addOrUpdateDatas(newDatas)
+
+    fun add_New(data: CategoriesTabelle) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(-1, dataUpdate)
     }
 
-    fun deleteAddMultiDatas(newDatas: List<CategoriesTabelle>) {
-        parentRepo.deleteAddMultiDatas(newDatas)
+    fun update_If_Exist(data: CategoriesTabelle) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            repoScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, updatedItem)
+    }
+
+    fun delete(data: CategoriesTabelle) {
+        repoScope.launch {
+            try {
+                _datas.value = datasValue.filter { it.keyID != data.keyID }
+                dataBaseCreationFactory.delete(data)
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun deleteAddMultiDatas(
+        datas: List<CategoriesTabelle>,
+    ) {
+        repoScope.launch {
+            try {
+                val preparedDatas =
+                    datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
+
+                dataBaseCreationFactory.dao.deleteAll()
+                dataBaseCreationFactory.dao.insertAll(preparedDatas)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = preparedDatas
+                }
+
+                CategoriesTabelle.safeRemoveRef()
+
+                batchFireBaseUpdate(preparedDatas)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in deleteAddMultiDatas: ${e.message}")
+            }
+        }
+    }
+
+    private suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
+        try {
+            val updates = mutableMapOf<String, Any>()
+            datas.forEach { data ->
+                updates[data.keyID] = data
+            }
+            CategoriesTabelle.ref.updateChildren(updates).await()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in batchFireBaseUpdate: ${e.message}")
+        }
     }
 }
 
@@ -101,7 +190,9 @@ class RepoM16CategorieProduit(
 data class CategoriesTabelle(
     @PrimaryKey
     val id: Long = System.currentTimeMillis(),
-    var bsonObjectId: String = getPushFireBase(ref),
+    var bsonObjectId: String = getPushFireBase(Z_AppCompt.ref),
+    var keyID: String = generePushKey(),
+    var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     val catalogueParentId: Long = 0,
@@ -124,11 +215,22 @@ data class CategoriesTabelle(
     }
 
     companion object {
-        val caRef =
+        val ref =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
+
         fun safeRemoveRef(): Unit {
-            caRef.removeValue()
+            ref.removeValue()
         }
+
+        fun generePushKey() =
+            ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+
+        fun get_default(
+        ): CategoriesTabelle {
+            val data = CategoriesTabelle()
+            return data
+        }
+
         fun logCategory(category: CategoriesTabelle, TAG: String) {
             Log.d(
                 TAG, "Category selected for displacement processed: " +

@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 
 fun C_CategorieProduitInfosRepository.addOrUpdateDatas(
     datas: List<CategoriesTabelle>,
-    avecFireBase: Boolean = true
+    avecFireBase: Boolean = false
 ) {
     CoroutineScope(Dispatchers.IO).launch {
         val preparedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }

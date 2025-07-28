@@ -47,7 +47,7 @@ fun ButtonId5(
     ) {
         val text =
             when (clickCount) {
-              0->  "from CSV To FireBase"
+              0->  "from repositorys Categ To FireBase"
               else ->  "T Sure"
             }
 
@@ -61,8 +61,8 @@ fun ButtonId5(
                     0 -> clickCount++
                     1 -> coroutineScope.launch {
                         viewModel.deleteAddMultiCategories(newDatas=list_CategoriesTabelle)
-
-                        viewModel.deleteAddMultiProduits(list_M1Produit)
+                        clickCount=0
+                       // viewModel.deleteAddMultiProduits(list_M1Produit)
                         //  viewModel.deleteAddMultiClients()
                     }
                 }

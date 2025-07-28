@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao
+package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.room.Dao
@@ -12,7 +12,13 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CategoriesModelDao {
+interface Dao16CategorieProduit {
+    @Delete
+    fun delete(data: CategoriesTabelle)
+
+    @Update
+    suspend fun update(data: CategoriesTabelle)
+
     @Upsert
     suspend fun upsert(data: CategoriesTabelle)
 
@@ -32,7 +38,7 @@ interface CategoriesModelDao {
     suspend fun updateAll(categories: List<CategoriesTabelle>)
 
     @Transaction
-    suspend fun transaction(block: suspend CategoriesModelDao.() -> Unit) {
+    suspend fun transaction(block: suspend Dao16CategorieProduit.() -> Unit) {
         block()
     }
 

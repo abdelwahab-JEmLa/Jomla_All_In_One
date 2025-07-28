@@ -136,9 +136,9 @@ private fun setupCategoryFirebaseListener(
     triggerUpdateFbParTimestampsListener<CategoriesTabelle>(
         compt = comptApp,
         scope = scope,
-        ref = CategoriesTabelle.caRef,
+        ref = CategoriesTabelle.ref,
         upsertFunction = { category: CategoriesTabelle ->
-            appDatabase.categoriesModelDao().upsertData(category)
+            appDatabase.Dao16CategorieProduit().upsertData(category)
         },
         callback = {
             Log.d("Repository", "Category Firebase listener callback executed")

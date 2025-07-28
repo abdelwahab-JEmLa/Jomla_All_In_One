@@ -52,7 +52,7 @@ internal fun MainItem(
         Card(
             modifier = Modifier
                 .getSemanticsTag(rel_category,"")
-                .height(height) // Use fixed height instead of aspectRatio
+                .height(height)
                 .fillMaxWidth()
                 .clickable {
                     viewModel.updateCate_cSelectionePourDeplace(rel_category)

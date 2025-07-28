@@ -204,7 +204,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
-        categoriesCompoRepository.addOrUpdateDatas(categories)
+        categoriesCompoRepository.addOrUpdateDatas(categories, avec_BatchFireBase = false)
     }
 
     fun deleteAddMultiCategories(newDatas: List<CategoriesTabelle>) {
