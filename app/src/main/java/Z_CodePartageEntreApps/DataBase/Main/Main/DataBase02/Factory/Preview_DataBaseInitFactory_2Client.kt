@@ -90,7 +90,7 @@ fun MainScreen(
                     ) {
                         Item_1_Menu(
                             repo2Client = repo2Client,
-                            title = "export",
+                            title = "batchFireBaseUpdate",
                             isLoading = isLoading,
                         ) {
                             showMenu = false
@@ -141,12 +141,14 @@ fun Item_1_Menu(
                             it.nom.contains("abde")
                         }, "")
                         .getSemanticsTag(
+                            datas
+                                .filter { it.nom.contains("abde") }
+                                .map { " ${it.nom} to ${it.keyID}" }, "datas_map"
+                        )
+                        .getSemanticsTag(
                             new_datas
-                                .filter {
-                                    it.nom.contains("abde")
-                                }
-                                .map { it.keyID }
-                            , "new_datas"
+                                .filter { it.nom.contains("abde") }
+                                .map { it.keyID }, "new_datas"
                         )
                 )
             },
@@ -162,10 +164,8 @@ fun Item_1_Menu(
                 if (safeCountClick == 0) {
                     safeCountClick++
                 } else {
-                    M2Client.safeRemoveRef {
-                        batchFireBaseUpdate(updates)
-                        onClick_TO_Close_Menu()
-                    }
+                    batchFireBaseUpdate(updates)
+                    onClick_TO_Close_Menu()
                     safeCountClick = 0
                 }
             }
