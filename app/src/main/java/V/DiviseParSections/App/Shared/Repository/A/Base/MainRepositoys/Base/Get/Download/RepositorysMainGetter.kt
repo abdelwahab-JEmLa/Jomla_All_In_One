@@ -102,6 +102,8 @@ class RepositorysMainGetter(
     //--------------M3Couleur----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M3CouleurInfos_By_KeyID(keyId: String): M3CouleurProduitInfos? =
         repo03CouleurProduitInfos.datasValue.find { it.keyID == keyId }
+    fun find_ListM3CouleurInfos_By_Parent_Produit_KeyID(keyId: String) =
+        repo03CouleurProduitInfos.datasValue.filter { it.parentBProduitInfosKeyID == keyId }
 
     fun find_M3Couleur_By(
         m1Produit: ArticlesBasesStatsTable,

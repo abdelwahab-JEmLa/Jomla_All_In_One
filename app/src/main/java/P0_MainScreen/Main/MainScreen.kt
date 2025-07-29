@@ -3,6 +3,9 @@ package P0_MainScreen.Main
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifNotNullOrEmpty
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
@@ -58,6 +61,8 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel = koinViewModel(),
     viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
@@ -271,7 +276,8 @@ fun MainScreen(
                 }
 
                 if (productDisplayController.searchWindowsDisplaye.isNotEmpty()
-                    && shouldShowContent && !hideAppScreen) {
+                    && shouldShowContent && !hideAppScreen
+                ) {
                     SearchArticle(
                         dsipayeText = productDisplayController.searchWindowsDisplaye
                     )
@@ -304,6 +310,11 @@ fun MainScreen(
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
+                }
+                focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
+                    it.active_ProduitKeyID_Au_DroopDown_PresenterEcran.ifNotNullOrEmpty {
+                        App_PresenterEcran_Au_Client()
+                    }
                 }
             }
         }

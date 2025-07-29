@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -79,7 +79,7 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val relative_M3Couleur = repoMainGetter.find_M3Couleur_By(relative_M1Produit, indexColor)
+    val relative_M9AppCompt= focusedValuesGetter.currentActive_M9AppCompt
     val enablePerformAutoClickImageDisplayer =
 
         viewModel.aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.enablePerformAutoClickImageDisplayer
@@ -161,17 +161,12 @@ fun ImageDisplayerProtoAvantJuin3(
             onClickToOpenWindow()
         }
     }
-
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            val get = focusedVarsHandlerFacade.focusedValuesGetter
-            val activeProduit =
-                get.focused_M1ProduitInfos_Pour_PrixDifineur
-
             GlideImage(
                 modifier = Modifier
-                    .getSemanticsTag(relative_M1Produit,"")
+                    .getSemanticsTag(relative_M1Produit, "")
                     .clickable {
                         // Manual click handler - always available
                         focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
