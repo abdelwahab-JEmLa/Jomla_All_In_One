@@ -4,23 +4,40 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.MessageHeader
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,11 +46,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -85,8 +106,6 @@ fun A_MessageurTelegram_MainScreen(
                         // Background image
                         Image(
                             modifier = Modifier
-                                .getSemanticsTag(repo17MessageVocale.datasValue
-                                    ,"")
                                 .fillMaxSize(),
                             painter = painterResource(id = R.drawable.background_mess),
                             contentDescription = null,
@@ -194,17 +213,252 @@ private fun List_Messages(
 ) {
     LazyColumn(
         modifier = Modifier
-            .getSemanticsTag(latestStatesForEachMessage,"")
             .fillMaxWidth()
             .padding(bottom = 80.dp),
         state = listState
     ) {
         items(latestStatesForEachMessage) { (latestEtate, allEtatesForMessage) ->
-            B_ItemMessagesVocale(
-                list_D_EtateMessageVocale = allEtatesForMessage,
-                viewModel = viewModel,
-                relative_M17MessageVocale = latestEtate,
-                uiState = uiState
+            when (latestEtate.its_Text_Message) {
+                true-> C_Text_Message(
+                    list_D_EtateMessageVocale = allEtatesForMessage,
+                    relative_M17MessageVocale = latestEtate,
+                    )
+               else-> B_ItemMessagesVocale(
+                    list_D_EtateMessageVocale = allEtatesForMessage,
+                    viewModel = viewModel,
+                    relative_M17MessageVocale = latestEtate,
+                    uiState = uiState
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun C_Text_Message(
+    list_D_EtateMessageVocale: List<M17MessageVocale>,
+    relative_M17MessageVocale: M17MessageVocale,
+    viewModel: ViewModelMessageur = koinViewModel(),
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+) {
+    val activeCurrent_M9AppCompt = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val relative_M9AppCompt = repositorysMainGetter.find_M9AppCompt_By_KeyID(relative_M17MessageVocale.parent_M9AppCompt_KeyID)
+    val relative_M8BonVent = repositorysMainGetter.find_M8BonVent(relative_M17MessageVocale.parent_M8BonVent_KeyID)
+
+    val its_ViewMessage_Du_Active_M9AppCompt = relative_M9AppCompt?.keyID == activeCurrent_M9AppCompt?.keyID
+    val its_Admin_Message = relative_M9AppCompt?.its_Admin ?: false
+
+    val datesHandler = remember { DatesHandler() }
+
+    val clientName = relative_M8BonVent?.parent_M2Client_DebugInfos ?: "Client inconnu"
+    val vendorName = relative_M17MessageVocale.parent_M9AppCompt_DebugInfos.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
+
+    val currentState = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
+        ?: relative_M17MessageVocale.etate
+
+    Column {
+        // Main message card
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (its_ViewMessage_Du_Active_M9AppCompt) {
+                    Arrangement.End // Messages from active account align to the right
+                } else {
+                    Arrangement.Start // Messages from others align to the left
+                }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .semantics(mergeDescendants = true) {
+                            set(SemanticsPropertyKey("relative_M17MessageVocale"), relative_M17MessageVocale)
+                        }
+                        .wrapContentWidth()
+                        .padding(
+                            start = if (its_ViewMessage_Du_Active_M9AppCompt) 40.dp else 0.dp,
+                            end = if (its_ViewMessage_Du_Active_M9AppCompt) 0.dp else 40.dp
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = when {
+                            // Admin messages get red background
+                            its_Admin_Message -> MaterialTheme.colorScheme.error
+                            // Regular styling for sent/received messages
+                            its_ViewMessage_Du_Active_M9AppCompt -> {
+                                // Green bubble for sent messages (like Telegram)
+                                when (currentState) {
+                                    M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                    M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                    M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                    M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                                    M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                }
+                            }
+                            else -> {
+                                // Light gray bubble for received messages (like Telegram)
+                                when (currentState) {
+                                    M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                                    M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                    M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+                                    M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                }
+                            }
+                        }
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = if (its_ViewMessage_Du_Active_M9AppCompt) 16.dp else 4.dp,
+                        bottomEnd = if (its_ViewMessage_Du_Active_M9AppCompt) 4.dp else 16.dp
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        // Message Header
+                        MessageHeader(
+                            relative_M9AppCompt = relative_M9AppCompt,
+                            relative_M17MessageVocale = relative_M17MessageVocale,
+                            viewModel = viewModel,
+                            clientName = clientName,
+                            vendorName = vendorName,
+                            messageVID = relative_M17MessageVocale.parentMessageVID,
+                            timestamp = relative_M17MessageVocale.creationTimestamps,
+                            datesHandler = datesHandler,
+                            etatesChildKeyIDsList = list_D_EtateMessageVocale,
+                            isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                            isAdminMessage = its_Admin_Message,
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Text Message Content
+                        TextMessageContent(
+                            textMessage = relative_M17MessageVocale.text_Inputted,
+                            currentState = currentState,
+                            isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                            isAdminMessage = its_Admin_Message
+                        )
+                    }
+                }
+            }
+        }
+
+        // Divider
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp),
+            thickness = 0.5.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        )
+    }
+}
+
+@Composable
+private fun TextMessageContent(
+    textMessage: String,
+    currentState: M17MessageVocale.Etate,
+    isFromActiveAccount: Boolean,
+    isAdminMessage: Boolean
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
+            else -> Color.Transparent
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            // Display text message if it's not empty
+            if (textMessage.isNotEmpty()) {
+                Text(
+                    text = textMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                // Show placeholder if no text
+                Text(
+                    text = "Message texte vide",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    ),
+                    color = when {
+                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.6f)
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Show typing indicator for messages being composed
+            if (currentState == M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT) {
+                Spacer(modifier = Modifier.height(8.dp))
+                TypingIndicator(
+                    isFromActiveAccount = isFromActiveAccount,
+                    isAdminMessage = isAdminMessage
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TypingIndicator(
+    isFromActiveAccount: Boolean,
+    isAdminMessage: Boolean
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.2f)
+            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+            else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Écriture en cours",
+                tint = when {
+                    isAdminMessage -> MaterialTheme.colorScheme.onError
+                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                    else -> MaterialTheme.colorScheme.primary
+                },
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Écriture en cours...",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+                color = when {
+                    isAdminMessage -> MaterialTheme.colorScheme.onError
+                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                    else -> MaterialTheme.colorScheme.primary
+                }
             )
         }
     }

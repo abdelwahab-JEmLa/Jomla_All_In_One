@@ -192,6 +192,8 @@ class RepositorysMainSetter(
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------
+
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =
             Regex("(\\w+)-(\\w+)").findAll(keyByParent).associate { match ->

@@ -70,8 +70,7 @@ fun B_ItemMessagesVocale(
 
     val currentState =
         list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
-        ?: relative_M17MessageVocale.etate      //<--
-        //TODO(1): fait que soit un deruved qui recompose le 
+        ?: relative_M17MessageVocale.etate
 
     val isListened = currentState == M17MessageVocale.Etate.ECOUTE
 

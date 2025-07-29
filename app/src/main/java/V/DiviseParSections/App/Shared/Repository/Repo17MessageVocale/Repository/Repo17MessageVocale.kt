@@ -82,6 +82,9 @@ data class M17MessageVocale(
     var etate: Etate = Etate.EN_COURT_ENREGESTREMENT,
     var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.C3_BonAchate,
 
+    var its_Text_Message: Boolean = false,
+    var text_Inputted: String = "",
+
     val parentMessageVID: Long = 0,
     val nomDeSonOriginaleFichie: String = "null.3gp",
 
