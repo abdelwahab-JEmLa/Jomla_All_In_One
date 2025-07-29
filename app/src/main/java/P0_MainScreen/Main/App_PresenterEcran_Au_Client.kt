@@ -3,6 +3,7 @@ package P0_MainScreen.Main
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -66,12 +67,13 @@ fun App_PresenterEcran_Au_Client(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     modifier: Modifier = Modifier
 ) {
-    val currentActive = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-    val productKeyID = currentActive?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
-    val activeCouleurKeyID by derivedStateOf { currentActive?.active_CouleurKeyID_Extended_Image }
-    val couleursList = productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
+    val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
+    val activeCouleurKeyID by derivedStateOf { relative_M9AppCompt?.active_CouleurKeyID_Extended_Image }
+    val relative_ListCouleurs = productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
 
     var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
 
@@ -85,7 +87,7 @@ fun App_PresenterEcran_Au_Client(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(couleursList.orEmpty()) { couleur ->
+            items(relative_ListCouleurs.orEmpty()) { couleur ->
                 val isClicked = clickedCouleurKeyID == couleur.keyID
                 val targetValue = if (isClicked) heights.first else heights.second
 
@@ -101,8 +103,13 @@ fun App_PresenterEcran_Au_Client(
                         .height(animatedHeight)
                         .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
                     onClick = {
-                        clickedCouleurKeyID = if (isClicked) null else couleur.keyID
-
+                        if (relative_M9AppCompt != null) {
+                            repositorysMainSetter.update_M9AppCompt(
+                                relative_M9AppCompt.copy(
+                                    active_CouleurKeyID_Extended_Image = if (isClicked) "" else couleur.keyID
+                                )
+                            )
+                        }
                     }
                 ) {
                     if (isClicked) {
@@ -122,7 +129,13 @@ fun App_PresenterEcran_Au_Client(
                                     .width(fixedWidth) // Fixed width
                                     .height(animatedHeight), // Animated height only
                                 onClickToChangeSelected = { keyID ->
-                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
+                                    if (relative_M9AppCompt != null) {
+                                        repositorysMainSetter.update_M9AppCompt(
+                                            relative_M9AppCompt.copy(
+                                                active_CouleurKeyID_Extended_Image = if (clickedCouleurKeyID == keyID) "" else couleur.keyID
+                                            )
+                                        )
+                                    }
                                 }
                             )
                         }
@@ -142,7 +155,13 @@ fun App_PresenterEcran_Au_Client(
                                 keyCouleur = couleur.keyID,
                                 size = fixedWidth, // Use fixed width instead of animated size
                                 onClickToChangeSelected = { keyID ->
-                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
+                                    if (relative_M9AppCompt != null) {
+                                        repositorysMainSetter.update_M9AppCompt(
+                                            relative_M9AppCompt.copy(
+                                                active_CouleurKeyID_Extended_Image = if (clickedCouleurKeyID == keyID) "" else couleur.keyID
+                                            )
+                                        )
+                                    }
                                 },
                                 height = heights.second
                             )
