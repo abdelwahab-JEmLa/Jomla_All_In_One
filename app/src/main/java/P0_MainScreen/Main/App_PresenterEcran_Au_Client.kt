@@ -60,7 +60,7 @@ import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import java.io.File
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState","ModifierParameter")
 @Composable
 fun App_PresenterEcran_Au_Client(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -78,7 +78,7 @@ fun App_PresenterEcran_Au_Client(
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
     val heights= Pair(450.dp,180.dp)
-    val fixedWidth = 350.dp // Fixed width that never changes
+    val fixedWidth = 360.dp
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
