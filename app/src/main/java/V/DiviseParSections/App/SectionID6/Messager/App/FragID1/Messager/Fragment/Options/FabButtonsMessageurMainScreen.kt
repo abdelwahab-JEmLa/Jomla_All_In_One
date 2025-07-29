@@ -60,9 +60,6 @@ fun FabButtonsMessageurMainScreen(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
 
-    val parent_M9AppCompt_KeyID = (focusedValuesGetter
-        .currentActive_M9AppCompt?.keyID
-        ?: "")
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -88,6 +85,22 @@ fun FabButtonsMessageurMainScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val parent_M9AppCompt_KeyID = (focusedValuesGetter
+                        .currentActive_M9AppCompt?.keyID
+                        ?: "")
+                    val new_Data = M17MessageVocale
+                        .get_default()
+                        .copy(
+                            parent_M9AppCompt_Nom =focusedValuesGetter
+                                .currentActive_M9AppCompt?.nom?:"" ,
+
+                            parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
+                            etate = M17MessageVocale.Etate.ENVOYER,
+                            creationTimestamps = System.currentTimeMillis(),
+                            its_Text_Message = true,
+                            text_Inputted = textValue
+                        )
+
                     focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         Button(
                             modifier = Modifier
@@ -96,17 +109,11 @@ fun FabButtonsMessageurMainScreen(
                                         value = parent_M9AppCompt_KeyID,
                                         key = SemanticsPropertyKey("parent_M9AppCompt_KeyID")
                                     )
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(value = new_Data, key = SemanticsPropertyKey("new_Data"))
                                 },
                             onClick = {
-                                val new_Data = M17MessageVocale.get_default()
-                                    .copy(
-                                        parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
-                                        etate = M17MessageVocale.Etate.ENVOYER,
-                                        creationTimestamps = System.currentTimeMillis(),
-                                        its_Text_Message = true,
-                                        text_Inputted = textValue
-                                    )
-
                                 repositorysMainSetter.upsert_M17MessageVocale(
                                     new_Data
                                 )

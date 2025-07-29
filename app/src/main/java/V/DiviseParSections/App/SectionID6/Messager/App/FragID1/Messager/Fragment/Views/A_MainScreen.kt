@@ -255,8 +255,7 @@ fun C_Text_Message(
     val clientName = relative_M8BonVent?.parent_M2Client_DebugInfos ?: "Client inconnu"
     val vendorName = relative_M17MessageVocale.parent_M9AppCompt_DebugInfos.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 
-    val currentState = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
-        ?: relative_M17MessageVocale.etate
+    val currentState = list_D_EtateMessageVocale.lastOrNull()?.etate
 
     Column {
         // Main message card
@@ -276,7 +275,23 @@ fun C_Text_Message(
                 Card(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
-                            set(SemanticsPropertyKey("relative_M17MessageVocale"), relative_M17MessageVocale)
+                            set(value = list_D_EtateMessageVocale
+                                .maxOf { it.parent_M9AppCompt_Nom }
+                                , key = SemanticsPropertyKey("maxBy"))
+                        }
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = list_D_EtateMessageVocale.map {
+                                    it.parent_M9AppCompt_Nom  + "->"+it.etate
+                                                                      },
+                                key = SemanticsPropertyKey("list_D_EtateMessageVocale")
+                            )
+                        }
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                SemanticsPropertyKey("relative_M17MessageVocale"),
+                                relative_M17MessageVocale
+                            )
                         }
                         .wrapContentWidth()
                         .padding(
@@ -296,6 +311,7 @@ fun C_Text_Message(
                                     M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                                     M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                                     M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                    null -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                                 }
                             }
                             else -> {
@@ -306,6 +322,7 @@ fun C_Text_Message(
                                     M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                                     M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
                                     M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                    null -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                                 }
                             }
                         }
@@ -323,6 +340,7 @@ fun C_Text_Message(
                     ) {
                         // Message Header
                         MessageHeader(
+                            list_D_EtateMessageVocale=list_D_EtateMessageVocale,
                             relative_M9AppCompt = relative_M9AppCompt,
                             relative_M17MessageVocale = relative_M17MessageVocale,
                             viewModel = viewModel,
@@ -339,12 +357,14 @@ fun C_Text_Message(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         // Text Message Content
-                        TextMessageContent(
-                            textMessage = relative_M17MessageVocale.text_Inputted,
-                            currentState = currentState,
-                            isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
-                            isAdminMessage = its_Admin_Message
-                        )
+                        if (currentState != null) {
+                            TextMessageContent(
+                                textMessage = relative_M17MessageVocale.text_Inputted,
+                                currentState = currentState,
+                                isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
+                                isAdminMessage = its_Admin_Message
+                            )
+                        }
                     }
                 }
             }

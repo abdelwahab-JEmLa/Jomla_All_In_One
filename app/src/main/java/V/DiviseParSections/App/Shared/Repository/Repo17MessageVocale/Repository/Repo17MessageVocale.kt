@@ -89,8 +89,10 @@ data class M17MessageVocale(
     val nomDeSonOriginaleFichie: String = "null.3gp",
 
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
-    val parent_M9AppCompt_KeyID: String = "null",
-    val parent_M9AppCompt_DebugInfos: String = "null",
+    val parent_M9AppCompt_KeyID: String = "",
+    val parent_M9AppCompt_DebugInfos: String = "",
+    //---------------------------------ForgingKeys.Repeated_Datas.M9AppCompt.----------------------------------------------------------------------------------------------------------------------------------
+    val parent_M9AppCompt_Nom: String = "",
 
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M8BonVent_KeyID: String = "null",

@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -27,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,7 +45,8 @@ fun MessageHeader(
     datesHandler: DatesHandler,
     etatesChildKeyIDsList: List<M17MessageVocale>,
     isFromActiveAccount: Boolean = false,
-    isAdminMessage: Boolean = false // Add this parameter
+    isAdminMessage: Boolean = false, // Add this parameter
+    list_D_EtateMessageVocale: List<M17MessageVocale>
 ) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -66,14 +67,19 @@ fun MessageHeader(
                         nom.any { char -> char in '\u0600'..'\u06FF' || char in '\u0750'..'\u077F' }
                     }
                     ?: relative_M9AppCompt?.nom
-                    ?: "???"
+
+                val displayText =
+                    if (!arabNom.isNullOrEmpty()) {
+                        arabNom
+                    } else {
+                        list_D_EtateMessageVocale
+                            .maxByOrNull { it.parent_M9AppCompt_Nom }
+                            ?.parent_M9AppCompt_Nom ?: ""
+                    }
 
                 Text(
-                    modifier = Modifier
-                        .getSemanticsTag(
-                            relative_M9AppCompt, ""
-                        ),
-                    text = arabNom,
+                    modifier = Modifier.semantics(mergeDescendants = true) {},
+                    text = displayText,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = when {

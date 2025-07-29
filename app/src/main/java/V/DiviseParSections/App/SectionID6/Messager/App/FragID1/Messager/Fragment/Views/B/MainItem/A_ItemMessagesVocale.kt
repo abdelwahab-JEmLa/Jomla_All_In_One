@@ -188,6 +188,7 @@ fun B_ItemMessagesVocale(
                             etatesChildKeyIDsList = list_D_EtateMessageVocale,
                             isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
                             isAdminMessage=its_Admin_Message,
+                            list_D_EtateMessageVocale = list_D_EtateMessageVocale,
                         )
 
                         // FIXED: BonVentInfoCard moved to the top after MessageHeader
