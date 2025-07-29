@@ -167,6 +167,7 @@ data class Z_AppCompt(
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",
+    val active_CouleurKeyID_Extended_Image: String = "",
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
