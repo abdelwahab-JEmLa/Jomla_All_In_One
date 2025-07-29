@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
@@ -95,7 +96,7 @@ fun MessageHeader(
                                     M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
                                     M17MessageVocale.Etate.VUE -> "👁️ Vu"
                                     M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
-                                    M17MessageVocale.Etate.Premier_Test_Envoi ->"📤 Envoyé"
+                                    M17MessageVocale.Etate.Premier_Test_Envoi -> "📤 Envoyé"
                                 }
                             }
                         }
@@ -105,35 +106,40 @@ fun MessageHeader(
                             M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
                             M17MessageVocale.Etate.VUE -> "👁️ Vu"
                             M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
-                            M17MessageVocale.Etate.Premier_Test_Envoi ->"📤 Envoyé"
+                            M17MessageVocale.Etate.Premier_Test_Envoi -> "📤 Envoyé"
 
                         }
                     }
+                    relative_M17MessageVocale.its_Text_Message.ifFalse {
+                        Text(
+                            text = stateText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = when {
+                                isAdminMessage -> MaterialTheme.colorScheme.onError
+                                isFromActiveAccount -> when (state.etate) {
+                                    M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.onPrimary
+                                    M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.onPrimary
+                                    M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
+                                    M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
+                                    else -> {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    }
+                                }
 
-                    Text(
-                        text = stateText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = when {
-                            isAdminMessage -> MaterialTheme.colorScheme.onError
-                            isFromActiveAccount -> when (state.etate) {
-                                M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.onPrimary
-                                M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.onPrimary
-                                M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
-                                M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
-                                else -> {MaterialTheme.colorScheme.onPrimary}
-                            }
-
-                            else -> when (state.etate) {
-                                M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
-                                M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
-                                M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.secondary
-                                M17MessageVocale.Etate.ECOUTE -> Color.Green
-                                else -> {MaterialTheme.colorScheme.onPrimary}
-                            }
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                                else -> when (state.etate) {
+                                    M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
+                                    M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
+                                    M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.secondary
+                                    M17MessageVocale.Etate.ECOUTE -> Color.Green
+                                    else -> {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    }
+                                }
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
