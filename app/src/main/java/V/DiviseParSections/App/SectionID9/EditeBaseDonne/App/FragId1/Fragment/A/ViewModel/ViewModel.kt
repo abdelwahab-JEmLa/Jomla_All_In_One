@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 data class UiStateSec9Frag1(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
+    val selectionePourDeplacement_Categorie: CategoriesTabelle? = null,
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
@@ -58,7 +59,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             masterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList(),
+                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
+                            ?: emptyList(),
                         mainLoadingProgressPJuin3 = model.progress
                     )
                 }
@@ -67,6 +69,16 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     enum class ModeAffichage { CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID }
+
+    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle? = null) {
+        _uiState.value = _uiState.value.copy(
+            selectionePourDeplacement_Categorie =
+                if (_uiState.value.selectionePourDeplacement_Categorie == null
+                    && categorie != null
+                )
+                    categorie else null
+        )
+    }
 
     fun new_currentMode(currentMode: ModeAffichage) {
         _uiState.value = _uiState.value.copy(currentMode = currentMode)
@@ -87,7 +99,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
-        val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+        val categoriesToMove =
+            categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
         if (categoriesToMove.isEmpty()) return
 
         val updatedCategories = categoriesToMove.map {
@@ -142,10 +155,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         return newList.mapIndexed { i, cat -> cat.copy(position = i + 1) }
     }
 
-    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle) {
-        val newData = categorie.copy(cSelectionePourDeplace = !categorie.cSelectionePourDeplace)
-        addOrUpdateCategorie(newData)
-    }
 
     fun getSelectedCategoryIds(): Set<Long> {
         return categoriesCompoRepository.datasValue

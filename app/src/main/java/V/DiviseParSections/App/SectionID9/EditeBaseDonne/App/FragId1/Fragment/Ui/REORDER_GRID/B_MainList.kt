@@ -1,11 +1,12 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,11 +27,11 @@ internal fun MainList(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     produitList: List<ArticlesBasesStatsTable>,
 ) {
-    val TAG ="List_GroupeAchatProduit"
+    val TAG = "List_GroupeAchatProduit"
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val currentCategories = categoriesCompoRepository.datasValue
 
-    val productsByCategory = remember(produitList, categoriesCompoRepository.tigerDataRecompose ) {
+    val productsByCategory = remember(produitList, categoriesCompoRepository.tigerDataRecompose) {
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
@@ -42,18 +43,23 @@ internal fun MainList(
     ) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
         catalogues.forEach { cat ->
-            currentCategories.filter { it.catalogueParentId == cat.id }
+            currentCategories.filter {
+                it.catalogueParentId == cat.id
+            }
                 .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
-        currentCategories.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
-            .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(
-                id = 0,
-                nom = "Autres",
-                premierCategorieId = 0
-            )] = it }
+        currentCategories
+            .filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
+            .let {
+                if (it.isNotEmpty()) grouped[CataloguesCaegorie(
+                    id = 0,
+                    nom = "Autres",
+                    premierCategorieId = 0
+                )] = it
+            }
         grouped
     }.also {
-        val cate=  currentCategories.find { it.nom.contains("huil") }
+        val cate = currentCategories.find { it.nom.contains("huil") }
         if (cate != null) {
             CategoriesTabelle.logCategory(cate, TAG)
         }
@@ -71,15 +77,17 @@ internal fun MainList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             categoriesByCatalogue.forEach { (catalogue, categories) ->
-                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
-                    CatalogHeaderCard(catalogue = catalogue, modifier = Modifier)
-                }
-                items(categories, key = { it.id }) { category ->
-                    MainItem(
-                        productsByCategory = productsByCategory,
-                        relative_category = category,
-                        viewModel = viewModel
-                    )
+                (catalogue.id != 4L ).ifTrue {
+                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                        CatalogHeaderCard(catalogue = catalogue, modifier = Modifier)
+                    }
+                    items(categories, key = { it.id }) { category ->
+                        MainItem(
+                            productsByCategory = productsByCategory,
+                            relative_category = category,
+                            viewModel = viewModel
+                        )
+                    }
                 }
             }
         }

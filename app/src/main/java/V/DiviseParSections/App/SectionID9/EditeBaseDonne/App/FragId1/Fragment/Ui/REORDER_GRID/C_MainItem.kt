@@ -29,6 +29,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -42,26 +44,31 @@ import org.koin.compose.koinInject
 @Composable
 internal fun MainItem(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     repoM16CategorieProduit: RepoM16CategorieProduit = aCentralFacade.repositorysMainGetter.repoM16CategorieProduit,
     relative_category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val categoryProducts = productsByCategory[relative_category.id] ?: emptyList()
     val selectedCategoryIds = viewModel.getSelectedCategoryIds()
-    val isSelected = relative_category.cSelectionePourDeplace
-    val hasSelections = selectedCategoryIds.isNotEmpty() && !isSelected
 
-     fun performCategoryReorder(
+    val isSelected =
+        (uiState.selectionePourDeplacement_Categorie?.keyID ?: "") == relative_category.keyID
+
+    val hasSelections = uiState.selectionePourDeplacement_Categorie!=null
+
+    fun performCategoryReorder(
         targetId: Long,
         moveBefore: Boolean
     ): List<CategoriesTabelle> {
-         val categories =repoM16CategorieProduit.datasValue
-         val selectedCategories = repoM16CategorieProduit.datasValue
-             .filter { it.cSelectionePourDeplace }
-         val selectedIds = selectedCategories.map { it.id }.toSet()
+        val categories = repoM16CategorieProduit.datasValue
+        val selectedCategories = repoM16CategorieProduit.datasValue
+            .filter { it.cSelectionePourDeplace }
+        val selectedIds = selectedCategories.map { it.id }.toSet()
 
-         if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
+        if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
 
         val selected = categories.filter { selectedIds.contains(it.id) }
         val remaining = categories.filter { !selectedIds.contains(it.id) }
@@ -76,8 +83,17 @@ internal fun MainItem(
             newList.add(insertIndex + i, cat)
         }
 
-        return newList.mapIndexed { i, cat -> cat.copy(position = i + 1) }
+        // Return new classification with updated positions for all categories
+        return newList.mapIndexed { index, category ->
+            category.copy(position = index + 1)
+        }
     }
+
+    // Calculate reordered categories for semantics (preview of the move operation)
+    val reorderedCategories = performCategoryReorder(
+        targetId = relative_category.id,
+        moveBefore = true
+    )
 
     Box {
         Card(
@@ -85,7 +101,9 @@ internal fun MainItem(
                 .getSemanticsTag(relative_category, "")
                 .height(150.dp)
                 .fillMaxWidth()
-                .clickable { viewModel.updateCate_cSelectionePourDeplace(relative_category) },
+                .clickable {
+                    viewModel.updateCate_cSelectionePourDeplace(relative_category)
+                           },
             colors = CardDefaults.cardColors(
                 containerColor = if (isSelected)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
@@ -94,44 +112,40 @@ internal fun MainItem(
             elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 6.dp else 2.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-
-            val reorderedCategories = performCategoryReorder(
-                targetId = relative_category.id,
-                moveBefore = true
-            )
-
             Column(
                 modifier = Modifier
-                    .semantics(mergeDescendants = true) {
-                        set(
-                            SemanticsPropertyKey("reorderedCategories"),
-                            reorderedCategories.filter {
-                                it.position in 153..155
-                            }
-                                .map { it.nom +" to "+ it.position}
-                        )
-                    }
                     .fillMaxSize()
                     .padding(2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-
-
                 if (hasSelections) {
                     IconButton(
                         modifier = Modifier
-
                             .size(25.dp),
                         onClick = {
-                            viewModel.moveSelectedCategoriesRelativeToTarget(relative_category.id, true)
+                            viewModel.moveSelectedCategoriesRelativeToTarget(
+                                relative_category.id,
+                                true
+                            )
+                            viewModel.updateCate_cSelectionePourDeplace(null)
                         }
                     ) {
                         Icon(
                             Icons.Default.KeyboardArrowUp,
+                            modifier = Modifier
+                               /* .semantics(mergeDescendants = true) {
+                                    set(
+                                        SemanticsPropertyKey("reorderedCategories"),
+                                        reorderedCategories.filter {
+                                            it.position in 2..7
+                                        }
+                                            .map { it.nom + " to " + it.position }
+                                    )
+                                }   */
+                                .size(25.dp),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(25.dp)
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                 } else {
