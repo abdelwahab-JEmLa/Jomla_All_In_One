@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -77,7 +77,8 @@ fun App_PresenterEcran_Au_Client(
 
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
-    val heights= Pair(600.dp,200.dp)
+    val heights= Pair(500.dp,200.dp)
+    val fixedWidth = 250.dp // Fixed width that never changes
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
@@ -92,12 +93,6 @@ fun App_PresenterEcran_Au_Client(
                     targetValue,
                     spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
                     label = "height"
-                )
-
-                val animatedSize by animateDpAsState(
-                    targetValue,
-                    tween(300, if (isClicked) 0 else 100),
-                    label = "size"
                 )
 
                 Card(
@@ -119,8 +114,10 @@ fun App_PresenterEcran_Au_Client(
                             CouleurDisplayer(
                                 height=heights.first,
                                 keyCouleur = couleur.keyID,
-                                size = animatedSize,
-                                modifier = Modifier.size(animatedSize),
+                                size = fixedWidth, // Use fixed width instead of animated size
+                                modifier = Modifier
+                                    .width(fixedWidth) // Fixed width
+                                    .height(animatedHeight), // Animated height only
                                 onClickToChangeSelected = { keyID ->
                                     clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
                                 }
@@ -136,9 +133,11 @@ fun App_PresenterEcran_Au_Client(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             CouleurDisplayer(
-                                modifier = Modifier.size(animatedSize),
+                                modifier = Modifier
+                                    .width(fixedWidth) // Fixed width
+                                    .height(animatedHeight), // Animated height only
                                 keyCouleur = couleur.keyID,
-                                size = animatedSize,
+                                size = fixedWidth, // Use fixed width instead of animated size
                                 onClickToChangeSelected = { keyID ->
                                     clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
                                 },
@@ -269,7 +268,7 @@ fun CouleurDisplayer(
                     imageFile = imageFile,
                     colorName = data.nomCouleurStrSiSonImageDispo,
                     contentScale = ContentScale.Crop,
-                    imageSize = DpSize(0.dp, height),
+                    imageSize = DpSize(size, height), // Use the size parameter for width
                     cornerRadius = 4.dp,
                     finalequalityImagePourcentage = finalequalityImagePourcentage,
                     reloadKey = reloadKey,
@@ -284,4 +283,3 @@ fun CouleurDisplayer(
         }
     }
 }
-
