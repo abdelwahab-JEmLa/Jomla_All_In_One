@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL
 
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,10 +8,17 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface Z_AppComptDao {
+    @Query("DELETE FROM Z_AppCompt WHERE keyID = :keyId")
+    suspend fun deleteByKeyId(keyId: String)
+
+    @Upsert
+    suspend fun upsert(data: Z_AppCompt)
+
     @Query("SELECT * FROM Z_AppCompt")
     fun getAll(): List<Z_AppCompt>
 
