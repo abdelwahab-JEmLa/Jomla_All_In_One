@@ -45,30 +45,27 @@ fun App_PresenterEcran_Au_Client(
         )
     }
 
-    // State for clicked items
-    var clickedCouleurId by remember { mutableStateOf<String?>(null) }
+    var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // LazyColumn with colors as dropdown items
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Fix: Handle nullable list by using orEmpty() or null check
             items(relative_List_Couleurs.orEmpty()) { couleur ->
-                val isClicked = clickedCouleurId == couleur.keyID
-                val itemHeight = if (isClicked) 200.dp else 100.dp
+                val isClicked = clickedCouleurKeyID == couleur.keyID
+                val itemHeight = if (isClicked) 500.dp else 100.dp
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(itemHeight),
                     onClick = {
-                        clickedCouleurId = if (isClicked) null else couleur.keyID
+                        clickedCouleurKeyID = if (isClicked) null else couleur.keyID
                     }
                 ) {
                     Row(
