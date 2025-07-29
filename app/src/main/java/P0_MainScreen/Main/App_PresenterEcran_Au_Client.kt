@@ -8,24 +8,47 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
-import com.bumptech.glide.integration.compose.*
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
@@ -37,6 +60,92 @@ import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import java.io.File
 
+@SuppressLint("UnrememberedMutableState")
+@Composable
+fun App_PresenterEcran_Au_Client(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    modifier: Modifier = Modifier
+) {
+    val currentActive = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val productKeyID = currentActive?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
+    val activeCouleurKeyID by derivedStateOf { currentActive?.active_CouleurKeyID_Extended_Image }
+    val couleursList = productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
+
+    var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
+
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(couleursList.orEmpty()) { couleur ->
+                val isClicked = clickedCouleurKeyID == couleur.keyID
+
+                val animatedHeight by animateDpAsState(
+                    if (isClicked) 600.dp else 200.dp,
+                    spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
+                    label = "height"
+                )
+
+                val animatedSize by animateDpAsState(
+                    if (isClicked) 450.dp else 80.dp,
+                    tween(300, if (isClicked) 0 else 100),
+                    label = "size"
+                )
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(animatedHeight)
+                        .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
+                    onClick = { clickedCouleurKeyID = if (isClicked) null else couleur.keyID }
+                ) {
+                    if (isClicked) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                                .animateContentSize(spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            CouleurDisplayer(
+                                keyCouleur = couleur.keyID,
+                                size = animatedSize,
+                                modifier = Modifier.size(animatedSize),
+                                onClickToChangeSelected = { keyID ->
+                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
+                                }
+                            )
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                                .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            CouleurDisplayer(
+                                keyCouleur = couleur.keyID,
+                                size = animatedSize,
+                                modifier = Modifier.size(animatedSize),
+                                onClickToChangeSelected = { keyID ->
+                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -170,89 +279,3 @@ fun CouleurDisplayer(
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
-@Composable
-fun App_PresenterEcran_Au_Client(
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    modifier: Modifier = Modifier
-) {
-    val currentActive = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-    val productKeyID = currentActive?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
-    val activeCouleurKeyID by derivedStateOf { currentActive?.active_CouleurKeyID_Extended_Image }
-    val couleursList = productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
-
-    var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
-
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(couleursList.orEmpty()) { couleur ->
-                val isClicked = clickedCouleurKeyID == couleur.keyID
-
-                val animatedHeight by animateDpAsState(
-                    if (isClicked) 500.dp else 100.dp,
-                    spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
-                    label = "height"
-                )
-
-                val animatedSize by animateDpAsState(
-                    if (isClicked) 450.dp else 80.dp,
-                    tween(300, if (isClicked) 0 else 100),
-                    label = "size"
-                )
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(animatedHeight)
-                        .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
-                    onClick = { clickedCouleurKeyID = if (isClicked) null else couleur.keyID }
-                ) {
-                    if (isClicked) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                                .animateContentSize(spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            CouleurDisplayer(
-                                keyCouleur = couleur.keyID,
-                                size = animatedSize,
-                                modifier = Modifier.size(animatedSize),
-                                onClickToChangeSelected = { keyID ->
-                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
-                                }
-                            )
-                        }
-                    } else {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                                .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            CouleurDisplayer(
-                                keyCouleur = couleur.keyID,
-                                size = animatedSize,
-                                modifier = Modifier.size(animatedSize),
-                                onClickToChangeSelected = { keyID ->
-                                    clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
