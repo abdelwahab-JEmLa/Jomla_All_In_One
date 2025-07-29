@@ -79,8 +79,8 @@ fun App_PresenterEcran_Au_Client(
 
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
-    val heights= Pair(450.dp,180.dp)
-    val fixedWidth = 360.dp
+    val heights= Pair(420.dp,160.dp)
+    val fixedWidth = 310.dp
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
