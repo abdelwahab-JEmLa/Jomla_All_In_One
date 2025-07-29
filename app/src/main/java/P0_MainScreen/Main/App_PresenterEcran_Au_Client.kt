@@ -77,8 +77,8 @@ fun App_PresenterEcran_Au_Client(
 
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
-    val heights= Pair(500.dp,200.dp)
-    val fixedWidth = 250.dp // Fixed width that never changes
+    val heights= Pair(450.dp,180.dp)
+    val fixedWidth = 350.dp // Fixed width that never changes
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
@@ -100,7 +100,10 @@ fun App_PresenterEcran_Au_Client(
                         .fillMaxWidth()
                         .height(animatedHeight)
                         .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
-                    onClick = { clickedCouleurKeyID = if (isClicked) null else couleur.keyID }
+                    onClick = {
+                        clickedCouleurKeyID = if (isClicked) null else couleur.keyID
+
+                    }
                 ) {
                     if (isClicked) {
                         Column(
