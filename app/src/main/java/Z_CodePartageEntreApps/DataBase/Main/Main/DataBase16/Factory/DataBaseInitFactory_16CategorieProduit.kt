@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -60,6 +61,75 @@ class DataBaseInitFactory_16CategorieProduit(
         }
     }
 
+// Update the Factory class methods to use transactions properly:
+
+    // In DataBaseInitFactory_16CategorieProduit class, update the addOrUpdatedAncienRepo method:
+    fun addOrUpdatedAncienRepo(
+        existingIndex: Int,
+        dataAvecTigerUpdate: CategoriesTabelle,
+        avec_BatchFireBase: Boolean = true
+    ) {
+        factoryScope.launch {
+            try {
+                dao.transaction {
+                    if (existingIndex >= 0) {
+                        dao.update(dataAvecTigerUpdate)
+                    } else {
+                        dao.insert(dataAvecTigerUpdate)
+                    }
+                }
+
+                if (avec_BatchFireBase) {
+                    batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
+                }
+            } catch (e: Exception) {
+                Log.e(repoTAG, "Error in addOrUpdatedAncienRepo: ${e.message}")
+            }
+        }
+    }
+
+    // Add a new method for bulk operations with transaction:
+    suspend fun bulkReplaceAll(newData: List<CategoriesTabelle>) {
+        try {
+            dao.transaction {
+                deleteAll()
+                insertAll(newData)
+            }
+            Log.d(repoTAG, "Bulk replace completed for ${newData.size} items")
+        } catch (e: Exception) {
+            Log.e(repoTAG, "Error in bulk replace: ${e.message}")
+            throw e
+        }
+    }
+
+    // Enhanced delete method with transaction:
+    fun delete(data: CategoriesTabelle) {
+        factoryScope.launch {
+            try {
+                dao.transaction {
+                    delete(data)
+                }
+                repoRef.child(data.keyID).removeValue().await()
+            } catch (e: Exception) {
+                Log.e(repoTAG, "Error in delete: ${e.message}")
+            }
+        }
+    }
+
+    // Enhanced deleteAll method with transaction:
+    fun deleteAll() {
+        factoryScope.launch {
+            try {
+                dao.transaction {
+                    deleteAll()
+                }
+                repoRef.removeValue().await()
+            } catch (e: Exception) {
+                Log.e(repoTAG, "Error deleting all data: ${e.message}")
+            }
+        }
+    }
+
     var isListenerRegistered = false
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
@@ -109,22 +179,6 @@ class DataBaseInitFactory_16CategorieProduit(
         })
     }
 
-    fun addOrUpdatedAncienRepo(
-        existingIndex: Int,
-        dataAvecTigerUpdate: CategoriesTabelle,
-        avec_BatchFireBase :Boolean=true
-    ) {
-        factoryScope.launch {
-            if (existingIndex >= 0) {
-                dao.update(dataAvecTigerUpdate)
-
-               if (avec_BatchFireBase) batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
-            } else {
-                dao.insert(dataAvecTigerUpdate)
-                if (avec_BatchFireBase)  batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
-            }
-        }
-    }
 
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<CategoriesTabelle>) {
         val updates = mutableMapOf<String, Any>()
@@ -134,25 +188,5 @@ class DataBaseInitFactory_16CategorieProduit(
         repoRef.updateChildren(updates).await()
     }
 
-    fun delete(data: CategoriesTabelle) {
-        factoryScope.launch {
-            try {
-                dao.delete(data)
-                repoRef.child(data.keyID).removeValue().await()
-            } catch (e: Exception) {
-                println("Error in deleteDataAncienRepo: ${e.message}")
-            }
-        }
-    }
 
-    fun deleteAll() {
-        factoryScope.launch {
-            try {
-                dao.deleteAll()
-                repoRef.removeValue().await()
-            } catch (e: Exception) {
-                println("Error deleting all data: ${e.message}")
-            }
-        }
-    }
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface Dao16CategorieProduit {
+
     @Delete
     fun delete(data: CategoriesTabelle)
 

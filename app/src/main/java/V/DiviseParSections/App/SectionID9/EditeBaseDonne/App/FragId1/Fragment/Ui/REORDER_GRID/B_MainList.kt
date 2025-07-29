@@ -77,7 +77,7 @@ internal fun MainList(
                 items(categories, key = { it.id }) { category ->
                     MainItem(
                         productsByCategory = productsByCategory,
-                        rel_category = category,
+                        relative_category = category,
                         viewModel = viewModel
                     )
                 }

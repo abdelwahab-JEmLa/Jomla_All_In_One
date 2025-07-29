@@ -24,18 +24,16 @@ data class UiStateSec9Frag1(
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
-        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
-        .REORDER_GRID,
+        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.REORDER_GRID,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
         Standart(Color.Gray, Icons.Default.Refresh),
         FastMove(Color.Blue, Icons.Default.TouchApp);
 
-        fun toggle(): ClickItemMode {
-            return when (this) {
-                Standart -> FastMove; FastMove -> Standart
-            }
+        fun toggle() = when (this) {
+            Standart -> FastMove
+            FastMove -> Standart
         }
     }
 }
@@ -45,118 +43,79 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     val a_CentralDatasHandlerProtoJuin9 = aCentralFacade.repositorysMainGetter
-    val setter = aCentralFacade.repositorysMainSetter
-
-    val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.repoM16CategorieProduit
     val a_ProduitDataBaseComposeRepositoryPJ17 =
         a_CentralDatasHandlerProtoJuin9.repo1ProduitInfos
+    private val dataHandler = aCentralFacade.repositorysMainGetter
+    private val setter = aCentralFacade.repositorysMainSetter
+    val categoriesCompoRepository = dataHandler.repoM16CategorieProduit
+    private val produitRepository = dataHandler.repo1ProduitInfos
 
     private val _uiState = MutableStateFlow(UiStateSec9Frag1())
     val uiState: StateFlow<UiStateSec9Frag1> = _uiState.asStateFlow()
 
-    fun new_currentMode(currentMode: ModeAffichage) {
-        _uiState.value = _uiState.value.copy(currentMode = currentMode)
-    }
-
     init {
-        collecteMasterRepositorysDatasAuUiState()
-    }
-
-    private fun collecteMasterRepositorysDatasAuUiState() {
         viewModelScope.launch {
             masterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
-                    val newProduitInfosList =
-                        model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
-                    val newProgress = model.progress
-
                     _uiState.value = _uiState.value.copy(
-                        a_ProduitInfosList = newProduitInfosList,
-                        mainLoadingProgressPJuin3 = newProgress
+                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList(),
+                        mainLoadingProgressPJuin3 = model.progress
                     )
                 }
             }
         }
     }
 
+    enum class ModeAffichage { CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID }
+
+    fun new_currentMode(currentMode: ModeAffichage) {
+        _uiState.value = _uiState.value.copy(currentMode = currentMode)
+    }
+
     fun toggleEntreEntitiesClickItemMode() {
-        val currentMode = _uiState.value.clickItemMode
-        val newMode = currentMode.toggle()
-        _uiState.value = _uiState.value.copy(clickItemMode = newMode)
+        _uiState.value = _uiState.value.copy(clickItemMode = _uiState.value.clickItemMode.toggle())
     }
 
     fun updateActiveCatalogue(catalogue: CataloguesCaegorie) {
         _uiState.value = _uiState.value.copy(activeCatalogue = catalogue)
     }
 
-    // Function to toggle between catalogues
     fun toggleToCatalogue(catalogueId: Long) {
         val catalogues = B4CatalogueCategoriesRepository()
         val newCatalogue = catalogues.find { it.id == catalogueId } ?: catalogues.first()
         updateActiveCatalogue(newCatalogue)
     }
 
+    fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
+        val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+        if (categoriesToMove.isEmpty()) return
 
-    enum class MoveOperation {
-        TO_CATALOGUE,
-        RELATIVE_TO_TARGET,
-        REORDER_WITH_CLEAR
+        val updatedCategories = categoriesToMove.map {
+            it.copy(catalogueParentId = targetCatalogueId, cSelectionePourDeplace = false)
+        }
+        addOrUpdateCategories(updatedCategories)
     }
 
-    fun moveCategories(
-        operation: MoveOperation,
-        targetId: Long = 0L,
-        moveBefore: Boolean = false,
-        newCategoriesList: List<CategoriesTabelle> = emptyList()
-    ) {
-        when (operation) {
-            MoveOperation.TO_CATALOGUE -> {
-                val categoriesToMove =
-                    categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
-                if (categoriesToMove.isEmpty()) return
+    fun moveSelectedCategoriesRelativeToTarget(targetCategoryId: Long, moveBefore: Boolean) {
+        val currentCategories = categoriesCompoRepository.datasValue
+        val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
 
-                val updatedCategories = categoriesToMove.map { categorie ->
-                    categorie.copy(
-                        catalogueParentId = targetId,
-                        cSelectionePourDeplace = false
-                    )
-                }
-                addOrUpdateCategories(updatedCategories)
-            }
+        if (selectedCategories.isEmpty() || selectedCategories.any { it.id == targetCategoryId }) return
 
-            MoveOperation.RELATIVE_TO_TARGET -> {
-                val currentCategories = categoriesCompoRepository.datasValue
-                val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
+        val reorderedCategories = performCategoryReorder(
+            categories = currentCategories,
+            selectedIds = selectedCategories.map { it.id }.toSet(),
+            targetId = targetCategoryId,
+            moveBefore = moveBefore
+        )
 
-                if (selectedCategories.isEmpty() || selectedCategories.any { it.id == targetId }) return
-
-                val reorderedCategories = performCategoryReorder(
-                    categories = currentCategories,
-                    selectedIds = selectedCategories.map { it.id }.toSet(),
-                    targetId = targetId,
-                    moveBefore = moveBefore
-                )
-
-                val finalCategories = reorderedCategories.map { category ->
-                    if (selectedCategories.any { it.id == category.id }) {
-                        category.copy(cSelectionePourDeplace = false)
-                    } else {
-                        category
-                    }
-                }
-                addOrUpdateCategories(finalCategories)
-            }
-
-            MoveOperation.REORDER_WITH_CLEAR -> {
-                val updatedCategories = newCategoriesList.mapIndexed { index, category ->
-                    category.copy(
-                        position = index + 1,
-                        cSelectionePourDeplace = false
-                    )
-                }
-                addOrUpdateCategories(updatedCategories)
-            }
+        val finalCategories = reorderedCategories.map { category ->
+            if (selectedCategories.any { it.id == category.id }) {
+                category.copy(cSelectionePourDeplace = false)
+            } else category
         }
+
+        addOrUpdateCategories(finalCategories)
     }
 
     private fun performCategoryReorder(
@@ -176,17 +135,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         val insertIndex = if (moveBefore) targetIndex else targetIndex + 1
         val newList = remaining.toMutableList()
 
-        selected.forEachIndexed { i, cat -> newList.add(insertIndex + i, cat) }
+        selected.forEachIndexed { i, cat ->
+            newList.add(insertIndex + i, cat)
+        }
 
         return newList.mapIndexed { i, cat -> cat.copy(position = i + 1) }
-    }
-
-    fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
-        moveCategories(MoveOperation.TO_CATALOGUE, targetCatalogueId)
-    }
-
-    fun moveSelectedCategoriesRelativeToTarget(targetCategoryId: Long, moveBefore: Boolean) {
-        moveCategories(MoveOperation.RELATIVE_TO_TARGET, targetCategoryId, moveBefore)
     }
 
     fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle) {
@@ -195,8 +148,10 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun getSelectedCategoryIds(): Set<Long> {
-        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
-            .map { it.id }.toSet()
+        return categoriesCompoRepository.datasValue
+            .filter { it.cSelectionePourDeplace }
+            .map { it.id }
+            .toSet()
     }
 
     fun addOrUpdateCategorie(categorie: CategoriesTabelle) {
@@ -204,7 +159,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
-        categoriesCompoRepository.addOrUpdateDatas(categories, avec_BatchFireBase = false)
+        if (categories.size > 10) {
+            categoriesCompoRepository.reorderCategories(categories)
+        } else {
+            categoriesCompoRepository.addOrUpdateDatas(categories, avec_BatchFireBase = true)
+        }
     }
 
     fun deleteAddMultiCategories(newDatas: List<CategoriesTabelle>) {
@@ -216,13 +175,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
-        a_ProduitDataBaseComposeRepositoryPJ17.upsert(data)
+        produitRepository.upsert(data)
     }
 
     fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) {
-        datas.forEach {
-            addOrUpdateProduit(it)
-        }
+        datas.forEach { addOrUpdateProduit(it) }
     }
 
     fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
@@ -231,9 +188,5 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun deleteAddMultiClients() {
         setter.deleteAddMultiClients()
-    }
-
-    enum class ModeAffichage {
-        CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID
     }
 }

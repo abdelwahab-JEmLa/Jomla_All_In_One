@@ -38,6 +38,58 @@ class RepoM16CategorieProduit(
         }
     }
 
+    fun deleteAddMultiDatas(
+        datas: List<CategoriesTabelle>,
+    ) {
+        repoScope.launch {
+            try {
+                val preparedDatas =
+                    datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
+
+                // Use the new bulk replace method with transaction
+                dataBaseCreationFactory.bulkReplaceAll(preparedDatas)
+
+                // Update UI state after successful database operation
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = preparedDatas
+                }
+
+                // Clear Firebase and batch update
+                CategoriesTabelle.safeRemoveRef()
+                batchFireBaseUpdate(preparedDatas)
+
+                Log.d(TAG, "Successfully replaced all ${preparedDatas.size} categories")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in deleteAddMultiDatas: ${e.message}")
+            }
+        }
+    }
+
+    fun reorderCategories(reorderedCategories: List<CategoriesTabelle>) {
+        repoScope.launch {
+            val processedDatas = reorderedCategories.map {
+                it.withDernierTimeTampsSynchronisationAvecFireBase()
+            }
+
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = processedDatas
+            }
+        }
+    }
+
+
+    private suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
+        try {
+            val updates = mutableMapOf<String, Any>()
+            datas.forEach { data ->
+                updates[data.keyID] = data
+            }
+            CategoriesTabelle.ref.updateChildren(updates).await()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in batchFireBaseUpdate: ${e.message}")
+        }
+    }
+
     fun addOrUpdateData(data: CategoriesTabelle) {
         data.let { dataSansProper ->
             val newData = dataSansProper.withDernierTimeTampsSynchronisationAvecFireBase()
@@ -60,34 +112,6 @@ class RepoM16CategorieProduit(
 
             repoScope.launch {
                 dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, newData)
-            }
-        }
-    }
-
-    fun addOrUpdateDatas(
-        datas: List<CategoriesTabelle> ,
-        avec_BatchFireBase :Boolean=false
-    ) {
-        val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
-
-        val currentList = _datas.value.toMutableList()
-
-        processedDatas.forEach { newData ->
-            val existingIndex = currentList.indexOfFirst { it.id == newData.id }
-
-            if (existingIndex >= 0) {
-                currentList[existingIndex] = newData
-            } else {
-                currentList.add(newData)
-            }
-        }
-
-        _datas.value = currentList
-
-        repoScope.launch {
-            processedDatas.forEach { processedData ->
-                val existingIndex = currentList.indexOfFirst { it.id == processedData.id }
-                dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, processedData,avec_BatchFireBase)
             }
         }
     }
@@ -139,51 +163,49 @@ class RepoM16CategorieProduit(
         dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, updatedItem)
     }
 
-    fun delete(data: CategoriesTabelle) {
-        repoScope.launch {
-            try {
-                _datas.value = datasValue.filter { it.keyID != data.keyID }
-                dataBaseCreationFactory.delete(data)
-            } catch (e: Exception) {
-            }
-        }
-    }
-
-    fun deleteAddMultiDatas(
+    fun addOrUpdateDatas(
         datas: List<CategoriesTabelle>,
+        avec_BatchFireBase: Boolean = false
     ) {
+        val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
+
+        // Update UI state immediately
+        _datas.value = processedDatas
+
+        // Handle database updates in background with transaction
         repoScope.launch {
             try {
-                val preparedDatas =
-                    datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
-
-                dataBaseCreationFactory.dao.deleteAll()
-                dataBaseCreationFactory.dao.insertAll(preparedDatas)
-
-                withContext(Dispatchers.Main.immediate) {
-                    _datas.value = preparedDatas
+                dataBaseCreationFactory.dao.transaction {
+                    if (datas.size > 10) {
+                        // For bulk operations like reordering - use transaction for consistency
+                        Log.d(
+                            TAG,
+                            "Performing bulk update with transaction for ${datas.size} items"
+                        )
+                        deleteAll()
+                        insertAll(processedDatas)
+                    } else {
+                        // For smaller updates, use upsert which handles insert/update automatically
+                        Log.d(TAG, "Performing individual upserts for ${datas.size} items")
+                        processedDatas.forEach { processedData ->
+                            upsert(processedData)
+                        }
+                    }
                 }
 
-                CategoriesTabelle.safeRemoveRef()
+                Log.d(TAG, "Database transaction completed successfully")
 
-                batchFireBaseUpdate(preparedDatas)
+                if (avec_BatchFireBase) {
+                    batchFireBaseUpdate(processedDatas)
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error in deleteAddMultiDatas: ${e.message}")
+                Log.e(TAG, "Error in addOrUpdateDatas transaction: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
 
-    private suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
-        try {
-            val updates = mutableMapOf<String, Any>()
-            datas.forEach { data ->
-                updates[data.keyID] = data
-            }
-            CategoriesTabelle.ref.updateChildren(updates).await()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in batchFireBaseUpdate: ${e.message}")
-        }
-    }
+
 }
 
 @Entity
