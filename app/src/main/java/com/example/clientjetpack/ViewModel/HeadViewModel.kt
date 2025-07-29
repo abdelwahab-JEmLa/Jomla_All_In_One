@@ -82,7 +82,7 @@ open class HeadViewModel(
 
     private val connectionManager = WifiTransferDatas(
         context = context,
-        a_CentralCompoRepositoryProtoJuin9 = getter,
+        repositorysMainGetter = getter,
     ) { payload -> handleRetoureDataPayload(payload) }
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {

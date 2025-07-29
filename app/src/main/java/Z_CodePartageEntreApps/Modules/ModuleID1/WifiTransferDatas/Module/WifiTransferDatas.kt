@@ -37,11 +37,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas(
     private val context: Context,
-    val a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
+    val repositorysMainGetter: RepositorysMainGetter,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
-    val appComptComposeRepositoryProtoJuin17 =
-        a_CentralCompoRepositoryProtoJuin9.repo9AppCompt
+    val appComptComposeRepositoryProtoJuin17 = repositorysMainGetter.repo9AppCompt
 
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
@@ -71,8 +70,6 @@ class WifiTransferDatas(
             sendData("${orderName.prefix}$data")
         }
     }
-
-
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->

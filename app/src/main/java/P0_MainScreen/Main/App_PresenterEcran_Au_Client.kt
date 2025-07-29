@@ -95,6 +95,7 @@ fun App_PresenterEcran_Au_Client(
                 active_CouleurKeyID_Extended_Image = if (isClicked) "" else couleur.keyID
             )
         )
+
     }
 
     Column(modifier = modifier
