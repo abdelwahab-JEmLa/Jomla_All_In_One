@@ -25,7 +25,7 @@ data class UiStateSec9Frag1(
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
         EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
-        .PRODUCTS_LIST,
+        .REORDER_GRID,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
