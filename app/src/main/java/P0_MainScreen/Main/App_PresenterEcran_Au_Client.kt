@@ -77,6 +77,8 @@ fun App_PresenterEcran_Au_Client(
 
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
+    val heights= Pair(600.dp,200.dp)
+
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -84,15 +86,16 @@ fun App_PresenterEcran_Au_Client(
         ) {
             items(couleursList.orEmpty()) { couleur ->
                 val isClicked = clickedCouleurKeyID == couleur.keyID
+                val targetValue = if (isClicked) heights.first else heights.second
 
                 val animatedHeight by animateDpAsState(
-                    if (isClicked) 600.dp else 200.dp,
+                    targetValue,
                     spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
                     label = "height"
                 )
 
                 val animatedSize by animateDpAsState(
-                    if (isClicked) 450.dp else 80.dp,
+                    targetValue,
                     tween(300, if (isClicked) 0 else 100),
                     label = "size"
                 )
@@ -114,6 +117,7 @@ fun App_PresenterEcran_Au_Client(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             CouleurDisplayer(
+                                height=heights.first,
                                 keyCouleur = couleur.keyID,
                                 size = animatedSize,
                                 modifier = Modifier.size(animatedSize),
@@ -132,12 +136,13 @@ fun App_PresenterEcran_Au_Client(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             CouleurDisplayer(
+                                modifier = Modifier.size(animatedSize),
                                 keyCouleur = couleur.keyID,
                                 size = animatedSize,
-                                modifier = Modifier.size(animatedSize),
                                 onClickToChangeSelected = { keyID ->
                                     clickedCouleurKeyID = if (clickedCouleurKeyID == keyID) null else keyID
-                                }
+                                },
+                                height = heights.second
                             )
                         }
                     }
@@ -153,7 +158,7 @@ fun ImageDisplayer(
     modifier: Modifier = Modifier,
     imageFile: File? = null,
     colorName: String = "",
-    contentScale: ContentScale = ContentScale.Fit,
+    contentScale: ContentScale = ContentScale.Crop,
     imageSize: DpSize,
     cornerRadius: Dp = 4.dp,
     finalequalityImagePourcentage: Int = 100,
@@ -240,7 +245,8 @@ fun CouleurDisplayer(
     finalequalityImagePourcentage: Int = 100,
     reloadKey: Any = Unit,
     onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {},
-    onClickToChangeSelected: (String) -> Unit = {}
+    onClickToChangeSelected: (String) -> Unit = {},
+    height: Dp
 ) {
     val data = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find { it.keyID == keyCouleur }!!
 
@@ -263,7 +269,7 @@ fun CouleurDisplayer(
                     imageFile = imageFile,
                     colorName = data.nomCouleurStrSiSonImageDispo,
                     contentScale = ContentScale.Crop,
-                    imageSize = DpSize(0.dp, size),
+                    imageSize = DpSize(0.dp, height),
                     cornerRadius = 4.dp,
                     finalequalityImagePourcentage = finalequalityImagePourcentage,
                     reloadKey = reloadKey,
