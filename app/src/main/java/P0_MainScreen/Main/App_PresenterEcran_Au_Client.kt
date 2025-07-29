@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -61,7 +62,7 @@ import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import java.io.File
 
-@SuppressLint("UnrememberedMutableState","ModifierParameter")
+@SuppressLint("UnrememberedMutableState", "ModifierParameter")
 @Composable
 fun App_PresenterEcran_Au_Client(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -73,16 +74,32 @@ fun App_PresenterEcran_Au_Client(
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
     val activeCouleurKeyID by derivedStateOf { relative_M9AppCompt?.active_CouleurKeyID_Extended_Image }
-    val relative_ListCouleurs = productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
+    val relative_ListCouleurs =
+        productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
 
     var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
-    val heights= Pair(420.dp,160.dp)
+    val heights = Pair(420.dp, 160.dp)
     val fixedWidth = 310.dp
 
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+    fun handelClick(
+        repositorysMainSetter: RepositorysMainSetter,
+        relative_M9AppCompt: Z_AppCompt,
+        isClicked: Boolean,
+        couleur: M3CouleurProduitInfos
+    ) {
+        repositorysMainSetter.update_M9AppCompt(
+            relative_M9AppCompt.copy(
+                active_CouleurKeyID_Extended_Image = if (isClicked) "" else couleur.keyID
+            )
+        )
+    }
+
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -101,13 +118,19 @@ fun App_PresenterEcran_Au_Client(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(animatedHeight)
-                        .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
+                        .animateContentSize(
+                            spring(
+                                Spring.DampingRatioMediumBouncy,
+                                Spring.StiffnessMedium
+                            )
+                        ),
                     onClick = {
                         if (relative_M9AppCompt != null) {
-                            repositorysMainSetter.update_M9AppCompt(
-                                relative_M9AppCompt.copy(
-                                    active_CouleurKeyID_Extended_Image = if (isClicked) "" else couleur.keyID
-                                )
+                            handelClick(
+                                repositorysMainSetter,
+                                relative_M9AppCompt,
+                                isClicked,
+                                couleur
                             )
                         }
                     }
@@ -117,12 +140,17 @@ fun App_PresenterEcran_Au_Client(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
-                                .animateContentSize(spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)),
+                                .animateContentSize(
+                                    spring(
+                                        Spring.DampingRatioLowBouncy,
+                                        Spring.StiffnessLow
+                                    )
+                                ),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             CouleurDisplayer(
-                                height=heights.first,
+                                height = heights.first,
                                 keyCouleur = couleur.keyID,
                                 size = fixedWidth, // Use fixed width instead of animated size
                                 modifier = Modifier
@@ -130,10 +158,11 @@ fun App_PresenterEcran_Au_Client(
                                     .height(animatedHeight), // Animated height only
                                 onClickToChangeSelected = { keyID ->
                                     if (relative_M9AppCompt != null) {
-                                        repositorysMainSetter.update_M9AppCompt(
-                                            relative_M9AppCompt.copy(
-                                                active_CouleurKeyID_Extended_Image = if (clickedCouleurKeyID == keyID) "" else couleur.keyID
-                                            )
+                                        handelClick(
+                                            repositorysMainSetter,
+                                            relative_M9AppCompt,
+                                            clickedCouleurKeyID == keyID,
+                                            couleur
                                         )
                                     }
                                 }
@@ -144,7 +173,12 @@ fun App_PresenterEcran_Au_Client(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
-                                .animateContentSize(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)),
+                                .animateContentSize(
+                                    spring(
+                                        Spring.DampingRatioMediumBouncy,
+                                        Spring.StiffnessMedium
+                                    )
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
@@ -156,10 +190,11 @@ fun App_PresenterEcran_Au_Client(
                                 size = fixedWidth, // Use fixed width instead of animated size
                                 onClickToChangeSelected = { keyID ->
                                     if (relative_M9AppCompt != null) {
-                                        repositorysMainSetter.update_M9AppCompt(
-                                            relative_M9AppCompt.copy(
-                                                active_CouleurKeyID_Extended_Image = if (clickedCouleurKeyID == keyID) "" else couleur.keyID
-                                            )
+                                        handelClick(
+                                            repositorysMainSetter,
+                                            relative_M9AppCompt,
+                                            clickedCouleurKeyID == keyID,
+                                            couleur
                                         )
                                     }
                                 },
@@ -172,6 +207,9 @@ fun App_PresenterEcran_Au_Client(
         }
     }
 }
+
+
+
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -231,15 +269,31 @@ fun ImageDisplayer(
                         }
                 ) { request ->
                     request.apply {
-                        thumbnail(request.clone().transform(jp.wasabeef.glide.transformations.BlurTransformation(10)))
+                        thumbnail(
+                            request.clone()
+                                .transform(jp.wasabeef.glide.transformations.BlurTransformation(10))
+                        )
                         transition(DrawableTransitionOptions.withCrossFade())
                         diskCacheStrategy(DiskCacheStrategy.ALL)
                         priority(Priority.HIGH)
                         signature(ObjectKey("${imageFile.absolutePath}_$currentQuality"))
                         listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean) = false
-                            override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                                if (isFirstResource && currentQuality < targetQuality) currentQuality = targetQuality
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean
+                            ) = false
+
+                            override fun onResourceReady(
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                if (isFirstResource && currentQuality < targetQuality) currentQuality =
+                                    targetQuality
                                 return false
                             }
                         })
@@ -273,7 +327,10 @@ fun CouleurDisplayer(
 
     val imageFile by derivedStateOf {
         if (data.nomImageFichieSansEtansion != "Non Dispo") {
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}")
+            File(
+                "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
+                "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+            )
         } else null
     }
 
@@ -283,7 +340,9 @@ fun CouleurDisplayer(
     }
 
     Card(modifier = modifier.fillMaxWidth()) {
-        Box(modifier = Modifier.fillMaxSize().padding(5.dp)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(5.dp)) {
             when (data.aAffiche) {
                 M3CouleurProduitInfos.Type.Image -> ImageDisplayer(
                     modifier = Modifier.fillMaxSize(),
@@ -296,6 +355,7 @@ fun CouleurDisplayer(
                     reloadKey = reloadKey,
                     onClickToOpenWindow = onClick
                 )
+
                 M3CouleurProduitInfos.Type.Nom -> ColorNameDisplayer(
                     modifier = Modifier.fillMaxSize(),
                     colorName = data.nomCouleurStrSiSonImageDispo,
