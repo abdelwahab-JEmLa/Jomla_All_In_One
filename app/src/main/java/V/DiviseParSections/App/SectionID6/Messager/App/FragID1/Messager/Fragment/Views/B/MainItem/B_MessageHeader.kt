@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-// Update MessageHeader function signature in B_MessageHeader.kt:
 @Composable
 fun MessageHeader(
     relative_M9AppCompt: Z_AppCompt?,

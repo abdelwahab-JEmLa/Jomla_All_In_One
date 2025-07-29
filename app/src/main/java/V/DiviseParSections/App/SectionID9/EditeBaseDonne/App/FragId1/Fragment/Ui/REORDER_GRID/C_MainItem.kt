@@ -112,33 +112,6 @@ internal fun MainItem(
                         Icon(
                             Icons.Default.KeyboardArrowUp,
                             modifier = Modifier
-                                .semantics(mergeDescendants = true) {
-                                    set(
-                                        SemanticsPropertyKey("old"),
-                                        list_repoM16CategorieProduit
-                                            .filter {
-                                                it.position in 2..7
-                                            }
-                                            .map { it.nom + it.keyID + " to " + it.position }
-                                    )
-                                }
-                                .semantics(mergeDescendants = true) {
-                                    set(SemanticsPropertyKey("targetIndex"), old_Index)
-                                }
-                                .semantics(mergeDescendants = true) {
-                                    set(SemanticsPropertyKey("insertIndex"), newAdd_Index)
-                                }
-
-                                .semantics(mergeDescendants = true) {
-                                    set(
-                                        SemanticsPropertyKey("new"),
-                                        new_reordered_List_Categorie
-                                            .filter {
-                                                it.position in 2..7
-                                            }
-                                            .map { it.nom + it.keyID + " to " + it.position }
-                                    )
-                                }
                                 .size(25.dp),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary
