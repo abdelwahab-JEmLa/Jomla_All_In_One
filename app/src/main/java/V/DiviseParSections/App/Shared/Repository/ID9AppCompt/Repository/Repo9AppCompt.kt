@@ -148,6 +148,8 @@ data class Z_AppCompt(
     val travailleChezGrossisst3Ali: Boolean = false,
     val its_Admin: Boolean = false,
 
+    val text_Message_Warning: String = "",
+
 
     var itsProductionModePourCeCompt: Boolean = false,
     var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
@@ -187,7 +189,7 @@ data class Z_AppCompt(
     //------------------------------------------------------------------------------------------------------------------------------------------------
 
     //---------------------------------DialogOpner.DialogAboveAll.OutlinedSearchListProduits----------------------------------------------------------------------------------------------------------------------------------
-    var dialogAboveAll_OutlinedSearchListProduits: Boolean=false,
+    var dialogAboveAll_OutlinedSearchListProduits: Boolean = false,
 
     //---------------------------------dialogChoisireQuantityM1Produit----------------------------------------------------------------------------------------------------------------------------------
     var dialogChoisireQuantityM1ProduitInfosKeyID: String = "null",
@@ -203,7 +205,9 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
-) {
+
+    ) {
+
     fun get_DebugInfos(): String {
         return buildString {
             append("(M9=")
@@ -249,6 +253,7 @@ data class Z_AppCompt(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
+
         fun generePushKey() = genereUnPushKeyFireBase(ref)
     }
 }

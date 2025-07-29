@@ -3,8 +3,8 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fr
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.ViewModel_M9AppCompt
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
@@ -138,6 +138,9 @@ private fun SettingsDialog(
     var itsAdmin by remember { mutableStateOf(relative_M9AppCompt.its_Admin) }
     var showPeriodSelector by remember { mutableStateOf(false) }
 
+    var showWarningMessage by remember {
+        mutableStateOf(relative_M9AppCompt.text_Message_Warning.isNotEmpty())
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -219,6 +222,40 @@ private fun SettingsDialog(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
+                            text = "Warning Message:",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        if (showWarningMessage) {
+                            Text(
+                                text = "لا تنسى اغلاق الوقت",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    Button(
+                        onClick = {
+                            showWarningMessage = !showWarningMessage
+                            val updatedAppCompt = relative_M9AppCompt.copy(
+                                text_Message_Warning = if (showWarningMessage) "لا تنسى اغلاق الوقت" else ""
+                            )
+                            viewModel.aCentralFacade.repositorysMainSetter.update_M9AppCompt(updatedAppCompt)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (showWarningMessage) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                        )
+                    ) {
+                        Text(if (showWarningMessage) "ON" else "OFF")
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
                             text = "Select Period:",
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -238,6 +275,7 @@ private fun SettingsDialog(
                         hideAppScreen = hideAppScreen,
                         travailleChezGrossisst3Ali = travailleChezGrossisst3Ali,
                         its_Admin = itsAdmin,
+                        text_Message_Warning = if (showWarningMessage) "لا تنسى اغلاق الوقت" else ""
                     )
                     onUpdateAppCompt(updatedAppCompt)
                 }

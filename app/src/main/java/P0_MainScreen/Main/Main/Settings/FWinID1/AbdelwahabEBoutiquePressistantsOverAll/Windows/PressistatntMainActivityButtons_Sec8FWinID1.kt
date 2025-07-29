@@ -260,7 +260,25 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             ) {
 
                 if (showButtons) {
-                    BlinkingWarningCard()
+
+                    focusedValuesGetter.currentActive_M9AppCompt?.text_Message_Warning?.let { warningMessage ->
+                        if (warningMessage.isNotBlank()
+                          //  && !M18CentralParametresOfAllApps.get_Default().itsDevMode
+                            ) {
+                            BlinkingWarningCard(warningMessage)
+                        }
+                    }
+
+                    if (!cLenceDepuitFragmentsSepecialisteDeVents) {
+                        ID3RecordingButton(
+                            viewModel,
+                            isRecording,
+                            showLabels,
+                            displayTime
+                        ) {
+                            showAlertDialog = true
+                        }
+                    }
 
                     if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
                         (activeFragment != Screen.EditDatabaseWithCreateNewArticles
@@ -277,16 +295,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showLabels = showLabels,
                         )
 
-                        if (!cLenceDepuitFragmentsSepecialisteDeVents) {
-                            ID3RecordingButton(
-                                viewModel,
-                                isRecording,
-                                showLabels,
-                                displayTime
-                            ) {
-                                showAlertDialog = true
-                            }
-                        }
+
 
                     }
 
@@ -398,8 +407,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 @Composable
 fun BlinkingWarningCard(
-    modifier: Modifier = Modifier,
-    message: String = "N'oublie pas de fermer le temps"
+    message: String = "",
+    modifier: Modifier = Modifier
 ) {
     var isBlinking by remember { mutableStateOf(false) }
 
@@ -413,7 +422,7 @@ fun BlinkingWarningCard(
 
     Card(
         modifier = modifier
-            .height(200.dp)
+            .height(180.dp)
             .fillMaxWidth()
             .padding(8.dp),
         colors = CardDefaults.cardColors(
@@ -429,6 +438,15 @@ fun BlinkingWarningCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = "تذكير سريع",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = if (isBlinking) Color.White else Color.Red,
+                textAlign = TextAlign.Center
+            )
+
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = "Warning",
