@@ -3,16 +3,17 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ internal fun MainList(
             currentCategories.filter {
                 it.catalogueParentId == cat.id
             }
+                .sortedBy { it.position } // Sort categories by position within each catalogue
                 .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
         currentCategories
@@ -57,13 +59,10 @@ internal fun MainList(
                     premierCategorieId = 0
                 )] = it
             }
+
         grouped
-    }.also {
-        val cate = currentCategories.find { it.nom.contains("huil") }
-        if (cate != null) {
-            CategoriesTabelle.logCategory(cate, TAG)
-        }
     }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -77,10 +76,17 @@ internal fun MainList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             categoriesByCatalogue.forEach { (catalogue, categories) ->
-                (catalogue.id != 4L ).ifTrue {
-                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                val shouldShowCatalogue = if (M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+                    catalogue.id != 4L
+                } else {
+                    true
+                }
+
+                if (shouldShowCatalogue) {
+                    item(span = { GridItemSpan(4) }) {
                         CatalogHeaderCard(catalogue = catalogue, modifier = Modifier)
                     }
+
                     items(categories, key = { it.id }) { category ->
                         MainItem(
                             productsByCategory = productsByCategory,

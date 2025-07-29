@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,7 +36,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import org.koin.compose.koinInject
 
 @Composable
@@ -49,51 +46,35 @@ internal fun MainItem(
     relative_category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
 ) {
+    val list_repoM16CategorieProduit = repoM16CategorieProduit.datasValue
     val uiState by viewModel.uiState.collectAsState()
 
     val categoryProducts = productsByCategory[relative_category.id] ?: emptyList()
-    val selectedCategoryIds = viewModel.getSelectedCategoryIds()
 
+    val selectionePourDeplacement_Categorie = uiState.selectionePourDeplacement_Categorie
+    val selected_Cate_Key = selectionePourDeplacement_Categorie?.keyID ?: ""
     val isSelected =
-        (uiState.selectionePourDeplacement_Categorie?.keyID ?: "") == relative_category.keyID
+        selected_Cate_Key == relative_category.keyID
 
-    val hasSelections = uiState.selectionePourDeplacement_Categorie!=null
+    val hasSelections = selectionePourDeplacement_Categorie != null
 
-    fun performCategoryReorder(
-        targetId: Long,
-        moveBefore: Boolean
-    ): List<CategoriesTabelle> {
-        val categories = repoM16CategorieProduit.datasValue
-        val selectedCategories = repoM16CategorieProduit.datasValue
-            .filter { it.cSelectionePourDeplace }
-        val selectedIds = selectedCategories.map { it.id }.toSet()
+    val old_Index = list_repoM16CategorieProduit.indexOf(selectionePourDeplacement_Categorie)
+    val targeted_Index = list_repoM16CategorieProduit.indexOf(relative_category)
+    val newAdd_Index = maxOf(0, targeted_Index - 1)
 
-        if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
-
-        val selected = categories.filter { selectedIds.contains(it.id) }
-        val remaining = categories.filter { !selectedIds.contains(it.id) }
-        val targetIndex = remaining.indexOfFirst { it.id == targetId }
-
-        if (targetIndex == -1) return categories
-
-        val insertIndex = if (moveBefore) targetIndex else targetIndex + 1
-        val newList = remaining.toMutableList()
-
-        selected.forEachIndexed { i, cat ->
-            newList.add(insertIndex + i, cat)
-        }
-
-        // Return new classification with updated positions for all categories
+    fun performCategoryReorder(): List<CategoriesTabelle> {
+        if (old_Index == -1) return emptyList()
+        val newList = list_repoM16CategorieProduit.toMutableList()
+        val categoryToMove = newList.removeAt(old_Index)
+        newList.add(newAdd_Index, categoryToMove)
         return newList.mapIndexed { index, category ->
-            category.copy(position = index + 1)
+            category.copy(
+                position = index + 1,
+            )
         }
     }
 
-    // Calculate reordered categories for semantics (preview of the move operation)
-    val reorderedCategories = performCategoryReorder(
-        targetId = relative_category.id,
-        moveBefore = true
-    )
+    val new_reordered_List_Categorie = performCategoryReorder()
 
     Box {
         Card(
@@ -103,7 +84,7 @@ internal fun MainItem(
                 .fillMaxWidth()
                 .clickable {
                     viewModel.updateCate_cSelectionePourDeplace(relative_category)
-                           },
+                },
             colors = CardDefaults.cardColors(
                 containerColor = if (isSelected)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
@@ -124,25 +105,40 @@ internal fun MainItem(
                         modifier = Modifier
                             .size(25.dp),
                         onClick = {
-                            viewModel.moveSelectedCategoriesRelativeToTarget(
-                                relative_category.id,
-                                true
-                            )
+                            viewModel.addOrUpdateCategories(new_reordered_List_Categorie)
                             viewModel.updateCate_cSelectionePourDeplace(null)
                         }
                     ) {
                         Icon(
                             Icons.Default.KeyboardArrowUp,
                             modifier = Modifier
-                               /* .semantics(mergeDescendants = true) {
+                                .semantics(mergeDescendants = true) {
                                     set(
-                                        SemanticsPropertyKey("reorderedCategories"),
-                                        reorderedCategories.filter {
-                                            it.position in 2..7
-                                        }
-                                            .map { it.nom + " to " + it.position }
+                                        SemanticsPropertyKey("old"),
+                                        list_repoM16CategorieProduit
+                                            .filter {
+                                                it.position in 2..7
+                                            }
+                                            .map { it.nom + it.keyID + " to " + it.position }
                                     )
-                                }   */
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(SemanticsPropertyKey("targetIndex"), old_Index)
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(SemanticsPropertyKey("insertIndex"), newAdd_Index)
+                                }
+
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        SemanticsPropertyKey("new"),
+                                        new_reordered_List_Categorie
+                                            .filter {
+                                                it.position in 2..7
+                                            }
+                                            .map { it.nom + it.keyID + " to " + it.position }
+                                    )
+                                }
                                 .size(25.dp),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary
@@ -195,26 +191,6 @@ internal fun MainItem(
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
-            }
-        }
-
-        if (hasSelections) {
-            IconButton(
-                onClick = {
-                    viewModel.moveSelectedCategoriesRelativeToTarget(relative_category.id, false)
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .size(28.dp)
-                    .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                    .zIndex(1f)
-            ) {
-                Icon(
-                    Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.size(16.dp)
-                )
             }
         }
     }

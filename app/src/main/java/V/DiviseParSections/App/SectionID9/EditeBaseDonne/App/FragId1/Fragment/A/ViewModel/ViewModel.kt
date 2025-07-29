@@ -109,7 +109,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         addOrUpdateCategories(updatedCategories)
     }
 
-    fun moveSelectedCategoriesRelativeToTarget(targetCategoryId: Long, moveBefore: Boolean) {
+    fun moveSelectedCategoriesRelativeToTarget(
+        performCategoryReorder: List<CategoriesTabelle>,
+        targetCategoryId: Long,
+        moveBefore: Boolean
+    ) {
         val currentCategories = categoriesCompoRepository.datasValue
         val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
 
@@ -121,6 +125,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             targetId = targetCategoryId,
             moveBefore = moveBefore
         )
+
 
         val finalCategories = reorderedCategories.map { category ->
             if (selectedCategories.any { it.id == category.id }) {
