@@ -89,7 +89,8 @@ class FocusedValuesGetter(
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
-        repo14VentPeriode.datasValue.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
+        repo14VentPeriode.datasValue
+            .find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID } ?:repo14VentPeriode.datasValue.last()
     }
 
     //----------------------------------Section.M8BonVent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -91,8 +91,8 @@ fun FabButtonsMessageurMainScreen(
                     val new_Data = M17MessageVocale
                         .get_default()
                         .copy(
-                            parent_M9AppCompt_Nom =focusedValuesGetter
-                                .currentActive_M9AppCompt?.nom?:"" ,
+                            parent_M9AppCompt_Nom = focusedValuesGetter
+                                .currentActive_M9AppCompt?.nom ?: "",
 
                             parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
                             etate = M17MessageVocale.Etate.ENVOYER,
@@ -123,11 +123,12 @@ fun FabButtonsMessageurMainScreen(
                                 "👍", fontSize = 20.sp
                             )
                         }
-                        ButtonMessageVocale(
-                            viewModel = viewModel
-                        )
                     }
+                    ButtonMessageVocale(
+                        viewModel = viewModel
+                    )
                 }
+
 
                 if (showMenuButtons) {
                     LabelsButton(
