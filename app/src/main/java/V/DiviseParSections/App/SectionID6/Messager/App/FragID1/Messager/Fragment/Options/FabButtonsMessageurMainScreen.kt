@@ -57,8 +57,8 @@ fun FabButtonsMessageurMainScreen(
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 170f)) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + -300f) }
 
 
     Box(
