@@ -414,14 +414,12 @@ private fun TextMessageContent(
             } else {
                 // Show placeholder if no text
                 Text(
-                    text = "Message texte vide",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                    ),
+                    fontSize = 40.sp,
+                    text = "👍",
                     color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.6f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        isAdminMessage -> MaterialTheme.colorScheme.onError
+                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                        else -> MaterialTheme.colorScheme.onSurface
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
