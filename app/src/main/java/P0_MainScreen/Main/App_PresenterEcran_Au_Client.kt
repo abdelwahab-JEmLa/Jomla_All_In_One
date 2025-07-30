@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -84,14 +85,29 @@ fun App_PresenterEcran_Au_Client(
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
 
-    val shouldShowLogo = productKeyID == "-OV3rmTfv1RVCax896N1"
+    val shouldShowLogo =
+        productKeyID == "-OV3rmTfv1RVCax896N1" || true
 
-    val activeCouleurKeyID = relative_M9AppCompt?.active_CouleurKeyID_Extended_Image
     val relative_ListCouleurs =
         productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
 
-    val heights = Pair(420.dp, 160.dp)
-    val fixedWidth = 310.dp
+    val activeCouleurKeyID = when {
+        relative_M9AppCompt?.active_CouleurKeyID_Extended_Image.isNullOrEmpty() && !shouldShowLogo -> {
+            relative_ListCouleurs?.firstOrNull()?.keyID
+        }
+        else -> relative_M9AppCompt?.active_CouleurKeyID_Extended_Image
+    }
+
+    val its_Tablette = Build.MODEL.contains("ncar")      //<--
+    //TODO(1): fait que si
+    
+    val heights_telep = Pair(420.dp, 160.dp)    //<--
+    //TODO(1): si non ca
+    val fixedWidth_telep = 310.dp
+
+    val heights = Pair(700.dp, 250.dp)   //<--
+    //TODO(1): ca
+    val fixedWidth = 450.dp
 
     fun handelClick(
         repositorysMainSetter: RepositorysMainSetter,
@@ -117,9 +133,11 @@ fun App_PresenterEcran_Au_Client(
         )
     }
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
         // Replace the logo Card section with this code:
 
@@ -141,7 +159,7 @@ fun App_PresenterEcran_Au_Client(
                     ) {
                         // Main text
                         Text(
-                            text = "اشري الهنــــأ بسعر الجملة",
+                            text = "اشري الهنــــأ بالجملة",
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
@@ -203,7 +221,10 @@ fun App_PresenterEcran_Au_Client(
                                 IconButton(
                                     onClick = {
                                         if (relative_M9AppCompt != null) {
-                                            handleCloseClick(repositorysMainSetter, relative_M9AppCompt)
+                                            handleCloseClick(
+                                                repositorysMainSetter,
+                                                relative_M9AppCompt
+                                            )
                                         }
                                     },
                                     modifier = Modifier
@@ -422,9 +443,11 @@ fun CouleurDisplayer(
     }
 
     Card(modifier = modifier.fillMaxWidth()) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(5.dp)
+        ) {
             when (data.aAffiche) {
                 M3CouleurProduitInfos.Type.Image -> ImageDisplayer(
                     modifier = Modifier.fillMaxSize(),

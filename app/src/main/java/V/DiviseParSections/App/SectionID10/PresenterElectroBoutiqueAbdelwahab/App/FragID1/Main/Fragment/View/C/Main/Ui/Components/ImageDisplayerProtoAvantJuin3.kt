@@ -6,7 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -188,10 +187,10 @@ fun ImageDisplayerProtoAvantJuin3(
 
                         onClickToOpenWindow()
 
-                        viewModel.sendOrderToClientDisplayer(
+                      /*  viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                             relative_M1Produit.keyID
-                        )
+                        )           */
                     }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
@@ -226,7 +225,7 @@ fun ImageDisplayerProtoAvantJuin3(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(4.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.Start
             ) {
                 Icon(
                     imageVector = Icons.Default.MonetizationOn,
@@ -237,12 +236,12 @@ fun ImageDisplayerProtoAvantJuin3(
                         .clip(CircleShape)
                         .background(Color.Red.copy(alpha = 0.6f))
                         .clickable {
-                            val rel_Prd = repoMainGetter.find_M1Produit("-OV3rmTfv1RVCax896N1")
+                        /*    val rel_Prd = repoMainGetter.find_M1Produit("-OV3rmTfv1RVCax896N1")
                             viewModel.sendOrderToClientDisplayer(
                                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                                 rel_Prd?.keyID
                                     ?: throw RuntimeException("Product not found - Real bug needs to be fixed")
-                            )
+                            )    */
                         }
                         .padding(4.dp)
                 )
