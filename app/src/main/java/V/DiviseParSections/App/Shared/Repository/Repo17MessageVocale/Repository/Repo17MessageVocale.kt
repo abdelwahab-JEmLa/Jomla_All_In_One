@@ -74,7 +74,7 @@ class Repo17MessageVocale(
 
 @Entity
 data class M17MessageVocale(
-    @PrimaryKey var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
+    @PrimaryKey var keyID: String = generePushKey(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var creationTimestamps: Long = 0,
 

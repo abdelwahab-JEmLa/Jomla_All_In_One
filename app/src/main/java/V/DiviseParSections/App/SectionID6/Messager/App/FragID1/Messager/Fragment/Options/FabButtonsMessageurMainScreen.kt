@@ -91,6 +91,7 @@ fun FabButtonsMessageurMainScreen(
                     val new_Data = M17MessageVocale
                         .get_default()
                         .copy(
+                            parentMessageVID = System.currentTimeMillis(),
                             parent_M9AppCompt_Nom = focusedValuesGetter
                                 .currentActive_M9AppCompt?.nom ?: "",
 
