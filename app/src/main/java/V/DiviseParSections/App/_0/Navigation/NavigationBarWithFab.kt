@@ -200,8 +200,10 @@ fun NavigationBarWithFab(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                 ) {
                     DropDownItem_2(
-                        item_States = Item_States.get_Default(),
-                        nomFun = "Supprimer par Période",
+                        item_States = Item_States.get_Default()
+                            .copy(
+                                nomFun = "repo8BonVent.refresh_Datas()"
+                            ),
                         onDismissDropdown = { showFabDropdown = false },
                         onExecute = {
                             repo8BonVent.refresh_Datas()
@@ -220,7 +222,8 @@ fun NavigationBarWithFab(
 }
 
 data class Item_States(
-    val icon_imageVector: ImageVector =Icons.Default.Delete,
+    val nomFun: String = "",
+    val icon_imageVector: ImageVector = Icons.Default.Delete,
 ) {
     companion object {
         fun get_Default(): Item_States {
@@ -232,7 +235,6 @@ data class Item_States(
 @Composable
 private fun DropDownItem_2(
     item_States: Item_States,
-    nomFun: String,
     onDismissDropdown: () -> Unit,
     onExecute: () -> Unit,
     context: Context = LocalContext.current
@@ -372,7 +374,7 @@ private fun DropDownItem_2(
             },
             text = {
                 Text(
-                    nomFun,
+                    item_States.nomFun,
                     color = when {
                         is_Button_Yellow -> Color(0xFFF59E0B)
                         else -> MaterialTheme.colorScheme.error
