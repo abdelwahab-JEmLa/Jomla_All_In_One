@@ -4,20 +4,16 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 
 @Composable
 fun InfosArticleBottom(
@@ -35,7 +31,7 @@ fun InfosArticleBottom(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-
+            /*
         Text(
             text = "زبون جديد في طور عرض الخدمة",
             style = MaterialTheme.typography.bodySmall,
@@ -101,10 +97,12 @@ fun InfosArticleBottom(
                 )
             }
         }
-
+            */
         Text(
             text = article.nom,
-            style = MaterialTheme.typography.titleMedium
+            color = Color.Red,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
     }
 }
