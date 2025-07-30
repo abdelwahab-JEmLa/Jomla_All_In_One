@@ -224,7 +224,8 @@ class FocusedValuesGetter(
         currentActive_M9AppCompt?.activeDialogSearchM1Produit ?: false
     }
 
-    val its_Developing_Mode by derivedStateOf { M18CentralParametresOfAllApps().itsDevMode }
+    val its_Developing_Mode = M18CentralParametresOfAllApps.get_Default().itsDevMode_2
+
     val m18CentralParametresOfAllApps by derivedStateOf { M18CentralParametresOfAllApps() }
 
     companion object {
