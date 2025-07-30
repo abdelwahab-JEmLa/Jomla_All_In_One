@@ -399,7 +399,6 @@ private fun TextMessageContent(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            // Display text message if it's not empty
             if (textMessage.isNotEmpty()) {
                 Text(
                     fontSize = 40.sp,
@@ -412,7 +411,6 @@ private fun TextMessageContent(
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
-                // Show placeholder if no text
                 Text(
                     fontSize = 40.sp,
                     text = "👍",

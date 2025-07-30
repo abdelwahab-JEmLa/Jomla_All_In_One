@@ -83,7 +83,7 @@ data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = true,
+    val itsDevMode: Boolean = false,
     val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
 
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------

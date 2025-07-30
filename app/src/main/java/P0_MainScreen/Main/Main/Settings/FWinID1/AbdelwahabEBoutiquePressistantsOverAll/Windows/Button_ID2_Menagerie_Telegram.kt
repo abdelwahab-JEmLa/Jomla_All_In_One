@@ -1,10 +1,11 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.VibrationEffect
@@ -61,16 +62,8 @@ fun Button_ID2_Menagerie_Telegram(
 
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID
-    val isDevMode = repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.itsDevMode == false
+    val isDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
-    android.util.Log.d(
-        "TelegramButton", """
-        🏗️ Button Init:
-        - Current Account KeyID: ${currentAppComptKeyID?.takeLast(4) ?: "null"}
-        - Is Admin: $current_Compt_Et_Admin
-        - Dev Mode: $isDevMode
-    """.trimIndent()
-    )
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -342,7 +335,6 @@ fun Button_ID2_Menagerie_Telegram(
             if (totalUnreadCount > 0 && !isDevMode ) {
                 Box(
                     modifier = Modifier
-                        .getSemanticsTag(isDevMode, "devMode")
                         .size(25.dp)
                         .offset(x = (-8).dp, y = (-10).dp)
                         .scale(scale)
