@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -83,6 +84,7 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    showWarningState: Boolean = false // New parameter to control warning display
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
@@ -133,39 +135,16 @@ fun NavigationBarWithFab(
             }
         }
 
-        val its_Targeted_Frag =
-            activeFragment == Screen.A_Clients_LocationGps
+        val its_Targeted_Frag = activeFragment == Screen.A_Clients_LocationGps
 
-        Surface(
-            modifier = Modifier
-                .offset(y = (-28).dp)
-                .size(56.dp),
-            shape = CircleShape,
-        ) {
-            Box {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            when (its_Targeted_Frag) {
-                                false -> onToggleFabVisibility()
-                                true -> {
-                                    showFabDropdown = true
-                                }
-                            }
-                        },
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-                Icon(
-                    imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = "Toggle FAB",
-                    modifier = Modifier.align(Alignment.Center),
-                    tint = Color.White
-                )
-            }
-        }
+        // Fixed FAB with conditional background and warning icon
+        FabButton(
+            showWarningState = showWarningState,
+            isFabVisible = isFabVisible,
+            its_Targeted_Frag = its_Targeted_Frag,
+            onToggleFabVisibility = onToggleFabVisibility,
+            onShowDropdown = { showFabDropdown = true }
+        )
 
         if (showCatalogDialog) {
             CatalogSelectionDialog(
@@ -189,43 +168,141 @@ fun NavigationBarWithFab(
         }
 
         if (showFabDropdown) {
-            Box(
-                modifier = Modifier
-                    .offset(y = (-90).dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                DropdownMenu(
-                    expanded = showFabDropdown,
-                    onDismissRequest = { showFabDropdown = false },
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                ) {
-                    DropDownItem_2(
-                        item_States = Item_States.get_Default()
-                            .copy(
-                                nomFun = "repo8BonVent.refresh_Datas()"
-                            ),
-                        onDismissDropdown = { showFabDropdown = false },
-                        onExecute = {
-                            repo8BonVent.refresh_Datas()
-                        }
-                    )
+            FabDropdownMenu(
+                showFabDropdown = showFabDropdown,
+                onDismissDropdown = { showFabDropdown = false },
+                repo8BonVent = repo8BonVent
+            )
+        }
+    }
+}
 
-                    DropDownItem_1(
-                        viewModel = koinInject(),
-                        nomFun = "Toggle Client Button",
-                        onDismissDropdown = { showFabDropdown = false }
+@Composable
+private fun FabButton(
+    showWarningState: Boolean,
+    isFabVisible: Boolean,
+    its_Targeted_Frag: Boolean,
+    onToggleFabVisibility: () -> Unit,
+    onShowDropdown: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .offset(y = (-28).dp)
+            .size(56.dp),
+        shape = CircleShape,
+    ) {
+        Box {
+            if (showWarningState) {
+                // Red background with warning icon instead of logo image
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFFDC2626), // Red-600
+                                    Color(0xFFB91C1C)  // Red-700
+                                )
+                            ),
+                            shape = CircleShape
+                        )
+                        .clickable {
+                            when (its_Targeted_Frag) {
+                                false -> onToggleFabVisibility()
+                                true -> onShowDropdown()
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Warning",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
+            } else {
+                // Original logo image
+                Image(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+                            when (its_Targeted_Frag) {
+                                false -> onToggleFabVisibility()
+                                true -> onShowDropdown()
+                            }
+                        },
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+                Icon(
+                    imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = "Toggle FAB",
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = Color.White
+                )
             }
         }
     }
 }
 
+@Composable
+private fun FabDropdownMenu(
+    showFabDropdown: Boolean,
+    onDismissDropdown: () -> Unit,
+    repo8BonVent: Repo8BonVent,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .offset(y = (-90).dp)
+    ) {
+        DropdownMenu(
+            expanded = showFabDropdown,
+            onDismissRequest = onDismissDropdown,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        ) {
+            DropDownItem_2(
+                item_States = Item_States.get_Default()
+                    .copy(
+                        function_noms_separatedStrings = "repo8BonVent.refresh_Datas(),تحديث التقارير",
+                    ),
+                onDismissDropdown = onDismissDropdown,
+                onExecute = {
+                    repo8BonVent.refresh_Datas()
+                }
+            )
+
+            DropDownItem_1(
+                viewModel = koinInject(),
+                nomFun = "Toggle Client Button",
+                onDismissDropdown = onDismissDropdown
+            )
+        }
+    }
+}
+
 data class Item_States(
-    val nomFun: String = "",
+    val function_noms_separatedStrings: String = ",",
+    val avec_Premier_Click_Jane: Boolean = false, // Skip yellow state if false - go directly to hold action
     val icon_imageVector: ImageVector = Icons.Default.Delete,
 ) {
     companion object {
+        fun get_Arab_Nom(function_noms_separatedStrings: String): String {
+            return extract_Noms(function_noms_separatedStrings).getOrNull(1) ?: ""
+        }
+
+        fun get_English_Nom(function_noms_separatedStrings: String): String {
+            return extract_Noms(function_noms_separatedStrings).getOrNull(0) ?: ""
+        }
+
+        fun extract_Noms(function_noms_separatedStrings: String): List<String> {
+            // Split by comma and trim whitespace from each part
+            return function_noms_separatedStrings.split(",").map { it.trim() }
+        }
+
         fun get_Default(): Item_States {
             return Item_States()
         }
@@ -234,16 +311,27 @@ data class Item_States(
 
 @Composable
 private fun DropDownItem_2(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     item_States: Item_States,
     onDismissDropdown: () -> Unit,
     onExecute: () -> Unit,
     context: Context = LocalContext.current
 ) {
+    val currentApp_Not_Admin = !focusedValuesGetter.currentApp_Est_Admin
+
+    // Use Arabic name if not admin, otherwise use English name
+    val displayText = if (currentApp_Not_Admin) {
+        Item_States.get_Arab_Nom(item_States.function_noms_separatedStrings)
+    } else {
+        Item_States.get_English_Nom(item_States.function_noms_separatedStrings)
+    }
+
     var is_Button_Pressed by remember { mutableStateOf(false) }
     var is_Button_Yellow by remember { mutableStateOf(false) }
     var deleteProgress by remember { mutableStateOf(0f) }
 
-    // Animation pour le progress du bouton _Button_
+    // Animation pour le progress du bouton
     val animatedProgress by animateFloatAsState(
         targetValue = if (is_Button_Pressed) 1f else 0f,
         animationSpec = tween(durationMillis = 1000),
@@ -273,108 +361,18 @@ private fun DropDownItem_2(
     ) {
         DropdownMenuItem(
             leadingIcon = {
-                // Expressive_Button_Icon intégré directement dans DropDownItem_2
-                val scale by animateFloatAsState(
-                    targetValue = if (is_Button_Pressed || is_Button_Yellow) 1.2f else 1f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
-                    )
+                ExpressiveButtonIcon(
+                    item_States = item_States,
+                    is_Button_Pressed = is_Button_Pressed,
+                    is_Button_Yellow = is_Button_Yellow,
+                    deleteProgress = deleteProgress,
+                    onButtonPressed = { pressed -> is_Button_Pressed = pressed },
+                    onButtonYellow = { yellow -> is_Button_Yellow = yellow }
                 )
-
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .scale(scale)
-                        .clip(CircleShape)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    // Commence l'animation seulement si le bouton est jaune
-                                    if (is_Button_Yellow) {
-                                        is_Button_Pressed = true
-                                    }
-                                    tryAwaitRelease()
-                                    if (deleteProgress < 1f) {
-                                        is_Button_Pressed = false
-                                    }
-                                },
-                                onTap = {
-                                    // Premier clic : active l'état jaune
-                                    if (!is_Button_Yellow) {
-                                        is_Button_Yellow = true
-                                    }
-                                }
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Fond du bouton
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = when {
-                                    is_Button_Yellow -> Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFFBBF24),
-                                            Color(0xFFF59E0B)
-                                        )
-                                    )
-
-                                    else -> Brush.linearGradient(
-                                        colors = listOf(
-                                            Color.Transparent,
-                                            Color.Transparent
-                                        )
-                                    )
-                                },
-                                shape = CircleShape
-                            )
-                    )
-
-                    // Indicateur de progression pour le bouton _Button_
-                    if (deleteProgress > 0f) {
-                        // Cercle de progression
-                        Canvas(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            val strokeWidth = 2.dp.toPx()
-                            drawArc(
-                                color = Color(0xFFDC2626), // Rouge pour delete
-                                startAngle = -90f,
-                                sweepAngle = 360f * deleteProgress,
-                                useCenter = false,
-                                style = Stroke(
-                                    width = strokeWidth,
-                                    cap = StrokeCap.Round
-                                ),
-                                size = Size(
-                                    size.width - strokeWidth,
-                                    size.height - strokeWidth
-                                ),
-                                topLeft = Offset(
-                                    strokeWidth / 2,
-                                    strokeWidth / 2
-                                )
-                            )
-                        }
-                    }
-
-                    Icon(
-                        imageVector = item_States.icon_imageVector,
-                        contentDescription = null,
-                        tint = when {
-                            is_Button_Yellow -> Color.White
-                            else -> MaterialTheme.colorScheme.error
-                        },
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
             },
             text = {
                 Text(
-                    item_States.nomFun,
+                    displayText,
                     color = when {
                         is_Button_Yellow -> Color(0xFFF59E0B)
                         else -> MaterialTheme.colorScheme.error
@@ -382,8 +380,14 @@ private fun DropDownItem_2(
                 )
             },
             onClick = {
-                // Premier clic : active l'état jaune
-                if (!is_Button_Yellow) {
+                // Handle click based on avec_Premier_Click_Jane setting
+                if (item_States.avec_Premier_Click_Jane) {
+                    // Original behavior: first click activates yellow state
+                    if (!is_Button_Yellow) {
+                        is_Button_Yellow = true
+                    }
+                } else {
+                    // Skip yellow state: go directly to hold action
                     is_Button_Yellow = true
                 }
             }
@@ -391,6 +395,119 @@ private fun DropDownItem_2(
     }
 }
 
+@Composable
+private fun ExpressiveButtonIcon(
+    item_States: Item_States,
+    is_Button_Pressed: Boolean,
+    is_Button_Yellow: Boolean,
+    deleteProgress: Float,
+    onButtonPressed: (Boolean) -> Unit,
+    onButtonYellow: (Boolean) -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (is_Button_Pressed || is_Button_Yellow) 1.2f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .size(24.dp)
+            .scale(scale)
+            .clip(CircleShape)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        // Commence l'animation seulement si le bouton est jaune
+                        if (is_Button_Yellow) {
+                            onButtonPressed(true)
+                        }
+                        tryAwaitRelease()
+                        if (deleteProgress < 1f) {
+                            onButtonPressed(false)
+                        }
+                    },
+                    onTap = {
+                        // Handle tap based on avec_Premier_Click_Jane setting
+                        if (item_States.avec_Premier_Click_Jane) {
+                            // Original behavior: first click activates yellow state
+                            if (!is_Button_Yellow) {
+                                onButtonYellow(true)
+                            }
+                        } else {
+                            // Skip yellow state: activate directly
+                            onButtonYellow(true)
+                        }
+                    }
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        // Fond du bouton
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = when {
+                        is_Button_Yellow -> Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFFBBF24),
+                                Color(0xFFF59E0B)
+                            )
+                        )
+
+                        else -> Brush.linearGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent
+                            )
+                        )
+                    },
+                    shape = CircleShape
+                )
+        )
+
+        // Indicateur de progression pour le bouton
+        if (deleteProgress > 0f) {
+            // Cercle de progression
+            Canvas(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val strokeWidth = 2.dp.toPx()
+                drawArc(
+                    color = Color(0xFFDC2626), // Rouge pour delete
+                    startAngle = -90f,
+                    sweepAngle = 360f * deleteProgress,
+                    useCenter = false,
+                    style = Stroke(
+                        width = strokeWidth,
+                        cap = StrokeCap.Round
+                    ),
+                    size = Size(
+                        size.width - strokeWidth,
+                        size.height - strokeWidth
+                    ),
+                    topLeft = Offset(
+                        strokeWidth / 2,
+                        strokeWidth / 2
+                    )
+                )
+            }
+        }
+
+        Icon(
+            imageVector = item_States.icon_imageVector,
+            contentDescription = null,
+            tint = when {
+                is_Button_Yellow -> Color.White
+                else -> MaterialTheme.colorScheme.error
+            },
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
 
 @Composable
 private fun DropDownItem_1(
