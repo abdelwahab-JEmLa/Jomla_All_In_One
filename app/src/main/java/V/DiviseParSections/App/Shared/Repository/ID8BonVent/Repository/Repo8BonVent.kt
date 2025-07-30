@@ -42,6 +42,41 @@ class Repo8BonVent(
         }
     }
 
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                // Step 1: Clear all data from Room database
+                dataBaseCreationFactory.dao.deleteAll()
+
+                // Step 2: Clear local _datas state
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                // Step 3: Load fresh data from Firebase
+                val freshDataFromFirebase = dataBaseCreationFactory.onLoadFromFireBase()
+
+                // Step 4: Insert all fresh data into Room database
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                // Step 5: Update local _datas state with fresh data
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+                // Handle any errors during refresh
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     fun upsert(data: M8BonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())

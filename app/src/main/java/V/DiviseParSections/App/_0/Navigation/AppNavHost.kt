@@ -1,4 +1,3 @@
-// Fixed AppNavHost.kt - Corrected startup screen determination logic
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
