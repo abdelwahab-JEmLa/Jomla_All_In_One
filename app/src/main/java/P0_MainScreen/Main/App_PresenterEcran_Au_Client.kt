@@ -82,7 +82,7 @@ fun App_PresenterEcran_Au_Client(
     modifier: Modifier = Modifier
 ) {
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-    val productKeyID = "-OV3rm_9Jt7Y9kWGbQny"
+    val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
 
     val shouldShowLogo = productKeyID == "-OV3rm_9Jt7Y9kWGbQny"
 
