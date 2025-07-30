@@ -16,6 +16,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +30,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,12 +48,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bumptech.glide.Priority
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -72,14 +82,17 @@ fun App_PresenterEcran_Au_Client(
     modifier: Modifier = Modifier
 ) {
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-    val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
+    val productKeyID = "-OV3rm_9Jt7Y9kWGbQny"
+
+    val shouldShowLogo = productKeyID == "-OV3rm_9Jt7Y9kWGbQny"
+
     val activeCouleurKeyID by derivedStateOf { relative_M9AppCompt?.active_CouleurKeyID_Extended_Image }
     val relative_ListCouleurs =
         productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
 
-    var clickedCouleurKeyID by remember { mutableStateOf<String?>(null) }
+    var clickedCouleurKeyID by remember(productKeyID) { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(activeCouleurKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
+    LaunchedEffect(productKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
     val heights = Pair(420.dp, 160.dp)
     val fixedWidth = 310.dp
@@ -95,112 +108,186 @@ fun App_PresenterEcran_Au_Client(
                 active_CouleurKeyID_Extended_Image = if (isClicked) "" else couleur.keyID
             )
         )
+    }
 
+    fun handleCloseClick(
+        repositorysMainSetter: RepositorysMainSetter,
+        relative_M9AppCompt: Z_AppCompt
+    ) {
+        repositorysMainSetter.update_M9AppCompt(
+            relative_M9AppCompt.copy(
+                active_CouleurKeyID_Extended_Image = ""
+            )
+        )
     }
 
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp)) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(relative_ListCouleurs.orEmpty()) { couleur ->
-                val isClicked = clickedCouleurKeyID == couleur.keyID
-                val targetValue = if (isClicked) heights.first else heights.second
 
-                val animatedHeight by animateDpAsState(
-                    targetValue,
-                    spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
-                    label = "height"
-                )
+        // Replace the logo Card section with this code:
 
-                Card(
+        if (shouldShowLogo) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+            ) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(animatedHeight)
-                        .animateContentSize(
-                            spring(
-                                Spring.DampingRatioMediumBouncy,
-                                Spring.StiffnessMedium
-                            )
-                        ),
-                    onClick = {
-                        if (relative_M9AppCompt != null) {
-                            handelClick(
-                                repositorysMainSetter,
-                                relative_M9AppCompt,
-                                isClicked,
-                                couleur
+                        .fillMaxSize()
+                        .background(Color(0xFFEC8918)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        // Main text
+                        Text(
+                            text = "اشري الهنــــأ بسعر الجملة",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Text(
+                                text = "عند عبدالوهاب",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
-                ) {
-                    if (isClicked) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                                .animateContentSize(
-                                    spring(
-                                        Spring.DampingRatioLowBouncy,
-                                        Spring.StiffnessLow
-                                    )
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            CouleurDisplayer(
-                                height = heights.first,
-                                keyCouleur = couleur.keyID,
-                                size = fixedWidth, // Use fixed width instead of animated size
-                                modifier = Modifier
-                                    .width(fixedWidth) // Fixed width
-                                    .height(animatedHeight), // Animated height only
-                                onClickToChangeSelected = { keyID ->
-                                    if (relative_M9AppCompt != null) {
-                                        handelClick(
-                                            repositorysMainSetter,
-                                            relative_M9AppCompt,
-                                            clickedCouleurKeyID == keyID,
-                                            couleur
-                                        )
-                                    }
-                                }
-                            )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(relative_ListCouleurs.orEmpty()) { couleur ->
+                    val isClicked = clickedCouleurKeyID == couleur.keyID
+                    val targetValue = if (isClicked) heights.first else heights.second
+
+                    val animatedHeight by animateDpAsState(
+                        targetValue,
+                        spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
+                        label = "height"
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(animatedHeight)
+                            .animateContentSize(
+                                spring(
+                                    Spring.DampingRatioMediumBouncy,
+                                    Spring.StiffnessMedium
+                                )
+                            ),
+                        onClick = {
+                            if (relative_M9AppCompt != null) {
+                                handelClick(
+                                    repositorysMainSetter,
+                                    relative_M9AppCompt,
+                                    isClicked,
+                                    couleur
+                                )
+                            }
                         }
-                    } else {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                                .animateContentSize(
-                                    spring(
-                                        Spring.DampingRatioMediumBouncy,
-                                        Spring.StiffnessMedium
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            if (isClicked) {
+                                IconButton(
+                                    onClick = {
+                                        if (relative_M9AppCompt != null) {
+                                            handleCloseClick(repositorysMainSetter, relative_M9AppCompt)
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Close"
                                     )
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            CouleurDisplayer(
-                                modifier = Modifier
-                                    .width(fixedWidth) // Fixed width
-                                    .height(animatedHeight), // Animated height only
-                                keyCouleur = couleur.keyID,
-                                size = fixedWidth, // Use fixed width instead of animated size
-                                onClickToChangeSelected = { keyID ->
-                                    if (relative_M9AppCompt != null) {
-                                        handelClick(
-                                            repositorysMainSetter,
-                                            relative_M9AppCompt,
-                                            clickedCouleurKeyID == keyID,
-                                            couleur
-                                        )
-                                    }
-                                },
-                                height = heights.second
-                            )
+                                }
+                            }
+
+                            if (isClicked) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .animateContentSize(
+                                            spring(
+                                                Spring.DampingRatioLowBouncy,
+                                                Spring.StiffnessLow
+                                            )
+                                        ),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    CouleurDisplayer(
+                                        height = heights.first,
+                                        keyCouleur = couleur.keyID,
+                                        size = fixedWidth, // Use fixed width instead of animated size
+                                        modifier = Modifier
+                                            .width(fixedWidth) // Fixed width
+                                            .height(animatedHeight), // Animated height only
+                                        onClickToChangeSelected = { keyID ->
+                                            if (relative_M9AppCompt != null) {
+                                                handelClick(
+                                                    repositorysMainSetter,
+                                                    relative_M9AppCompt,
+                                                    clickedCouleurKeyID == keyID,
+                                                    couleur
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .animateContentSize(
+                                            spring(
+                                                Spring.DampingRatioMediumBouncy,
+                                                Spring.StiffnessMedium
+                                            )
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    CouleurDisplayer(
+                                        modifier = Modifier
+                                            .width(fixedWidth) // Fixed width
+                                            .height(animatedHeight), // Animated height only
+                                        keyCouleur = couleur.keyID,
+                                        size = fixedWidth, // Use fixed width instead of animated size
+                                        onClickToChangeSelected = { keyID ->
+                                            if (relative_M9AppCompt != null) {
+                                                handelClick(
+                                                    repositorysMainSetter,
+                                                    relative_M9AppCompt,
+                                                    clickedCouleurKeyID == keyID,
+                                                    couleur
+                                                )
+                                            }
+                                        },
+                                        height = heights.second
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -208,8 +295,6 @@ fun App_PresenterEcran_Au_Client(
         }
     }
 }
-
-
 
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)

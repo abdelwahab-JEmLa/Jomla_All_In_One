@@ -213,10 +213,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 )
                 appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
-                viewModel.sendOrderAuPresentoireDevice(catalogueId)
+               // viewModel.sendOrderAuPresentoireDevice(catalogueId)
+
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+                    WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                     catalogueId
                 )
             }

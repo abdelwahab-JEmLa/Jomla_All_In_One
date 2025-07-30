@@ -139,7 +139,7 @@ class WDatabaseInitializationManager(
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
-                        factory.triggerUpdateFbParTimestampsListener()
+                      //  factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
             } ,

@@ -5,7 +5,6 @@ import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifNotNullOrEmpty
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
@@ -311,10 +310,13 @@ fun MainScreen(
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
+
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                    it.active_ProduitKeyID_Au_DroopDown_PresenterEcran.ifNotNullOrEmpty {
-                        App_PresenterEcran_Au_Client()
-                    }
+                  //  productDisplayController.isConnected.ifTrue {
+                      //  it.active_ProduitKeyID_Au_DroopDown_PresenterEcran.ifNotNullOrEmpty {
+                            App_PresenterEcran_Au_Client()
+                     //   }
+                  //  }
                 }
             }
         }

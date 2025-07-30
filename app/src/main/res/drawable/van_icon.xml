@@ -1,0 +1,53 @@
+<!-- Save this as res/drawable/van_icon.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Van body outline -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,8 L3,16 L5,16 C5,17.66 6.34,19 8,19 C9.66,19 11,17.66 11,16 L13,16 C13,17.66 14.34,19 16,19 C17.66,19 19,17.66 19,16 L21,16 L21,8 C21,7.45 20.55,7 20,7 L4,7 C3.45,7 3,7.45 3,8 Z"/>
+
+    <!-- Van cabin separator -->
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:pathData="M11,7 L11,16"/>
+
+    <!-- Van windows -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M4,8 L10,8 L10,11 L4,11 Z"/>
+
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M12,8 L20,8 L20,11 L12,11 Z"/>
+
+    <!-- Front wheel (created with path instead of circle) -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M8,14 C9.66,14 11,15.34 11,17 C11,18.66 9.66,20 8,20 C6.34,20 5,18.66 5,17 C5,15.34 6.34,14 8,14 Z"/>
+
+    <!-- Front wheel inner circle -->
+    <path
+        android:fillColor="#666666"
+        android:pathData="M8,15.5 C8.83,15.5 9.5,16.17 9.5,17 C9.5,17.83 8.83,18.5 8,18.5 C7.17,18.5 6.5,17.83 6.5,17 C6.5,16.17 7.17,15.5 8,15.5 Z"/>
+
+    <!-- Rear wheel (created with path instead of circle) -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M16,14 C17.66,14 19,15.34 19,17 C19,18.66 17.66,20 16,20 C14.34,20 13,18.66 13,17 C13,15.34 14.34,14 16,14 Z"/>
+
+    <!-- Rear wheel inner circle -->
+    <path
+        android:fillColor="#666666"
+        android:pathData="M16,15.5 C16.83,15.5 17.5,16.17 17.5,17 C17.5,17.83 16.83,18.5 16,18.5 C15.17,18.5 14.5,17.83 14.5,17 C14.5,16.17 15.17,15.5 16,15.5 Z"/>
+
+    <!-- Van door handle -->
+    <path
+        android:fillColor="#CCCCCC"
+        android:pathData="M18,12 L19,12 L19,13 L18,13 Z"/>
+
+</vector>

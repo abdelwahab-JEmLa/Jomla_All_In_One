@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacad
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -35,9 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
+import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun Dialog_MainFastSearchProduitPourVent(
+    viewModelHeadViewModel: HeadViewModel= koinInject(),
     focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment
@@ -145,6 +149,11 @@ fun Dialog_MainFastSearchProduitPourVent(
                                         affiche_Panier_au_Search_Dialog = false ,
                                                 handled_M10OperationVent_Pour_Link=null
                                     )
+                            )
+
+                            viewModelHeadViewModel.sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
+                                "-OV3rm_9Jt7Y9kWGbQny"
                             )
                         },
 

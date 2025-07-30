@@ -71,15 +71,57 @@ class WifiTransferDatas(
         }
     }
 
+    private fun handle_Text_Payload(payload: String) {
+        val parts = payload.split("=", limit = 2)
+
+        if (parts.size == 2) {
+            val command = parts[0]
+            val data = parts[1]
+
+            when (command) {
+                "Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran" -> {
+                    appComptComposeRepositoryProtoJuin17.currentAppCompt?.let { currentAppCompt ->
+                        appComptComposeRepositoryProtoJuin17.upsert(
+                            currentAppCompt.copy(
+                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = data
+                            )
+                        )
+                        Log.d(
+                            TAG,
+                            "✅ Updated active_ProduitKeyID_Au_DroopDown_PresenterEcran to: $data"
+                        )
+                    } ?: run {
+                        Log.e(TAG, "❌ Cannot update: currentAppCompt is null")
+                    }
+                }
+
+                else -> {
+                    Log.d(TAG, "📩 Unhandled command: $command with data: $data")
+                }
+            }
+        } else {
+            Log.d(TAG, "📩 Invalid payload format (no '=' separator): $payload")
+        }
+    }
+
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
-                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types -> {
                     appComptComposeRepositoryProtoJuin17.upsert(
                         appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
                             presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
                         )
                     )
+
+                    val relative_Produit = repositorysMainGetter.find_M1Produit(content)
+                    if (relative_Produit != null) {
+                        appComptComposeRepositoryProtoJuin17.upsert(
+                            appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
+                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = relative_Produit.keyID
+                            )
+                        )
+                    }
                 }
 
                 else -> {}
@@ -552,7 +594,12 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"), WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"), SearchWindowsDisplaye(
         "SearchWindowsDisplaye"
     ),
-    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"), FilterProduitsParCatalogueBsonID("FilterProduitsParCatalogueBsonID");
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"),
+    FilterProduitsParCatalogueBsonID_ET_Autres_Types(
+        "FilterProduitsParCatalogueBsonID_ET_Autres_Types"
+    ),
+
+    Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran"), ;
 
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
