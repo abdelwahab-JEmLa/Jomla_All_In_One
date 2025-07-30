@@ -13,12 +13,18 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -161,7 +167,9 @@ fun ImageDisplayerProtoAvantJuin3(
             onClickToOpenWindow()
         }
     }
+
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
+        // Main image content
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             GlideImage(
@@ -213,7 +221,33 @@ fun ImageDisplayerProtoAvantJuin3(
                 }
             }
         }
-
+        if (indexColor==0) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red.copy(alpha = 0.6f))
+                        .clickable {
+                            val rel_Prd = repoMainGetter.find_M1Produit("-OV3rmTfv1RVCax896N1")
+                            viewModel.sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
+                                rel_Prd?.keyID
+                                    ?: throw RuntimeException("Product not found - Real bug needs to be fixed")
+                            )
+                        }
+                        .padding(4.dp)
+                )
+            }
+        }
 
         if (showOverlay) {
             val productImageInfos =

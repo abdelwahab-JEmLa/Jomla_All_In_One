@@ -115,13 +115,12 @@ class WifiTransferDatas(
                     )
 
                     val relative_Produit = repositorysMainGetter.find_M1Produit(content)
-                    if (relative_Produit != null) {
                         appComptComposeRepositoryProtoJuin17.upsert(
                             appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
-                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = relative_Produit.keyID
+                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = relative_Produit?.keyID
+                                    ?: "-OV3rmTfv1RVCax896N1"
                             )
                         )
-                    }
                 }
 
                 else -> {}

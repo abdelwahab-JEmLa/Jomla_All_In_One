@@ -2,11 +2,12 @@ package P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -42,6 +43,8 @@ import org.koin.compose.koinInject
 @Composable
 fun Dialog_MainFastSearchProduitPourVent(
     viewModelHeadViewModel: HeadViewModel= koinInject(),
+    aCentralFacade: ACentralFacade= koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment
@@ -136,6 +139,7 @@ fun Dialog_MainFastSearchProduitPourVent(
 
                     FloatingActionButton(
                         onClick = {
+
                             focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
                             focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
                                 ""
@@ -149,11 +153,6 @@ fun Dialog_MainFastSearchProduitPourVent(
                                         affiche_Panier_au_Search_Dialog = false ,
                                                 handled_M10OperationVent_Pour_Link=null
                                     )
-                            )
-
-                            viewModelHeadViewModel.sendOrderToClientDisplayer(
-                                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
-                                "-OV3rm_9Jt7Y9kWGbQny"
                             )
                         },
 

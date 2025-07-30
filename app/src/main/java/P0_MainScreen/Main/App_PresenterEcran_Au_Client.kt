@@ -84,15 +84,11 @@ fun App_PresenterEcran_Au_Client(
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran
 
-    val shouldShowLogo = productKeyID == "-OV3rm_9Jt7Y9kWGbQny"
+    val shouldShowLogo = productKeyID == "-OV3rmTfv1RVCax896N1"
 
-    val activeCouleurKeyID by derivedStateOf { relative_M9AppCompt?.active_CouleurKeyID_Extended_Image }
+    val activeCouleurKeyID = relative_M9AppCompt?.active_CouleurKeyID_Extended_Image
     val relative_ListCouleurs =
         productKeyID?.let { repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(it) }
-
-    var clickedCouleurKeyID by remember(productKeyID) { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(productKeyID) { clickedCouleurKeyID = activeCouleurKeyID }
 
     val heights = Pair(420.dp, 160.dp)
     val fixedWidth = 310.dp
@@ -136,7 +132,7 @@ fun App_PresenterEcran_Au_Client(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFEC8918)),
+                        .background(Color(0xFFD22317)),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -172,7 +168,7 @@ fun App_PresenterEcran_Au_Client(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(relative_ListCouleurs.orEmpty()) { couleur ->
-                    val isClicked = clickedCouleurKeyID == couleur.keyID
+                    val isClicked = activeCouleurKeyID == couleur.keyID
                     val targetValue = if (isClicked) heights.first else heights.second
 
                     val animatedHeight by animateDpAsState(
@@ -247,7 +243,7 @@ fun App_PresenterEcran_Au_Client(
                                                 handelClick(
                                                     repositorysMainSetter,
                                                     relative_M9AppCompt,
-                                                    clickedCouleurKeyID == keyID,
+                                                    activeCouleurKeyID == keyID,
                                                     couleur
                                                 )
                                             }
@@ -279,7 +275,7 @@ fun App_PresenterEcran_Au_Client(
                                                 handelClick(
                                                     repositorysMainSetter,
                                                     relative_M9AppCompt,
-                                                    clickedCouleurKeyID == keyID,
+                                                    activeCouleurKeyID == keyID,
                                                     couleur
                                                 )
                                             }
