@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import android.content.Context
 import android.widget.Toast
@@ -26,11 +27,11 @@ import kotlinx.coroutines.withContext
 @Stable
 class Repo10OperationVentCouleur(
     val context: Context,
-    private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
+    private val dataBaseCreationFactory: DataBaseFactoryDCouleurAchatOperation,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
-    val dao = ancienRepo.dao
-    private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val dao = dataBaseCreationFactory.dao
+    private val repoScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<M10OperationVentCouleur>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
@@ -41,7 +42,7 @@ class Repo10OperationVentCouleur(
     }
 
     init {
-        composScope.launch {
+        repoScope.launch {
             try {
                 if (depuitTestData) {
                     withContext(Dispatchers.Main) {
@@ -58,6 +59,35 @@ class Repo10OperationVentCouleur(
                     }
                 }
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                dataBaseCreationFactory.dao.deleteAll()
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                val freshDataFromFirebase = dataBaseCreationFactory.onLoadFromFireBase()
+
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -93,7 +123,7 @@ class Repo10OperationVentCouleur(
             )
         }
 
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
     }
 
     fun fixExistingOperationsWithEmptyBonVentKey() {
@@ -115,7 +145,7 @@ class Repo10OperationVentCouleur(
         relatedVentOperation: M3CouleurProduitInfos,
         quantity: Int,
     ) {
-        composScope.launch {
+        repoScope.launch {
             try {
                 val couleurVentOperation = createSafeCouleurVentOperation(
                     relatedCouleur = relatedVentOperation,
@@ -150,10 +180,10 @@ class Repo10OperationVentCouleur(
     }
 
     fun delete(data: M10OperationVentCouleur) {
-        composScope.launch {
+        repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
-                ancienRepo.delete(data)
+                dataBaseCreationFactory.delete(data)
             } catch (e: Exception) {
                 // Error handling
             }
@@ -175,7 +205,7 @@ class Repo10OperationVentCouleur(
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     add(dataUpdate)
@@ -183,7 +213,7 @@ class Repo10OperationVentCouleur(
             }
         }
 
-        ancienRepo.addOrUpdatedAncienRepo(-1, data)
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(-1, data)
     }
 
     fun update_If_Exist(data: M10OperationVentCouleur) {
@@ -192,7 +222,7 @@ class Repo10OperationVentCouleur(
         }
 
         if (existingIndex < 0) {
-            composScope.launch {
+            repoScope.launch {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
                         .show()
@@ -206,7 +236,7 @@ class Repo10OperationVentCouleur(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = datasValue.toMutableList().apply {
                     this[existingIndex] = updatedItem
@@ -214,7 +244,7 @@ class Repo10OperationVentCouleur(
             }
         }
 
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
     }
 }
 

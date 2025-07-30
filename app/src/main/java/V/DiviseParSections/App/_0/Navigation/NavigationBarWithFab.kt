@@ -4,6 +4,7 @@ package V.DiviseParSections.App._0.Navigation
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -26,8 +27,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
@@ -84,7 +86,7 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    showWarningState: Boolean = false // New parameter to control warning display
+    showWarningState: Boolean = true // New parameter to control warning display
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
@@ -250,6 +252,10 @@ private fun FabButton(
 
 @Composable
 private fun FabDropdownMenu(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+
     showFabDropdown: Boolean,
     onDismissDropdown: () -> Unit,
     repo8BonVent: Repo8BonVent,
@@ -267,11 +273,14 @@ private fun FabDropdownMenu(
             DropDownItem_2(
                 item_States = Item_States.get_Default()
                     .copy(
-                        function_noms_separatedStrings = "repo8BonVent.refresh_Datas(),تحديث التقارير",
+                        icon_imageVector =  Icons.Default.Receipt,
+                        function_noms_separatedStrings = "repo8BonVent && repo10OperationVentCouleur.refresh_Datas(),تحديث تقارير المبيعات",
+                        time_pressing_millis = 1500 // Custom press duration for this action
                     ),
                 onDismissDropdown = onDismissDropdown,
                 onExecute = {
                     repo8BonVent.refresh_Datas()
+                    repositorysMainGetter.repo10OperationVentCouleur.refresh_Datas()
                 }
             )
 
@@ -286,8 +295,9 @@ private fun FabDropdownMenu(
 
 data class Item_States(
     val function_noms_separatedStrings: String = ",",
-    val avec_Premier_Click_Jane: Boolean = false, // Skip yellow state if false - go directly to hold action
-    val icon_imageVector: ImageVector = Icons.Default.Delete,
+    val avec_Premier_Click_Jane: Boolean = true,
+    val time_pressing_millis: Int = 1000,
+    val icon_imageVector: ImageVector = Icons.Default.Close,
 ) {
     companion object {
         fun get_Arab_Nom(function_noms_separatedStrings: String): String {
@@ -299,7 +309,6 @@ data class Item_States(
         }
 
         fun extract_Noms(function_noms_separatedStrings: String): List<String> {
-            // Split by comma and trim whitespace from each part
             return function_noms_separatedStrings.split(",").map { it.trim() }
         }
 
@@ -334,7 +343,7 @@ private fun DropDownItem_2(
     // Animation pour le progress du bouton
     val animatedProgress by animateFloatAsState(
         targetValue = if (is_Button_Pressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 1000),
+        animationSpec = tween(durationMillis = item_States.time_pressing_millis),
         finishedListener = { progress ->
             if (progress == 1f && is_Button_Pressed) {
                 // Security check and execution
@@ -394,7 +403,6 @@ private fun DropDownItem_2(
         )
     }
 }
-
 @Composable
 private fun ExpressiveButtonIcon(
     item_States: Item_States,
@@ -417,27 +425,26 @@ private fun ExpressiveButtonIcon(
             .size(24.dp)
             .scale(scale)
             .clip(CircleShape)
-            .pointerInput(Unit) {
+            .pointerInput(is_Button_Yellow) { // Add key to restart gesture detection when state changes
                 detectTapGestures(
                     onPress = {
-                        // Commence l'animation seulement si le bouton est jaune
+                        // Only start hold animation if button is in yellow state
                         if (is_Button_Yellow) {
                             onButtonPressed(true)
-                        }
-                        tryAwaitRelease()
-                        if (deleteProgress < 1f) {
-                            onButtonPressed(false)
+                            // Wait for release or timeout
+                            val released = tryAwaitRelease()
+                            // If user released before animation completed, stop the animation
+                            if (released && deleteProgress < 1f) {
+                                onButtonPressed(false)
+                            }
                         }
                     },
                     onTap = {
-                        // Handle tap based on avec_Premier_Click_Jane setting
-                        if (item_States.avec_Premier_Click_Jane) {
-                            // Original behavior: first click activates yellow state
-                            if (!is_Button_Yellow) {
-                                onButtonYellow(true)
-                            }
-                        } else {
-                            // Skip yellow state: activate directly
+                        // Handle initial tap to activate yellow state
+                        if (item_States.avec_Premier_Click_Jane && !is_Button_Yellow) {
+                            onButtonYellow(true)
+                        } else if (!item_States.avec_Premier_Click_Jane) {
+                            // Skip yellow state and go directly to hold mode
                             onButtonYellow(true)
                         }
                     }
@@ -445,7 +452,7 @@ private fun ExpressiveButtonIcon(
             },
         contentAlignment = Alignment.Center
     ) {
-        // Fond du bouton
+        // Button background
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -457,7 +464,6 @@ private fun ExpressiveButtonIcon(
                                 Color(0xFFF59E0B)
                             )
                         )
-
                         else -> Brush.linearGradient(
                             colors = listOf(
                                 Color.Transparent,
@@ -469,15 +475,14 @@ private fun ExpressiveButtonIcon(
                 )
         )
 
-        // Indicateur de progression pour le bouton
-        if (deleteProgress > 0f) {
-            // Cercle de progression
+        // Progress indicator for hold action
+        if (deleteProgress > 0f && is_Button_Pressed) {
             Canvas(
                 modifier = Modifier.fillMaxSize()
             ) {
                 val strokeWidth = 2.dp.toPx()
                 drawArc(
-                    color = Color(0xFFDC2626), // Rouge pour delete
+                    color = Color(0xFFDC2626), // Red for delete/action
                     startAngle = -90f,
                     sweepAngle = 360f * deleteProgress,
                     useCenter = false,

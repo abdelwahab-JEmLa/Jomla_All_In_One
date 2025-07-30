@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJ
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBaseD_AchatOperation
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
@@ -29,7 +29,7 @@ class DataBaseFactoryDCouleurAchatOperation(
         updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.4f)
         val data: List<M10OperationVentCouleur> = if (isInternetAvailable) {
             updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.6f)
-            onLoadFromFireBaseD_AchatOperation()
+            onLoadFromFireBase()
         } else {
             onLoadCategoriesFromCsvD_AchatOperation()
         }
