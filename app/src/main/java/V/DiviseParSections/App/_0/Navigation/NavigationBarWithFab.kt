@@ -274,13 +274,14 @@ private fun FabDropdownMenu(
                 item_States = Item_States.get_Default()
                     .copy(
                         icon_imageVector =  Icons.Default.Receipt,
-                        function_noms_separatedStrings = "repo8BonVent && repo10OperationVentCouleur.refresh_Datas(),تحديث تقارير المبيعات",
+                        function_noms_separatedStrings = "refresh_Datas(),تحديث تقارير المبيعات",
                         time_pressing_millis = 1500 // Custom press duration for this action
                     ),
                 onDismissDropdown = onDismissDropdown,
                 onExecute = {
                     repo8BonVent.refresh_Datas()
                     repositorysMainGetter.repo10OperationVentCouleur.refresh_Datas()
+                    repositorysMainGetter.repo1ProduitInfos.refresh_Datas()
                 }
             )
 

@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_Pr
 import android.annotation.SuppressLint
 import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 
-fun A_ProduitInfosRepository.getFirebaseData(onSuccess: (List<ArticlesBasesStatsTable>) -> Unit) {
+fun A_ProduitInfosRepository.getFirebaseData_M1Produit(onSuccess: (List<ArticlesBasesStatsTable>) -> Unit) {
     updateProgress(0.1f)
     ref.get()
         .addOnSuccessListener { snapshot ->

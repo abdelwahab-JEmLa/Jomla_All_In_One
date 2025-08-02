@@ -24,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -62,7 +64,14 @@ fun View_Vent_M1Produit(
         relative_List_M10OperationVentCouleur.isNotEmpty() && relative_List_M10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = relative_M1Produit, key = SemanticsPropertyKey("relative_M1Produit"))
+            }
+            .semantics(mergeDescendants = true) {
+                set(value = productKeyId, key = SemanticsPropertyKey("productKeyId"))
+            }
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -72,6 +81,9 @@ fun View_Vent_M1Produit(
     ) {
         Column(
             modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    set(value = relative_M1Produit, key = SemanticsPropertyKey(""))
+                }
                 .padding(16.dp)
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {

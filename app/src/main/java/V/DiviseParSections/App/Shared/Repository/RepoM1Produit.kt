@@ -3,6 +3,8 @@ package V.DiviseParSections.App.Shared.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData_M1Produit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import android.content.Context
 import android.util.Log
@@ -18,23 +20,58 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
 @Stable
 class RepoM1Produit(
     val context: Context,
-    val ancienRepo: A_ProduitDataBaseProtoJuin17,
+    val dataBaseCreationFactory: A_ProduitDataBaseProtoJuin17,
+    val dataBaseCreationFactoryP1: A_ProduitInfosRepository,
 ) {
-    val dao = ancienRepo.dao
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    val dao = dataBaseCreationFactory.dao
+    private val repoScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
 
     init {
-        composScope.launch {
+        repoScope.launch {
             dao.getAllFlow().collect { _datas.value = it }
+        }
+    }
+
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                dataBaseCreationFactory.dao.deleteAll()
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                val freshDataFromFirebase = suspendCancellableCoroutine { continuation ->
+                    dataBaseCreationFactoryP1.getFirebaseData_M1Produit { dataFB ->
+                        continuation.resume(dataFB)
+                    }
+                }
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -66,16 +103,16 @@ class RepoM1Produit(
         existingIndex: Int,
         data: ArticlesBasesStatsTable
     ) {
-        composScope.launch {
-            ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+        repoScope.launch {
+            dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
         }
     }
 
     private fun deleteDataAncienRepo(
         data: ArticlesBasesStatsTable
     ) {
-        composScope.launch {
-            ancienRepo.deleteDataAncienRepo(data)
+        repoScope.launch {
+            dataBaseCreationFactory.deleteDataAncienRepo(data)
         }
     }
 
@@ -104,7 +141,7 @@ class RepoM1Produit(
         }
 
         if (existingIndex < 0) {
-            composScope.launch {
+            repoScope.launch {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
                         .show()
@@ -118,14 +155,14 @@ class RepoM1Produit(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = datasValue.toMutableList().apply {
                     this[existingIndex] = updatedItem
                 }
             }
         }
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
     }
 }
 

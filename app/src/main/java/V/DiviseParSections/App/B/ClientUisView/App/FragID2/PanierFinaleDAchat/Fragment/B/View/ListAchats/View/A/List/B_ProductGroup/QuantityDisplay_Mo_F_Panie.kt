@@ -1,12 +1,14 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,13 +28,16 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun QuantityDisplay_Mo_F_Panie(
-    produit: ArticlesBasesStatsTable,
+    relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
+    relative_produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade
 ) {
@@ -50,7 +54,7 @@ fun QuantityDisplay_Mo_F_Panie(
         getterFocusedVarsHandlerFacade
             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             .filter { ventOperation ->
-                ventOperation.parent_M1Produit_KeyId == produit.keyID
+                ventOperation.parent_M1Produit_KeyId == relative_produit.keyID
             }   .sumOf { it.quantity }
     }
 
@@ -74,7 +78,7 @@ fun QuantityDisplay_Mo_F_Panie(
                     )
 
                     focusedValuesSetter.active_M1Produit_Pour_Choisire_TotalQuantity(
-                        produit
+                        relative_produit
                     )
 
                 }
@@ -84,7 +88,8 @@ fun QuantityDisplay_Mo_F_Panie(
                 )
                 .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
                     1,
-                    "dialogChoisireQuantityM1ProduitInfosKeyID", focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
+                    "dialogChoisireQuantityM1ProduitInfosKeyID",
+                    focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
                 )
         ) {
             Row(
@@ -111,27 +116,44 @@ fun QuantityDisplay_Mo_F_Panie(
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-        val findTariff = datasValue.find { tariff ->
-            tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
-                    tariff.parent_M1Produit_KeyId == produit.keyID
-        }
-        val default_Tariff = M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
-        val finale_Tariff = findTariff ?: default_Tariff.first
+        val findTariff = datasValue
+            .filter { tariff ->
+                tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
+                        tariff.parent_M1Produit_KeyId == relative_produit.keyID
+            }
+            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+
+
+        val default_Tariff = M13TarificationInfos.get_default_P0(relative_produit, start_Prix_Depuit_Ancient = relative_produit.prixAchat)
+
+        val finale_Tariff_Prix = findTariff?.prixCurrency.takeIf { it!! >0.0 }
+            ?: relative_List_M10OperationVentCouleur.first().provisoireMonPrix.takeIf { it>0.0 }
+            ?: default_Tariff.first.prixCurrency
 
         Card(
             modifier = Modifier
-                .getSemanticsTag(nomVal = "repo13TarificationInfos", data = datasValue)
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(2, "finale_Tariff", finale_Tariff)
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(3, "findTariff", findTariff)
+                .semantics(mergeDescendants = true) {
+                    val datasValuefilter= datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
+                    set(value =datasValue, key = SemanticsPropertyKey("datasValue")) //<--
+                    //TODO(1): pk ca ne s affiche pas le tarrife avec prix 10.0
+                    Log.d("datasValuefilter", datasValuefilter.toString())
+                }
+                .semantics(mergeDescendants = true) {
+                    set(value = findTariff, key = SemanticsPropertyKey("findTariff"))
+                }
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = relative_List_M10OperationVentCouleur,
+                        key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur")
+                    )
+                }
                 .clickable(enabled = !allNonTrouve) {
-
-                    repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                    /* repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         m13TarificationInfos_Pour_Produit = finale_Tariff,
                         m10OperationVentCouleurs = focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
-                    )
-
+                    )       */
                     focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                        produit
+                        relative_produit
                     )
 
                 },
@@ -146,14 +168,14 @@ fun QuantityDisplay_Mo_F_Panie(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val (depuit_Qui, tariffIcon) = if (findTariff != null) {
+                val (depuit_Qui, tariffIcon) =
+                    /*if (findTariff != null) {
                     "Définie Par Ali" to Icons.Default.TrendingUp
-                } else {
+                } else {    */
                     "Depuis Mon Old BaseDonnée" to Icons.Default.History
-                }
 
                 Text(
-                    text = "$depuit_Qui - ${finale_Tariff.prixCurrency}",
+                    text = "$depuit_Qui - ${finale_Tariff_Prix}",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)

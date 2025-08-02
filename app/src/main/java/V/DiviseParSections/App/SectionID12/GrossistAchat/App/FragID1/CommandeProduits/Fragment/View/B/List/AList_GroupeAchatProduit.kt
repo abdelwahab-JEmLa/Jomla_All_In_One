@@ -3,47 +3,122 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.W_AchatProduitOperation.View.View_AchatProduitOperation
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 @Composable
 fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    headViewModel: HeadViewModel = koinViewModel(),
 ) {
     val repo = viewModel.getter.repo11AchatOperation
+
+    // Préparation des données groupées par produit
     val items = remember(repo.filteredDatasValue) {
         repo.filteredDatasValue.mapNotNull { achat ->
-            if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") return@mapNotNull null
+            // Vérification de la validité de l'ID couleur produit
+            if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
+                return@mapNotNull null
+            }
 
+            // Récupération des ventes associées
             val sales = achat.get_list_v_Depuit_joinedStringKeys(repo.repo10OperationVentCouleur.datasValue)
             val produitId = sales.firstOrNull()?.parent_M1Produit_KeyId
 
-            if (produitId.isNullOrBlank() || produitId == "null" || produitId.length <= 5) return@mapNotNull null
+            // Validation de l'ID produit
+            if (produitId.isNullOrBlank() || produitId == "null" || produitId.length <= 5) {
+                return@mapNotNull null
+            }
 
             produitId to achat
         }.groupBy({ it.first }, { it.second }).entries.toList()
     }
 
+    // État de défilement pour la synchronisation
+    val listState = rememberLazyListState()
+    val uiState by headViewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    // Synchronisation du défilement - Réception des positions depuis l'appareil hôte
+    LaunchedEffect(uiState.productDisplayController.mainGridScrollPosition) {
+        val targetPosition = uiState.productDisplayController.mainGridScrollPosition
+
+        // Ne pas synchroniser si c'est l'appareil hôte (pour éviter les boucles)
+        if (!uiState.productDisplayController.isHostPhone &&
+            uiState.productDisplayController.isConnected &&
+            targetPosition >= 0 &&
+            targetPosition < items.size) {
+
+            scope.launch {
+                try {
+                    // Animation fluide vers la position cible
+                    listState.animateScrollToItem(
+                        index = targetPosition,
+                        scrollOffset = 0
+                    )
+                } catch (e: Exception) {
+                    // En cas d'échec de l'animation, défilement instantané
+                    try {
+                        listState.scrollToItem(targetPosition)
+                    } catch (scrollException: Exception) {
+                        // Log de l'erreur ou gestion d'erreur si nécessaire
+                    }
+                }
+            }
+        }
+    }
+
+    // Diffusion du défilement - Envoi des positions aux appareils clients
+    LaunchedEffect(listState) {
+        // Seulement si l'appareil est l'hôte et connecté
+        if (uiState.productDisplayController.isHostPhone &&
+            uiState.productDisplayController.isConnected) {
+
+            snapshotFlow {
+                listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+            }
+                .distinctUntilChanged()
+                .collect { (position, offset) ->
+                    // Envoi de la position de défilement aux clients connectés
+                    headViewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                        position
+                    )
+                }
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize().padding(4.dp)) {
         if (items.isEmpty()) {
+            // Affichage des messages d'état quand la liste est vide
             ElevatedCard(
                 modifier = Modifier
                     .getSemanticsTag(repo.datasValue, "repo11AchatOperation_datasValue")
@@ -55,9 +130,18 @@ fun List_GroupeAchatProduit(
                 Text(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     text = when {
-                        repo.datasValue.isEmpty() -> "Aucune opération d'achat disponible\nAjoutez des opérations d'achat pour commencer"
-                        repo.filteredDatasValue.isEmpty() -> "Aucune opération d'achat ne correspond au filtre actuel\n(${repo.datasValue.size} opérations totales disponibles)\nModifiez ou supprimez le filtre pour voir plus d'opérations"
-                        else -> "Aucune opération d'achat valide trouvée\n(${repo.filteredDatasValue.size} opérations après filtrage)\nVérifiez la validité des données ou contactez le support"
+                        repo.datasValue.isEmpty() ->
+                            "Aucune opération d'achat disponible\nAjoutez des opérations d'achat pour commencer"
+
+                        repo.filteredDatasValue.isEmpty() ->
+                            "Aucune opération d'achat ne correspond au filtre actuel\n" +
+                                    "(${repo.datasValue.size} opérations totales disponibles)\n" +
+                                    "Modifiez ou supprimez le filtre pour voir plus d'opérations"
+
+                        else ->
+                            "Aucune opération d'achat valide trouvée\n" +
+                                    "(${repo.filteredDatasValue.size} opérations après filtrage)\n" +
+                                    "Vérifiez la validité des données ou contactez le support"
                     },
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -65,7 +149,11 @@ fun List_GroupeAchatProduit(
                 )
             }
         } else {
-            LazyColumn {
+            // Liste principale avec synchronisation de défilement
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(items) { groupe ->
                     View_AchatProduitOperation(viewModel, groupe)
                 }

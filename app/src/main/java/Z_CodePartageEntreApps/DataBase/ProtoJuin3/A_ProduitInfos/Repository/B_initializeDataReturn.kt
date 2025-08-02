@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData_M1Produit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.isRoomEmpty
 import android.content.Context
 import android.net.ConnectivityManager
@@ -17,7 +17,7 @@ suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<ArticlesBasesS
 
         if (hasInternetConnection) {
             val firebaseData = suspendCancellableCoroutine { continuation ->
-                getFirebaseData { dataFB ->
+                getFirebaseData_M1Produit { dataFB ->
                     continuation.resume(dataFB)
                 }
             }

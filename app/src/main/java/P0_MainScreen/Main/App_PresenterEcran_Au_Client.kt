@@ -159,7 +159,7 @@ fun App_PresenterEcran_Au_Client(
                     ) {
                         // Main text
                         Text(
-                            text = "اشري الهنــــآ بالجــــــملة",
+                            text = "اشري لهنــــآ بالجــــــملة",
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,

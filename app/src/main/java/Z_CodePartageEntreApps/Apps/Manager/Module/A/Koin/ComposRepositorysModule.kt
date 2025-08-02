@@ -42,7 +42,7 @@ val composRepositorysModule = module {
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
-    single { RepoM1Produit(androidContext(),get()) }
+    single { RepoM1Produit(androidContext(),get(),get(),) }
     single { Repo03CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
