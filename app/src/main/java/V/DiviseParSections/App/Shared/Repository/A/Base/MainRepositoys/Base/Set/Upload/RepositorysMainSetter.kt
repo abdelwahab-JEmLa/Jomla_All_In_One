@@ -155,15 +155,13 @@ class RepositorysMainSetter(
     fun delete_M8BonVent(data: M8BonVent) {
         repo8BonVent.delete(data)
     }
-
-    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
     fun update_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
 
-    fun m10_delete(ventOperationsForProduct: List<M10OperationVentCouleur>) {
-        ventOperationsForProduct.map {
+    fun delete_ListM10OperationVentCouleur(datas: List<M10OperationVentCouleur>) {
+        datas.map {
             repo10OperationVentCouleur.delete(it)
         }
     }

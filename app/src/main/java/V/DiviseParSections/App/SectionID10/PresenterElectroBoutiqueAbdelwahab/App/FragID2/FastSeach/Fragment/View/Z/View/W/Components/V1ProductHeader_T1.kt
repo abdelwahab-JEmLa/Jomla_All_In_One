@@ -159,7 +159,7 @@ fun ProductHeader_T1(
                                     it
                                 )
                             }
-                            viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                            viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
                                 listFiltered_M10OperationVentCouleurs_By_M1Produit
                             )
                         }, modifier = Modifier.size(36.dp)
@@ -224,7 +224,7 @@ fun ProductHeader_T1(
                         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
 
-                    viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                    viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
                         listFiltered_M10OperationVentCouleurs_By_M1Produit
                     )
                 }

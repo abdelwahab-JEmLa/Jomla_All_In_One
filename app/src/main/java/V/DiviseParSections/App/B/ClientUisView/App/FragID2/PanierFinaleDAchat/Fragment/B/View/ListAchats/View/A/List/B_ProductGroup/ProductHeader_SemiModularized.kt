@@ -230,7 +230,7 @@ fun ProductHeader_SemiModularized(
                         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
 
-                    viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                    viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
                         listFiltered_M10OperationVentCouleurs_By_M1Produit
                     )
                 }
