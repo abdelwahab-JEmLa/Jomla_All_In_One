@@ -126,10 +126,13 @@ fun QuantityDisplay_Mo_F_Panie(
 
         val default_Tariff = M13TarificationInfos.get_default_P0(relative_produit, start_Prix_Depuit_Ancient = relative_produit.prixAchat)
 
-        val finale_Tariff_Prix = findTariff?.prixCurrency.takeIf { it!! >0.0 }
-            ?: relative_List_M10OperationVentCouleur.first().provisoireMonPrix.takeIf { it>0.0 }
-            ?: default_Tariff.first.prixCurrency
-
+        val finale_Tariff_Prix = when {
+            findTariff?.prixCurrency?.let { it > 0.0 } == true -> findTariff.prixCurrency
+            relative_List_M10OperationVentCouleur.isNotEmpty() &&
+                    relative_List_M10OperationVentCouleur.first().provisoireMonPrix > 0.0 ->
+                relative_List_M10OperationVentCouleur.first().provisoireMonPrix
+            else -> default_Tariff.first.prixCurrency
+        }
         Card(
             modifier = Modifier
                 .semantics(mergeDescendants = true) {
