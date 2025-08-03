@@ -5,6 +5,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,24 +19,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun View_Vent_M1Produit(
     modifier: Modifier = Modifier,
@@ -53,13 +64,18 @@ fun View_Vent_M1Produit(
     val allNonTrouve =
         relative_List_M10OperationVentCouleur.isNotEmpty() && relative_List_M10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
+    // State for delete button activation
+    var isDeleteButtonActivated by remember { mutableStateOf(false) }
+    val hapticFeedback = LocalHapticFeedback.current
+
     fun delete_list_Vents(datas: List<M10OperationVentCouleur>): Unit {
         repositorysMainSetter.delete_ListM10OperationVentCouleur(datas)
+        isDeleteButtonActivated = false // Reset after deletion
     }
 
-    Box(modifier = modifier) {
+    Box {
         Card(
-            modifier = Modifier
+            modifier = modifier
                 .semantics(mergeDescendants = true) {
                     set(value = relative_M1Produit, key = SemanticsPropertyKey("relative_M1Produit"))
                 }
@@ -136,21 +152,51 @@ fun View_Vent_M1Produit(
             }
         }
 
-        // Floating Action Button at top start
-        FloatingActionButton(
-            onClick = { delete_list_Vents(relative_List_M10OperationVentCouleur) },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(x = 8.dp, y = (-8).dp)
-                .size(40.dp),
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete items",
-                modifier = Modifier.size(20.dp)
-            )
+        // Floating Action Button for Delete with Long Press Security
+        if (relative_List_M10OperationVentCouleur.isNotEmpty()) {
+            FloatingActionButton(
+                onClick = {
+                    if (isDeleteButtonActivated) {
+                        delete_list_Vents(relative_List_M10OperationVentCouleur)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .offset(x = 8.dp, y = 8.dp)
+                    .size(40.dp)
+                    .combinedClickable(
+                        onClick = {
+                            if (isDeleteButtonActivated) {
+                                delete_list_Vents(relative_List_M10OperationVentCouleur)
+                            }
+                        },
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            isDeleteButtonActivated = !isDeleteButtonActivated
+                        }
+                    ),
+                shape = CircleShape,
+                containerColor = if (isDeleteButtonActivated)
+                    MaterialTheme.colorScheme.error
+                else
+                    MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f),
+                contentColor = if (isDeleteButtonActivated)
+                    MaterialTheme.colorScheme.onError
+                else
+                    MaterialTheme.colorScheme.onErrorContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = if (isDeleteButtonActivated) 6.dp else 2.dp
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = if (isDeleteButtonActivated)
+                        "Delete items (activated)"
+                    else
+                        "Long press to activate delete",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
