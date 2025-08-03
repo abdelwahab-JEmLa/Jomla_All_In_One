@@ -148,13 +148,6 @@ private fun CustomStatusDropdownMenu(
             )
         }
 
-        M8BonVent.EtateActuellementEst.Ordre_Gerant.let { etate ->
-            StatusDropdownItem(
-                status = etate,
-                text = etate.nomArabe
-            )
-        }
-
         StatusDropdownItem(
             status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             text = "عندو سلعة"
@@ -171,9 +164,22 @@ private fun CustomStatusDropdownMenu(
         )
 
         focusedValuesGetter.currentApp_Est_Admin.ifTrue {
+            val status = M8BonVent.EtateActuellementEst.PASSE
+            StatusDropdownItem(
+                status = status,
+                text = status.nomArabe
+            )
+
             StatusDropdownItem(
                 status = M8BonVent.EtateActuellementEst.Ordre_Gerant,
                 text = M8BonVent.EtateActuellementEst.Ordre_Gerant.nomArabe
+            )
+
+            // Added CommantaireSpeciale status item
+            val statusCommantaire = M8BonVent.EtateActuellementEst.CommantaireSpeciale
+            StatusDropdownItem(
+                status = statusCommantaire,
+                text = statusCommantaire.nomArabe
             )
         }
     }
@@ -358,6 +364,15 @@ fun MarkerStatusDialog(
                                                 relative_M2Client = relative_M2Client,
                                             )
                                         }
+                                    }
+
+                                    // Fixed TODO: Added CommantaireSpeciale button
+                                    item {
+                                        M8BonVent.EtateActuellementEst.CommantaireSpeciale
+                                            .ButtonAutreEtates(
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
                                     }
 
                                     activeCompt?.let { activeCompt ->

@@ -12,6 +12,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSave
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -42,11 +45,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
@@ -79,6 +86,10 @@ fun View_MainItem(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
+
+    // Security state for delete button
+    var isDeleteButtonActivated by remember { mutableStateOf(false) }
+    val hapticFeedback = LocalHapticFeedback.current
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
@@ -139,6 +150,35 @@ fun View_MainItem(
         }
     }
 
+    // Delete function extracted for reuse
+    fun performDelete() {
+        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
+            relative_M8BonVent
+        )
+
+        // Delete voice recording using the original file name if available
+        val audioKeyToDelete = if (hasVoiceMessage) {
+            relative_M17Message?.nomDeSonOriginaleFichie ?: ""
+        } else {
+            relative_M8BonVent.vocaleKeyID
+        }
+
+        viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
+            if (success) {
+                viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
+            } else {
+                Toast.makeText(
+                    context,
+                    "Erreur lors de la suppression du message vocal",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        // Reset security state after deletion
+        isDeleteButtonActivated = false
+    }
+
     Card(
         modifier = Modifier
             .getSemanticsTag(relative_M17Message, "")
@@ -171,35 +211,32 @@ fun View_MainItem(
         ) {
             IconButton(
                 onClick = {
-                    viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
-                        relative_M8BonVent
-                    )
-
-                    // Delete voice recording using the original file name if available
-                    val audioKeyToDelete = if (hasVoiceMessage) {
-                        relative_M17Message?.nomDeSonOriginaleFichie ?: ""
-                    } else {
-                        relative_M8BonVent.vocaleKeyID
-                    }
-
-                    viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
-                        if (success) {
-                            viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Erreur lors de la suppression du message vocal",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    if (isDeleteButtonActivated) {
+                        performDelete()
                     }
                 },
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .combinedClickable(
+                        onClick = {
+                            if (isDeleteButtonActivated) {
+                                performDelete()
+                            }
+                        },
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            isDeleteButtonActivated = !isDeleteButtonActivated
+                        }
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Supprimer la transaction",
-                    tint = Color.White
+                    contentDescription = if (isDeleteButtonActivated)
+                        "Supprimer la transaction (activé)"
+                    else
+                        "Maintenir appuyé pour activer la suppression",
+                    tint = if (isDeleteButtonActivated) Color.Red else Color.White,
+                    modifier = Modifier.size(if (isDeleteButtonActivated) 26.dp else 24.dp)
                 )
             }
 

@@ -263,9 +263,8 @@ data class M8BonVent(
         RAPPORT_AU_ENREGESTREMENT_VOCALE(android.R.color.black, "التقرير قي التسجيل الصوتي "),
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
         A_EVITE(android.R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
-
-
-        ;
+        PASSE(R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
+        CommantaireSpeciale(R.color.c7, "ملاحظة خاصة بالطلبية"), ;
 
         companion object {
             const val keyModel = "ID8C2"
