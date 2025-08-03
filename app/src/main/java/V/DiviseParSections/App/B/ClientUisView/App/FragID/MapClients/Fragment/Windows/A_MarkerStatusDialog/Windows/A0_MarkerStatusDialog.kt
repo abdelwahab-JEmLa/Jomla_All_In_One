@@ -162,6 +162,12 @@ private fun CustomStatusDropdownMenu(
             status = M8BonVent.EtateActuellementEst.FERME,
             text = "مغلق"
         )
+        // Added CommantaireSpeciale status item
+        val statusCommantaire = M8BonVent.EtateActuellementEst.CommantaireSpeciale
+        StatusDropdownItem(
+            status = statusCommantaire,
+            text = statusCommantaire.nomArabe
+        )
 
         focusedValuesGetter.currentApp_Est_Admin.ifTrue {
             val status = M8BonVent.EtateActuellementEst.PASSE
@@ -175,12 +181,7 @@ private fun CustomStatusDropdownMenu(
                 text = M8BonVent.EtateActuellementEst.Ordre_Gerant.nomArabe
             )
 
-            // Added CommantaireSpeciale status item
-            val statusCommantaire = M8BonVent.EtateActuellementEst.CommantaireSpeciale
-            StatusDropdownItem(
-                status = statusCommantaire,
-                text = statusCommantaire.nomArabe
-            )
+
         }
     }
 }
@@ -366,7 +367,6 @@ fun MarkerStatusDialog(
                                         }
                                     }
 
-                                    // Fixed TODO: Added CommantaireSpeciale button
                                     item {
                                         M8BonVent.EtateActuellementEst.CommantaireSpeciale
                                             .ButtonAutreEtates(

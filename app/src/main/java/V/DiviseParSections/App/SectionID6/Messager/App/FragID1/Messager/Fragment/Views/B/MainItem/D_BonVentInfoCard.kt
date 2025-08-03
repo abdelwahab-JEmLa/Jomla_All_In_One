@@ -34,14 +34,10 @@ fun BonVentInfoCard(
 ) {
     val context = LocalContext.current
 
-    // Updated styling to fit better inside the message bubble
+    // Background color matches EtateActuellementEst color
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = when {
-            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
-            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
-            else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-        },
+        color = Color(context.getColor(m8BonVent.etateActuellementEst.color)),
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(
@@ -59,23 +55,13 @@ fun BonVentInfoCard(
                     text = "État: ${m8BonVent.etateActuellementEst.nomArabe}",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                        else -> Color(
-                            context.getColor(m8BonVent.etateActuellementEst.color)
-                        )
-                    }
+                    color = Color.White
                 )
 
                 Text(
                     text = m8BonVent.get_DebugInfos(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    color = Color.White.copy(alpha = 0.8f)
                 )
             }
 
@@ -89,21 +75,13 @@ fun BonVentInfoCard(
                 Text(
                     text = "Début: ${m8BonVent.heurDebutInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    color = Color.White
                 )
 
                 Text(
                     text = "Fin: ${m8BonVent.heurFinInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    color = Color.White
                 )
             }
 
@@ -120,36 +98,14 @@ fun BonVentInfoCard(
                             Icons.Default.VolumeOff
                         },
                         contentDescription = null,
-                        tint = when {
-                            isAdminMessage -> if (m8BonVent.sonVocaleEstEcoute) {
-                                MaterialTheme.colorScheme.onError
-                            } else {
-                                MaterialTheme.colorScheme.onError.copy(alpha = 0.6f)
-                            }
-
-                            isFromActiveAccount -> if (m8BonVent.sonVocaleEstEcoute) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                            }
-
-                            else -> if (m8BonVent.sonVocaleEstEcoute) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            }
-                        },
+                        tint = Color.White,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = if (m8BonVent.sonVocaleEstEcoute) "Message vocal écouté" else "Message vocal non écouté",
                         style = MaterialTheme.typography.bodySmall,
-                        color = when {
-                            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
-                            isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        }
+                        color = Color.White.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -160,11 +116,7 @@ fun BonVentInfoCard(
                 Text(
                     text = "Client: ${m8BonVent.parent_M2Client_DebugInfos}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.8f)
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    color = Color.White.copy(alpha = 0.8f)
                 )
             }
         }
