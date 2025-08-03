@@ -134,8 +134,7 @@ fun QuantityDisplay_Mo_F_Panie(
             modifier = Modifier
                 .semantics(mergeDescendants = true) {
                     val datasValuefilter= datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
-                    set(value =datasValue, key = SemanticsPropertyKey("datasValue")) //<--
-                    //TODO(1): pk ca ne s affiche pas le tarrife avec prix 10.0
+                    set(value =datasValue, key = SemanticsPropertyKey("datasValue"))
                     Log.d("datasValuefilter", datasValuefilter.toString())
                 }
                 .semantics(mergeDescendants = true) {
