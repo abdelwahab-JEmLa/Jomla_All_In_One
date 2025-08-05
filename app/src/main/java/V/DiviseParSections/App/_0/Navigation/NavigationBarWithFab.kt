@@ -272,6 +272,8 @@ private fun FabDropdownMenu(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItem_FABs_AddClient()   //<--
+            //TODO(1): regle ca et fait que ca toggle affiche_Floating_Button_AddCLient
             DropDownItem_DisplayeGpsFlowFAB(
                 onDismissDropdown = onDismissDropdown
             )
