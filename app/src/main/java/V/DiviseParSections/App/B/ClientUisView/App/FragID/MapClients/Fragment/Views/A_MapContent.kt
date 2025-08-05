@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
@@ -23,6 +25,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GpsFixed
+import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -75,6 +81,17 @@ fun MapContent(
             radius = 25.0,
             xmlResources = listOf("location_arrow" to R.drawable.ic_location_dot)
         )
+    }
+
+    // FIXED: Listen for GPS follow mode changes from the FAB dropdown
+    val gpsFollowModeActive = focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
+
+    LaunchedEffect(gpsFollowModeActive) {
+        if (gpsFollowModeActive) {
+            locationTracker.enableFollowMode()
+        } else {
+            locationTracker.disableFollowMode()
+        }
     }
 
     // Initialize map and start location tracking
@@ -250,13 +267,20 @@ fun MapContent(
         affiche_Floating_Button_Cible_Client.ifTrue {
             Floating_Separated_FragMap_Button_1()
         }
+        // Floating button for client targeting
+        val affiche_Floating_Button_gps_follow_mode_active =
+            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active
+        affiche_Floating_Button_gps_follow_mode_active.ifTrue {
+            Floating_Separated_FragMap_Button_2(
+                buttonState= Button_State.get_Default().copy(
+                text_Label = "affiche_Floating_Button_gps_follow_mode_active",
+                icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),
+                colors = Pair(Color.Red, Color.Green)
+            )
+            )
+        }
     }
 }
-
-/**
- * Ensures location overlay stays at the bottom of the overlay stack
- * This prevents location marker from appearing above client markers
- */
 private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
     val locationOverlay = mapView.overlays.find { overlay ->
         overlay.javaClass.simpleName.contains("Location") ||

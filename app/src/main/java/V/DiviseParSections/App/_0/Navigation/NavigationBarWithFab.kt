@@ -28,6 +28,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.GpsFixed
+import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Visibility
@@ -270,10 +272,14 @@ private fun FabDropdownMenu(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItem_DisplayeGpsFlowFAB(
+                onDismissDropdown = onDismissDropdown
+            )
+
             DropDownItem_2(
                 item_States = Item_States.get_Default()
                     .copy(
-                        icon_imageVector =  Icons.Default.Receipt,
+                        icon_imageVector = Icons.Default.Receipt,
                         function_noms_separatedStrings = "refresh_Datas(),تحديث تقارير المبيعات",
                         time_pressing_millis = 1500 // Custom press duration for this action
                     ),
@@ -293,7 +299,56 @@ private fun FabDropdownMenu(
         }
     }
 }
+@Composable
+private fun DropDownItem_DisplayeGpsFlowFAB(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    onDismissDropdown: () -> Unit
+) {
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val isGpsButtonVisible = currentValues.affiche_Floating_Button_gps_follow_mode_active
 
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isGpsButtonVisible)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = if (isGpsButtonVisible) Icons.Default.GpsFixed else Icons.Default.GpsNotFixed,
+                    contentDescription = "Toggle GPS Button Visibility",
+                    tint = if (isGpsButtonVisible)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            text = {
+                Text(
+                    text = if (isGpsButtonVisible) "Hide GPS Button" else "Show GPS Button",
+                    color = if (isGpsButtonVisible)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            onClick = {
+                // Toggle the GPS button visibility
+                val newValues = currentValues.copy(
+                    affiche_Floating_Button_gps_follow_mode_active = !isGpsButtonVisible
+                )
+                focusedValuesGetter.update_activeCentralValues(newValues)
+                onDismissDropdown()
+            }
+        )
+    }
+}
 data class Item_States(
     val function_noms_separatedStrings: String = ",",
     val avec_Premier_Click_Jane: Boolean = true,
@@ -404,6 +459,7 @@ private fun DropDownItem_2(
         )
     }
 }
+
 @Composable
 private fun ExpressiveButtonIcon(
     item_States: Item_States,

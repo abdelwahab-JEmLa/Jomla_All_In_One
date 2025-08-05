@@ -39,13 +39,53 @@ class LocationTracker(
     private var directionMarker: Marker? = null
     private var proximityCircle: Polygon? = null
     private var isTracking = false
-    private var followLocation = false // Changed to false to prevent auto-following
+    private var followLocation = false // Keep for backward compatibility
 
     var currentBearing by mutableStateOf(0f)
         private set
 
     var currentLocation by mutableStateOf<Location?>(null)
         private set
+
+    // FIXED: Proper follow mode implementation
+    private var isFollowModeActive = false
+
+    /**
+     * Enable GPS follow mode - map will automatically center on location updates
+     */
+    fun enableFollowMode() {
+        isFollowModeActive = true
+        followLocation = true // Keep both for compatibility
+        // Immediately center on current location if available
+        currentLocation?.let { location ->
+            centerMapOnCurrentLocation()
+        }
+    }
+
+    /**
+     * Disable GPS follow mode - map will stay where user positioned it
+     */
+    fun disableFollowMode() {
+        isFollowModeActive = false
+        followLocation = false // Keep both for compatibility
+    }
+
+    /**
+     * Check if follow mode is currently active
+     */
+    fun isFollowModeEnabled(): Boolean = isFollowModeActive
+
+    /**
+     * Toggle follow mode on/off
+     */
+    fun toggleFollowMode(): Boolean {
+        if (isFollowModeActive) {
+            disableFollowMode()
+        } else {
+            enableFollowMode()
+        }
+        return isFollowModeActive
+    }
 
     fun getCurrentPosition(): Location? {
         return try {
@@ -135,8 +175,12 @@ class LocationTracker(
                 mapView.overlays.add(marker)
             }
 
-            // Only center if explicitly requested (not automatically)
-            // The map will stay where the user positioned it
+            // FIXED: Properly handle follow mode
+            if (isFollowModeActive) {
+                // Auto-center map on new location when follow mode is active
+                mapView.controller.animateTo(geoPoint)
+            }
+            // If follow mode is disabled, map stays where user positioned it
 
             mapView.invalidate()
         }
@@ -166,7 +210,7 @@ class LocationTracker(
                 icon = ContextCompat.getDrawable(
                     context, xmlResources
                         ?.find { it.first == "location_arrow" }?.second
-                        ?: throw IllegalStateException(" layout not found")
+                        ?: throw IllegalStateException("location_arrow layout not found")
                 )
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                 icon?.setTint(android.graphics.Color.BLUE) // Rendre l'icône plus visible
@@ -179,6 +223,11 @@ class LocationTracker(
                 proximityCircle = createProximityCircle(geoPoint)
                 mapView.overlays.add(proximityCircle)
                 mapView.overlays.add(directionMarker)
+
+                // If follow mode is active, center immediately
+                if (isFollowModeActive) {
+                    mapView.controller.animateTo(geoPoint)
+                }
             }
 
             // Démarrer les mises à jour du capteur (keep normal frequency for compass)
@@ -231,6 +280,7 @@ class LocationTracker(
             proximityCircle = null
             isTracking = false
             currentLocation = null
+            // Don't reset follow mode state - let it persist
 
             mapView.invalidate()
         }

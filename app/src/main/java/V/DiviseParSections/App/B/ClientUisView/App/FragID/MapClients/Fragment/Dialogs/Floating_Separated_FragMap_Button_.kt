@@ -1,9 +1,7 @@
-// File 1: Fixed Button State and Floating Button Component
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -16,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.GpsFixed
+import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -37,19 +35,19 @@ import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
-fun Floating_Separated_FragMap_Button_1(
+fun Floating_Separated_FragMap_Button_2(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
-        text_Label = "Toggle Button",
-        icons = Pair(Icons.Default.Remove, Icons.Default.Add),
-        colors = Pair(Color.Red, Color.Green)
+        text_Label = "GPS Follow Mode",
+        icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),
+        colors = Pair(Color.Gray, Color.Blue)
     )
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
-    val isActive = currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
+    val isGpsFollowActive = currentValues.gps_follow_mode_active ?: false
 
-    val updatedButtonState = buttonState.copy(its_Active = isActive)
+    val updatedButtonState = buttonState.copy(its_Active = isGpsFollowActive)
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -80,14 +78,14 @@ fun Floating_Separated_FragMap_Button_1(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = updatedButtonState.text_Label,
+                        text = if (isGpsFollowActive) "GPS Active" else "GPS Inactive",
                         color = Color.White,
                         modifier = Modifier
                             .background(
                                 color = if (updatedButtonState.its_Active)
-                                    updatedButtonState.colors.first.copy(alpha = 0.8f)
+                                    updatedButtonState.colors.second.copy(alpha = 0.8f)
                                 else
-                                    updatedButtonState.colors.second.copy(alpha = 0.8f),
+                                    updatedButtonState.colors.first.copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -95,25 +93,26 @@ fun Floating_Separated_FragMap_Button_1(
                 }
                 FloatingActionButton(
                     modifier = Modifier
-                        .getSemanticsTag(updatedButtonState, "buttonState")
+                        .getSemanticsTag(updatedButtonState, "gpsFollowButtonState")
                         .size(48.dp),
                     onClick = {
+                        // FIXED: Toggle GPS follow mode instead of click_On_Marque
                         val newValues = currentValues.copy(
-                            click_On_Marque = currentValues.click_On_Marque.toggle_retrn()
+                            gps_follow_mode_active = !isGpsFollowActive
                         )
                         focusedValuesGetter.update_activeCentralValues(newValues)
                     },
                     containerColor = if (updatedButtonState.its_Active)
-                        updatedButtonState.colors.first
-                    else
                         updatedButtonState.colors.second
+                    else
+                        updatedButtonState.colors.first
                 ) {
                     Icon(
                         imageVector = if (updatedButtonState.its_Active)
-                            updatedButtonState.icons.first
+                            updatedButtonState.icons.second // GpsFixed when active
                         else
-                            updatedButtonState.icons.second,
-                        contentDescription = updatedButtonState.description_Functionement,
+                            updatedButtonState.icons.first, // GpsNotFixed when inactive
+                        contentDescription = if (isGpsFollowActive) "Disable GPS Follow" else "Enable GPS Follow",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )

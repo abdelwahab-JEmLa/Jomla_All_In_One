@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -53,6 +54,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+@Composable
+fun Button_De_supprime_Avec_Securite(
+    bon_Vent: M8BonVent,
+    machina_li_t_supprime: Repo8BonVent,
+) {
+
+    IconButton(
+        onClick = {
+
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
 
 @Composable
 fun View_MainItem(
@@ -197,9 +218,9 @@ fun View_MainItem(
                 modifier = Modifier.align(Alignment.TopStart)
             ) {
                 Icon(    //<--
-                //TODO(1): AJOUT UNE SECURITE DEHOL
+                    //TODO(1): AJOUT UNE SECURITE DEHOL
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Supprimer la transaction",
+                    contentDescription = null,
                     tint = Color.White
                 )
             }

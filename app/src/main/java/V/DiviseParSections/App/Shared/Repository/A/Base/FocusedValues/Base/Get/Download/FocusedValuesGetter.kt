@@ -32,8 +32,11 @@ data class ActiveCentralValues(
     //-----------------Bon8----------------------------------------------------------------------------
    val click_On_Marque : Click_On_Marque  =Click_On_Marque.Standart,
    val actuelle_Ciblage_MaxPosition : Int  =1,
+    val gps_follow_mode_active: Boolean? = false,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_Cible_Client: Boolean = false,
+
+    val affiche_Floating_Button_gps_follow_mode_active: Boolean = false,
 ) {
     companion object {
         fun get_Default(): ActiveCentralValues {
