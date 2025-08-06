@@ -3,9 +3,8 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.FabButtonsMessageurMainScreen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.A.VideoDownloadManager
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.A.D_Video_Message
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.MessageHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -54,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -233,7 +231,9 @@ private fun List_Messages(
                     // Check if video download is in progress
                     val isDownloading = checkVideoDownloadState(latestEtate, viewModel)
                     if (isDownloading) {
-                        VideoLoadingMessage(
+                        VideoLoadingMessage(       //<--
+                        //TODO(1): fait affiche ca si le video est dispo a storage firebase et non au local ici fait downold depuit storage ...
+                        //au local
                             list_D_EtateMessageVocale = allEtatesForMessage,
                             relative_M17MessageVocale = latestEtate,
                             viewModel = viewModel
@@ -250,7 +250,8 @@ private fun List_Messages(
                     // Audio message - check if download is in progress
                     val isDownloading = checkAudioDownloadState(latestEtate, viewModel)
                     if (isDownloading) {
-                        AudioLoadingMessage(
+                        AudioLoadingMessage(     //<--
+                        //TODO(1): mem chose ici
                             list_D_EtateMessageVocale = allEtatesForMessage,
                             relative_M17MessageVocale = latestEtate,
                             viewModel = viewModel,
@@ -276,12 +277,7 @@ private fun checkVideoDownloadState(
     message: M17MessageVocale,
     viewModel: ViewModelMessageur
 ): Boolean {
-    val context = LocalContext.current
-    val videoManager = remember { VideoDownloadManager(context) }
-    val videoFileName = message.text_Inputted
-
-    return !videoManager.isVideoDownloaded(videoFileName) &&
-            message.etate == M17MessageVocale.Etate.ENVOYER
+   return false
 }
 
 // Helper function to check audio download state
