@@ -332,7 +332,7 @@ fun Button_ID2_Menagerie_Telegram(
                 )
             }
 
-            if (totalUnreadCount > 0 && !isDevMode ) {
+            if (totalUnreadCount > 0 && !isDevMode && false ) {
                 Box(
                     modifier = Modifier
                         .size(25.dp)

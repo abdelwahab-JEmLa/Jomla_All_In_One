@@ -30,8 +30,8 @@ data class ActiveCentralValues(
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
     //-----------------Bon8----------------------------------------------------------------------------
-   val click_On_Marque : Click_On_Marque  =Click_On_Marque.Standart,
-   val actuelle_Ciblage_MaxPosition : Int  =1,
+    val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
+    val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_Cible_Client: Boolean = false,
@@ -45,6 +45,7 @@ data class ActiveCentralValues(
         }
 
     }
+
     enum class Click_On_Marque {
         Standart,
         ADD_Au_Ciblage_Clients;
@@ -56,6 +57,7 @@ data class ActiveCentralValues(
             }
         }
     }
+
     sealed class RoleDefinieParSourceACetteFragment() {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
@@ -86,15 +88,17 @@ class FocusedValuesGetter(
     }
 
     val currentActive_M9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.keyID == repo18CentralParametresOfAllApps
-            .dataValue
-            ?.au_Lence_Set_Compt_Ac_KeyId
+        repo9AppCompt.datasValue.firstOrNull {
+            it.keyID == repo18CentralParametresOfAllApps
+                .dataValue
+                ?.au_Lence_Set_Compt_Ac_KeyId
         }
     }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
         repo14VentPeriode.datasValue
-            .find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID } ?:repo14VentPeriode.datasValue.last()
+            .find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
+            ?: repo14VentPeriode.datasValue.last()
     }
 
     //----------------------------------Section.M8BonVent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -118,7 +122,7 @@ class FocusedValuesGetter(
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     val currentApp_Est_Admin by derivedStateOf {
-        currentActive_M9AppCompt?.its_Admin ==true
+        currentActive_M9AppCompt?.its_Admin == true
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -135,7 +139,8 @@ class FocusedValuesGetter(
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter {
                     (it.parent_M2Client_KeyID == client.keyID
-                            && it.parent_M9AppCompt_KeyID == (currentActive_M9AppCompt?.keyID ?: ""))
+                            && it.parent_M9AppCompt_KeyID == (currentActive_M9AppCompt?.keyID
+                        ?: ""))
                 }
                 .maxByOrNull { it.creationTimestamps }
 
@@ -156,7 +161,7 @@ class FocusedValuesGetter(
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
-            parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID?:"",
+            parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID ?: "",
             parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
         )
     }
@@ -175,7 +180,7 @@ class FocusedValuesGetter(
                     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
                     parent_M8BonVent_KeyId = keyID,
                     parent_M8BonVent_DebugInfos = get_DebugInfos(),
-                    )
+                )
             }
         }
 
