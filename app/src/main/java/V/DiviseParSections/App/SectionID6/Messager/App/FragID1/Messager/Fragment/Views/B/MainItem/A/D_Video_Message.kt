@@ -220,215 +220,6 @@ fun D_Video_Message(
 }
 
 @Composable
-private fun VideoMessageContent(
-    videoFileName: String,
-    currentState: M17MessageVocale.Etate,
-    isFromActiveAccount: Boolean,
-    isAdminMessage: Boolean
-) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
-    // Initialize VideoDownloadManager
-    val videoManager = remember { VideoDownloadManager(context) }
-
-    var downloadState by remember {
-        mutableStateOf(
-            if (videoManager.isVideoDownloaded(videoFileName))
-                VideoDownloadState.DOWNLOADED
-            else
-                VideoDownloadState.NOT_DOWNLOADED
-        )
-    }
-    var downloadProgress by remember { mutableStateOf(0f) }
-    var localVideoFile by remember { mutableStateOf(videoManager.getLocalVideoFile(videoFileName)) }
-    var exoPlayer by remember { mutableStateOf<ExoPlayer?>(null) }
-    var playbackState by remember { mutableStateOf(VideoPlaybackState()) }
-
-    // Initialize ExoPlayer
-    LaunchedEffect(Unit) {
-        exoPlayer = ExoPlayer.Builder(context).build().apply {
-            addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(state: Int) {
-                    // FIXED: Changed variable name to avoid conflict and fixed copy method call
-                    val newPlaybackState = when (state) {
-                        Player.STATE_READY -> {
-                            playbackState.copy(
-                                duration = duration,
-                                isPlaying = playWhenReady,
-                                isBuffering = false,
-                                hasError = false
-                            )
-                        }
-                        Player.STATE_ENDED -> {
-                            playbackState.copy(
-                                isPlaying = false,
-                                currentPosition = 0L,
-                                isBuffering = false
-                            )
-                        }
-                        Player.STATE_BUFFERING -> {
-                            playbackState.copy(
-                                isBuffering = true,
-                                hasError = false
-                            )
-                        }
-                        Player.STATE_IDLE -> {
-                            playbackState.copy(
-                                isBuffering = false,
-                                hasError = playWhenReady // Error if it was supposed to be playing
-                            )
-                        }
-                        else -> playbackState
-                    }
-                    playbackState = newPlaybackState
-                }
-
-                override fun onIsPlayingChanged(playing: Boolean) {
-                    playbackState = playbackState.copy(isPlaying = playing)
-                }
-
-                override fun onPlayerError(error: com.google.android.exoplayer2.PlaybackException) {
-                    playbackState = playbackState.copy(
-                        hasError = true,
-                        errorMessage = error.message,
-                        isPlaying = false
-                    )
-                }
-            })
-        }
-    }
-
-    // Update position periodically when playing
-    LaunchedEffect(playbackState.isPlaying) {
-        if (playbackState.isPlaying) {
-            while (playbackState.isPlaying && exoPlayer != null) {
-                playbackState = playbackState.copy(currentPosition = exoPlayer?.currentPosition ?: 0L)
-                delay(500) // Update every 500ms for smoother progress
-            }
-        }
-    }
-
-    // Clean up ExoPlayer
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer?.release()
-        }
-    }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = when {
-            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
-            else -> Color.Transparent
-        }
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            // Video player area
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black),
-                contentAlignment = Alignment.Center
-            ) {
-                when (downloadState) {
-                    VideoDownloadState.NOT_DOWNLOADED -> {
-                        VideoDownloadPrompt(
-                            onDownloadClick = {
-                                coroutineScope.launch {
-                                    downloadState = VideoDownloadState.DOWNLOADING
-                                    videoManager.downloadVideo(
-                                        videoFileName = videoFileName,
-                                        onSuccess = { file ->
-                                            localVideoFile = file
-                                            downloadState = VideoDownloadState.DOWNLOADED
-                                            // Load video into player
-                                            exoPlayer?.setMediaItem(MediaItem.fromUri(file.toURI().toString()))
-                                            exoPlayer?.prepare()
-                                        },
-                                        onError = { error ->
-                                            downloadState = VideoDownloadState.ERROR
-                                            android.util.Log.e("VideoDownload", "Error: $error")
-                                        }
-                                    )
-                                }
-                            },
-                            isAdminMessage = isAdminMessage,
-                            isFromActiveAccount = isFromActiveAccount
-                        )
-                    }
-
-                    VideoDownloadState.DOWNLOADING -> {
-                        VideoDownloadingIndicator(
-                            progress = downloadProgress,
-                            isAdminMessage = isAdminMessage,
-                            isFromActiveAccount = isFromActiveAccount
-                        )
-                    }
-
-                    VideoDownloadState.DOWNLOADED -> {
-                        if (exoPlayer != null) {
-                            AndroidView(
-                                factory = { ctx ->
-                                    PlayerView(ctx).apply {
-                                        player = exoPlayer
-                                        useController = false // We'll create custom controls
-                                    }
-                                },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-
-                    VideoDownloadState.ERROR -> {
-                        VideoErrorIndicator(
-                            onRetryClick = {
-                                downloadState = VideoDownloadState.NOT_DOWNLOADED
-                            },
-                            isAdminMessage = isAdminMessage,
-                            isFromActiveAccount = isFromActiveAccount
-                        )
-                    }
-                }
-
-                // Custom video controls overlay (when video is downloaded)
-                if (downloadState == VideoDownloadState.DOWNLOADED) {
-                    VideoControlsOverlay(
-                        playbackState = playbackState,
-                        onPlayPauseClick = {
-                            if (playbackState.isPlaying) {
-                                exoPlayer?.pause()
-                            } else {
-                                exoPlayer?.play()
-                            }
-                        },
-                        onSeek = { position ->
-                            exoPlayer?.seekTo(position)
-                        },
-                        isAdminMessage = isAdminMessage,
-                        isFromActiveAccount = isFromActiveAccount
-                    )
-                }
-            }
-
-            // Show recording indicator for messages being composed
-            if (currentState == M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT) {
-                Spacer(modifier = Modifier.height(8.dp))
-                VideoRecordingIndicator(
-                    isFromActiveAccount = isFromActiveAccount,
-                    isAdminMessage = isAdminMessage
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun VideoDownloadPrompt(
     onDownloadClick: () -> Unit,
     isFromActiveAccount: Boolean,
@@ -672,9 +463,17 @@ private fun VideoControlsOverlay(
                             .fillMaxWidth()
                             .height(4.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .clickable { position ->
+                            .clickable { position ->       //->
+                                //TODO(FIXME):Fix erreur Type mismatch.
+                                //Required:
+                                //() → Unit
+                                //Found:
+                                //(Any?) → Uni
                                 // Allow seeking by clicking on progress bar
-                                android.util.Log.d("VideoControls", "Progress bar clicked for seeking")
+                                android.util.Log.d(
+                                    "VideoControls",
+                                    "Progress bar clicked for seeking"
+                                )
                                 // Note: This is simplified - you'd need to calculate the exact position based on click
                             },
                         color = Color.White,
@@ -813,4 +612,587 @@ private enum class VideoDownloadState {
     DOWNLOADING,
     DOWNLOADED,
     ERROR
+}
+@Composable
+private fun VideoMessageContent(
+    videoFileName: String,
+    currentState: M17MessageVocale.Etate,
+    isFromActiveAccount: Boolean,
+    isAdminMessage: Boolean
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // Initialize VideoDownloadManager
+    val videoManager = remember { VideoDownloadManager(context) }
+
+    var downloadState by remember {
+        mutableStateOf(
+            if (videoManager.isVideoDownloaded(videoFileName))
+                VideoDownloadState.DOWNLOADED
+            else
+                VideoDownloadState.NOT_DOWNLOADED
+        )
+    }
+    var downloadProgress by remember { mutableStateOf(0f) }
+    var localVideoFile by remember { mutableStateOf(videoManager.getLocalVideoFile(videoFileName)) }
+    var exoPlayer by remember { mutableStateOf<ExoPlayer?>(null) }
+    var playbackState by remember { mutableStateOf(VideoPlaybackState()) }
+
+    // LOG: Initial state
+    LaunchedEffect(videoFileName) {
+        android.util.Log.d("VideoMessage", """
+            |=== INITIALIZING VIDEO MESSAGE ===
+            |videoFileName: $videoFileName
+            |currentState: $currentState
+            |isFromActiveAccount: $isFromActiveAccount
+            |isAdminMessage: $isAdminMessage
+            |downloadState: $downloadState
+            |localVideoFile exists: ${localVideoFile?.exists()}
+            |localVideoFile path: ${localVideoFile?.absolutePath}
+            |===================================
+        """.trimMargin())
+    }
+
+    // Initialize ExoPlayer
+    LaunchedEffect(Unit) {
+        android.util.Log.d("VideoMessage", "Initializing ExoPlayer...")
+
+        exoPlayer = ExoPlayer.Builder(context).build().apply {
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(state: Int) {
+                    val stateString = when (state) {
+                        Player.STATE_IDLE -> "IDLE"
+                        Player.STATE_BUFFERING -> "BUFFERING"
+                        Player.STATE_READY -> "READY"
+                        Player.STATE_ENDED -> "ENDED"
+                        else -> "UNKNOWN($state)"
+                    }
+
+                    android.util.Log.d("VideoPlayback", """
+                        |onPlaybackStateChanged: $stateString
+                        |playWhenReady: $playWhenReady
+                        |duration: $duration
+                        |currentPosition: $currentPosition
+                    """.trimMargin())
+
+                    val newPlaybackState = when (state) {
+                        Player.STATE_READY -> {
+                            android.util.Log.i("VideoPlayback", "Video is ready to play - Duration: ${duration}ms")
+                            playbackState.copy(
+                                duration = duration,
+                                isPlaying = playWhenReady,
+                                isBuffering = false,
+                                hasError = false
+                            )
+                        }
+                        Player.STATE_ENDED -> {
+                            android.util.Log.i("VideoPlayback", "Video playback ended")
+                            playbackState.copy(
+                                isPlaying = false,
+                                currentPosition = 0L,
+                                isBuffering = false
+                            )
+                        }
+                        Player.STATE_BUFFERING -> {
+                            android.util.Log.i("VideoPlayback", "Video is buffering...")
+                            playbackState.copy(
+                                isBuffering = true,
+                                hasError = false
+                            )
+                        }
+                        Player.STATE_IDLE -> {
+                            val hasError = playWhenReady // Error if it was supposed to be playing
+                            if (hasError) {
+                                android.util.Log.e("VideoPlayback", "Player is IDLE but should be playing - likely an error")
+                            }
+                            playbackState.copy(
+                                isBuffering = false,
+                                hasError = hasError
+                            )
+                        }
+                        else -> playbackState
+                    }
+                    playbackState = newPlaybackState
+                }
+
+                override fun onIsPlayingChanged(playing: Boolean) {
+                    android.util.Log.d("VideoPlayback", "onIsPlayingChanged: $playing")
+                    playbackState = playbackState.copy(isPlaying = playing)
+                }
+
+                override fun onPlayerError(error: com.google.android.exoplayer2.PlaybackException) {
+                    android.util.Log.e("VideoPlayback", """
+                        |PLAYER ERROR OCCURRED!
+                        |Error type: ${error.errorCode}
+                        |Error message: ${error.message}
+                        |Cause: ${error.cause?.message}
+                    """.trimMargin(), error)
+
+                    playbackState = playbackState.copy(
+                        hasError = true,
+                        errorMessage = error.message,
+                        isPlaying = false
+                    )
+                }
+
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    android.util.Log.d("VideoPlayback", "onMediaItemTransition - mediaItem: ${mediaItem?.localConfiguration?.uri}")
+                }
+
+                override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                    val reasonString = when (reason) {
+                        Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST -> "USER_REQUEST"
+                        Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS -> "AUDIO_FOCUS_LOSS"
+                        Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY -> "AUDIO_BECOMING_NOISY"
+                        Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE -> "REMOTE"
+                        else -> "UNKNOWN($reason)"
+                    }
+                    android.util.Log.d("VideoPlayback", "onPlayWhenReadyChanged: $playWhenReady, reason: $reasonString")
+                }
+            })
+        }
+
+        android.util.Log.i("VideoMessage", "ExoPlayer initialized successfully")
+    }
+
+    // Load video when file becomes available
+    LaunchedEffect(localVideoFile, exoPlayer) {
+        if (localVideoFile != null && exoPlayer != null) {
+            try {
+                android.util.Log.i("VideoMessage", "Loading video file: ${localVideoFile!!.absolutePath}")
+                android.util.Log.d("VideoMessage", "File size: ${localVideoFile!!.length()} bytes")
+                android.util.Log.d("VideoMessage", "File exists: ${localVideoFile.exists()}")
+                android.util.Log.d("VideoMessage", "File can read: ${localVideoFile.canRead()}")
+
+                val mediaItem = MediaItem.fromUri(localVideoFile.toURI().toString())
+                android.util.Log.d("VideoMessage", "Created MediaItem with URI: ${mediaItem.localConfiguration?.uri}")
+
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.prepare()
+
+                android.util.Log.i("VideoMessage", "Video prepared successfully")
+
+            } catch (e: Exception) {
+                android.util.Log.e("VideoMessage", "Error loading video file", e)
+                playbackState = playbackState.copy(
+                    hasError = true,
+                    errorMessage = "Failed to load video: ${e.message}"
+                )
+            }
+        } else {
+            android.util.Log.w("VideoMessage", "Cannot load video - localVideoFile: $localVideoFile, exoPlayer: $exoPlayer")
+        }
+    }
+
+    // Update position periodically when playing
+    LaunchedEffect(playbackState.isPlaying) {
+        if (playbackState.isPlaying) {
+            android.util.Log.d("VideoMessage", "Starting position update loop")
+            while (playbackState.isPlaying && exoPlayer != null) {
+                val currentPos = exoPlayer?.currentPosition ?: 0L
+                playbackState = playbackState.copy(currentPosition = currentPos)
+                delay(500) // Update every 500ms for smoother progress
+            }
+            android.util.Log.d("VideoMessage", "Position update loop stopped")
+        }
+    }
+
+    // Clean up ExoPlayer
+    DisposableEffect(Unit) {
+        onDispose {
+            android.util.Log.i("VideoMessage", "Disposing ExoPlayer")
+            exoPlayer?.release()
+        }
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        color = when {
+            isAdminMessage -> MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
+            else -> Color.Transparent
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            // Video player area
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                when (downloadState) {
+                    VideoDownloadState.NOT_DOWNLOADED -> {
+                        VideoDownloadPrompt(
+                            onDownloadClick = {
+                                android.util.Log.i("VideoMessage", "Download button clicked for: $videoFileName")
+                                coroutineScope.launch {
+                                    downloadState = VideoDownloadState.DOWNLOADING
+                                    videoManager.downloadVideo(
+                                        videoFileName = videoFileName,
+                                        onSuccess = { file ->
+                                            android.util.Log.i("VideoMessage", "Download successful: ${file.absolutePath}")
+                                            localVideoFile = file
+                                            downloadState = VideoDownloadState.DOWNLOADED
+                                        },
+                                        onError = { error ->
+                                            android.util.Log.e("VideoMessage", "Download failed: $error")
+                                            downloadState = VideoDownloadState.ERROR
+                                        }
+                                    )
+                                }
+                            },
+                            isAdminMessage = isAdminMessage,
+                            isFromActiveAccount = isFromActiveAccount
+                        )
+                    }
+
+                    VideoDownloadState.DOWNLOADING -> {
+                        VideoDownloadingIndicator(
+                            progress = downloadProgress,
+                            isAdminMessage = isAdminMessage,
+                            isFromActiveAccount = isFromActiveAccount
+                        )
+                    }
+
+                    VideoDownloadState.DOWNLOADED -> {
+                        if (exoPlayer != null) {
+                            android.util.Log.d("VideoMessage", "Rendering AndroidView for ExoPlayer")
+                            AndroidView(
+                                factory = { ctx ->
+                                    android.util.Log.d("VideoMessage", "Creating PlayerView")
+                                    PlayerView(ctx).apply {
+                                        player = exoPlayer
+                                        useController = false // We'll create custom controls
+                                        android.util.Log.d("VideoMessage", "PlayerView configured")
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            android.util.Log.w("VideoMessage", "ExoPlayer is null, showing error")
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Error,
+                                    contentDescription = "Player Error",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Text(
+                                    text = "Player not initialized",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
+
+                    VideoDownloadState.ERROR -> {
+                        VideoErrorIndicator(
+                            onRetryClick = {
+                                android.util.Log.i("VideoMessage", "Retry button clicked")
+                                downloadState = VideoDownloadState.NOT_DOWNLOADED
+                            },
+                            isAdminMessage = isAdminMessage,
+                            isFromActiveAccount = isFromActiveAccount
+                        )
+                    }
+                }
+
+                // Custom video controls overlay (when video is downloaded)
+                if (downloadState == VideoDownloadState.DOWNLOADED) {
+                    VideoControlsOverlay(
+                        playbackState = playbackState,
+                        onPlayPauseClick = {
+                            android.util.Log.d("VideoMessage", "Play/Pause clicked - current isPlaying: ${playbackState.isPlaying}")
+                            if (playbackState.isPlaying) {
+                                android.util.Log.d("VideoMessage", "Pausing video")
+                                exoPlayer?.pause()
+                            } else {
+                                android.util.Log.d("VideoMessage", "Playing video")
+                                exoPlayer?.play()
+                            }
+                        },
+                        onSeek = { position ->
+                            android.util.Log.d("VideoMessage", "Seeking to position: $position")
+                            exoPlayer?.seekTo(position)
+                        },
+                        isAdminMessage = isAdminMessage,
+                        isFromActiveAccount = isFromActiveAccount
+                    )
+                }
+            }
+
+            // Show recording indicator for messages being composed
+            if (currentState == M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT) {
+                Spacer(modifier = Modifier.height(8.dp))
+                VideoRecordingIndicator(
+                    isFromActiveAccount = isFromActiveAccount,
+                    isAdminMessage = isAdminMessage
+                )
+            }
+        }
+    }
+}
+
+// Additional debugging and diagnostic functions for video playback issues
+
+/**
+ * Comprehensive video file validation
+ */
+fun validateVideoFile(file: File): VideoFileValidation {
+    val validation = VideoFileValidation()
+
+    try {
+        android.util.Log.d("VideoValidation", "=== VALIDATING VIDEO FILE ===")
+        android.util.Log.d("VideoValidation", "File path: ${file.absolutePath}")
+
+        // Basic file checks
+        validation.exists = file.exists()
+        validation.canRead = file.canRead()
+        validation.size = file.length()
+        validation.isFile = file.isFile
+        validation.parentExists = file.parentFile?.exists() ?: false
+
+        android.util.Log.d("VideoValidation", "File exists: ${validation.exists}")
+        android.util.Log.d("VideoValidation", "Can read: ${validation.canRead}")
+        android.util.Log.d("VideoValidation", "Size: ${validation.size} bytes")
+        android.util.Log.d("VideoValidation", "Is file: ${validation.isFile}")
+        android.util.Log.d("VideoValidation", "Parent exists: ${validation.parentExists}")
+
+        if (validation.exists && validation.size > 0) {
+            // Try to determine file type
+            val fileName = file.name.lowercase()
+            validation.hasVideoExtension = fileName.endsWith(".mp4") ||
+                    fileName.endsWith(".avi") ||
+                    fileName.endsWith(".mov") ||
+                    fileName.endsWith(".mkv") ||
+                    fileName.endsWith(".webm")
+
+            android.util.Log.d("VideoValidation", "Has video extension: ${validation.hasVideoExtension}")
+
+            // Try to read first few bytes to check file header
+            try {
+                file.inputStream().use { input ->
+                    val header = ByteArray(16)
+                    val bytesRead = input.read(header)
+                    validation.canReadContent = bytesRead > 0
+
+                    // Check for common video file signatures
+                    val headerHex = header.take(8).joinToString(" ") { "%02x".format(it) }
+                    android.util.Log.d("VideoValidation", "File header (hex): $headerHex")
+
+                    // MP4 signature check (ftyp)
+                    val headerString = String(header, Charsets.ISO_8859_1)
+                    validation.hasValidHeader = headerString.contains("ftyp") ||
+                            headerString.contains("moov") ||
+                            headerHex.startsWith("00 00 00") // Common MP4 start
+
+                    android.util.Log.d("VideoValidation", "Can read content: ${validation.canReadContent}")
+                    android.util.Log.d("VideoValidation", "Has valid header: ${validation.hasValidHeader}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("VideoValidation", "Error reading file content", e)
+                validation.contentError = e.message
+            }
+        }
+
+        validation.isValid = validation.exists &&
+                validation.canRead &&
+                validation.size > 0 &&
+                validation.isFile &&
+                validation.hasVideoExtension
+
+        android.util.Log.d("VideoValidation", "Overall valid: ${validation.isValid}")
+        android.util.Log.d("VideoValidation", "=============================")
+
+    } catch (e: Exception) {
+        android.util.Log.e("VideoValidation", "Error during validation", e)
+        validation.validationError = e.message
+    }
+
+    return validation
+}
+
+data class VideoFileValidation(
+    var exists: Boolean = false,
+    var canRead: Boolean = false,
+    var size: Long = 0L,
+    var isFile: Boolean = false,
+    var parentExists: Boolean = false,
+    var hasVideoExtension: Boolean = false,
+    var canReadContent: Boolean = false,
+    var hasValidHeader: Boolean = false,
+    var isValid: Boolean = false,
+    var contentError: String? = null,
+    var validationError: String? = null
+)
+
+/**
+ * ExoPlayer diagnostic information
+ */
+fun logExoPlayerDiagnostics(player: ExoPlayer?) {
+    if (player == null) {
+        android.util.Log.w("ExoPlayerDiag", "Player is null!")
+        return
+    }
+
+    android.util.Log.d("ExoPlayerDiag", """
+        |=== EXOPLAYER DIAGNOSTICS ===
+        |Player state: ${getPlayerStateString(player.playbackState)}
+        |Play when ready: ${player.playWhenReady}
+        |Is playing: ${player.isPlaying}
+        |Current position: ${player.currentPosition}ms
+        |Duration: ${player.duration}ms
+        |Buffered position: ${player.bufferedPosition}ms
+        |Buffered percentage: ${player.bufferedPercentage}%
+        |Current media item: ${player.currentMediaItem?.localConfiguration?.uri}
+        |Media items count: ${player.mediaItemCount}
+        |Current window index: ${player.currentMediaItemIndex}
+        |Playback parameters: speed=${player.playbackParameters.speed}, pitch=${player.playbackParameters.pitch}
+        |Audio attributes: ${player.audioAttributes}
+        |Video size: ${player.videoSize.width}x${player.videoSize.height}
+        |Is loading: ${player.isLoading}
+        |==============================
+    """.trimMargin())
+
+    // Log track information
+    val trackGroups = player.currentTracks
+    android.util.Log.d("ExoPlayerDiag", "Available tracks:")
+    for (i in 0 until trackGroups.groups.size) {
+        val group = trackGroups.groups[i]
+        android.util.Log.d("ExoPlayerDiag", "  Group $i: type=${group.type}, length=${group.length}")
+        for (j in 0 until group.length) {
+            val format = group.getTrackFormat(j)
+            android.util.Log.d("ExoPlayerDiag", "    Track $j: ${format.sampleMimeType}, ${format.width}x${format.height}")
+        }
+    }
+}
+
+private fun getPlayerStateString(state: Int): String {
+    return when (state) {
+        Player.STATE_IDLE -> "IDLE"
+        Player.STATE_BUFFERING -> "BUFFERING"
+        Player.STATE_READY -> "READY"
+        Player.STATE_ENDED -> "ENDED"
+        else -> "UNKNOWN($state)"
+    }
+}
+
+/**
+ * Firebase Storage diagnostic
+ */
+suspend fun diagnoseFirebaseStorage(videoFileName: String) {
+    try {
+        android.util.Log.d("FirebaseDiag", "=== FIREBASE STORAGE DIAGNOSTICS ===")
+        android.util.Log.d("FirebaseDiag", "Video filename: $videoFileName")
+
+        val storage = FirebaseStorage.getInstance()
+        val videoRef = storage.reference.child("VideosMessages/$videoFileName")
+
+        android.util.Log.d("FirebaseDiag", "Storage reference: ${videoRef.path}")
+        android.util.Log.d("FirebaseDiag", "Full path: ${videoRef.toString()}")
+
+        // Try to get metadata
+        try {
+            val metadata = videoRef.metadata.await()
+            android.util.Log.d("FirebaseDiag", """
+                |File metadata:
+                |  Name: ${metadata.name}
+                |  Size: ${metadata.sizeBytes} bytes
+                |  Content type: ${metadata.contentType}
+                |  Created: ${metadata.creationTimeMillis}
+                |  Updated: ${metadata.updatedTimeMillis}
+                |  MD5: ${metadata.md5Hash}
+            """.trimMargin())
+        } catch (e: Exception) {
+            android.util.Log.e("FirebaseDiag", "Failed to get metadata", e)
+        }
+
+        // Try to get download URL
+        try {
+            val downloadUrl = videoRef.downloadUrl.await()
+            android.util.Log.d("FirebaseDiag", "Download URL available: $downloadUrl")
+        } catch (e: Exception) {
+            android.util.Log.e("FirebaseDiag", "Failed to get download URL", e)
+        }
+
+        android.util.Log.d("FirebaseDiag", "====================================")
+
+    } catch (e: Exception) {
+        android.util.Log.e("FirebaseDiag", "Firebase diagnostics failed", e)
+    }
+}
+
+/**
+ * System diagnostics for video playback
+ */
+fun logSystemDiagnostics(context: Context) {
+    android.util.Log.d("SystemDiag", """
+        |=== SYSTEM DIAGNOSTICS ===
+        |Android version: ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})
+        |Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}
+        |Available memory: ${getAvailableMemory(context)}
+        |Storage space: ${getAvailableStorage(context)}
+        |Network connected: ${isNetworkConnected(context)}
+        |===========================
+    """.trimMargin())
+}
+
+private fun getAvailableMemory(context: Context): String {
+    val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+    val memoryInfo = android.app.ActivityManager.MemoryInfo()
+    activityManager.getMemoryInfo(memoryInfo)
+    return "${memoryInfo.availMem / (1024 * 1024)} MB"
+}
+
+private fun getAvailableStorage(context: Context): String {
+    val stat = android.os.StatFs(context.filesDir.path)
+    val availableBytes = stat.availableBytes
+    return "${availableBytes / (1024 * 1024)} MB"
+}
+
+private fun isNetworkConnected(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+    val network = connectivityManager.activeNetwork ?: return false
+    val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return networkCapabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) ||
+            networkCapabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR)
+}
+
+/**
+ * Complete diagnostic function to call when video won't play
+ */
+suspend fun runCompleteVideoDiagnostics(
+    context: Context,
+    videoFileName: String,
+    localVideoFile: File?,
+    exoPlayer: ExoPlayer?
+) {
+    android.util.Log.i("VideoDiagnostics", "🔍 RUNNING COMPLETE VIDEO DIAGNOSTICS 🔍")
+
+    // System diagnostics
+    logSystemDiagnostics(context)
+
+    // Firebase diagnostics
+    diagnoseFirebaseStorage(videoFileName)
+
+    // File validation
+    localVideoFile?.let { file ->
+        val validation = validateVideoFile(file)
+        android.util.Log.i("VideoDiagnostics", "File validation result: $validation")
+    } ?: android.util.Log.w("VideoDiagnostics", "No local video file to validate")
+
+    // ExoPlayer diagnostics
+    logExoPlayerDiagnostics(exoPlayer)
+
+    android.util.Log.i("VideoDiagnostics", "🏁 DIAGNOSTICS COMPLETE 🏁")
 }
