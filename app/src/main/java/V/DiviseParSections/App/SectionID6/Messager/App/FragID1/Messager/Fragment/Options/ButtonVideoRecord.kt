@@ -50,7 +50,8 @@ fun ButtonVideoRecord(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
     onVideoRecorded: (String) -> Unit
-) {
+) {      //<--
+//TODO(1): fait u^load le fichie au locale aussi 
     val context = LocalContext.current
     val activity = remember { getActivityFromContext(context) }
     val coroutineScope = rememberCoroutineScope()
