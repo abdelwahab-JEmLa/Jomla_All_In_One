@@ -14,11 +14,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -160,6 +165,13 @@ fun View_M14VentPeriod(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "m14VentPeriode: ${relative_M14VentPeriode.get_DebugInfos()}",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+
             // Delete button with icon
             IconButton(
                 onClick = { showDeleteDialog = true }
@@ -170,15 +182,6 @@ fun View_M14VentPeriod(
                     tint = MaterialTheme.colorScheme.error
                 )
             }
-
-            Text(
-                text = "m14VentPeriode: ${relative_M14VentPeriode.get_DebugInfos()}",
-                fontSize = 20.sp,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
-
-
         }
 
         Text(
@@ -187,126 +190,309 @@ fun View_M14VentPeriod(
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Financial data display/editing section
-        Column {
-            // Credit Ventes
-            if (editingField == "credit_vents") {
-                OutlinedTextField(
-                    value = editingValue,
-                    onValueChange = { editingValue = it },
-                    label = { Text("Crédit Ventes Total") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { saveEditedValue() }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
+        // Calculate totals
+        val totalVentes = relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
+        val totalAchats = relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
+        val balance = totalVentes - totalAchats
+
+        // Financial data display/editing section with enhanced UI
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Ventes Section - Elevated Card
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                 )
-            } else {
-                Text(
-                    text = "Crédit Ventes Total: ${relative_M14VentPeriode.credit_Vents_Totale}",
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        startEditing("credit_vents", relative_M14VentPeriode.credit_Vents_Totale)
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = "💰 VENTES",
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Credit Ventes
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "credit_vents") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Crédit") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("credit_vents", relative_M14VentPeriode.credit_Vents_Totale)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💳 Crédit",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.credit_Vents_Totale}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Cash Ventes
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "cash_vents") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Cash") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("cash_vents", relative_M14VentPeriode.cash_Vents_Totale)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💵 Cash",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.cash_Vents_Totale}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
-                )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider()
+                    Text(
+                        text = "Total: $totalVentes",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            // Achats Section - Elevated Card
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = "🛒 ACHATS",
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            // Cash Ventes
-            if (editingField == "cash_vents") {
-                OutlinedTextField(
-                    value = editingValue,
-                    onValueChange = { editingValue = it },
-                    label = { Text("Cash Ventes Total") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { saveEditedValue() }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                )
-            } else {
-                Text(
-                    text = "Cash Ventes Total: ${relative_M14VentPeriode.cash_Vents_Totale}",
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        startEditing("cash_vents", relative_M14VentPeriode.cash_Vents_Totale)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Credit Achats
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "credit_achats") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Crédit") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("credit_achats", relative_M14VentPeriode.credit_achats_Totale)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💳 Crédit",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.credit_achats_Totale}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Cash Achats
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "cash_achats") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Cash") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("cash_achats", relative_M14VentPeriode.cash_achats_Totale)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💵 Cash",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.cash_achats_Totale}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
-                )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider()
+                    Text(
+                        text = "Total: $totalAchats",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Credit Achats
-            if (editingField == "credit_achats") {
-                OutlinedTextField(
-                    value = editingValue,
-                    onValueChange = { editingValue = it },
-                    label = { Text("Crédit Achats Total") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { saveEditedValue() }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                )
-            } else {
-                Text(
-                    text = "Crédit Achats Total: ${relative_M14VentPeriode.credit_achats_Totale}",
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        startEditing("credit_achats", relative_M14VentPeriode.credit_achats_Totale)
+            // Balance Section - Highlighted Card
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = when {
+                        balance > 0 -> MaterialTheme.colorScheme.primaryContainer
+                        balance < 0 -> MaterialTheme.colorScheme.errorContainer
+                        else -> MaterialTheme.colorScheme.surfaceContainer
                     }
                 )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Cash Achats
-            if (editingField == "cash_achats") {
-                OutlinedTextField(
-                    value = editingValue,
-                    onValueChange = { editingValue = it },
-                    label = { Text("Cash Achats Total") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { saveEditedValue() }
-                    ),
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                )
-            } else {
-                Text(
-                    text = "Cash Achats Total: ${relative_M14VentPeriode.cash_achats_Totale}",
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        startEditing("cash_achats", relative_M14VentPeriode.cash_achats_Totale)
-                    }
-                )
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "⚖️ BALANCE",
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "$balance",
+                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = when {
+                            balance > 0 -> MaterialTheme.colorScheme.primary
+                            balance < 0 -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.onSurface
+                        }
+                    )
+                }
             }
         }
     }
