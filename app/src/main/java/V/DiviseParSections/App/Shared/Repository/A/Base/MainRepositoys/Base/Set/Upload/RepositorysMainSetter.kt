@@ -180,6 +180,7 @@ class RepositorysMainSetter(
     fun upsert_M13TarificationInfos(data: M13TarificationInfos) = repo13TarificationInfos.upsert(data)
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.update_If_Exist(data)
+    fun delete(data: M14VentPeriode) = repo14VentPeriode.delete(data)
 
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
     fun repo15Grossist_add_New(data: M15Grossist) = repo15Grossist.add_New(data)
