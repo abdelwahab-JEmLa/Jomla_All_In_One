@@ -201,6 +201,9 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
+    var sum_De_Totale_Vents: Double = 0.0,
+    var sum_De_Credit_Fait: Double = 0.0,
+
     //Mutable
     var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
 

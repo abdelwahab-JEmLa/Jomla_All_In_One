@@ -3,6 +3,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Column
@@ -17,14 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun AfficheurRegleOuvert(
     uiState: UiState,
     viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     relatedClients: M2Client?,
     onPourEdite_Gps_Client: (M2Client) -> Unit,
-    ) {
+) {
     val clientId = relatedClients?.id ?: 0L
 
     fun getLatestTransactionForClient(clientId: Long): M8BonVent? {
@@ -76,7 +81,27 @@ fun AfficheurRegleOuvert(
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
-                    )
+                    ) { relative_M8BonVent ->
+                        val relative_List_Vents =
+                            repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+                                it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+                            }
+
+                        val sum_Bon_Vents = relative_List_Vents.sumOf {
+                            val parentM13TarificationPrix =
+                                repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency
+                                    ?: 0.0
+
+                            it.quantity * parentM13TarificationPrix
+                        }
+
+                        aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                            relative_M8BonVent.copy(
+                                sum_De_Totale_Vents = sum_Bon_Vents
+                            )
+                        )
+                    }
+
 
                 M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(

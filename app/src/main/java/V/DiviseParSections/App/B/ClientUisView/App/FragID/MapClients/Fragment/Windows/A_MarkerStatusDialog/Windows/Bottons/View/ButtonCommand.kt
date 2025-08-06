@@ -32,7 +32,7 @@ fun CommandButton(
     aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
     context: Context,
-    onUpdateLongAppSetting: () -> Unit,
+    onUpdateLongAppSetting: () -> Unit={},
 ) {
     val found_Or_Default_M8BonVent =
         get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)

@@ -37,6 +37,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
+    onClick: (M8BonVent) -> Unit={},
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
@@ -71,9 +72,11 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(
                     found_Or_Default_M8BonVent.found
                 )
+                onClick(found_Or_Default_M8BonVent.found)
             } else {
                 aCentralFacade.repositorysMainSetter
                     .addNew_M8BonVent(found_Or_Default_M8BonVent.default_If_No_Found)
+                onClick(found_Or_Default_M8BonVent.default_If_No_Found)
             }
 
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
@@ -87,6 +90,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             }
 
             aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(

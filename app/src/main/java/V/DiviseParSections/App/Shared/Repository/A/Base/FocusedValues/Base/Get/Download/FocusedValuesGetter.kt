@@ -129,7 +129,7 @@ class FocusedValuesGetter(
 
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID
+            it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode.keyID
         }
     }
 

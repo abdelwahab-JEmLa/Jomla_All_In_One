@@ -154,6 +154,12 @@ data class M14VentPeriode(
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
     val son_verification_entre_vent_et_achat_est_fait:Boolean= false,
     // Section StatuesMutable
+    val credit_Vents_Totale:Double= 0.0,
+    val cash_Vents_Totale:Double= 0.0,
+
+    val credit_achats_Totale:Double= 0.0,
+    val cash_achats_Totale:Double= 0.0,
+
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.SoquetteNonDefinie,
 ) {

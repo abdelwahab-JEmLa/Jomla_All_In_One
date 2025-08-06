@@ -128,7 +128,7 @@ class RepositorysMainGetter(
         repo10OperationVentCouleur.datasValue.find { it.keyID == keyID }
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun m13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
+    fun find_M13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }
 
     //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------

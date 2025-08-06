@@ -74,7 +74,6 @@ fun Button_De_supprime_Avec_Securite(
     }
 }
 
-
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
@@ -85,6 +84,7 @@ fun View_MainItem(
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler
 ) {
+
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
@@ -217,8 +217,7 @@ fun View_MainItem(
                 },
                 modifier = Modifier.align(Alignment.TopStart)
             ) {
-                Icon(    //<--
-                    //TODO(1): AJOUT UNE SECURITE DEHOL
+                Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = null,
                     tint = Color.White
@@ -288,6 +287,46 @@ fun View_MainItem(
                         color = Color.White,
                         modifier = Modifier.padding(start = 4.dp)
                     )
+                }
+
+                if (relative_M8BonVent.sum_De_Totale_Vents > 0.0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "المجموع: ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Text(
+                            text = String.format("%.2f دج", relative_M8BonVent.sum_De_Totale_Vents),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // Show credit amount if there's any credit made
+                        if (relative_M8BonVent.sum_De_Credit_Fait > 0.0) {
+                            Text(
+                                text = "دفع: ",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                            Text(
+                                text = String.format("%.2f دج", relative_M8BonVent.sum_De_Credit_Fait),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
 
                 fun update_etate_Listening_relative_M17Message(): Unit {
