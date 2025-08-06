@@ -5,6 +5,13 @@
     <!-- Hardware Features -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- ADD THIS NEW PERMISSION FOR SCREEN RECORDING -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
     <!-- Storage Permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -39,8 +46,14 @@
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Internet permission for Firebase downloads -->
 
+    <!-- Network state permission for checking connectivity -->
+
+    <!-- Storage permissions for saving downloaded videos -->
+
+    <!-- Wake lock for background video processing (optional) -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -63,6 +76,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- ADD THIS SERVICE FOR SCREEN RECORDING -->
+        <service
+            android:name="V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.ScreenRecordingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
 
         <!-- FileProvider for camera functionality -->
         <provider

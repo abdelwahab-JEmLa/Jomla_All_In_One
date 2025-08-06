@@ -88,6 +88,9 @@ data class M17MessageVocale(
     val parentMessageVID: Long = 0,
     val nomDeSonOriginaleFichie: String = "null.3gp",
 
+    val its_Video_Message:  Boolean = false,
+    val nom_Fichie_Video: String = "",
+
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "",
     val parent_M9AppCompt_DebugInfos: String = "",

@@ -3,7 +3,9 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.FabButtonsMessageurMainScreen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.A.VideoDownloadManager
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.B_ItemMessagesVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.D_Video_Message
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem.MessageHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -33,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -204,7 +208,6 @@ fun MainList(
 
     List_Messages(listState, latestStatesForEachMessage, viewModel, uiState)
 }
-
 @Composable
 private fun List_Messages(
     listState: LazyListState,
@@ -219,19 +222,252 @@ private fun List_Messages(
         state = listState
     ) {
         items(latestStatesForEachMessage) { (latestEtate, allEtatesForMessage) ->
-            when (latestEtate.its_Text_Message) {
-                true-> C_Text_Message(
-                    list_D_EtateMessageVocale = allEtatesForMessage,
-                    relative_M17MessageVocale = latestEtate,
+            when {
+                latestEtate.its_Text_Message -> {
+                    C_Text_Message(
+                        list_D_EtateMessageVocale = allEtatesForMessage,
+                        relative_M17MessageVocale = latestEtate,
                     )
-               else-> B_ItemMessagesVocale(
-                    list_D_EtateMessageVocale = allEtatesForMessage,
-                    viewModel = viewModel,
-                    relative_M17MessageVocale = latestEtate,
-                    uiState = uiState
-                )
+                }
+                latestEtate.its_Video_Message -> {
+                    // Check if video download is in progress
+                    val isDownloading = checkVideoDownloadState(latestEtate, viewModel)
+                    if (isDownloading) {
+                        VideoLoadingMessage(
+                            list_D_EtateMessageVocale = allEtatesForMessage,
+                            relative_M17MessageVocale = latestEtate,
+                            viewModel = viewModel
+                        )
+                    } else {
+                        D_Video_Message(
+                            list_D_EtateMessageVocale = allEtatesForMessage,
+                            relative_M17MessageVocale = latestEtate,
+                            viewModel = viewModel
+                        )
+                    }
+                }
+                else -> {
+                    // Audio message - check if download is in progress
+                    val isDownloading = checkAudioDownloadState(latestEtate, viewModel)
+                    if (isDownloading) {
+                        AudioLoadingMessage(
+                            list_D_EtateMessageVocale = allEtatesForMessage,
+                            relative_M17MessageVocale = latestEtate,
+                            viewModel = viewModel,
+                            uiState = uiState
+                        )
+                    } else {
+                        B_ItemMessagesVocale(
+                            list_D_EtateMessageVocale = allEtatesForMessage,
+                            viewModel = viewModel,
+                            relative_M17MessageVocale = latestEtate,
+                            uiState = uiState
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+// Helper function to check video download state
+@Composable
+private fun checkVideoDownloadState(
+    message: M17MessageVocale,
+    viewModel: ViewModelMessageur
+): Boolean {
+    val context = LocalContext.current
+    val videoManager = remember { VideoDownloadManager(context) }
+    val videoFileName = message.text_Inputted
+
+    return !videoManager.isVideoDownloaded(videoFileName) &&
+            message.etate == M17MessageVocale.Etate.ENVOYER
+}
+
+// Helper function to check audio download state
+@Composable
+private fun checkAudioDownloadState(
+    message: M17MessageVocale,
+    viewModel: ViewModelMessageur
+): Boolean {
+    val audioHandler = viewModel.audioRecorderAndPlayHandler
+    val playbackProgress by audioHandler.playbackProgress.collectAsState()
+
+    // Check if this message is currently downloading
+    return audioHandler.getCurrentPlaybackSession()?.parentMessageVID == message.parentMessageVID &&
+            playbackProgress.isDownloading
+}
+
+// Loading component for video messages
+@Composable
+private fun VideoLoadingMessage(
+    list_D_EtateMessageVocale: List<M17MessageVocale>,
+    relative_M17MessageVocale: M17MessageVocale,
+    viewModel: ViewModelMessageur
+) {
+    val activeCurrent_M9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val relative_M9AppCompt = viewModel.aCentralFacade.repositorysMainGetter.find_M9AppCompt_By_KeyID(relative_M17MessageVocale.parent_M9AppCompt_KeyID)
+    val its_ViewMessage_Du_Active_M9AppCompt = relative_M9AppCompt?.keyID == activeCurrent_M9AppCompt?.keyID
+    val its_Admin_Message = relative_M9AppCompt?.its_Admin ?: false
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (its_ViewMessage_Du_Active_M9AppCompt) {
+                    Arrangement.End
+                } else {
+                    Arrangement.Start
+                }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(
+                            start = if (its_ViewMessage_Du_Active_M9AppCompt) 40.dp else 0.dp,
+                            end = if (its_ViewMessage_Du_Active_M9AppCompt) 0.dp else 40.dp
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = when {
+                            its_Admin_Message -> MaterialTheme.colorScheme.error
+                            its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                            else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        }
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = if (its_ViewMessage_Du_Active_M9AppCompt) 16.dp else 4.dp,
+                        bottomEnd = if (its_ViewMessage_Du_Active_M9AppCompt) 4.dp else 16.dp
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = when {
+                                its_Admin_Message -> MaterialTheme.colorScheme.onError
+                                its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.onPrimary
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Téléchargement de la vidéo...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = when {
+                                its_Admin_Message -> MaterialTheme.colorScheme.onError
+                                its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.onPrimary
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        // Divider
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp),
+            thickness = 0.5.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        )
+    }
+}
+
+// Loading component for audio messages
+@Composable
+private fun AudioLoadingMessage(
+    list_D_EtateMessageVocale: List<M17MessageVocale>,
+    relative_M17MessageVocale: M17MessageVocale,
+    viewModel: ViewModelMessageur,
+    uiState: UiState
+) {
+    val activeCurrent_M9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val relative_M9AppCompt = viewModel.aCentralFacade.repositorysMainGetter.find_M9AppCompt_By_KeyID(relative_M17MessageVocale.parent_M9AppCompt_KeyID)
+    val its_ViewMessage_Du_Active_M9AppCompt = relative_M9AppCompt?.keyID == activeCurrent_M9AppCompt?.keyID
+    val its_Admin_Message = relative_M9AppCompt?.its_Admin ?: false
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (its_ViewMessage_Du_Active_M9AppCompt) {
+                    Arrangement.End
+                } else {
+                    Arrangement.Start
+                }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(
+                            start = if (its_ViewMessage_Du_Active_M9AppCompt) 40.dp else 0.dp,
+                            end = if (its_ViewMessage_Du_Active_M9AppCompt) 0.dp else 40.dp
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = when {
+                            its_Admin_Message -> MaterialTheme.colorScheme.error
+                            its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                            else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        }
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = if (its_ViewMessage_Du_Active_M9AppCompt) 16.dp else 4.dp,
+                        bottomEnd = if (its_ViewMessage_Du_Active_M9AppCompt) 4.dp else 16.dp
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = when {
+                                its_Admin_Message -> MaterialTheme.colorScheme.onError
+                                its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.onPrimary
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Téléchargement de l'audio...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = when {
+                                its_Admin_Message -> MaterialTheme.colorScheme.onError
+                                its_ViewMessage_Du_Active_M9AppCompt -> MaterialTheme.colorScheme.onPrimary
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        // Divider
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp),
+            thickness = 0.5.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        )
     }
 }
 

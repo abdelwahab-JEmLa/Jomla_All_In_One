@@ -52,14 +52,13 @@ fun FabButtonsMessageurMainScreen(
     var showTextInput by remember { mutableStateOf(false) }
     var textValue by remember { mutableStateOf("") }
 
-    // RepositorysMainGetter screen configuration to position at the right edge
+    // Screen configuration to position at the right edge
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 170f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + -300f) }
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -94,7 +93,6 @@ fun FabButtonsMessageurMainScreen(
                             parentMessageVID = System.currentTimeMillis(),
                             parent_M9AppCompt_Nom = focusedValuesGetter
                                 .currentActive_M9AppCompt?.nom ?: "",
-
                             parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
                             etate = M17MessageVocale.Etate.ENVOYER,
                             creationTimestamps = System.currentTimeMillis(),
@@ -124,12 +122,33 @@ fun FabButtonsMessageurMainScreen(
                                 "👍", fontSize = 20.sp
                             )
                         }
+
+                        // New Video Recording Button
+                        ButtonVideoRecord(
+                            viewModel = viewModel,
+                            onVideoRecorded = { videoFileName ->
+                                val videoMessage = M17MessageVocale
+                                    .get_default()
+                                    .copy(
+                                        parentMessageVID = System.currentTimeMillis(),
+                                        parent_M9AppCompt_Nom = focusedValuesGetter
+                                            .currentActive_M9AppCompt?.nom ?: "",
+                                        parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
+                                        etate = M17MessageVocale.Etate.ENVOYER,
+                                        creationTimestamps = System.currentTimeMillis(),
+                                        its_Video_Message = true,
+                                        nom_Fichie_Video = videoFileName
+                                    )
+
+                                repositorysMainSetter.upsert_M17MessageVocale(videoMessage)
+                            }
+                        )
                     }
+
                     ButtonMessageVocale(
                         viewModel = viewModel
                     )
                 }
-
 
                 if (showMenuButtons) {
                     LabelsButton(

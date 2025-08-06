@@ -177,6 +177,15 @@ dependencies {
     // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // For coroutines with Firebase
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation ("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+
+    // If you need additional ExoPlayer extensions
+    implementation ("com.google.android.exoplayer:extension-mediasession:2.19.1")
+
 }
 
 apply(plugin = "com.google.gms.google-services")

@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Keep MediaProjection classes
+-keep class android.media.projection.** { *; }
+
+    # Keep MediaRecorder classes
+    -keep class android.media.MediaRecorder** { *; }
