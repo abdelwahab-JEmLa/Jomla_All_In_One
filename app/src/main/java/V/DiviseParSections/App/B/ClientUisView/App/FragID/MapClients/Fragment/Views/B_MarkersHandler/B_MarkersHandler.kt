@@ -191,9 +191,11 @@ private fun Marker.title(
                 dateHandler.getAbrgDistanceSemain(relative_M8Transaction?.creationTimestamps)
 
             if (relative_M8Transaction != null) {
+                val text = " بالتقريب$sumBonVents"
+                val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
                 "$distanceSemain.$dayName (${timeStr})" +
                         "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                        " ${sumBonVents.takeIf { it!! >0.0 }?:""}"+
+                        texy_Safe +
                 "\n${m2Client.nom}"
             } else {
                 m2Client.nom
