@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSave
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -118,6 +120,12 @@ fun View_MainItem(
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M8BonVent.vid && playbackProgress.isDownloading
     }
 
+    val sumBonVents by remember {
+        derivedStateOf {
+            get_sum_Bon_Vents(repositorysMainGetter, relative_M8BonVent)
+        }
+    }
+
     LaunchedEffect(relative_M8BonVent.vid, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
@@ -190,45 +198,84 @@ fun View_MainItem(
                 )
                 .fillMaxWidth()
         ) {
-            IconButton(
-                onClick = {
-                    viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
-                        relative_M8BonVent
-                    )
+            // Top row with delete button and sum card
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Delete button
+                IconButton(
+                    onClick = {
+                        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
+                            relative_M8BonVent
+                        )
 
-                    // Delete voice recording using the original file name if available
-                    val audioKeyToDelete = if (hasVoiceMessage) {
-                        relative_M17Message?.nomDeSonOriginaleFichie ?: ""
-                    } else {
-                        relative_M8BonVent.vocaleKeyID
-                    }
-
-                    viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
-                        if (success) {
-                            viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
+                        val audioKeyToDelete = if (hasVoiceMessage) {
+                            relative_M17Message?.nomDeSonOriginaleFichie ?: ""
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Erreur lors de la suppression du message vocal",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            relative_M8BonVent.vocaleKeyID
+                        }
+
+                        viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
+                            if (success) {
+                                viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors de la suppression du message vocal",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
-                },
-                modifier = Modifier.align(Alignment.TopStart)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = null,
-                    tint = Color.White
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                if (sumBonVents > 0.0) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.15f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = String.format("%.2f", sumBonVents),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = "دج",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                    }
+                }
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .padding(top = 32.dp) // Space for top buttons
+                    .padding(top = 56.dp) // More space for top row with delete button and sum card
             ) {
                 // Transaction info row
                 Row(
@@ -279,6 +326,15 @@ fun View_MainItem(
                         color = Color.White
                     )
 
+
+                    Text(
+                        text = " --",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        color = Color.White
+                    )
+
                     Text(
                         text = relative_M8BonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodySmall,
@@ -320,7 +376,10 @@ fun View_MainItem(
                                 color = Color.White.copy(alpha = 0.8f)
                             )
                             Text(
-                                text = String.format("%.2f دج", relative_M8BonVent.sum_De_Credit_Fait),
+                                text = String.format(
+                                    "%.2f دج",
+                                    relative_M8BonVent.sum_De_Credit_Fait
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.8f),
                                 fontWeight = FontWeight.Medium

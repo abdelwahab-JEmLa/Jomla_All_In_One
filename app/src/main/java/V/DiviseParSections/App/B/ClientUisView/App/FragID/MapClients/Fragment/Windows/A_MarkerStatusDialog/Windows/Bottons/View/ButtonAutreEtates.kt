@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 
 @Composable
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
+    modifier: Modifier=Modifier,
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,

@@ -189,6 +189,8 @@ data class M8BonVent(
     //---------------------------------Parent.M17----------------------------------------------------------------------------------------------------------------------------------
     var parent_M17Message_KeyID: String = "null",
     var parent_M17Message_DebugInfos: String = "null",
+    //-----------------------------------Parent.Realations-------------------------------------------------------------------------------------------------------------------------------
+    var its_Confirmation_de_TransactionKeyId: String = "",
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Section InfosDeBase
@@ -203,6 +205,7 @@ data class M8BonVent(
 
     var sum_De_Totale_Vents: Double = 0.0,
     var sum_De_Credit_Fait: Double = 0.0,
+    var versement: Double = 0.0,
 
     //Mutable
     var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
@@ -248,6 +251,8 @@ data class M8BonVent(
             android.R.color.holo_purple, "تم تاكيد الطلبية"
         ),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
+
+        Cette_Transaction_Type_Est_Credit(R.color.c8, "تم اقراضه  "),
 
 
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),

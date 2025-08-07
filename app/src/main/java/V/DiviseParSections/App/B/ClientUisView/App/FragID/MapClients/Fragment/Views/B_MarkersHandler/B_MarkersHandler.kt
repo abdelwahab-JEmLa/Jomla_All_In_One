@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
@@ -167,35 +168,40 @@ fun createAndAddMarker(
 // Fix 2: Title display - don't show date/time when position is displayed
 private fun Marker.title(
     viewModel: MapClientsViewModel,
+
     m2Client: M2Client,
 ) {
-    val latestTransaction = viewModel.getLastTransaction(m2Client)
-    val position = latestTransaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
+    val relative_M8Transaction = viewModel.getLastTransaction(m2Client)
+
+    val sumBonVents = relative_M8Transaction?.let { get_sum_Bon_Vents(viewModel.getter, it) }
+
+    val position = relative_M8Transaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
     title =
-        if (viewModel.afficheLesJoursAuNoms && position == 0) { // Only show date/time if no position
+        if (viewModel.afficheLesJoursAuNoms && position == 0) {
             val dateHandler = DatesHandler()
-            val timeStr = latestTransaction?.creationTimestamps?.let {
+            val timeStr = relative_M8Transaction?.creationTimestamps?.let {
                 dateHandler.getDateAndTimString(it).time
             }
             val dayName = dateHandler.getArabicDayNameFromTimestamp(
-                latestTransaction?.creationTimestamps ?: 0
+                relative_M8Transaction?.creationTimestamps ?: 0
             )
             val distanceSemain =
-                dateHandler.getAbrgDistanceSemain(latestTransaction?.creationTimestamps)
+                dateHandler.getAbrgDistanceSemain(relative_M8Transaction?.creationTimestamps)
 
-            if (latestTransaction != null) {
+            if (relative_M8Transaction != null) {
                 "$distanceSemain.$dayName (${timeStr})" +
-                        "\n${latestTransaction.etateActuellementEst.nomArabe}" +
-                        "\n${m2Client.nom}"
+                        "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
+                        " ${sumBonVents.takeIf { it!! >0.0 }?:""}"+
+                "\n${m2Client.nom}"
             } else {
                 m2Client.nom
             }
         } else {
             // Show position or just client name
-            if (position != 0 && latestTransaction != null) {
-                "$positionPrefix${latestTransaction.etateActuellementEst.nomArabe}" +
+            if (position != 0 && relative_M8Transaction != null) {
+                "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         "\n${m2Client.nom}"
             } else {
                 "$positionPrefix${m2Client.nom}"

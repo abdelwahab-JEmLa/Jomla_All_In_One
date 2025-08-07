@@ -74,6 +74,7 @@ private fun CustomStatusDropdownMenu(
     onDismissRequest: () -> Unit,
     relative_M2Client: M2Client?,
 ) {
+
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -202,6 +203,9 @@ fun MarkerStatusDialog(
     onRemoveMark: (Marker?) -> Unit,
     onPourEdite_Gps_Client: (M2Client) -> Unit = {},
 ) {
+    var showCreditDialog by remember { mutableStateOf(false) }
+    var currentCreditTransaction by remember { mutableStateOf<M8BonVent?>(null) }
+
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
         .find { marker ->
@@ -281,10 +285,15 @@ fun MarkerStatusDialog(
                                 AfficheurRegleOuvert(
                                     uiState = uiState,
                                     viewModel = viewModel,
-                                    relatedClients = relative_M2Client,
-                                ) {
-                                    onPourEdite_Gps_Client(it)
-                                }
+                                    relative_Client = relative_M2Client,
+                                    onPourEdite_Gps_Client = {
+                                        onPourEdite_Gps_Client(it)
+                                    },
+                                    extracted = { relative_M8BonVent ->
+                                        currentCreditTransaction = relative_M8BonVent
+                                    },
+                                    extracted_2 = { showCreditDialog = true },
+                                )
                             }
                         }
                     }
@@ -567,5 +576,27 @@ fun MarkerStatusDialog(
         if(!M18CentralParametresOfAllApps.get_Default().itsDevMode) {
             PressistatntMainActivityButtons_Sec8FWinID1()
         }
+
+        // Credit Payment Dialog
+        if(showCreditDialog) {
+
+            CreditPaymentDialog(
+            onDismiss = {
+                showCreditDialog = false
+                currentCreditTransaction = null
+            },
+            onConfirm = { amount ->
+                currentCreditTransaction?.let { transaction ->
+                    aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                        transaction.copy(
+                            versement = amount
+                        )
+                    )
+                }
+                showCreditDialog = false
+                currentCreditTransaction = null
+            }
+        )
+    }
     }
 }
