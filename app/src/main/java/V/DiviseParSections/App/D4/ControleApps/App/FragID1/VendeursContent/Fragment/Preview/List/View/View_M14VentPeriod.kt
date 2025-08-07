@@ -54,7 +54,9 @@ fun View_M14VentPeriod(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     relative_M14VentPeriode: M14VentPeriode,
     relative_M9AppCompt: Z_AppCompt?,
-) {
+) {               //<--
+//TODO(1): ajout affiche de  val credit_produitsAuDepot:Double= 0.0,
+//    val acheter_produitsAuDepot:Double= 0.0, avec edites et fait que ca diminue le balance d achats
     // State for showing delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
 

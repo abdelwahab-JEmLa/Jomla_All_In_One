@@ -160,6 +160,9 @@ data class M14VentPeriode(
     val credit_achats_Totale:Double= 0.0,
     val cash_achats_Totale:Double= 0.0,
 
+    val credit_produitsAuDepot:Double= 0.0,
+    val acheter_produitsAuDepot:Double= 0.0,
+
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.SoquetteNonDefinie,
 ) {
