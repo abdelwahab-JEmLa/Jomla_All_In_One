@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_4
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
@@ -71,6 +72,18 @@ fun MapContent(
                 true -> MapClientsViewModel.VisibleClientsNow.showAll
             }
         )
+    }
+
+    LaunchedEffect(
+        focusedValuesGetter.currentApp_Est_Admin,
+        focusedValuesGetter.active_Central_Values.visibleClientsNow
+    ) {
+        currentFilterMode = focusedValuesGetter.active_Central_Values.visibleClientsNow ?: run {
+            when (focusedValuesGetter.currentApp_Est_Admin) {
+                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                true -> MapClientsViewModel.VisibleClientsNow.showAll
+            }
+        }
     }
 
     // Location tracker initialization
@@ -267,6 +280,13 @@ fun MapContent(
         affiche_Floating_Button_Cible_Client.ifTrue {
             Floating_Separated_FragMap_Button_1()
         }
+        // Floating button for client targeting
+        val affiche_Floating_Button_TogleFilterMarquers =
+            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers
+        affiche_Floating_Button_TogleFilterMarquers.ifTrue {
+            Floating_Separated_FragMap_Button_4()
+        }
+
         // Floating button for client targeting
         val affiche_Floating_Button_gps_follow_mode_active =
             focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active

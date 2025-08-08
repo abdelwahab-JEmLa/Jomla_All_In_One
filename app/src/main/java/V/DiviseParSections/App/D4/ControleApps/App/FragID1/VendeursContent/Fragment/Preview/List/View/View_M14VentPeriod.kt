@@ -2,7 +2,9 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
@@ -51,12 +53,11 @@ import androidx.compose.ui.unit.sp
 fun View_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     relative_M14VentPeriode: M14VentPeriode,
     relative_M9AppCompt: Z_AppCompt?,
-) {               //<--
-//TODO(1): ajout affiche de  val credit_produitsAuDepot:Double= 0.0,
-//    val acheter_produitsAuDepot:Double= 0.0, avec edites et fait que ca diminue le balance d achats
+) {
     // State for showing delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -90,6 +91,8 @@ fun View_M14VentPeriod(
             "cash_vents" -> relative_M14VentPeriode.copy(cash_Vents_Totale = newValue)
             "credit_achats" -> relative_M14VentPeriode.copy(credit_achats_Totale = newValue)
             "cash_achats" -> relative_M14VentPeriode.copy(cash_achats_Totale = newValue)
+            "credit_produits_depot" -> relative_M14VentPeriode.copy(credit_produitsAuDepot = newValue)
+            "acheter_produits_depot" -> relative_M14VentPeriode.copy(acheter_produitsAuDepot = newValue)
             else -> relative_M14VentPeriode
         }
         updatedPeriode.handel_Clavie_Donne()
@@ -197,138 +200,194 @@ fun View_M14VentPeriod(
         // Calculate totals
         val totalVentes = relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
         val totalAchats = relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
-        val balance = totalVentes - totalAchats
+        val totalProduitsDepot = relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
+        val adjustedTotalAchats = totalAchats - totalProduitsDepot // Produits au dépôt reduce purchase balance
+        val balance = totalVentes - adjustedTotalAchats
+
+        val relative_List_Vents =
+            repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+                it.parent_M14VentPeriod_KeyId == relative_M14VentPeriode.keyID
+                        && it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+
+            }
+
+        val sum_Bon_Vents = relative_List_Vents.sumOf {
+            val parentM13TarificationPrix =
+                repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency
+                    ?: 0.0
+
+            it.quantity * parentM13TarificationPrix
+        }
 
         // Financial data display/editing section with enhanced UI
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Ventes Section - Elevated Card
-            ElevatedCard(
+            // Ventes Section - Elevated Card with Calculated Vents
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                )
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
+                // Manual Ventes Card
+                ElevatedCard(
+                    modifier = Modifier.weight(2f),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                    )
                 ) {
-                    Text(
-                        text = "💰 VENTES",
-                        fontSize = 18.sp,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.padding(12.dp)
                     ) {
-                        // Credit Ventes
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (editingField == "credit_vents") {
-                                OutlinedTextField(
-                                    value = editingValue,
-                                    onValueChange = { editingValue = it },
-                                    label = { Text("Crédit") },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = { saveEditedValue() }
-                                    ),
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            } else {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            startEditing("credit_vents", relative_M14VentPeriode.credit_Vents_Totale)
-                                        },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                        Text(
+                            text = "💰 VENTES (Manual)",
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Credit Ventes
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (editingField == "credit_vents") {
+                                    OutlinedTextField(
+                                        value = editingValue,
+                                        onValueChange = { editingValue = it },
+                                        label = { Text("Crédit") },
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Decimal,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = { saveEditedValue() }
+                                        ),
+                                        modifier = Modifier.focusRequester(focusRequester)
                                     )
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                } else {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                startEditing("credit_vents", relative_M14VentPeriode.credit_Vents_Totale)
+                                            },
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                        )
                                     ) {
-                                        Text(
-                                            text = "💳 Crédit",
-                                            fontSize = 12.sp,
-                                            style = MaterialTheme.typography.labelSmall
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "💳 Crédit",
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                            Text(
+                                                text = "${relative_M14VentPeriode.credit_Vents_Totale}",
+                                                fontSize = 14.sp,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Cash Ventes
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (editingField == "cash_vents") {
+                                    OutlinedTextField(
+                                        value = editingValue,
+                                        onValueChange = { editingValue = it },
+                                        label = { Text("Cash") },
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Decimal,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = { saveEditedValue() }
+                                        ),
+                                        modifier = Modifier.focusRequester(focusRequester)
+                                    )
+                                } else {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                startEditing("cash_vents", relative_M14VentPeriode.cash_Vents_Totale)
+                                            },
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
                                         )
-                                        Text(
-                                            text = "${relative_M14VentPeriode.credit_Vents_Totale}",
-                                            fontSize = 14.sp,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "💵 Cash",
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                            Text(
+                                                text = "${relative_M14VentPeriode.cash_Vents_Totale}",
+                                                fontSize = 14.sp,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        // Cash Ventes
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (editingField == "cash_vents") {
-                                OutlinedTextField(
-                                    value = editingValue,
-                                    onValueChange = { editingValue = it },
-                                    label = { Text("Cash") },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = { saveEditedValue() }
-                                    ),
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            } else {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            startEditing("cash_vents", relative_M14VentPeriode.cash_Vents_Totale)
-                                        },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                                    )
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "💵 Cash",
-                                            fontSize = 12.sp,
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                        Text(
-                                            text = "${relative_M14VentPeriode.cash_Vents_Totale}",
-                                            fontSize = 14.sp,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Divider()
+                        Text(
+                            text = "Total: $totalVentes",
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.End)
+                        )
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Divider()
-                    Text(
-                        text = "Total: $totalVentes",
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.align(Alignment.End)
+                // Calculated Ventes Card
+                ElevatedCard(
+                    modifier = Modifier.weight(1f),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
                     )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "📊 Calculated",
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Ventes",
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "$sum_Bon_Vents",
+                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
                 }
             }
 
@@ -461,7 +520,147 @@ fun View_M14VentPeriod(
                 }
             }
 
-            // Balance Section - Highlighted Card
+            // Produits au Dépôt Section - New Card
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = "📦 PRODUITS AU DÉPÔT",
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Credit Produits Dépôt
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "credit_produits_depot") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Crédit") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("credit_produits_depot", relative_M14VentPeriode.credit_produitsAuDepot)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💳 Crédit",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.credit_produitsAuDepot}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Cash Produits Dépôt
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (editingField == "acheter_produits_depot") {
+                                OutlinedTextField(
+                                    value = editingValue,
+                                    onValueChange = { editingValue = it },
+                                    label = { Text("Acheté") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = { saveEditedValue() }
+                                    ),
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            startEditing("acheter_produits_depot", relative_M14VentPeriode.acheter_produitsAuDepot)
+                                        },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "💵 Acheté",
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                        Text(
+                                            text = "${relative_M14VentPeriode.acheter_produitsAuDepot}",
+                                            fontSize = 14.sp,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Total: $totalProduitsDepot",
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "(Réduit achats)",
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
+
+            // Balance Section - Highlighted Card with adjusted calculation
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.elevatedCardColors(
@@ -472,27 +671,40 @@ fun View_M14VentPeriod(
                     }
                 )
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(16.dp)
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "⚖️ BALANCE",
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "$balance",
+                            fontSize = 24.sp,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = when {
+                                balance > 0 -> MaterialTheme.colorScheme.primary
+                                balance < 0 -> MaterialTheme.colorScheme.error
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    }
+
+                    // Show calculation breakdown
                     Text(
-                        text = "⚖️ BALANCE",
-                        fontSize = 20.sp,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "$balance",
-                        fontSize = 24.sp,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = when {
-                            balance > 0 -> MaterialTheme.colorScheme.primary
-                            balance < 0 -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurface
-                        }
+                        text = "Ventes ($totalVentes) - Achats ajustés ($adjustedTotalAchats)",
+                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        modifier = Modifier.align(Alignment.End)
                     )
                 }
             }

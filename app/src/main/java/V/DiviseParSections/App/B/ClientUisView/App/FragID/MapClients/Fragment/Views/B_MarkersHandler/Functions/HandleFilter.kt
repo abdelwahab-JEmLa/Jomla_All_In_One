@@ -40,6 +40,10 @@ fun handleFilterMarkersClick(
 
         MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
             MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+
+        else -> {
+            MapClientsViewModel.VisibleClientsNow.showAll
+        }
     }
 
     onFilterChanged(newMode)

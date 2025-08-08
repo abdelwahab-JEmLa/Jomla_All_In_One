@@ -263,6 +263,10 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                                 MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
                                     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+
+                                else -> {
+                                    MapClientsViewModel.VisibleClientsNow.showAll
+                                }
                             }
 
                             FilterLogger.logFilterChange(previousMode, newMode)

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -33,7 +34,9 @@ data class ActiveCentralValues(
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
+    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
+    val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
 
     val affiche_Floating_Button_gps_follow_mode_active: Boolean = false,

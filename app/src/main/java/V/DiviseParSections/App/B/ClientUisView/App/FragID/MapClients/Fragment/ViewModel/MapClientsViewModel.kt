@@ -224,6 +224,7 @@ class MapClientsViewModel(
     // ===============================================
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
+        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Map, Color.Red),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
         CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),

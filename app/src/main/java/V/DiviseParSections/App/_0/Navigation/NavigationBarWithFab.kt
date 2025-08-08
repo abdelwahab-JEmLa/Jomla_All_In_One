@@ -272,11 +272,11 @@ private fun FabDropdownMenu(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-          //  DropDownItem_FABs_AddClient()   //<--
-            //TODO(1): regle ca et fait que ca toggle affiche_Floating_Button_AddCLient
-            DropDownItem_DisplayeGpsFlowFAB(
-                onDismissDropdown = onDismissDropdown
-            )
+          //  DropDownItem_FABs_AddClient()
+
+            DropDownItem_Displaye_TogleFilterMarquers()
+            
+            DropDownItem_DisplayeGpsFlowFAB()
 
             DropDownItem_2(
                 item_States = Item_States.get_Default()
@@ -301,11 +301,66 @@ private fun FabDropdownMenu(
         }
     }
 }
+
+@Composable
+private fun DropDownItem_Displaye_TogleFilterMarquers(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+) {
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val isFilterMarkersVisible = currentValues.affiche_Floating_Button_TogleFilterMarquers
+
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isFilterMarkersVisible)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = if (isFilterMarkersVisible)
+                        Icons.Default.Visibility
+                    else
+                        Icons.Default.VisibilityOff,
+                    contentDescription = "Toggle Filter Markers",
+                    tint = if (isFilterMarkersVisible)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            text = {
+                Text(
+                    text = if (isFilterMarkersVisible)
+                        "Hide Filter Markers"
+                    else
+                        "Show Filter Markers",
+                    color = if (isFilterMarkersVisible)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            onClick = {
+                // Toggle the filter markers visibility
+                val newValues = currentValues.copy(
+                    affiche_Floating_Button_TogleFilterMarquers = !isFilterMarkersVisible
+                )
+                focusedValuesGetter.update_activeCentralValues(newValues)
+            }
+        )
+    }
+}
+
 @Composable
 private fun DropDownItem_DisplayeGpsFlowFAB(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    onDismissDropdown: () -> Unit
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val isGpsButtonVisible = currentValues.affiche_Floating_Button_gps_follow_mode_active
@@ -341,12 +396,10 @@ private fun DropDownItem_DisplayeGpsFlowFAB(
                 )
             },
             onClick = {
-                // Toggle the GPS button visibility
                 val newValues = currentValues.copy(
                     affiche_Floating_Button_gps_follow_mode_active = !isGpsButtonVisible
                 )
                 focusedValuesGetter.update_activeCentralValues(newValues)
-                onDismissDropdown()
             }
         )
     }
