@@ -275,7 +275,9 @@ private fun GrossistItem(
     purchaseCount: Int,
     onSelect: () -> Unit,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList()
-) {
+) {   //<--
+//TODO(1): ajout un button au click affiche un dialoge des transactions avec un outlined text au click donne ca add un item au lazy list 
+//contie credit de date et hh mm ss == added somme au outlined 
     val datas = updated_Achats(list_M11AchatOperation, grossist)
 
     Card(
