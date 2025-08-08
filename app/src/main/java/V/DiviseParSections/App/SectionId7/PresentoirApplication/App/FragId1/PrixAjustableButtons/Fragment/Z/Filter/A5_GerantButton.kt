@@ -2,6 +2,9 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
@@ -42,6 +45,9 @@ fun GerantButton(
     tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     onClickPrixButton: () -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
+    focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,
 ) {
     val color = Color(0xFF4CAF50)
     val cancelColor = Color(0xFFFF5722)
@@ -61,33 +67,28 @@ fun GerantButton(
     }
 
     val m10OperationVentCouleurs =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
-    val edited_Tariff =
-        relative_Tariff
-            ?.copy(
+    val edited_Tariff = relative_Tariff?.copy(
             parent_M1Produit_KeyId = relative_M1Produit.keyID,
             parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-            parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .activeOnVent_M2Client?.keyID ?: "null",
-            parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .activeOnVent_M2Client?.get_DebugInfos() ?: "null",
-            parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .activeonVent_M8BonVent?.keyID ?: "null",
-            parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .activeonVent_M8BonVent?.get_DebugInfos() ?: "null",
+            parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.keyID
+                ?: "null",
+            parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.get_DebugInfos()
+                ?: "null",
+            parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.keyID
+                ?: "null",
+            parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.get_DebugInfos()
+                ?: "null",
         )
 
     fun handelClick() {
-        viewModel.aCentralFacade.repositorysMainSetter
-            .saveTariff_Et_RelateIt_Au_Vents_Correspond(
+        viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = edited_Tariff,
                 m10OperationVentCouleurs = m10OperationVentCouleurs
             )
 
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-            .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
     Column(
@@ -104,8 +105,7 @@ fun GerantButton(
                         Modifier.clickable {
                             onClickPrixButton()
                             handelClick()
-                        }
-                    ) {
+                        }) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
@@ -147,7 +147,24 @@ fun GerantButton(
             // Cancellation button positioned at top-right with proper padding
             if (onClickAnulationButton != null) {
                 FloatingActionButton(
-                    onClick = onClickAnulationButton,
+                    onClick = {
+
+                        onClickAnulationButton()
+                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                            ""
+                        )
+
+                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+                        focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
+                        focusedValuesGetter.update_activeCentralValues(
+                            focusedValuesGetter.active_Central_Values.copy(
+                                    affiche_Panier_au_Search_Dialog = false,
+                                    handled_M10OperationVent_Pour_Link = null
+                                )
+                        )
+
+                    },
                     modifier = Modifier
                         .size(32.dp)
                         .align(Alignment.TopEnd)

@@ -62,7 +62,7 @@ fun TariffButtonItem(
     nombreUnite: Int = 1,
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-) {   //<--
+) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
@@ -107,9 +107,9 @@ fun TariffButtonItem(
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
-            typeTarification == TypeChoisi.DefiniParGerant ||
+            (typeTarification == TypeChoisi.DefiniParGerant && currentApp_Est_Admin)||
             typeTarification == TypeChoisi.Edited_Pour_Client ||
-            typeTarification == TypeChoisi.Historique  //
+            typeTarification == TypeChoisi.Historique
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 
