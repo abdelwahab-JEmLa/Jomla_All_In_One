@@ -100,7 +100,7 @@ fun View_Vent_M1Produit(
             ) {
                 //----------------------------Header---------------------------------------------------------------------------------------------------------------------------------------------------------
                 if (relative_M1Produit != null) {
-                    ProductHeader_SemiModularized(relative_M1Produit, viewModel)
+                    ProductHeader_SemiModularized(relative_M1Produit, viewModel,relative_List_M10OperationVentCouleur)
                 }
                 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

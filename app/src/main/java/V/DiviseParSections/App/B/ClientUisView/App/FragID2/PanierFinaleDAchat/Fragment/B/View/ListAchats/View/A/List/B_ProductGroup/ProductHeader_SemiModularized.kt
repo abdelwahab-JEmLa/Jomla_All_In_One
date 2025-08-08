@@ -3,9 +3,11 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,17 +47,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ProductHeader_SemiModularized(
     relative_M1Produit: ArticlesBasesStatsTable,
     viewModel: ZViewModel_Sec1Frag3,
+    relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
             relative_M1Produit
         )
     }
@@ -208,6 +213,7 @@ fun ProductHeader_SemiModularized(
                         }
                     }
                     ToggleButton_SemiModularized_F_Panie(
+                        relative_List_M10OperationVentCouleur =relative_List_M10OperationVentCouleur,
                         allNonTrouve = allNonTrouve,
                         hasNonTrouve = hasNonTrouve,
                         viewModel = viewModel,
@@ -259,17 +265,24 @@ fun ProductHeader_SemiModularized(
 
 @Composable
 fun ToggleButton_SemiModularized_F_Panie(
+    aCentralFacade: ACentralFacade= koinInject(),
+    repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     allNonTrouve: Boolean,
     hasNonTrouve: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?
+    relative_M1Produit: ArticlesBasesStatsTable?,
+    relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>
 ) {
     IconButton(
         onClick = {
-            relative_M1Produit?.keyID?.let {
-                viewModel.aCentralFacade.repositorysMainSetter.toggleEtateDeliveryNonTrouveVentOuFacade(
-                    it
-                )
+            relative_List_M10OperationVentCouleur.map {vent->
+                val newState =
+                    if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve)
+                        M10OperationVentCouleur.EtateDelivery.NonTrouve
+                    else M10OperationVentCouleur.EtateDelivery.Trouve
+
+                repo10OperationVentCouleur.addOrUpdateData(vent.copy(etateDelivery = newState))
+
             }
         },
         modifier = Modifier

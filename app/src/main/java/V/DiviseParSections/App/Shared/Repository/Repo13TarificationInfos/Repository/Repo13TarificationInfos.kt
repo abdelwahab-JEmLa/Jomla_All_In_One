@@ -135,6 +135,7 @@ data class M13TarificationInfos(
             "فائدة محققة مع لاضا كثير من الزيناء"
         ),
         DefiniParGerant(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B), "محدد من المحل", Color.Black),
+        Edited_Pour_Client(Icons.Filled.ArrowUpward, Color(0xFFE0E0E0), "محدد بتصرف", Color.Black),
         Historique(Icons.Filled.History, Color(0xFF9C27B0), "السعر الذي وصلنا له"),
         PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
         Tariff_Achat_Depuit_Grossisst(

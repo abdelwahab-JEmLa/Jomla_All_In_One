@@ -62,7 +62,7 @@ fun TariffButtonItem(
     nombreUnite: Int = 1,
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-) {
+) {   //<--
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
@@ -106,8 +106,10 @@ fun TariffButtonItem(
     val focusRequester = remember { FocusRequester() }
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
+    // Fixed: Added Edited_Pour_Client to the editable tariff types
     val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
-            typeTarification == TypeChoisi.DefiniParGerant
+            typeTarification == TypeChoisi.DefiniParGerant ||
+            typeTarification == TypeChoisi.Edited_Pour_Client
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 
@@ -181,18 +183,16 @@ fun TariffButtonItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ElevatedCard {
-                    val labelBackgroundColor = if (isEditableTariff) {
-                        Color.Yellow
-                    } else if (isPurchasePriceTariff) {
+                    val labelBackgroundColor = if (isPurchasePriceTariff) {
                         Color.Cyan // Different color for purchase price
                     } else {
                         couleurButton
                     }
 
-                    val labelTextColor = if (isEditableTariff || isPurchasePriceTariff) {
+                    val labelTextColor = if (isPurchasePriceTariff) {
                         Color.Black
                     } else {
-                        Color.White
+                        typeTarification.couleur_Text
                     }
 
                     // Handle purchase price editing
@@ -319,7 +319,7 @@ fun TariffButtonItem(
                                         Modifier
                                     }
                                 ),
-                            color = if (isEditableTariff || isPurchasePriceTariff) {
+                            color = if (isPurchasePriceTariff) {
                                 Color.Black
                             } else {
                                 typeTarification.couleur_Text  // Use the couleur_Text from TypeChoisi enum
@@ -396,18 +396,16 @@ fun TariffButtonItem(
                     // Show plus sign for editable tariffs and purchase price
                     val pls = if (isEditableTariff || isPurchasePriceTariff) " +" else ""
 
-                    val priceBackgroundColor = if (isEditableTariff) {
-                        Color.Yellow
-                    } else if (isPurchasePriceTariff) {
+                    val priceBackgroundColor = if (isPurchasePriceTariff) {
                         Color.Cyan
                     } else {
                         couleurButton
                     }
 
-                    val priceTextColor = if (isEditableTariff || isPurchasePriceTariff) {
+                    val priceTextColor = if (isPurchasePriceTariff) {
                         Color.Black
                     } else {
-                        Color.White
+                        typeTarification.couleur_Text
                     }
 
                     Column {
@@ -436,9 +434,7 @@ fun TariffButtonItem(
             }
         }
 
-        val buttonBackgroundColor = if (isEditableTariff) {
-            Color.Yellow
-        } else if (isPurchasePriceTariff) {
+        val buttonBackgroundColor = if (isPurchasePriceTariff) {
             Color.Cyan
         } else {
             couleurButton
@@ -453,10 +449,10 @@ fun TariffButtonItem(
             containerColor = buttonBackgroundColor
         ) {
             typeTarification.iconVector?.let { iconVector ->
-                val iconColor = if (isEditableTariff || isPurchasePriceTariff) {
+                val iconColor = if (isPurchasePriceTariff) {
                     Color.Black
                 } else {
-                    Color.White
+                    typeTarification.couleur_Text
                 }
 
                 Icon(

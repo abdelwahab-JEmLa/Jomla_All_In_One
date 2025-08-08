@@ -55,7 +55,7 @@ fun QuantityDisplay_Mo_F_Panie(
             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == relative_produit.keyID
-            }   .sumOf { it.quantity }
+            }.sumOf { it.quantity }
     }
 
     Row(
@@ -116,7 +116,7 @@ fun QuantityDisplay_Mo_F_Panie(
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-        val findTariff = datasValue
+        val find_Tariff_DefiniParGerant = datasValue
             .filter { tariff ->
                 tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
                         tariff.parent_M1Produit_KeyId == relative_produit.keyID
@@ -124,24 +124,33 @@ fun QuantityDisplay_Mo_F_Panie(
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
 
-        val default_Tariff = M13TarificationInfos.get_default_P0(relative_produit, start_Prix_Depuit_Ancient = relative_produit.prixAchat)
+        val default_Tariff = M13TarificationInfos.get_default_P0(
+            relative_produit,
+            start_Prix_Depuit_Ancient = relative_produit.prixAchat
+        )
 
         val finale_Tariff_Prix = when {
-            findTariff?.prixCurrency?.let { it > 0.0 } == true -> findTariff.prixCurrency
+            find_Tariff_DefiniParGerant?.prixCurrency?.let { it > 0.0 } == true -> find_Tariff_DefiniParGerant.prixCurrency
+
             relative_List_M10OperationVentCouleur.isNotEmpty() &&
-                    relative_List_M10OperationVentCouleur.first().provisoireMonPrix > 0.0 ->
-                relative_List_M10OperationVentCouleur.first().provisoireMonPrix
+                    relative_List_M10OperationVentCouleur.first().provisoireMonPrix > 0.0 -> relative_List_M10OperationVentCouleur.first().provisoireMonPrix
+
             else -> default_Tariff.first.prixCurrency
         }
+
         Card(
             modifier = Modifier
                 .semantics(mergeDescendants = true) {
-                    val datasValuefilter= datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
-                    set(value =datasValue, key = SemanticsPropertyKey("datasValue"))
+                    val datasValuefilter =
+                        datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
+                    set(value = datasValue, key = SemanticsPropertyKey("datasValue"))
                     Log.d("datasValuefilter", datasValuefilter.toString())
                 }
                 .semantics(mergeDescendants = true) {
-                    set(value = findTariff, key = SemanticsPropertyKey("findTariff"))
+                    set(
+                        value = find_Tariff_DefiniParGerant,
+                        key = SemanticsPropertyKey("findTariff")
+                    )
                 }
                 .semantics(mergeDescendants = true) {
                     set(
@@ -150,14 +159,9 @@ fun QuantityDisplay_Mo_F_Panie(
                     )
                 }
                 .clickable(enabled = !allNonTrouve) {
-                    /* repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                        m13TarificationInfos_Pour_Produit = finale_Tariff,
-                        m10OperationVentCouleurs = focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
-                    )       */
                     focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
                         relative_produit
                     )
-
                 },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
@@ -171,13 +175,10 @@ fun QuantityDisplay_Mo_F_Panie(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 val (depuit_Qui, tariffIcon) =
-                    /*if (findTariff != null) {
-                    "Définie Par Ali" to Icons.Default.TrendingUp
-                } else {    */
-                    "Depuis Mon Old BaseDonnée" to Icons.Default.History
+                    "" to Icons.Default.History
 
                 Text(
-                    text = "$depuit_Qui - ${finale_Tariff_Prix}",
+                    text = "$depuit_Qui - $finale_Tariff_Prix",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -186,7 +187,7 @@ fun QuantityDisplay_Mo_F_Panie(
 
                 Icon(
                     imageVector = tariffIcon,
-                    contentDescription = if (findTariff != null) "Defined by Ali" else "From old database",
+                    contentDescription = if (find_Tariff_DefiniParGerant != null) "Defined by Ali" else "From old database",
                     tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     else MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier.size(16.dp)
