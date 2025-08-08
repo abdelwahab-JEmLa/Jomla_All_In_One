@@ -252,7 +252,7 @@ data class M8BonVent(
         ),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
-        Cette_Transaction_Type_Est_Credit(R.color.c8, "تم اقراضه  "),
+        Cette_Transaction_Type_Est_Credit(android.R.color.holo_red_dark, "تم اقراضه  "),
 
 
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),

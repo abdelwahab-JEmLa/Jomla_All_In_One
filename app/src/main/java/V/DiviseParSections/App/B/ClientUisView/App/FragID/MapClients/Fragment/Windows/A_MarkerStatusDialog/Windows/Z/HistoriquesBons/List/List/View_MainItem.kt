@@ -25,27 +25,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -63,7 +55,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -74,10 +65,9 @@ fun Button_De_supprime_Avec_Securite(
     bon_Vent: M8BonVent,
     machina_li_t_supprime: Repo8BonVent,
 ) {
-
     IconButton(
         onClick = {
-
+            // Implementation for secure deletion
         },
     ) {
         Icon(
@@ -119,6 +109,7 @@ fun View_MainItem(
 
     // State for credit payment dialog
     var showCreditDialog by remember { mutableStateOf(false) }
+    var targeted_M8Transaction_Pour_Credit by remember { mutableStateOf<M8BonVent?>(null) }
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
@@ -153,7 +144,6 @@ fun View_MainItem(
                         break
                     }
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -264,25 +254,72 @@ fun View_MainItem(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = String.format("%.2f", sumBonVents),
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
+                        if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = String.format(
+                                            "%.2f",
+                                            sumBonVents - relative_M8BonVent.versement
+                                        ),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (sumBonVents - relative_M8BonVent.versement > 0) {
+                                            Color.Red.copy(alpha = 0.9f)
+                                        } else {
+                                            Color.Green.copy(alpha = 0.9f)
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text(
+                                        text = "دج متبقي",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
+                                }
 
-                            Spacer(modifier = Modifier.width(4.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = String.format("%.2f", relative_M8BonVent.versement),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text(
+                                        text = "دج مدفوع",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = String.format("%.2f", sumBonVents),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
 
-                            Text(
-                                text = "دج",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.9f)
-                            )
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = "دج",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.9f)
+                                )
+                            }
                         }
                     }
                 }
@@ -292,7 +329,7 @@ fun View_MainItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .padding(top = 56.dp) // More space for top row with delete button and sum card
+                    .padding(top = 56.dp)
             ) {
                 // Transaction info row
                 Row(
@@ -361,25 +398,21 @@ fun View_MainItem(
                     )
                 }
 
-                if (relative_M8BonVent.sum_De_Totale_Vents > 0.0 &&
-                    relative_M8BonVent.sum_De_Credit_Fait < relative_M8BonVent.sum_De_Totale_Vents
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (relative_Client != null) {
-                            M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
-                                .ButtonAutreEtates(
-                                    clickedClient = relative_Client.id
-                                ) {
-                                    showCreditDialog = true
-                                }
-                        }
+                    if (etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
+                        M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit.ButtonAutreEtates(
+                            clickedClient = relative_Client?.id ?: 0L,
+                            onClick = { bonVent ->
+                                targeted_M8Transaction_Pour_Credit = bonVent
+                                showCreditDialog = true
+                            }
+                        )
                     }
                 }
 
@@ -435,6 +468,7 @@ fun View_MainItem(
                     }
                 }
 
+                // Voice message player section - FIXED: Progress bar layout
                 if (hasVoiceMessage) {
                     Row(
                         modifier = Modifier
@@ -585,16 +619,15 @@ fun View_MainItem(
         CreditPaymentDialog(
             onDismiss = { showCreditDialog = false },
             onConfirm = { paymentAmount ->
-                val updatedBonVent = relative_M8BonVent.copy(
-                    sum_De_Credit_Fait = relative_M8BonVent.sum_De_Credit_Fait + paymentAmount,
+                val updatedBonVent = targeted_M8Transaction_Pour_Credit?.copy(
+                    sum_De_Credit_Fait = sumBonVents,
                     versement = paymentAmount,
-                    etateActuellementEst = M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
                 )
 
-                // Update the transaction
-                repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+                if (updatedBonVent != null) {
+                    repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+                }
 
-                // Show success message
                 Toast.makeText(
                     context,
                     "تم إضافة الدفع بنجاح: ${String.format("%.2f", paymentAmount)} دج",
@@ -602,93 +635,8 @@ fun View_MainItem(
                 ).show()
 
                 showCreditDialog = false
-            }
+            },
+            sumBonVents = sumBonVents
         )
     }
-}
-
-@Composable
-fun CreditPaymentDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (Double) -> Unit
-) {
-    var versementText by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text("إدخال مبلغ الدفع")
-        },
-        text = {
-            Column {
-                Text(
-                    text = "أدخل مبلغ الدفع للمعاملة الائتمانية",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                OutlinedTextField(
-                    value = versementText,
-                    onValueChange = { versementText = it },
-                    label = { Text("مبلغ الدفع") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    trailingIcon = {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
-                                else Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "Toggle dropdown"
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Quick amount selection dropdown
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    val quickAmounts = listOf(100.0, 500.0, 1000.0, 2000.0, 5000.0, 10000.0)
-                    quickAmounts.forEach { amount ->
-                        DropdownMenuItem(
-                            text = { Text("${amount.toInt()} دج") },
-                            onClick = {
-                                versementText = amount.toString()
-                                expanded = false
-                            }
-                        )
-                    }
-
-                    // Custom amount option
-                    DropdownMenuItem(
-                        text = { Text("مبلغ مخصص") },
-                        onClick = {
-                            versementText = ""
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val amount = versementText.toDoubleOrNull()
-                    if (amount != null && amount > 0) {
-                        onConfirm(amount)
-                    }
-                },
-                enabled = versementText.toDoubleOrNull()?.let { it > 0 } == true
-            ) {
-                Text("تأكيد")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("إلغاء")
-            }
-        }
-    )
 }

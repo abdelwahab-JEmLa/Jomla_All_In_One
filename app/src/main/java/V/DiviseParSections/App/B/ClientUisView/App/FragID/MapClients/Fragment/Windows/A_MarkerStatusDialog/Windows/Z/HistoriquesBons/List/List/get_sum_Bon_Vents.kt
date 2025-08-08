@@ -30,8 +30,5 @@ fun get_sum_Bon_Vents(
         it.quantity * parentM13TarificationPrix
     }
 
-    return if (relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-        && relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-        && sum_Bon_Vents > 0.0
-    ) 0.0 else sum_Bon_Vents
+    return sum_Bon_Vents
 }
