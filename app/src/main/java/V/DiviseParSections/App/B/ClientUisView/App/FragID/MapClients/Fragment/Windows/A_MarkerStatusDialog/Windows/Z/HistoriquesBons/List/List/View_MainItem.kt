@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
@@ -84,10 +86,11 @@ fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    relative_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
-    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler
+    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
+    printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
+    relative_M8BonVent: M8BonVent,
 ) {
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
@@ -246,6 +249,54 @@ fun View_MainItem(
                     )
                 }
 
+                // CORRECTION 1: Une seule section pour les boutons crédit et print
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Bouton crédit - Une seule fois
+                    if (etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
+                        M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit.ButtonAutreEtates(
+                            clickedClient = relative_Client?.id ?: 0L,
+                            onClick = { bonVent ->
+                                targeted_M8Transaction_Pour_Credit = bonVent
+                                showCreditDialog = true
+                            }
+                        )
+                    }
+
+                    // Print Credit Button
+                    if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
+                        etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                    ) {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    printReceiptHandler.print_Credit(
+                                        context = context,
+                                        client = relative_Client,
+                                        bonVent = relative_M8BonVent,
+                                        scope = coroutineScope
+                                    )
+
+                                    Toast.makeText(
+                                        context,
+                                        "طباعة إيصال الدفع - Credit Receipt Printed",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Print,
+                                contentDescription = "Print Credit Receipt",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+
+                // CORRECTION 2: Card avec hauteur réduite
                 if (sumBonVents > 0.0) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -255,54 +306,57 @@ fun View_MainItem(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
-                            Column(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            // VERSION COMPACTE - Une seule Row au lieu de Column
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = String.format(
-                                            "%.2f",
-                                            sumBonVents - relative_M8BonVent.versement
-                                        ),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (sumBonVents - relative_M8BonVent.versement > 0) {
-                                            Color.Red.copy(alpha = 0.9f)
-                                        } else {
-                                            Color.Green.copy(alpha = 0.9f)
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(
-                                        text = "دج متبقي",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White.copy(alpha = 0.8f)
-                                    )
-                                }
+                                // Montant restant (principal)
+                                Text(
+                                    text = String.format("%.2f", sumBonVents - relative_M8BonVent.versement),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (sumBonVents - relative_M8BonVent.versement > 0) {
+                                        Color.Red.copy(alpha = 0.9f)
+                                    } else {
+                                        Color.Green.copy(alpha = 0.9f)
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "دج متبقي",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.8f)
+                                )
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = String.format("%.2f", relative_M8BonVent.versement),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.White.copy(alpha = 0.9f)
-                                    )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(
-                                        text = "دج مدفوع",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                // Séparateur
+                                Text(
+                                    text = "|",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.6f)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                // Montant payé (compact)
+                                Text(
+                                    text = String.format("%.2f", relative_M8BonVent.versement),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White.copy(alpha = 0.9f)
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(
+                                    text = "مدفوع",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
                             }
                         } else {
                             Row(
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
@@ -311,9 +365,7 @@ fun View_MainItem(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
-
                                 Spacer(modifier = Modifier.width(4.dp))
-
                                 Text(
                                     text = "دج",
                                     style = MaterialTheme.typography.bodySmall,
@@ -398,23 +450,8 @@ fun View_MainItem(
                     )
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
-                        M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit.ButtonAutreEtates(
-                            clickedClient = relative_Client?.id ?: 0L,
-                            onClick = { bonVent ->
-                                targeted_M8Transaction_Pour_Credit = bonVent
-                                showCreditDialog = true
-                            }
-                        )
-                    }
-                }
+                // CORRECTION 1: SUPPRESSION de la section dupliquée des boutons crédit
+                // Cette section était en double, elle est maintenant supprimée
 
                 if (relative_M8BonVent.sum_De_Totale_Vents > 0.0) {
                     Row(
@@ -468,7 +505,7 @@ fun View_MainItem(
                     }
                 }
 
-                // Voice message player section - FIXED: Progress bar layout
+                // Voice message player section
                 if (hasVoiceMessage) {
                     Row(
                         modifier = Modifier
@@ -559,7 +596,7 @@ fun View_MainItem(
                             )
                         }
 
-                        // FIXED: Progress indicator with proper layout
+                        // Progress indicator with proper layout
                         Box(
                             modifier = Modifier
                                 .weight(1f)

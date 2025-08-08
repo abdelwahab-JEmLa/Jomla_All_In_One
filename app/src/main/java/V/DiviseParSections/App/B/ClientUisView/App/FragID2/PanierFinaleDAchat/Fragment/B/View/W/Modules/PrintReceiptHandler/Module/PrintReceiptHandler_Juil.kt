@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
@@ -25,6 +26,89 @@ class PrintReceiptHandler_Juil() {
         val prixUnitaire: Double,
         val couleur: String? = null
     )
+
+    fun print_Credit(
+        context: Context,
+        client: M2Client?,
+        bonVent: M8BonVent,
+        scope: CoroutineScope? = null
+    ) {
+        val printFunction = {
+            val dateString =
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+
+            val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
+            val totalAmount = bonVent.sum_De_Totale_Vents
+            val paymentAmount = bonVent.versement
+            val remainingAmount = totalAmount - paymentAmount
+            val transactionId = bonVent.keyID.takeLast(4)
+
+            val texteImprimable = StringBuilder().apply {
+                append("<BIG><CENTER>Abdelwahab<BR>")
+                append("<BIG><CENTER>JeMla.Com<BR>")
+                append("<SMALL><CENTER>0553885037<BR>")
+                append("<SMALL><CENTER>إيصال دفع - Credit Payment<BR>")
+                append("<BR>")
+                append("<SMALL><CENTER>$clientName                        $dateString<BR>")
+                append("<SMALL><CENTER>رقم المعاملة: $transactionId<BR>")
+                append("<BR>")
+                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+                append("<MEDIUM1><LEFT>تفاصيل الدفع - Payment Details<BR>")
+                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+                append("<BR>")
+
+                // Total amount
+                append("<MEDIUM1><LEFT>إجمالي المبلغ - Total Amount:<BR>")
+                append("<MEDIUM2><RIGHT>${round(totalAmount)}Da<BR>")
+                append("<BR>")
+
+                // Payment made
+                append("<MEDIUM1><LEFT>المبلغ المدفوع - Amount Paid:<BR>")
+                append("<MEDIUM2><RIGHT>${round(paymentAmount)}Da<BR>")
+                append("<BR>")
+
+                // Remaining balance
+                append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
+                if (remainingAmount > 0) {
+                    append("<MEDIUM1><LEFT>المتبقي - Remaining Balance:<BR>")
+                    append("<MEDIUM3><RIGHT><BOLD>${round(remainingAmount)}Da<BR>")
+                } else if (remainingAmount < 0) {
+                    append("<MEDIUM1><LEFT>فائض الدفع - Overpayment:<BR>")
+                    append("<MEDIUM3><RIGHT><BOLD>${round(kotlin.math.abs(remainingAmount))}Da<BR>")
+                } else {
+                    append("<MEDIUM2><CENTER><BOLD>مدفوع بالكامل - PAID IN FULL<BR>")
+                }
+
+                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+                append("<BR>")
+                append("<SMALL><CENTER>شكراً لك - Thank You<BR>")
+                append("<BR><BR><BR>>")
+            }
+
+            // Log the credit receipt content
+            logCreditReceiptContent(
+                clientName = clientName,
+                dateString = dateString,
+                transactionId = transactionId,
+                totalAmount = totalAmount,
+                paymentAmount = paymentAmount,
+                remainingAmount = remainingAmount,
+                receiptText = texteImprimable.toString()
+            )
+
+            val intent = Intent(PRINT_INTENT).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, texteImprimable.toString())
+            }
+            ContextCompat.startActivity(context, intent, null)
+        }
+
+        if (scope != null) {
+            scope.launch { printFunction() }
+        } else {
+            printFunction()
+        }
+    }
 
     fun printVentReceipt(
         context: Context,
@@ -270,6 +354,45 @@ class PrintReceiptHandler_Juil() {
 
         Log.d(TAG, cleanedText)
         Log.d(TAG, "=== END RECEIPT LOG ===")
+    }
+
+    /**
+     * Logs the credit receipt content for debugging and monitoring purposes
+     */
+    private fun logCreditReceiptContent(
+        clientName: String,
+        dateString: String,
+        transactionId: String,
+        totalAmount: Double,
+        paymentAmount: Double,
+        remainingAmount: Double,
+        receiptText: String
+    ) {
+        Log.d(TAG, "=== CREDIT RECEIPT PRINT LOG ===")
+        Log.d(TAG, "Client: $clientName")
+        Log.d(TAG, "Date: $dateString")
+        Log.d(TAG, "Transaction ID: $transactionId")
+        Log.d(TAG, "Total Amount: ${round(totalAmount)}Da")
+        Log.d(TAG, "Payment Amount: ${round(paymentAmount)}Da")
+        Log.d(TAG, "Remaining Amount: ${round(remainingAmount)}Da")
+
+        Log.d(TAG, "=== RAW CREDIT RECEIPT TEXT ===")
+        // Clean the receipt text for better readability in logs
+        val cleanedText = receiptText
+            .replace("<BIG>", "")
+            .replace("<CENTER>", "")
+            .replace("<SMALL>", "")
+            .replace("<LEFT>", "")
+            .replace("<RIGHT>", "")
+            .replace("<NORMAL>", "")
+            .replace("<MEDIUM1>", "")
+            .replace("<MEDIUM2>", "")
+            .replace("<MEDIUM3>", "")
+            .replace("<BOLD>", "")
+            .replace("<BR>", "\n")
+
+        Log.d(TAG, cleanedText)
+        Log.d(TAG, "=== END CREDIT RECEIPT LOG ===")
     }
 
     private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10
