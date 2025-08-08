@@ -435,7 +435,6 @@ fun View_MainItem(
                     }
                 }
 
-                // Voice message player section - FIXED: Progress bar layout
                 if (hasVoiceMessage) {
                     Row(
                         modifier = Modifier
