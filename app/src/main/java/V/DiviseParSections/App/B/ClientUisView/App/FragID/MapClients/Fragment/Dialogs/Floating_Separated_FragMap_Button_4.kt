@@ -92,6 +92,7 @@ fun Floating_Separated_FragMap_Button_4(
                         text = when (currentVisibleClientsMode) {
                             MapClientsViewModel.VisibleClientsNow.showAll -> "Show All"
                             MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Targeted"
+                            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "A_COMMANDE_CONFIRME "
                             else -> {"Show All"}
                         },
                         color = Color.White,
@@ -154,18 +155,38 @@ fun Floating_Separated_FragMap_Button_4(
                         }
                     )
 
-                    // Targeted for Vendor option
+                    val VisibleClientsNow_1 =
+                        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "Targeted Clients",
-                                color = if (currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
-                                    Color.Blue else Color.Black
+                                text = VisibleClientsNow_1.name,
+                                color = if (currentVisibleClientsMode == VisibleClientsNow_1)
+                                    Color.Red else Color.Black
                             )
                         },
                         onClick = {
                             val newValues = currentValues.copy(
-                                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                                visibleClientsNow = VisibleClientsNow_1
+                            )
+                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            showDropdown = false
+                        }
+                    )
+
+                    val VisibleClientsNow_2 =
+                        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = VisibleClientsNow_2.name,
+                                color = if (currentVisibleClientsMode == VisibleClientsNow_2)
+                                    Color.Red else Color.Black
+                            )
+                        },
+                        onClick = {
+                            val newValues = currentValues.copy(
+                                visibleClientsNow = VisibleClientsNow_2
                             )
                             focusedValuesGetter.update_activeCentralValues(newValues)
                             showDropdown = false

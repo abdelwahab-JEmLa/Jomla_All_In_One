@@ -135,6 +135,18 @@ fun filterClientsBasedOnMode(
             }
         }
 
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> {
+            clientDataBaseSnapList.filter {
+                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+            }
+        }
+
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> {
+            clientDataBaseSnapList.filter {
+                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            }
+        }
+
         else -> {
             clientDataBaseSnapList
         }

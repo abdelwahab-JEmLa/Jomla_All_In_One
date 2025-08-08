@@ -262,6 +262,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                     MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts
 
                                 MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
+                                    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+
+                                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter ->
                                     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
 
                                 else -> {

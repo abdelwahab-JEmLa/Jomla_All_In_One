@@ -14,6 +14,7 @@ import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.Filter
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.runtime.Stable
@@ -224,7 +225,8 @@ class MapClientsViewModel(
     // ===============================================
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
-        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Map, Color.Red),
+        Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
+        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
         CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
