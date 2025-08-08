@@ -8,8 +8,9 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.D
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -134,10 +135,10 @@ data class M13TarificationInfos(
             Color(0xFFFF9800),
             "فائدة محققة مع لاضا كثير من الزيناء"
         ),
-        DefiniParGerant(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B), "محدد من المحل", Color.Black),
+        DefiniParGerant(Icons.Filled.Person, Color(0xFFFFEB3B), "محدد من المحل", Color.Black),
         Edited_Pour_Client(Icons.Filled.ArrowUpward, Color(0xFFE0E0E0), "محدد بتصرف", Color.Black),
-        Historique(Icons.Filled.History, Color(0xFF9C27B0), "السعر الذي وصلنا له"),
-        PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
+        Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
+        PRIX_BASE(Icons.Filled.Warning, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
         Tariff_Achat_Depuit_Grossisst(
             Icons.Filled.History,
             Color(0xFF000000),

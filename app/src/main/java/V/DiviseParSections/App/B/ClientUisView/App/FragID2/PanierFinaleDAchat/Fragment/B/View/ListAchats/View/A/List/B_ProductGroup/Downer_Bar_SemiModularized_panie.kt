@@ -95,7 +95,7 @@ fun Downer_Bar_SemiModularized_panie(
                     modifier = Modifier.padding(8.dp)
                 ) {
                     QuantityDisplay_Mo_F_Panie(
-                        relative_List_M10OperationVentCouleur=relative_List_M10OperationVentCouleur,
+                        relative_List_M10OperationVentCouleur =relative_List_M10OperationVentCouleur,
                         aCentralFacade = viewModel.aCentralFacade,
                         relative_produit = relative_M1Produit,
                         allNonTrouve = allNonTrouve,

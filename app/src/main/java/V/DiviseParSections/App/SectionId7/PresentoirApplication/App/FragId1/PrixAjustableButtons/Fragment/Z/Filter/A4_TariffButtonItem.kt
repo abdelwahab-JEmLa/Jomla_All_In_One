@@ -106,10 +106,10 @@ fun TariffButtonItem(
     val focusRequester = remember { FocusRequester() }
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
-    // Fixed: Added Edited_Pour_Client to the editable tariff types
     val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
             typeTarification == TypeChoisi.DefiniParGerant ||
-            typeTarification == TypeChoisi.Edited_Pour_Client
+            typeTarification == TypeChoisi.Edited_Pour_Client ||
+            typeTarification == TypeChoisi.Historique  //
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 

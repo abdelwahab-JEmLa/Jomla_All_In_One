@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -11,6 +12,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,11 +41,11 @@ fun QuantityDisplay_Mo_F_Panie(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
     relative_produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
-    aCentralFacade: ACentralFacade
+    aCentralFacade: ACentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
-    val repositorysMainSetter = aCentralFacade.repositorysMainSetter
 
     val getterFocusedVarsHandlerFacade =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -138,8 +140,14 @@ fun QuantityDisplay_Mo_F_Panie(
             else -> default_Tariff.first.prixCurrency
         }
 
+        val parentM13TarificationKeyID =
+            relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
+
+        val relative_Tariff = repositorysMainGetter.find_M13Tarification_By_KeyID(parentM13TarificationKeyID)
+
         Card(
             modifier = Modifier
+
                 .semantics(mergeDescendants = true) {
                     val datasValuefilter =
                         datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
@@ -166,32 +174,47 @@ fun QuantityDisplay_Mo_F_Panie(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                else MaterialTheme.colorScheme.secondary
+                else relative_Tariff?.typeChoisi?.couleur ?: MaterialTheme.colorScheme.secondary
             )
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            Column(
+                modifier = Modifier
+                    .semantics(mergeDescendants = true) {
+                        set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                    }
             ) {
-                val (depuit_Qui, tariffIcon) =
-                    "" to Icons.Default.History
+                Row(
+                    modifier = Modifier
+                        .semantics(mergeDescendants = true) {
+                            set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                        }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val tariffType = relative_Tariff?.typeChoisi ?: TypeChoisi.Historique
+                    val nom = tariffType.nomArabe
+                    val tariffIcon = tariffType.iconVector ?: Icons.Default.History
+                    val textColor = if (allNonTrouve) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    } else {
+                        tariffType.couleur_Text
+                    }
 
-                Text(
-                    text = "$depuit_Qui - $finale_Tariff_Prix",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSecondary
-                )
+                    Text(
+                        text = "$nom - ${relative_Tariff?.prixCurrency}",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = textColor
+                    )
 
-                Icon(
-                    imageVector = tariffIcon,
-                    contentDescription = if (find_Tariff_DefiniParGerant != null) "Defined by Ali" else "From old database",
-                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.size(16.dp)
-                )
+                    Icon(
+                        imageVector = tariffIcon,
+                        contentDescription = tariffType.nomArabe,
+                        tint = textColor,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
