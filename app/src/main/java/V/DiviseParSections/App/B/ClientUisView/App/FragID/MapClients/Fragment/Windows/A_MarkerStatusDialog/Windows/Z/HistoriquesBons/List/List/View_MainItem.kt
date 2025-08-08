@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -12,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,19 +25,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -76,6 +88,7 @@ fun Button_De_supprime_Avec_Securite(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
@@ -85,12 +98,12 @@ fun View_MainItem(
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler
-) {      //<--
-//TODO(1): ajout si on commande un buton code shop qi au click add credire transaction avec les vents actuelle
-
+) {
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
+    val relative_Client =
+        repositorysMainGetter.find_M2Client(relative_M8BonVent.parent_M2Client_KeyID)
 
     val hasVoiceMessage =
         relative_M17Message?.nomDeSonOriginaleFichie != null && relative_M17Message.nomDeSonOriginaleFichie != "null"
@@ -103,6 +116,9 @@ fun View_MainItem(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
+
+    // State for credit payment dialog
+    var showCreditDialog by remember { mutableStateOf(false) }
 
     // Fixed: Properly observe the StateFlow for repo17MessageVocale data
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
@@ -327,7 +343,6 @@ fun View_MainItem(
                         color = Color.White
                     )
 
-
                     Text(
                         text = " --",
                         style = MaterialTheme.typography.bodySmall,
@@ -344,6 +359,28 @@ fun View_MainItem(
                         color = Color.White,
                         modifier = Modifier.padding(start = 4.dp)
                     )
+                }
+
+                if (relative_M8BonVent.sum_De_Totale_Vents > 0.0 &&
+                    relative_M8BonVent.sum_De_Credit_Fait < relative_M8BonVent.sum_De_Totale_Vents
+                ) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (relative_Client != null) {
+                            M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+                                .ButtonAutreEtates(
+                                    clickedClient = relative_Client.id
+                                ) {
+                                    showCreditDialog = true
+                                }
+                        }
+                    }
                 }
 
                 if (relative_M8BonVent.sum_De_Totale_Vents > 0.0) {
@@ -543,4 +580,116 @@ fun View_MainItem(
                 .padding(horizontal = 16.dp)
         )
     }
+
+    // Credit Payment Dialog
+    if (showCreditDialog) {
+        CreditPaymentDialog(
+            onDismiss = { showCreditDialog = false },
+            onConfirm = { paymentAmount ->
+                val updatedBonVent = relative_M8BonVent.copy(
+                    sum_De_Credit_Fait = relative_M8BonVent.sum_De_Credit_Fait + paymentAmount,
+                    versement = paymentAmount,
+                    etateActuellementEst = M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+                )
+
+                // Update the transaction
+                repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+
+                // Show success message
+                Toast.makeText(
+                    context,
+                    "تم إضافة الدفع بنجاح: ${String.format("%.2f", paymentAmount)} دج",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                showCreditDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun CreditPaymentDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Double) -> Unit
+) {
+    var versementText by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("إدخال مبلغ الدفع")
+        },
+        text = {
+            Column {
+                Text(
+                    text = "أدخل مبلغ الدفع للمعاملة الائتمانية",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = versementText,
+                    onValueChange = { versementText = it },
+                    label = { Text("مبلغ الدفع") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    trailingIcon = {
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
+                                else Icons.Filled.KeyboardArrowDown,
+                                contentDescription = "Toggle dropdown"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Quick amount selection dropdown
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    val quickAmounts = listOf(100.0, 500.0, 1000.0, 2000.0, 5000.0, 10000.0)
+                    quickAmounts.forEach { amount ->
+                        DropdownMenuItem(
+                            text = { Text("${amount.toInt()} دج") },
+                            onClick = {
+                                versementText = amount.toString()
+                                expanded = false
+                            }
+                        )
+                    }
+
+                    // Custom amount option
+                    DropdownMenuItem(
+                        text = { Text("مبلغ مخصص") },
+                        onClick = {
+                            versementText = ""
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val amount = versementText.toDoubleOrNull()
+                    if (amount != null && amount > 0) {
+                        onConfirm(amount)
+                    }
+                },
+                enabled = versementText.toDoubleOrNull()?.let { it > 0 } == true
+            ) {
+                Text("تأكيد")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("إلغاء")
+            }
+        }
+    )
 }

@@ -29,11 +29,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     modifier: Modifier=Modifier,
-    viewModel: MapClientsViewModel,
+    viewModel: MapClientsViewModel= koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,

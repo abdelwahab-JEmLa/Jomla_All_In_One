@@ -576,27 +576,5 @@ fun MarkerStatusDialog(
         if(!M18CentralParametresOfAllApps.get_Default().itsDevMode) {
             PressistatntMainActivityButtons_Sec8FWinID1()
         }
-
-        // Credit Payment Dialog
-        if(showCreditDialog) {
-
-            CreditPaymentDialog(
-            onDismiss = {
-                showCreditDialog = false
-                currentCreditTransaction = null
-            },
-            onConfirm = { amount ->
-                currentCreditTransaction?.let { transaction ->
-                    aCentralFacade.repositorysMainSetter.update_M8BonVent(
-                        transaction.copy(
-                            versement = amount
-                        )
-                    )
-                }
-                showCreditDialog = false
-                currentCreditTransaction = null
-            }
-        )
-    }
     }
 }
