@@ -24,12 +24,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,9 +66,13 @@ fun TariffButtonItem(
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
 ) {
+    val proto_Affiche_Dialog_Au_Base = true
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
+
+    // Add dialog state
+    var showConfirmationDialog by remember { mutableStateOf(false) }
 
     var latestTariffLocalData by remember(
         produit,
@@ -118,7 +125,7 @@ fun TariffButtonItem(
         return
     }
 
-    fun handelClick() {
+    fun executeClickLogic() {
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = latestTariffLocalData,
@@ -127,6 +134,53 @@ fun TariffButtonItem(
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
             .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+    }
+
+    fun handelClick() {
+        // Show confirmation dialog for PRIX_BASE when proto_Affiche_Dialog_Au_Base is true
+        if (typeTarification == TypeChoisi.PRIX_BASE && proto_Affiche_Dialog_Au_Base) {
+            showConfirmationDialog = true
+            return
+        }
+
+        // Execute the click logic directly for other types
+        executeClickLogic()
+    }
+
+    // Confirmation Dialog
+    if (showConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmationDialog = false },
+            title = {
+                Text(
+                    text = "تأكيد البيع",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            text = {
+                Text(
+                    text = "هل انت متاكد من انك تريد البيع بالقرب من سعر الشراء؟",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showConfirmationDialog = false
+                        executeClickLogic()
+                    }
+                ) {
+                    Text("نعم", color = MaterialTheme.colorScheme.primary)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showConfirmationDialog = false }
+                ) {
+                    Text("لا", color = MaterialTheme.colorScheme.secondary)
+                }
+            }
+        )
     }
 
     fun handlePriceEditDone() {

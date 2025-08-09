@@ -91,7 +91,7 @@ fun MainList(
             typeChoisi = TypeChoisi.Edited_Pour_Client,
             parent_M1Produit_DebugInfos = relative_M1Produit.nom,
             parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            prixCurrency =   relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
+            prixCurrency = relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
         )
 
     val standardTariffs = remember(
@@ -102,7 +102,11 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            add(relative_Tariff_DefiniParGerant)
+            if (relative_Tariff_Historique != null
+                && relative_Tariff_DefiniParGerant.prixCurrency > relative_Tariff_Historique.prixCurrency
+            ) {
+                add(relative_Tariff_DefiniParGerant)
+            }
 
             if (relative_Tariff_Historique == null) {
                 add(relative_Tariff_Edited_Pour_Client)

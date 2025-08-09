@@ -32,7 +32,6 @@ fun CreditPaymentDialog(
     var versementText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
-    // Auto-focus on the text field when dialog opens
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -54,7 +53,6 @@ fun CreditPaymentDialog(
                     value = versementText,
                     onValueChange = { newValue ->
                         versementText = newValue
-                        // Auto-confirm when user enters a value or when field becomes empty
                         val amount = if (newValue.isEmpty()) {
                             sumBonVents
                         } else {

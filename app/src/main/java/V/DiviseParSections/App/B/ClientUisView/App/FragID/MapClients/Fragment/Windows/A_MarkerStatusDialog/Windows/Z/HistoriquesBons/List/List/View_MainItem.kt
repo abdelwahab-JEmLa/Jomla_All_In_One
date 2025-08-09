@@ -66,15 +66,18 @@ import kotlinx.coroutines.launch
 fun Button_De_supprime_Avec_Securite(
     bon_Vent: M8BonVent,
     machina_li_t_supprime: Repo8BonVent,
+    onDeleteConfirmed: () -> Unit = {}
 ) {
     IconButton(
         onClick = {
-            // Implementation for secure deletion
+            // Secure deletion logic
+            machina_li_t_supprime.delete(bon_Vent)
+            onDeleteConfirmed()
         },
     ) {
         Icon(
             imageVector = Icons.Default.Delete,
-            contentDescription = null,
+            contentDescription = "Supprimer avec sécurité",
             tint = Color.White
         )
     }
@@ -249,12 +252,12 @@ fun View_MainItem(
                     )
                 }
 
-                // CORRECTION 1: Une seule section pour les boutons crédit et print
+                // Buttons section (credit and print)
                 Row(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Bouton crédit - Une seule fois
+                    // Credit button - only once for COMMANDE_LIVRAI state
                     if (etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
                         M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit.ButtonAutreEtates(
                             clickedClient = relative_Client?.id ?: 0L,
@@ -265,17 +268,24 @@ fun View_MainItem(
                         )
                     }
 
-                    // Print Credit Button
+                    // Print Credit Button - for both credit transactions and delivered orders
                     if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
                         etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     ) {
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
+                                    // FIXED: Pass the required credit and payment parameters
+                                    val creditAmount = sumBonVents
+                                    val versementAmount = relative_M8BonVent.versement
+
                                     printReceiptHandler.print_Credit(
                                         context = context,
                                         client = relative_Client,
-                                        bonVent = relative_M8BonVent,
+                                        bonVent = relative_M8BonVent.copy(
+                                            sum_De_Totale_Vents = creditAmount,
+                                            versement = versementAmount
+                                        ),
                                         scope = coroutineScope
                                     )
 
@@ -296,7 +306,7 @@ fun View_MainItem(
                     }
                 }
 
-                // CORRECTION 2: Card avec hauteur réduite
+                // Sum display card with reduced height
                 if (sumBonVents > 0.0) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -306,18 +316,21 @@ fun View_MainItem(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
-                            // VERSION COMPACTE - Une seule Row au lieu de Column
+                            // Compact version - single Row instead of Column
                             Row(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Montant restant (principal)
+                                // Remaining amount (primary)
                                 Text(
-                                    text = String.format("%.2f", sumBonVents - relative_M8BonVent.versement),
+                                    text = String.format(
+                                        "%.2f",
+                                        sumBonVents - relative_M8BonVent.versement
+                                    ),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = if (sumBonVents - relative_M8BonVent.versement > 0) {
-                                        Color.Red.copy(alpha = 0.9f)
+                                        Color.White.copy(alpha = 0.9f)
                                     } else {
                                         Color.Green.copy(alpha = 0.9f)
                                     }
@@ -331,7 +344,7 @@ fun View_MainItem(
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
-                                // Séparateur
+                                // Separator
                                 Text(
                                     text = "|",
                                     style = MaterialTheme.typography.bodySmall,
@@ -340,7 +353,7 @@ fun View_MainItem(
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
-                                // Montant payé (compact)
+                                // Amount paid (compact)
                                 Text(
                                     text = String.format("%.2f", relative_M8BonVent.versement),
                                     style = MaterialTheme.typography.bodySmall,
@@ -380,8 +393,8 @@ fun View_MainItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .padding(top = 56.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(top = 8.dp)
             ) {
                 // Transaction info row
                 Row(
@@ -450,14 +463,11 @@ fun View_MainItem(
                     )
                 }
 
-                // CORRECTION 1: SUPPRESSION de la section dupliquée des boutons crédit
-                // Cette section était en double, elle est maintenant supprimée
-
                 if (relative_M8BonVent.sum_De_Totale_Vents > 0.0) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp),
+                            .padding(vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -505,15 +515,15 @@ fun View_MainItem(
                     }
                 }
 
-                // Voice message player section
+                // Voice message player section - compact version
                 if (hasVoiceMessage) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
+                            .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Play/Stop button
+                        // Play/Stop button - smaller
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
@@ -555,7 +565,7 @@ fun View_MainItem(
                                                             ) {}
                                                         }
 
-                                                        // NEW: Update M17MessageVocale to ECOUTE state
+                                                        // Update M17MessageVocale to ECOUTE state
                                                         update_etate_Listening_relative_M17Message()
                                                     },
                                                     onPlaybackError = { errorMessage ->
@@ -579,7 +589,8 @@ fun View_MainItem(
                                     }
                                 }
                             },
-                            enabled = !isCurrentlyDownloading
+                            enabled = !isCurrentlyDownloading,
+                            modifier = Modifier.padding(2.dp)
                         ) {
                             Icon(
                                 imageVector = when {
@@ -596,19 +607,19 @@ fun View_MainItem(
                             )
                         }
 
-                        // Progress indicator with proper layout
+                        // Progress indicator - more compact
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(horizontal = 8.dp)
+                                .padding(horizontal = 4.dp)
                         ) {
                             when {
                                 isCurrentlyDownloading -> {
                                     LinearProgressIndicator(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(RoundedCornerShape(3.dp)),
+                                            .height(4.dp)
+                                            .clip(RoundedCornerShape(2.dp)),
                                         color = Color.White,
                                         trackColor = Color.White.copy(alpha = 0.3f)
                                     )
@@ -619,8 +630,8 @@ fun View_MainItem(
                                         progress = { playbackProgress.progress.coerceIn(0f, 1f) },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(RoundedCornerShape(3.dp)),
+                                            .height(4.dp)
+                                            .clip(RoundedCornerShape(2.dp)),
                                         color = Color.White,
                                         trackColor = Color.White.copy(alpha = 0.3f)
                                     )
@@ -631,8 +642,8 @@ fun View_MainItem(
                                         progress = { 0f },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(RoundedCornerShape(3.dp)),
+                                            .height(4.dp)
+                                            .clip(RoundedCornerShape(2.dp)),
                                         color = Color.White.copy(alpha = 0.5f),
                                         trackColor = Color.White.copy(alpha = 0.2f)
                                     )
@@ -651,7 +662,7 @@ fun View_MainItem(
         )
     }
 
-    // Credit Payment Dialog
+// Credit Payment Dialog
     if (showCreditDialog) {
         CreditPaymentDialog(
             onDismiss = { showCreditDialog = false },
