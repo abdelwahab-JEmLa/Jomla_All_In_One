@@ -237,7 +237,7 @@ fun ButtonVideoRecord(
         }
 
         FloatingActionButton(
-            modifier = Modifier.size(56.dp),
+            modifier = Modifier.size(20.dp),
             onClick = {
                 if (!isRecording) {
                     // Request audio permission if not granted

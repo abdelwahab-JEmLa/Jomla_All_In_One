@@ -281,6 +281,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showAlertDialog = true
                         }
                     }
+                    ButtonVideoRecord()
 
                     if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
                         (activeFragment != Screen.EditDatabaseWithCreateNewArticles
@@ -299,7 +300,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     }
 
-                    ButtonVideoRecord()
 
                     focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         ID4ClientSearchButton(
