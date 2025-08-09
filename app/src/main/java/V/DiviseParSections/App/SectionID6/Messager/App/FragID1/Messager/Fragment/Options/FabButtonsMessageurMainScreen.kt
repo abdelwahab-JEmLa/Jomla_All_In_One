@@ -123,26 +123,6 @@ fun FabButtonsMessageurMainScreen(
                             )
                         }
 
-                        // New Video Recording Button
-                        ButtonVideoRecord(
-                            viewModel = viewModel,
-                            onVideoRecorded = { videoFileName ->
-                                val videoMessage = M17MessageVocale
-                                    .get_default()
-                                    .copy(
-                                        parentMessageVID = System.currentTimeMillis(),
-                                        parent_M9AppCompt_Nom = focusedValuesGetter
-                                            .currentActive_M9AppCompt?.nom ?: "",
-                                        parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
-                                        etate = M17MessageVocale.Etate.ENVOYER,
-                                        creationTimestamps = System.currentTimeMillis(),
-                                        its_Video_Message = true,
-                                        nom_Fichie_Video = videoFileName
-                                    )
-
-                                repositorysMainSetter.upsert_M17MessageVocale(videoMessage)
-                            }
-                        )
                     }
 
                     ButtonMessageVocale(

@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -57,8 +55,7 @@ import java.util.Locale
 @Composable
 fun ButtonVideoRecord(
     modifier: Modifier = Modifier,
-    viewModel: ViewModelMessageur,
-    onVideoRecorded: (String) -> Unit
+    onVideoRecorded: (String) -> Unit ={}
 ) {
     val context = LocalContext.current
     val activity = remember { getActivityFromContext(context) }
@@ -215,14 +212,6 @@ fun ButtonVideoRecord(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Show audio status
-        Text(
-            text = if (hasMicPermission) "🎤 Audio + Vidéo" else "📹 Vidéo seulement",
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(bottom = 4.dp),
-            textAlign = TextAlign.Center,
-            color = if (hasMicPermission) Color(0xFF4CAF50) else Color(0xFFFF9800)
-        )
 
         if (isRecording) {
             Text(

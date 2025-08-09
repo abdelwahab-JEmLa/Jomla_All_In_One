@@ -4,6 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ID4ClientSearchButton
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.ButtonVideoRecord
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurTelegram_MainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
@@ -213,7 +214,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 )
                 appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
-               // viewModel.sendOrderAuPresentoireDevice(catalogueId)
+                // viewModel.sendOrderAuPresentoireDevice(catalogueId)
 
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
@@ -264,8 +265,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     focusedValuesGetter.currentActive_M9AppCompt?.text_Message_Warning?.let { warningMessage ->
                         if (warningMessage.isNotBlank()
-                          //  && !M18CentralParametresOfAllApps.get_Default().itsDevMode
-                            ) {
+                        //  && !M18CentralParametresOfAllApps.get_Default().itsDevMode
+                        ) {
                             BlinkingWarningCard(warningMessage)
                         }
                     }
@@ -283,22 +284,22 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
                         (activeFragment != Screen.EditDatabaseWithCreateNewArticles
-                                        && activeDialogSearchM1Produit == false).ifTrue {
-                                B1CataloguesAffiche(
-                                    appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                                    showLabels = showLabels,
-                                ) {
-                                    showCatalogueDialog = true
-                                }
+                                && activeDialogSearchM1Produit == false).ifTrue {
+                            B1CataloguesAffiche(
+                                appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+                                showLabels = showLabels,
+                            ) {
+                                showCatalogueDialog = true
                             }
+                        }
 
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )
 
-
-
                     }
+
+                    ButtonVideoRecord()
 
                     focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         ID4ClientSearchButton(
