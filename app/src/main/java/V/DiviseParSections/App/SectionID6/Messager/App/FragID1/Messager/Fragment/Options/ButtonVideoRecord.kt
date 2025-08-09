@@ -2,9 +2,11 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Environment
@@ -38,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.clientjetpack.R
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -66,6 +69,24 @@ fun ButtonVideoRecord(
     var isUploading by remember { mutableStateOf(false) }
     var recordingTimeSeconds by remember { mutableStateOf(0) }
     var currentVideoFile by remember { mutableStateOf<File?>(null) }
+    var clickCount by remember { mutableStateOf(0) }
+    var lastClickAction by remember { mutableStateOf("") }
+    var hasMicPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    // Audio permission launcher
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasMicPermission = isGranted
+        logUserAction("MIC_PERMISSION_RESULT", context, "Granted: $isGranted")
+        if (!isGranted) {
+            Toast.makeText(context, "Permission microphone refusée - enregistrement vidéo seulement", Toast.LENGTH_LONG).show()
+        }
+    }
 
     // Screen recording permission launcher
     val screenRecordLauncher = rememberLauncherForActivityResult(
@@ -116,7 +137,7 @@ fun ButtonVideoRecord(
     DisposableEffect(Unit) {
         val callback = object : ScreenRecordingService.ScreenRecordingCallback {
             override fun onRecordingStarted(videoFile: File) {
-                android.util.Log.d("ScreenRecord", "Recording started: ${videoFile.name}")
+                android.util.Log.d("ScreenRecord", "Callback: Recording started: ${videoFile.name}")
                 currentVideoFile = videoFile
                 isRecording = true
                 recordingTimeSeconds = 0
@@ -129,17 +150,22 @@ fun ButtonVideoRecord(
                         delay(1000)
                         recordingTimeSeconds++
                     }
+                    android.util.Log.d("ScreenRecord", "Timer stopped - isRecording: $isRecording, Service.isRecording: ${ScreenRecordingService.isRecording}")
                 }
             }
 
             override fun onRecordingStopped(videoFile: File?) {
-                android.util.Log.d("ScreenRecord", "Recording stopped: ${videoFile?.name}")
+                android.util.Log.d("ScreenRecord", "Callback: Recording stopped: ${videoFile?.name}")
+                android.util.Log.d("ScreenRecord", "Before stop - isRecording: $isRecording, recordingTimeSeconds: $recordingTimeSeconds")
+
                 isRecording = false
                 recordingTimeSeconds = 0
 
-                logUserAction("RECORDING_STOPPED", context, "Duration: $recordingTimeSeconds seconds")
+                android.util.Log.d("ScreenRecord", "After stop - isRecording: $isRecording, recordingTimeSeconds: $recordingTimeSeconds")
+                logUserAction("RECORDING_STOPPED", context, "Duration: ${recordingTimeSeconds} seconds, File: ${videoFile?.name}")
 
                 if (videoFile != null && videoFile.exists()) {
+                    android.util.Log.d("VideoUpload", "File exists, starting upload process")
                     isUploading = true
 
                     coroutineScope.launch {
@@ -156,7 +182,7 @@ fun ButtonVideoRecord(
                             isUploading = false
 
                             onVideoRecorded(fileName)
-                            Toast.makeText(context, "Video uploaded and saved locally!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Vidéo uploadée et sauvée localement!", Toast.LENGTH_SHORT).show()
                             logUserAction("VIDEO_UPLOAD_SUCCESS", context, fileName)
 
                             // Clean up temporary file (keep local copy)
@@ -165,22 +191,23 @@ fun ButtonVideoRecord(
                         } catch (e: Exception) {
                             isUploading = false
                             android.util.Log.e("VideoUpload", "Upload failed", e)
-                            Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Échec de l'upload: ${e.message}", Toast.LENGTH_LONG).show()
                             logUserAction("VIDEO_UPLOAD_ERROR", context, e.message)
                         }
                     }
                 } else {
-                    android.util.Log.e("ScreenRecord", "Recording failed - no file created")
-                    Toast.makeText(context, "Recording failed - no file created", Toast.LENGTH_SHORT).show()
+                    android.util.Log.e("ScreenRecord", "Recording failed - no file created or file doesn't exist")
+                    android.util.Log.e("ScreenRecord", "videoFile: $videoFile, exists: ${videoFile?.exists()}")
+                    Toast.makeText(context, "Échec de l'enregistrement - aucun fichier créé", Toast.LENGTH_SHORT).show()
                     logUserAction("RECORDING_FAILED_NO_FILE", context)
                 }
             }
 
             override fun onRecordingError(error: String) {
-                android.util.Log.e("ScreenRecord", "Recording error: $error")
+                android.util.Log.e("ScreenRecord", "Callback: Recording error: $error")
                 isRecording = false
                 recordingTimeSeconds = 0
-                Toast.makeText(context, "Recording error: $error", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Erreur d'enregistrement: $error", Toast.LENGTH_LONG).show()
                 logUserAction("RECORDING_ERROR", context, error)
             }
         }
@@ -188,6 +215,7 @@ fun ButtonVideoRecord(
         ScreenRecordingService.recordingCallback = callback
 
         onDispose {
+            android.util.Log.d("ScreenRecord", "Disposing callback")
             ScreenRecordingService.recordingCallback = null
         }
     }
@@ -196,6 +224,26 @@ fun ButtonVideoRecord(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Show click info and audio status
+        if (clickCount > 0) {
+            Text(
+                text = "Clics: $clickCount | Dernière action: $lastClickAction",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 4.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        // Show audio status
+        Text(
+            text = if (hasMicPermission) "🎤 Audio + Vidéo" else "📹 Vidéo seulement",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(bottom = 4.dp),
+            textAlign = TextAlign.Center,
+            color = if (hasMicPermission) Color(0xFF4CAF50) else Color(0xFFFF9800)
+        )
+
         if (isRecording) {
             Text(
                 text = formatTime(recordingTimeSeconds),
@@ -217,21 +265,37 @@ fun ButtonVideoRecord(
         FloatingActionButton(
             modifier = Modifier.size(56.dp),
             onClick = {
-                // Log every button click
-                logUserAction("BUTTON_CLICKED", context, if (isRecording) "STOP" else "START")
+                // Log every button click with visual feedback
+                clickCount++
+                var action = if (isRecording) "ARRÊT" else "DÉMARRAGE"
+                lastClickAction = action
+
+                logUserAction("BUTTON_CLICKED", context, "$action (Clic #$clickCount)")
 
                 if (!isRecording) {
-                    // Start recording
+                    // Check and request audio permission before starting
+                    if (!hasMicPermission) {
+                        audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+
+                    // Start recording (permission will be checked in service)
                     if (activity != null) {
-                        try {
-                            android.util.Log.d("ScreenRecord", "Requesting screen capture permission")
-                            val mediaProjectionManager = activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                            val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
-                            screenRecordLauncher.launch(captureIntent)
-                        } catch (e: Exception) {
-                            android.util.Log.e("ScreenRecord", "Error accessing screen recording", e)
-                            Toast.makeText(context, "Error accessing screen recording: ${e.message}", Toast.LENGTH_LONG).show()
-                            logUserAction("SCREEN_RECORDING_ACCESS_ERROR", context, e.message)
+                        // Start recording
+                        if (activity != null) {
+                            try {
+                                android.util.Log.d("ScreenRecord", "Requesting screen capture permission")
+                                val mediaProjectionManager = activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                                val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
+                                screenRecordLauncher.launch(captureIntent)
+                            } catch (e: Exception) {
+                                android.util.Log.e("ScreenRecord", "Error accessing screen recording", e)
+                                Toast.makeText(context, "Error accessing screen recording: ${e.message}", Toast.LENGTH_LONG).show()
+                                logUserAction("SCREEN_RECORDING_ACCESS_ERROR", context, e.message)
+                            }
+                        } else {
+                            android.util.Log.e("ScreenRecord", "Activity is null")
+                            Toast.makeText(context, "Unable to access activity - try restarting the app", Toast.LENGTH_LONG).show()
+                            logUserAction("ACTIVITY_NULL_ERROR", context)
                         }
                     } else {
                         android.util.Log.e("ScreenRecord", "Activity is null")
@@ -239,13 +303,37 @@ fun ButtonVideoRecord(
                         logUserAction("ACTIVITY_NULL_ERROR", context)
                     }
                 } else {
-                    // Stop recording
-                    android.util.Log.d("ScreenRecord", "Stopping recording")
+                    android.util.Log.d("ScreenRecord", "User requested stop recording")
+                    android.util.Log.d("ScreenRecord", "Current recording state: $isRecording")
+                    android.util.Log.d("ScreenRecord", "Service recording state: ${ScreenRecordingService.isRecording}")
+
                     val serviceIntent = Intent(context, ScreenRecordingService::class.java).apply {
                         action = ScreenRecordingService.ACTION_STOP_RECORDING
                     }
-                    context.startService(serviceIntent)
-                    logUserAction("STOP_RECORDING_REQUESTED", context)
+
+                    try {
+                        context.startService(serviceIntent)
+                        android.util.Log.d("ScreenRecord", "Stop service intent sent successfully")
+                        logUserAction("STOP_RECORDING_REQUESTED", context)
+
+                        // Show immediate feedback
+                        Toast.makeText(context, "Arrêt de l'enregistrement...", Toast.LENGTH_SHORT).show()
+
+                        // Force update UI state after delay if service doesn't respond
+                        coroutineScope.launch {
+                            delay(3000) // Wait 3 seconds
+                            if (isRecording && !ScreenRecordingService.isRecording) {
+                                android.util.Log.w("ScreenRecord", "Service stopped but UI state not updated, forcing update")
+                                isRecording = false
+                                recordingTimeSeconds = 0
+                            }
+                        }
+
+                    } catch (e: Exception) {
+                        android.util.Log.e("ScreenRecord", "Failed to send stop intent", e)
+                        Toast.makeText(context, "Erreur lors de l'arrêt: ${e.message}", Toast.LENGTH_LONG).show()
+                        logUserAction("STOP_RECORDING_ERROR", context, e.message)
+                    }
                 }
             },
             containerColor = when {
@@ -301,6 +389,7 @@ private fun getActivityFromContext(context: Context): Activity? {
     }
 }
 
+// Function to save video locally with WebM format (TODO #1: Upload file locally)
 private fun saveVideoLocally(videoFile: File, context: Context): File? {
     return try {
         // Create app-specific directory for videos
@@ -329,12 +418,18 @@ private fun saveVideoLocally(videoFile: File, context: Context): File? {
     }
 }
 
+// Function to log user actions with Toast notification (TODO #2: Register clicks)
 private fun logUserAction(action: String, context: Context, details: String? = null) {
     val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-    val logMessage = "[$timestamp] ACTION: $action" + if (details != null) " - Details: $details" else ""
+    val logMessage = "[$timestamp] ACTION: $action" + if (details != null) " - Détails: $details" else ""
 
     // Log to Android Log
     android.util.Log.i("UserAction", logMessage)
+
+    // Show Toast for click feedback (only for button clicks)
+    if (action == "BUTTON_CLICKED") {
+        Toast.makeText(context, "Action: $details", Toast.LENGTH_SHORT).show()
+    }
 
     // Save to local log file
     try {
@@ -363,6 +458,7 @@ private suspend fun uploadVideoToFirebase(videoFile: File): String {
         else -> "video/webm" // Default to WebM
     }
 
+    // Create metadata with WebM format and optimized settings (TODO #3: Minimum storage)
     val metadata = com.google.firebase.storage.StorageMetadata.Builder()
         .setContentType(contentType)
         .setCustomMetadata("originalName", videoFile.name)
