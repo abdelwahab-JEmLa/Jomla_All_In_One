@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.os.Environment
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,14 +45,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ButtonVideoRecord(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
     onVideoRecorded: (String) -> Unit
-) {      //<--
-//TODO(1): fait u^load le fichie au locale aussi 
+) {
     val context = LocalContext.current
     val activity = remember { getActivityFromContext(context) }
     val coroutineScope = rememberCoroutineScope()
@@ -70,15 +75,20 @@ fun ButtonVideoRecord(
 
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             try {
+                // Log click action for recording start
+                logUserAction("RECORDING_START", context)
+
                 // Validate the result data
                 val resultData = result.data!!
                 android.util.Log.d("ScreenRecord", "Result data extras: ${resultData.extras}")
 
-                // Create the service intent
+                // Create the service intent with WebM format for minimum storage
                 val serviceIntent = Intent(context, ScreenRecordingService::class.java).apply {
                     action = ScreenRecordingService.ACTION_START_RECORDING
                     putExtra(ScreenRecordingService.EXTRA_RESULT_CODE, result.resultCode)
                     putExtra(ScreenRecordingService.EXTRA_RESULT_DATA, resultData)
+                    putExtra("video_format", "webm") // Use WebM for better compression
+                    putExtra("video_codec", "vp8") // VP8 codec for WebM
                 }
 
                 // Start the service
@@ -93,10 +103,12 @@ fun ButtonVideoRecord(
             } catch (e: Exception) {
                 android.util.Log.e("ScreenRecord", "Failed to start recording service", e)
                 Toast.makeText(context, "Failed to start recording service: ${e.message}", Toast.LENGTH_LONG).show()
+                logUserAction("RECORDING_START_ERROR", context, e.message)
             }
         } else {
             android.util.Log.w("ScreenRecord", "Permission denied - Code: ${result.resultCode}")
             Toast.makeText(context, "Permission denied for screen recording", Toast.LENGTH_SHORT).show()
+            logUserAction("RECORDING_PERMISSION_DENIED", context)
         }
     }
 
@@ -108,6 +120,8 @@ fun ButtonVideoRecord(
                 currentVideoFile = videoFile
                 isRecording = true
                 recordingTimeSeconds = 0
+
+                logUserAction("RECORDING_ACTUALLY_STARTED", context, videoFile.name)
 
                 // Start timer
                 coroutineScope.launch {
@@ -123,6 +137,8 @@ fun ButtonVideoRecord(
                 isRecording = false
                 recordingTimeSeconds = 0
 
+                logUserAction("RECORDING_STOPPED", context, "Duration: $recordingTimeSeconds seconds")
+
                 if (videoFile != null && videoFile.exists()) {
                     isUploading = true
 
@@ -131,23 +147,32 @@ fun ButtonVideoRecord(
                             android.util.Log.d("VideoUpload", "Starting upload for: ${videoFile.name}")
                             android.util.Log.d("VideoUpload", "File size: ${videoFile.length()} bytes")
 
+                            // 1. Save file locally first
+                            val localFile = saveVideoLocally(videoFile, context)
+                            logUserAction("VIDEO_SAVED_LOCALLY", context, localFile?.absolutePath)
+
+                            // 2. Upload to Firebase
                             val fileName = uploadVideoToFirebase(videoFile)
                             isUploading = false
 
                             onVideoRecorded(fileName)
-                            Toast.makeText(context, "Video uploaded successfully!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Video uploaded and saved locally!", Toast.LENGTH_SHORT).show()
+                            logUserAction("VIDEO_UPLOAD_SUCCESS", context, fileName)
 
-                            // Clean up local file
+                            // Clean up temporary file (keep local copy)
                             videoFile.delete()
+
                         } catch (e: Exception) {
                             isUploading = false
                             android.util.Log.e("VideoUpload", "Upload failed", e)
                             Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            logUserAction("VIDEO_UPLOAD_ERROR", context, e.message)
                         }
                     }
                 } else {
                     android.util.Log.e("ScreenRecord", "Recording failed - no file created")
                     Toast.makeText(context, "Recording failed - no file created", Toast.LENGTH_SHORT).show()
+                    logUserAction("RECORDING_FAILED_NO_FILE", context)
                 }
             }
 
@@ -156,6 +181,7 @@ fun ButtonVideoRecord(
                 isRecording = false
                 recordingTimeSeconds = 0
                 Toast.makeText(context, "Recording error: $error", Toast.LENGTH_LONG).show()
+                logUserAction("RECORDING_ERROR", context, error)
             }
         }
 
@@ -191,6 +217,9 @@ fun ButtonVideoRecord(
         FloatingActionButton(
             modifier = Modifier.size(56.dp),
             onClick = {
+                // Log every button click
+                logUserAction("BUTTON_CLICKED", context, if (isRecording) "STOP" else "START")
+
                 if (!isRecording) {
                     // Start recording
                     if (activity != null) {
@@ -202,10 +231,12 @@ fun ButtonVideoRecord(
                         } catch (e: Exception) {
                             android.util.Log.e("ScreenRecord", "Error accessing screen recording", e)
                             Toast.makeText(context, "Error accessing screen recording: ${e.message}", Toast.LENGTH_LONG).show()
+                            logUserAction("SCREEN_RECORDING_ACCESS_ERROR", context, e.message)
                         }
                     } else {
                         android.util.Log.e("ScreenRecord", "Activity is null")
                         Toast.makeText(context, "Unable to access activity - try restarting the app", Toast.LENGTH_LONG).show()
+                        logUserAction("ACTIVITY_NULL_ERROR", context)
                     }
                 } else {
                     // Stop recording
@@ -214,6 +245,7 @@ fun ButtonVideoRecord(
                         action = ScreenRecordingService.ACTION_STOP_RECORDING
                     }
                     context.startService(serviceIntent)
+                    logUserAction("STOP_RECORDING_REQUESTED", context)
                 }
             },
             containerColor = when {
@@ -269,16 +301,76 @@ private fun getActivityFromContext(context: Context): Activity? {
     }
 }
 
+private fun saveVideoLocally(videoFile: File, context: Context): File? {
+    return try {
+        // Create app-specific directory for videos
+        val videosDir = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), "RecordedVideos")
+        if (!videosDir.exists()) {
+            videosDir.mkdirs()
+        }
+
+        // Create local file with timestamp and WebM extension
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val extension = if (videoFile.name.endsWith(".webm")) ".webm" else ".mp4"
+        val localFile = File(videosDir, "screen_record_${timestamp}${extension}")
+
+        // Copy the video file
+        FileInputStream(videoFile).use { input ->
+            FileOutputStream(localFile).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        android.util.Log.d("VideoSave", "Video saved locally: ${localFile.absolutePath}")
+        localFile
+    } catch (e: Exception) {
+        android.util.Log.e("VideoSave", "Failed to save video locally", e)
+        null
+    }
+}
+
+private fun logUserAction(action: String, context: Context, details: String? = null) {
+    val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+    val logMessage = "[$timestamp] ACTION: $action" + if (details != null) " - Details: $details" else ""
+
+    // Log to Android Log
+    android.util.Log.i("UserAction", logMessage)
+
+    // Save to local log file
+    try {
+        val logDir = File(context.getExternalFilesDir(null), "logs")
+        if (!logDir.exists()) {
+            logDir.mkdirs()
+        }
+
+        val logFile = File(logDir, "user_actions.log")
+        logFile.appendText("$logMessage\n")
+
+    } catch (e: Exception) {
+        android.util.Log.e("UserAction", "Failed to write to log file", e)
+    }
+}
+
 private suspend fun uploadVideoToFirebase(videoFile: File): String {
     val storage = FirebaseStorage.getInstance()
     val storageRef: StorageReference = storage.reference
     val videoRef = storageRef.child("VideosMessages/${videoFile.name}")
 
-    // Create metadata with proper content type
+    // Determine content type based on file extension
+    val contentType = when {
+        videoFile.name.endsWith(".webm") -> "video/webm"
+        videoFile.name.endsWith(".mp4") -> "video/mp4"
+        else -> "video/webm" // Default to WebM
+    }
+
     val metadata = com.google.firebase.storage.StorageMetadata.Builder()
-        .setContentType("video/mp4")
+        .setContentType(contentType)
         .setCustomMetadata("originalName", videoFile.name)
         .setCustomMetadata("uploadTimestamp", System.currentTimeMillis().toString())
+        .setCustomMetadata("format", if (contentType == "video/webm") "webm" else "mp4")
+        .setCustomMetadata("codec", if (contentType == "video/webm") "vp8" else "h264")
+        .setCustomMetadata("compressionLevel", "HIGH") // Indicate high compression for minimum storage
+        .setCustomMetadata("optimizedForSize", "true") // WebM optimized for smaller size
         .build()
 
     val uploadTask = videoRef.putFile(android.net.Uri.fromFile(videoFile), metadata)

@@ -72,10 +72,14 @@ class ScreenRecordingService : Service() {
                     intent.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
                 }
 
-                android.util.Log.d("ScreenRecordingService", "Received parameters - ResultCode: $resultCode, ResultData: $resultData")
+                // Get video format preferences from intent
+                val videoFormat = intent.getStringExtra("video_format") ?: "webm"
+                val videoCodec = intent.getStringExtra("video_codec") ?: "vp8"
+
+                android.util.Log.d("ScreenRecordingService", "Received parameters - ResultCode: $resultCode, Format: $videoFormat, Codec: $videoCodec")
 
                 if (resultCode == Activity.RESULT_OK && resultData != null) {
-                    startRecording(resultCode, resultData)
+                    startRecording(resultCode, resultData, videoFormat, videoCodec)
                 } else {
                     val errorMsg = "Invalid recording parameters - ResultCode: $resultCode, ResultData: $resultData"
                     android.util.Log.e("ScreenRecordingService", errorMsg)
@@ -125,7 +129,7 @@ class ScreenRecordingService : Service() {
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun startRecording(resultCode: Int, resultData: Intent) {
+    private fun startRecording(resultCode: Int, resultData: Intent, videoFormat: String, videoCodec: String) {
         try {
             val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, resultData)
@@ -136,7 +140,7 @@ class ScreenRecordingService : Service() {
                 return
             }
 
-            setupMediaRecorder()
+            setupMediaRecorder(videoFormat, videoCodec)
 
         } catch (e: Exception) {
             android.util.Log.e("ScreenRecording", "Error starting recording", e)
@@ -145,7 +149,7 @@ class ScreenRecordingService : Service() {
         }
     }
 
-    private fun setupMediaRecorder() {
+    private fun setupMediaRecorder(videoFormat: String, videoCodec: String) {
         try {
             // Get display dimensions in a way that works from Service context
             val displayMetrics = resources.displayMetrics
@@ -182,7 +186,15 @@ class ScreenRecordingService : Service() {
 
             android.util.Log.d("ScreenRecording", "Recording dimensions: ${width}x${height}, density: $densityDpi")
 
-            videoFile = File(filesDir, "screen_record_${System.currentTimeMillis()}.mp4")
+            // Create video file with appropriate extension based on format
+            val fileExtension = when (videoFormat.lowercase()) {
+                "webm" -> ".webm"
+                "mp4" -> ".mp4"
+                else -> ".webm" // Default to WebM
+            }
+
+            videoFile = File(filesDir, "screen_record_${System.currentTimeMillis()}${fileExtension}")
+            android.util.Log.d("ScreenRecording", "Creating video file: ${videoFile!!.name} with format: $videoFormat")
 
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(this)
@@ -191,12 +203,58 @@ class ScreenRecordingService : Service() {
                 MediaRecorder()
             }.apply {
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+
+                // Configure format and encoder based on parameters
+                when (videoFormat.lowercase()) {
+                    "webm" -> {
+                        setOutputFormat(MediaRecorder.OutputFormat.WEBM)
+                        when (videoCodec.lowercase()) {
+                            "vp8" -> {
+                                if (isVP8Supported()) {
+                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
+                                    android.util.Log.d("ScreenRecording", "Using VP8 encoder")
+                                } else {
+                                    android.util.Log.w("ScreenRecording", "VP8 not supported, falling back to H264")
+                                    setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                                }
+                            }
+                            "vp9" -> {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isVP9Supported()) {
+                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8) // VP9 constant might not be available
+                                    android.util.Log.d("ScreenRecording", "Using VP9 encoder")
+                                } else {
+                                    android.util.Log.w("ScreenRecording", "VP9 not supported, using VP8")
+                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
+                                }
+                            }
+                            else -> {
+                                setVideoEncoder(MediaRecorder.VideoEncoder.VP8) // Default WebM encoder
+                            }
+                        }
+                        // WebM optimized settings for smaller files
+                        setVideoEncodingBitRate(1_500_000) // 1.5 Mbps (reduced from 5 Mbps)
+                        setVideoFrameRate(20) // Reduced framerate for smaller files
+                    }
+                    "mp4" -> {
+                        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                        setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                        setVideoEncodingBitRate(3_000_000) // 3 Mbps for MP4
+                        setVideoFrameRate(30)
+                        android.util.Log.d("ScreenRecording", "Using MP4 format with H264")
+                    }
+                    else -> {
+                        // Default to WebM
+                        setOutputFormat(MediaRecorder.OutputFormat.WEBM)
+                        setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
+                        setVideoEncodingBitRate(1_500_000)
+                        setVideoFrameRate(20)
+                        android.util.Log.d("ScreenRecording", "Using default WebM format")
+                    }
+                }
+
                 setOutputFile(videoFile!!.absolutePath)
                 setVideoSize(width, height)
-                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setVideoEncodingBitRate(5 * 1024 * 1024)
-                setVideoFrameRate(30)
+
                 prepare()
             }
 
@@ -215,8 +273,13 @@ class ScreenRecordingService : Service() {
             mediaRecorder?.start()
             isRecording = true
 
-            // Update notification to show recording is active
-            updateNotification("Recording your screen...")
+            // Update notification to show recording is active with format info
+            val formatInfo = when (videoFormat.lowercase()) {
+                "webm" -> "WebM (optimized)"
+                "mp4" -> "MP4"
+                else -> "WebM"
+            }
+            updateNotification("Recording screen in $formatInfo format...")
 
             videoFile?.let { recordingCallback?.onRecordingStarted(it) }
 
@@ -224,6 +287,25 @@ class ScreenRecordingService : Service() {
             android.util.Log.e("ScreenRecording", "Error setting up media recorder", e)
             recordingCallback?.onRecordingError(e.message ?: "Failed to setup recording")
             stopSelf()
+        }
+    }
+
+    // Check if VP8 encoder is supported
+    private fun isVP8Supported(): Boolean {
+        return try {
+            // This is a basic check - you might want to implement more thorough codec detection
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Check if VP9 encoder is supported
+    private fun isVP9Supported(): Boolean {
+        return try {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        } catch (e: Exception) {
+            false
         }
     }
 
