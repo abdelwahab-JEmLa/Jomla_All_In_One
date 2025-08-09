@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -51,6 +53,7 @@ data class UiState(
 
 class MapClientsViewModel(
     val aCentralFacade: ACentralFacade,
+    val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -184,11 +187,40 @@ class MapClientsViewModel(
 
             viewModelScope.launch {
                 repo2Client.upsert(newClientAchteur)
+                add_Cible(newClientAchteur)
                 updateUiState()
             }
         } catch (e: Exception) {
             // Error handling
         }
+    }
+
+    fun add_Cible(m2Client:M2Client): Unit {
+        val activeCentralValues = focusedValuesGetter.active_Central_Values
+
+        val actuelle_Ciblage_MaxPosition = activeCentralValues
+            .actuelle_Ciblage_MaxPosition
+
+        val newPosition = actuelle_Ciblage_MaxPosition + 1
+        val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+            aCentralFacade = aCentralFacade,
+            relative_M2Client = m2Client,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
+        )
+
+        aCentralFacade.repositorysMainSetter
+            .addNew_M8BonVent(
+                found_Or_Default_M8BonVent.default_If_No_Found
+                    .copy(
+                        position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
+                    )
+            )
+
+        focusedValuesGetter.update_activeCentralValues(
+            activeCentralValues.copy(
+                actuelle_Ciblage_MaxPosition = newPosition
+            )
+        )
     }
 
     fun deleteUnSeulData(data: M2Client) {
