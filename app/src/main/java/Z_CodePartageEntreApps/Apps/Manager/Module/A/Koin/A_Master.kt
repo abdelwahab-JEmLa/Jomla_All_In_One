@@ -27,8 +27,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Test.B_ClientInfosProtoJuin3PreviewViewModel
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
@@ -214,7 +214,7 @@ val viewModelModule = module {
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
-    viewModel { MapClientsViewModel(get(), get(), get(), get()) }
+    viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { ViewModelPresistantButtonsSec8FWinID1(get(), get()) }

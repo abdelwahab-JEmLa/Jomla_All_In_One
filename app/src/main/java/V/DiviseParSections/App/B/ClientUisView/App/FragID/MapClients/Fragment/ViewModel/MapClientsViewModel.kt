@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -187,7 +188,9 @@ class MapClientsViewModel(
 
             viewModelScope.launch {
                 repo2Client.upsert(newClientAchteur)
+                delay(1500)
                 add_Cible(newClientAchteur)
+                delay(1500)
                 updateUiState()
             }
         } catch (e: Exception) {
