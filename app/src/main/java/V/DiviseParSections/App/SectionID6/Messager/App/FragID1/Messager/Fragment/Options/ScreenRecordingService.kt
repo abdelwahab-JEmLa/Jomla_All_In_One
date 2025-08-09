@@ -9,6 +9,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -45,6 +46,7 @@ class ScreenRecordingService : Service() {
 
     private var mediaRecorder: MediaRecorder? = null
     private var mediaProjection: MediaProjection? = null
+    private var virtualDisplay: VirtualDisplay? = null
     private var videoFile: File? = null
 
     override fun onCreate() {
@@ -79,8 +81,8 @@ class ScreenRecordingService : Service() {
                 }
 
                 // Get video format preferences from intent
-                val videoFormat = intent.getStringExtra("video_format") ?: "webm"
-                val videoCodec = intent.getStringExtra("video_codec") ?: "vp8"
+                val videoFormat = intent.getStringExtra("video_format") ?: "mp4"
+                val videoCodec = intent.getStringExtra("video_codec") ?: "h264"
 
                 android.util.Log.d("ScreenRecordingService", "Received parameters - ResultCode: $resultCode, Format: $videoFormat, Codec: $videoCodec")
 
@@ -170,150 +172,38 @@ class ScreenRecordingService : Service() {
 
             android.util.Log.d("ScreenRecording", "Microphone permission: $hasMicPermission")
 
-            // Get display dimensions in a way that works from Service context
-            val displayMetrics = resources.displayMetrics
-            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-            var width = displayMetrics.widthPixels
-            var height = displayMetrics.heightPixels
+            // Get display dimensions
+            val displayMetrics = getDisplayMetrics()
+            val width = displayMetrics.widthPixels
+            val height = displayMetrics.heightPixels
             val densityDpi = displayMetrics.densityDpi
 
-            // For newer Android versions, try to get more accurate dimensions
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                try {
-                    val metrics = windowManager.currentWindowMetrics
-                    val bounds = metrics.bounds
-                    width = bounds.width()
-                    height = bounds.height()
-                } catch (e: Exception) {
-                    // Fall back to displayMetrics if currentWindowMetrics fails
-                    android.util.Log.w("ScreenRecording", "Could not get current window metrics, using display metrics", e)
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                try {
-                    @Suppress("DEPRECATION")
-                    val display = windowManager.defaultDisplay
-                    val realMetrics = DisplayMetrics()
-                    display.getRealMetrics(realMetrics)
-                    width = realMetrics.widthPixels
-                    height = realMetrics.heightPixels
-                } catch (e: Exception) {
-                    // Fall back to regular metrics
-                    android.util.Log.w("ScreenRecording", "Could not get real metrics, using display metrics", e)
-                }
-            }
+            // Ensure dimensions are even numbers (required by some encoders)
+            val adjustedWidth = if (width % 2 == 0) width else width - 1
+            val adjustedHeight = if (height % 2 == 0) height else height - 1
 
-            android.util.Log.d("ScreenRecording", "Recording dimensions: ${width}x${height}, density: $densityDpi")
+            android.util.Log.d("ScreenRecording", "Recording dimensions: ${adjustedWidth}x${adjustedHeight}, density: $densityDpi")
 
-            // Create video file with appropriate extension based on format
-            val fileExtension = when (videoFormat.lowercase()) {
-                "webm" -> ".webm"
-                "mp4" -> ".mp4"
-                else -> ".webm" // Default to WebM
-            }
+            // Create video file with WebM extension (will change to MP4 if WebM fails)
+            videoFile = File(filesDir, "screen_record_${System.currentTimeMillis()}.webm")
+            android.util.Log.d("ScreenRecording", "Creating video file: ${videoFile!!.name} (WebM preferred, MP4 fallback)")
 
-            videoFile = File(filesDir, "screen_record_${System.currentTimeMillis()}${fileExtension}")
-            android.util.Log.d("ScreenRecording", "Creating video file: ${videoFile!!.name} with format: $videoFormat, audio: $hasMicPermission")
-
+            // Configure MediaRecorder with ultra-compressed settings
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(this)
             } else {
                 @Suppress("DEPRECATION")
                 MediaRecorder()
             }.apply {
-                // Set video source first
-                setVideoSource(MediaRecorder.VideoSource.SURFACE)
-
-                // Set audio source if permission granted
-                if (hasMicPermission) {
-                    setAudioSource(MediaRecorder.AudioSource.MIC)
-                    android.util.Log.d("ScreenRecording", "Audio source set to microphone")
-                } else {
-                    android.util.Log.w("ScreenRecording", "No microphone permission, recording video only")
-                }
-
-                // Configure format and encoder based on parameters
-                when (videoFormat.lowercase()) {
-                    "webm" -> {
-                        setOutputFormat(MediaRecorder.OutputFormat.WEBM)
-
-                        // Set audio encoder for WebM if audio available
-                        if (hasMicPermission) {
-                            setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS) // Vorbis for WebM
-                            setAudioEncodingBitRate(128000) // 128 kbps
-                            setAudioSamplingRate(44100) // 44.1 kHz
-                        }
-
-                        when (videoCodec.lowercase()) {
-                            "vp8" -> {
-                                if (isVP8Supported()) {
-                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
-                                    android.util.Log.d("ScreenRecording", "Using VP8 encoder")
-                                } else {
-                                    android.util.Log.w("ScreenRecording", "VP8 not supported, falling back to H264")
-                                    setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                                }
-                            }
-                            "vp9" -> {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isVP9Supported()) {
-                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8) // VP9 constant might not be available
-                                    android.util.Log.d("ScreenRecording", "Using VP9 encoder")
-                                } else {
-                                    android.util.Log.w("ScreenRecording", "VP9 not supported, using VP8")
-                                    setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
-                                }
-                            }
-                            else -> {
-                                setVideoEncoder(MediaRecorder.VideoEncoder.VP8) // Default WebM encoder
-                            }
-                        }
-                        // WebM optimized settings for smaller files
-                        setVideoEncodingBitRate(1_500_000) // 1.5 Mbps (reduced from 5 Mbps)
-                        setVideoFrameRate(20) // Reduced framerate for smaller files
-                    }
-                    "mp4" -> {
-                        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-
-                        // Set audio encoder for MP4 if audio available
-                        if (hasMicPermission) {
-                            setAudioEncoder(MediaRecorder.AudioEncoder.AAC) // AAC for MP4
-                            setAudioEncodingBitRate(128000) // 128 kbps
-                            setAudioSamplingRate(44100) // 44.1 kHz
-                        }
-
-                        setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                        setVideoEncodingBitRate(3_000_000) // 3 Mbps for MP4
-                        setVideoFrameRate(30)
-                        android.util.Log.d("ScreenRecording", "Using MP4 format with H264")
-                    }
-                    else -> {
-                        // Default to WebM
-                        setOutputFormat(MediaRecorder.OutputFormat.WEBM)
-
-                        if (hasMicPermission) {
-                            setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS)
-                            setAudioEncodingBitRate(128000)
-                            setAudioSamplingRate(44100)
-                        }
-
-                        setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
-                        setVideoEncodingBitRate(1_500_000)
-                        setVideoFrameRate(20)
-                        android.util.Log.d("ScreenRecording", "Using default WebM format")
-                    }
-                }
-
-                setOutputFile(videoFile!!.absolutePath)
-                setVideoSize(width, height)
-
-                prepare()
+                configureUltraCompressedWebM(this, hasMicPermission, adjustedWidth, adjustedHeight)
             }
 
+            // Create virtual display
             val surface = mediaRecorder!!.surface
-            mediaProjection?.createVirtualDisplay(
+            virtualDisplay = mediaProjection?.createVirtualDisplay(
                 "ScreenRecord",
-                width,
-                height,
+                adjustedWidth,
+                adjustedHeight,
                 densityDpi,
                 0,
                 surface,
@@ -321,99 +211,276 @@ class ScreenRecordingService : Service() {
                 null
             )
 
+            if (virtualDisplay == null) {
+                throw RuntimeException("Failed to create virtual display")
+            }
+
             mediaRecorder?.start()
             isRecording = true
 
-            // Update notification to show recording is active with format and audio info
-            val formatInfo = when (videoFormat.lowercase()) {
-                "webm" -> "WebM (optimized)"
-                "mp4" -> "MP4"
-                else -> "WebM"
-            }
+            // Update notification based on actual format used
+            val formatInfo = if (videoFile!!.name.endsWith(".webm")) "WebM (compressé)" else "MP4 (compressé)"
             val audioInfo = if (hasMicPermission) " + Audio" else " (vidéo seulement)"
-            updateNotification("Enregistrement écran en $formatInfo$audioInfo...")
+            updateNotification("Enregistrement $formatInfo$audioInfo...")
 
             videoFile?.let { recordingCallback?.onRecordingStarted(it) }
 
         } catch (e: Exception) {
             android.util.Log.e("ScreenRecording", "Error setting up media recorder", e)
             recordingCallback?.onRecordingError(e.message ?: "Failed to setup recording")
+            cleanupResources()
             stopSelf()
         }
     }
 
-    // Check if VP8 encoder is supported
-    private fun isVP8Supported(): Boolean {
+    private fun configureUltraCompressedWebM(
+        recorder: MediaRecorder,
+        hasMicPermission: Boolean,
+        width: Int,
+        height: Int
+    ) {
+        android.util.Log.d("ScreenRecording", "Attempting ultra-compressed WebM configuration")
+
+        // Try WebM first, with MP4 fallback
+        if (tryConfigureWebM(recorder, hasMicPermission, width, height)) {
+            return
+        }
+
+        android.util.Log.w("ScreenRecording", "WebM failed, using MP4 with maximum compression")
+        configureUltraCompressedMp4(recorder, hasMicPermission, width, height)
+    }
+
+    private fun tryConfigureWebM(
+        recorder: MediaRecorder,
+        hasMicPermission: Boolean,
+        width: Int,
+        height: Int
+    ): Boolean {
         return try {
-            // This is a basic check - you might want to implement more thorough codec detection
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+            // Check WebM support first
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                android.util.Log.w("ScreenRecording", "WebM not supported on Android < 5.0")
+                return false
+            }
+
+            android.util.Log.d("ScreenRecording", "Trying WebM configuration...")
+
+            // Set sources
+            recorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            if (hasMicPermission) {
+                recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+            }
+
+            // WebM format
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.WEBM)
+
+            // VP8 encoder (more compatible than VP9)
+            recorder.setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
+
+            // Conservative audio settings for WebM compatibility
+            if (hasMicPermission) {
+                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS)
+                recorder.setAudioEncodingBitRate(96000) // More conservative 96 kbps
+                recorder.setAudioSamplingRate(44100) // Standard sample rate
+            }
+
+            // Conservative video settings to avoid prepare() failure
+            recorder.setVideoSize(width, height)
+            recorder.setVideoFrameRate(20) // Conservative framerate
+
+            // Moderate compression for stability
+            val moderateBitrate = calculateModerateBitRate(width, height)
+            recorder.setVideoEncodingBitRate(moderateBitrate)
+
+            recorder.setOutputFile(videoFile!!.absolutePath)
+
+            // Try to prepare - this is where it usually fails
+            recorder.prepare()
+
+            android.util.Log.d(
+                "ScreenRecording",
+                "WebM configured successfully: ${width}x${height} @ 20fps, " +
+                        "video: ${moderateBitrate/1000}kbps, audio: ${if(hasMicPermission) "96kbps" else "none"}"
+            )
+
+            true
+
         } catch (e: Exception) {
+            android.util.Log.w("ScreenRecording", "WebM configuration failed: ${e.message}")
+
+            // Reset recorder state after failed prepare
+            try {
+                recorder.reset()
+            } catch (resetException: Exception) {
+                android.util.Log.w("ScreenRecording", "Failed to reset recorder: ${resetException.message}")
+            }
+
             false
         }
     }
 
-    // Check if VP9 encoder is supported
-    private fun isVP9Supported(): Boolean {
-        return try {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+    private fun configureUltraCompressedMp4(
+        recorder: MediaRecorder,
+        hasMicPermission: Boolean,
+        width: Int,
+        height: Int
+    ) {
+        try {
+            android.util.Log.d("ScreenRecording", "Configuring ultra-compressed MP4 as fallback")
+
+            // Set sources in correct order
+            recorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            if (hasMicPermission) {
+                recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+            }
+
+            // MP4 format (most compatible)
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+
+            // H.264 encoder (universal support)
+            recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+
+            // Compressed audio settings
+            if (hasMicPermission) {
+                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                recorder.setAudioEncodingBitRate(64000) // Low 64 kbps
+                recorder.setAudioSamplingRate(44100)
+            }
+
+            // Compressed video settings but conservative enough to work
+            recorder.setVideoSize(width, height)
+            recorder.setVideoFrameRate(20) // Lower framerate for compression
+
+            // Low bitrate for small files
+            val compressedBitrate = calculateCompressedBitRate(width, height)
+            recorder.setVideoEncodingBitRate(compressedBitrate)
+
+            // Update filename to MP4 since WebM failed
+            val mp4File = File(videoFile!!.parent, videoFile!!.name.replace(".webm", ".mp4"))
+            videoFile = mp4File
+
+            recorder.setOutputFile(videoFile!!.absolutePath)
+            recorder.prepare()
+
+            android.util.Log.d(
+                "ScreenRecording",
+                "Ultra-compressed MP4 configured: ${width}x${height} @ 20fps, " +
+                        "video: ${compressedBitrate/1000}kbps, audio: ${if(hasMicPermission) "64kbps" else "none"}"
+            )
+
         } catch (e: Exception) {
-            false
+            android.util.Log.e("ScreenRecording", "Even MP4 configuration failed", e)
+            throw e
         }
+    }
+
+    private fun calculateModerateBitRate(width: Int, height: Int): Int {
+        // Moderate bitrates for WebM stability
+        val pixels = width * height
+        return when {
+            pixels <= 640 * 480 -> 500_000 // 500 kbps
+            pixels <= 1280 * 720 -> 800_000 // 800 kbps
+            pixels <= 1920 * 1080 -> 1_200_000 // 1.2 Mbps
+            else -> 1_800_000 // 1.8 Mbps
+        }
+    }
+
+    private fun calculateCompressedBitRate(width: Int, height: Int): Int {
+        // Compressed but stable bitrates for MP4
+        val pixels = width * height
+        return when {
+            pixels <= 640 * 480 -> 400_000 // 400 kbps
+            pixels <= 1280 * 720 -> 700_000 // 700 kbps
+            pixels <= 1920 * 1080 -> 1_000_000 // 1 Mbps
+            else -> 1_500_000 // 1.5 Mbps
+        }
+    }
+
+    private fun calculateMinimumBitRate(width: Int, height: Int): Int {
+        // Calculate very low bitrate for minimum file size
+        val pixels = width * height
+        val baseRate = when {
+            pixels <= 640 * 480 -> 300_000 // 300 kbps for low res (very compressed)
+            pixels <= 1280 * 720 -> 500_000 // 500 kbps for 720p (very compressed)
+            pixels <= 1920 * 1080 -> 800_000 // 800 kbps for 1080p (very compressed)
+            else -> 1_200_000 // 1.2 Mbps for higher res (still compressed)
+        }
+
+        // VP8 with WebM container provides excellent compression
+        return baseRate
+    }
+
+    private fun getDisplayMetrics(): DisplayMetrics {
+        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val metrics = windowManager.currentWindowMetrics
+                val bounds = metrics.bounds
+                displayMetrics.widthPixels = bounds.width()
+                displayMetrics.heightPixels = bounds.height()
+                displayMetrics.densityDpi = resources.displayMetrics.densityDpi
+            } catch (e: Exception) {
+                // Fall back to older method
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+        }
+
+        return displayMetrics
     }
 
     private fun stopRecording() {
         android.util.Log.d("ScreenRecordingService", "stopRecording() called")
-        android.util.Log.d("ScreenRecordingService", "Current isRecording state: $isRecording")
-        android.util.Log.d("ScreenRecordingService", "MediaRecorder: $mediaRecorder")
-        android.util.Log.d("ScreenRecordingService", "MediaProjection: $mediaProjection")
 
         try {
-            if (mediaRecorder != null) {
-                android.util.Log.d("ScreenRecordingService", "Stopping MediaRecorder...")
-                mediaRecorder?.apply {
-                    try {
-                        stop()
-                        android.util.Log.d("ScreenRecordingService", "MediaRecorder stopped successfully")
-                    } catch (e: Exception) {
-                        android.util.Log.e("ScreenRecordingService", "Error stopping MediaRecorder", e)
-                    }
-                    release()
-                    android.util.Log.d("ScreenRecordingService", "MediaRecorder released")
-                }
-            } else {
-                android.util.Log.w("ScreenRecordingService", "MediaRecorder is null, cannot stop")
-            }
-
-            if (mediaProjection != null) {
-                android.util.Log.d("ScreenRecordingService", "Stopping MediaProjection...")
-                mediaProjection?.stop()
-                android.util.Log.d("ScreenRecordingService", "MediaProjection stopped")
-            } else {
-                android.util.Log.w("ScreenRecordingService", "MediaProjection is null")
-            }
-
             val wasRecording = isRecording
             isRecording = false
-            android.util.Log.d("ScreenRecordingService", "isRecording set to false")
+
+            if (mediaRecorder != null) {
+                android.util.Log.d("ScreenRecordingService", "Stopping MediaRecorder...")
+                try {
+                    mediaRecorder?.stop()
+                    android.util.Log.d("ScreenRecordingService", "MediaRecorder stopped successfully")
+                } catch (e: Exception) {
+                    android.util.Log.e("ScreenRecordingService", "Error stopping MediaRecorder", e)
+                }
+            }
+
+            cleanupResources()
 
             if (wasRecording) {
                 android.util.Log.d("ScreenRecordingService", "Calling callback onRecordingStopped with videoFile: ${videoFile?.name}")
                 recordingCallback?.onRecordingStopped(videoFile)
-            } else {
-                android.util.Log.w("ScreenRecordingService", "Was not recording, skipping callback")
             }
 
         } catch (e: Exception) {
             android.util.Log.e("ScreenRecordingService", "Error stopping recording", e)
             recordingCallback?.onRecordingError(e.message ?: "Failed to stop recording")
         } finally {
-            mediaRecorder = null
-            mediaProjection = null
-            android.util.Log.d("ScreenRecordingService", "Stopping foreground service...")
             stopForeground(true)
-            android.util.Log.d("ScreenRecordingService", "Stopping self...")
             stopSelf()
-            android.util.Log.d("ScreenRecordingService", "Service cleanup completed")
+        }
+    }
+
+    private fun cleanupResources() {
+        try {
+            mediaRecorder?.release()
+            mediaRecorder = null
+
+            virtualDisplay?.release()
+            virtualDisplay = null
+
+            mediaProjection?.stop()
+            mediaProjection = null
+
+            android.util.Log.d("ScreenRecordingService", "Resources cleaned up")
+        } catch (e: Exception) {
+            android.util.Log.e("ScreenRecordingService", "Error cleaning up resources", e)
         }
     }
 
@@ -421,6 +488,8 @@ class ScreenRecordingService : Service() {
         super.onDestroy()
         if (isRecording) {
             stopRecording()
+        } else {
+            cleanupResources()
         }
     }
 }
