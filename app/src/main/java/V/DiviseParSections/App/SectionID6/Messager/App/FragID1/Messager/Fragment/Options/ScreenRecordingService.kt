@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
 
+import android.Manifest
 import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
@@ -7,6 +8,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -15,6 +17,7 @@ import android.os.IBinder
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.example.clientjetpack.R
 import java.io.File
 
@@ -50,8 +53,11 @@ class ScreenRecordingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        android.util.Log.d("ScreenRecordingService", "onStartCommand called with action: ${intent?.action}")
+
         when (intent?.action) {
             ACTION_START_RECORDING -> {
+                android.util.Log.d("ScreenRecordingService", "Processing START_RECORDING action")
                 // Start foreground service immediately to avoid RemoteServiceException
                 val notification = createNotification("Preparing to record...")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -88,7 +94,12 @@ class ScreenRecordingService : Service() {
                 }
             }
             ACTION_STOP_RECORDING -> {
+                android.util.Log.d("ScreenRecordingService", "Processing STOP_RECORDING action")
+                android.util.Log.d("ScreenRecordingService", "Current recording state before stop: $isRecording")
                 stopRecording()
+            }
+            else -> {
+                android.util.Log.w("ScreenRecordingService", "Unknown action received: ${intent?.action}")
             }
         }
 
@@ -151,6 +162,14 @@ class ScreenRecordingService : Service() {
 
     private fun setupMediaRecorder(videoFormat: String, videoCodec: String) {
         try {
+            // Check microphone permission
+            val hasMicPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+
+            android.util.Log.d("ScreenRecording", "Microphone permission: $hasMicPermission")
+
             // Get display dimensions in a way that works from Service context
             val displayMetrics = resources.displayMetrics
             val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -194,7 +213,7 @@ class ScreenRecordingService : Service() {
             }
 
             videoFile = File(filesDir, "screen_record_${System.currentTimeMillis()}${fileExtension}")
-            android.util.Log.d("ScreenRecording", "Creating video file: ${videoFile!!.name} with format: $videoFormat")
+            android.util.Log.d("ScreenRecording", "Creating video file: ${videoFile!!.name} with format: $videoFormat, audio: $hasMicPermission")
 
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(this)
@@ -202,12 +221,29 @@ class ScreenRecordingService : Service() {
                 @Suppress("DEPRECATION")
                 MediaRecorder()
             }.apply {
+                // Set video source first
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
+
+                // Set audio source if permission granted
+                if (hasMicPermission) {
+                    setAudioSource(MediaRecorder.AudioSource.MIC)
+                    android.util.Log.d("ScreenRecording", "Audio source set to microphone")
+                } else {
+                    android.util.Log.w("ScreenRecording", "No microphone permission, recording video only")
+                }
 
                 // Configure format and encoder based on parameters
                 when (videoFormat.lowercase()) {
                     "webm" -> {
                         setOutputFormat(MediaRecorder.OutputFormat.WEBM)
+
+                        // Set audio encoder for WebM if audio available
+                        if (hasMicPermission) {
+                            setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS) // Vorbis for WebM
+                            setAudioEncodingBitRate(128000) // 128 kbps
+                            setAudioSamplingRate(44100) // 44.1 kHz
+                        }
+
                         when (videoCodec.lowercase()) {
                             "vp8" -> {
                                 if (isVP8Supported()) {
@@ -237,6 +273,14 @@ class ScreenRecordingService : Service() {
                     }
                     "mp4" -> {
                         setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+
+                        // Set audio encoder for MP4 if audio available
+                        if (hasMicPermission) {
+                            setAudioEncoder(MediaRecorder.AudioEncoder.AAC) // AAC for MP4
+                            setAudioEncodingBitRate(128000) // 128 kbps
+                            setAudioSamplingRate(44100) // 44.1 kHz
+                        }
+
                         setVideoEncoder(MediaRecorder.VideoEncoder.H264)
                         setVideoEncodingBitRate(3_000_000) // 3 Mbps for MP4
                         setVideoFrameRate(30)
@@ -245,6 +289,13 @@ class ScreenRecordingService : Service() {
                     else -> {
                         // Default to WebM
                         setOutputFormat(MediaRecorder.OutputFormat.WEBM)
+
+                        if (hasMicPermission) {
+                            setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS)
+                            setAudioEncodingBitRate(128000)
+                            setAudioSamplingRate(44100)
+                        }
+
                         setVideoEncoder(MediaRecorder.VideoEncoder.VP8)
                         setVideoEncodingBitRate(1_500_000)
                         setVideoFrameRate(20)
@@ -273,13 +324,14 @@ class ScreenRecordingService : Service() {
             mediaRecorder?.start()
             isRecording = true
 
-            // Update notification to show recording is active with format info
+            // Update notification to show recording is active with format and audio info
             val formatInfo = when (videoFormat.lowercase()) {
                 "webm" -> "WebM (optimized)"
                 "mp4" -> "MP4"
                 else -> "WebM"
             }
-            updateNotification("Recording screen in $formatInfo format...")
+            val audioInfo = if (hasMicPermission) " + Audio" else " (vidéo seulement)"
+            updateNotification("Enregistrement écran en $formatInfo$audioInfo...")
 
             videoFile?.let { recordingCallback?.onRecordingStarted(it) }
 
@@ -310,28 +362,58 @@ class ScreenRecordingService : Service() {
     }
 
     private fun stopRecording() {
-        try {
-            mediaRecorder?.apply {
-                try {
-                    stop()
-                } catch (e: Exception) {
-                    android.util.Log.e("ScreenRecording", "Error stopping MediaRecorder", e)
-                }
-                release()
-            }
-            mediaProjection?.stop()
+        android.util.Log.d("ScreenRecordingService", "stopRecording() called")
+        android.util.Log.d("ScreenRecordingService", "Current isRecording state: $isRecording")
+        android.util.Log.d("ScreenRecordingService", "MediaRecorder: $mediaRecorder")
+        android.util.Log.d("ScreenRecordingService", "MediaProjection: $mediaProjection")
 
+        try {
+            if (mediaRecorder != null) {
+                android.util.Log.d("ScreenRecordingService", "Stopping MediaRecorder...")
+                mediaRecorder?.apply {
+                    try {
+                        stop()
+                        android.util.Log.d("ScreenRecordingService", "MediaRecorder stopped successfully")
+                    } catch (e: Exception) {
+                        android.util.Log.e("ScreenRecordingService", "Error stopping MediaRecorder", e)
+                    }
+                    release()
+                    android.util.Log.d("ScreenRecordingService", "MediaRecorder released")
+                }
+            } else {
+                android.util.Log.w("ScreenRecordingService", "MediaRecorder is null, cannot stop")
+            }
+
+            if (mediaProjection != null) {
+                android.util.Log.d("ScreenRecordingService", "Stopping MediaProjection...")
+                mediaProjection?.stop()
+                android.util.Log.d("ScreenRecordingService", "MediaProjection stopped")
+            } else {
+                android.util.Log.w("ScreenRecordingService", "MediaProjection is null")
+            }
+
+            val wasRecording = isRecording
             isRecording = false
-            recordingCallback?.onRecordingStopped(videoFile)
+            android.util.Log.d("ScreenRecordingService", "isRecording set to false")
+
+            if (wasRecording) {
+                android.util.Log.d("ScreenRecordingService", "Calling callback onRecordingStopped with videoFile: ${videoFile?.name}")
+                recordingCallback?.onRecordingStopped(videoFile)
+            } else {
+                android.util.Log.w("ScreenRecordingService", "Was not recording, skipping callback")
+            }
 
         } catch (e: Exception) {
-            android.util.Log.e("ScreenRecording", "Error stopping recording", e)
+            android.util.Log.e("ScreenRecordingService", "Error stopping recording", e)
             recordingCallback?.onRecordingError(e.message ?: "Failed to stop recording")
         } finally {
             mediaRecorder = null
             mediaProjection = null
+            android.util.Log.d("ScreenRecordingService", "Stopping foreground service...")
             stopForeground(true)
+            android.util.Log.d("ScreenRecordingService", "Stopping self...")
             stopSelf()
+            android.util.Log.d("ScreenRecordingService", "Service cleanup completed")
         }
     }
 
