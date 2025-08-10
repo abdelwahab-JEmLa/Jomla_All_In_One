@@ -147,6 +147,7 @@ data class Z_AppCompt(
     var hideAppScreen: Boolean = false,
     val travailleChezGrossisst3Ali: Boolean = false,
     val its_Admin: Boolean = false,
+    var c_Ouvert_Pour_Au_Command_Add_Period: Boolean =true,
 
     val text_Message_Warning: String = "",
 

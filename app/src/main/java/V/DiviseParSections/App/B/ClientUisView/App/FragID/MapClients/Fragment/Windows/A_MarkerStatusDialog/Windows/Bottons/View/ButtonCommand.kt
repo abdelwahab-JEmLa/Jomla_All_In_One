@@ -32,14 +32,14 @@ fun CommandButton(
     aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
     context: Context,
-    onUpdateLongAppSetting: () -> Unit={},
+    onUpdateLongAppSetting: () -> Unit = {},
 ) {
     val found_Or_Default_M8BonVent =
         get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
 
     FilledTonalButton(
         modifier = modifier
-            .getSemanticsTag(found_Or_Default_M8BonVent.default_If_No_Found,"")
+            .getSemanticsTag(found_Or_Default_M8BonVent.default_If_No_Found, "")
             .fillMaxWidth(),
         onClick = {
             if (found_Or_Default_M8BonVent.found != null) {
@@ -60,7 +60,12 @@ fun CommandButton(
                     )
             }
 
-            viewModel.startRecordIfNot()
+            if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+                    ?.c_Ouvert_Pour_Au_Command_Add_Period == true
+            ) {
+                viewModel.startRecordIfNot()
+            }
+
             viewModel.updateLongAppSetting(relative_M2Client.id)
             onUpdateLongAppSetting()
         },

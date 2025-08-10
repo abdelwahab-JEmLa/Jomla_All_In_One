@@ -120,9 +120,6 @@ data class M13TarificationInfos(
     fun getDebugInfos(): String {
         return "$parent_M1Produit_DebugInfos $typeChoisi"
     }
-    fun get_defaultNonSaved_Entre(): Boolean {
-        return creationTimestamps>0
-    }
 
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
