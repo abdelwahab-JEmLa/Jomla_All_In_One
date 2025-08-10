@@ -82,8 +82,8 @@ data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false,
-    val devStartUpScree: String = Screen.A_Clients_LocationGps.route,
+    val itsDevMode: Boolean = true,
+    val devStartUpScree: String = Screen.EditDatabaseWithCreateNewArticles.route,
 
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",

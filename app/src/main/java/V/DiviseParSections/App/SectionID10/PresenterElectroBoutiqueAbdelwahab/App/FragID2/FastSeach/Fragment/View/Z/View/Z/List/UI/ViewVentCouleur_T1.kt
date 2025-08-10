@@ -136,7 +136,7 @@ fun ViewVentCouleur_T1(
     val datasValue =
         viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff = datasValue.find { tariff ->
-        tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
+        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                 tariff.parent_M1Produit_KeyId == produit.keyID
     }
     val default_Tariff =

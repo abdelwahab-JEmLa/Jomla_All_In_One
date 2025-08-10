@@ -114,7 +114,7 @@ fun TariffButtonItem(
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
-            (typeTarification == TypeChoisi.DefiniParGerant && currentApp_Est_Admin)||
+            (typeTarification == TypeChoisi.Prix_Detaille && currentApp_Est_Admin)||
             typeTarification == TypeChoisi.Edited_Pour_Client ||
             typeTarification == TypeChoisi.Historique
 
@@ -137,8 +137,8 @@ fun TariffButtonItem(
     }
 
     fun handelClick() {
-        // Show confirmation dialog for PRIX_BASE when proto_Affiche_Dialog_Au_Base is true
-        if (typeTarification == TypeChoisi.PRIX_BASE && proto_Affiche_Dialog_Au_Base) {
+        // Show confirmation dialog for Prix_SupperGro_Et_PresentationService when proto_Affiche_Dialog_Au_Base is true
+        if (typeTarification == TypeChoisi.Prix_SupperGro_Et_PresentationService && proto_Affiche_Dialog_Au_Base) {
             showConfirmationDialog = true
             return
         }
@@ -238,18 +238,11 @@ fun TariffButtonItem(
             ) {
                 ElevatedCard {
                     val labelBackgroundColor = if (isPurchasePriceTariff) {
-                        Color.Cyan // Different color for purchase price
+                        Color.Cyan
                     } else {
                         couleurButton
                     }
 
-                    val labelTextColor = if (isPurchasePriceTariff) {
-                        Color.Black
-                    } else {
-                        typeTarification.couleur_Text
-                    }
-
-                    // Handle purchase price editing
                     if (isEditingPurchasePrice && isPurchasePriceTariff) {
                         OutlinedTextField(
                             modifier = Modifier

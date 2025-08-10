@@ -94,7 +94,8 @@ fun View_MainItem(
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
     printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
     relative_M8BonVent: M8BonVent,
-) {
+) {   //<--
+//TODO(1): augmetn le height
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
@@ -185,7 +186,7 @@ fun View_MainItem(
         modifier = Modifier
             .getSemanticsTag(relative_M17Message, "")
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            ,
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = etateActuellementEst.color)
         ),

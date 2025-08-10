@@ -138,7 +138,7 @@ class PrintReceiptHandler_Juil() {
                 append("<BIG><CENTER>Abdelwahab<BR>")
                 append("<BIG><CENTER>JeMla.Com<BR>")
                 append("<SMALL><CENTER>0553885037<BR>")
-                append("<SMALL><CENTER> - Recu Credit Detaille<BR>")
+                append("<SMALL><CENTER> - Recu Credit Prix_Detaille<BR>")
                 append("<BR>")
                 append("<SMALL><CENTER>$clientName                        $dateString<BR>")
                 append("<BR>")

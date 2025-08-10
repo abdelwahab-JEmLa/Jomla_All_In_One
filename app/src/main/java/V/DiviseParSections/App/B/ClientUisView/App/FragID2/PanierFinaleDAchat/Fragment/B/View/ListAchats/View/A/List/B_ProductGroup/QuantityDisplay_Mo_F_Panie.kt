@@ -6,7 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
 import android.util.Log
@@ -118,27 +117,12 @@ fun QuantityDisplay_Mo_F_Panie(
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-        val find_Tariff_DefiniParGerant = datasValue
+        val find_Tariff_Prix_Detaille = datasValue
             .filter { tariff ->
-                tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
+                tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                         tariff.parent_M1Produit_KeyId == relative_produit.keyID
             }
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
-
-
-        val default_Tariff = M13TarificationInfos.get_default_P0(
-            relative_produit,
-            start_Prix_Depuit_Ancient = relative_produit.prixAchat
-        )
-
-        val finale_Tariff_Prix = when {
-            find_Tariff_DefiniParGerant?.prixCurrency?.let { it > 0.0 } == true -> find_Tariff_DefiniParGerant.prixCurrency
-
-            relative_List_M10OperationVentCouleur.isNotEmpty() &&
-                    relative_List_M10OperationVentCouleur.first().provisoireMonPrix > 0.0 -> relative_List_M10OperationVentCouleur.first().provisoireMonPrix
-
-            else -> default_Tariff.first.prixCurrency
-        }
 
         val parentM13TarificationKeyID =
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
@@ -156,7 +140,7 @@ fun QuantityDisplay_Mo_F_Panie(
                 }
                 .semantics(mergeDescendants = true) {
                     set(
-                        value = find_Tariff_DefiniParGerant,
+                        value = find_Tariff_Prix_Detaille,
                         key = SemanticsPropertyKey("findTariff")
                     )
                 }

@@ -130,23 +130,25 @@ data class M13TarificationInfos(
         val nomArabe: String = "",
         val couleur_Text: Color = Color.White,
     ) {
-        LeMaxPrixArrive(
-            Icons.Filled.ArrowUpward,
-            Color(0xFFFF9800),
-            "فائدة محققة مع لاضا كثير من الزيناء"
-        ),
-        DefiniParGerant(Icons.Filled.Person, Color(0xFFFFEB3B), "محدد من المحل", Color.Black),
-        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFFE0E0E0), "محدد بتصرف", Color.Black),
-        Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
-        PRIX_BASE(Icons.Filled.Warning, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
         Tariff_Achat_Depuit_Grossisst(
             Icons.Filled.History,
             Color(0xFF000000),
             "سعر الشراء",
             Color(0xFF2196F3)
         ),
-
         DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "fd "),
+
+        LeMaxPrixArrive(
+            Icons.Filled.ArrowUpward,
+            Color(0xFFFF9800),
+            "فائدة محققة مع لاضا كثير من الزيناء"
+        ),
+
+        Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
+        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFFE0E0E0), "محدد بتصرف", Color.Black),
+
+        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFFFFEB3B), "Supper Gro Prix", Color.Black),
+        Prix_Detaille(Icons.Filled.Person, Color(0xFFF44336), "Detaille Prix", Color.White),
     }
 
     fun withProperDefaults(): M13TarificationInfos {

@@ -46,18 +46,18 @@ fun Prix_Detailer_Section(
     val relative_M13Tariffication by derivedStateOf {
         datasValue.lastOrNull {
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID
-                    && it.typeChoisi == TypeChoisi.DefiniParGerant
+                    && it.typeChoisi == TypeChoisi.Prix_Detaille
         } ?: M13TarificationInfos
             .get_default()
             .copy(
-                typeChoisi = TypeChoisi.DefiniParGerant,
+                typeChoisi = TypeChoisi.Prix_Detaille,
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
             )
     }
 
     val relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff by derivedStateOf {
-        val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.DefiniParGerant
+        val isDefiniParGerantActive = selectedTypeChoisi == TypeChoisi.Prix_Detaille
 
         val effectiveTariff = relative_M13Tariffication
 
@@ -91,7 +91,7 @@ fun Prix_Detailer_Section(
                     onTypeSelected = { newType ->
                         // FIXED: Use viewModel method to update selectedTypeChoisi
                         viewModel.updateSelectedTypeChoisi(newType)
-                        if (newType == TypeChoisi.DefiniParGerant &&
+                        if (newType == TypeChoisi.Prix_Detaille &&
                             relative_M13Tariffication.prixCurrency > 0
                         ) {
                             updateProduct(

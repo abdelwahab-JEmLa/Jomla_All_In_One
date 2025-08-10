@@ -12,7 +12,7 @@ class Sec9FragId1ViewId2ViewModel(
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,
-        var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.PRIX_BASE,
+        var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet(),
     )
 
@@ -23,9 +23,9 @@ class Sec9FragId1ViewId2ViewModel(
     fun toggle_selectedTypeChoisi() {
         val currentType = _uiState.value.selectedTypeChoisi
         val newType = when (currentType) {
-            M13TarificationInfos.TypeChoisi.DefiniParGerant -> M13TarificationInfos.TypeChoisi.PRIX_BASE
-            M13TarificationInfos.TypeChoisi.PRIX_BASE -> M13TarificationInfos.TypeChoisi.DefiniParGerant
-            else -> M13TarificationInfos.TypeChoisi.DefiniParGerant
+            M13TarificationInfos.TypeChoisi.Prix_Detaille -> M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> M13TarificationInfos.TypeChoisi.Prix_Detaille
+            else -> M13TarificationInfos.TypeChoisi.Prix_Detaille
         }
 
         _uiState.value = _uiState.value.copy(

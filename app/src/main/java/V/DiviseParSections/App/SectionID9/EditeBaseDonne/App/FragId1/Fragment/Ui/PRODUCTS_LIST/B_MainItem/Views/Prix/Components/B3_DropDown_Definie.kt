@@ -114,8 +114,8 @@ fun DropDownItems(
     selectedType: M13TarificationInfos.TypeChoisi,
     onSelected: (M13TarificationInfos.TypeChoisi) -> Unit
 ) {
-    // PRIX_BASE option
-    M13TarificationInfos.TypeChoisi.PRIX_BASE.let { type ->
+    // Prix_SupperGro_Et_PresentationService option
+    M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService.let { type ->
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,8 +161,7 @@ fun DropDownItems(
         Spacer(modifier = Modifier.height(4.dp))
     }
 
-    // DefiniParGerant option
-    M13TarificationInfos.TypeChoisi.DefiniParGerant.let { type ->
+    M13TarificationInfos.TypeChoisi.Prix_Detaille.let { type ->
         Card(
             modifier = Modifier
                 .getSemanticsTag(relative_M13Tariffication, "relative_M13Tariffication")

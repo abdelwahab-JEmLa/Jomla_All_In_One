@@ -46,12 +46,12 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): M13TarificationInfos
             val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
             val value = when (paramName) {
                 "typeTarificationEnumT2Correspond" -> {
-                    val enumString = childSnap.child(paramName).getValue(String::class.java) ?: "PRIX_BASE"
+                    val enumString = childSnap.child(paramName).getValue(String::class.java) ?: "Prix_SupperGro_Et_PresentationService"
                     // FIXED: Using paramName variable instead of param.name property
                     try {
                         M13TarificationInfos.TypeChoisi.valueOf(enumString)
                     } catch (e: IllegalArgumentException) {
-                        M13TarificationInfos.TypeChoisi.PRIX_BASE
+                        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
                     }
                 }
                 else -> getValueWithDefault(childSnap, paramName, param.type)

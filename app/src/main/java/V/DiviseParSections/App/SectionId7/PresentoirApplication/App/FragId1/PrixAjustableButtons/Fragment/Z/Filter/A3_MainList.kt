@@ -48,7 +48,7 @@ fun MainList(
     val max_Prix = list_M13TarificationInfos
         .filter {
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID
-                    && it.typeChoisi != TypeChoisi.PRIX_BASE
+                    && it.typeChoisi != TypeChoisi.Prix_SupperGro_Et_PresentationService
 
         }
         .maxOfOrNull { it.prixCurrency } ?: 0.0
@@ -73,13 +73,13 @@ fun MainList(
 
     val existingDefiniParGerant2Tariff = list_M13TarificationInfos
         .lastOrNull { tariff ->
-            tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
+            tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
-    val relative_Tariff_DefiniParGerant =
+    val relative_Tariff_Prix_Detaille =
         M13TarificationInfos.get_default().copy(
-            typeChoisi = TypeChoisi.DefiniParGerant,
+            typeChoisi = TypeChoisi.Prix_Detaille,
             parent_M1Produit_DebugInfos = relative_M1Produit.nom,
             parent_M1Produit_KeyId = relative_M1Produit.keyID,
             prixCurrency = existingDefiniParGerant2Tariff?.prixCurrency
@@ -102,11 +102,7 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            if (relative_Tariff_Historique != null
-                && relative_Tariff_DefiniParGerant.prixCurrency > relative_Tariff_Historique.prixCurrency
-            ) {
-                add(relative_Tariff_DefiniParGerant)
-            }
+            add(relative_Tariff_Prix_Detaille)
 
             if (relative_Tariff_Historique == null) {
                 add(relative_Tariff_Edited_Pour_Client)
@@ -119,7 +115,7 @@ fun MainList(
             if (
                 max_Prix != 0.0
                 && max_Prix > relative_M1Produit.prixVent
-                && max_Prix > relative_Tariff_DefiniParGerant.prixCurrency
+                && max_Prix > relative_Tariff_Prix_Detaille.prixCurrency
             ) {
                 add(
                     M13TarificationInfos(
@@ -129,14 +125,13 @@ fun MainList(
                 )
             }
 
-            if (!travailleChezGrossisst3Ali!!) {
-                add(
-                    M13TarificationInfos(
-                        typeChoisi = TypeChoisi.PRIX_BASE,
-                        prixCurrency = relative_M1Produit.prixVent,
-                    )
+            add(
+                M13TarificationInfos(
+                    typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                    prixCurrency = relative_M1Produit.prixVent,
                 )
-            }
+            )
+
             if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
                 add(
                     M13TarificationInfos(
@@ -179,7 +174,7 @@ fun MainList(
                 }
                 .semantics(mergeDescendants = true) {
                     set(value = list_M13TarificationInfos.filter { tariff ->
-                        tariff.typeChoisi == TypeChoisi.DefiniParGerant &&
+                        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                                 tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
                     }, key = SemanticsPropertyKey("filter"))
                 }
@@ -208,7 +203,7 @@ fun MainList(
         val typeToUse = if (max_Prix != 0.0) {
             TypeChoisi.LeMaxPrixArrive
         } else {
-            TypeChoisi.PRIX_BASE
+            TypeChoisi.Prix_SupperGro_Et_PresentationService
         }
 
         val tarificationInfo = M13TarificationInfos(

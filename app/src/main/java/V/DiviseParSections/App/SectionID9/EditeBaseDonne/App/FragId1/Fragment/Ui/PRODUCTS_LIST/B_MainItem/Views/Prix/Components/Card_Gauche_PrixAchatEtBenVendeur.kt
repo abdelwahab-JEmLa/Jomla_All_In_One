@@ -98,7 +98,7 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                     label = "Unité",
                     onPriceUpdate = { newPrixUnit ->
                         if (itsActiveTariff) {
-                            // Only allow editing if DefiniParGerant tariff is active
+                            // Only allow editing if Prix_Detaille tariff is active
                             val newPrixAchat = newPrixUnit * produit.nombreUniteInt
                             updateProduct(
                                 produit.copy(
