@@ -137,13 +137,6 @@ fun TariffButtonItem(
     }
 
     fun handelClick() {
-        // Show confirmation dialog for Prix_SupperGro_Et_PresentationService when proto_Affiche_Dialog_Au_Base is true
-        if (typeTarification == TypeChoisi.Prix_SupperGro_Et_PresentationService && proto_Affiche_Dialog_Au_Base) {
-            showConfirmationDialog = true
-            return
-        }
-
-        // Execute the click logic directly for other types
         executeClickLogic()
     }
 

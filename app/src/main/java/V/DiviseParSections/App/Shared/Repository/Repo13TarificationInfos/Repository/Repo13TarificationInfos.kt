@@ -145,10 +145,10 @@ data class M13TarificationInfos(
         ),
 
         Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
-        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFFE0E0E0), "محدد بتصرف", Color.Black),
+        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFF000000), "محدد بتصرف", Color.White),
 
-        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFFFFEB3B), "Supper Gro Prix", Color.Black),
-        Prix_Detaille(Icons.Filled.Person, Color(0xFFF44336), "Detaille Prix", Color.White),
+        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFFC2BEBE), "Supper Gro Prix", Color.Black),
+        Prix_Detaille(Icons.Filled.Person, Color(0xFFE0E0E0), "Detaille Prix", Color.Black),
     }
 
     fun withProperDefaults(): M13TarificationInfos {
