@@ -104,7 +104,7 @@ fun MainList(
         buildList {
             add(relative_Tariff_Prix_Detaille)
 
-            if (relative_Tariff_Historique == null) {
+            if (relative_Tariff_Historique == null || focusedValuesGetter.currentApp_Est_Admin) {
                 add(relative_Tariff_Edited_Pour_Client)
             }
 

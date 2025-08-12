@@ -135,17 +135,17 @@ data class M13TarificationInfos(
         ),
         DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "fd "),
 
+        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFFFFEB3B), "محدد بتصرف", Color.White),
+
         LeMaxPrixArrive(
             Icons.Filled.ArrowUpward,
-            Color(0xFFFF9800),
+            Color(0xFF4CAF50),
             "فائدة محققة مع لاضا كثير من الزيناء"
         ),
-
         Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
-        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFF000000), "محدد بتصرف", Color.White),
-
-        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFFC2BEBE), "Supper Gro Prix", Color.Black),
-        Prix_Detaille(Icons.Filled.Person, Color(0xFFE0E0E0), "Detaille Prix", Color.Black),
+        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFFC4BFBF)
+            , "Supper Gro Prix", Color.Black),
+        Prix_Detaille(Icons.Filled.Person, Color(0xFFCDDC39), "Detaille Prix", Color.Black),
     }
 
     fun withProperDefaults(): M13TarificationInfos {
