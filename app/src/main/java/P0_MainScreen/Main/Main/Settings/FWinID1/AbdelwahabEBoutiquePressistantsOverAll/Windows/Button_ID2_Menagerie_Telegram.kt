@@ -63,7 +63,7 @@ fun Button_ID2_Menagerie_Telegram(
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID
     val isDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
-
+    val active_Notifications = false // Control for sound and vibration
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
@@ -148,6 +148,15 @@ fun Button_ID2_Menagerie_Telegram(
 
     @SuppressLint("ObsoleteSdkInt")
     fun playNotificationSound(messageCount: Int) {
+        // Check if notifications are active before playing sound/vibration
+        if (!active_Notifications) {
+            android.util.Log.d(
+                "TelegramButton",
+                "🔇 Notifications disabled - skipping sound and vibration for $messageCount messages"
+            )
+            return
+        }
+
         android.util.Log.d(
             "TelegramButton",
             "🔊 Playing notification sound for $messageCount messages"
@@ -238,7 +247,8 @@ fun Button_ID2_Menagerie_Telegram(
             - Is Admin: $current_Compt_Et_Admin
             - New Message Count: $non_Lu_Messages_Size
             - Previous Count: $previousMessageCount
-            - Should Play: ${!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount}
+            - Notifications Active: $active_Notifications
+            - Should Play: ${!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount && active_Notifications}
         """.trimIndent()
         )
 
@@ -262,7 +272,8 @@ fun Button_ID2_Menagerie_Telegram(
             Other Accounts Notification Check:
             - Messages from others: $messages_From_Other_Accounts_Size
             - Previous count: $previousOtherAccountsCount
-            - Should Play: ${messages_From_Other_Accounts_Size > previousOtherAccountsCount}
+            - Notifications Active: $active_Notifications
+            - Should Play: ${messages_From_Other_Accounts_Size > previousOtherAccountsCount && active_Notifications}
         """.trimIndent()
         )
 

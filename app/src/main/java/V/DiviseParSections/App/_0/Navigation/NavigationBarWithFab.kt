@@ -161,13 +161,13 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdown) {
+      /*  if (showFabDropdown) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
                 repo8BonVent = repo8BonVent
             )
-        }
+        }     */
     }
 }
 
