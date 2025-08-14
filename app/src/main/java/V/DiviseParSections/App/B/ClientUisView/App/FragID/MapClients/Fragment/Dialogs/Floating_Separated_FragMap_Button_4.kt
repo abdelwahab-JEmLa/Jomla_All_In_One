@@ -71,7 +71,7 @@ fun Floating_Separated_FragMap_Button_4(
     val screenHeightDp = configuration.screenHeightDp.dp
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) } // Different Y position
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
 
     // State for dropdown menu
     var showDropdown by remember { mutableStateOf(true) }
@@ -133,22 +133,20 @@ fun Floating_Separated_FragMap_Button_4(
                 ) {
                     Icon(
                         imageVector = if (updatedButtonState.its_Active)
-                            updatedButtonState.icons.second // ViewList when showing all
+                            updatedButtonState.icons.second
                         else
-                            updatedButtonState.icons.first, // FilterList when filtered/targeted
+                            updatedButtonState.icons.first,
                         contentDescription = if (isShowingAll) "Switch to Targeted View" else "Switch to Show All",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
 
-                // Dropdown Menu
                 DropdownMenu(
                     expanded = showDropdown,
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    // Show All option
                     DropdownMenuItem(
                         text = {
                             Text(
