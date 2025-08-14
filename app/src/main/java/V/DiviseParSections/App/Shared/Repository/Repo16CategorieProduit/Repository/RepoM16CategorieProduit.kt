@@ -224,6 +224,8 @@ data class CategoriesTabelle(
 
     var position: Int = 0,
 
+    var positionDouble: Double = 0.0,
+
     var displayedHeader: Boolean = false,
 
     val itsHeldPourDeplacement: Boolean = false,

@@ -4,8 +4,8 @@ package V.DiviseParSections.App._0.Navigation
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -15,14 +15,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -31,20 +28,16 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,12 +58,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import com.example.clientjetpack.R
 import org.koin.compose.koinInject
 
 private const val TAG = "NavigationBarWithFab"
@@ -140,8 +130,8 @@ fun NavigationBarWithFab(
         }
 
         val its_Targeted_Frag = activeFragment == Screen.A_Clients_LocationGps
+        val its_EditDatabaseWithCreateNewArticles = activeFragment == Screen.EditDatabaseWithCreateNewArticles
 
-        // Fixed FAB with conditional background and warning icon
         FabButton(
             showWarningState = showWarningState,
             isFabVisible = isFabVisible,
@@ -176,127 +166,6 @@ fun NavigationBarWithFab(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
                 repo8BonVent = repo8BonVent
-            )
-        }
-    }
-}
-
-@Composable
-private fun FabButton(
-    showWarningState: Boolean,
-    isFabVisible: Boolean,
-    its_Targeted_Frag: Boolean,
-    onToggleFabVisibility: () -> Unit,
-    onShowDropdown: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier
-            .offset(y = (-28).dp)
-            .size(56.dp),
-        shape = CircleShape,
-    ) {
-        Box {
-            if (showWarningState) {
-                // Red background with warning icon instead of logo image
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFFDC2626), // Red-600
-                                    Color(0xFFB91C1C)  // Red-700
-                                )
-                            ),
-                            shape = CircleShape
-                        )
-                        .clickable {
-                            when (its_Targeted_Frag) {
-                                false -> onToggleFabVisibility()
-                                true -> onShowDropdown()
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Warning",
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            } else {
-                // Original logo image
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            when (its_Targeted_Frag) {
-                                false -> onToggleFabVisibility()
-                                true -> onShowDropdown()
-                            }
-                        },
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-                Icon(
-                    imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = "Toggle FAB",
-                    modifier = Modifier.align(Alignment.Center),
-                    tint = Color.White
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun FabDropdownMenu(
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-
-    showFabDropdown: Boolean,
-    onDismissDropdown: () -> Unit,
-    repo8BonVent: Repo8BonVent,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .offset(y = (-90).dp)
-    ) {
-        DropdownMenu(
-            expanded = showFabDropdown,
-            onDismissRequest = onDismissDropdown,
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-        ) {
-          //  DropDownItem_FABs_AddClient()
-
-            DropDownItem_Displaye_TogleFilterMarquers()
-            
-            DropDownItem_DisplayeGpsFlowFAB()
-
-            DropDownItem_2(
-                item_States = Item_States.get_Default()
-                    .copy(
-                        icon_imageVector = Icons.Default.Receipt,
-                        function_noms_separatedStrings = "refresh_Datas(),تحديث تقارير المبيعات",
-                        time_pressing_millis = 1500 // Custom press duration for this action
-                    ),
-                onDismissDropdown = onDismissDropdown,
-                onExecute = {
-                    repo8BonVent.refresh_Datas()
-                    repositorysMainGetter.repo10OperationVentCouleur.refresh_Datas()
-                    repositorysMainGetter.repo1ProduitInfos.refresh_Datas()
-                }
-            )
-
-            DropDownItem_1(
-                viewModel = koinInject(),
-                nomFun = "Toggle Client Button",
-                onDismissDropdown = onDismissDropdown
             )
         }
     }
@@ -404,6 +273,7 @@ private fun DropDownItem_DisplayeGpsFlowFAB(
         )
     }
 }
+
 data class Item_States(
     val function_noms_separatedStrings: String = ",",
     val avec_Premier_Click_Jane: Boolean = true,
@@ -576,6 +446,7 @@ private fun ExpressiveButtonIcon(
                                 Color(0xFFF59E0B)
                             )
                         )
+
                         else -> Brush.linearGradient(
                             colors = listOf(
                                 Color.Transparent,
