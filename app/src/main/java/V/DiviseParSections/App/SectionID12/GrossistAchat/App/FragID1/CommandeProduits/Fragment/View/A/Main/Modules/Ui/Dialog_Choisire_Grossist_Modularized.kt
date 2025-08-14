@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,62 +22,48 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.toColorInt
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx
-import androidx.compose.foundation.layout.fillMaxHeight
 
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
@@ -309,7 +296,6 @@ fun Dialog_Choisire_Grossist_Modularized(
     }
 }
 
-
 @Composable
 private fun GrossistItem(
     grossist: M15Grossist,
@@ -331,9 +317,7 @@ private fun GrossistItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             BadgedBox(
@@ -367,9 +351,7 @@ private fun GrossistItem(
                         Icons.Default.Business,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
+                        modifier = Modifier.size(24.dp).align(Alignment.Center)
                     )
                 }
             }
@@ -431,6 +413,15 @@ private fun GrossistItem(
     }
 }
 
+// Data class for transaction items - moved outside composable
+private data class TransactionItem(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val credit: Double,
+    val date: String,
+    val time: String,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
 @Composable
 private fun TransactionDialog(
     grossist: M15Grossist,
@@ -438,21 +429,8 @@ private fun TransactionDialog(
     onDismiss: () -> Unit
 ) {
     var creditText by remember { mutableStateOf("") }
-    var transactionItems by remember { mutableStateOf(listOf<TransactionItem>()) }    //->
-    //TODO(FIXME):Fix erreur Property delegate must have a 'getValue(Nothing?, KProperty<*>)' method. None of the following functions are suitable.
-    //State<T>.getValue(Any?, KProperty<*>)
-    //  where T cannot be inferred for
-    //  inline operator fun <T> State<T>.getValue(thisObj: Any?, property: KProperty<*>): T defined in androidx.compose.runtime
-    //Unresolved reference: TransactionItem
+    var transactionItems by remember { mutableStateOf<List<TransactionItem>>(emptyList()) }
     var totalSum by remember { mutableStateOf(0.0) }
-
-    data class TransactionItem(
-        val id: String = UUID.randomUUID().toString(),
-        val credit: Double,
-        val date: String,
-        val time: String,
-        val timestamp: Long = System.currentTimeMillis()
-    )
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -530,10 +508,8 @@ private fun TransactionDialog(
                                 try {
                                     val credit = creditText.toDouble()
                                     val now = System.currentTimeMillis()
-                                    val dateFormat =
-                                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                    val timeFormat =
-                                        SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
                                     val newItem = TransactionItem(
                                         credit = credit,
