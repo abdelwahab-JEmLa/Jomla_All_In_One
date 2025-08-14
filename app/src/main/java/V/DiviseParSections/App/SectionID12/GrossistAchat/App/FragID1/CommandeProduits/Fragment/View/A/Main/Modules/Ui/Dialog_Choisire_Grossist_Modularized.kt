@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,14 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Badge
@@ -39,8 +32,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,16 +45,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.toColorInt
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
@@ -311,9 +297,7 @@ private fun GrossistItem(
             .getSemanticsTag(datas, "datas")
             .clickable { onSelect() }
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -326,12 +310,7 @@ private fun GrossistItem(
                         Badge(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
-                        ) {
-                            Text(
-                                text = purchaseCount.toString(),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
+                        ) { Text(purchaseCount.toString(), style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             ) {
@@ -340,11 +319,8 @@ private fun GrossistItem(
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(
-                            try {
-                                Color(grossist.couleur_In_Str.toColorInt())
-                            } catch (e: Exception) {
-                                MaterialTheme.colorScheme.primary
-                            }
+                            try { Color(grossist.couleur_In_Str.toColorInt()) }
+                            catch (e: Exception) { MaterialTheme.colorScheme.primary }
                         )
                 ) {
                     Icon(
@@ -388,10 +364,7 @@ private fun GrossistItem(
                 }
             }
 
-            // Transaction button
-            IconButton(
-                onClick = { showTransactionDialog = true }
-            ) {
+            IconButton(onClick = { showTransactionDialog = true }) {
                 Icon(
                     Icons.Default.Receipt,
                     contentDescription = "Voir les transactions",
@@ -401,339 +374,11 @@ private fun GrossistItem(
         }
     }
 
-    // Transaction Dialog
     if (showTransactionDialog) {
         TransactionDialog(
             grossist = grossist,
-            transactions = list_M11AchatOperation.filter {
-                it.parent_M15Grossist_KeyID == grossist.keyID
-            },
+            transactions = list_M11AchatOperation.filter { it.parent_M15Grossist_KeyID == grossist.keyID },
             onDismiss = { showTransactionDialog = false }
         )
-    }
-}
-
-// Data class for transaction items - moved outside composable
-private data class TransactionItem(
-    val id: String = java.util.UUID.randomUUID().toString(),
-    val credit: Double,
-    val date: String,
-    val time: String,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-@Composable
-private fun TransactionDialog(
-    grossist: M15Grossist,
-    transactions: List<M11AchatOperation>,
-    onDismiss: () -> Unit
-) {
-    var creditText by remember { mutableStateOf("") }
-    var transactionItems by remember { mutableStateOf<List<TransactionItem>>(emptyList()) }
-    var totalSum by remember { mutableStateOf(0.0) }
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Transactions - ${grossist.nom}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            Icons.Default.Clear,
-                            contentDescription = "Fermer",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Credit input field
-                OutlinedTextField(
-                    value = totalSum.toString(),
-                    onValueChange = { },
-                    label = { Text("Total des crédits") },
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.AccountBalance,
-                            contentDescription = "Crédit total"
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Add new transaction input
-                OutlinedTextField(
-                    value = creditText,
-                    onValueChange = { creditText = it },
-                    label = { Text("Ajouter crédit") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            if (creditText.isNotBlank()) {
-                                try {
-                                    val credit = creditText.toDouble()
-                                    val now = System.currentTimeMillis()
-                                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-
-                                    val newItem = TransactionItem(
-                                        credit = credit,
-                                        date = dateFormat.format(Date(now)),
-                                        time = timeFormat.format(Date(now))
-                                    )
-
-                                    transactionItems = transactionItems + newItem
-                                    totalSum += credit
-                                    creditText = ""
-                                } catch (e: NumberFormatException) {
-                                    // Handle invalid input
-                                }
-                            }
-                        },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (creditText.isNotBlank()) {
-                                try {
-                                    val credit = creditText.toDouble()
-                                    val now = System.currentTimeMillis()
-                                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-
-                                    val newItem = TransactionItem(
-                                        credit = credit,
-                                        date = dateFormat.format(Date(now)),
-                                        time = timeFormat.format(Date(now))
-                                    )
-
-                                    transactionItems = transactionItems + newItem
-                                    totalSum += credit
-                                    creditText = ""
-                                } catch (e: NumberFormatException) {
-                                    // Handle invalid input
-                                }
-                            }
-                        }
-                    ),
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                if (creditText.isNotBlank()) {
-                                    try {
-                                        val credit = creditText.toDouble()
-                                        val now = System.currentTimeMillis()
-                                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-
-                                        val newItem = TransactionItem(
-                                            credit = credit,
-                                            date = dateFormat.format(Date(now)),
-                                            time = timeFormat.format(Date(now))
-                                        )
-
-                                        transactionItems = transactionItems + newItem
-                                        totalSum += credit
-                                        creditText = ""
-                                    } catch (e: NumberFormatException) {
-                                        // Handle invalid input
-                                    }
-                                }
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Ajouter transaction"
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Transactions list
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Existing transactions from M11AchatOperation
-                    items(transactions) { transaction ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Achat: ${transaction.parent_M1Produit_DebugInfos}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        text = "Qté: ${transaction.sumAchatQantity}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = "${transaction.prix_Achat_De_Cette_Grossist} DA",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                                    Text(
-                                        text = dateFormat.format(Date(transaction.creationTimestamp)),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // New transaction items
-                    items(transactionItems) { item ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Nouveau crédit",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                    Text(
-                                        text = "${item.date} à ${item.time}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                }
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "${item.credit} DA",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    IconButton(
-                                        onClick = {
-                                            transactionItems = transactionItems.filter { it.id != item.id }
-                                            totalSum -= item.credit
-                                        }
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Supprimer",
-                                            tint = MaterialTheme.colorScheme.error,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (transactions.isEmpty() && transactionItems.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        Icons.Default.Receipt,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(48.dp)
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "Aucune transaction disponible",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Action buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Fermer")
-                    }
-                }
-            }
-        }
     }
 }
