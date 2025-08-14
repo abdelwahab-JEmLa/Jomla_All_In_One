@@ -18,15 +18,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,10 +66,24 @@ fun CreditCard(
     var showCameraDialog by remember { mutableStateOf(false) }
     var showImageDialog by remember { mutableStateOf(false) }
     var isProcessing by remember { mutableStateOf(false) }
+    var isDownloadingImage by remember { mutableStateOf(false) }
+    var actualImagePath by remember { mutableStateOf(item.receiptImagePath) }
 
     // Firebase storage reference for receipts
     val storageRef = Firebase.storage.reference.child("Images Receipts").child("bons_achat")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BonsAchat"
+
+    // Check for image availability on launch
+    LaunchedEffect(item.receiptImagePath, item.firebaseStoragePath) {
+        checkAndDownloadImage(
+            item = item,
+            onImageReady = { imagePath ->
+                actualImagePath = imagePath
+            },
+            onDownloadStart = { isDownloadingImage = true },
+            onDownloadEnd = { isDownloadingImage = false }
+        )
+    }
 
     suspend fun handleReceiptImageCapture(uri: Uri) {
         if (isProcessing) return
@@ -87,22 +104,29 @@ fun CreditCard(
                     }
 
                     // Upload to Firebase Storage
+                    val firebaseFileName = "receipt_${item.id}_${System.currentTimeMillis()}.webp"
+                    val firebaseStoragePath = "Images Receipts/bons_achat/$firebaseFileName"
+
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            storageRef.child(fileName).putBytes(bytes).await()
+                            storageRef.child(firebaseFileName).putBytes(bytes).await()
                         } catch (e: Exception) {
                             // Handle upload error silently
                         }
                     }
 
                     withContext(Dispatchers.Main) {
-                        // Update the item with the image path
-                        val updatedItem = item.copy(receiptImagePath = localFile.absolutePath)
+                        // Update the item with both local and Firebase paths
+                        val updatedItem = item.copy(
+                            receiptImagePath = localFile.absolutePath,
+                            firebaseStoragePath = firebaseStoragePath
+                        )
                         onUpdateItem(updatedItem)
+                        actualImagePath = localFile.absolutePath
 
                         Toast.makeText(
                             context,
-                            "Photo du bon d'achat sauvegardée: $fileName",
+                            "Photo du bon d'achat sauvegardée: $firebaseFileName",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -132,9 +156,9 @@ fun CreditCard(
     }
 
     // Dialog pour afficher l'image
-    if (showImageDialog && item.receiptImagePath != null) {
+    if (showImageDialog && actualImagePath != null) {
         ImageViewDialog(
-            imagePath = item.receiptImagePath,
+            imagePath = actualImagePath!!,
             onDismiss = { showImageDialog = false }
         )
     }
@@ -181,14 +205,23 @@ fun CreditCard(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${item.credit} DA",
+                    text = "${String.format("%.2f", item.credit)} DA",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // Show image button (only if image exists)
-                if (item.receiptImagePath != null && File(item.receiptImagePath).exists()) {
+                // Show download indicator
+                if (isDownloadingImage) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                // Show image button (only if image is available locally)
+                if (actualImagePath != null && File(actualImagePath).exists()) {
                     IconButton(
                         onClick = { showImageDialog = true }
                     ) {
@@ -197,6 +230,36 @@ fun CreditCard(
                             contentDescription = "Voir photo bon d'achat",
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                } else if (item.firebaseStoragePath != null && !isDownloadingImage) {
+                    // Show download button if image is only in Firebase
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                checkAndDownloadImage(
+                                    item = item,
+                                    onImageReady = { imagePath ->
+                                        actualImagePath = imagePath
+                                        if (imagePath != null) {
+                                            Toast.makeText(
+                                                context,
+                                                "Image téléchargée avec succès",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    onDownloadStart = { isDownloadingImage = true },
+                                    onDownloadEnd = { isDownloadingImage = false }
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudDownload,
+                            contentDescription = "Télécharger photo",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -278,5 +341,48 @@ private fun ImageViewDialog(imagePath: String, onDismiss: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+// Helper function for image management
+private suspend fun checkAndDownloadImage(
+    item: TransactionItem,
+    onImageReady: (String?) -> Unit,
+    onDownloadStart: () -> Unit,
+    onDownloadEnd: () -> Unit
+) {
+    val localPath = item.receiptImagePath
+
+    // Check if local file exists
+    if (localPath != null && File(localPath).exists()) {
+        onImageReady(localPath)
+        return
+    }
+
+    // If local file doesn't exist but Firebase path is available, download it
+    val firebasePath = item.firebaseStoragePath
+    if (firebasePath != null && localPath != null) {
+        onDownloadStart()
+
+        val success = withContext(Dispatchers.IO) {
+            try {
+                val storageRef = Firebase.storage.reference.child(firebasePath)
+                val localFile = File(localPath)
+
+                // Create parent directories if they don't exist
+                localFile.parentFile?.mkdirs()
+
+                // Download the file
+                storageRef.getFile(localFile).await()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        onDownloadEnd()
+        onImageReady(if (success) localPath else null)
+    } else {
+        onImageReady(null)
     }
 }

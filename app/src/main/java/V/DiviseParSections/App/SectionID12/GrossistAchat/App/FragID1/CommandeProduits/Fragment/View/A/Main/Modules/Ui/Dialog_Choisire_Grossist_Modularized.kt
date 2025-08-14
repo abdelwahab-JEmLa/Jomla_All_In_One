@@ -377,7 +377,6 @@ private fun GrossistItem(
     if (showTransactionDialog) {
         TransactionDialog(
             grossist = grossist,
-            transactions = list_M11AchatOperation.filter { it.parent_M15Grossist_KeyID == grossist.keyID },
             onDismiss = { showTransactionDialog = false }
         )
     }
