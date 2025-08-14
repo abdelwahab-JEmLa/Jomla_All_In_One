@@ -34,7 +34,7 @@ data class ActiveCentralValues(
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
+    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,

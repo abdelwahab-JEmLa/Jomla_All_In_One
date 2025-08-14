@@ -1,9 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -33,14 +37,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
 fun Floating_Separated_FragMap_Button_4(
+    mapClientsViewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "Client Filter Mode",
@@ -65,7 +74,7 @@ fun Floating_Separated_FragMap_Button_4(
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) } // Different Y position
 
     // State for dropdown menu
-    var showDropdown by remember { mutableStateOf(false) }
+    var showDropdown by remember { mutableStateOf(true) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -93,7 +102,9 @@ fun Floating_Separated_FragMap_Button_4(
                             MapClientsViewModel.VisibleClientsNow.showAll -> "Show All"
                             MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Targeted"
                             MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "A_COMMANDE_CONFIRME "
-                            else -> {"Show All"}
+                            else -> {
+                                "Show All"
+                            }
                         },
                         color = Color.White,
                         modifier = Modifier
@@ -177,6 +188,24 @@ fun Floating_Separated_FragMap_Button_4(
                     val VisibleClientsNow_2 =
                         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
                     DropdownMenuItem(
+                        modifier = Modifier
+                            .semantics(mergeDescendants = true) {
+                                set(
+                                    value = filterClientsBasedOnMode(
+                                        viewModel = mapClientsViewModel,
+                                        currentFilterMode = VisibleClientsNow_2
+                                    ), key = SemanticsPropertyKey("")
+                                )
+                            }
+                            .semantics(mergeDescendants = true) {
+                                set(value = repositorysMainGetter.repo8BonVent.datasValue.lastOrNull {
+                                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                                }?.let {
+                                    find_its_Confirmation_de_Transaction(
+                                        repositorysMainGetter, it
+                                    )
+                                }, key = SemanticsPropertyKey("find_its_Confirmation_de_Transaction"))
+                            },
                         text = {
                             Text(
                                 text = VisibleClientsNow_2.name,

@@ -43,7 +43,7 @@ fun addOuUpdateMapMarkers(
 
     // Filter clientAchteurs based on the current mode
     val clientsToShow =
-        filterClientsBasedOnMode(viewModel, clientDataBaseSnapList, currentFilterMode)
+            filterClientsBasedOnMode(viewModel, currentFilterMode)
 
     // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(

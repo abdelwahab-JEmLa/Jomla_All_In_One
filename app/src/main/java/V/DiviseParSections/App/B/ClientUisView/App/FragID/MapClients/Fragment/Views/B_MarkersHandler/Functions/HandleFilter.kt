@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import org.osmdroid.views.MapView
@@ -54,11 +55,13 @@ fun handleFilterMarkersClick(
 
 fun filterClientsBasedOnMode(
     viewModel: MapClientsViewModel,
-    clientDataBaseSnapList: List<M2Client>,
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
 ): List<M2Client> {
+    val clientDataBaseSnapList =repositorysMainGetter.repo2Client.datasValue
+
     return when (currentFilterMode) {
         MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
@@ -147,13 +150,9 @@ fun filterClientsBasedOnMode(
                 val lastTransaction = viewModel.getLastTransaction(it)
                 (
                         (lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
-                                )
-                                && (find_its_Confirmation_de_Transaction(
-                            aCentralFacade.repositorysMainGetter,
-                            lastTransaction
-                        )
-                            ?.parent_M14VentPeriod_KeyId ?: "")
+                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit)
+                                && (find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, lastTransaction)
+                                    ?.parent_M14VentPeriod_KeyId ?: "")
                                 == keyID_currentActiveFocuced_M14VentPeriode
                         )
 
