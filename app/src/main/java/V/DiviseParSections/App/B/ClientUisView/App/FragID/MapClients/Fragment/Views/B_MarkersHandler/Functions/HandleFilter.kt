@@ -61,7 +61,6 @@ fun filterClientsBasedOnMode(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
 ): List<M2Client> {
     val clientDataBaseSnapList =repositorysMainGetter.repo2Client.datasValue
-
     return when (currentFilterMode) {
         MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {

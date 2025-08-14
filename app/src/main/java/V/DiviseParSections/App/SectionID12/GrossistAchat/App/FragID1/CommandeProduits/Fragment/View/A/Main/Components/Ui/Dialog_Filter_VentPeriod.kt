@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
@@ -37,16 +40,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun Dialog_Filter_VentPeriod(
-    uiState: GrossistAchatSec12FragID1_ViewModel.UiState,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: (M14VentPeriode?) -> Unit
 ) {
+    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+
     Dialog(
         onDismissRequest = { onDismiss(null) },
         properties = DialogProperties(
@@ -124,6 +131,7 @@ fun Dialog_Filter_VentPeriod(
                 // VentPeriod List
                 LazyColumn_VentPeriod(
                     viewModel = viewModel,
+                    currentActivePeriod = currentActiveFocuced_M14VentPeriode,
                     onPeriodSelected = { period ->
                         onDismiss(period)
                     },
@@ -138,6 +146,7 @@ fun Dialog_Filter_VentPeriod(
 fun LazyColumn_VentPeriod(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    currentActivePeriod: M14VentPeriode?,
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
     // Get all vent periods and filter those that have associated achat operations
@@ -149,14 +158,24 @@ fun LazyColumn_VentPeriod(
         val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
 
         // Get all period IDs that have associated achat operations
-        val periodIdsWithAchats = allAchatOperations.map { 
-            it.parent_M14VentPeriod_KeyID 
+        val periodIdsWithAchats = allAchatOperations.map {
+            it.parent_M14VentPeriod_KeyID
         }.filter { it != "null" }.toSet()
 
         // Filter periods to only include those with achat operations
-        allPeriods.filter { period ->
+        val filteredPeriods = allPeriods.filter { period ->
             period.keyID in periodIdsWithAchats
-        }.sortedByDescending { it.creationTimestamp } // Sort by most recent first
+        }.sortedByDescending { it.creationTimestamp }
+
+        // Put current active period at the top if it exists
+        currentActivePeriod?.let { activePeriod ->
+            if (activePeriod.keyID in periodIdsWithAchats) {
+                val withoutActive = filteredPeriods.filter { it.keyID != activePeriod.keyID }
+                listOf(activePeriod) + withoutActive
+            } else {
+                filteredPeriods
+            }
+        } ?: filteredPeriods
     }
 
     LazyColumn(
@@ -177,6 +196,7 @@ fun LazyColumn_VentPeriod(
                 Item_VentPeriod(
                     period = period,
                     viewModel = viewModel,
+                    isCurrentActive = period.keyID == currentActivePeriod?.keyID,
                     onPeriodSelected = onPeriodSelected
                 )
             }
@@ -188,6 +208,7 @@ fun LazyColumn_VentPeriod(
 fun Item_VentPeriod(
     period: M14VentPeriode,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    isCurrentActive: Boolean,
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
     // Calculate statistics for this period
@@ -216,9 +237,14 @@ fun Item_VentPeriod(
             .clickable { onPeriodSelected(period) }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (isCurrentActive)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isCurrentActive) 4.dp else 2.dp
+        )
     ) {
         Row(
             modifier = Modifier
@@ -231,13 +257,16 @@ fun Item_VentPeriod(
                 modifier = Modifier
                     .size(40.dp)
                     .background(
-                        MaterialTheme.colorScheme.primary,
+                        if (isCurrentActive)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.DateRange,
+                    imageVector = if (isCurrentActive) Icons.Default.CheckCircle else Icons.Default.DateRange,
                     contentDescription = "Période",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
@@ -249,18 +278,39 @@ fun Item_VentPeriod(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = period.get_DebugInfos(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = period.get_DebugInfos(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = if (isCurrentActive)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    if (isCurrentActive) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "(Actuelle)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
 
                 Text(
                     text = "Créée le: $formattedDate",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isCurrentActive)
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -269,7 +319,10 @@ fun Item_VentPeriod(
                 Text(
                     text = "${periodStats.first} opérations • ${periodStats.second} articles • ${periodStats.third} produits",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isCurrentActive)
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

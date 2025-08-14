@@ -36,7 +36,7 @@ fun Screen_GrossistAchatSec12FragID1(
     }
 
     if (uiState.dialog_Filter_VentPeriod_showDialog) {
-        Dialog_Filter_VentPeriod(uiState, viewModel) { period ->
+        Dialog_Filter_VentPeriod(viewModel) { period ->
             updateFilter(repo, period?.let { Repo11AchatOperation.FilterQuery.F14VentPeriode(it) })
             viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
         }

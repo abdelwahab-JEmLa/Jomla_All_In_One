@@ -36,13 +36,16 @@ class Repo11AchatOperation(
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M11AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+    val currentFilterQuery by derivedStateOf { _filterQuery.value }
 
     sealed class FilterQuery {
         data object NO_FILTER : FilterQuery()
-        data class F14VentPeriode(val data: M14VentPeriode) : FilterQuery()
+        // CHANGE THIS:
+        data class F14VentPeriode(val m14VentPeriode: M14VentPeriode) : FilterQuery() // Changed from 'data' to 'm14VentPeriode'
         data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
         data class Client(val m2Client: M2Client) : FilterQuery()
     }
+
 
     private val _filterQuery = mutableStateOf<FilterQuery>(FilterQuery.NO_FILTER)
 
@@ -67,7 +70,8 @@ class Repo11AchatOperation(
         val validData = getValidatedData()
         when (val filter = _filterQuery.value) {
             FilterQuery.NO_FILTER -> validData
-            is FilterQuery.F14VentPeriode -> validData.filter { it.parent_M14VentPeriod_KeyID == filter.data.keyID }
+            // CHANGE THIS LINE:
+            is FilterQuery.F14VentPeriode -> validData.filter { it.parent_M14VentPeriod_KeyID == filter.m14VentPeriode.keyID }
             is FilterQuery.Grossist -> validData.filter { it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID }
             is FilterQuery.Client -> validData.filter { achat ->
                 achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
@@ -78,7 +82,6 @@ class Repo11AchatOperation(
             }
         }
     }
-
     fun updateFilterQuery(filter: FilterQuery) {
         _filterQuery.value = filter
     }

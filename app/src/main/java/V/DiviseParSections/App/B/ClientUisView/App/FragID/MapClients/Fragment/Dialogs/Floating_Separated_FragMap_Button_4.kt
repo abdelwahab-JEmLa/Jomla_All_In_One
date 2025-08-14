@@ -59,6 +59,7 @@ fun Floating_Separated_FragMap_Button_4(
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val currentVisibleClientsMode = currentValues.visibleClientsNow
+    val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode.keyID
 
     // Determine if we're in "show all" mode (for admin) or targeted mode
     val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
@@ -73,8 +74,8 @@ fun Floating_Separated_FragMap_Button_4(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
 
-    // State for dropdown menu
-    var showDropdown by remember { mutableStateOf(true) }
+    // State for dropdown menu - FIXED: Initialize as false
+    var showDropdown by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -101,10 +102,9 @@ fun Floating_Separated_FragMap_Button_4(
                         text = when (currentVisibleClientsMode) {
                             MapClientsViewModel.VisibleClientsNow.showAll -> "Show All"
                             MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Targeted"
-                            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "A_COMMANDE_CONFIRME "
-                            else -> {
-                                "Show All"
-                            }
+                            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "A_COMMANDE_CONFIRME"
+                            MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "COMMANDE_LIVRAI"
+                            else -> "Show All"
                         },
                         color = Color.White,
                         modifier = Modifier
@@ -118,12 +118,12 @@ fun Floating_Separated_FragMap_Button_4(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
+
                 FloatingActionButton(
                     modifier = Modifier
                         .getSemanticsTag(updatedButtonState, "clientFilterButtonState")
                         .size(48.dp),
                     onClick = {
-                        // FIXED: Show dropdown menu on click
                         showDropdown = true
                     },
                     containerColor = if (updatedButtonState.its_Active)
@@ -147,6 +147,7 @@ fun Floating_Separated_FragMap_Button_4(
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
+                    // Show All Clients option
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -164,56 +165,79 @@ fun Floating_Separated_FragMap_Button_4(
                         }
                     )
 
-                    val VisibleClientsNow_1 =
-                        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
+                    // Filter for A_COMMANDE_CONFIRME
+                    val visibleClientsNow1 = MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = VisibleClientsNow_1.name,
-                                color = if (currentVisibleClientsMode == VisibleClientsNow_1)
+                                text = "A_COMMANDE_CONFIRME Filter",
+                                color = if (currentVisibleClientsMode == visibleClientsNow1)
                                     Color.Red else Color.Black
                             )
                         },
                         onClick = {
                             val newValues = currentValues.copy(
-                                visibleClientsNow = VisibleClientsNow_1
+                                visibleClientsNow = visibleClientsNow1
                             )
                             focusedValuesGetter.update_activeCentralValues(newValues)
                             showDropdown = false
                         }
                     )
 
-                    val VisibleClientsNow_2 =
-                        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                    // Filter for COMMANDE_LIVRAI
+                    val visibleClientsNow2 = MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                    val bons = repositorysMainGetter.repo8BonVent.datasValue
+
+                    // Get accepted orders for current period
+                    val acceptedBons = bons.filter { bon ->
+                        val lastTransaction = find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, bon)
+                        (bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI)
+                                && (lastTransaction?.parent_M14VentPeriod_KeyId ?: "") == keyID_currentActiveFocused_M14VentPeriode
+                    }
+
+                    // Get filtered clients based on mode
+                    val filteredClients = filterClientsBasedOnMode(
+                        viewModel = mapClientsViewModel,
+                        currentFilterMode = visibleClientsNow2
+                    )
+
                     DropdownMenuItem(
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
+                                // Add semantics for accepted orders
                                 set(
-                                    value = filterClientsBasedOnMode(
-                                        viewModel = mapClientsViewModel,
-                                        currentFilterMode = VisibleClientsNow_2
-                                    ), key = SemanticsPropertyKey("")
+                                    value = acceptedBons,
+                                    key = SemanticsPropertyKey("acceptedBons")
                                 )
                             }
                             .semantics(mergeDescendants = true) {
-                                set(value = repositorysMainGetter.repo8BonVent.datasValue.lastOrNull {
-                                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                                }?.let {
-                                    find_its_Confirmation_de_Transaction(
-                                        repositorysMainGetter, it
-                                    )
-                                }, key = SemanticsPropertyKey("find_its_Confirmation_de_Transaction"))
+                                // Add semantics for filtered clients
+                                set(
+                                    value = filteredClients,
+                                    key = SemanticsPropertyKey("filteredClients")
+                                )
+                            }
+                            .semantics(mergeDescendants = true) {
+                                // Add semantics for last COMMANDE_LIVRAI transaction
+                                set(
+                                    value = bons.lastOrNull { bon ->
+                                        bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                                    }?.let { bon ->
+                                        find_its_Confirmation_de_Transaction(repositorysMainGetter, bon)
+                                    },
+                                    key = SemanticsPropertyKey("lastCommandeLivraiTransaction")
+                                )
                             },
                         text = {
                             Text(
-                                text = VisibleClientsNow_2.name,
-                                color = if (currentVisibleClientsMode == VisibleClientsNow_2)
+                                text = "COMMANDE_LIVRAI Filter (${acceptedBons.size})",
+                                color = if (currentVisibleClientsMode == visibleClientsNow2)
                                     Color.Red else Color.Black
                             )
                         },
                         onClick = {
                             val newValues = currentValues.copy(
-                                visibleClientsNow = VisibleClientsNow_2
+                                visibleClientsNow = visibleClientsNow2
                             )
                             focusedValuesGetter.update_activeCentralValues(newValues)
                             showDropdown = false
