@@ -4,9 +4,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +54,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.toColorInt
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 
 
@@ -72,16 +69,12 @@ fun Dialog_Choisire_Grossist_Modularized(
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     val focusManager = LocalFocusManager.current
 
-    // Get current active filter to filter grossists accordingly
-    val currentActiveFilter =
-        remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) { // FIXED: Now using the added property
-            viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery
-        }
-
-    val activePeriodId = when (currentActiveFilter) {
-        is Repo11AchatOperation.FilterQuery.F14VentPeriode -> currentActiveFilter.m14VentPeriode.keyID // FIXED: Changed from 'data' to 'm14VentPeriode'
-        else -> null
+    // Get current active filters - UPDATED to use new method
+    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
     }
+
+    val activePeriodId = activePeriod?.keyID
 
     // State for storing credits for each grossist
     var grossistCredits by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
@@ -167,7 +160,7 @@ fun Dialog_Choisire_Grossist_Modularized(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // Header with title and total credits
+                // Header with title and active filters display - UPDATED
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -179,14 +172,21 @@ fun Dialog_Choisire_Grossist_Modularized(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
-                        if (activePeriodId != null) {
+
+                        // Show active filters - UPDATED
+                        if (activePeriod != null || activeClient != null) {
+                            val filterTexts = mutableListOf<String>()
+                            activePeriod?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
+                            activeClient?.let { filterTexts.add("Client: ${it.nom}") }
+
                             Text(
-                                text = "Filtrés par période active",
+                                text = "Filtres actifs: ${filterTexts.joinToString(", ")}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                         }
+
                         TextButton(onClick = {
                             focusManager.clearFocus()
                             onDismiss(null)
@@ -210,6 +210,8 @@ fun Dialog_Choisire_Grossist_Modularized(
                                 modifier = Modifier
                                     .clickable {
                                         focusManager.clearFocus()
+                                        // UPDATED: Clear only grossist filter, keep others
+                                        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.removeGrossistFilter()
                                         onDismiss(null)
                                     }
                                     .fillMaxWidth(),
@@ -226,13 +228,13 @@ fun Dialog_Choisire_Grossist_Modularized(
                                 ) {
                                     Icon(
                                         Icons.Default.Clear,
-                                        contentDescription = "Supprimer le filtre",
+                                        contentDescription = "Supprimer le filtre grossiste",
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(40.dp)
                                     )
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Text(
-                                        text = "Supprimer le filtre",
+                                        text = "Supprimer le filtre grossiste",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Medium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -252,7 +254,9 @@ fun Dialog_Choisire_Grossist_Modularized(
                                                 nom = "Grossiste non défini",
                                                 couleur_In_Str = "#FF0000"
                                             )
-                                            onDismiss(nullGrossist)
+                                            // UPDATED: Add grossist filter while keeping other active filters
+                                            viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.addGrossistFilter(nullGrossist)
+                                            onDismiss(null)
                                         }
                                         .fillMaxWidth(),
                                     colors = CardDefaults.cardColors(
@@ -322,7 +326,9 @@ fun Dialog_Choisire_Grossist_Modularized(
                                 activePeriodId = activePeriodId,
                                 onSelect = {
                                     focusManager.clearFocus()
-                                    onDismiss(grossist)
+                                    // UPDATED: Add grossist filter while keeping other active filters
+                                    viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.addGrossistFilter(grossist)
+                                    onDismiss(null)
                                 }
                             )
                         }

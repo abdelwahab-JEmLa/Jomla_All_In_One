@@ -40,12 +40,17 @@ class Repo11AchatOperation(
 
     sealed class FilterQuery {
         data object NO_FILTER : FilterQuery()
-        // CHANGE THIS:
-        data class F14VentPeriode(val m14VentPeriode: M14VentPeriode) : FilterQuery() // Changed from 'data' to 'm14VentPeriode'
+        data class F14VentPeriode(val m14VentPeriode: M14VentPeriode) : FilterQuery()
         data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
         data class Client(val m2Client: M2Client) : FilterQuery()
-    }
 
+        // NEW: Combined filters for multiple criteria
+        data class Combined(
+            val period: M14VentPeriode? = null,
+            val grossist: M15Grossist? = null,
+            val client: M2Client? = null
+        ) : FilterQuery()
+    }
 
     private val _filterQuery = mutableStateOf<FilterQuery>(FilterQuery.NO_FILTER)
 
@@ -70,9 +75,15 @@ class Repo11AchatOperation(
         val validData = getValidatedData()
         when (val filter = _filterQuery.value) {
             FilterQuery.NO_FILTER -> validData
-            // CHANGE THIS LINE:
-            is FilterQuery.F14VentPeriode -> validData.filter { it.parent_M14VentPeriod_KeyID == filter.m14VentPeriode.keyID }
-            is FilterQuery.Grossist -> validData.filter { it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID }
+
+            is FilterQuery.F14VentPeriode -> validData.filter {
+                it.parent_M14VentPeriod_KeyID == filter.m14VentPeriode.keyID
+            }
+
+            is FilterQuery.Grossist -> validData.filter {
+                it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
+            }
+
             is FilterQuery.Client -> validData.filter { achat ->
                 achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
                     .any { sales ->
@@ -80,10 +91,134 @@ class Repo11AchatOperation(
                             ?.parent_M2Client_KeyID == filter.m2Client.keyID
                     }
             }
+
+            // NEW: Handle combined filters
+            is FilterQuery.Combined -> {
+                var filteredData = validData
+
+                // Apply period filter if present
+                filter.period?.let { period ->
+                    filteredData = filteredData.filter {
+                        it.parent_M14VentPeriod_KeyID == period.keyID
+                    }
+                }
+
+                // Apply grossist filter if present
+                filter.grossist?.let { grossist ->
+                    filteredData = filteredData.filter {
+                        it.parent_M15Grossist_KeyID == grossist.keyID
+                    }
+                }
+
+                // Apply client filter if present
+                filter.client?.let { client ->
+                    filteredData = filteredData.filter { achat ->
+                        achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+                            .any { sales ->
+                                repo8BonVent.datasValue.find { it.keyID == sales.parent_M8BonVent_KeyId }
+                                    ?.parent_M2Client_KeyID == client.keyID
+                            }
+                    }
+                }
+
+                filteredData
+            }
         }
     }
+
     fun updateFilterQuery(filter: FilterQuery) {
         _filterQuery.value = filter
+    }
+
+    // NEW: Helper methods for combined filtering
+    fun addPeriodFilter(period: M14VentPeriode) {
+        val currentFilter = _filterQuery.value
+        _filterQuery.value = when (currentFilter) {
+            is FilterQuery.Combined -> currentFilter.copy(period = period)
+            is FilterQuery.Grossist -> FilterQuery.Combined(period = period, grossist = currentFilter.m15Grossist)
+            is FilterQuery.Client -> FilterQuery.Combined(period = period, client = currentFilter.m2Client)
+            else -> FilterQuery.Combined(period = period)
+        }
+    }
+
+    fun addGrossistFilter(grossist: M15Grossist) {
+        val currentFilter = _filterQuery.value
+        _filterQuery.value = when (currentFilter) {
+            is FilterQuery.Combined -> currentFilter.copy(grossist = grossist)
+            is FilterQuery.F14VentPeriode -> FilterQuery.Combined(period = currentFilter.m14VentPeriode, grossist = grossist)
+            is FilterQuery.Client -> FilterQuery.Combined(grossist = grossist, client = currentFilter.m2Client)
+            else -> FilterQuery.Combined(grossist = grossist)
+        }
+    }
+
+    fun addClientFilter(client: M2Client) {
+        val currentFilter = _filterQuery.value
+        _filterQuery.value = when (currentFilter) {
+            is FilterQuery.Combined -> currentFilter.copy(client = client)
+            is FilterQuery.F14VentPeriode -> FilterQuery.Combined(period = currentFilter.m14VentPeriode, client = client)
+            is FilterQuery.Grossist -> FilterQuery.Combined(grossist = currentFilter.m15Grossist, client = client)
+            else -> FilterQuery.Combined(client = client)
+        }
+    }
+
+    fun removePeriodFilter() {
+        val currentFilter = _filterQuery.value
+        if (currentFilter is FilterQuery.Combined) {
+            val newFilter = currentFilter.copy(period = null)
+            _filterQuery.value = when {
+                newFilter.grossist != null && newFilter.client == null -> FilterQuery.Grossist(newFilter.grossist)
+                newFilter.client != null && newFilter.grossist == null -> FilterQuery.Client(newFilter.client)
+                newFilter.grossist == null && newFilter.client == null -> FilterQuery.NO_FILTER
+                else -> newFilter
+            }
+        } else if (currentFilter is FilterQuery.F14VentPeriode) {
+            _filterQuery.value = FilterQuery.NO_FILTER
+        }
+    }
+
+    fun removeGrossistFilter() {
+        val currentFilter = _filterQuery.value
+        if (currentFilter is FilterQuery.Combined) {
+            val newFilter = currentFilter.copy(grossist = null)
+            _filterQuery.value = when {
+                newFilter.period != null && newFilter.client == null -> FilterQuery.F14VentPeriode(newFilter.period)
+                newFilter.client != null && newFilter.period == null -> FilterQuery.Client(newFilter.client)
+                newFilter.period == null && newFilter.client == null -> FilterQuery.NO_FILTER
+                else -> newFilter
+            }
+        } else if (currentFilter is FilterQuery.Grossist) {
+            _filterQuery.value = FilterQuery.NO_FILTER
+        }
+    }
+
+    fun removeClientFilter() {
+        val currentFilter = _filterQuery.value
+        if (currentFilter is FilterQuery.Combined) {
+            val newFilter = currentFilter.copy(client = null)
+            _filterQuery.value = when {
+                newFilter.period != null && newFilter.grossist == null -> FilterQuery.F14VentPeriode(newFilter.period)
+                newFilter.grossist != null && newFilter.period == null -> FilterQuery.Grossist(newFilter.grossist)
+                newFilter.period == null && newFilter.grossist == null -> FilterQuery.NO_FILTER
+                else -> newFilter
+            }
+        } else if (currentFilter is FilterQuery.Client) {
+            _filterQuery.value = FilterQuery.NO_FILTER
+        }
+    }
+
+    fun clearAllFilters() {
+        _filterQuery.value = FilterQuery.NO_FILTER
+    }
+
+    // NEW: Helper to get current active filters
+    fun getCurrentActiveFilters(): Triple<M14VentPeriode?, M15Grossist?, M2Client?> {
+        return when (val filter = _filterQuery.value) {
+            is FilterQuery.Combined -> Triple(filter.period, filter.grossist, filter.client)
+            is FilterQuery.F14VentPeriode -> Triple(filter.m14VentPeriode, null, null)
+            is FilterQuery.Grossist -> Triple(null, filter.m15Grossist, null)
+            is FilterQuery.Client -> Triple(null, null, filter.m2Client)
+            FilterQuery.NO_FILTER -> Triple(null, null, null)
+        }
     }
 
     fun genere_Achats_Depuit_M11AchatOperation_List(

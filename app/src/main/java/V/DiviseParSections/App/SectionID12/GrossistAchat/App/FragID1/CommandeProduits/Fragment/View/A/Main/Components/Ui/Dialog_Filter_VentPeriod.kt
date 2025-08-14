@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +55,11 @@ fun Dialog_Filter_VentPeriod(
 ) {
     val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
+    // UPDATED: Get current active filters
+    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
+    }
+
     Dialog(
         onDismissRequest = { onDismiss(null) },
         properties = DialogProperties(
@@ -73,17 +79,34 @@ fun Dialog_Filter_VentPeriod(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Header
+                // Header - UPDATED to show active filters
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Sélectionner une Période",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            text = "Sélectionner une Période",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        // UPDATED: Show active filters
+                        if (activeGrossist != null || activeClient != null) {
+                            val filterTexts = mutableListOf<String>()
+                            activeGrossist?.let { filterTexts.add("Grossiste: ${it.nom}") }
+                            activeClient?.let { filterTexts.add("Client: ${it.nom}") }
+
+                            Text(
+                                text = "Filtres actifs: ${filterTexts.joinToString(", ")}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
                     IconButton(onClick = { onDismiss(null) }) {
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -94,10 +117,14 @@ fun Dialog_Filter_VentPeriod(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Clear Filter Option
+                // Clear Filter Option - UPDATED
                 Card(
                     modifier = Modifier
-                        .clickable { onDismiss(null) }
+                        .clickable {
+                            // UPDATED: Clear only period filter, keep others
+                            viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.removePeriodFilter()
+                            onDismiss(null)
+                        }
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = CardDefaults.cardColors(
@@ -113,12 +140,12 @@ fun Dialog_Filter_VentPeriod(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Supprimer le filtre",
+                            contentDescription = "Supprimer le filtre période",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = "Supprimer le filtre",
+                            text = "Supprimer le filtre période",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -133,7 +160,9 @@ fun Dialog_Filter_VentPeriod(
                     viewModel = viewModel,
                     currentActivePeriod = currentActiveFocuced_M14VentPeriode,
                     onPeriodSelected = { period ->
-                        onDismiss(period)
+                        // UPDATED: Add period filter while keeping other active filters
+                        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.addPeriodFilter(period)
+                        onDismiss(null)
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -149,13 +178,26 @@ fun LazyColumn_VentPeriod(
     currentActivePeriod: M14VentPeriode?,
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
+    // UPDATED: Consider active grossist filter when showing periods
+    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
+    }
+
     // Get all vent periods and filter those that have associated achat operations
     val periodsWithAchats = remember(
         viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        activeGrossist  // UPDATED: Consider active grossist
     ) {
         val allPeriods = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
-        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+        var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        // UPDATED: Filter by active grossist if one is selected
+        activeGrossist?.let { grossist ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
+        }
 
         // Get all period IDs that have associated achat operations
         val periodIdsWithAchats = allAchatOperations.map {
@@ -185,7 +227,10 @@ fun LazyColumn_VentPeriod(
         if (periodsWithAchats.isEmpty()) {
             item {
                 Text(
-                    text = "Aucune période avec des achats trouvée",
+                    text = if (activeGrossist != null)
+                        "Aucune période avec des achats trouvée pour ce grossiste"
+                    else
+                        "Aucune période avec des achats trouvée",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp)
@@ -197,7 +242,150 @@ fun LazyColumn_VentPeriod(
                     period = period,
                     viewModel = viewModel,
                     isCurrentActive = period.keyID == currentActivePeriod?.keyID,
+                    activeGrossist = activeGrossist,  // UPDATED: Pass active grossist
                     onPeriodSelected = onPeriodSelected
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Item_VentPeriod(
+    period: M14VentPeriode,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    isCurrentActive: Boolean,
+    activeGrossist: M15Grossist? = null,  // UPDATED: Add active grossist parameter
+    onPeriodSelected: (M14VentPeriode) -> Unit
+) {
+    // UPDATED: Calculate statistics considering active grossist
+    val periodStats = remember(
+        period.keyID,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        activeGrossist
+    ) {
+        var achatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+            .filter { it.parent_M14VentPeriod_KeyID == period.keyID }
+
+        // UPDATED: Filter by active grossist if one is selected
+        activeGrossist?.let { grossist ->
+            achatOperations = achatOperations.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
+        }
+
+        val totalOperations = achatOperations.size
+        val totalQuantity = achatOperations.sumOf { it.sumAchatQantity }
+        val uniqueProducts = achatOperations.map { it.parent_M1Produit_KeyID }.toSet().size
+
+        Triple(totalOperations, totalQuantity, uniqueProducts)
+    }
+
+    // Format date
+    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    val formattedDate = remember(period.creationTimestamp) {
+        dateFormatter.format(Date(period.creationTimestamp))
+    }
+
+    Card(
+        modifier = Modifier
+            .clickable { onPeriodSelected(period) }
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isCurrentActive)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isCurrentActive) 4.dp else 2.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Period icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        if (isCurrentActive)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isCurrentActive) Icons.Default.CheckCircle else Icons.Default.DateRange,
+                    contentDescription = "Période",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Period info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = period.get_DebugInfos(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = if (isCurrentActive)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    if (isCurrentActive) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "(Actuelle)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Text(
+                    text = "Créée le: $formattedDate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isCurrentActive)
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // UPDATED: Show statistics with grossist context
+                val statsText = if (activeGrossist != null) {
+                    "${periodStats.first} opérations • ${periodStats.second} articles • ${periodStats.third} produits (${activeGrossist.nom})"
+                } else {
+                    "${periodStats.first} opérations • ${periodStats.second} articles • ${periodStats.third} produits"
+                }
+
+                Text(
+                    text = statsText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isCurrentActive)
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
