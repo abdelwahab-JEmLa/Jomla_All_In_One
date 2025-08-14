@@ -52,12 +52,13 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-private data class TransactionItem(
+data class TransactionItem(
     val id: String = UUID.randomUUID().toString(),
     val credit: Double,
     val date: String,
     val time: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val receiptImagePath: String? = null
 )
 
 private data class VersementItem(
@@ -124,10 +125,14 @@ fun TransactionDialog(
         )
     ) {
         Card(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -161,7 +166,9 @@ fun TransactionDialog(
                     value = creditText,
                     onValueChange = { creditText = it },
                     label = { Text("Ajouter crédit") },
-                    modifier = Modifier.fillMaxWidth().clickable { addCredit() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { addCredit() },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { addCredit() }),
                     trailingIcon = {
@@ -177,7 +184,9 @@ fun TransactionDialog(
                     value = versementText,
                     onValueChange = { versementText = it },
                     label = { Text("Ajouter versement") },
-                    modifier = Modifier.fillMaxWidth().clickable { addVersement() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { addVersement() },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { addVersement() }),
                     trailingIcon = {
@@ -207,6 +216,11 @@ fun TransactionDialog(
                             onDelete = {
                                 transactionItems = transactionItems.filter { it.id != item.id }
                                 totalSum -= item.credit
+                            },
+                            onUpdateItem = { updatedItem ->
+                                transactionItems = transactionItems.map {
+                                    if (it.id == updatedItem.id) updatedItem else it
+                                }
                             }
                         )
                     }
@@ -224,7 +238,9 @@ fun TransactionDialog(
                     if (transactionItems.isEmpty() && versementItems.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -247,46 +263,6 @@ fun TransactionDialog(
 }
 
 @Composable
-private fun CreditCard(item: TransactionItem, onDelete: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Nouveau crédit",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Text(
-                    text = "${item.date} à ${item.time}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "${item.credit} DA",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Supprimer", modifier = Modifier.size(16.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -294,7 +270,9 @@ private fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
