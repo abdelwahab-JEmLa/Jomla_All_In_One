@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -118,7 +119,6 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        // Handle DialogTests specially - show dialog instead of navigating
                         if (screen.route == Screen.DialogTests.route) {
                             showDialogTests = true
                         } else {
@@ -161,18 +161,18 @@ fun NavigationBarWithFab(
             )
         }
 
-      /*  if (showFabDropdown) {
+        if (showFabDropdown) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
                 repo8BonVent = repo8BonVent
             )
-        }     */
+        }
     }
 }
 
 @Composable
-private fun DropDownItem_Displaye_TogleFilterMarquers(
+ fun DropDownItem_Displaye_TogleFilterMarquers(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
@@ -227,7 +227,7 @@ private fun DropDownItem_Displaye_TogleFilterMarquers(
 }
 
 @Composable
-private fun DropDownItem_DisplayeGpsFlowFAB(
+fun DropDownItem_DisplayeGpsFlowFAB(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
@@ -300,7 +300,7 @@ data class Item_States(
 }
 
 @Composable
-private fun DropDownItem_2(
+fun DropDownItem_2(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     item_States: Item_States,
@@ -498,7 +498,7 @@ private fun ExpressiveButtonIcon(
 }
 
 @Composable
-private fun DropDownItem_1(
+fun DropDownItem_1(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     nomFun: String,
     onDismissDropdown: () -> Unit,

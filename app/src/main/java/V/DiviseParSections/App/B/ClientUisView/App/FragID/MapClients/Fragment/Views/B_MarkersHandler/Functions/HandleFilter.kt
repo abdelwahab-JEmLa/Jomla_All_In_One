@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import org.osmdroid.views.MapView
@@ -50,9 +53,11 @@ fun handleFilterMarkersClick(
 }
 
 fun filterClientsBasedOnMode(
+    viewModel: MapClientsViewModel,
     clientDataBaseSnapList: List<M2Client>,
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
-    viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ): List<M2Client> {
     return when (currentFilterMode) {
         MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
@@ -136,8 +141,22 @@ fun filterClientsBasedOnMode(
         }
 
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> {
+            val keyID_currentActiveFocuced_M14VentPeriode =
+                focusedValuesGetter.currentActiveFocuced_M14VentPeriode.keyID
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                val lastTransaction = viewModel.getLastTransaction(it)
+                (
+                        (lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+                                )
+                                && (find_its_Confirmation_de_Transaction(
+                            aCentralFacade.repositorysMainGetter,
+                            lastTransaction
+                        )
+                            ?.parent_M14VentPeriod_KeyId ?: "")
+                                == keyID_currentActiveFocuced_M14VentPeriode
+                        )
+
             }
         }
 
