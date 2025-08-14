@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.TransactionItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -48,6 +51,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun View_M14VentPeriod(
@@ -64,6 +73,10 @@ fun View_M14VentPeriod(
     // State for editing fields
     var editingField by remember { mutableStateOf<String?>(null) }
     var editingValue by remember { mutableStateOf("") }
+
+    // State for calculated achat totals
+    var calculatedAchatTotal by remember { mutableStateOf(0.0) }
+    var isLoadingCalculatedAchat by remember { mutableStateOf(true) }
 
     // Focus requester for auto-focus
     val focusRequester = remember { FocusRequester() }
@@ -98,6 +111,14 @@ fun View_M14VentPeriod(
         updatedPeriode.handel_Clavie_Donne()
         editingField = null
         keyboardController?.hide()
+    }
+
+    // Load calculated achat totals (credits from all grossists)
+    LaunchedEffect(Unit) {
+        loadCalculatedAchatTotals { total ->
+            calculatedAchatTotal = total
+            isLoadingCalculatedAchat = false
+        }
     }
 
     // Auto-focus when editing starts
@@ -391,132 +412,180 @@ fun View_M14VentPeriod(
                 }
             }
 
-            // Achats Section - Elevated Card
-            ElevatedCard(
+            // Achats Section - Row with Manual and Calculated Cards
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
-                )
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
-                    Text(
-                        text = "🛒 ACHATS",
-                        fontSize = 18.sp,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.error
+                // Manual Achats Card
+                ElevatedCard(
+                    modifier = Modifier.weight(2f),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
                     ) {
-                        // Credit Achats
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (editingField == "credit_achats") {
-                                OutlinedTextField(
-                                    value = editingValue,
-                                    onValueChange = { editingValue = it },
-                                    label = { Text("Crédit") },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = { saveEditedValue() }
-                                    ),
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            } else {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            startEditing("credit_achats", relative_M14VentPeriode.credit_achats_Totale)
-                                        },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                        Text(
+                            text = "🛒 ACHATS (Manual)",
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Credit Achats
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (editingField == "credit_achats") {
+                                    OutlinedTextField(
+                                        value = editingValue,
+                                        onValueChange = { editingValue = it },
+                                        label = { Text("Crédit") },
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Decimal,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = { saveEditedValue() }
+                                        ),
+                                        modifier = Modifier.focusRequester(focusRequester)
                                     )
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                } else {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                startEditing("credit_achats", relative_M14VentPeriode.credit_achats_Totale)
+                                            },
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                        )
                                     ) {
-                                        Text(
-                                            text = "💳 Crédit",
-                                            fontSize = 12.sp,
-                                            style = MaterialTheme.typography.labelSmall
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "💳 Crédit",
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                            Text(
+                                                text = "${relative_M14VentPeriode.credit_achats_Totale}",
+                                                fontSize = 14.sp,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Cash Achats
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (editingField == "cash_achats") {
+                                    OutlinedTextField(
+                                        value = editingValue,
+                                        onValueChange = { editingValue = it },
+                                        label = { Text("Cash") },
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Decimal,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = { saveEditedValue() }
+                                        ),
+                                        modifier = Modifier.focusRequester(focusRequester)
+                                    )
+                                } else {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                startEditing("cash_achats", relative_M14VentPeriode.cash_achats_Totale)
+                                            },
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
                                         )
-                                        Text(
-                                            text = "${relative_M14VentPeriode.credit_achats_Totale}",
-                                            fontSize = 14.sp,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "💵 Cash",
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                            Text(
+                                                text = "${relative_M14VentPeriode.cash_achats_Totale}",
+                                                fontSize = 14.sp,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Divider()
+                        Text(
+                            text = "Total: $totalAchats",
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                    }
+                }
 
-                        // Cash Achats
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (editingField == "cash_achats") {
-                                OutlinedTextField(
-                                    value = editingValue,
-                                    onValueChange = { editingValue = it },
-                                    label = { Text("Cash") },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = { saveEditedValue() }
-                                    ),
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            } else {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            startEditing("cash_achats", relative_M14VentPeriode.cash_achats_Totale)
-                                        },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                                    )
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "💵 Cash",
-                                            fontSize = 12.sp,
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                        Text(
-                                            text = "${relative_M14VentPeriode.cash_achats_Totale}",
-                                            fontSize = 14.sp,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
-                                }
-                            }
+                // Calculated Achat Card - NEW ADDITION
+                ElevatedCard(
+                    modifier = Modifier.weight(1f),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "📊 Calculated",
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Achats",
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        if (isLoadingCalculatedAchat) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        } else {
+                            Text(
+                                text = String.format("%.2f", calculatedAchatTotal),
+                                fontSize = 18.sp,
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Divider()
-                    Text(
-                        text = "Total: $totalAchats",
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.End)
-                    )
                 }
             }
 
@@ -708,6 +777,77 @@ fun View_M14VentPeriod(
                     )
                 }
             }
+        }
+    }
+}
+
+// Helper function to load calculated achat totals from all grossists
+private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
+    var totalCredits = 0.0
+    var totalVersements = 0.0
+    var completedQueries = 0
+    val totalQueries = 2
+
+    fun checkComplete() {
+        completedQueries++
+        if (completedQueries == totalQueries) {
+            onTotalLoaded(totalCredits - totalVersements)
+        }
+    }
+
+    // Load all TransactionItems (credits from all grossists)
+    val transactionListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            totalCredits = 0.0
+            for (child in snapshot.children) {
+                try {
+                    val transaction = child.getValue(TransactionItem::class.java)
+                    transaction?.let {
+                        totalCredits += it.credit
+                    }
+                } catch (e: Exception) {
+                    // Handle parsing error silently
+                }
+            }
+            checkComplete()
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            checkComplete()
+        }
+    }
+
+    TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
+
+    // Load all VersementItems (payments from all grossists)
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val versementRef = TransactionItem.ref.parent?.child("VersementItem")
+            val versementListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    totalVersements = 0.0
+                    for (child in snapshot.children) {
+                        try {
+                            val versement = child.child("versement").getValue(Double::class.java)
+                            versement?.let {
+                                totalVersements += it
+                            }
+                        } catch (e: Exception) {
+                            // Handle parsing error silently
+                        }
+                    }
+                    checkComplete()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    checkComplete()
+                }
+            }
+
+            versementRef?.addListenerForSingleValueEvent(versementListener)
+        } catch (e: Exception) {
+            // If VersementItem loading fails, just complete with transaction total
+            checkComplete()
         }
     }
 }
