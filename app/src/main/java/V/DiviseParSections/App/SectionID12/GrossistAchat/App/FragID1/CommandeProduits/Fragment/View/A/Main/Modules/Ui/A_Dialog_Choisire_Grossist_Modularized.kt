@@ -75,33 +75,47 @@ fun Dialog_Choisire_Grossist_Modularized(
     var isLoadingCredits by remember { mutableStateOf(true) }
     var creditListeners by remember { mutableStateOf<Map<String, List<ValueEventListener>>>(emptyMap()) }
 
+    // FIXED: Show all grossists with their purchase counts, ignoring period filter for grossist visibility
     val grossistsWithPurchaseCount =
         remember(grossists, datasValue_repo11AchatOperation, activePeriodId) {
-            val filteredOperations = if (activePeriodId != null) {
-                datasValue_repo11AchatOperation.filter { it.parent_M14VentPeriod_KeyID == activePeriodId }
-            } else {
-                datasValue_repo11AchatOperation
-            }
-
             grossists.map { grossist ->
-                val purchaseCount =
-                    filteredOperations.count { it.parent_M15Grossist_KeyID == grossist.keyID }
-                grossist to purchaseCount
+                // Count purchases across all periods for display purposes
+                val totalPurchaseCount = datasValue_repo11AchatOperation.count {
+                    it.parent_M15Grossist_KeyID == grossist.keyID
+                }
+
+                // Also count purchases for the active period to show filtered count
+                val activePeriodPurchaseCount = if (activePeriodId != null) {
+                    datasValue_repo11AchatOperation.count {
+                        it.parent_M15Grossist_KeyID == grossist.keyID &&
+                                it.parent_M14VentPeriod_KeyID == activePeriodId
+                    }
+                } else {
+                    totalPurchaseCount
+                }
+
+                Triple(grossist, totalPurchaseCount, activePeriodPurchaseCount)
             }
-                .filter { it.second > 0 || activePeriodId == null } // Show all grossists if no period filter, otherwise only those with purchases
+                // Sort by total purchase count (all periods) to show most active grossists first
                 .sortedByDescending { it.second }
         }
 
-    val nullGrossistCount = remember(datasValue_repo11AchatOperation, activePeriodId) {
-        val filteredOperations = if (activePeriodId != null) {
-            datasValue_repo11AchatOperation.filter { it.parent_M14VentPeriod_KeyID == activePeriodId }
-        } else {
-            datasValue_repo11AchatOperation
-        }
-
-        filteredOperations.count {
+    // Count null grossist operations for both all periods and active period
+    val (nullGrossistCountTotal, nullGrossistCountActive) = remember(datasValue_repo11AchatOperation, activePeriodId) {
+        val totalCount = datasValue_repo11AchatOperation.count {
             it.parent_M15Grossist_KeyID == "null" || it.parent_M15Grossist_KeyID.isBlank()
         }
+
+        val activeCount = if (activePeriodId != null) {
+            datasValue_repo11AchatOperation.count {
+                (it.parent_M15Grossist_KeyID == "null" || it.parent_M15Grossist_KeyID.isBlank()) &&
+                        it.parent_M14VentPeriod_KeyID == activePeriodId
+            }
+        } else {
+            totalCount
+        }
+
+        totalCount to activeCount
     }
 
     LaunchedEffect(grossists) {
@@ -229,7 +243,8 @@ fun Dialog_Choisire_Grossist_Modularized(
                         }
                     }
 
-                    if (nullGrossistCount > 0) {
+                    // Show null grossist option if there are operations without grossist
+                    if (nullGrossistCountTotal > 0) {
                         item {
                             Card(
                                 modifier = Modifier
@@ -263,7 +278,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                                                 contentColor = MaterialTheme.colorScheme.onError
                                             ) {
                                                 Text(
-                                                    text = nullGrossistCount.toString(),
+                                                    text = if (activePeriodId != null) nullGrossistCountActive.toString() else nullGrossistCountTotal.toString(),
                                                     style = MaterialTheme.typography.labelSmall
                                                 )
                                             }
@@ -292,7 +307,11 @@ fun Dialog_Choisire_Grossist_Modularized(
                                             color = MaterialTheme.colorScheme.onErrorContainer
                                         )
                                         Text(
-                                            text = "$nullGrossistCount opérations sans grossiste${if (activePeriodId != null) " (période active)" else ""}",
+                                            text = if (activePeriodId != null) {
+                                                "$nullGrossistCountActive opérations sans grossiste (période active) / $nullGrossistCountTotal total"
+                                            } else {
+                                                "$nullGrossistCountTotal opérations sans grossiste"
+                                            },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onErrorContainer
                                         )
@@ -302,11 +321,12 @@ fun Dialog_Choisire_Grossist_Modularized(
                         }
                     }
 
-                    items(grossistsWithPurchaseCount) { (grossist, purchaseCount) ->
+                    // FIXED: Show all grossists regardless of period filter
+                    items(grossistsWithPurchaseCount) { (grossist, totalPurchaseCount, activePeriodPurchaseCount) ->
                         GrossistItem(
                             list_M11AchatOperation = list_M11AchatOperation,
                             grossist = grossist,
-                            purchaseCount = purchaseCount,
+                            purchaseCount = activePeriodPurchaseCount, // Show period-specific count for the badge
                             grossistCredit = grossistCredits[grossist.keyID] ?: 0.0,
                             isLoadingCredit = isLoadingCredits,
                             activePeriodId = activePeriodId,
@@ -319,7 +339,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                         )
                     }
 
-                    if (grossistsWithPurchaseCount.isEmpty() && nullGrossistCount == 0) {
+                    if (grossistsWithPurchaseCount.isEmpty() && nullGrossistCountTotal == 0) {
                         item {
                             Box(
                                 modifier = Modifier
@@ -336,10 +356,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = if (activePeriodId != null)
-                                            "Aucun grossiste avec des achats pour cette période"
-                                        else
-                                            "Aucun grossiste disponible",
+                                        text = "Aucun grossiste disponible",
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         style = MaterialTheme.typography.bodyMedium
                                     )

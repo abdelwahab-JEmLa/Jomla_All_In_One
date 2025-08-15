@@ -51,7 +51,8 @@ fun GrossistItem(
     activePeriodId: String?,
     onSelect: () -> Unit,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList()
-) {
+) {    //<--
+//TODO(1): fait que le height soit limite a 80 .dp
     val datas = updated_Achats(list_M11AchatOperation, grossist)
     var showTransactionDialog by remember { mutableStateOf(false) }
 
