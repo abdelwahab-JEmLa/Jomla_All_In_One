@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,7 +44,7 @@ fun Dialog_Filter_Client(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    onDismiss: (M2Client?) -> Unit
+    onDismiss: () -> Unit
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
@@ -131,7 +130,7 @@ fun Dialog_Filter_Client(
     }
 
     Dialog(
-        onDismissRequest = { onDismiss(null) },
+        onDismissRequest = { onDismiss() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = true
@@ -177,7 +176,7 @@ fun Dialog_Filter_Client(
                         }
                     }
 
-                    IconButton(onClick = { onDismiss(null) }) {
+                    IconButton(onClick = { onDismiss() }) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Fermer"
@@ -266,7 +265,7 @@ fun Dialog_Filter_Client(
                     modifier = Modifier
                         .clickable {
                             focusedValuesGetter.removeClientFilter()
-                            onDismiss(null)
+                            onDismiss()
                         }
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
@@ -304,9 +303,8 @@ fun Dialog_Filter_Client(
                     activePeriod = activePeriod,
                     activeGrossist = activeGrossist,
                     focusedValuesGetter = focusedValuesGetter,
-                    onClientSelected = { client ->
-                        focusedValuesGetter.addClientFilter(client)
-                        onDismiss(client)
+                    on_Pour_Dissmiss = {
+                        onDismiss()
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -322,7 +320,7 @@ fun LazyColumn_Client(
     activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
     activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
     focusedValuesGetter: FocusedValuesGetter,
-    onClientSelected: (M2Client) -> Unit
+    on_Pour_Dissmiss: () -> Unit
 ) {
     // Filter clients based on both active period and active grossist
     val clientsWithPurchases = remember(
@@ -393,11 +391,11 @@ fun LazyColumn_Client(
         } else {
             items(clientsWithPurchases) { client ->
                 Item_Client(
-                    client = client,
+                    relative_client = client,
                     viewModel = viewModel,
                     activePeriod = activePeriod,
                     activeGrossist = activeGrossist,
-                    onClientSelected = onClientSelected
+                    on_Pour_Dissmiss = { on_Pour_Dissmiss() }
                 )
             }
         }

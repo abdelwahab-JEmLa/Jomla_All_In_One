@@ -26,7 +26,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-
+// Update the ActiveCentralValues data class to include product filter
 data class ActiveCentralValues(
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
     val active_OpnerDialog_M17MessageVocale: M17MessageVocale? = null,
@@ -42,6 +42,7 @@ data class ActiveCentralValues(
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
     val active_M2Client_AuFilterAchats: M2Client? = null,
+    val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null, // NEW: Product filter
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
@@ -53,7 +54,6 @@ data class ActiveCentralValues(
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()
         }
-
     }
 
     enum class Click_On_Marque {
@@ -73,7 +73,6 @@ data class ActiveCentralValues(
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
             RoleDefinieParSourceACetteFragment()
     }
-
 }
 
 @Stable
@@ -144,13 +143,30 @@ class FocusedValuesGetter(
         )
         update_activeCentralValues(updatedValues)
     }
+    fun addProductFilter(product: ArticlesBasesStatsTable) {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M1Produit_AuFilterAchats = product
+        )
+        update_activeCentralValues(updatedValues)
+    }
 
+    fun removeProductFilter() {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M1Produit_AuFilterAchats = null
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    // Update the clearAllFilters method to include product filter
     fun clearAllFilters() {
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M14VentPeriode_AuFilterAchats = null,
             active_M15Grossist_AuFilterAchats = null,
-            active_M2Client_AuFilterAchats = null
+            active_M2Client_AuFilterAchats = null,
+            active_M1Produit_AuFilterAchats = null // NEW: Clear product filter too
         )
         update_activeCentralValues(updatedValues)
     }

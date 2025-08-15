@@ -23,12 +23,20 @@ class GrossistAchatSec12FragID1_ViewModel(
         val showDialog: Boolean = false,
         val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
         val mainLoadingProgress: Float = 0f,
+        val show_Dialog_filter_Products_Par_Client: Boolean = false, // NEW: Product filter dialog state
+
     )
 
     val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-
+    // Add this method to the ViewModel class
+    fun update_show_Dialog_filter_Products_Par_Client(show: Boolean) {
+        val currentState = _uiState.value
+        _uiState.value = currentState.copy(
+            show_Dialog_filter_Products_Par_Client = show
+        )
+    }
     // Add a method to validate data integrity
     fun validateDataIntegrity(): Boolean {
         return try {

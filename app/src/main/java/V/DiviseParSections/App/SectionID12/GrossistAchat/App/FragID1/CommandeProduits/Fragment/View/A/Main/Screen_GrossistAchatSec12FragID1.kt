@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.AppBar.Settings.TopAppBar_With_DropDownMenu
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod.Dialog_Filter_VentPeriod
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.F.Dialog_Filter_Product
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.List_GroupeAchatProduit
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
@@ -25,12 +26,19 @@ fun Screen_GrossistAchatSec12FragID1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 ) {
+    val active_M2Client_AuFilterAchats =
+        focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats
+    val active_M1Produit_AuFilterAchats =
+        focusedValuesGetter.active_Central_Values.active_M1Produit_AuFilterAchats
+
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar_With_DropDownMenu(viewModel, uiState = uiState)
         List_GroupeAchatProduit(
-            modifier = Modifier.fillMaxSize().padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp),
             viewModel = viewModel
         )
     }
@@ -57,13 +65,25 @@ fun Screen_GrossistAchatSec12FragID1(
     }
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
-        Dialog_Filter_Client(uiState, viewModel) { client ->
-            if (client != null) {
-                focusedValuesGetter.addClientFilter(client)
-            } else {
-                focusedValuesGetter.removeClientFilter()
-            }
+        Dialog_Filter_Client(uiState, viewModel) {
+            focusedValuesGetter.removeClientFilter()
             viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
         }
+    }
+
+    // NEW: Product filter dialog - shows when client is selected or manually triggered
+    if (uiState.show_Dialog_filter_Products_Par_Client) {
+        Dialog_Filter_Product(
+            viewModel = viewModel,
+            activeClient = active_M2Client_AuFilterAchats,
+            onDismiss = { product ->
+                if (product != null) {
+                    focusedValuesGetter.addProductFilter(product)
+                } else {
+                    focusedValuesGetter.removeProductFilter()
+                }
+                viewModel.update_show_Dialog_filter_Products_Par_Client(false)
+            }
+        )
     }
 }

@@ -2,9 +2,12 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,14 +41,15 @@ import org.koin.compose.koinInject
 fun Item_Client(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    client: M2Client,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    relative_client: M2Client,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
-    activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
-    onClientSelected: (M2Client) -> Unit
+    activePeriod: M14VentPeriode?,
+    activeGrossist: M15Grossist?,
+    on_Pour_Dissmiss: () -> Unit
 ) {
     val clientPurchaseInfo = remember(
-        client.keyID,
+        relative_client.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
@@ -72,7 +76,7 @@ fun Item_Client(
         }
 
         // Get all BonVents for this client
-        val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == client.keyID }
+        val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
         val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
 
         // Get all vent operations for this client
@@ -116,7 +120,14 @@ fun Item_Client(
 
     Card(
         modifier = Modifier
-            .clickable { onClientSelected(client) }
+            .clickable {
+                val active_Central_Values = focusedValuesGetter.active_Central_Values
+                val updatedValues =  active_Central_Values.copy(
+                    active_M2Client_AuFilterAchats = relative_client
+                )
+                focusedValuesGetter.update_activeCentralValues(updatedValues)
+                on_Pour_Dissmiss()
+            }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -140,7 +151,7 @@ fun Item_Client(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = client.nom.take(2).uppercase(),
+                    text = relative_client.nom.take(2).uppercase(),
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
@@ -154,7 +165,7 @@ fun Item_Client(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = client.nom,
+                    text = relative_client.nom,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
