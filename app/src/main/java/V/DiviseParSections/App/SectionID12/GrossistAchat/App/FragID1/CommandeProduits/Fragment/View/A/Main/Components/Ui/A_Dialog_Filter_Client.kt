@@ -36,12 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun Dialog_Filter_Client(
-    uiState: GrossistAchatSec12FragID1_ViewModel.UiState,
-    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    viewModel: GrossistAchatSec12FragID1_ViewModel= koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: () -> Unit

@@ -3,6 +3,7 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.TransactionItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -62,6 +63,7 @@ import kotlinx.coroutines.launch
 fun View_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     relative_M14VentPeriode: M14VentPeriode,
@@ -222,7 +224,7 @@ fun View_M14VentPeriod(
         val totalVentes = relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
         val totalAchats = relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
         val totalProduitsDepot = relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
-        val adjustedTotalAchats = totalAchats - totalProduitsDepot // Produits au dépôt reduce purchase balance
+        val adjustedTotalAchats = totalAchats - totalProduitsDepot
         val balance = totalVentes - adjustedTotalAchats
 
         val relative_List_Vents =
@@ -240,16 +242,13 @@ fun View_M14VentPeriod(
             it.quantity * parentM13TarificationPrix
         }
 
-        // Financial data display/editing section with enhanced UI
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Ventes Section - Elevated Card with Calculated Vents
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Manual Ventes Card
                 ElevatedCard(
                     modifier = Modifier.weight(2f),
                     colors = CardDefaults.elevatedCardColors(
@@ -403,6 +402,9 @@ fun View_M14VentPeriod(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
+                            modifier = Modifier.clickable {
+                                focusedValuesGetter.update_activeCentralValues(focusedValuesGetter.active_Central_Values.copy(show_Dialog_filter_AChats_Par_Client_Acheteur = true))
+                            },
                             text = "$sum_Bon_Vents",
                             fontSize = 18.sp,
                             style = MaterialTheme.typography.headlineSmall,

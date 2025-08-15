@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.ViewList_M14VentPeriod
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ fun ScreenM14VentPeriod(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_M14VentPeriod = koinInject(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     list_M14VentPeriode: List<M14VentPeriode> = aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
     relative_M9AppCompt: Z_AppCompt? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
@@ -57,6 +60,15 @@ fun ScreenM14VentPeriod(
                         relative_M9AppCompt=relative_M9AppCompt
                     )
                 }
+            }
+        }
+        if (focusedValuesGetter.active_Central_Values.show_Dialog_filter_AChats_Par_Client_Acheteur == true) {
+            Dialog_Filter_Client() {
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        show_Dialog_filter_AChats_Par_Client_Acheteur = false
+                    )
+                )
             }
         }
     }

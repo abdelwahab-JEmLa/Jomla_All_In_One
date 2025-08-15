@@ -45,6 +45,8 @@ data class ActiveCentralValues(
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
     val active_M2Client_AuFilterAchats: M2Client? = null,
     val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
+
+    val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,

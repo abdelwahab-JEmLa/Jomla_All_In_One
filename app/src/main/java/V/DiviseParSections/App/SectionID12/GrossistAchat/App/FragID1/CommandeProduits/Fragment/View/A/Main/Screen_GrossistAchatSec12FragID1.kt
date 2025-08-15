@@ -66,7 +66,7 @@ fun Screen_GrossistAchatSec12FragID1(
     }
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
-        Dialog_Filter_Client(uiState, viewModel) {
+        Dialog_Filter_Client(viewModel) {
             focusedValuesGetter.removeClientFilter()
             viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
         }
