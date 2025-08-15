@@ -42,7 +42,7 @@ data class ActiveCentralValues(
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
     val active_M2Client_AuFilterAchats: M2Client? = null,
-    val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null, // NEW: Product filter
+    val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
