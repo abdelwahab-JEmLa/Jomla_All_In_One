@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -50,6 +50,28 @@ fun Item_Client(
     activeGrossist: M15Grossist?,
     on_Pour_Dissmiss: () -> Unit
 ) {
+    val TAG = "Item_Client"
+
+    // Log current state before any interaction
+    LaunchedEffect(Unit) {
+        Log.d(TAG, "=== Item_Client Initialized ===")
+        Log.d(TAG, "Client: ${relative_client.nom} (ID: ${relative_client.keyID})")
+        Log.d(TAG, "Current active client filter: ${focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.nom ?: "NONE"}")
+        Log.d(TAG, "Active period: ${activePeriod?.let { "ID: ${it.keyID}" } ?: "NONE"}")
+        Log.d(TAG, "Active grossist: ${activeGrossist?.let { "ID: ${it.keyID}" } ?: "NONE"}")
+        Log.d(TAG, "FocusedValuesGetter instance: ${focusedValuesGetter.hashCode()}")
+    }
+
+    // Monitor state changes
+    val currentClientFilter = focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats
+    LaunchedEffect(currentClientFilter) {
+        Log.d(TAG, ">>> Client filter changed to: ${currentClientFilter?.nom ?: "NULL"}")
+        if (currentClientFilter != null) {
+            Log.d(TAG, "    - Client ID: ${currentClientFilter.keyID}")
+            Log.d(TAG, "    - Is same as current client? ${currentClientFilter.keyID == relative_client.keyID}")
+        }
+    }
+
     val clientPurchaseInfo = remember(
         relative_client.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
@@ -58,34 +80,44 @@ fun Item_Client(
         activePeriod?.keyID,
         activeGrossist?.keyID
     ) {
+        Log.d(TAG, "Recalculating purchase info for client: ${relative_client.nom}")
+
         val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
         val allVentOperations =
             viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
         var allAchatOperations =
             viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
 
-        // FIXED: Filter achat operations by active period AND grossist if they are selected
+        Log.d(TAG, "Initial data counts:")
+        Log.d(TAG, "  - BonVents: ${allBonVents.size}")
+        Log.d(TAG, "  - VentOperations: ${allVentOperations.size}")
+        Log.d(TAG, "  - AchatOperations: ${allAchatOperations.size}")
+
         activePeriod?.let { period ->
             allAchatOperations = allAchatOperations.filter {
                 it.parent_M14VentPeriod_KeyID == period.keyID
             }
+            Log.d(TAG, "  - AchatOperations after period filter: ${allAchatOperations.size}")
         }
 
         activeGrossist?.let { grossist ->
             allAchatOperations = allAchatOperations.filter {
                 it.parent_M15Grossist_KeyID == grossist.keyID
             }
+            Log.d(TAG, "  - AchatOperations after grossist filter: ${allAchatOperations.size}")
         }
 
         // Get all BonVents for this client
         val clientBonVents =
             allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
         val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
+        Log.d(TAG, "  - Client BonVents: ${clientBonVents.size}")
 
         // Get all vent operations for this client
         val clientVentOperations = allVentOperations.filter {
             it.parent_M8BonVent_KeyId in clientBonVentIds
         }
+        Log.d(TAG, "  - Client VentOperations: ${clientVentOperations.size}")
 
         // Get unique products (M1Produit) purchased by this client (considering period and grossist)
         val relatedAchatOperations = allAchatOperations.filter { achatOperation ->
@@ -97,6 +129,7 @@ fun Item_Client(
         val uniqueProducts = relatedAchatOperations.map {
             it.parent_M1Produit_KeyID
         }.toSet()
+        Log.d(TAG, "  - Unique products: ${uniqueProducts.size}")
 
         // Calculate total quantity and total sales amount for this client (considering period and grossist)
         val relevantVentOperations = clientVentOperations.filter { ventOperation ->
@@ -107,6 +140,7 @@ fun Item_Client(
         }
 
         val totalQuantity = relevantVentOperations.sumOf { it.quantity }
+        Log.d(TAG, "  - Total quantity: $totalQuantity")
 
         val totalSalesValue = relevantVentOperations.filter {
             it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
@@ -117,22 +151,51 @@ fun Item_Client(
 
             it.quantity * parentM13TarificationPrix
         }
+        Log.d(TAG, "  - Total sales value: $totalSalesValue")
 
         Triple(uniqueProducts.size, totalQuantity, totalSalesValue)
     }
-    val active_Central_Values = focusedValuesGetter.active_Central_Values
-    val updatedValues = active_Central_Values.copy(
-        active_M2Client_AuFilterAchats = relative_client
-    )
 
     Card(
         modifier = Modifier
-            .semantics(mergeDescendants = true) {
-                set(value = updatedValues, key = SemanticsPropertyKey("updatedValues"))
-            }
             .clickable {
-                focusedValuesGetter.update_activeCentralValues(updatedValues)
+                Log.d(TAG, "=== CLICK EVENT TRIGGERED ===")
+                Log.d(TAG, "About to add client filter for: ${relative_client.nom}")
+                Log.d(TAG, "Client ID: ${relative_client.keyID}")
+                Log.d(TAG, "Current state BEFORE update:")
+                Log.d(TAG, "  - Current client filter: ${focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.nom ?: "NULL"}")
+                Log.d(TAG, "  - Current period filter: ${focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats?.keyID ?: "NULL"}")
+                Log.d(TAG, "  - Current grossist filter: ${focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats?.keyID ?: "NULL"}")
+
+                try {
+                    // Test if the method exists and is accessible
+                    Log.d(TAG, "Calling focusedValuesGetter.addClientFilter()...")
+                    focusedValuesGetter.addClientFilter(relative_client)
+                    Log.d(TAG, "✓ addClientFilter() called successfully")
+
+                    // Check state immediately after call
+                    Log.d(TAG, "Current state AFTER update:")
+                    Log.d(TAG, "  - Current client filter: ${focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.nom ?: "NULL"}")
+                    Log.d(TAG, "  - Current client filter ID: ${focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.keyID ?: "NULL"}")
+
+                    // Verify the update worked
+                    val wasUpdated = focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.keyID == relative_client.keyID
+                    Log.d(TAG, "Update verification: ${if (wasUpdated) "SUCCESS" else "FAILED"}")
+
+                    if (!wasUpdated) {
+                        Log.e(TAG, "⚠️ CLIENT FILTER NOT UPDATED PROPERLY!")
+                        Log.e(TAG, "Expected: ${relative_client.keyID}")
+                        Log.e(TAG, "Actual: ${focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.keyID}")
+                    }
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Exception during addClientFilter(): ${e.message}")
+                    Log.e(TAG, "Exception details: ", e)
+                }
+
+                Log.d(TAG, "Calling on_Pour_Dissmiss()...")
                 on_Pour_Dissmiss()
+                Log.d(TAG, "=== CLICK EVENT COMPLETED ===")
             }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -206,7 +269,7 @@ fun Item_Client(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    // FIXED: Show context based on active filters
+                    // Show context based on active filters
                     when {
                         activePeriod != null && activeGrossist != null -> {
                             Text(

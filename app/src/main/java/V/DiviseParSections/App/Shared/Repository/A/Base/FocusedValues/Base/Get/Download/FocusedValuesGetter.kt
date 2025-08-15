@@ -21,11 +21,13 @@ import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSave
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+
 // Update the ActiveCentralValues data class to include product filter
 data class ActiveCentralValues(
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
@@ -80,7 +82,6 @@ class FocusedValuesGetter(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1Produit,
     repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
-
     repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
@@ -88,15 +89,76 @@ class FocusedValuesGetter(
     private val repo14VentPeriode: Repo14VentPeriode,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
+     val TAG = "FocusedValuesGetter"
+
+    init {
+        Log.d(TAG, "FocusedValuesGetter initialized with hashCode: ${this.hashCode()}")
+    }
+
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
-    val active_Central_Values by derivedStateOf { _activeCentralValues.value }
+    val active_Central_Values by derivedStateOf {
+        val currentValue = _activeCentralValues.value
+        Log.v(
+            TAG,
+            "active_Central_Values accessed - current client filter: ${currentValue.active_M2Client_AuFilterAchats?.nom ?: "NULL"}"
+        )
+        currentValue
+    }
 
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
+        Log.d(TAG, "=== update_activeCentralValues CALLED ===")
+        Log.d(TAG, "Previous state:")
+        Log.d(
+            TAG,
+            "  - Client: ${_activeCentralValues.value.active_M2Client_AuFilterAchats?.nom ?: "NULL"}"
+        )
+        Log.d(
+            TAG,
+            "  - Period: ${_activeCentralValues.value.active_M14VentPeriode_AuFilterAchats?.keyID ?: "NULL"}"
+        )
+        Log.d(
+            TAG,
+            "  - Grossist: ${_activeCentralValues.value.active_M15Grossist_AuFilterAchats?.keyID ?: "NULL"}"
+        )
+
+        Log.d(TAG, "New state:")
+        Log.d(TAG, "  - Client: ${new.active_M2Client_AuFilterAchats?.nom ?: "NULL"}")
+        Log.d(TAG, "  - Period: ${new.active_M14VentPeriode_AuFilterAchats?.keyID ?: "NULL"}")
+        Log.d(TAG, "  - Grossist: ${new.active_M15Grossist_AuFilterAchats?.keyID ?: "NULL"}")
+
+        val oldValue = _activeCentralValues.value
         _activeCentralValues.value = new
+
+        // Verify the update worked
+        val actualValue = _activeCentralValues.value
+        val updateSuccess = actualValue == new
+        Log.d(TAG, "Update verification: ${if (updateSuccess) "SUCCESS" else "FAILED"}")
+
+        if (!updateSuccess) {
+            Log.e(TAG, "❌ State update FAILED!")
+            Log.e(TAG, "Expected: $new")
+            Log.e(TAG, "Actual: $actualValue")
+        } else {
+            Log.d(TAG, "✓ State updated successfully")
+        }
+
+        // Test if the value is actually readable
+        try {
+            val testRead = active_Central_Values
+            Log.d(
+                TAG,
+                "Test read after update - Client: ${testRead.active_M2Client_AuFilterAchats?.nom ?: "NULL"}"
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error reading updated state: ${e.message}")
+        }
+
+        Log.d(TAG, "=== update_activeCentralValues COMPLETED ===")
     }
 
     fun addPeriodFilter(period: M14VentPeriode) {
+        Log.d(TAG, "addPeriodFilter called for period: ${period.keyID}")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M14VentPeriode_AuFilterAchats = period
@@ -105,6 +167,7 @@ class FocusedValuesGetter(
     }
 
     fun removePeriodFilter() {
+        Log.d(TAG, "removePeriodFilter called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M14VentPeriode_AuFilterAchats = null
@@ -113,6 +176,7 @@ class FocusedValuesGetter(
     }
 
     fun addGrossistFilter(grossist: M15Grossist) {
+        Log.d(TAG, "addGrossistFilter called for grossist: ${grossist.keyID}")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M15Grossist_AuFilterAchats = grossist
@@ -121,6 +185,7 @@ class FocusedValuesGetter(
     }
 
     fun removeGrossistFilter() {
+        Log.d(TAG, "removeGrossistFilter called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M15Grossist_AuFilterAchats = null
@@ -129,21 +194,63 @@ class FocusedValuesGetter(
     }
 
     fun addClientFilter(client: M2Client) {
-        val currentValues = active_Central_Values
-        val updatedValues = currentValues.copy(
-            active_M2Client_AuFilterAchats = client
-        )
-        update_activeCentralValues(updatedValues)
+        Log.d(TAG, "=== addClientFilter CALLED ===")
+        Log.d(TAG, "Target client: ${client.nom} (ID: ${client.keyID})")
+        Log.d(TAG, "Instance hashCode: ${this.hashCode()}")
+
+        try {
+            Log.d(TAG, "Getting current values...")
+            val currentValues = active_Central_Values
+            Log.d(TAG, "Current values retrieved successfully")
+            Log.d(
+                TAG,
+                "Current client in state: ${currentValues.active_M2Client_AuFilterAchats?.nom ?: "NULL"}"
+            )
+
+            Log.d(TAG, "Creating updated values...")
+            val updatedValues = currentValues.copy(
+                active_M2Client_AuFilterAchats = client
+            )
+            Log.d(
+                TAG,
+                "Updated values created - new client: ${updatedValues.active_M2Client_AuFilterAchats?.nom}"
+            )
+
+            Log.d(TAG, "Calling update_activeCentralValues...")
+            update_activeCentralValues(updatedValues)
+            Log.d(TAG, "update_activeCentralValues completed")
+
+            // Double-check the state after update
+            val finalState = active_Central_Values
+            val success = finalState.active_M2Client_AuFilterAchats?.keyID == client.keyID
+            Log.d(TAG, "Final verification: ${if (success) "SUCCESS" else "FAILED"}")
+
+            if (!success) {
+                Log.e(TAG, "❌ CLIENT FILTER UPDATE FAILED!")
+                Log.e(TAG, "Expected client ID: ${client.keyID}")
+                Log.e(TAG, "Actual client ID: ${finalState.active_M2Client_AuFilterAchats?.keyID}")
+                Log.e(TAG, "Actual client name: ${finalState.active_M2Client_AuFilterAchats?.nom}")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Exception in addClientFilter: ${e.message}")
+            Log.e(TAG, "Exception stacktrace:", e)
+        }
+
+        Log.d(TAG, "=== addClientFilter COMPLETED ===")
     }
 
     fun removeClientFilter() {
+        Log.d(TAG, "removeClientFilter called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M2Client_AuFilterAchats = null
         )
         update_activeCentralValues(updatedValues)
     }
+
     fun addProductFilter(product: ArticlesBasesStatsTable) {
+        Log.d(TAG, "addProductFilter called for product: ${product.keyID}")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M1Produit_AuFilterAchats = product
@@ -152,6 +259,7 @@ class FocusedValuesGetter(
     }
 
     fun removeProductFilter() {
+        Log.d(TAG, "removeProductFilter called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M1Produit_AuFilterAchats = null
@@ -159,14 +267,14 @@ class FocusedValuesGetter(
         update_activeCentralValues(updatedValues)
     }
 
-    // Update the clearAllFilters method to include product filter
     fun clearAllFilters() {
+        Log.d(TAG, "clearAllFilters called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
             active_M14VentPeriode_AuFilterAchats = null,
             active_M15Grossist_AuFilterAchats = null,
             active_M2Client_AuFilterAchats = null,
-            active_M1Produit_AuFilterAchats = null // NEW: Clear product filter too
+            active_M1Produit_AuFilterAchats = null
         )
         update_activeCentralValues(updatedValues)
     }
@@ -209,7 +317,6 @@ class FocusedValuesGetter(
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
             it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode.keyID
