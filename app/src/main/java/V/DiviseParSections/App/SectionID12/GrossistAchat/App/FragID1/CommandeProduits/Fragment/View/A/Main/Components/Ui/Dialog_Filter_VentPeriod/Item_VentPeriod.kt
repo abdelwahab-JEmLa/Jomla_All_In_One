@@ -42,10 +42,12 @@ fun Item_VentPeriod(
     relative_Period: M14VentPeriode,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    isCurrentActive: Boolean,
     activeGrossist: M15Grossist? = null,  // UPDATED: Add active grossist parameter
-    onPeriodSelected: (M14VentPeriode) -> Unit
+    onPeriodSelected_To_onDismiss: (M14VentPeriode) -> Unit
 ) {
+    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+    val isCurrentActive = relative_Period.keyID == currentActiveFocuced_M14VentPeriode?.keyID
+
     val periodStats = remember(
         relative_Period.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
@@ -80,8 +82,6 @@ fun Item_VentPeriod(
         active_M14VentPeriode_AuFilterAchats = relative_Period
     )
 
-    focusedValuesGetter.update_activeCentralValues(updatedValues)
-
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
@@ -99,7 +99,10 @@ fun Item_VentPeriod(
             .semantics(mergeDescendants = true) {
                 set(value = updatedValues, key = SemanticsPropertyKey(""))
             }
-            .clickable { onPeriodSelected(relative_Period) }
+            .clickable {
+                focusedValuesGetter.update_activeCentralValues(updatedValues)
+                onPeriodSelected_To_onDismiss(relative_Period)
+            }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentActive)

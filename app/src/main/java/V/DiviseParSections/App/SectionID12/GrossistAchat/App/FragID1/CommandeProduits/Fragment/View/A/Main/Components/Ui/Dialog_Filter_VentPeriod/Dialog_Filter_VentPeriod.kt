@@ -147,8 +147,7 @@ fun Dialog_Filter_VentPeriod(
                     currentActivePeriod = currentActiveFocuced_M14VentPeriode,
                     activeGrossist = activeGrossist,
                     focusedValuesGetter = focusedValuesGetter,
-                    onPeriodSelected = { period ->
-
+                    onPeriodSelected_To_onDismiss = { period ->
                         onDismiss(null)
                     },
                     modifier = Modifier.weight(1f)
@@ -165,7 +164,7 @@ fun LazyColumn_VentPeriod(
     currentActivePeriod: M14VentPeriode?,
     activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
     focusedValuesGetter: FocusedValuesGetter, // Add this parameter
-    onPeriodSelected: (M14VentPeriode) -> Unit
+    onPeriodSelected_To_onDismiss: (M14VentPeriode) -> Unit
 ) {
 
     // Get all vent periods and filter those that have associated achat operations
@@ -226,9 +225,8 @@ fun LazyColumn_VentPeriod(
                 Item_VentPeriod(
                     relative_Period = period,
                     viewModel = viewModel,
-                    isCurrentActive = period.keyID == currentActivePeriod?.keyID,
                     activeGrossist = activeGrossist,
-                    onPeriodSelected = onPeriodSelected
+                    onPeriodSelected_To_onDismiss = onPeriodSelected_To_onDismiss
                 )
             }
         }
