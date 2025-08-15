@@ -55,11 +55,6 @@ fun Dialog_Filter_VentPeriod(
 ) {
     val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
-    // UPDATED: Get current active filters
-    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
-    }
-
     Dialog(
         onDismissRequest = { onDismiss(null) },
         properties = DialogProperties(
@@ -92,7 +87,6 @@ fun Dialog_Filter_VentPeriod(
                             fontWeight = FontWeight.Bold
                         )
 
-                        // UPDATED: Show active filters
                         if (activeGrossist != null || activeClient != null) {
                             val filterTexts = mutableListOf<String>()
                             activeGrossist?.let { filterTexts.add("Grossiste: ${it.nom}") }
@@ -178,16 +172,12 @@ fun LazyColumn_VentPeriod(
     currentActivePeriod: M14VentPeriode?,
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
-    // UPDATED: Consider active grossist filter when showing periods
-    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
-    }
 
     // Get all vent periods and filter those that have associated achat operations
     val periodsWithAchats = remember(
         viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
-        activeGrossist  // UPDATED: Consider active grossist
+        activeGrossist
     ) {
         val allPeriods = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
         var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue

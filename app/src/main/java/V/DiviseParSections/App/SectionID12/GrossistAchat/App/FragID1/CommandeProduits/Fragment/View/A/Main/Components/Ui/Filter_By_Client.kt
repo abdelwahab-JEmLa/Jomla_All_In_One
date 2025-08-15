@@ -50,6 +50,10 @@ fun Dialog_Filter_Client(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     onDismiss: (M2Client?) -> Unit
 ) {
+    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
+    }
+
     Dialog(
         onDismissRequest = { onDismiss(null) },
         properties = DialogProperties(
@@ -69,17 +73,34 @@ fun Dialog_Filter_Client(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Header
+                // Header - FIXED: Show active filters context
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Sélectionner un Client",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            text = "Sélectionner un Client",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        // FIXED: Show active filters for context
+                        if (activePeriod != null || activeGrossist != null) {
+                            val filterTexts = mutableListOf<String>()
+                            activePeriod?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
+                            activeGrossist?.let { filterTexts.add("Grossiste: ${it.nom}") }
+
+                            Text(
+                                text = "Filtres actifs: ${filterTexts.joinToString(", ")}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
                     IconButton(onClick = { onDismiss(null) }) {
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -90,10 +111,13 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Clear Filter Option
+                // Clear Filter Option - FIXED: Only clear client filter
                 Card(
                     modifier = Modifier
-                        .clickable { onDismiss(null) }
+                        .clickable {
+                            // FIXED: This will remove only the client filter, keeping period and grossist
+                            onDismiss(null)
+                        }
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = CardDefaults.cardColors(
@@ -109,12 +133,12 @@ fun Dialog_Filter_Client(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Supprimer le filtre",
+                            contentDescription = "Supprimer le filtre client",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = "Supprimer le filtre",
+                            text = "Supprimer le filtre client",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -127,7 +151,8 @@ fun Dialog_Filter_Client(
                 // Client List
                 LazyColumn_Client(
                     viewModel = viewModel,
-                    currentActiveFilter = getCurrentActiveFilter(viewModel),
+                    activePeriod = activePeriod,
+                    activeGrossist = activeGrossist,
                     onClientSelected = { client ->
                         onDismiss(client)
                     },
@@ -137,6 +162,280 @@ fun Dialog_Filter_Client(
         }
     }
 }
+
+@Composable
+fun LazyColumn_Client(
+    modifier: Modifier = Modifier,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
+    activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
+    onClientSelected: (M2Client) -> Unit
+) {
+    // FIXED: Filter clients based on both active period and active grossist
+    val clientsWithPurchases = remember(
+        viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        activePeriod?.keyID,
+        activeGrossist?.keyID
+    ) {
+        val allClients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        // FIXED: Filter achat operations by active period AND grossist if they are selected
+        activePeriod?.let { period ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M14VentPeriod_KeyID == period.keyID
+            }
+        }
+
+        activeGrossist?.let { grossist ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
+        }
+
+        // Get all client IDs that have purchases (considering both period and grossist filters)
+        val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
+            val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(allVentOperations)
+            relatedVentOperations.mapNotNull { ventOperation ->
+                val bonVent = allBonVents.find { it.keyID == ventOperation.parent_M8BonVent_KeyId }
+                bonVent?.parent_M2Client_KeyID
+            }
+        }.toSet()
+
+        // Filter clients to only include those with purchases
+        allClients.filter { client ->
+            client.keyID in clientIdsWithPurchases
+        }
+    }
+
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (clientsWithPurchases.isEmpty()) {
+            item {
+                val message = when {
+                    activePeriod != null && activeGrossist != null ->
+                        "Aucun client avec des achats trouvé pour cette période et ce grossiste"
+                    activePeriod != null ->
+                        "Aucun client avec des achats trouvé pour cette période"
+                    activeGrossist != null ->
+                        "Aucun client avec des achats trouvé pour ce grossiste"
+                    else ->
+                        "Aucun client avec des achats trouvé"
+                }
+
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        } else {
+            items(clientsWithPurchases) { client ->
+                Item_Client(
+                    client = client,
+                    viewModel = viewModel,
+                    activePeriod = activePeriod,
+                    activeGrossist = activeGrossist,
+                    onClientSelected = onClientSelected
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Item_Client(
+    aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    client: M2Client,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
+    activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
+    onClientSelected: (M2Client) -> Unit
+) {
+    val clientPurchaseInfo = remember(
+        client.keyID,
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        activePeriod?.keyID,
+        activeGrossist?.keyID
+    ) {
+        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        // FIXED: Filter achat operations by active period AND grossist if they are selected
+        activePeriod?.let { period ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M14VentPeriod_KeyID == period.keyID
+            }
+        }
+
+        activeGrossist?.let { grossist ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
+        }
+
+        // Get all BonVents for this client
+        val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == client.keyID }
+        val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
+
+        // Get all vent operations for this client
+        val clientVentOperations = allVentOperations.filter {
+            it.parent_M8BonVent_KeyId in clientBonVentIds
+        }
+
+        // Get unique products (M1Produit) purchased by this client (considering period and grossist)
+        val relatedAchatOperations = allAchatOperations.filter { achatOperation ->
+            val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(clientVentOperations)
+            relatedVentOperations.isNotEmpty()
+        }
+
+        val uniqueProducts = relatedAchatOperations.map {
+            it.parent_M1Produit_KeyID
+        }.toSet()
+
+        // Calculate total quantity and total sales amount for this client (considering period and grossist)
+        val relevantVentOperations = clientVentOperations.filter { ventOperation ->
+            allAchatOperations.any { achatOperation ->
+                achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation)).isNotEmpty()
+            }
+        }
+
+        val totalQuantity = relevantVentOperations.sumOf { it.quantity }
+
+        val totalSalesValue = relevantVentOperations.filter {
+            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+        }.sumOf {
+            val parentM13TarificationPrix =
+                repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency
+                    ?: 0.0
+
+            it.quantity * parentM13TarificationPrix
+        }
+
+        Triple(uniqueProducts.size, totalQuantity, totalSalesValue)
+    }
+
+    Card(
+        modifier = Modifier
+            .clickable { onClientSelected(client) }
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Client avatar or icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = client.nom.take(2).uppercase(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Client info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = client.nom,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Show purchase statistics
+                Text(
+                    text = "${clientPurchaseInfo.first} produits • ${clientPurchaseInfo.second} articles",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Show total sales amount with context
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = if (clientPurchaseInfo.third > 0) Icons.Default.TrendingUp else Icons.Default.AccountBalance,
+                        contentDescription = "Ventes totales",
+                        modifier = Modifier.size(14.dp),
+                        tint = if (clientPurchaseInfo.third > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                    )
+                    Text(
+                        text = "Ventes: ${String.format("%.2f", clientPurchaseInfo.third)} DA",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (clientPurchaseInfo.third > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        fontWeight = if (clientPurchaseInfo.third > 0) FontWeight.SemiBold else FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    // FIXED: Show context based on active filters
+                    when {
+                        activePeriod != null && activeGrossist != null -> {
+                            Text(
+                                text = "(période + grossiste actifs)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        activePeriod != null -> {
+                            Text(
+                                text = "(période active)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        activeGrossist != null -> {
+                            Text(
+                                text = "(grossiste actif)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun LazyColumn_Client(

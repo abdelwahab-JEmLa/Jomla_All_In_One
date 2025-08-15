@@ -46,7 +46,7 @@ val composRepositorysModule = module {
     single { Repo03CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
-    single { Repo11AchatOperation(androidContext(), get(),get(),get(),get(),) }
+    single { Repo11AchatOperation(androidContext(), get(), get(),) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
     // Helper classes for RepositorysMainSetter

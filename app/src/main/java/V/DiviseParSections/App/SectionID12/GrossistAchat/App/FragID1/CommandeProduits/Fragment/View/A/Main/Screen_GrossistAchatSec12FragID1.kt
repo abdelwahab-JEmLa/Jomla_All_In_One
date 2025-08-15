@@ -37,7 +37,12 @@ fun Screen_GrossistAchatSec12FragID1(
 
     if (uiState.dialog_Filter_VentPeriod_showDialog) {
         Dialog_Filter_VentPeriod(viewModel) { period ->
-            updateFilter(repo, period?.let { Repo11AchatOperation.FilterQuery.F14VentPeriode(it) })
+            // FIXED: Use addPeriodFilter to preserve other filters
+            if (period != null) {
+                repo.addPeriodFilter(period)
+            } else {
+                repo.removePeriodFilter()
+            }
             viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
         }
     }
@@ -48,14 +53,24 @@ fun Screen_GrossistAchatSec12FragID1(
             viewModel = viewModel,
             list_M11AchatOperation = repo.datasValue
         ) { grossist ->
-            updateFilter(repo, grossist?.let { Repo11AchatOperation.FilterQuery.Grossist(it) })
+            // FIXED: Use addGrossistFilter to preserve other filters
+            if (grossist != null) {
+                repo.addGrossistFilter(grossist)
+            } else {
+                repo.removeGrossistFilter()
+            }
             viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = false)
         }
     }
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
         Dialog_Filter_Client(uiState, viewModel) { client ->
-            updateFilter(repo, client?.let { Repo11AchatOperation.FilterQuery.Client(it) })
+            // FIXED: Use addClientFilter to preserve other filters (including period filter)
+            if (client != null) {
+                repo.addClientFilter(client)
+            } else {
+                repo.removeClientFilter()
+            }
             viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
         }
     }
