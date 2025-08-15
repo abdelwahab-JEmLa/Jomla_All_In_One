@@ -455,7 +455,8 @@ private fun DropDownItem_3(viewModel: GrossistAchatSec12FragID1_ViewModel) {
 @Composable
 private fun DropDownItem_4(viewModel: GrossistAchatSec12FragID1_ViewModel, text: String) {
     Card(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),

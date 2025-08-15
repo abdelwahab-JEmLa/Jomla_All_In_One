@@ -15,10 +15,10 @@ class GrossistAchatSec12FragID1_ViewModel(
 
     data class UiState(
         var show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean = false,
-        var dialog_Filter_VentPeriod_showDialog: Boolean = false,
+        var dialog_Filter_VentPeriod_showDialog: Boolean = true,
 
         var dialog_Choisire_Grossist_Modularized_showDialog: Boolean = false,
-        var dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen: Boolean = true,
+        var dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen: Boolean = false,
         val showMenu: Boolean = false,
         val showDialog: Boolean = false,
         val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),

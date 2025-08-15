@@ -44,10 +44,9 @@ fun Dialog_Filter_VentPeriod(
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
-    // Use active_Central_Values instead of separate repository calls
     val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
     val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
-    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+    val currentActiveFocuced_M14VentPeriode = active_Central_Values.active_M14VentPeriode_AuFilterAchats
 
     Dialog(
         onDismissRequest = { onDismiss(null) },
@@ -109,7 +108,6 @@ fun Dialog_Filter_VentPeriod(
                 Card(
                     modifier = Modifier
                         .clickable {
-                            // FIXED: Use focusedValuesGetter extension function to remove period filter
                             focusedValuesGetter.removePeriodFilter()
                             onDismiss(null)
                         }
@@ -148,10 +146,9 @@ fun Dialog_Filter_VentPeriod(
                     viewModel = viewModel,
                     currentActivePeriod = currentActiveFocuced_M14VentPeriode,
                     activeGrossist = activeGrossist,
-                    focusedValuesGetter = focusedValuesGetter, // Pass the getter
+                    focusedValuesGetter = focusedValuesGetter,
                     onPeriodSelected = { period ->
-                        // FIXED: Use focusedValuesGetter extension function to add period filter
-                        focusedValuesGetter.addPeriodFilter(period)
+
                         onDismiss(null)
                     },
                     modifier = Modifier.weight(1f)

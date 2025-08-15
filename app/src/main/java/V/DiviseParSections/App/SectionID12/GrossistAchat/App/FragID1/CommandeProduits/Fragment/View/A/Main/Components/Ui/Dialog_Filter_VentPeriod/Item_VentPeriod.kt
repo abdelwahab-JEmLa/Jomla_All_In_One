@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.background
@@ -26,9 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,11 +41,11 @@ import java.util.Locale
 fun Item_VentPeriod(
     period: M14VentPeriode,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     isCurrentActive: Boolean,
     activeGrossist: M15Grossist? = null,  // UPDATED: Add active grossist parameter
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
-    // UPDATED: Calculate statistics considering active grossist
     val periodStats = remember(
         period.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
@@ -71,8 +75,17 @@ fun Item_VentPeriod(
         dateFormatter.format(Date(period.creationTimestamp))
     }
 
+    val updatedValues =  focusedValuesGetter.active_Central_Values.copy(
+        active_M14VentPeriode_AuFilterAchats = period
+    )
+
+    focusedValuesGetter.update_activeCentralValues(updatedValues)
+
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = updatedValues, key = SemanticsPropertyKey(""))
+            }
             .clickable { onPeriodSelected(period) }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(

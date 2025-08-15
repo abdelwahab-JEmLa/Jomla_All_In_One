@@ -96,7 +96,7 @@ class FocusedValuesGetter(
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
         _activeCentralValues.value = new
     }
-    // Add these methods to the class
+
     fun addPeriodFilter(period: M14VentPeriode) {
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
