@@ -32,6 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -76,7 +78,8 @@ fun Item_Client(
         }
 
         // Get all BonVents for this client
-        val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
+        val clientBonVents =
+            allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
         val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
 
         // Get all vent operations for this client
@@ -117,14 +120,17 @@ fun Item_Client(
 
         Triple(uniqueProducts.size, totalQuantity, totalSalesValue)
     }
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
+    val updatedValues = active_Central_Values.copy(
+        active_M2Client_AuFilterAchats = relative_client
+    )
 
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = updatedValues, key = SemanticsPropertyKey("updatedValues"))
+            }
             .clickable {
-                val active_Central_Values = focusedValuesGetter.active_Central_Values
-                val updatedValues =  active_Central_Values.copy(
-                    active_M2Client_AuFilterAchats = relative_client
-                )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
                 on_Pour_Dissmiss()
             }
@@ -140,7 +146,6 @@ fun Item_Client(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Client avatar or icon
             Box(
                 modifier = Modifier
                     .size(40.dp)

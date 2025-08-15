@@ -75,8 +75,8 @@ fun TopAppBar_With_DropDownMenu(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
                 set(
-                    value = focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats,
-                    key = SemanticsPropertyKey("")
+                    value = focusedValuesGetter.active_Central_Values,
+                    key = SemanticsPropertyKey("active_Central_Values")
                 )
             }
             .getSemanticsTag(
