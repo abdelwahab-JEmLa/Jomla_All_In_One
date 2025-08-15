@@ -34,6 +34,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -142,9 +144,10 @@ fun Item_Client(
         val totalQuantity = relevantVentOperations.sumOf { it.quantity }
         Log.d(TAG, "  - Total quantity: $totalQuantity")
 
-        val totalSalesValue = relevantVentOperations.filter {
+        val filter_relevantVentOperations = relevantVentOperations.filter {
             it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-        }.sumOf {
+        }
+        val totalSalesValue = filter_relevantVentOperations.sumOf {
             val parentM13TarificationPrix =
                 repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency
                     ?: 0.0
@@ -155,9 +158,67 @@ fun Item_Client(
 
         Triple(uniqueProducts.size, totalQuantity, totalSalesValue)
     }
+    val client_Vents = remember(
+        relative_client.keyID,
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        activePeriod?.keyID,
+    ) {
+        Log.d(TAG, "Recalculating purchase info for client: ${relative_client.nom}")
+
+        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        val allVentOperations =
+            viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        var allAchatOperations =
+            viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        Log.d(TAG, "Initial data counts:")
+        Log.d(TAG, "  - BonVents: ${allBonVents.size}")
+        Log.d(TAG, "  - VentOperations: ${allVentOperations.size}")
+        Log.d(TAG, "  - AchatOperations: ${allAchatOperations.size}")
+
+        activePeriod?.let { period ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M14VentPeriod_KeyID == period.keyID
+            }
+            Log.d(TAG, "  - AchatOperations after period filter: ${allAchatOperations.size}")
+        }
+
+        activeGrossist?.let { grossist ->
+            allAchatOperations = allAchatOperations.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
+            Log.d(TAG, "  - AchatOperations after grossist filter: ${allAchatOperations.size}")
+        }
+
+        val clientBonVents =
+            allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
+        val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
+
+        val clientVentOperations = allVentOperations.filter {
+            it.parent_M8BonVent_KeyId in clientBonVentIds
+        }
+
+        val relevantVentOperations = clientVentOperations.filter { ventOperation ->
+            allAchatOperations.any { achatOperation ->
+                achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation))
+                    .isNotEmpty()
+            }
+        }
+
+        val filter_relevantVentOperations = relevantVentOperations.filter {
+            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+        }
+
+        filter_relevantVentOperations
+    }
 
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = client_Vents, key = SemanticsPropertyKey("client_Vents"))
+            }
             .clickable {
                 Log.d(TAG, "=== CLICK EVENT TRIGGERED ===")
                 Log.d(TAG, "About to add client filter for: ${relative_client.nom}")

@@ -91,14 +91,16 @@ class FocusedValuesGetter(
     private val repo14VentPeriode: Repo14VentPeriode,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
-     val TAG = "FocusedValuesGetter"
+    val TAG = "FocusedValuesGetter"
 
     init {
         Log.d(TAG, "FocusedValuesGetter initialized with hashCode: ${this.hashCode()}")
     }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
+    private val _activeCentralValues = mutableStateOf(ActiveCentralValues(
+        active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode()
+    ))
     val active_Central_Values by derivedStateOf {
         val currentValue = _activeCentralValues.value
         Log.v(
@@ -106,6 +108,27 @@ class FocusedValuesGetter(
             "active_Central_Values accessed - current client filter: ${currentValue.active_M2Client_AuFilterAchats?.nom ?: "NULL"}"
         )
         currentValue
+    }
+
+    /**
+     * Helper function to get the current active vent periode
+     * Returns the current active focused M14VentPeriode, or the last one if none is active
+     */
+    private fun getCurrentActiveVentPeriode(): M14VentPeriode? {
+        return try {
+            val currentAppCompt = repo9AppCompt.datasValue.firstOrNull {
+                it.keyID == repo18CentralParametresOfAllApps
+                    .dataValue
+                    ?.au_Lence_Set_Compt_Ac_KeyId
+            }
+
+            repo14VentPeriode.datasValue
+                .find { it.keyID == currentAppCompt?.current_OnVent_M14VentPeriode_KeyID }
+                ?: repo14VentPeriode.datasValue.lastOrNull()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error getting current active vent periode: ${e.message}")
+            null
+        }
     }
 
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
@@ -172,7 +195,7 @@ class FocusedValuesGetter(
         Log.d(TAG, "removePeriodFilter called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
-            active_M14VentPeriode_AuFilterAchats = null
+            active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode() // Reset to current active period instead of null
         )
         update_activeCentralValues(updatedValues)
     }
@@ -273,7 +296,7 @@ class FocusedValuesGetter(
         Log.d(TAG, "clearAllFilters called")
         val currentValues = active_Central_Values
         val updatedValues = currentValues.copy(
-            active_M14VentPeriode_AuFilterAchats = null,
+            active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode(), // Reset to current active period instead of null
             active_M15Grossist_AuFilterAchats = null,
             active_M2Client_AuFilterAchats = null,
             active_M1Produit_AuFilterAchats = null

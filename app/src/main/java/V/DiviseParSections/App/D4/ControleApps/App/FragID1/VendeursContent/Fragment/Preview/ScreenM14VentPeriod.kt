@@ -62,14 +62,16 @@ fun ScreenM14VentPeriod(
                 }
             }
         }
+        val active_Central_Values = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+
         if (focusedValuesGetter.active_Central_Values.show_Dialog_filter_AChats_Par_Client_Acheteur == true) {
-            Dialog_Filter_Client() {
+            Dialog_Filter_Client(onDismiss = {
                 focusedValuesGetter.update_activeCentralValues(
                     focusedValuesGetter.active_Central_Values.copy(
                         show_Dialog_filter_AChats_Par_Client_Acheteur = false
                     )
                 )
-            }
+            }, activePeriod = active_Central_Values)
         }
     }
 }
