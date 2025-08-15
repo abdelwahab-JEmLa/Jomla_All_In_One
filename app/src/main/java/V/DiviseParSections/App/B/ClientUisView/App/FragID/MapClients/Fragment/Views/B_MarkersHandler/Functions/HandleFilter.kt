@@ -149,7 +149,9 @@ fun filterClientsBasedOnMode(
                 val lastTransaction = viewModel.getLastTransaction(it)
                 (
                         (lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit)
+                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Passed_Sans_Livre
+                                )
                                 && (find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, lastTransaction)
                                     ?.parent_M14VentPeriod_KeyId ?: "")
                                 == keyID_currentActiveFocuced_M14VentPeriode

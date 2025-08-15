@@ -83,7 +83,7 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true,
-    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
+    val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
 
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
