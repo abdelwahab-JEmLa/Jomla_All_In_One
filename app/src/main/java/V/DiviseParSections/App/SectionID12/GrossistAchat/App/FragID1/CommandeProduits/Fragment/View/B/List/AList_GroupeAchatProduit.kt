@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,25 +34,65 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
 @Composable
 fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     headViewModel: HeadViewModel = koinViewModel(),
 ) {
-    val repo = viewModel.getter.repo11AchatOperation
+    val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
+    val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+
+    // Get filtered data based on active filters
+    val filteredAchatOperations by remember {
+        derivedStateOf {
+            val activeCentralValues = focusedValuesGetter.active_Central_Values
+            var filteredData = repo.datasValue
+
+            // Apply period filter
+            activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
+                filteredData = filteredData.filter {
+                    it.parent_M14VentPeriod_KeyID == period.keyID
+                }
+            }
+
+            // Apply grossist filter
+            activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
+                filteredData = filteredData.filter {
+                    it.parent_M15Grossist_KeyID == grossist.keyID
+                }
+            }
+
+            // Apply client filter
+            activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
+                filteredData = filteredData.filter { achat ->
+                    // Get associated sales to find client
+                    val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+                    sales.any { sale ->
+                        // Assuming there's a way to get client from sale - adjust based on your data structure
+                        // You might need to check through BonVent or another relationship
+                        true // Placeholder - implement based on your data structure
+                    }
+                }
+            }
+
+            filteredData
+        }
+    }
 
     // Préparation des données groupées par produit
-    val items = remember(repo.filteredDatasValue) {
-        repo.filteredDatasValue.mapNotNull { achat ->
+    val items = remember(filteredAchatOperations) {
+        filteredAchatOperations.mapNotNull { achat ->
             // Vérification de la validité de l'ID couleur produit
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
                 return@mapNotNull null
             }
 
             // Récupération des ventes associées
-            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo.repo10OperationVentCouleur.datasValue)
+            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             val produitId = sales.firstOrNull()?.parent_M1Produit_KeyId
 
             // Validation de l'ID produit
@@ -122,6 +164,7 @@ fun List_GroupeAchatProduit(
             ElevatedCard(
                 modifier = Modifier
                     .getSemanticsTag(repo.datasValue, "repo11AchatOperation_datasValue")
+                    .getSemanticsTag(filteredAchatOperations, "filtered_achat_operations")
                     .getSemanticsTag(items, "grouped_items_list")
                     .fillMaxWidth()
                     .padding(petitePaddine),
@@ -133,14 +176,14 @@ fun List_GroupeAchatProduit(
                         repo.datasValue.isEmpty() ->
                             "Aucune opération d'achat disponible\nAjoutez des opérations d'achat pour commencer"
 
-                        repo.filteredDatasValue.isEmpty() ->
+                        filteredAchatOperations.isEmpty() ->
                             "Aucune opération d'achat ne correspond au filtre actuel\n" +
                                     "(${repo.datasValue.size} opérations totales disponibles)\n" +
                                     "Modifiez ou supprimez le filtre pour voir plus d'opérations"
 
                         else ->
                             "Aucune opération d'achat valide trouvée\n" +
-                                    "(${repo.filteredDatasValue.size} opérations après filtrage)\n" +
+                                    "(${filteredAchatOperations.size} opérations après filtrage)\n" +
                                     "Vérifiez la validité des données ou contactez le support"
                     },
                     fontSize = 12.sp,

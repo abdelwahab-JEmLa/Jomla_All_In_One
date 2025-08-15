@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,19 +36,18 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.compose.koinInject
 
 @Composable
-fun Dialog_Filter_Client(
-    uiState: GrossistAchatSec12FragID1_ViewModel.UiState,
+fun Dialog_Filter_VentPeriod(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    onDismiss: (M2Client?) -> Unit
+    onDismiss: (M14VentPeriode?) -> Unit
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
-    // Use active_Central_Values instead of repository method call
-    val activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats
+    // Use active_Central_Values instead of separate repository calls
     val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
     val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
+    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
     Dialog(
         onDismissRequest = { onDismiss(null) },
@@ -69,7 +68,7 @@ fun Dialog_Filter_Client(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Header - Show active filters context
+                // Header - Show active filters
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -77,16 +76,15 @@ fun Dialog_Filter_Client(
                 ) {
                     Column {
                         Text(
-                            text = "Sélectionner un Client",
+                            text = "Sélectionner une Période",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
 
-                        // Show active filters for context
-                        if (activePeriod != null || activeGrossist != null) {
+                        if (activeGrossist != null || activeClient != null) {
                             val filterTexts = mutableListOf<String>()
-                            activePeriod?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
                             activeGrossist?.let { filterTexts.add("Grossiste: ${it.nom}") }
+                            activeClient?.let { filterTexts.add("Client: ${it.nom}") }
 
                             Text(
                                 text = "Filtres actifs: ${filterTexts.joinToString(", ")}",
@@ -107,12 +105,12 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Clear Filter Option - Only clear client filter
+                // Clear Filter Option
                 Card(
                     modifier = Modifier
                         .clickable {
-                            // FIXED: Use focusedValuesGetter extension function to remove client filter only
-                            focusedValuesGetter.removeClientFilter()
+                            // FIXED: Use focusedValuesGetter extension function to remove period filter
+                            focusedValuesGetter.removePeriodFilter()
                             onDismiss(null)
                         }
                         .fillMaxWidth()
@@ -130,12 +128,12 @@ fun Dialog_Filter_Client(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Supprimer le filtre client",
+                            contentDescription = "Supprimer le filtre période",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = "Supprimer le filtre client",
+                            text = "Supprimer le filtre période",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -145,16 +143,16 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Client List
-                LazyColumn_Client(
+                // VentPeriod List
+                LazyColumn_VentPeriod(
                     viewModel = viewModel,
-                    activePeriod = activePeriod,
+                    currentActivePeriod = currentActiveFocuced_M14VentPeriode,
                     activeGrossist = activeGrossist,
                     focusedValuesGetter = focusedValuesGetter, // Pass the getter
-                    onClientSelected = { client ->
-                        // FIXED: Use focusedValuesGetter extension function to add client filter
-                        focusedValuesGetter.addClientFilter(client)
-                        onDismiss(client)
+                    onPeriodSelected = { period ->
+                        // FIXED: Use focusedValuesGetter extension function to add period filter
+                        focusedValuesGetter.addPeriodFilter(period)
+                        onDismiss(null)
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -164,88 +162,76 @@ fun Dialog_Filter_Client(
 }
 
 @Composable
-fun LazyColumn_Client(
+fun LazyColumn_VentPeriod(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
+    currentActivePeriod: M14VentPeriode?,
     activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
     focusedValuesGetter: FocusedValuesGetter, // Add this parameter
-    onClientSelected: (M2Client) -> Unit
+    onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
-    // Filter clients based on both active period and active grossist
-    val clientsWithPurchases = remember(
-        viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+
+    // Get all vent periods and filter those that have associated achat operations
+    val periodsWithAchats = remember(
+        viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
-        activePeriod?.keyID,
-        activeGrossist?.keyID
+        activeGrossist
     ) {
-        val allClients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
-        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        val allPeriods = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
         var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
 
-        // Filter achat operations by active period AND grossist if they are selected
-        activePeriod?.let { period ->
-            allAchatOperations = allAchatOperations.filter {
-                it.parent_M14VentPeriod_KeyID == period.keyID
-            }
-        }
-
+        // Filter by active grossist if one is selected
         activeGrossist?.let { grossist ->
             allAchatOperations = allAchatOperations.filter {
                 it.parent_M15Grossist_KeyID == grossist.keyID
             }
         }
 
-        // Get all client IDs that have purchases (considering both period and grossist filters)
-        val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
-            val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(allVentOperations)
-            relatedVentOperations.mapNotNull { ventOperation ->
-                val bonVent = allBonVents.find { it.keyID == ventOperation.parent_M8BonVent_KeyId }
-                bonVent?.parent_M2Client_KeyID
-            }
-        }.toSet()
+        // Get all period IDs that have associated achat operations
+        val periodIdsWithAchats = allAchatOperations.map {
+            it.parent_M14VentPeriod_KeyID
+        }.filter { it != "null" }.toSet()
 
-        // Filter clients to only include those with purchases
-        allClients.filter { client ->
-            client.keyID in clientIdsWithPurchases
-        }
+        // Filter periods to only include those with achat operations
+        val filteredPeriods = allPeriods.filter { period ->
+            period.keyID in periodIdsWithAchats
+        }.sortedByDescending { it.creationTimestamp }
+
+        // Put current active period at the top if it exists
+        currentActivePeriod?.let { activePeriod ->
+            if (activePeriod.keyID in periodIdsWithAchats) {
+                val withoutActive = filteredPeriods.filter { it.keyID != activePeriod.keyID }
+                listOf(activePeriod) + withoutActive
+            } else {
+                filteredPeriods
+            }
+        } ?: filteredPeriods
     }
 
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (clientsWithPurchases.isEmpty()) {
+        if (periodsWithAchats.isEmpty()) {
             item {
-                val message = when {
-                    activePeriod != null && activeGrossist != null ->
-                        "Aucun client avec des achats trouvé pour cette période et ce grossiste"
-                    activePeriod != null ->
-                        "Aucun client avec des achats trouvé pour cette période"
-                    activeGrossist != null ->
-                        "Aucun client avec des achats trouvé pour ce grossiste"
-                    else ->
-                        "Aucun client avec des achats trouvé"
-                }
-
                 Text(
-                    text = message,
+                    text = if (activeGrossist != null)
+                        "Aucune période avec des achats trouvée pour ce grossiste"
+                    else
+                        "Aucune période avec des achats trouvée",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp)
                 )
             }
         } else {
-            items(clientsWithPurchases) { client ->
-                Item_Client(
-                    client = client,
+            items(periodsWithAchats) { period ->
+                Item_VentPeriod(
+                    period = period,
                     viewModel = viewModel,
-                    activePeriod = activePeriod,
+                    isCurrentActive = period.keyID == currentActivePeriod?.keyID,
                     activeGrossist = activeGrossist,
-                    onClientSelected = onClientSelected
+                    onPeriodSelected = onPeriodSelected
                 )
             }
         }

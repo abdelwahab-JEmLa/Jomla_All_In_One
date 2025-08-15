@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.W_AchatProduitOperation.View.updated_Achats
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.background
@@ -21,17 +21,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,24 +41,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.graphics.toColorInt
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-
+import org.koin.compose.koinInject
 
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
     titel: String = "Choisir un Grossiste",
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList(),
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: (M15Grossist?) -> Unit
 ) {
     val datasValue_repo11AchatOperation =
@@ -69,10 +63,12 @@ fun Dialog_Choisire_Grossist_Modularized(
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     val focusManager = LocalFocusManager.current
 
-    // Get current active filters - UPDATED to use new method
-    val (activePeriod, activeGrossist, activeClient) = remember(viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.currentFilterQuery) {
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.getCurrentActiveFilters()
-    }
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
+
+    // Use active_Central_Values instead of repository method call
+    val activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats
+    val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
+    val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
 
     val activePeriodId = activePeriod?.keyID
 
@@ -160,7 +156,7 @@ fun Dialog_Choisire_Grossist_Modularized(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // Header with title and active filters display - UPDATED
+                // Header with title and active filters display
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -173,7 +169,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                             fontWeight = FontWeight.Bold
                         )
 
-                        // Show active filters - UPDATED
+                        // Show active filters
                         if (activePeriod != null || activeClient != null) {
                             val filterTexts = mutableListOf<String>()
                             activePeriod?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
@@ -186,37 +182,82 @@ fun Dialog_Choisire_Grossist_Modularized(
                                 fontWeight = FontWeight.Medium
                             )
                         }
+                    }
 
-                        TextButton(onClick = {
-                            focusManager.clearFocus()
-                            onDismiss(null)
-                        }) {
-                            Icon(
-                                Icons.Default.Clear,
-                                contentDescription = "Fermer",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        onDismiss(null)
+                    }) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "Fermer",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .clickable {
+                                    focusManager.clearFocus()
+                                    // FIXED: Use focusedValuesGetter extension function to remove grossist filter
+                                    focusedValuesGetter.removeGrossistFilter()
+                                    onDismiss(null)
+                                }
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Clear,
+                                    contentDescription = "Supprimer le filtre grossiste",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Text(
+                                    text = "Supprimer le filtre grossiste",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                    if (nullGrossistCount > 0) {
                         item {
                             Card(
                                 modifier = Modifier
                                     .clickable {
                                         focusManager.clearFocus()
-                                        // UPDATED: Clear only grossist filter, keep others
-                                        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.removeGrossistFilter()
+                                        val nullGrossist = M15Grossist(
+                                            keyID = "NULL_GROSSIST_FILTER",
+                                            nom = "Grossiste non défini",
+                                            couleur_In_Str = "#FF0000"
+                                        )
+                                        // FIXED: Use focusedValuesGetter extension function to add grossist filter
+                                        focusedValuesGetter.addGrossistFilter(nullGrossist)
                                         onDismiss(null)
                                     }
                                     .fillMaxWidth(),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                             ) {
@@ -226,136 +267,45 @@ fun Dialog_Choisire_Grossist_Modularized(
                                         .padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        Icons.Default.Clear,
-                                        contentDescription = "Supprimer le filtre grossiste",
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Text(
-                                        text = "Supprimer le filtre grossiste",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-
-                        if (nullGrossistCount > 0) {
-                            item {
-                                Card(
-                                    modifier = Modifier
-                                        .clickable {
-                                            focusManager.clearFocus()
-                                            val nullGrossist = M15Grossist(
-                                                keyID = "NULL_GROSSIST_FILTER",
-                                                nom = "Grossiste non défini",
-                                                couleur_In_Str = "#FF0000"
-                                            )
-                                            // UPDATED: Add grossist filter while keeping other active filters
-                                            viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.addGrossistFilter(nullGrossist)
-                                            onDismiss(null)
-                                        }
-                                        .fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    ),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        BadgedBox(
-                                            badge = {
-                                                Badge(
-                                                    containerColor = MaterialTheme.colorScheme.error,
-                                                    contentColor = MaterialTheme.colorScheme.onError
-                                                ) {
-                                                    Text(
-                                                        text = nullGrossistCount.toString(),
-                                                        style = MaterialTheme.typography.labelSmall
-                                                    )
-                                                }
-                                            }
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .clip(CircleShape)
-                                                    .background(MaterialTheme.colorScheme.error),
-                                                contentAlignment = Alignment.Center
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                                contentColor = MaterialTheme.colorScheme.onError
                                             ) {
-                                                Icon(
-                                                    Icons.Default.FilterList,
-                                                    contentDescription = "Grossiste non défini",
-                                                    tint = MaterialTheme.colorScheme.onError
+                                                Text(
+                                                    text = nullGrossistCount.toString(),
+                                                    style = MaterialTheme.typography.labelSmall
                                                 )
                                             }
                                         }
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = "Grossiste non défini",
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                fontWeight = FontWeight.Medium,
-                                                color = MaterialTheme.colorScheme.onErrorContainer
-                                            )
-                                            Text(
-                                                text = "$nullGrossistCount opérations sans grossiste${if (activePeriodId != null) " (période active)" else ""}",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onErrorContainer
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.error),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Default.FilterList,
+                                                contentDescription = "Grossiste non défini",
+                                                tint = MaterialTheme.colorScheme.onError
                                             )
                                         }
                                     }
-                                }
-                            }
-                        }
-
-                        items(grossistsWithPurchaseCount) { (grossist, purchaseCount) ->
-                            GrossistItem(
-                                list_M11AchatOperation = list_M11AchatOperation,
-                                grossist = grossist,
-                                purchaseCount = purchaseCount,
-                                grossistCredit = grossistCredits[grossist.keyID] ?: 0.0,
-                                isLoadingCredit = isLoadingCredits,
-                                activePeriodId = activePeriodId,
-                                onSelect = {
-                                    focusManager.clearFocus()
-                                    // UPDATED: Add grossist filter while keeping other active filters
-                                    viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.addGrossistFilter(grossist)
-                                    onDismiss(null)
-                                }
-                            )
-                        }
-
-                        if (grossistsWithPurchaseCount.isEmpty() && nullGrossistCount == 0) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Icon(
-                                            Icons.Default.Business,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(48.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            text = if (activePeriodId != null)
-                                                "Aucun grossiste avec des achats pour cette période"
-                                            else
-                                                "Aucun grossiste disponible",
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            style = MaterialTheme.typography.bodyMedium
+                                            text = "Grossiste non défini",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                        Text(
+                                            text = "$nullGrossistCount opérations sans grossiste${if (activePeriodId != null) " (période active)" else ""}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
                                         )
                                     }
                                 }
@@ -363,269 +313,66 @@ fun Dialog_Choisire_Grossist_Modularized(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(onClick = {
-                            focusManager.clearFocus()
-                            onDismiss(null)
-                        }) {
-                            Text("Annuler")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun GrossistItem(
-    grossist: M15Grossist,
-    purchaseCount: Int,
-    grossistCredit: Double,
-    isLoadingCredit: Boolean,
-    activePeriodId: String?,
-    onSelect: () -> Unit,
-    list_M11AchatOperation: List<M11AchatOperation> = emptyList()
-) {
-    val datas = updated_Achats(list_M11AchatOperation, grossist)
-    var showTransactionDialog by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .getSemanticsTag(datas, "datas")
-            .clickable { onSelect() }
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BadgedBox(
-                badge = {
-                    if (purchaseCount > 0) {
-                        Badge(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ) {
-                            Text(
-                                purchaseCount.toString(),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    }
-                }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(
-                            try {
-                                Color(grossist.couleur_In_Str.toColorInt())
-                            } catch (e: Exception) {
-                                MaterialTheme.colorScheme.primary
+                    items(grossistsWithPurchaseCount) { (grossist, purchaseCount) ->
+                        GrossistItem(
+                            list_M11AchatOperation = list_M11AchatOperation,
+                            grossist = grossist,
+                            purchaseCount = purchaseCount,
+                            grossistCredit = grossistCredits[grossist.keyID] ?: 0.0,
+                            isLoadingCredit = isLoadingCredits,
+                            activePeriodId = activePeriodId,
+                            onSelect = {
+                                focusManager.clearFocus()
+                                // FIXED: Use focusedValuesGetter extension function to add grossist filter
+                                focusedValuesGetter.addGrossistFilter(grossist)
+                                onDismiss(null)
                             }
                         )
-                ) {
-                    Icon(
-                        Icons.Default.Business,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
-                    )
+                    }
+
+                    if (grossistsWithPurchaseCount.isEmpty() && nullGrossistCount == 0) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(
+                                        Icons.Default.Business,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = if (activePeriodId != null)
+                                            "Aucun grossiste avec des achats pour cette période"
+                                        else
+                                            "Aucun grossiste disponible",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = grossist.nom,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = grossist.get_DebugInfos(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (purchaseCount > 0) {
-                        Text(
-                            text = "• $purchaseCount achats${if (activePeriodId != null) " (période)" else ""}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-
-                // Display total credit for this grossist
-                if (isLoadingCredit) {
-                    Text(
-                        text = "Chargement crédit...",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
-                        fontWeight = FontWeight.Normal
-                    )
-                } else {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.AccountBalance,
-                            contentDescription = "Crédit",
-                            modifier = Modifier.size(14.dp),
-                            tint = if (grossistCredit > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = "Crédit: ${String.format("%.2f", grossistCredit)} DA",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (grossistCredit > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            fontWeight = if (grossistCredit > 0) FontWeight.SemiBold else FontWeight.Normal
-                        )
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        onDismiss(null)
+                    }) {
+                        Text("Annuler")
                     }
                 }
             }
-
-            IconButton(onClick = { showTransactionDialog = true }) {
-                Icon(
-                    Icons.Default.Receipt,
-                    contentDescription = "Voir les transactions",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
         }
     }
-
-    if (showTransactionDialog) {
-        TransactionDialog(
-            grossist = grossist,
-            onDismiss = { showTransactionDialog = false }
-        )
-    }
-}
-
-// Helper function to load credits for all grossists with real-time updates
-private fun loadCreditsForAllGrossists(
-    grossists: List<M15Grossist>,
-    onCreditsLoaded: (Map<String, Double>) -> Unit
-): Pair<Map<String, List<ValueEventListener>>, Map<String, Double>> {
-    val creditsMap = mutableMapOf<String, Double>()
-    val allListeners = mutableMapOf<String, List<ValueEventListener>>()
-
-    if (grossists.isEmpty()) {
-        onCreditsLoaded(emptyMap())
-        return Pair(emptyMap(), emptyMap())
-    }
-
-    grossists.forEach { grossist ->
-        val listeners = loadCreditForGrossist(grossist.keyID) { credit ->
-            creditsMap[grossist.keyID] = credit
-            onCreditsLoaded(creditsMap.toMap())
-        }
-        allListeners[grossist.keyID] = listeners
-    }
-
-    return Pair(allListeners, creditsMap.toMap())
-}
-
-// Helper function to load credit for a specific grossist
-private fun loadCreditForGrossist(
-    grossistKeyID: String,
-    onCreditLoaded: (Double) -> Unit
-): List<ValueEventListener> {
-    var transactionTotal = 0.0
-    var versementTotal = 0.0
-    var completedQueries = 0
-    val totalQueries = 2
-    val listeners = mutableListOf<ValueEventListener>()
-
-    fun checkComplete() {
-        completedQueries++
-        if (completedQueries == totalQueries) {
-            onCreditLoaded(transactionTotal - versementTotal)
-        }
-    }
-
-    // Load TransactionItems for this grossist
-    val transactionListener = object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            transactionTotal = 0.0
-            for (child in snapshot.children) {
-                try {
-                    val transaction = child.getValue(TransactionItem::class.java)
-                    transaction?.let { transactionTotal += it.credit }
-                } catch (e: Exception) {
-                    // Handle parsing error
-                }
-            }
-            checkComplete()
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            checkComplete()
-        }
-    }
-
-    TransactionItem.ref
-        .orderByChild("parent_GrossistKeyID")
-        .equalTo(grossistKeyID)
-        .addValueEventListener(transactionListener)
-
-    listeners.add(transactionListener)
-
-    // Load VersementItems for this grossist
-    try {
-        val versementRef = TransactionItem.ref.parent?.child("VersementItem")
-        val versementListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                versementTotal = 0.0
-                for (child in snapshot.children) {
-                    try {
-                        val versement = child.child("versement").getValue(Double::class.java)
-                        versement?.let { versementTotal += it }
-                    } catch (e: Exception) {
-                        // Handle parsing error
-                    }
-                }
-                checkComplete()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                checkComplete()
-            }
-        }
-
-        versementRef?.orderByChild("parent_GrossistKeyID")
-            ?.equalTo(grossistKeyID)
-            ?.addValueEventListener(versementListener)
-
-        listeners.add(versementListener)
-
-    } catch (e: Exception) {
-        // If VersementItem loading fails, just complete with transaction total
-        checkComplete()
-    }
-
-    return listeners
 }

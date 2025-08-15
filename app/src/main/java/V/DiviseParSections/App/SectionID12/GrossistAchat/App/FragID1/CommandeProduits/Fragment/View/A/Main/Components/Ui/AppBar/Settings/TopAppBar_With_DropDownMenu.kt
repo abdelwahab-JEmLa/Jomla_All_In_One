@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.AppBar.Settings
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.animation.core.Spring
@@ -206,9 +206,11 @@ fun TopAppBar_With_DropDownMenu(
         }
     )
 }
-
 @Composable
-private fun ClearFilterButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+private fun ClearFilterButton(
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+) {
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
@@ -226,11 +228,8 @@ private fun ClearFilterButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
             },
             text = { Text("Effacer le filtre") },
             onClick = {
-                // Clear the filter
-                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-                    .updateFilterQuery(
-                        V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation.FilterQuery.NO_FILTER
-                    )
+                // Clear all filters using FocusedValuesGetter
+                focusedValuesGetter.clearAllFilters()
                 viewModel.updateShowMenu(false)
             }
         )
@@ -375,6 +374,7 @@ private fun ExpressiveDeleteIcon(
                                 Color(0xFFF59E0B)
                             )
                         )
+
                         else -> Brush.linearGradient(
                             colors = listOf(
                                 Color.Transparent,

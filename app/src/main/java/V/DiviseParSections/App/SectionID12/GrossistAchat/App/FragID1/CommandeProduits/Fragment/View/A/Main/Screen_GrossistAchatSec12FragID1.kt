@@ -2,12 +2,12 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.AppBar.Settings.TopAppBar_With_DropDownMenu
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod.Dialog_Filter_VentPeriod
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.List_GroupeAchatProduit
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,12 +23,12 @@ fun Screen_GrossistAchatSec12FragID1(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repo = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
     Column(modifier = modifier.fillMaxSize()) {
-        TopAppBar_With_DropDownMenu(viewModel, uiState =uiState)
+        TopAppBar_With_DropDownMenu(viewModel, uiState = uiState)
         List_GroupeAchatProduit(
             modifier = Modifier.fillMaxSize().padding(top = 8.dp),
             viewModel = viewModel
@@ -37,11 +37,10 @@ fun Screen_GrossistAchatSec12FragID1(
 
     if (uiState.dialog_Filter_VentPeriod_showDialog) {
         Dialog_Filter_VentPeriod(viewModel) { period ->
-            // FIXED: Use addPeriodFilter to preserve other filters
             if (period != null) {
-                repo.addPeriodFilter(period)
+                focusedValuesGetter.addPeriodFilter(period)
             } else {
-                repo.removePeriodFilter()
+                focusedValuesGetter.removePeriodFilter()
             }
             viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
         }
@@ -51,13 +50,12 @@ fun Screen_GrossistAchatSec12FragID1(
         Dialog_Choisire_Grossist_Modularized(
             titel = "Choisir un Grossiste",
             viewModel = viewModel,
-            list_M11AchatOperation = repo.datasValue
+            list_M11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
         ) { grossist ->
-            // FIXED: Use addGrossistFilter to preserve other filters
             if (grossist != null) {
-                repo.addGrossistFilter(grossist)
+                focusedValuesGetter.addGrossistFilter(grossist)
             } else {
-                repo.removeGrossistFilter()
+                focusedValuesGetter.removeGrossistFilter()
             }
             viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = false)
         }
@@ -65,17 +63,12 @@ fun Screen_GrossistAchatSec12FragID1(
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
         Dialog_Filter_Client(uiState, viewModel) { client ->
-            // FIXED: Use addClientFilter to preserve other filters (including period filter)
             if (client != null) {
-                repo.addClientFilter(client)
+                focusedValuesGetter.addClientFilter(client)
             } else {
-                repo.removeClientFilter()
+                focusedValuesGetter.removeClientFilter()
             }
             viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
         }
     }
-}
-
-private fun updateFilter(repo: Repo11AchatOperation, filter: Repo11AchatOperation.FilterQuery?) {
-    repo.updateFilterQuery(filter ?: Repo11AchatOperation.FilterQuery.NO_FILTER)
 }

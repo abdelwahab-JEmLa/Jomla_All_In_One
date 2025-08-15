@@ -96,7 +96,64 @@ class FocusedValuesGetter(
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
         _activeCentralValues.value = new
     }
+    // Add these methods to the class
+    fun addPeriodFilter(period: M14VentPeriode) {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M14VentPeriode_AuFilterAchats = period
+        )
+        update_activeCentralValues(updatedValues)
+    }
 
+    fun removePeriodFilter() {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M14VentPeriode_AuFilterAchats = null
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    fun addGrossistFilter(grossist: M15Grossist) {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M15Grossist_AuFilterAchats = grossist
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    fun removeGrossistFilter() {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M15Grossist_AuFilterAchats = null
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    fun addClientFilter(client: M2Client) {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M2Client_AuFilterAchats = client
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    fun removeClientFilter() {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M2Client_AuFilterAchats = null
+        )
+        update_activeCentralValues(updatedValues)
+    }
+
+    fun clearAllFilters() {
+        val currentValues = active_Central_Values
+        val updatedValues = currentValues.copy(
+            active_M14VentPeriode_AuFilterAchats = null,
+            active_M15Grossist_AuFilterAchats = null,
+            active_M2Client_AuFilterAchats = null
+        )
+        update_activeCentralValues(updatedValues)
+    }
     val currentActive_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull {
             it.keyID == repo18CentralParametresOfAllApps
