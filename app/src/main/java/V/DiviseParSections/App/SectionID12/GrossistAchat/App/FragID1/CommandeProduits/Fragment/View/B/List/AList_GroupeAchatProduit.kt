@@ -74,8 +74,7 @@ fun List_GroupeAchatProduit(
                     val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
                     sales.any { sale ->
                         // Method 1: Check if sale has direct client reference
-                        if (sale.parentClientInfosKeyID.isNotBlank() == true &&
-                            sale.parentClientInfosKeyID == client.keyID) {
+                        if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
                             return@any true
                         }
 

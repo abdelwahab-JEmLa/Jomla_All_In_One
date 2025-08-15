@@ -73,6 +73,12 @@ fun TopAppBar_With_DropDownMenu(
 
     TopAppBar(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats,
+                    key = SemanticsPropertyKey("")
+                )
+            }
             .getSemanticsTag(
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
                 "currentActiveFocuced_M14VentPeriode"
@@ -464,7 +470,10 @@ private fun DropDownItem_4(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
-                set(value = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats, key = SemanticsPropertyKey(""))
+                set(
+                    value = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats,
+                    key = SemanticsPropertyKey("")
+                )
             }
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
