@@ -65,20 +65,16 @@ fun Dialog_Choisire_Grossist_Modularized(
 
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
-    // Use active_Central_Values instead of repository method call
     val activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats
-    val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
     val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
 
     val activePeriodId = activePeriod?.keyID
 
-    // State for storing credits for each grossist
     var grossistCredits by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
     var totalCreditsAllGrossists by remember { mutableStateOf(0.0) }
     var isLoadingCredits by remember { mutableStateOf(true) }
     var creditListeners by remember { mutableStateOf<Map<String, List<ValueEventListener>>>(emptyMap()) }
 
-    // Filter grossists based on active period and calculate purchase counts
     val grossistsWithPurchaseCount =
         remember(grossists, datasValue_repo11AchatOperation, activePeriodId) {
             val filteredOperations = if (activePeriodId != null) {
@@ -108,15 +104,8 @@ fun Dialog_Choisire_Grossist_Modularized(
         }
     }
 
-    // Load credits for all grossists with real-time updates
     LaunchedEffect(grossists) {
         isLoadingCredits = true
-
-        // Remove previous listeners
-        creditListeners.values.flatten().forEach { listener ->
-            // Note: In a real implementation, you would need to remove these listeners
-            // from their respective Firebase references
-        }
 
         val (listeners, initialCredits) = loadCreditsForAllGrossists(grossists) { creditsMap ->
             grossistCredits = creditsMap
