@@ -224,7 +224,7 @@ fun LazyColumn_VentPeriod(
         } else {
             items(periodsWithAchats) { period ->
                 Item_VentPeriod(
-                    period = period,
+                    relative_Period = period,
                     viewModel = viewModel,
                     isCurrentActive = period.keyID == currentActivePeriod?.keyID,
                     activeGrossist = activeGrossist,

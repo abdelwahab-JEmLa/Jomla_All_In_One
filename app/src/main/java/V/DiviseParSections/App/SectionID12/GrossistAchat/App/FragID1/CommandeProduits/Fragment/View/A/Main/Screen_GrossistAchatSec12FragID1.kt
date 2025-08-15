@@ -37,11 +37,6 @@ fun Screen_GrossistAchatSec12FragID1(
 
     if (uiState.dialog_Filter_VentPeriod_showDialog) {
         Dialog_Filter_VentPeriod(viewModel) { period ->
-            if (period != null) {
-                focusedValuesGetter.addPeriodFilter(period)
-            } else {
-                focusedValuesGetter.removePeriodFilter()
-            }
             viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
         }
     }

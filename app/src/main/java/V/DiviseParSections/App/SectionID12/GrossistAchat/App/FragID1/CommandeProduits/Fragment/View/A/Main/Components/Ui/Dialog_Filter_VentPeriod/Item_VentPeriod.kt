@@ -39,7 +39,7 @@ import java.util.Locale
 
 @Composable
 fun Item_VentPeriod(
-    period: M14VentPeriode,
+    relative_Period: M14VentPeriode,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     isCurrentActive: Boolean,
@@ -47,13 +47,13 @@ fun Item_VentPeriod(
     onPeriodSelected: (M14VentPeriode) -> Unit
 ) {
     val periodStats = remember(
-        period.keyID,
+        relative_Period.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
         activeGrossist
     ) {
         var achatOperations =
             viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
-                .filter { it.parent_M14VentPeriod_KeyID == period.keyID }
+                .filter { it.parent_M14VentPeriod_KeyID == relative_Period.keyID }
 
         // UPDATED: Filter by active grossist if one is selected
         activeGrossist?.let { grossist ->
@@ -71,12 +71,13 @@ fun Item_VentPeriod(
 
     // Format date
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-    val formattedDate = remember(period.creationTimestamp) {
-        dateFormatter.format(Date(period.creationTimestamp))
+    val formattedDate = remember(relative_Period.creationTimestamp) {
+        dateFormatter.format(Date(relative_Period.creationTimestamp))
     }
 
-    val updatedValues =  focusedValuesGetter.active_Central_Values.copy(
-        active_M14VentPeriode_AuFilterAchats = period
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
+    val updatedValues =  active_Central_Values.copy(
+        active_M14VentPeriode_AuFilterAchats = relative_Period
     )
 
     focusedValuesGetter.update_activeCentralValues(updatedValues)
@@ -84,9 +85,21 @@ fun Item_VentPeriod(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
+                set(
+                    value = relative_Period.keyID,
+                    key = SemanticsPropertyKey("relative_Periodrelative_Period")
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = active_Central_Values.active_M14VentPeriode_AuFilterAchats?.keyID?:"",
+                    key = SemanticsPropertyKey("active_Central_Values")
+                )
+            }
+            .semantics(mergeDescendants = true) {
                 set(value = updatedValues, key = SemanticsPropertyKey(""))
             }
-            .clickable { onPeriodSelected(period) }
+            .clickable { onPeriodSelected(relative_Period) }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentActive)
@@ -134,7 +147,7 @@ fun Item_VentPeriod(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = period.get_DebugInfos(),
+                        text = relative_Period.get_DebugInfos(),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,

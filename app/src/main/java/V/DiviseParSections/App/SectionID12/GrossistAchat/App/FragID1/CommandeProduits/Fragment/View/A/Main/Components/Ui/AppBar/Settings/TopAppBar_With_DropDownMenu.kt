@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
@@ -453,9 +455,17 @@ private fun DropDownItem_3(viewModel: GrossistAchatSec12FragID1_ViewModel) {
 }
 
 @Composable
-private fun DropDownItem_4(viewModel: GrossistAchatSec12FragID1_ViewModel, text: String) {
+private fun DropDownItem_4(
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    text: String,
+    focusedValuesGetter: FocusedValuesGetter= koinInject()
+) {
+    
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats, key = SemanticsPropertyKey(""))
+            }
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
