@@ -45,6 +45,7 @@ fun List_GroupeAchatProduit(
 ) {
     val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
 
     // Get filtered data based on active filters
     val filteredAchatOperations by remember {
@@ -66,15 +67,34 @@ fun List_GroupeAchatProduit(
                 }
             }
 
-            // Apply client filter
+            // Apply client filter - FIXED IMPLEMENTATION
             activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
                 filteredData = filteredData.filter { achat ->
                     // Get associated sales to find client
                     val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
                     sales.any { sale ->
-                        // Assuming there's a way to get client from sale - adjust based on your data structure
-                        // You might need to check through BonVent or another relationship
-                        true // Placeholder - implement based on your data structure
+                        // Method 1: Check if sale has direct client reference
+                        if (sale.parentClientInfosKeyID.isNotBlank() == true &&
+                            sale.parentClientInfosKeyID == client.keyID) {
+                            return@any true
+                        }
+
+                        // Method 2: Check through BonVent relationship
+                        val bonVent = repo8BonVent.datasValue
+                            .find { it.keyID == sale.parent_M8BonVent_KeyId }
+
+                        bonVent?.parent_M2Client_KeyID == client.keyID
+                    }
+                }
+            }
+
+            // Apply product filter - NEW IMPLEMENTATION
+            activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
+                filteredData = filteredData.filter { achat ->
+                    // Get associated sales to find product
+                    val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+                    sales.any { sale ->
+                        sale.parent_M1Produit_KeyId == product.keyID
                     }
                 }
             }
@@ -176,10 +196,26 @@ fun List_GroupeAchatProduit(
                         repo.datasValue.isEmpty() ->
                             "Aucune opération d'achat disponible\nAjoutez des opérations d'achat pour commencer"
 
-                        filteredAchatOperations.isEmpty() ->
-                            "Aucune opération d'achat ne correspond au filtre actuel\n" +
-                                    "(${repo.datasValue.size} opérations totales disponibles)\n" +
-                                    "Modifiez ou supprimez le filtre pour voir plus d'opérations"
+                        filteredAchatOperations.isEmpty() -> {
+                            val activeFilters = mutableListOf<String>()
+                            focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats?.let {
+                                activeFilters.add("Période: ")
+                            }
+                            focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats?.let {
+                                activeFilters.add("Grossiste: ${it.nom}")
+                            }
+                            focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats?.let {
+                                activeFilters.add("Client: ${it.nom}")
+                            }
+                            focusedValuesGetter.active_Central_Values.active_M1Produit_AuFilterAchats?.let {
+                                activeFilters.add("Produit: ${it.nom}")
+                            }
+
+                            "Aucune opération d'achat ne correspond aux filtres actifs:\n" +
+                                    activeFilters.joinToString("\n") +
+                                    "\n\n(${repo.datasValue.size} opérations totales disponibles)\n" +
+                                    "Modifiez ou supprimez les filtres pour voir plus d'opérations"
+                        }
 
                         else ->
                             "Aucune opération d'achat valide trouvée\n" +
