@@ -3,8 +3,8 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,13 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,12 +49,9 @@ fun Dialog_Filter_Client(
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
-    // Use active_Central_Values instead of repository method call
     val activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats
     val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
-    val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
 
-    // FIXED TODO(1): Calculate total sales summary for all filtered clients
     val clientsSalesSummary = remember(
         viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
@@ -189,7 +187,6 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // FIXED TODO(1): Total Sales Summary Card
                 if (clientsSalesSummary.first > 0) {
                     Card(
                         modifier = Modifier
