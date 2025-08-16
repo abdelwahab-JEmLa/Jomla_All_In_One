@@ -51,11 +51,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
-val desactive_Le_Animation_Pour_Layout_Inspecteur = true //<--
-//TODO(1): faique si true de desactive l animation
 
-      //<--
-      //TODO(1): fait que le card afficeh non ecout soit a nas de playe bar
+val desactive_Le_Animation_Pour_Layout_Inspecteur = true // FIXED: Animation control flag
 
 // Enhanced audio state to better track audio availability
 enum class AudioAvailabilityState {
@@ -223,6 +220,14 @@ fun AudioPlayerControls(
                     errorMessage = errorMessage
                 )
             }
+
+            // FIXED TODO(1): Display "not listened" card below the play bar
+            StatusIndicatorBelowPlayBar(
+                isListened = isListened,
+                isAdminMessage = isAdminMessage,
+                latestTimestamp = latestTimestamp,
+                datesHandler = datesHandler
+            )
         }
     }
 }
@@ -261,11 +266,22 @@ private fun EnhancedPlaybackButton(
         ) {
             when (audioAvailabilityState) {
                 AudioAvailabilityState.CHECKING, AudioAvailabilityState.DOWNLOADING -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
+                    // FIXED TODO(1): Conditional animation based on flag
+                    if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
+                        // Static icon instead of animated progress indicator
+                        Icon(
+                            imageVector = Icons.Default.CloudDownload,
+                            contentDescription = "Chargement...",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    }
                 }
                 AudioAvailabilityState.PLAYING -> {
                     Icon(
@@ -319,14 +335,28 @@ private fun EnhancedProgressSection(
         // Progress Bar
         when (audioAvailabilityState) {
             AudioAvailabilityState.CHECKING, AudioAvailabilityState.DOWNLOADING -> {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp)),
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
-                )
+                // FIXED TODO(1): Conditional animation based on flag
+                if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
+                    // Static progress bar at 50% when animations are disabled
+                    LinearProgressIndicator(
+                        progress = { 0.5f },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                    )
+                } else {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                    )
+                }
             }
             AudioAvailabilityState.PLAYING -> {
                 if (playbackProgress.duration > 0) {
@@ -340,14 +370,27 @@ private fun EnhancedProgressSection(
                         trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     )
                 } else {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(6.dp)
-                            .clip(RoundedCornerShape(3.dp)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                    )
+                    // FIXED TODO(1): Conditional animation based on flag
+                    if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
+                        LinearProgressIndicator(
+                            progress = { 0.5f },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        )
+                    }
                 }
             }
             AudioAvailabilityState.DOWNLOAD_ERROR, AudioAvailabilityState.PLAYBACK_ERROR -> {
@@ -390,8 +433,8 @@ private fun EnhancedProgressSection(
                 errorMessage = errorMessage
             )
 
-            // Status indicator
-            StatusIndicator(
+            // Status indicator (minimal version for top area)
+            MinimalStatusIndicator(
                 isAdminMessage = isAdminMessage,
                 isListened = isListened,
                 latestTimestamp = latestTimestamp,
@@ -470,8 +513,10 @@ private fun EnhancedTimeDisplay(
         }
     }
 }
+
+// Minimal status indicator for top area (reduced from original StatusIndicator)
 @Composable
-private fun StatusIndicator(
+private fun MinimalStatusIndicator(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     isListened: Boolean,
@@ -479,147 +524,122 @@ private fun StatusIndicator(
     datesHandler: DatesHandler,
     isAdminMessage: Boolean
 ) {
-
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
     if (isAdminMessage || currentApp_Est_Admin) {
-        if (isAdminMessage) {
-            // Large blinking card for admin messages
-            AdminMessageStatusCard(
-                isListened = isListened,
-                latestTimestamp = latestTimestamp,
-                datesHandler = datesHandler
-            )
-        } else {
-            // Regular status indicator for non-admin but current app is admin
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isListened) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Message écouté",
-                        tint = Color.Green,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    if (latestTimestamp > 0) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = datesHandler.getDateAndTimString(latestTimestamp).time,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Message non écouté",
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isListened) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Message écouté",
+                    tint = Color.Green,
+                    modifier = Modifier.size(12.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Message non écouté",
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(12.dp)
+                )
             }
         }
     }
 }
 
+// FIXED TODO(1): New component to display status below the play bar
 @Composable
-private fun AdminMessageStatusCard(
+private fun StatusIndicatorBelowPlayBar(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     isListened: Boolean,
+    isAdminMessage: Boolean,
+    latestTimestamp: Long,
+    datesHandler: DatesHandler
+) {
+    val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
+
+    if ((isAdminMessage || currentApp_Est_Admin) && !isListened) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Card showing "not listened" status below play bar
+        UnlistenedMessageCard(
+            isAdminMessage = isAdminMessage,
+            latestTimestamp = latestTimestamp,
+            datesHandler = datesHandler
+        )
+    }
+}
+
+@Composable
+private fun UnlistenedMessageCard(
+    isAdminMessage: Boolean,
     latestTimestamp: Long,
     datesHandler: DatesHandler
 ) {
     var isBlinkVisible by remember { mutableStateOf(true) }
 
-    // Blinking animation for unlistened messages
-    if (!isListened) {
+    // FIXED TODO(1): Conditional blinking animation based on flag
+    if (!desactive_Le_Animation_Pour_Layout_Inspecteur) {
         LaunchedEffect(Unit) {
             while (true) {
                 delay(800) // Blink every 800ms
                 isBlinkVisible = !isBlinkVisible
             }
         }
+    } else {
+        // When animations are disabled, keep it visible
+        isBlinkVisible = true
     }
 
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = if (isListened) {
-            // Green background for listened messages
-            Color(0xFF4CAF50)
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        color = if (isAdminMessage) {
+            // More prominent for admin messages
+            if (desactive_Le_Animation_Pour_Layout_Inspecteur || isBlinkVisible) {
+                Color(0xFFF44336) // Red
+            } else {
+                Color(0xFFFFC107) // Yellow
+            }
         } else {
-            // Blinking yellow/red background for unlistened messages
-            if (isBlinkVisible) Color(0xFFFFC107) else Color(0xFFF44336)
+            // Subtle for regular messages
+            MaterialTheme.colorScheme.errorContainer
         },
-        shadowElevation = 4.dp
+        shadowElevation = if (isAdminMessage) 4.dp else 2.dp
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            if (isListened) {
-                // Listened message card
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "تم سماعها",
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "تم سماعها",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "Non écouté",
+                tint = if (isAdminMessage) {
+                    Color.White
+                } else {
+                    MaterialTheme.colorScheme.onErrorContainer
+                },
+                modifier = Modifier.size(16.dp)
+            )
 
-                if (latestTimestamp > 0) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = datesHandler.getDateAndTimString(latestTimestamp).time,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                }
-            } else {
-                // Unlistened message card with blinking text
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "لم يتم سماعه",
-                        tint = if (isBlinkVisible) Color.White else Color.Red,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "لم يتم سماعه",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isBlinkVisible) Color.White else Color.Red
-                    )
-                }
+            Spacer(modifier = Modifier.width(8.dp))
 
-                // Additional urgent indicator
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "⚠️ يتطلب الانتباه",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = if (isBlinkVisible) Color.White.copy(alpha = 0.9f) else Color.Red.copy(alpha = 0.9f)
-                )
-            }
+            Text(
+                text = if (isAdminMessage) "لم يتم سماعه" else "Non écouté",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = if (isAdminMessage) FontWeight.Bold else FontWeight.Medium,
+                color = if (isAdminMessage) {
+                    Color.White
+                } else {
+                    MaterialTheme.colorScheme.onErrorContainer
+                }
+            )
         }
     }
 }

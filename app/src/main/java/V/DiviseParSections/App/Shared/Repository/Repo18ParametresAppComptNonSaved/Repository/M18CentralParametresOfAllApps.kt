@@ -54,7 +54,6 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
                     Log.d(repoTAG, "Successfully retrieved and saved data: $data")
                 } else {
                     Log.w(repoTAG, "Received null data from Firebase")
-                    // If Firebase returns null, use default values
                     val defaultData = M18CentralParametresOfAllApps.get_Default()
                     dao.upsert(defaultData)
                     _data.value = defaultData
@@ -64,7 +63,6 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
         }.addOnFailureListener { exception ->
             Log.e(repoTAG, "Failed to retrieve data from Firebase", exception)
 
-            // On Firebase failure, try to use local data or defaults
             repoScope.launch {
                 val localData = dao.getAll()
                 if (localData == null) {
@@ -76,12 +74,35 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
             }
         }
     }
+
+    fun getNotificationSettings(): Boolean {
+        return _data.value?.enableNotifications ?: true
+    }
+
+    fun updateNotificationSettings(enabled: Boolean) {
+        repoScope.launch {
+            val currentData = _data.value ?: M18CentralParametresOfAllApps.get_Default()
+            val updatedData = currentData.copy(enableNotifications = enabled)
+            dao.upsert(updatedData)
+            _data.value = updatedData
+
+            // Update Firebase
+            refRepo.setValue(updatedData)
+                .addOnSuccessListener {
+                    Log.d(repoTAG, "Notification settings updated in Firebase: $enabled")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(repoTAG, "Failed to update notification settings in Firebase", exception)
+                }
+        }
+    }
 }
 
 @Entity
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
+
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true,
     val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
@@ -92,15 +113,23 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
     val au_Lence_Set_Compt_Ac_KeyId: String =
-        if (itsDevMode) abdelmomen_Compt_KeyId else {
+        if (itsDevMode) abdelwahabCompt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")
                 abdelwahabCompt_KeyId
             else
                 abdelmomen_Compt_KeyId
         },
+
+    //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
     val activeWindowsSearchProduit: Boolean = false,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
+
+    //---------------------------------Notification Settings----------------------------------------------------------------------------------------------------------------------------------
+    val enableNotifications: Boolean = true,
+    val enableSoundNotifications: Boolean = true,
+    val enableVibrationNotifications: Boolean = true,
+    val notificationVolume: Float = 0.8f, // 0.0 to 1.0
 ) {
     companion object {
         val ref = RepositorysMainGetter.centralRef
