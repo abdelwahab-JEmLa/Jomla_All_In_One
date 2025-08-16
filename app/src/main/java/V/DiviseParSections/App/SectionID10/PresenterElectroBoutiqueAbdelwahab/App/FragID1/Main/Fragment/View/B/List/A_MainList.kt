@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,16 +51,23 @@ fun MainList(
     val categories = viewModel.getter.repoM16CategorieProduit.datasValue
     val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
+    // Fixed sorting implementation similar to categoriesByCatalogue
     val articlesByCategory = remember(filteredArticles, categories) {
+        // Sort categories using the same logic as in the second file
         val sortedCategories = categories.sortedWith(
             compareBy<CategoriesTabelle> { category ->
-                when {
-                    category.position <= 0 -> Int.MAX_VALUE
-                    else -> category.position
-                }
-            }.thenBy { it.nom }
+                // Use positionDouble for primary sorting (like in categoriesByCatalogue)
+                category.positionDouble
+            }.thenByDescending {
+                // Use dernierTimeTampsSynchronisationAvecFireBase as secondary sort
+                it.dernierTimeTampsSynchronisationAvecFireBase
+            }.thenBy {
+                // Use name as tertiary sort for consistency
+                it.nom
+            }
         )
 
+        // Create the articles by category map with sorted categories
         sortedCategories.associateWith { category ->
             val articlesForCategory = when {
                 category.nom == "NewArrivale" ->
@@ -78,7 +85,6 @@ fun MainList(
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
-
 
     LaunchedEffect(gridState) {
         snapshotFlow {

@@ -81,6 +81,18 @@ internal fun MainItem(
     Box {
         Card(
             modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = selectionePourDeplacement_Categorie,
+                        key = SemanticsPropertyKey("selectionePourDeplacement_Categorie")
+                    )
+                }
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = relative_category,
+                        key = SemanticsPropertyKey("relative_category")
+                    )
+                }
                 .getSemanticsTag(relative_category, "")
                 .height(150.dp)
                 .fillMaxWidth()
@@ -107,15 +119,16 @@ internal fun MainItem(
                         modifier = Modifier
                             .size(25.dp),
                         onClick = {
-                            viewModel.addOrUpdateCategories(new_reordered_List_Categorie)
                             val positionDouble_SC =
-                                selectionePourDeplacement_Categorie?.positionDouble ?: 0.0
+                                relative_category.positionDouble
 
-                            repositorysMainSetter.upsert_M16CategorieProduit(
-                                relative_category.copy(
-                                    positionDouble = positionDouble_SC
+                            if (selectionePourDeplacement_Categorie != null) {
+                                repositorysMainSetter.upsert_M16CategorieProduit(
+                                    selectionePourDeplacement_Categorie.copy(
+                                        positionDouble = positionDouble_SC
+                                    )
                                 )
-                            )
+                            }
 
                             viewModel.updateCate_cSelectionePourDeplace(null)
                         }
@@ -123,6 +136,18 @@ internal fun MainItem(
                         Icon(
                             Icons.Default.KeyboardArrowUp,
                             modifier = Modifier
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = selectionePourDeplacement_Categorie,
+                                        key = SemanticsPropertyKey("selectionePourDeplacement_Categorie")
+                                    )
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = relative_category,
+                                        key = SemanticsPropertyKey("relative_category")
+                                    )
+                                }
                                 .size(25.dp),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary
