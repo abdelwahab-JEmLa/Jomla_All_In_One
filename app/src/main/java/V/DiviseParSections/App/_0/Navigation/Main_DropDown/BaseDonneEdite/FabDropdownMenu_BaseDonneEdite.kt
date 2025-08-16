@@ -1,6 +1,5 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -32,7 +31,6 @@ fun FabDropdownMenu_BaseDonneEdite(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
             DropDownItemWBaseDonne_1(
-                viewModel = koinInject<GrossistAchatSec12FragID1_ViewModel>(),
                 nomFun = "Base Donnée Function",
                 onDismissDropdown = onDismissDropdown
             )
