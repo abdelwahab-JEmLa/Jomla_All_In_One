@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -130,37 +129,6 @@ class RepoM16CategorieProduit(
         }
 
         dataBaseCreationFactory.addOrUpdatedAncienRepo(-1, dataUpdate)
-    }
-
-    fun update_If_Exist(data: CategoriesTabelle) {
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.keyID == data.keyID
-        }
-
-        if (existingIndex < 0) {
-            repoScope.launch {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-            return
-        }
-
-        val updatedItem = data.copy(
-            keyID = datasValue[existingIndex].keyID,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-
-        repoScope.launch {
-            withContext(Dispatchers.Main.immediate) {
-                _datas.value = datasValue.toMutableList().apply {
-                    this[existingIndex] = updatedItem
-                }
-            }
-        }
-
-        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, updatedItem)
     }
 
     fun addOrUpdateDatas(

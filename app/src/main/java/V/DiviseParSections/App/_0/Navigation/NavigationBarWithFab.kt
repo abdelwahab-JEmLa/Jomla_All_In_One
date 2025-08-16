@@ -5,6 +5,8 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -85,6 +87,16 @@ fun NavigationBarWithFab(
     var showDialogTests by remember { mutableStateOf(false) }
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
     var showFabDropdown by remember { mutableStateOf(false) }
+    var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
+
+    // Debug: Add logging to see current state
+    LaunchedEffect(activeFragment) {
+        println("DEBUG: Current active fragment: $activeFragment")
+    }
+
+    LaunchedEffect(showFabDropdownBaseDonne) {
+        println("DEBUG: showFabDropdownBaseDonne state: $showFabDropdownBaseDonne")
+    }
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -132,13 +144,29 @@ fun NavigationBarWithFab(
         val its_Targeted_Frag = activeFragment == Screen.A_Clients_LocationGps
         val its_EditDatabaseWithCreateNewArticles = activeFragment == Screen.EditDatabaseWithCreateNewArticles
 
-        FabButton(
-            showWarningState = showWarningState,
-            isFabVisible = isFabVisible,
-            its_Targeted_Frag = its_Targeted_Frag,
-            onToggleFabVisibility = onToggleFabVisibility,
-            onShowDropdown = { showFabDropdown = true }
-        )
+        // FIXED: Always show one FAB button based on current fragment
+        if (its_EditDatabaseWithCreateNewArticles) {
+            // Show special FAB button for edit database mode
+            FabButton_When_ItsEditeBaseDonne(
+                showWarningState = showWarningState,
+                isFabVisible = isFabVisible,
+                its_Targeted_Frag = true, // FIXED: Set to true for dropdown functionality
+                onToggleFabVisibility = onToggleFabVisibility,
+                onShowDropdown = {
+                    println("DEBUG: Setting showFabDropdownBaseDonne to true")
+                    showFabDropdownBaseDonne = true
+                }
+            )
+        } else {
+            // Show regular FAB button for normal mode
+            FabButton(
+                showWarningState = showWarningState,
+                isFabVisible = isFabVisible,
+                its_Targeted_Frag = its_Targeted_Frag,
+                onToggleFabVisibility = onToggleFabVisibility,
+                onShowDropdown = { showFabDropdown = true }
+            )
+        }
 
         if (showCatalogDialog) {
             CatalogSelectionDialog(
@@ -161,18 +189,30 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdown) {
+        // Regular dropdown menu for normal mode
+        if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
                 repo8BonVent = repo8BonVent
             )
         }
+
+        // FIXED: Database edit dropdown menu - removed conflicting condition
+        if (showFabDropdownBaseDonne && its_EditDatabaseWithCreateNewArticles) {
+            println("DEBUG: Showing FabDropdownMenu_BaseDonneEdite")
+            FabDropdownMenu_BaseDonneEdite(
+                onDismissDropdown = {
+                    println("DEBUG: Dismissing FabDropdownMenu_BaseDonneEdite")
+                    showFabDropdownBaseDonne = false
+                }
+            )
+        }
     }
 }
 
 @Composable
- fun DropDownItem_Displaye_TogleFilterMarquers(
+fun DropDownItem_Displaye_TogleFilterMarquers(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {

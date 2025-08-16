@@ -31,9 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -108,28 +105,6 @@ fun StickyPeriodHeader(
     totalPeriods: Int,
     isActive: Boolean
 ) {
-    // Calculate basic totals for header display
-    val totalVentes = periode.credit_Vents_Totale + periode.cash_Vents_Totale
-    val totalAchats = periode.credit_achats_Totale + periode.cash_achats_Totale
-    val totalProduitsDepot = periode.credit_produitsAuDepot + periode.acheter_produitsAuDepot
-    val adjustedTotalAchats = totalAchats - totalProduitsDepot
-    val balance = totalVentes - adjustedTotalAchats
-
-    // Try to format the period creation time from keyID or use fallback
-    val formattedDate = try {
-        // Assuming keyID contains timestamp - adjust this based on your actual keyID format
-        val timestamp = periode.keyID.toLongOrNull()
-        if (timestamp != null) {
-            val date = Date(timestamp)
-            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-            formatter.format(date)
-        } else {
-            "Date inconnue"
-        }
-    } catch (e: Exception) {
-        "Date inconnue"
-    }
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
         tonalElevation = if (isActive) 8.dp else 4.dp,

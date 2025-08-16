@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
@@ -42,6 +43,7 @@ import org.koin.compose.koinInject
 internal fun MainItem(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     repoM16CategorieProduit: RepoM16CategorieProduit = aCentralFacade.repositorysMainGetter.repoM16CategorieProduit,
     relative_category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
@@ -106,6 +108,15 @@ internal fun MainItem(
                             .size(25.dp),
                         onClick = {
                             viewModel.addOrUpdateCategories(new_reordered_List_Categorie)
+                            val positionDouble_SC =
+                                selectionePourDeplacement_Categorie?.positionDouble ?: 0.0
+
+                            repositorysMainSetter.upsert_M16CategorieProduit(
+                                relative_category.copy(
+                                    positionDouble = positionDouble_SC - 0.0001
+                                )
+                            )
+
                             viewModel.updateCate_cSelectionePourDeplace(null)
                         }
                     ) {

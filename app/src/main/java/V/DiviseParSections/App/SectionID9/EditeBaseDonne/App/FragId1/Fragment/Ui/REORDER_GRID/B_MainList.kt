@@ -38,27 +38,40 @@ internal fun MainList(
 
     val catalogues = remember { B4CatalogueCategoriesRepository() }
 
+    // Fixed: Changed to LinkedHashMap to maintain insertion order and proper sorting
     val categoriesByCatalogue = remember(
         categoriesCompoRepository.tigerDataRecompose,
         catalogues
     ) {
-        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-        catalogues.forEach { cat ->
-            currentCategories.filter {
-                it.catalogueParentId == cat.id
+        val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+        // Process catalogues in order
+        catalogues.forEach { catalogue ->
+            val categoriesForCatalogue = currentCategories
+                .filter { it.catalogueParentId == catalogue.id }
+                .sortedBy { it.positionDouble } // Use positionDouble field for proper ordering
+
+            if (categoriesForCatalogue.isNotEmpty()) {
+                grouped[catalogue] = categoriesForCatalogue
             }
-                .sortedBy { it.position } // Sort categories by position within each catalogue
-                .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
-        currentCategories
-            .filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
-            .let {
-                if (it.isNotEmpty()) grouped[CataloguesCaegorie(
-                    id = 0,
-                    nom = "Autres",
-                    premierCategorieId = 0
-                )] = it
+
+        // Handle categories without a parent catalogue or with invalid parent catalogue
+        val orphanCategories = currentCategories
+            .filter { category ->
+                category.catalogueParentId == 0L ||
+                        !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
             }
+            .sortedBy { it.positionDouble } // Use positionDouble field for proper ordering
+
+        if (orphanCategories.isNotEmpty()) {
+            val othersCatalogue = CataloguesCaegorie(
+                id = 0,
+                nom = "Autres",
+                premierCategorieId = 0
+            )
+            grouped[othersCatalogue] = orphanCategories
+        }
 
         grouped
     }

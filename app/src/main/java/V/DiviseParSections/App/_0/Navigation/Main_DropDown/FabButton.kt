@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
 
 @Composable
- fun FabButton(
+fun FabButton(
     showWarningState: Boolean,
     isFabVisible: Boolean,
     its_Targeted_Frag: Boolean,
