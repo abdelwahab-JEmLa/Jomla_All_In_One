@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,8 +52,7 @@ fun GrossistItem(
     activePeriodId: String?,
     onSelect: () -> Unit,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList()
-) {    //<--
-//TODO(1): fait que le height soit limite a 80 .dp
+) {
     val datas = updated_Achats(list_M11AchatOperation, grossist)
     var showTransactionDialog by remember { mutableStateOf(false) }
 
@@ -60,14 +60,16 @@ fun GrossistItem(
         modifier = Modifier
             .getSemanticsTag(datas, "datas")
             .clickable { onSelect() }
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(80.dp), // Fixed height limit as requested
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .height(80.dp) // Ensure consistent height
+                .padding(12.dp), // Reduced padding to fit within height constraint
             verticalAlignment = Alignment.CenterVertically
         ) {
             BadgedBox(
@@ -87,7 +89,7 @@ fun GrossistItem(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(36.dp) // Slightly reduced size to fit better
                         .clip(CircleShape)
                         .background(
                             try {
@@ -102,25 +104,28 @@ fun GrossistItem(
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(20.dp) // Adjusted icon size
                             .align(Alignment.Center)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp)) // Reduced spacing
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center // Center content vertically
+            ) {
                 Text(
                     text = grossist.nom,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium, // Slightly smaller text
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp), // Reduced spacing
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -128,14 +133,17 @@ fun GrossistItem(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false) // Allow flexible width
                     )
                     if (purchaseCount > 0) {
                         Text(
-                            text = "• $purchaseCount achats${if (activePeriodId != null) " (période)" else ""}",
+                            text = "• $purchaseCount achats${if (activePeriodId != null) " (p)" else ""}", // Shortened text
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -143,37 +151,44 @@ fun GrossistItem(
                 // Display total credit for this grossist
                 if (isLoadingCredit) {
                     Text(
-                        text = "Chargement crédit...",
+                        text = "Chargement...", // Shortened loading text
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        maxLines = 1
                     )
                 } else {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(3.dp) // Reduced spacing
                     ) {
                         Icon(
                             Icons.Default.AccountBalance,
                             contentDescription = "Crédit",
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(12.dp), // Smaller icon
                             tint = if (grossistCredit > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
                         )
                         Text(
-                            text = "Crédit: ${String.format("%.2f", grossistCredit)} DA",
+                            text = "${String.format("%.0f", grossistCredit)} DA", // Removed decimal places to save space
                             style = MaterialTheme.typography.bodySmall,
                             color = if (grossistCredit > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            fontWeight = if (grossistCredit > 0) FontWeight.SemiBold else FontWeight.Normal
+                            fontWeight = if (grossistCredit > 0) FontWeight.SemiBold else FontWeight.Normal,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
             }
 
-            IconButton(onClick = { showTransactionDialog = true }) {
+            IconButton(
+                onClick = { showTransactionDialog = true },
+                modifier = Modifier.size(36.dp) // Smaller button to fit better
+            ) {
                 Icon(
                     Icons.Default.Receipt,
                     contentDescription = "Voir les transactions",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp) // Smaller icon
                 )
             }
         }

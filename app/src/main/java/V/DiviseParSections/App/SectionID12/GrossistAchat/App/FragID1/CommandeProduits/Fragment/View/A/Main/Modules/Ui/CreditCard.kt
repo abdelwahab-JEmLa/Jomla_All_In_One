@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,9 +71,20 @@ fun CreditCard(
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
     var showImageDialog by remember { mutableStateOf(false) }
+    var showImageDropdown by remember { mutableStateOf(false) }
+    var selectedImagePath by remember { mutableStateOf<String?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
     var isDownloadingImage by remember { mutableStateOf(false) }
-    var actualImagePath by remember { mutableStateOf(item.receiptImagePath) }
+
+    // Get all available image paths
+    val availableImages = remember(item) {
+        listOfNotNull(
+            item.receiptImagePath,
+            item.receiptImage2Path,
+            item.receiptImage3Path,
+            item.receiptImage4Path
+        ).filter { File(it).exists() }
+    }
 
     // Firebase storage reference for receipts
     val storageRef = Firebase.storage.reference.child("Images Receipts").child("bons_achat")
@@ -80,9 +94,7 @@ fun CreditCard(
     LaunchedEffect(item.receiptImagePath, item.firebaseStoragePath) {
         checkAndDownloadImage(
             item = item,
-            onImageReady = { imagePath ->
-                actualImagePath = imagePath
-            },
+            onImageReady = { /* handled in availableImages */ },
             onDownloadStart = { isDownloadingImage = true },
             onDownloadEnd = { isDownloadingImage = false }
         )
@@ -119,13 +131,31 @@ fun CreditCard(
                     }
 
                     withContext(Dispatchers.Main) {
-                        // Update the item with both local and Firebase paths
-                        val updatedItem = item.copy(
-                            receiptImagePath = localFile.absolutePath,
-                            firebaseStoragePath = firebaseStoragePath
-                        )
+                        // Find the next available image slot and update the item
+                        val updatedItem = when {
+                            item.receiptImagePath == null -> item.copy(
+                                receiptImagePath = localFile.absolutePath,
+                                firebaseStoragePath = firebaseStoragePath
+                            )
+                            item.receiptImage2Path == null -> item.copy(
+                                receiptImage2Path = localFile.absolutePath
+                            )
+                            item.receiptImage3Path == null -> item.copy(
+                                receiptImage3Path = localFile.absolutePath
+                            )
+                            item.receiptImage4Path == null -> item.copy(
+                                receiptImage4Path = localFile.absolutePath
+                            )
+                            else -> {
+                                // All slots full, replace the first one
+                                item.copy(
+                                    receiptImagePath = localFile.absolutePath,
+                                    firebaseStoragePath = firebaseStoragePath
+                                )
+                            }
+                        }
+
                         onUpdateItem(updatedItem)
-                        actualImagePath = localFile.absolutePath
 
                         Toast.makeText(
                             context,
@@ -159,10 +189,13 @@ fun CreditCard(
     }
 
     // Dialog pour afficher l'image
-    if (showImageDialog && actualImagePath != null) {
+    if (showImageDialog && selectedImagePath != null) {
         ImageViewDialog(
-            imagePath = actualImagePath!!,
-            onDismiss = { showImageDialog = false }
+            imagePath = selectedImagePath!!,
+            onDismiss = {
+                showImageDialog = false
+                selectedImagePath = null
+            }
         )
     }
 
@@ -182,7 +215,9 @@ fun CreditCard(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp), // Add some vertical padding
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -223,17 +258,59 @@ fun CreditCard(
                     )
                 }
 
-                // Show image button (only if image is available locally)
-                if (actualImagePath != null && File(actualImagePath).exists()) {
-                    IconButton(
-                        onClick = { showImageDialog = true }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Image,
-                            contentDescription = "Voir photo bon d'achat",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
+                // Show image button with dropdown if multiple images available
+                if (availableImages.isNotEmpty()) {
+                    Box {
+                        IconButton(
+                            onClick = {
+                                if (availableImages.size == 1) {
+                                    selectedImagePath = availableImages.first()
+                                    showImageDialog = true
+                                } else {
+                                    showImageDropdown = true
+                                }
+                            }
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Image,
+                                    contentDescription = "Voir photos bon d'achat",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                                if (availableImages.size > 1) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Plus d'images",
+                                        modifier = Modifier.size(12.dp),
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                        }
+
+                        DropdownMenu(
+                            expanded = showImageDropdown,
+                            onDismissRequest = { showImageDropdown = false }
+                        ) {
+                            availableImages.forEachIndexed { index, imagePath ->
+                                DropdownMenuItem(
+                                    text = { Text("Image ${index + 1}") },
+                                    onClick = {
+                                        selectedImagePath = imagePath
+                                        showImageDialog = true
+                                        showImageDropdown = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Default.Image,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 } else if (item.firebaseStoragePath != null && !isDownloadingImage) {
                     // Show download button if image is only in Firebase
@@ -243,7 +320,6 @@ fun CreditCard(
                                 checkAndDownloadImage(
                                     item = item,
                                     onImageReady = { imagePath ->
-                                        actualImagePath = imagePath
                                         if (imagePath != null) {
                                             Toast.makeText(
                                                 context,
@@ -394,6 +470,7 @@ private fun ImageViewDialog(
         }
     }
 }
+
 // Helper function for image management
 private suspend fun checkAndDownloadImage(
     item: TransactionItem,

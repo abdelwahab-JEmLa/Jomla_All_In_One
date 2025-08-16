@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +51,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,11 +58,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 data class TransactionItem(
     val id: String = generePushKey(),
@@ -74,7 +70,10 @@ data class TransactionItem(
     val time: String = "",
     val timestamp: Long = System.currentTimeMillis(),
     val receiptImagePath: String? = null,
-    val firebaseStoragePath: String? = null // Firebase Storage path for the receipt image
+    val receiptImage2Path: String? = null,
+    val receiptImage3Path: String? = null,
+    val receiptImage4Path: String? = null,
+    val firebaseStoragePath: String? = null
 ) {
     companion object {
         val ref = centralRef.child("TransactionItem")
