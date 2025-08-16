@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioHandlerInterface
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
@@ -43,9 +42,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
@@ -464,7 +465,6 @@ private fun EnhancedTimeDisplay(
         }
     }
 }
-
 @Composable
 private fun StatusIndicator(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -476,31 +476,142 @@ private fun StatusIndicator(
 ) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
-    (isAdminMessage || currentApp_Est_Admin).ifTrue {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+    if (isAdminMessage || currentApp_Est_Admin) {
+        if (isAdminMessage) {
+            // Large blinking card for admin messages
+            AdminMessageStatusCard(
+                isListened = isListened,
+                latestTimestamp = latestTimestamp,
+                datesHandler = datesHandler
+            )
+        } else {
+            // Regular status indicator for non-admin but current app is admin
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isListened) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Message écouté",
+                        tint = Color.Green,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    if (latestTimestamp > 0) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = datesHandler.getDateAndTimString(latestTimestamp).time,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Message non écouté",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AdminMessageStatusCard(
+    isListened: Boolean,
+    latestTimestamp: Long,
+    datesHandler: DatesHandler
+) {
+    var isBlinkVisible by remember { mutableStateOf(true) }
+
+    // Blinking animation for unlistened messages
+    if (!isListened) {
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(800) // Blink every 800ms
+                isBlinkVisible = !isBlinkVisible
+            }
+        }
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = if (isListened) {
+            // Green background for listened messages
+            Color(0xFF4CAF50)
+        } else {
+            // Blinking yellow/red background for unlistened messages
+            if (isBlinkVisible) Color(0xFFFFC107) else Color(0xFFF44336)
+        },
+        shadowElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (isListened) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Message écouté",
-                    tint = Color.Green,
-                    modifier = Modifier.size(16.dp)
-                )
+                // Listened message card
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "تم سماعها",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "تم سماعها",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
                 if (latestTimestamp > 0) {
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = datesHandler.getDateAndTimString(latestTimestamp).time,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Color.White.copy(alpha = 0.8f)
                     )
                 }
             } else {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = "Message non écouté",
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(16.dp)
+                // Unlistened message card with blinking text
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "لم يتم سماعه",
+                        tint = if (isBlinkVisible) Color.White else Color.Red,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "لم يتم سماعه",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isBlinkVisible) Color.White else Color.Red
+                    )
+                }
+
+                // Additional urgent indicator
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "⚠️ يتطلب الانتباه",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isBlinkVisible) Color.White.copy(alpha = 0.9f) else Color.Red.copy(alpha = 0.9f)
                 )
             }
         }

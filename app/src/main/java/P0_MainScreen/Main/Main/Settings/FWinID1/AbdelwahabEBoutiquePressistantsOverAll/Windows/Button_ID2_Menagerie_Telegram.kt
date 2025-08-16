@@ -63,7 +63,7 @@ fun Button_ID2_Menagerie_Telegram(
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID
     val isDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
-    val active_Notifications = false // Control for sound and vibration
+    val active_Notifications = true
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
     val context = LocalContext.current
