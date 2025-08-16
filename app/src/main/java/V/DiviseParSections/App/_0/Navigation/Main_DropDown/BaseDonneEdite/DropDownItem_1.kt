@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -14,6 +15,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -27,32 +32,53 @@ fun DropDownItemWBaseDonne_1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     context: Context = LocalContext.current
 ) {
+    var needsConfirmation by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (needsConfirmation) {
+                MaterialTheme.colorScheme.errorContainer
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
+                    imageVector = if (needsConfirmation) Icons.Default.Warning else Icons.Default.PlayArrow,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = if (needsConfirmation) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
                 )
             },
-            text = { Text(nomFun) },
+            text = {
+                Text(
+                    text = if (needsConfirmation) "Êtes-vous sûr?" else nomFun,
+                    color = if (needsConfirmation) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            },
             onClick = {
+                if (!needsConfirmation) {
+                    needsConfirmation = true
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Fonction '$nomFun' exécutée avec succès",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-
-                Toast.makeText(
-                    context,
-                    "Fonction '$nomFun' exécutée avec succès",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                onDismissDropdown()
+                    onDismissDropdown()
+                }
             }
         )
     }
