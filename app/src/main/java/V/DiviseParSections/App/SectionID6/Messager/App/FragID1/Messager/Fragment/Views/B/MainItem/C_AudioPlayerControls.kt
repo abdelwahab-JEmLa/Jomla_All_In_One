@@ -51,6 +51,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
+val desactive_Le_Animation_Pour_Layout_Inspecteur = true //<--
+//TODO(1): faique si true de desactive l animation
+
+      //<--
+      //TODO(1): fait que le card afficeh non ecout soit a nas de playe bar
 
 // Enhanced audio state to better track audio availability
 enum class AudioAvailabilityState {
@@ -474,6 +479,7 @@ private fun StatusIndicator(
     datesHandler: DatesHandler,
     isAdminMessage: Boolean
 ) {
+
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
     if (isAdminMessage || currentApp_Est_Admin) {

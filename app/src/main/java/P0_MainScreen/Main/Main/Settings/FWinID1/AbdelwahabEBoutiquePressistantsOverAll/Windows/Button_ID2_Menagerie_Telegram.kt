@@ -87,25 +87,29 @@ fun Button_ID2_Menagerie_Telegram(
         }
     }
 
-    val non_Lu_Messages_Size by remember(latestStatesForEachMessage) {
+    // FIXED: Proper unread message count for current account only
+    val non_Lu_Messages_Current_Account_Size by remember(
+        latestStatesForEachMessage,
+        currentAppComptKeyID
+    ) {
         derivedStateOf {
-            latestStatesForEachMessage.count { (_, etatesList) ->
-                etatesList.none {
-                    it.etate == M17MessageVocale.Etate.ECOUTE
-                }
+            latestStatesForEachMessage.count { (latestMessage, etatesList) ->
+                val isFromCurrentAccount = latestMessage.parent_M9AppCompt_KeyID == currentAppComptKeyID
+                val isUnread = etatesList.none { it.etate == M17MessageVocale.Etate.ECOUTE }
+
+                isFromCurrentAccount && isUnread
             }
         }
     }
 
-    // Separate count for messages from other accounts
+    // FIXED: Proper count for messages from other accounts (different phones)
     val messages_From_Other_Accounts_Size by remember(
         latestStatesForEachMessage,
         currentAppComptKeyID
     ) {
         derivedStateOf {
             val result = latestStatesForEachMessage.count { (latestMessage, etatesList) ->
-                val isFromOtherAccount =
-                    latestMessage.parent_M9AppCompt_KeyID != currentAppComptKeyID
+                val isFromOtherAccount = latestMessage.parent_M9AppCompt_KeyID != currentAppComptKeyID
                 val isUnread = etatesList.none { it.etate == M17MessageVocale.Etate.ECOUTE }
 
                 // Debug logs
@@ -129,19 +133,35 @@ fun Button_ID2_Menagerie_Telegram(
         }
     }
 
-    var previousMessageCount by remember { mutableIntStateOf(0) }
+    // NEW: Check for important unread messages from other accounts
+    val hasImportantUnreadMessagesFromOtherAccounts by remember(
+        latestStatesForEachMessage,
+        currentAppComptKeyID
+    ) {
+        derivedStateOf {
+            latestStatesForEachMessage.any { (latestMessage, etatesList) ->
+                val isFromOtherAccount = latestMessage.parent_M9AppCompt_KeyID != currentAppComptKeyID
+                val isUnread = etatesList.none { it.etate == M17MessageVocale.Etate.ECOUTE }
+                val isImportant = latestMessage.ceMessage_Est_Important_Au_Ecoute
+
+                isFromOtherAccount && isUnread && isImportant
+            }
+        }
+    }
+
+    var previousCurrentAccountCount by remember { mutableIntStateOf(0) }
     var previousOtherAccountsCount by remember { mutableIntStateOf(0) }
 
     // Initialize previous counts on first composition to prevent initial notifications
     LaunchedEffect(Unit) {
         if (!hasInitializedNotifications) {
-            previousMessageCount = non_Lu_Messages_Size
+            previousCurrentAccountCount = non_Lu_Messages_Current_Account_Size
             previousOtherAccountsCount = messages_From_Other_Accounts_Size
             hasInitializedNotifications = true
 
             android.util.Log.d(
                 "TelegramButton",
-                "Initial setup - Previous counts set to: messages=$non_Lu_Messages_Size, others=$messages_From_Other_Accounts_Size"
+                "Initial setup - Previous counts set to: current=$non_Lu_Messages_Current_Account_Size, others=$messages_From_Other_Accounts_Size"
             )
         }
     }
@@ -174,27 +194,15 @@ fun Button_ID2_Menagerie_Telegram(
                 }
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
-                val repeatedPattern = mutableListOf<Long>().apply {
-                    add(0)
-                    repeat(messageCount) { index ->
-                        if (index > 0) add(150)
-                        addAll(basePattern.drop(1))
-                    }
-                }
-                val effect = VibrationEffect.createWaveform(repeatedPattern.toLongArray(), -1)
+                // Fixed pattern - always 1 second duration regardless of message count
+                val fixedPattern = longArrayOf(0, 200, 100, 300, 100, 200, 100, 200)
+                val effect = VibrationEffect.createWaveform(fixedPattern, -1)
                 vibrator.vibrate(effect)
             } else {
-                val basePattern = longArrayOf(0, 200, 100, 300, 100, 200)
-                val repeatedPattern = mutableListOf<Long>().apply {
-                    add(0)
-                    repeat(messageCount) { index ->
-                        if (index > 0) add(150)
-                        addAll(basePattern.drop(1))
-                    }
-                }
+                // Fixed pattern - always 1 second duration regardless of message count
+                val fixedPattern = longArrayOf(0, 200, 100, 300, 100, 200, 100, 200)
                 @Suppress("DEPRECATION")
-                vibrator.vibrate(repeatedPattern.toLongArray(), -1)
+                vibrator.vibrate(fixedPattern, -1)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -207,6 +215,7 @@ fun Button_ID2_Menagerie_Telegram(
                 player.setOnCompletionListener { mp ->
                     mp.release()
                 }
+                // Fixed duration - always 1.2 seconds regardless of message count
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                     try {
                         if (player.isPlaying) {
@@ -238,29 +247,29 @@ fun Button_ID2_Menagerie_Telegram(
     }
 
     // Handle notifications for current account (non-admin only) - only after initialization
-    LaunchedEffect(non_Lu_Messages_Size, hasInitializedNotifications) {
+    LaunchedEffect(non_Lu_Messages_Current_Account_Size, hasInitializedNotifications) {
         if (!hasInitializedNotifications) return@LaunchedEffect
 
         android.util.Log.d(
             "TelegramButton", """
             Current Account Notification Check:
             - Is Admin: $current_Compt_Et_Admin
-            - New Message Count: $non_Lu_Messages_Size
-            - Previous Count: $previousMessageCount
+            - New Message Count: $non_Lu_Messages_Current_Account_Size
+            - Previous Count: $previousCurrentAccountCount
             - Notifications Active: $active_Notifications
-            - Should Play: ${!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount && active_Notifications}
+            - Should Play: ${!current_Compt_Et_Admin && non_Lu_Messages_Current_Account_Size > previousCurrentAccountCount && active_Notifications}
         """.trimIndent()
         )
 
-        if (!current_Compt_Et_Admin && non_Lu_Messages_Size > previousMessageCount) {
-            val newMessages = non_Lu_Messages_Size - previousMessageCount
+        if (!current_Compt_Et_Admin && non_Lu_Messages_Current_Account_Size > previousCurrentAccountCount) {
+            val newMessages = non_Lu_Messages_Current_Account_Size - previousCurrentAccountCount
             android.util.Log.d(
                 "TelegramButton",
                 "Playing notification for $newMessages current account messages"
             )
             playNotificationSound(newMessages)
         }
-        previousMessageCount = non_Lu_Messages_Size
+        previousCurrentAccountCount = non_Lu_Messages_Current_Account_Size
     }
 
     // Handle notifications for messages from other accounts (always play) - only after initialization
@@ -289,6 +298,7 @@ fun Button_ID2_Menagerie_Telegram(
         previousOtherAccountsCount = messages_From_Other_Accounts_Size
     }
 
+    // Animation for regular badge (message count)
     val infiniteTransition = rememberInfiniteTransition(label = "badge_animation")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -309,8 +319,38 @@ fun Button_ID2_Menagerie_Telegram(
         label = "alpha_animation"
     )
 
-    // Display total unread count (including messages from other accounts)
-    val totalUnreadCount = non_Lu_Messages_Size + messages_From_Other_Accounts_Size
+    // NEW: Animation for important message alert (right to left sliding)
+    val importantAlertTransition = rememberInfiniteTransition(label = "important_alert_animation")
+    val alertOffsetX by importantAlertTransition.animateFloat(
+        initialValue = 15f,
+        targetValue = -5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alert_offset_animation"
+    )
+    val alertScale by importantAlertTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alert_scale_animation"
+    )
+    val alertAlpha by importantAlertTransition.animateFloat(
+        initialValue = 0.7f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alert_alpha_animation"
+    )
+
+    val shouldShowBadge = messages_From_Other_Accounts_Size > 0 && !isDevMode
+    val shouldShowImportantAlert = hasImportantUnreadMessagesFromOtherAccounts && !isDevMode
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -343,7 +383,8 @@ fun Button_ID2_Menagerie_Telegram(
                 )
             }
 
-            if (totalUnreadCount > 0 && !isDevMode && false ) {
+            // Regular badge showing count of messages from other accounts
+            if (shouldShowBadge) {
                 Box(
                     modifier = Modifier
                         .size(25.dp)
@@ -355,11 +396,37 @@ fun Button_ID2_Menagerie_Telegram(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (totalUnreadCount > 99) "99+" else totalUnreadCount.toString(),
+                        text = if (messages_From_Other_Accounts_Size > 99) "99+" else messages_From_Other_Accounts_Size.toString(),
                         color = Color.White,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // NEW: Important message alert indicator (🖏️) with right-to-left animation
+            if (shouldShowImportantAlert) {
+                Box(
+                    modifier = Modifier
+                        .offset(
+                            x = (20 + alertOffsetX).dp,
+                            y = (-8).dp
+                        )
+                        .scale(alertScale)
+                        .align(Alignment.TopEnd),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "🖏️",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = alertAlpha),
+                        modifier = Modifier
+                            .background(
+                                Color.Red.copy(alpha = 0.8f),
+                                CircleShape
+                            )
+                            .padding(2.dp)
                     )
                 }
             }

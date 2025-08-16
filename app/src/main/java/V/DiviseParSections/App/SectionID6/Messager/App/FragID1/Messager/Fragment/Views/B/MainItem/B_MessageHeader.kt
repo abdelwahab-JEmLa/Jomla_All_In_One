@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 @Composable
 fun MessageHeader(
@@ -44,11 +46,25 @@ fun MessageHeader(
     datesHandler: DatesHandler,
     etatesChildKeyIDsList: List<M17MessageVocale>,
     isFromActiveAccount: Boolean = false,
-    isAdminMessage: Boolean = false, // Add this parameter
-    list_D_EtateMessageVocale: List<M17MessageVocale>
+    isAdminMessage: Boolean = false,
+    list_D_EtateMessageVocale: List<M17MessageVocale>,
+    isImportantMessage: Boolean = false // Add this parameter for blinking
 ) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    // Blinking state for important messages
+    var isBlinkVisible by remember { mutableStateOf(true) }
+
+    // Blinking animation for important messages
+    if (isImportantMessage) {
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(500) // Blink every 500ms
+                isBlinkVisible = !isBlinkVisible
+            }
+        }
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -76,16 +92,20 @@ fun MessageHeader(
                             ?.parent_M9AppCompt_Nom ?: ""
                     }
 
+                // Apply blinking effect to the name if message is important
+                val nameColor = when {
+                    isImportantMessage && !isBlinkVisible -> Color.Transparent // Make invisible during blink
+                    isAdminMessage -> MaterialTheme.colorScheme.onError
+                    isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
+
                 Text(
                     modifier = Modifier.semantics(mergeDescendants = true) {},
                     text = displayText,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = when {
-                        isAdminMessage -> MaterialTheme.colorScheme.onError
-                        isFromActiveAccount -> MaterialTheme.colorScheme.onPrimary
-                        else -> MaterialTheme.colorScheme.onSurface
-                    },
+                    fontWeight = if (isImportantMessage) FontWeight.Bold else FontWeight.SemiBold,
+                    color = nameColor,
                 )
 
                 val currentState = etatesChildKeyIDsList.maxByOrNull { it.creationTimestamps }
@@ -206,6 +226,18 @@ fun MessageHeader(
 
                                 else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    // Show important indicator
+                    if (isImportantMessage) {
+                        Text(
+                            text = "⚠️ IMPORTANT",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

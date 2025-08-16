@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PriorityHigh
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,8 +35,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -70,7 +74,7 @@ fun B_ItemMessagesVocale(
 
     val currentState =
         list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.etate
-        ?: relative_M17MessageVocale.etate
+            ?: relative_M17MessageVocale.etate
 
     val isListened = currentState == M17MessageVocale.Etate.ECOUTE
 
@@ -83,6 +87,9 @@ fun B_ItemMessagesVocale(
     val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M17MessageVocale.parentMessageVID && playbackProgress.isDownloading
     }
+
+    // State for toggling importance
+    var isImportant by remember { mutableStateOf(relative_M17MessageVocale.ceMessage_Est_Important_Au_Ecoute) }
 
     LaunchedEffect(relative_M17MessageVocale.parentMessageVID, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
@@ -189,6 +196,7 @@ fun B_ItemMessagesVocale(
                             isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt,
                             isAdminMessage=its_Admin_Message,
                             list_D_EtateMessageVocale = list_D_EtateMessageVocale,
+                            isImportantMessage = isImportant // Pass the importance state
                         )
 
                         // FIXED: BonVentInfoCard moved to the top after MessageHeader
@@ -235,6 +243,48 @@ fun B_ItemMessagesVocale(
                             M17MessageVocale.Etate.Premier_Test_Envoi -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         }
                     }
+                }
+            }
+
+            // FloatingActionButton for marking message as important
+            // Positioned at the top-right corner of the message card
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        end = if (its_ViewMessage_Du_Active_M9AppCompt) 8.dp else 48.dp,
+                        top = 8.dp
+                    ),
+                contentAlignment = if (its_ViewMessage_Du_Active_M9AppCompt) Alignment.TopEnd else Alignment.TopStart
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        // Toggle importance state
+                        isImportant = !isImportant
+
+                        // Update the message in the database
+                        val updatedMessage = relative_M17MessageVocale.copy(
+                            ceMessage_Est_Important_Au_Ecoute = isImportant
+                        )
+                        viewModel.addOrUpdateData(updatedMessage)
+                    },
+                    modifier = Modifier.size(32.dp),
+                    containerColor = if (isImportant) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                    },
+                    contentColor = if (isImportant) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PriorityHigh,
+                        contentDescription = if (isImportant) "Marquer comme non important" else "Marquer comme important",
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
         }

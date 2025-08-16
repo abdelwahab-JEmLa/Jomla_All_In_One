@@ -82,6 +82,8 @@ data class M17MessageVocale(
     var etate: Etate = Etate.EN_COURT_ENREGESTREMENT,
     var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.C3_BonAchate,
 
+    var ceMessage_Est_Important_Au_Ecoute: Boolean = false,
+
     var its_Text_Message: Boolean = false,
     var text_Inputted: String = "",
 
