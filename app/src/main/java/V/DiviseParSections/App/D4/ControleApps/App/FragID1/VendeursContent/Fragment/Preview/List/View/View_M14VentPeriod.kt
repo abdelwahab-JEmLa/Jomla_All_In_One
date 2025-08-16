@@ -231,15 +231,14 @@ fun View_M14VentPeriod(
             repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
                 it.parent_M14VentPeriod_KeyId == relative_M14VentPeriode.keyID
                         && it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-
             }
 
-        val sum_Bon_Vents = relative_List_Vents.sumOf {
-            val parentM13TarificationPrix =
-                repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency
-                    ?: 0.0
-
-            it.quantity * parentM13TarificationPrix
+        val sum_Bon_Vents = relative_List_Vents.filter {
+            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+        }.sumOf { ventOperation ->
+            val parentM13TarificationPrix = repositorysMainGetter
+                .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
+            ventOperation.quantity * parentM13TarificationPrix
         }
 
         Column(
@@ -650,54 +649,6 @@ fun View_M14VentPeriod(
                                             style = MaterialTheme.typography.labelSmall
                                         )
                                         Text(
-                                            text = "${relative_M14VentPeriode.credit_produitsAuDepot}",
-                                            fontSize = 14.sp,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        // Cash Produits Dépôt
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (editingField == "acheter_produits_depot") {
-                                OutlinedTextField(
-                                    value = editingValue,
-                                    onValueChange = { editingValue = it },
-                                    label = { Text("Acheté") },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = { saveEditedValue() }
-                                    ),
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            } else {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            startEditing("acheter_produits_depot", relative_M14VentPeriode.acheter_produitsAuDepot)
-                                        },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                                    )
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "💵 Acheté",
-                                            fontSize = 12.sp,
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                        Text(
                                             text = "${relative_M14VentPeriode.acheter_produitsAuDepot}",
                                             fontSize = 14.sp,
                                             style = MaterialTheme.typography.bodyLarge
@@ -882,7 +833,6 @@ fun View_M14VentPeriod(
     }
 }
 
-// Helper function to load calculated achat totals from all grossists
 private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
     var totalCredits = 0.0
     var totalVersements = 0.0
@@ -896,7 +846,6 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
         }
     }
 
-    // Load all TransactionItems (credits from all grossists)
     val transactionListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             totalCredits = 0.0
@@ -907,7 +856,6 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
                         totalCredits += it.credit
                     }
                 } catch (e: Exception) {
-                    // Handle parsing error silently
                 }
             }
             checkComplete()
@@ -920,7 +868,6 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
 
     TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
 
-    // Load all VersementItems (payments from all grossists)
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val versementRef = TransactionItem.ref.parent?.child("VersementItem")

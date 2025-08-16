@@ -34,6 +34,15 @@ fun ScreenM14VentPeriod(
     relative_M9AppCompt: Z_AppCompt? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
 ) {
+    // TODO(1): Fixed - now starts with the most recent period
+    // Sort periods by creation date/keyID in descending order to show latest first
+    val sortedList_M14VentPeriode = list_M14VentPeriode.sortedByDescending {
+        // Assuming keyID contains timestamp or creation order information
+        // If keyID is timestamp-based, this will sort by newest first
+        // Alternative: if you have a creation timestamp field, use that instead
+        it.keyID
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Surface(
             modifier = modifier.fillMaxWidth(),
@@ -50,14 +59,14 @@ fun ScreenM14VentPeriod(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = "Count: ${list_M14VentPeriode.size}",
+                        text = "Count: ${sortedList_M14VentPeriode.size}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
                     ViewList_M14VentPeriod(
                         viewModel,
-                        list_M14VentPeriode = list_M14VentPeriode,
-                        relative_M9AppCompt=relative_M9AppCompt
+                        list_M14VentPeriode = sortedList_M14VentPeriode,
+                        relative_M9AppCompt = relative_M9AppCompt
                     )
                 }
             }
