@@ -92,7 +92,7 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
     val au_Lence_Set_Compt_Ac_KeyId: String =
-        if (itsDevMode) abdelwahabCompt_KeyId else {
+        if (itsDevMode) abdelmomen_Compt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")
                 abdelwahabCompt_KeyId
             else
