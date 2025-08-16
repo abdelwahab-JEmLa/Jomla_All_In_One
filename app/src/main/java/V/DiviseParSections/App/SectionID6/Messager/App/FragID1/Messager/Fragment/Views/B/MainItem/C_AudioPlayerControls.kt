@@ -52,9 +52,8 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 
-val desactive_Le_Animation_Pour_Layout_Inspecteur = true // FIXED: Animation control flag
+const val desactive_Le_Animation_Pour_Layout_Inspecteur = false
 
-// Enhanced audio state to better track audio availability
 enum class AudioAvailabilityState {
     UNKNOWN,           // Initial state - need to check if audio exists
     CHECKING,          // Currently checking if audio file exists
