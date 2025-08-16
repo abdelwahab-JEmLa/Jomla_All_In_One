@@ -51,23 +51,17 @@ fun MainList(
     val categories = viewModel.getter.repoM16CategorieProduit.datasValue
     val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
-    // Fixed sorting implementation similar to categoriesByCatalogue
     val articlesByCategory = remember(filteredArticles, categories) {
-        // Sort categories using the same logic as in the second file
         val sortedCategories = categories.sortedWith(
             compareBy<CategoriesTabelle> { category ->
-                // Use positionDouble for primary sorting (like in categoriesByCatalogue)
                 category.positionDouble
             }.thenByDescending {
-                // Use dernierTimeTampsSynchronisationAvecFireBase as secondary sort
                 it.dernierTimeTampsSynchronisationAvecFireBase
             }.thenBy {
-                // Use name as tertiary sort for consistency
                 it.nom
             }
         )
 
-        // Create the articles by category map with sorted categories
         sortedCategories.associateWith { category ->
             val articlesForCategory = when {
                 category.nom == "NewArrivale" ->
