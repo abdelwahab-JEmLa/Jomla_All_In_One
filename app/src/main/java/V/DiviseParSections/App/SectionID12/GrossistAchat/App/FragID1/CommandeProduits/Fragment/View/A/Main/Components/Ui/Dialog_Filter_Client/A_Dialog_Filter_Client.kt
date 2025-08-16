@@ -40,6 +40,11 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+// Utility function for consistent currency formatting
+fun formatCurrency(amount: Double): String {
+    return String.format("%.2f DA", amount)
+}
+
 @Composable
 fun Dialog_Filter_Client(
     viewModel: GrossistAchatSec12FragID1_ViewModel = koinViewModel(),
@@ -249,7 +254,7 @@ fun Dialog_Filter_Client(
                                 }
 
                                 Text(
-                                    text = "Total: ${String.format("%.2f", clientsSalesSummary.third)} DA",
+                                    text = "Total: ${formatCurrency(clientsSalesSummary.third)}",
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold

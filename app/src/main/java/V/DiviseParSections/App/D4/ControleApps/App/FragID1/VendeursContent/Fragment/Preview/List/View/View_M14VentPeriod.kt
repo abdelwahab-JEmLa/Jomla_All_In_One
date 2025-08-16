@@ -227,20 +227,65 @@ fun View_M14VentPeriod(
         val adjustedTotalAchats = totalAchats - totalProduitsDepot
         val balance = totalVentes - adjustedTotalAchats
 
-        val relative_List_Vents =
-            repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
-                it.parent_M14VentPeriod_KeyId == relative_M14VentPeriode.keyID
-                        && it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+
+        val sum_Bon_Vents = run {
+            // Obtenir les filtres actifs comme dans Dialog_Filter_Client
+            val active_Central_Values = focusedValuesGetter.active_Central_Values
+            val activePeriod = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+            val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
+            val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
+
+            val allBonVents = repositorysMainGetter.repo8BonVent.datasValue
+            val allVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue
+            var allAchatOperations = repositorysMainGetter.repo11AchatOperation.datasValue
+
+            // Appliquer la même logique de filtrage que Dialog_Filter_Client
+            // 1. Filtrer les opérations d'achat par période active
+            activePeriod.let { period ->
+                allAchatOperations = allAchatOperations.filter {
+                    it.parent_M14VentPeriod_KeyID == period.keyID
+                }
             }
 
-        val sum_Bon_Vents = relative_List_Vents.filter {
-            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-        }.sumOf { ventOperation ->
-            val parentM13TarificationPrix = repositorysMainGetter
-                .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
-            ventOperation.quantity * parentM13TarificationPrix
-        }
+            // 2. Filtrer les opérations d'achat par grossiste actif
+            activeGrossist?.let { grossist ->
+                allAchatOperations = allAchatOperations.filter {
+                    it.parent_M15Grossist_KeyID == grossist.keyID
+                }
+            }
 
+            val relevantVentOperations = if (allAchatOperations.isNotEmpty()) {
+                allVentOperations.filter { ventOperation ->
+                    allAchatOperations.any { achatOperation ->
+                        achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation)).isNotEmpty()
+                    }
+                }
+            } else {
+                allVentOperations.filter {
+                    it.parent_M14VentPeriod_KeyId == relative_M14VentPeriode.keyID
+                }
+            }
+
+            // 4. Appliquer le filtre client si actif
+            val filteredVentOperations = activeClient?.let { client ->
+                val clientBonVentIds = allBonVents
+                    .filter { it.parent_M2Client_KeyID == client.keyID }
+                    .map { it.keyID }
+                    .toSet()
+
+                relevantVentOperations.filter {
+                    it.parent_M8BonVent_KeyId in clientBonVentIds
+                }
+            } ?: relevantVentOperations
+
+            filteredVentOperations.filter {
+                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+            }.sumOf { ventOperation ->
+                val parentM13TarificationPrix = repositorysMainGetter
+                    .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
+                ventOperation.quantity * parentM13TarificationPrix
+            }
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {

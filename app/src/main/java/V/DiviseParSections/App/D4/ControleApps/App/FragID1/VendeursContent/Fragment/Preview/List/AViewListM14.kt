@@ -7,6 +7,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.DateRange
@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ViewList_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
@@ -56,29 +57,33 @@ fun ViewList_M14VentPeriod(
 
         // Show periods if they exist
         if (list_M14VentPeriode.isNotEmpty()) {
-            itemsIndexed(
-                items = list_M14VentPeriode,
-                key = { _, periode -> periode.keyID }
-            ) { index, periode ->
-
+            list_M14VentPeriode.forEachIndexed { index, periode ->
                 // Sticky Header for each period
-                StickyPeriodHeader(
-                    periode = periode,
-                    periodIndex = index + 1,
-                    totalPeriods = list_M14VentPeriode.size,
-                    isActive = (relative_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID ?: "") == periode.keyID
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
+                stickyHeader(
+                    key = "header_${periode.keyID}"
+                ) {
+                    StickyPeriodHeader(
+                        periode = periode,
+                        periodIndex = index + 1,
+                        totalPeriods = list_M14VentPeriode.size,
+                        isActive = (relative_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID ?: "") == periode.keyID
+                    )
+                }
 
                 // Period content
-                View_M14VentPeriod(
-                    viewModel = viewModel,
-                    relative_M14VentPeriode = periode,
-                    relative_M9AppCompt = relative_M9AppCompt
-                )
+                item(key = "content_${periode.keyID}") {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        View_M14VentPeriod(
+                            viewModel = viewModel,
+                            relative_M14VentPeriode = periode,
+                            relative_M9AppCompt = relative_M9AppCompt
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         } else {
             item {
