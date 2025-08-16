@@ -27,6 +27,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import java.io.File
 
 // Update the ActiveCentralValues data class to include product filter
 data class ActiveCentralValues(
@@ -47,6 +48,9 @@ data class ActiveCentralValues(
     val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
 
     val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
+    //-----------------Grossist----------------------------------------------------------------------------
+    val image_Flotant: File? = null,
+
     //-----------------Fabs.Affichage----------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,

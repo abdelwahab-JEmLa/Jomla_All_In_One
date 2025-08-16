@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.net.Uri
 import android.widget.Toast
@@ -52,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
 
@@ -296,7 +299,37 @@ fun CreditCard(
 }
 
 @Composable
-private fun ImageViewDialog(imagePath: String, onDismiss: () -> Unit) {
+private fun ImageViewDialog(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    imagePath: String,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
+
+    fun handel_add_AuFlotatn(): Unit {
+        val imageFile = File(imagePath)
+        if (imageFile.exists()) {
+            focusedValuesGetter.update_activeCentralValues(
+                active_Central_Values.copy(
+                    image_Flotant = imageFile
+                )
+            )
+            Toast.makeText(
+                context,
+                "Image ajoutée au flotant",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(
+                context,
+                "Erreur: Fichier image introuvable",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -330,6 +363,24 @@ private fun ImageViewDialog(imagePath: String, onDismiss: () -> Unit) {
                     )
                 }
 
+                // Add to Float button
+                IconButton(
+                    onClick = { handel_add_AuFlotatn() },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(8.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                            CircleShape
+                        )
+                ) {
+                    Icon(
+                        Icons.Default.CloudDownload, // Or use a more appropriate icon
+                        contentDescription = "Ajouter au flotant",
+                        tint = Color.White
+                    )
+                }
+
                 // Image display
                 AsyncImage(
                     model = imagePath,
@@ -343,7 +394,6 @@ private fun ImageViewDialog(imagePath: String, onDismiss: () -> Unit) {
         }
     }
 }
-
 // Helper function for image management
 private suspend fun checkAndDownloadImage(
     item: TransactionItem,

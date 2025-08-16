@@ -1,7 +1,13 @@
-package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
+package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ID4ClientSearchButton
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.Button_ID2_Menagerie_Telegram
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.CatalogueSelectionDialog
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.ID3RecordingButton
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.B1CataloguesAffiche
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.BlinkingWarningCard
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.FloatingImageDisplay
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.ButtonVideoRecord
@@ -14,8 +20,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -25,20 +29,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,8 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -115,6 +110,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
+
+    // Get the floating image from ActiveCentralValues
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
+    val floatingImage = activeCentralValues.image_Flotant
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -214,9 +213,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 )
                 appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
-                // viewModel.sendOrderAuPresentoireDevice(catalogueId)
-
-
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
                     WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                     catalogueId
@@ -232,6 +228,18 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        // Display floating image if available
+        if (floatingImage != null && floatingImage.exists()) {
+            FloatingImageDisplay(
+                imageFile = floatingImage,
+                onDismiss = {
+                    focusedValuesGetter.update_activeCentralValues(
+                        activeCentralValues.copy(image_Flotant = null)
+                    )
+                }
+            )
+        }
+
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
@@ -250,7 +258,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 .padding(16.dp)
         ) {
 
-
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -262,16 +269,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             ) {
 
                 if (showButtons) {
-
                     focusedValuesGetter.currentActive_M9AppCompt?.text_Message_Warning?.let { warningMessage ->
-                        if (warningMessage.isNotBlank()
-                        //  && !M18CentralParametresOfAllApps.get_Default().itsDevMode
-                        ) {
+                        if (warningMessage.isNotBlank()) {
                             BlinkingWarningCard(warningMessage)
                         }
                     }
 
-                    if (!cLenceDepuitFragmentsSepecialisteDeVents) {
+                    if (!cLenceDepuitFragmentsSepecialicteDeVents) {
                         ID3RecordingButton(
                             viewModel,
                             isRecording,
@@ -297,9 +301,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )
-
                     }
-
 
                     focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         ID4ClientSearchButton(
@@ -407,114 +409,4 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
 }
 
-@Composable
-fun BlinkingWarningCard(
-    message: String = "",
-    modifier: Modifier = Modifier
-) {
-    var isBlinking by remember { mutableStateOf(false) }
 
-    // Create blinking effect
-    LaunchedEffect(Unit) {
-        while (true) {
-            isBlinking = !isBlinking
-            delay(1000) // Blink every 1 second
-        }
-    }
-
-    Card(
-        modifier = modifier
-            .height(180.dp)
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isBlinking) Color.Red else Color.White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "تذكير سريع",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = if (isBlinking) Color.White else Color.Red,
-                textAlign = TextAlign.Center
-            )
-
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = "Warning",
-                modifier = Modifier.size(48.dp),
-                tint = if (isBlinking) Color.White else Color.Red
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = if (isBlinking) Color.White else Color.Red,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-
-@Composable
-fun B1CataloguesAffiche(
-    appComptComposeRepositoryProtoJuin17: Repo9AppCompt,
-    showLabels: Boolean,
-    onClickPourAfficheDialog: () -> Unit = {}
-) {
-
-    val catalogues = B4CatalogueCategoriesRepository()
-    val catalogueId =
-        appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
-    val buttonAFficheAuCata = catalogues.find { it.key == catalogueId }
-
-    // RepositorysMainGetter the catalogue name and color, with fallbacks
-    val catalogueName = buttonAFficheAuCata?.nom ?: "Catalogues"
-    val buttonBackgroundColor = buttonAFficheAuCata?.couleur ?: Color(0xFF9C27B0)
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FloatingActionButton(
-            onClick = {
-                onClickPourAfficheDialog()
-            },
-            modifier = Modifier.size(40.dp),
-            containerColor = buttonBackgroundColor,
-        ) {
-            val iconColor = Color.Black
-
-            Icon(
-                imageVector = Icons.Default.Category,
-                contentDescription = "Sélectionner Catalogue",
-                tint = iconColor
-            )
-        }
-
-        if (showLabels) {
-            Text(
-                text = catalogueName, // Now displays the actual catalogue name
-                modifier = Modifier
-                    .background(buttonBackgroundColor)
-                    .padding(4.dp),
-                color = Color.White
-            )
-        }
-    }
-}

@@ -1,6 +1,6 @@
 package P0_MainScreen.Main
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -314,11 +314,11 @@ fun MainScreen(
 
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
                     (!productDisplayController.isHostPhone && productDisplayController.isConnected).ifTrue {
-                       // it.active_ProduitKeyID_Au_DroopDown_PresenterEcran.ifNotNullOrEmpty {
                             App_PresenterEcran_Au_Client()
-                     //   }
                     }
                 }
+
+
             }
         }
     }
