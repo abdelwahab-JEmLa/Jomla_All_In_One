@@ -64,16 +64,19 @@ fun DropDownItemWBaseDonne_1(
 
         return updatedCategories
     }
-
+    val filter = update_return()
+        .filter { it.catalogueParentId == 2L }
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
-                set(value = update_return().map {
-                    it.nom
+
+                set(value = filter
+                    .map {
+                    it.nom + " " +it.positionDouble
                 }, key = SemanticsPropertyKey(""))
             }
             .semantics(mergeDescendants = true) {
-                set(value = update_return(), key = SemanticsPropertyKey("update_return"))
+                set(value = filter, key = SemanticsPropertyKey("update_return"))
             }
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
