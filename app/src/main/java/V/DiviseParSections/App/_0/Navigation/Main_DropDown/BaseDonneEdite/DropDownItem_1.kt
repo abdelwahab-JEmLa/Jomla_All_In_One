@@ -1,7 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -29,13 +33,49 @@ fun DropDownItemWBaseDonne_1(
     nomFun: String,
     onDismissDropdown: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     context: Context = LocalContext.current
 ) {
+    val  datas =repositorysMainGetter.repoM16CategorieProduit.datasValue
     var needsConfirmation by remember { mutableStateOf(false) }
 
+    fun update_return(): List<CategoriesTabelle> {
+        // Group categories by catalogue
+        val categoriesByCatalogue = datas.groupBy { it.catalogueParentId }
+
+        val updatedCategories = mutableListOf<CategoriesTabelle>()
+
+        categoriesByCatalogue.forEach { (catalogueId, categories) ->
+            // Sort categories by positionDouble, then by dernierTimeTampsSynchronisationAvecFireBase
+            val sortedCategories = categories.sortedWith(
+                compareBy<CategoriesTabelle> { it.positionDouble }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+            )
+
+            // Update positionDouble with incremental index + 1
+            sortedCategories.forEachIndexed { index, category ->
+                val updatedCategory = category.copy(
+                    positionDouble = (index + 1).toDouble()
+                )
+                updatedCategories.add(updatedCategory)
+            }
+        }
+
+        return updatedCategories
+    }
+
     Card(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = update_return().map {
+                    it.nom
+                }, key = SemanticsPropertyKey(""))
+            }
+            .semantics(mergeDescendants = true) {
+                set(value = update_return(), key = SemanticsPropertyKey("update_return"))
+            }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (needsConfirmation) {
                 MaterialTheme.colorScheme.errorContainer
@@ -71,6 +111,8 @@ fun DropDownItemWBaseDonne_1(
                 if (!needsConfirmation) {
                     needsConfirmation = true
                 } else {
+                    repositorysMainSetter.addOrUpdateDatas_M16CategorieProduit(update_return())
+
                     Toast.makeText(
                         context,
                         "Fonction '$nomFun' exécutée avec succès",

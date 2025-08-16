@@ -113,7 +113,7 @@ internal fun MainItem(
 
                             repositorysMainSetter.upsert_M16CategorieProduit(
                                 relative_category.copy(
-                                    positionDouble = positionDouble_SC - 0.0001
+                                    positionDouble = positionDouble_SC
                                 )
                             )
 
@@ -144,7 +144,7 @@ internal fun MainItem(
                                 set(SemanticsPropertyKey(""), relative_category.position)
                             }
                             .fillMaxWidth(),
-                        text = "${relative_category.position}_${relative_category.nom}-${relative_category.id}",
+                        text = "${relative_category.positionDouble}_${relative_category.nom}-${relative_category.id}",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         textAlign = TextAlign.Center,

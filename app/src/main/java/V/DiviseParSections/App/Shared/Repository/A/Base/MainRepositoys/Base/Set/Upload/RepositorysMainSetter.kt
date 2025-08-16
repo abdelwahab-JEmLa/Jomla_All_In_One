@@ -193,6 +193,7 @@ class RepositorysMainSetter(
 
     //------------R16 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M16CategorieProduit(data: CategoriesTabelle) = repoM16CategorieProduit.addOrUpdateData(data)
+    fun addOrUpdateDatas_M16CategorieProduit(datas: List<CategoriesTabelle>) = repoM16CategorieProduit.addOrUpdateDatas(datas,true)
 
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)

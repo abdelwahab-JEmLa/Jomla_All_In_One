@@ -38,7 +38,6 @@ internal fun MainList(
 
     val catalogues = remember { B4CatalogueCategoriesRepository() }
 
-    // Fixed: Changed to LinkedHashMap to maintain insertion order and proper sorting
     val categoriesByCatalogue = remember(
         categoriesCompoRepository.tigerDataRecompose,
         catalogues
@@ -49,20 +48,25 @@ internal fun MainList(
         catalogues.forEach { catalogue ->
             val categoriesForCatalogue = currentCategories
                 .filter { it.catalogueParentId == catalogue.id }
-                .sortedBy { it.positionDouble } // Use positionDouble field for proper ordering
+                .sortedWith(
+                    compareBy<CategoriesTabelle> { it.positionDouble }
+                        .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+                )
 
             if (categoriesForCatalogue.isNotEmpty()) {
                 grouped[catalogue] = categoriesForCatalogue
             }
         }
 
-        // Handle categories without a parent catalogue or with invalid parent catalogue
         val orphanCategories = currentCategories
             .filter { category ->
                 category.catalogueParentId == 0L ||
                         !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
             }
-            .sortedBy { it.positionDouble } // Use positionDouble field for proper ordering
+            .sortedWith(
+                compareBy<CategoriesTabelle> { it.positionDouble }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+            )
 
         if (orphanCategories.isNotEmpty()) {
             val othersCatalogue = CataloguesCaegorie(
