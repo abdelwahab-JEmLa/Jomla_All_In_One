@@ -18,7 +18,9 @@ fun handlePlaybackClick(
     datesHandler: DatesHandler,
     context: Context,
     coroutineScope: CoroutineScope
-) {
+) {       //<--
+//TODO(1): pk des foit m affiche erreur objet no exist apre un temp ca marche fait que si le audio n exist pas de ne pas affiche le playe 
+//button au lieux un loading qend c telecharger playe 
     coroutineScope.launch {
         when {
             isCurrentlyPlaying -> {
