@@ -7,6 +7,8 @@ import android.graphics.Rect
 import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlipCameraAndroid
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.graphics.scale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +60,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import androidx.core.graphics.scale
 
 @Composable
 fun CameraXDialog(
@@ -73,6 +76,68 @@ fun CameraXDialog(
     var isCapturing by remember { mutableStateOf(false) }
     var isCameraReady by remember { mutableStateOf(false) }
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
+
+    suspend fun processGalleryImageToWebP(selectedUri: Uri): Uri? {
+        return try {
+            withContext(Dispatchers.IO) {
+                val inputStream = context.contentResolver.openInputStream(selectedUri)
+                val originalBitmap = BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+
+                if (originalBitmap == null) return@withContext null
+
+                val maxSize = 2048
+                val scaledBitmap = if (originalBitmap.width > maxSize || originalBitmap.height > maxSize) {
+                    val scale = minOf(maxSize.toFloat() / originalBitmap.width, maxSize.toFloat() / originalBitmap.height)
+                    val newWidth = (originalBitmap.width * scale).toInt()
+                    val newHeight = (originalBitmap.height * scale).toInt()
+                    originalBitmap.scale(newWidth, newHeight).also {
+                        if (it !== originalBitmap) originalBitmap.recycle()
+                    }
+                } else originalBitmap
+
+                val outputFile = File(context.cacheDir, "gallery_webp_${System.currentTimeMillis()}.webp")
+
+                val success = try {
+                    FileOutputStream(outputFile).use { outputStream ->
+                        when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, webPQuality, outputStream)
+                            }
+                            true -> {
+                                @Suppress("DEPRECATION")
+                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP, webPQuality, outputStream)
+                            }
+                            else -> {
+                                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, webPQuality, outputStream)
+                            }
+                        }
+                    }
+                } catch (e: Exception) { false }
+
+                scaledBitmap.recycle()
+
+                if (success && outputFile.exists() && outputFile.length() > 0) {
+                    Uri.fromFile(outputFile)
+                } else {
+                    outputFile.delete()
+                    null
+                }
+            }
+        } catch (e: Exception) { null }
+    }
+
+    // Gallery picker launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { selectedUri ->
+            CoroutineScope(Dispatchers.Main).launch {
+                val processedUri = processGalleryImageToWebP(selectedUri)
+                processedUri?.let { onImageCaptured(it) }
+            }
+        }
+    }
 
     fun convertYuvToRgb(imageProxy: ImageProxy): Bitmap {
         val yBuffer = imageProxy.planes[0].buffer
@@ -200,18 +265,33 @@ fun CameraXDialog(
                         Icon(Icons.Default.Close, "Fermer", tint = Color.White)
                     }
 
-                    IconButton(
-                        onClick = {
-                            if (!isCapturing && isCameraReady) {
-                                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                                    CameraSelector.LENS_FACING_FRONT
-                                } else CameraSelector.LENS_FACING_BACK
-                                isCameraReady = false
-                            }
-                        },
-                        modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                    ) {
-                        Icon(Icons.Default.FlipCameraAndroid, "Changer", tint = Color.White)
+                    Row {
+                        // Gallery selection button
+                        IconButton(
+                            onClick = {
+                                if (!isCapturing) {
+                                    galleryLauncher.launch("image/*")
+                                }
+                            },
+                            modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(Icons.Default.PhotoLibrary, "Galerie", tint = Color.White)
+                        }
+
+                        // Camera flip button
+                        IconButton(
+                            onClick = {
+                                if (!isCapturing && isCameraReady) {
+                                    lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                                        CameraSelector.LENS_FACING_FRONT
+                                    } else CameraSelector.LENS_FACING_BACK
+                                    isCameraReady = false
+                                }
+                            },
+                            modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(Icons.Default.FlipCameraAndroid, "Changer", tint = Color.White)
+                        }
                     }
                 }
 

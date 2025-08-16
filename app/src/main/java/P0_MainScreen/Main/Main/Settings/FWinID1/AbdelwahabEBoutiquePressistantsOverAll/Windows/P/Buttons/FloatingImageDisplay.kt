@@ -42,12 +42,12 @@ fun FloatingImageDisplay(
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-    var imageSize by remember { mutableFloatStateOf(200f) }
+    var imageSize by remember { mutableFloatStateOf(350f) }
 
     // Define min and max sizes for the image
     val minSize = 100f
-    val maxSize = 400f
-    val sizeStep = 30f
+    val maxSize = 100f
+    val sizeStep = 50f
 
     Card(
         modifier = Modifier
