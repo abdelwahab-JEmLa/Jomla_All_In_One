@@ -7,6 +7,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +31,18 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import java.util.SortedMap
 
 @Composable
@@ -52,8 +62,38 @@ fun GerantButton(
     val color = Color(0xFF4CAF50)
     val cancelColor = Color(0xFFFF5722)
 
+    // Blinking animation state
+    var isRedBackground by remember { mutableStateOf(false) }
+
+    // Toggle state every 500ms for blinking effect
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(500L)
+            isRedBackground = !isRedBackground
+        }
+    }
+
+    // Animated colors
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (isRedBackground) Color.Red else Color.White,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 900, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "backgroundColorAnimation"
+    )
+
+    val animatedTextColor by animateColorAsState(
+        targetValue = if (isRedBackground) Color.White else Color.Red,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "textColorAnimation"
+    )
+
     val gerantButtonHeight = remember(tariffsGroupedByType) {
-        val fabButtonSize = 40
+        val fabButtonSize = 50
         val spacerBetweenItems = 4
         val numberOfTariffTypes = tariffsGroupedByType.size
         val totalItemsHeight = numberOfTariffTypes * fabButtonSize
@@ -70,23 +110,23 @@ fun GerantButton(
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
     val edited_Tariff = relative_Tariff?.copy(
-            parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-            parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.keyID
-                ?: "null",
-            parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.get_DebugInfos()
-                ?: "null",
-            parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.keyID
-                ?: "null",
-            parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.get_DebugInfos()
-                ?: "null",
-        )
+        parent_M1Produit_KeyId = relative_M1Produit.keyID,
+        parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+        parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.keyID
+            ?: "null",
+        parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.get_DebugInfos()
+            ?: "null",
+        parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.keyID
+            ?: "null",
+        parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.get_DebugInfos()
+            ?: "null",
+    )
 
     fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                m13TarificationInfos_Pour_Produit = edited_Tariff,
-                m10OperationVentCouleurs = m10OperationVentCouleurs
-            )
+            m13TarificationInfos_Pour_Produit = edited_Tariff,
+            m10OperationVentCouleurs = m10OperationVentCouleurs
+        )
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
@@ -109,7 +149,7 @@ fun GerantButton(
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .background(color)
+                                .background(animatedBackgroundColor)
                                 .padding(vertical = 4.dp, horizontal = 4.dp)
                                 .height(gerantButtonHeight)
                                 .width(30.dp)
@@ -126,7 +166,7 @@ fun GerantButton(
                                     maxLines = 1,
                                     fontSize = fontSize,
                                     modifier = Modifier.rotate(-90f),
-                                    color = Color.White
+                                    color = animatedTextColor
                                 )
 
                                 Spacer(modifier = Modifier.height(20.dp))
@@ -136,7 +176,7 @@ fun GerantButton(
                                     maxLines = 1,
                                     fontSize = fontSize,
                                     modifier = Modifier.rotate(-90f),
-                                    color = Color.White
+                                    color = animatedTextColor
                                 )
                             }
                         }
@@ -159,9 +199,9 @@ fun GerantButton(
                         focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
                         focusedValuesGetter.update_activeCentralValues(
                             focusedValuesGetter.active_Central_Values.copy(
-                                    affiche_Panier_au_Search_Dialog = false,
-                                    handled_M10OperationVent_Pour_Link = null
-                                )
+                                affiche_Panier_au_Search_Dialog = false,
+                                handled_M10OperationVent_Pour_Link = null
+                            )
                         )
 
                     },

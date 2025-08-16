@@ -114,7 +114,7 @@ fun TariffButtonItem(
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFIN_OLd ||
-            (typeTarification == TypeChoisi.Prix_Detaille && currentApp_Est_Admin)||
+            (typeTarification == TypeChoisi.Prix_Detaille && currentApp_Est_Admin) ||
             typeTarification == TypeChoisi.Edited_Pour_Client ||
             typeTarification == TypeChoisi.Historique
 
@@ -371,11 +371,15 @@ fun TariffButtonItem(
                 }
 
                 // Show decrease button for both editable tariff types and purchase price
+                val decrease_Value = if (latestTariffLocalData.prixCurrency < 200.0) 1.0 else 5.0
+
                 if (isEditableTariff) {
                     IconButton(
                         onClick = {
                             val newPrice =
-                                (latestTariffLocalData.prixCurrency - 5.0).coerceAtLeast(0.0)
+                                (latestTariffLocalData.prixCurrency - decrease_Value).coerceAtLeast(
+                                    0.0
+                                )
                             latestTariffLocalData = latestTariffLocalData.copy(
                                 prixCurrency = newPrice
                             )
@@ -391,7 +395,7 @@ fun TariffButtonItem(
                 } else if (isPurchasePriceTariff) {
                     IconButton(
                         onClick = {
-                            val newPrice = (produit.prixAchat - 5.0).coerceAtLeast(0.0)
+                            val newPrice = (produit.prixAchat - decrease_Value).coerceAtLeast(0.0)
                             val updatedProduit = produit.copy(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
@@ -417,10 +421,10 @@ fun TariffButtonItem(
                         // Allow price increase for editable tariffs
                         if (isEditableTariff) {
                             latestTariffLocalData = latestTariffLocalData.copy(
-                                prixCurrency = latestTariffLocalData.prixCurrency + 5.0
+                                prixCurrency = latestTariffLocalData.prixCurrency + decrease_Value
                             )
                         } else if (isPurchasePriceTariff) {
-                            val newPrice = produit.prixAchat + 5.0
+                            val newPrice = produit.prixAchat + decrease_Value
                             val updatedProduit = produit.copy(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
@@ -453,7 +457,7 @@ fun TariffButtonItem(
                             "$prixCurrency$pls",
                             modifier = Modifier
                                 .semantics(mergeDescendants = true) {
-                                    set(SemanticsPropertyKey("aa"),latestTariffLocalData )
+                                    set(SemanticsPropertyKey("aa"), latestTariffLocalData)
                                 }
                                 .background(priceBackgroundColor)
                                 .padding(4.dp),

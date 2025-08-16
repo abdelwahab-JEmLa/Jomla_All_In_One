@@ -49,7 +49,6 @@ fun MainList(
         .filter {
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID
                     && it.typeChoisi != TypeChoisi.Prix_SupperGro_Et_PresentationService
-
         }
         .maxOfOrNull { it.prixCurrency } ?: 0.0
 
@@ -71,7 +70,7 @@ fun MainList(
             )
         }
 
-    val existingDefiniParGerant2Tariff = list_M13TarificationInfos
+    val existing_Prix_Detaille = list_M13TarificationInfos
         .lastOrNull { tariff ->
             tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
@@ -82,7 +81,7 @@ fun MainList(
             typeChoisi = TypeChoisi.Prix_Detaille,
             parent_M1Produit_DebugInfos = relative_M1Produit.nom,
             parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            prixCurrency = existingDefiniParGerant2Tariff?.prixCurrency
+            prixCurrency = existing_Prix_Detaille?.prixCurrency
                 ?: relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
         )
 
@@ -91,7 +90,7 @@ fun MainList(
             typeChoisi = TypeChoisi.Edited_Pour_Client,
             parent_M1Produit_DebugInfos = relative_M1Produit.nom,
             parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            prixCurrency = relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
+            prixCurrency = (relative_Tariff_Prix_Detaille.prixCurrency + relative_M1Produit.prixVent) / 2
         )
 
     val standardTariffs = remember(
@@ -104,9 +103,8 @@ fun MainList(
         buildList {
             add(relative_Tariff_Prix_Detaille)
 
-            if (relative_Tariff_Historique == null || focusedValuesGetter.currentApp_Est_Admin) {
-                add(relative_Tariff_Edited_Pour_Client)
-            }
+
+            add(relative_Tariff_Edited_Pour_Client)
 
             if (relative_Tariff_Historique != null) {
                 add(relative_Tariff_Historique)
@@ -170,7 +168,7 @@ fun MainList(
         Column(
             modifier = modifier
                 .semantics(mergeDescendants = true) {
-                    set(value = existingDefiniParGerant2Tariff, key = SemanticsPropertyKey(""))
+                    set(value = existing_Prix_Detaille, key = SemanticsPropertyKey(""))
                 }
                 .semantics(mergeDescendants = true) {
                     set(value = list_M13TarificationInfos.filter { tariff ->
