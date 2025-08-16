@@ -42,11 +42,38 @@ fun TypeChoisiDropdownCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    val alternativeType = if (selectedType == M13TarificationInfos.TypeChoisi.Prix_Detaille) {
+        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+    } else {
+        M13TarificationInfos.TypeChoisi.Prix_Detaille
+    }
+
+    val selectedTypePrice = when (selectedType) {
+        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+            relative_M1Produit.prixVent.toString()
+        }
+        M13TarificationInfos.TypeChoisi.Prix_Detaille -> {
+            val prixCurrency = relative_M13Tariffication.prixCurrency.takeIf { it > 0.0 }
+            prixCurrency?.toString() ?: "non definie"
+        }
+        else -> "0.0"
+    }
+
+    val alternativeTypePrice = when (alternativeType) {
+        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+            relative_M1Produit.prixVent.toString()
+        }
+        M13TarificationInfos.TypeChoisi.Prix_Detaille -> {
+            val prixCurrency = relative_M13Tariffication.prixCurrency.takeIf { it > 0.0 }
+            prixCurrency?.toString() ?: "non definie"
+        }
+        else -> "0.0"
+    }
+
     Card(
         modifier = modifier
-            .getSemanticsTag(relative_M13Tariffication,"relative_M13Tariffication")
-            .fillMaxWidth()
-            .clickable { expanded = !expanded },
+            .getSemanticsTag(relative_M13Tariffication, "relative_M13Tariffication")
+            .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = selectedType.couleur
@@ -56,39 +83,156 @@ fun TypeChoisiDropdownCard(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            if (!expanded) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            expanded = true
+                        },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = selectedType.couleur.copy(alpha = 0.9f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    selectedType.iconVector?.let { icon ->
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = selectedType.couleur_Text,
-                            modifier = Modifier.size(20.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            selectedType.iconVector?.let { icon ->
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = selectedType.couleur_Text,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Text(
+                                text = selectedType.nomArabe,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = selectedType.couleur_Text,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Text(
+                            text = selectedTypePrice,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = selectedType.couleur_Text,
+                            fontWeight = FontWeight.Bold
                         )
                     }
-                    Text(
-                        text = selectedType.nomArabe,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = selectedType.couleur_Text,
-                        fontWeight = FontWeight.Medium
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onTypeSelected(alternativeType)
+                        },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = alternativeType.couleur.copy(alpha = 0.7f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            alternativeType.iconVector?.let { icon ->
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = alternativeType.couleur_Text,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Text(
+                                text = alternativeType.nomArabe,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = alternativeType.couleur_Text
+                            )
+                        }
+
+                        Text(
+                            text = alternativeTypePrice,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = alternativeType.couleur_Text,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                // Small expand button at the bottom
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expanded = true }
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ExpandMore,
+                        contentDescription = "Expand",
+                        tint = selectedType.couleur_Text.copy(alpha = 0.7f),
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
-                Icon(
-                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = null,
-                    tint = selectedType.couleur_Text
-                )
-            }
+            } else {
+                // Expanded state: Show header with collapse button and detailed options
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expanded = false },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        selectedType.iconVector?.let { icon ->
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = selectedType.couleur_Text,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Text(
+                            text = selectedType.nomArabe,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = selectedType.couleur_Text,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
 
-            if (expanded) {
+                    Icon(
+                        imageVector = Icons.Filled.ExpandLess,
+                        contentDescription = "Collapse",
+                        tint = selectedType.couleur_Text
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(color = selectedType.couleur_Text.copy(alpha = 0.3f))
                 Spacer(modifier = Modifier.height(8.dp))
@@ -99,10 +243,76 @@ fun TypeChoisiDropdownCard(
                     selectedType = selectedType,
                     onSelected = {
                         onTypeSelected(it)
-                        expanded=false
+                        expanded = false
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun FloatingAlternativePriceCard(
+    alternativeType: M13TarificationInfos.TypeChoisi,
+    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M13Tariffication: M13TarificationInfos,
+    onDismiss: () -> Unit,
+    onSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect() },
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = alternativeType.couleur.copy(alpha = 0.95f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                alternativeType.iconVector?.let { icon ->
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = alternativeType.couleur_Text,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Text(
+                    text = alternativeType.nomArabe,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = alternativeType.couleur_Text
+                )
+            }
+
+            val price = when (alternativeType) {
+                M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+                    relative_M1Produit.prixVent.toString()
+                }
+                M13TarificationInfos.TypeChoisi.Prix_Detaille -> {
+                    val prixCurrency = relative_M13Tariffication.prixCurrency.takeIf { it > 0.0 }
+                    prixCurrency?.toString() ?: "non definie"
+                }
+
+                else->"0.0"
+            }
+
+            Text(
+                text = price,
+                style = MaterialTheme.typography.bodyMedium,
+                color = alternativeType.couleur_Text,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
