@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.WeekInfo
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -275,27 +275,39 @@ fun translateWeekTextToArabic(weekInfo: WeekInfo): String {
     }
 }
 
-// Function to translate work duration to Arabic
+// Function to translate work duration to Arabic (CORRIGÉE)
 fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String {
     return when {
-        daysWorked == 0.0 -> "0 يوم"  // "0 days" in Arabic
+        totalMinutes == 0 -> "0 يوم"  // "0 days" in Arabic
         daysWorked < 1.0 -> {
             val hours = totalMinutes / 60
-            "$hours ساعات"  // "N hours" in Arabic
-        }
-
-        daysWorked == 1.0 -> "1 يوم"  // "1 day" in Arabic
-        daysWorked < 2.0 -> {
-            "1 يوم و ${(daysWorked - 1.0) * 8} ساعات"  // "1 day and N hours" in Arabic
-        }
-
-        else -> {
-            val fullDays = daysWorked.toInt()
-            val remainingHours = ((daysWorked - fullDays) * 8).toInt()
-            if (remainingHours > 0) {
-                "$fullDays أيام و $remainingHours ساعات"  // "N days and M hours" in Arabic
+            val minutes = totalMinutes % 60
+            if (minutes > 0) {
+                "$hours ساعات و $minutes دقيقة"  // "N hours and M minutes" in Arabic
             } else {
-                "$fullDays أيام"  // "N days" in Arabic
+                "$hours ساعات"  // "N hours" in Arabic
+            }
+        }
+        daysWorked == 1.0 -> "1 يوم"  // "1 day" in Arabic
+        else -> {
+            val fullDays = (totalMinutes / (8 * 60))
+            val remainingMinutes = totalMinutes % (8 * 60)
+            val remainingHours = remainingMinutes / 60
+            val remainingMins = remainingMinutes % 60
+
+            when {
+                remainingHours > 0 && remainingMins > 0 -> {
+                    "$fullDays أيام و $remainingHours ساعات و $remainingMins دقيقة"
+                }
+                remainingHours > 0 -> {
+                    "$fullDays أيام و $remainingHours ساعات"
+                }
+                remainingMins > 0 -> {
+                    "$fullDays أيام و $remainingMins دقيقة"
+                }
+                else -> {
+                    "$fullDays أيام"  // "N days" in Arabic
+                }
             }
         }
     }
