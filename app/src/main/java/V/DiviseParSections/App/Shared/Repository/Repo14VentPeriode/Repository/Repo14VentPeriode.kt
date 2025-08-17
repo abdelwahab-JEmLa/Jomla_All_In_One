@@ -50,12 +50,17 @@ class Repo14VentPeriode(
                 }
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Failed to refresh data: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -93,6 +98,7 @@ class Repo14VentPeriode(
             }
         }
     }
+
     fun add_New(data: M14VentPeriode) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
@@ -138,7 +144,6 @@ class Repo14VentPeriode(
 
         ancienRepoUpsert(updatedItem)
     }
-
 }
 
 @Entity
@@ -152,16 +157,16 @@ data class M14VentPeriode(
     var parent_M9AppCompt_KeyID: String = "",
     var parent_M9AppCompt_DebugInfos: String = "",
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val son_verification_entre_vent_et_achat_est_fait:Boolean= false,
+    val son_verification_entre_vent_et_achat_est_fait: Boolean = false,
     // Section StatuesMutable
-    val credit_Vents_Totale:Double= 0.0,
-    val cash_Vents_Totale:Double= 0.0,
+    val credit_Vents_Totale: Double = 0.0,
+    val cash_Vents_Totale: Double = 0.0,
 
-    val credit_achats_Totale:Double= 0.0,
-    val cash_achats_Totale:Double= 0.0,
+    val credit_achats_Totale: Double = 0.0,
+    val cash_achats_Totale: Double = 0.0,
 
-    val credit_produitsAuDepot:Double= 0.0,
-    val acheter_produitsAuDepot:Double= 0.0,
+    val credit_produitsAuDepot: Double = 0.0,
+    val acheter_produitsAuDepot: Double = 0.0,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.SoquetteNonDefinie,

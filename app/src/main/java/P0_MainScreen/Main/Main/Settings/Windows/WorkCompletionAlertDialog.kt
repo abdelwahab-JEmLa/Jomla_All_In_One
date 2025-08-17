@@ -2,6 +2,7 @@ package P0_MainScreen.Main.Main.Settings.Windows
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,16 +49,19 @@ import kotlinx.coroutines.launch
 fun WorkCompletionAlertDialog(
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps,
     related_M14VentPeriode: M14VentPeriode? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit = {},
-    nombreClientAvecCibleCommeLastBonAchat: Int = 0
+    nombreClientAvecCibleCommeLastBonAchat: Int = 0,
 ) {
+    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+
     var isLoading by remember { mutableStateOf(false) }
     var showToast by remember { mutableStateOf(false) }
-    var isVerificationChecked by remember {
+    val isVerificationChecked by remember {
         mutableStateOf(
             related_M14VentPeriode?.son_verification_entre_vent_et_achat_est_fait ?: false
         )
@@ -152,7 +153,11 @@ fun WorkCompletionAlertDialog(
                             }
                         }
 
-                        Card(
+                        //<--
+                        //TODO(1): cree un text
+
+
+                        /*Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (isVerificationChecked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
@@ -167,7 +172,6 @@ fun WorkCompletionAlertDialog(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Checkbox(
-                                    checked = isVerificationChecked,
                                     onCheckedChange = { newValue ->
                                         isVerificationChecked = newValue
                                         GlobalScope.launch {
@@ -185,7 +189,7 @@ fun WorkCompletionAlertDialog(
                                     color = if (isVerificationChecked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                        }
+                        }       */
                     }
 
                     Row(

@@ -103,8 +103,10 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false,
-    val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
+    val itsDevMode: Boolean = true,
+    val devStartUpScree: String = Screen.TravailleTempRecorder.route,
+
+    val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
