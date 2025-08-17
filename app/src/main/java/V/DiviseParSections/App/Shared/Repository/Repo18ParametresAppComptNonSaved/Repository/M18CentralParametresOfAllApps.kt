@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -112,13 +111,13 @@ data class M18CentralParametresOfAllApps(
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String =
-        if (itsDevMode) abdelmomen_Compt_KeyId else {
+    val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabCompt_KeyId,
+   /*     if (itsDevMode) abdelmomen_Compt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")
                 abdelwahabCompt_KeyId
             else
                 abdelmomen_Compt_KeyId
-        },
+        },            */
 
     //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
     val activeWindowsSearchProduit: Boolean = false,
