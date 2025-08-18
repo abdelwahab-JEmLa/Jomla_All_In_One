@@ -144,7 +144,7 @@ fun filterClientsBasedOnMode(
 
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> {
             val keyID_currentActiveFocuced_M14VentPeriode =
-                focusedValuesGetter.currentActiveFocuced_M14VentPeriode.keyID
+                focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
             clientDataBaseSnapList.filter {
                 val lastTransaction = viewModel.getLastTransaction(it)
                 (

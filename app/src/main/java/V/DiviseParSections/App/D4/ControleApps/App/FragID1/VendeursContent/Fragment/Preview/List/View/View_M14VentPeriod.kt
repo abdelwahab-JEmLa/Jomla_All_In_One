@@ -115,15 +115,13 @@ fun View_M14VentPeriod(
         keyboardController?.hide()
     }
 
-    // Load calculated achat totals (credits from all grossists)
     LaunchedEffect(Unit) {
-        loadCalculatedAchatTotals { total ->
+        loadCalculatedAchatTotals(relative_M14VentPeriode.keyID, repositorysMainGetter) { total ->
             calculatedAchatTotal = total
             isLoadingCalculatedAchat = false
         }
     }
 
-    // Auto-focus when editing starts
     LaunchedEffect(editingField) {
         if (editingField != null) {
             focusRequester.requestFocus()
@@ -221,9 +219,12 @@ fun View_M14VentPeriod(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Calculate totals
-        val totalVentes = relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
-        val totalAchats = relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
-        val totalProduitsDepot = relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
+        val totalVentes =
+            relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
+        val totalAchats =
+            relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
+        val totalProduitsDepot =
+            relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
         val adjustedTotalAchats = totalAchats - totalProduitsDepot
         val balance = totalVentes - adjustedTotalAchats
 
@@ -242,8 +243,10 @@ fun View_M14VentPeriod(
             // Appliquer la même logique de filtrage que Dialog_Filter_Client
             // 1. Filtrer les opérations d'achat par période active
             activePeriod.let { period ->
-                allAchatOperations = allAchatOperations.filter {
-                    it.parent_M14VentPeriod_KeyID == period.keyID
+                if (period != null) {
+                    allAchatOperations = allAchatOperations.filter {
+                        it.parent_M14VentPeriod_KeyID == period.keyID
+                    }
                 }
             }
 
@@ -257,7 +260,8 @@ fun View_M14VentPeriod(
             val relevantVentOperations = if (allAchatOperations.isNotEmpty()) {
                 allVentOperations.filter { ventOperation ->
                     allAchatOperations.any { achatOperation ->
-                        achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation)).isNotEmpty()
+                        achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation))
+                            .isNotEmpty()
                     }
                 }
             } else {
@@ -282,7 +286,8 @@ fun View_M14VentPeriod(
                 it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
             }.sumOf { ventOperation ->
                 val parentM13TarificationPrix = repositorysMainGetter
-                    .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
+                    .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency
+                    ?: 0.0
                 ventOperation.quantity * parentM13TarificationPrix
             }
         }
@@ -335,10 +340,15 @@ fun View_M14VentPeriod(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                startEditing("credit_vents", relative_M14VentPeriode.credit_Vents_Totale)
+                                                startEditing(
+                                                    "credit_vents",
+                                                    relative_M14VentPeriode.credit_Vents_Totale
+                                                )
                                             },
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(
+                                                alpha = 0.5f
+                                            )
                                         )
                                     ) {
                                         Column(
@@ -383,10 +393,15 @@ fun View_M14VentPeriod(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                startEditing("cash_vents", relative_M14VentPeriode.cash_Vents_Totale)
+                                                startEditing(
+                                                    "cash_vents",
+                                                    relative_M14VentPeriode.cash_Vents_Totale
+                                                )
                                             },
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(
+                                                alpha = 0.5f
+                                            )
                                         )
                                     ) {
                                         Column(
@@ -447,7 +462,11 @@ fun View_M14VentPeriod(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             modifier = Modifier.clickable {
-                                focusedValuesGetter.update_activeCentralValues(focusedValuesGetter.active_Central_Values.copy(show_Dialog_filter_AChats_Par_Client_Acheteur = true))
+                                focusedValuesGetter.update_activeCentralValues(
+                                    focusedValuesGetter.active_Central_Values.copy(
+                                        show_Dialog_filter_AChats_Par_Client_Acheteur = true
+                                    )
+                                )
                             },
                             text = "$sum_Bon_Vents",
                             fontSize = 18.sp,
@@ -506,10 +525,15 @@ fun View_M14VentPeriod(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                startEditing("credit_achats", relative_M14VentPeriode.credit_achats_Totale)
+                                                startEditing(
+                                                    "credit_achats",
+                                                    relative_M14VentPeriode.credit_achats_Totale
+                                                )
                                             },
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(
+                                                alpha = 0.5f
+                                            )
                                         )
                                     ) {
                                         Column(
@@ -554,10 +578,15 @@ fun View_M14VentPeriod(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                startEditing("cash_achats", relative_M14VentPeriode.cash_achats_Totale)
+                                                startEditing(
+                                                    "cash_achats",
+                                                    relative_M14VentPeriode.cash_achats_Totale
+                                                )
                                             },
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                            containerColor = MaterialTheme.colorScheme.surface.copy(
+                                                alpha = 0.5f
+                                            )
                                         )
                                     ) {
                                         Column(
@@ -592,7 +621,6 @@ fun View_M14VentPeriod(
                     }
                 }
 
-                // Calculated Achat Card - NEW ADDITION
                 ElevatedCard(
                     modifier = Modifier.weight(1f),
                     colors = CardDefaults.elevatedCardColors(
@@ -678,10 +706,15 @@ fun View_M14VentPeriod(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            startEditing("credit_produits_depot", relative_M14VentPeriode.credit_produitsAuDepot)
+                                            startEditing(
+                                                "credit_produits_depot",
+                                                relative_M14VentPeriode.credit_produitsAuDepot
+                                            )
                                         },
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(
+                                            alpha = 0.5f
+                                        )
                                     )
                                 ) {
                                     Column(
@@ -797,10 +830,14 @@ fun View_M14VentPeriod(
                                 val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal
                                 when {
                                     calculatedBalance > 0 -> MaterialTheme.colorScheme.tertiaryContainer
-                                    calculatedBalance < 0 -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f)
+                                    calculatedBalance < 0 -> MaterialTheme.colorScheme.errorContainer.copy(
+                                        alpha = 0.8f
+                                    )
+
                                     else -> MaterialTheme.colorScheme.surfaceContainer
                                 }
                             }
+
                             else -> MaterialTheme.colorScheme.surfaceContainer
                         }
                     )
@@ -864,7 +901,12 @@ fun View_M14VentPeriod(
                         if (!isLoadingCalculatedAchat) {
                             // Show calculated breakdown
                             Text(
-                                text = "Ventes calc. (${String.format("%.2f", sum_Bon_Vents)}) - Achats calc. (${String.format("%.2f", calculatedAchatTotal)})",
+                                text = "Ventes calc. (${
+                                    String.format(
+                                        "%.2f",
+                                        sum_Bon_Vents
+                                    )
+                                }) - Achats calc. (${String.format("%.2f", calculatedAchatTotal)})",
                                 fontSize = 10.sp,
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
@@ -878,7 +920,24 @@ fun View_M14VentPeriod(
     }
 }
 
-private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
+// Helper function to check if a grossist has operations in a specific period
+private fun isGrossistActiveInPeriod(
+    grossistKeyID: String,
+    ventPeriodKeyID: String,
+    repositorysMainGetter: RepositorysMainGetter
+): Boolean {
+    return repositorysMainGetter.repo11AchatOperation.datasValue.any { achatOperation ->
+        achatOperation.parent_M15Grossist_KeyID == grossistKeyID &&
+                achatOperation.parent_M14VentPeriod_KeyID == ventPeriodKeyID
+    }
+}
+
+// Fix 2: Update the loadCalculatedAchatTotals function signature
+private fun loadCalculatedAchatTotals(
+    ventPeriodKeyID: String,
+    repositorysMainGetter: RepositorysMainGetter, // Add this parameter
+    onTotalLoaded: (Double) -> Unit
+) {
     var totalCredits = 0.0
     var totalVersements = 0.0
     var completedQueries = 0
@@ -891,6 +950,7 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
         }
     }
 
+    // Load TransactionItems filtered by the specific period
     val transactionListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             totalCredits = 0.0
@@ -898,7 +958,10 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
                 try {
                     val transaction = child.getValue(TransactionItem::class.java)
                     transaction?.let {
-                        totalCredits += it.credit
+                        // Fix: Pass repositorysMainGetter parameter
+                        if (isGrossistActiveInPeriod(it.parent_GrossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                            totalCredits += it.credit
+                        }
                     }
                 } catch (e: Exception) {
                 }
@@ -913,6 +976,7 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
 
     TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
 
+    // Load VersementItems filtered by the specific period
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val versementRef = TransactionItem.ref.parent?.child("VersementItem")
@@ -922,8 +986,14 @@ private fun loadCalculatedAchatTotals(onTotalLoaded: (Double) -> Unit) {
                     for (child in snapshot.children) {
                         try {
                             val versement = child.child("versement").getValue(Double::class.java)
-                            versement?.let {
-                                totalVersements += it
+                            val grossistKeyID =
+                                child.child("parent_GrossistKeyID").getValue(String::class.java)
+
+                            if (versement != null && grossistKeyID != null) {
+                                // Fix: Pass repositorysMainGetter parameter
+                                if (isGrossistActiveInPeriod(grossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                                    totalVersements += versement
+                                }
                             }
                         } catch (e: Exception) {
                             // Handle parsing error silently

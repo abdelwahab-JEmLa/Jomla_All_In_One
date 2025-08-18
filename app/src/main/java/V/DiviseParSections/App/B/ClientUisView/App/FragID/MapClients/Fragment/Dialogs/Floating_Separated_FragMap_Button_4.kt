@@ -59,7 +59,7 @@ fun Floating_Separated_FragMap_Button_4(
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val currentVisibleClientsMode = currentValues.visibleClientsNow
-    val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode.keyID
+    val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
 
     // Determine if we're in "show all" mode (for admin) or targeted mode
     val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll

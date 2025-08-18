@@ -100,6 +100,48 @@ class FocusedValuesGetter(
     init {
         Log.d(TAG, "FocusedValuesGetter initialized with hashCode: ${this.hashCode()}")
     }
+    // Fix the currentActiveFocuced_M14VentPeriode property
+    val currentActiveFocuced_M14VentPeriode by derivedStateOf {
+        val periods = repo14VentPeriode.datasValue
+        if (periods.isEmpty()) {
+            Log.w(TAG, "No vent periods available in currentActiveFocuced_M14VentPeriode")
+            return@derivedStateOf null
+        }
+
+        periods.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
+            ?: periods.lastOrNull() // Use lastOrNull() instead of last()
+    }
+
+    // Also update the filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod to handle null case
+    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod by derivedStateOf {
+        val currentPeriod = currentActiveFocuced_M14VentPeriode
+        if (currentPeriod == null) {
+            Log.w(TAG, "No current active vent period available for filtering")
+            return@derivedStateOf emptyList<M8BonVent>()
+        }
+        repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
+    }
+
+    // Update filtered_ListM10Vent_BY_Curr_M14VentPeriod to handle null case
+    val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
+        val currentPeriod = currentActiveFocuced_M14VentPeriode
+        if (currentPeriod == null) {
+            Log.w(TAG, "No current active vent period available for M10Vent filtering")
+            return@derivedStateOf emptyList<M10OperationVentCouleur>()
+        }
+        repo10OperationVentCouleur.datasValue.filter {
+            it.parent_M14VentPeriod_KeyId == currentPeriod.keyID
+        }
+    }
+
+    // Update getDefaultM8BonVent to handle null case
+    fun getDefaultM8BonVent(): M8BonVent {
+        return M8BonVent(
+            keyID = M8BonVent.generePushKey(),
+            parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID ?: "",
+            parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode?.keyID ?: "null",
+        )
+    }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private val _activeCentralValues = mutableStateOf(ActiveCentralValues(
@@ -114,10 +156,6 @@ class FocusedValuesGetter(
         currentValue
     }
 
-    /**
-     * Helper function to get the current active vent periode
-     * Returns the current active focused M14VentPeriode, or the last one if none is active
-     */
     private fun getCurrentActiveVentPeriode(): M14VentPeriode? {
         return try {
             val currentAppCompt = repo9AppCompt.datasValue.firstOrNull {
@@ -126,9 +164,14 @@ class FocusedValuesGetter(
                     ?.au_Lence_Set_Compt_Ac_KeyId
             }
 
-            repo14VentPeriode.datasValue
-                .find { it.keyID == currentAppCompt?.current_OnVent_M14VentPeriode_KeyID }
-                ?: repo14VentPeriode.datasValue.lastOrNull()
+            val periods = repo14VentPeriode.datasValue
+            if (periods.isEmpty()) {
+                Log.w(TAG, "No vent periods available in getCurrentActiveVentPeriode")
+                return null
+            }
+
+            periods.find { it.keyID == currentAppCompt?.current_OnVent_M14VentPeriode_KeyID }
+                ?: periods.lastOrNull()
         } catch (e: Exception) {
             Log.w(TAG, "Error getting current active vent periode: ${e.message}")
             null
@@ -315,16 +358,7 @@ class FocusedValuesGetter(
         }
     }
 
-    val currentActiveFocuced_M14VentPeriode by derivedStateOf {
-        repo14VentPeriode.datasValue
-            .find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
-            ?: repo14VentPeriode.datasValue.last()
-    }
-
     //----------------------------------Section.M8BonVent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod by derivedStateOf {
-        repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID }
-    }
 
     val activeonVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }
@@ -346,11 +380,6 @@ class FocusedValuesGetter(
     }
 
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
-        repo10OperationVentCouleur.datasValue.filter {
-            it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode.keyID
-        }
-    }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {
@@ -375,14 +404,6 @@ class FocusedValuesGetter(
         repo2Client.datasValue.find {
             it.keyID == (activeonVent_M8BonVent?.parent_M2Client_KeyID ?: "")
         }
-    }
-
-    fun getDefaultM8BonVent(): M8BonVent {
-        return M8BonVent(
-            keyID = M8BonVent.generePushKey(),
-            parent_M9AppCompt_KeyID = currentActive_M9AppCompt?.keyID ?: "",
-            parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
-        )
     }
 
     val activeOnVent_M2Client by derivedStateOf {

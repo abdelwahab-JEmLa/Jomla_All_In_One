@@ -26,8 +26,7 @@ fun Screen_GrossistAchatSec12FragID1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 ) {
-    val active_M2Client_AuFilterAchats =         //<--
-    //TODO(1): pk le filter par ca ne marche pas 
+    val active_M2Client_AuFilterAchats =
         focusedValuesGetter.active_Central_Values.active_M2Client_AuFilterAchats
     val active_M1Produit_AuFilterAchats =
         focusedValuesGetter.active_Central_Values.active_M1Produit_AuFilterAchats

@@ -276,6 +276,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
 
                     if (!cLenceDepuitFragmentsSepecialicteDeVents) {
+                        //Affiche_Statues()
+
                         ID3RecordingButton(
                             viewModel,
                             isRecording,
@@ -285,6 +287,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showAlertDialog = true
                         }
                     }
+
                     ButtonVideoRecord()
 
                     if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
