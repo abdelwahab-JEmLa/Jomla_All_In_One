@@ -36,6 +36,9 @@ data class ActiveCentralValues(
 
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
+    //-----------------Peride----------------------------------------------------------------------------
+    val held_Period_Pour_copie_Leur_Vents: M14VentPeriode? = null,
+
     //-----------------Bon8----------------------------------------------------------------------------
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,

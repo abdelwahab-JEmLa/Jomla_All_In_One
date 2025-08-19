@@ -263,19 +263,94 @@ class DatesHandler {
             return ""
         }
     }
-    companion object{
+    // Updated usage in Item_VentPeriod composable:
+// Replace this line:
+// text = get_PersonaleDateFormatArab(), //<--
+// With:
+// text = DatesHandler.get_PersonaleDateFormatArab(relative_Period.creationTimestamp),
 
+    // Updated companion function in DatesHandler class
+    companion object {
+        fun get_PersonaleDateFormatArab(timestamp: Long?): String {
+            if (timestamp == null) return ""
+
+            try {
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = timestamp
+
+                // Get Arabic day name
+                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                val arabicDayName = when (dayOfWeek) {
+                    Calendar.SUNDAY -> "الأحد"
+                    Calendar.MONDAY -> "الإثنين"
+                    Calendar.TUESDAY -> "الثلاثاء"
+                    Calendar.WEDNESDAY -> "الأربعاء"
+                    Calendar.THURSDAY -> "الخميس"
+                    Calendar.FRIDAY -> "الجمعة"
+                    Calendar.SATURDAY -> "السبت"
+                    else -> ""
+                }
+
+                // Get day of month
+                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+                // Get Arabic month name
+                val month = calendar.get(Calendar.MONTH)
+                val arabicMonthName = when (month) {
+                    Calendar.JANUARY -> "جانفي"
+                    Calendar.FEBRUARY -> "فيفري"
+                    Calendar.MARCH -> "مارس"
+                    Calendar.APRIL -> "أفريل"
+                    Calendar.MAY -> "ماي"
+                    Calendar.JUNE -> "جوان"
+                    Calendar.JULY -> "جويلية"
+                    Calendar.AUGUST -> "أوت"
+                    Calendar.SEPTEMBER -> "سبتمبر"
+                    Calendar.OCTOBER -> "أكتوبر"
+                    Calendar.NOVEMBER -> "نوفمبر"
+                    Calendar.DECEMBER -> "ديسمبر"
+                    else -> ""
+                }
+
+                // Get month number for display in parentheses
+                val monthNumber = month + 1
+
+                // Get week distance using existing function
+                val datesHandler = DatesHandler()
+                val weekDistance = datesHandler.getAbrgDistanceSemain(timestamp)
+
+                // Format the final string: "السبت 18 أوت(8) قبل أسبوع"
+                return buildString {
+                    append(arabicDayName)
+                    append(" ")
+                    append(dayOfMonth)
+                    append(" ")
+                    append(arabicMonthName)
+                    append("(")
+                    append(monthNumber)
+                    append(")")
+                    if (weekDistance.isNotEmpty()) {
+                        append(" ")
+                        append(weekDistance)
+                    }
+                }
+            } catch (e: Exception) {
+                return ""
+            }
+        }
+
+        // Keep your existing functions...
         fun Long.getDateAndTimStringAvecSecondsP2(): DateAndTimString {
             try {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = this
 
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()) // Added seconds format
+                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
                 val date = dateFormat.format(calendar.time)
                 val timeString = timeFormat.format(calendar.time)
-                val time = timeString.formatTimeToArabicWithSeconds() // Use new extension function with seconds
+                val time = timeString.formatTimeToArabicWithSeconds()
 
                 return DateAndTimString(date, time)
             } catch (e: Exception) {
@@ -287,26 +362,21 @@ class DatesHandler {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = creationTimestamps
 
-            // French day names
             val dayNames = arrayOf(
                 "dimanche", "lundi", "mardi", "mercredi",
                 "jeudi", "vendredi", "samedi"
             )
 
-            // Get day of week (Calendar.DAY_OF_WEEK returns 1-7, where 1 = Sunday)
             val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
             val dayName = dayNames[dayOfWeek - 1]
 
-            // Get hour, minute, and second
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
             val second = calendar.get(Calendar.SECOND)
 
-            // Convert to 12-hour format and determine AM/PM
             val hour12 = if (hour == 0) 12 else if (hour > 12) hour - 12 else hour
             val amPm = if (hour < 12) "am" else "pm"
 
-            // Format minute and second with leading zero if needed
             val minuteStr = if (minute < 10) "0$minute" else "$minute"
             val secondStr = if (second < 10) "0$second" else "$second"
 

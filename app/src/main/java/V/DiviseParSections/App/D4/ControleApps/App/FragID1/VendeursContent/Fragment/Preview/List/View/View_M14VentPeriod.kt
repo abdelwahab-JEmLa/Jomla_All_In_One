@@ -191,14 +191,7 @@ fun View_M14VentPeriod(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "m14VentPeriode: ${relative_M14VentPeriode.get_DebugInfos()}",
-                fontSize = 20.sp,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
 
-            // Delete button with icon
             IconButton(
                 onClick = { showDeleteDialog = true }
             ) {
@@ -208,7 +201,19 @@ fun View_M14VentPeriod(
                     tint = MaterialTheme.colorScheme.error
                 )
             }
+
+            Text(
+                text = "m14VentPeriode: ${relative_M14VentPeriode.get_DebugInfos()}",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+
         }
+
+        Coupe_Colle_Buttons(
+            relative_Period= relative_M14VentPeriode
+        )
 
         Text(
             text = "Heure de début: $heurDebutInString",

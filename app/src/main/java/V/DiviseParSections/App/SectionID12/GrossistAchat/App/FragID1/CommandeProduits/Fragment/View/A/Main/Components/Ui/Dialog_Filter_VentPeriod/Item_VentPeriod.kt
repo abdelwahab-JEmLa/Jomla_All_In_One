@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -42,10 +43,12 @@ fun Item_VentPeriod(
     relative_Period: M14VentPeriode,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    activeGrossist: M15Grossist? = null,  // UPDATED: Add active grossist parameter
-    onPeriodSelected_To_onDismiss: (M14VentPeriode) -> Unit
+    activeGrossist: M15Grossist? = null,
+    onPeriodSelected_To_onDismiss: (M14VentPeriode) -> Unit,
 ) {
-    val currentActiveFocuced_M14VentPeriode = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+    val currentActiveFocuced_M14VentPeriode =
+        focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+
     val isCurrentActive = relative_Period.keyID == currentActiveFocuced_M14VentPeriode?.keyID
 
     val periodStats = remember(
@@ -57,7 +60,6 @@ fun Item_VentPeriod(
             viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
                 .filter { it.parent_M14VentPeriod_KeyID == relative_Period.keyID }
 
-        // UPDATED: Filter by active grossist if one is selected
         activeGrossist?.let { grossist ->
             achatOperations = achatOperations.filter {
                 it.parent_M15Grossist_KeyID == grossist.keyID
@@ -78,7 +80,7 @@ fun Item_VentPeriod(
     }
 
     val active_Central_Values = focusedValuesGetter.active_Central_Values
-    val updatedValues =  active_Central_Values.copy(
+    val updatedValues = active_Central_Values.copy(
         active_M14VentPeriode_AuFilterAchats = relative_Period
     )
 
@@ -92,7 +94,7 @@ fun Item_VentPeriod(
             }
             .semantics(mergeDescendants = true) {
                 set(
-                    value = active_Central_Values.active_M14VentPeriode_AuFilterAchats?.keyID?:"",
+                    value = active_Central_Values.active_M14VentPeriode_AuFilterAchats?.keyID ?: "",
                     key = SemanticsPropertyKey("active_Central_Values")
                 )
             }
@@ -151,7 +153,7 @@ fun Item_VentPeriod(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = relative_Period.get_DebugInfos(),
+                        text = DatesHandler.get_PersonaleDateFormatArab(relative_Period.creationTimestamp),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
