@@ -223,10 +223,10 @@ fun View_M14VentPeriod(
             relative_M14VentPeriode.credit_Vents_Totale + relative_M14VentPeriode.cash_Vents_Totale
         val totalAchats =
             relative_M14VentPeriode.credit_achats_Totale + relative_M14VentPeriode.cash_achats_Totale
-        val totalProduitsDepot =
+        val totalProduitsDepot_stagne_Cette_Period =
             relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
-        val adjustedTotalAchats = totalAchats - totalProduitsDepot
-        val balance = totalVentes - totalAchats + totalProduitsDepot
+
+        val balance = totalVentes - totalAchats + totalProduitsDepot_stagne_Cette_Period
 
 
         val sum_Bon_Vents = run {
@@ -677,7 +677,7 @@ fun View_M14VentPeriod(
                     modifier = Modifier.padding(12.dp)
                 ) {
                     Text(
-                        text = "📦 PRODUITS AU DÉPÔT",
+                        text = "📦 Stagne AuDepo Routour/Regle",
                         fontSize = 18.sp,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.secondary
@@ -748,7 +748,7 @@ fun View_M14VentPeriod(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Total: $totalProduitsDepot",
+                            text = "Total: $totalProduitsDepot_stagne_Cette_Period",
                             fontSize = 16.sp,
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary
@@ -814,7 +814,7 @@ fun View_M14VentPeriod(
                         }
 
                         Text(
-                            text = "Ventes ($totalVentes) - Achats ($totalAchats) + Dépôt ($totalProduitsDepot)",
+                            text = "Ventes ($totalVentes) - Achats ($totalAchats) + Dépôt ($totalProduitsDepot_stagne_Cette_Period)",
                             fontSize = 11.sp,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
@@ -856,7 +856,7 @@ fun View_M14VentPeriod(
                         ) {
                             Column {
                                 Text(
-                                    text = "📊 BALANCE من غير تكاليف فائدة محسوبة ",
+                                    text = "📊 BALANCE ",
                                     fontSize = 18.sp,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.tertiary
@@ -886,7 +886,7 @@ fun View_M14VentPeriod(
                                     )
                                 }
                             } else {
-                                val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal
+                                val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal + totalProduitsDepot_stagne_Cette_Period
                                 Text(
                                     text = String.format("%.2f", calculatedBalance),
                                     fontSize = 22.sp,
@@ -908,7 +908,7 @@ fun View_M14VentPeriod(
                                         "%.2f",
                                         sum_Bon_Vents
                                     )
-                                }) - Achats calc. (${String.format("%.2f", calculatedAchatTotal)})",
+                                }) - Achats calc. (${String.format("%.2f", calculatedAchatTotal)})  + Dépôt stagne  ($totalProduitsDepot_stagne_Cette_Period)",
                                 fontSize = 10.sp,
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),

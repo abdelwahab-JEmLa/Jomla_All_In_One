@@ -138,7 +138,11 @@ fun Dialog_Filter_Client(
     }
 
     Dialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {
+
+            onDismiss()
+
+                           },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = true

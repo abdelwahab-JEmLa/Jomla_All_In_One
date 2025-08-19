@@ -481,7 +481,7 @@ private fun loadTransactionsForGrossist(
         })
 }
 
-private fun saveTransactionToFirebase(transaction: TransactionItem) {
+fun saveTransactionToFirebase(transaction: TransactionItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             TransactionItem.ref.child(transaction.id).setValue(transaction)

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
 
+// Add these imports to CreditCard.kt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
@@ -8,14 +9,19 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
@@ -24,6 +30,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +68,97 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
+@Composable
+private fun DatePickerDialog(
+    currentItem: TransactionItem,
+    onDateSelected: (TransactionItem) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    // Generate list of last 7 days
+    val last7Days = remember {
+        val calendar = Calendar.getInstance()
+        val days = mutableListOf<Pair<String, Long>>()
+
+        repeat(7) { dayOffset ->
+            calendar.timeInMillis = System.currentTimeMillis()
+            calendar.add(Calendar.DAY_OF_YEAR, -dayOffset)
+
+            val dateStr = dateFormat.format(calendar.time)
+            val timestamp = calendar.timeInMillis
+            val dayName = when (dayOffset) {
+                0 -> "Aujourd'hui"
+                1 -> "Hier"
+                else -> SimpleDateFormat("EEEE", Locale.FRENCH).format(calendar.time)
+            }
+
+            days.add("$dayName - $dateStr" to timestamp)
+        }
+        days
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Choisir une date",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            LazyColumn {
+                items(last7Days) { (dayLabel, timestamp) ->
+                    TextButton(
+                        onClick = {
+                            // Create updated item with new timestamp and formatted date/time
+                            val calendar = Calendar.getInstance().apply {
+                                timeInMillis = timestamp
+                                // Keep the same time as original or set to current time
+                                val originalCalendar = Calendar.getInstance().apply {
+                                    timeInMillis = currentItem.timestamp
+                                }
+                                set(Calendar.HOUR_OF_DAY, originalCalendar.get(Calendar.HOUR_OF_DAY))
+                                set(Calendar.MINUTE, originalCalendar.get(Calendar.MINUTE))
+                                set(Calendar.SECOND, originalCalendar.get(Calendar.SECOND))
+                            }
+
+                            val updatedItem = currentItem.copy(
+                                timestamp = calendar.timeInMillis,
+                                date = dateFormat.format(calendar.time),
+                                time = timeFormat.format(calendar.time)
+                            )
+
+                            onDateSelected(updatedItem)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = dayLabel,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    if (last7Days.indexOf(dayLabel to timestamp) < last7Days.size - 1) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
+}
 
 @Composable
 fun CreditCard(
@@ -75,6 +174,7 @@ fun CreditCard(
     var selectedImagePath by remember { mutableStateOf<String?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
     var isDownloadingImage by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     // Get all available image paths
     val availableImages = remember(item) {
@@ -238,7 +338,10 @@ fun CreditCard(
                 Text(
                     text = "${item.date} à ${item.time}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.clickable {
+                        showDatePicker = true
+                    }
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -370,6 +473,28 @@ fun CreditCard(
                     )
                 }
             }
+        }
+        // Date picker dialog
+        if (showDatePicker) {
+            DatePickerDialog(
+                currentItem = item,
+                onDateSelected = { updatedItem ->
+                    showDatePicker = false
+                    onUpdateItem(updatedItem)
+
+                    // Update in Firebase
+                    saveTransactionToFirebase(updatedItem)
+
+                    Toast.makeText(
+                        context,
+                        "Date mise à jour: ${updatedItem.date}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onDismiss = {
+                    showDatePicker = false
+                }
+            )
         }
     }
 }

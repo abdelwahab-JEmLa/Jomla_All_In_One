@@ -82,7 +82,8 @@ fun ScreenM14VentPeriod(
                 onDismiss = {
                     focusedValuesGetter.update_activeCentralValues(
                         focusedValuesGetter.active_Central_Values.copy(
-                            show_Dialog_filter_AChats_Par_Client_Acheteur = false
+                            show_Dialog_filter_AChats_Par_Client_Acheteur = false,
+                            vent_Au_Dialog_filter_AChats_Par_Client_Acheteur=null
                         )
                     )
                 },
