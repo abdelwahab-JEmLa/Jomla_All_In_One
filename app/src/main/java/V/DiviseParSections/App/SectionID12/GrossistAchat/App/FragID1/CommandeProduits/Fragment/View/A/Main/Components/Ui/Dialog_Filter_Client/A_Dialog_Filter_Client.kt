@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,7 +52,8 @@ fun Dialog_Filter_Client(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: () -> Unit,
-    activePeriod: M14VentPeriode?
+    activePeriod: M14VentPeriode?,
+    active_M14VentPeriode_AuFilterAchats: M14VentPeriode?
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
@@ -305,6 +307,7 @@ fun Dialog_Filter_Client(
 
                 // Client List
                 LazyColumn_Client(
+                    modifier = Modifier.weight(1f),
                     viewModel = viewModel,
                     activePeriod = activePeriod,
                     activeGrossist = activeGrossist,
@@ -312,7 +315,6 @@ fun Dialog_Filter_Client(
                     on_Pour_Dissmiss = {
                         onDismiss()
                     },
-                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -323,10 +325,10 @@ fun Dialog_Filter_Client(
 fun LazyColumn_Client(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    activePeriod: V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode?,
-    activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
+    activePeriod: M14VentPeriode?,
+    activeGrossist: M15Grossist?,
     focusedValuesGetter: FocusedValuesGetter,
-    on_Pour_Dissmiss: () -> Unit
+    on_Pour_Dissmiss: () -> Unit,
 ) {
     // Filter clients based on both active period and active grossist
     val clientsWithPurchases = remember(
@@ -401,7 +403,7 @@ fun LazyColumn_Client(
                     viewModel = viewModel,
                     activePeriod = activePeriod,
                     activeGrossist = activeGrossist,
-                    on_Pour_Dissmiss = { on_Pour_Dissmiss() }
+                    on_Pour_Dissmiss = { on_Pour_Dissmiss() },
                 )
             }
         }

@@ -16,6 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -34,12 +38,12 @@ fun ScreenM14VentPeriod(
     relative_M9AppCompt: Z_AppCompt? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
 ) {
-    // TODO(1): Fixed - now starts with the most recent period
-    // Sort periods by creation date/keyID in descending order to show latest first
+
+    var active_M14VentPeriode_AuFilterAchats by remember { mutableStateOf(
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+    ) }
+
     val sortedList_M14VentPeriode = list_M14VentPeriode.sortedByDescending {
-        // Assuming keyID contains timestamp or creation order information
-        // If keyID is timestamp-based, this will sort by newest first
-        // Alternative: if you have a creation timestamp field, use that instead
         it.keyID
     }
 
@@ -73,14 +77,18 @@ fun ScreenM14VentPeriod(
         }
         val active_Central_Values = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
-        if (focusedValuesGetter.active_Central_Values.show_Dialog_filter_AChats_Par_Client_Acheteur == true) {
-            Dialog_Filter_Client(onDismiss = {
-                focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
-                        show_Dialog_filter_AChats_Par_Client_Acheteur = false
+        if (focusedValuesGetter.active_Central_Values.vent_Au_Dialog_filter_AChats_Par_Client_Acheteur != null) {
+            Dialog_Filter_Client(
+                onDismiss = {
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            show_Dialog_filter_AChats_Par_Client_Acheteur = false
+                        )
                     )
-                )
-            }, activePeriod = active_Central_Values)
+                },
+                activePeriod = active_Central_Values,
+                active_M14VentPeriode_AuFilterAchats =active_M14VentPeriode_AuFilterAchats
+            )
         }
     }
 }

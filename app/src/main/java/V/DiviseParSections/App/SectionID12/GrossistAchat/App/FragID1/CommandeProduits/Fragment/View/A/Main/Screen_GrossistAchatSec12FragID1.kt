@@ -66,10 +66,15 @@ fun Screen_GrossistAchatSec12FragID1(
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
-        Dialog_Filter_Client(viewModel, onDismiss = {
-            focusedValuesGetter.removeClientFilter()
-            viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
-        }, activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats)
+        Dialog_Filter_Client(
+            viewModel,
+            onDismiss = {
+                focusedValuesGetter.removeClientFilter()
+                viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
+            },
+            activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats,
+            active_M14VentPeriode_AuFilterAchats = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+        )
     }
 
     // NEW: Product filter dialog - shows when client is selected or manually triggered

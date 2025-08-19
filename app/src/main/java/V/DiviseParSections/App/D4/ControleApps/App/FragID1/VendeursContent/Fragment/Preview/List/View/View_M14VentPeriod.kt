@@ -226,7 +226,7 @@ fun View_M14VentPeriod(
         val totalProduitsDepot =
             relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
         val adjustedTotalAchats = totalAchats - totalProduitsDepot
-        val balance = totalVentes - adjustedTotalAchats
+        val balance = totalVentes - totalAchats + totalProduitsDepot
 
 
         val sum_Bon_Vents = run {
@@ -464,9 +464,12 @@ fun View_M14VentPeriod(
                             modifier = Modifier.clickable {
                                 focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
-                                        show_Dialog_filter_AChats_Par_Client_Acheteur = true
+                                        show_Dialog_filter_AChats_Par_Client_Acheteur = true,
+                                        vent_Au_Dialog_filter_AChats_Par_Client_Acheteur = relative_M14VentPeriode
                                     )
+
                                 )
+
                             },
                             text = "$sum_Bon_Vents",
                             fontSize = 18.sp,
@@ -639,7 +642,7 @@ fun View_M14VentPeriod(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Achats",
+                            text = "Achats De period Vent ",
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -810,9 +813,8 @@ fun View_M14VentPeriod(
                             )
                         }
 
-                        // Show calculation breakdown
                         Text(
-                            text = "Ventes ($totalVentes) - Achats ajustés ($adjustedTotalAchats)",
+                            text = "Ventes ($totalVentes) - Achats ($totalAchats) + Dépôt ($totalProduitsDepot)",
                             fontSize = 11.sp,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
@@ -854,7 +856,7 @@ fun View_M14VentPeriod(
                         ) {
                             Column {
                                 Text(
-                                    text = "📊 BALANCE",
+                                    text = "📊 BALANCE من غير تكاليف فائدة محسوبة ",
                                     fontSize = 18.sp,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.tertiary
@@ -932,16 +934,41 @@ private fun isGrossistActiveInPeriod(
     }
 }
 
-// Fix 2: Update the loadCalculatedAchatTotals function signature
+// Updated loadCalculatedAchatTotals function with timestamp filtering
 private fun loadCalculatedAchatTotals(
     ventPeriodKeyID: String,
-    repositorysMainGetter: RepositorysMainGetter, // Add this parameter
+    repositorysMainGetter: RepositorysMainGetter,
     onTotalLoaded: (Double) -> Unit
 ) {
     var totalCredits = 0.0
     var totalVersements = 0.0
     var completedQueries = 0
     val totalQueries = 2
+
+    // Find the current and next vent periods to determine timestamp range
+    val currentPeriod = repositorysMainGetter.repo14VentPeriode.datasValue
+        .firstOrNull { it.keyID == ventPeriodKeyID }
+
+    if (currentPeriod == null) {
+        onTotalLoaded(0.0)
+        return
+    }
+
+    // Get all periods for the same parent, sorted by creation timestamp
+    val allPeriodsForSameParent = repositorysMainGetter.repo14VentPeriode.datasValue
+        .filter { it.parent_M9AppCompt_KeyID == currentPeriod.parent_M9AppCompt_KeyID }
+        .sortedBy { it.creationTimestamp }
+
+    // Find the timestamp range for this period
+    val currentPeriodIndex = allPeriodsForSameParent.indexOfFirst { it.keyID == ventPeriodKeyID }
+    val periodStartTimestamp = currentPeriod.creationTimestamp
+    val periodEndTimestamp = if (currentPeriodIndex < allPeriodsForSameParent.size - 1) {
+        // Not the last period, use next period's start timestamp
+        allPeriodsForSameParent[currentPeriodIndex + 1].creationTimestamp
+    } else {
+        // Last period, use current timestamp
+        System.currentTimeMillis()
+    }
 
     fun checkComplete() {
         completedQueries++
@@ -950,7 +977,12 @@ private fun loadCalculatedAchatTotals(
         }
     }
 
-    // Load TransactionItems filtered by the specific period
+    // Helper function to check if a timestamp is within the period range
+    fun isTimestampInPeriod(timestamp: Long): Boolean {
+        return timestamp >= periodStartTimestamp && timestamp < periodEndTimestamp
+    }
+
+    // Load TransactionItems filtered by timestamp and active grossists
     val transactionListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             totalCredits = 0.0
@@ -958,12 +990,19 @@ private fun loadCalculatedAchatTotals(
                 try {
                     val transaction = child.getValue(TransactionItem::class.java)
                     transaction?.let {
-                        // Fix: Pass repositorysMainGetter parameter
-                        if (isGrossistActiveInPeriod(it.parent_GrossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                        // Filter by timestamp first, then check if grossist is active in this period
+                        if (isTimestampInPeriod(it.timestamp) &&
+                            isGrossistActiveInPeriod(
+                                it.parent_GrossistKeyID,
+                                ventPeriodKeyID,
+                                repositorysMainGetter
+                            )
+                        ) {
                             totalCredits += it.credit
                         }
                     }
                 } catch (e: Exception) {
+                    // Handle parsing error silently
                 }
             }
             checkComplete()
@@ -976,7 +1015,7 @@ private fun loadCalculatedAchatTotals(
 
     TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
 
-    // Load VersementItems filtered by the specific period
+    // Load VersementItems filtered by timestamp and active grossists
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val versementRef = TransactionItem.ref.parent?.child("VersementItem")
@@ -988,10 +1027,18 @@ private fun loadCalculatedAchatTotals(
                             val versement = child.child("versement").getValue(Double::class.java)
                             val grossistKeyID =
                                 child.child("parent_GrossistKeyID").getValue(String::class.java)
+                            val timestamp =
+                                child.child("timestamp").getValue(Long::class.java) ?: 0L
 
                             if (versement != null && grossistKeyID != null) {
-                                // Fix: Pass repositorysMainGetter parameter
-                                if (isGrossistActiveInPeriod(grossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                                // Filter by timestamp first, then check if grossist is active in this period
+                                if (isTimestampInPeriod(timestamp) &&
+                                    isGrossistActiveInPeriod(
+                                        grossistKeyID,
+                                        ventPeriodKeyID,
+                                        repositorysMainGetter
+                                    )
+                                ) {
                                     totalVersements += versement
                                 }
                             }
@@ -1013,4 +1060,32 @@ private fun loadCalculatedAchatTotals(
             checkComplete()
         }
     }
+}
+
+// Alternative approach: If you want to create a more robust timestamp filtering system
+// You can add this helper function to get precise period boundaries:
+
+private fun getPeriodTimestampRange(
+    ventPeriodKeyID: String,
+    repositorysMainGetter: RepositorysMainGetter
+): Pair<Long, Long>? {
+    val currentPeriod = repositorysMainGetter.repo14VentPeriode.datasValue
+        .firstOrNull { it.keyID == ventPeriodKeyID } ?: return null
+
+    // Get all periods for the same parent, sorted by creation timestamp
+    val allPeriodsForSameParent = repositorysMainGetter.repo14VentPeriode.datasValue
+        .filter { it.parent_M9AppCompt_KeyID == currentPeriod.parent_M9AppCompt_KeyID }
+        .sortedBy { it.creationTimestamp }
+
+    val currentPeriodIndex = allPeriodsForSameParent.indexOfFirst { it.keyID == ventPeriodKeyID }
+    if (currentPeriodIndex == -1) return null
+
+    val startTimestamp = currentPeriod.creationTimestamp
+    val endTimestamp = if (currentPeriodIndex < allPeriodsForSameParent.size - 1) {
+        allPeriodsForSameParent[currentPeriodIndex + 1].creationTimestamp
+    } else {
+        System.currentTimeMillis()
+    }
+
+    return Pair(startTimestamp, endTimestamp)
 }

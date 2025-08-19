@@ -48,6 +48,7 @@ data class ActiveCentralValues(
     val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
 
     val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
+    val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode?= null,
     //-----------------Grossist----------------------------------------------------------------------------
     val image_Flotant: File? = null,
 

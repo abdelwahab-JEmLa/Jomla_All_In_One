@@ -53,12 +53,12 @@ fun Item_Client(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    repo8BonVent: Repo8BonVent= koinInject(),
+    repo8BonVent: Repo8BonVent = koinInject(),
     relative_client: M2Client,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     activePeriod: M14VentPeriode?,
     activeGrossist: M15Grossist?,
-    on_Pour_Dissmiss: () -> Unit
+    on_Pour_Dissmiss: () -> Unit,
 ) {
 
     val clientPurchaseInfo = remember(
@@ -105,7 +105,10 @@ fun Item_Client(
 
         // Filtrer les opérations livrées (etateDelivery == Trouve)
         val deliveredOperations = clientVentOperations.filter {
-            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+            (it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+                    && it.parent_M14VentPeriod_KeyId == (
+                    focusedValuesGetter.active_Central_Values.
+                    vent_Au_Dialog_filter_AChats_Par_Client_Acheteur?.keyID ?: ""))
         }
 
         // Calculer la valeur totale des ventes SEULEMENT pour etateDelivery == Trouve
