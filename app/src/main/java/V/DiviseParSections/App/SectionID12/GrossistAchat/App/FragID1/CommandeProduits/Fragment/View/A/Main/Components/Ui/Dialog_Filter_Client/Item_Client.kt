@@ -1,14 +1,12 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +38,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
-// Data class to hold client purchase information and delivered operations
 data class ClientPurchaseInfo(
     val uniqueProducts: Int,
     val totalQuantity: Int,
@@ -48,19 +45,16 @@ data class ClientPurchaseInfo(
     val deliveredOperations: List<M10OperationVentCouleur>
 )
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun Item_Client(
-    aCentralFacade: ACentralFacade = koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    repo8BonVent: Repo8BonVent = koinInject(),
     relative_client: M2Client,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     activePeriod: M14VentPeriode?,
     activeGrossist: M15Grossist?,
     on_Pour_Dissmiss: () -> Unit,
 ) {
-
     val clientPurchaseInfo = remember(
         relative_client.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
@@ -68,42 +62,33 @@ fun Item_Client(
         activePeriod?.keyID,
         activeGrossist?.keyID
     ) {
-        // Calculer directement depuis les BonVents comme dans get_sum_Bon_Vents
         val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue  //<--
+        //TODO(1): fait toujout de filtre ou leur vents est 
 
-        // Filtrer les BonVents pour ce client spécifique
         var clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
 
-        // Appliquer les filtres de période et grossiste si nécessaire
         activePeriod?.let { period ->
-            // Filtrer par période si elle est active
             clientBonVents = clientBonVents.filter {
-                // Logique pour filtrer par période - à adapter selon votre modèle de données
-                true // Pour l'instant, à implémenter selon vos besoins
+                true
             }
         }
 
         activeGrossist?.let { grossist ->
-            // Filtrer par grossiste si il est actif
             clientBonVents = clientBonVents.filter {
-                // Logique pour filtrer par grossiste - à adapter selon votre modèle de données
-                true // Pour l'instant, à implémenter selon vos besoins
+                true
             }
         }
 
         val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
 
-        // Obtenir toutes les opérations de vente pour les BonVents de ce client
         val clientVentOperations = allVentOperations.filter {
             it.parent_M8BonVent_KeyId in clientBonVentIds
         }
 
-        // Calculer les métriques pour tous les produits/articles
         val uniqueProducts = clientVentOperations.map { it.parent_M1Produit_KeyId }.toSet().size
         val totalQuantity = clientVentOperations.sumOf { it.quantity }
 
-        // Filtrer les opérations livrées (etateDelivery == Trouve)
         val deliveredOperations = clientVentOperations.filter {
             (it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
                     && it.parent_M14VentPeriod_KeyId == (
@@ -111,7 +96,6 @@ fun Item_Client(
                     vent_Au_Dialog_filter_AChats_Par_Client_Acheteur?.keyID ?: ""))
         }
 
-        // Calculer la valeur totale des ventes SEULEMENT pour etateDelivery == Trouve
         val totalSalesValue = deliveredOperations.sumOf { ventOperation ->
             val parentM13TarificationPrix = viewModel.aCentralFacade.repositorysMainGetter
                 .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
