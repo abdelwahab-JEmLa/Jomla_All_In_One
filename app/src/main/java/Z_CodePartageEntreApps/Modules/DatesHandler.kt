@@ -339,25 +339,6 @@ class DatesHandler {
             }
         }
 
-        // Keep your existing functions...
-        fun Long.getDateAndTimStringAvecSecondsP2(): DateAndTimString {
-            try {
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = this
-
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-
-                val date = dateFormat.format(calendar.time)
-                val timeString = timeFormat.format(calendar.time)
-                val time = timeString.formatTimeToArabicWithSeconds()
-
-                return DateAndTimString(date, time)
-            } catch (e: Exception) {
-                return DateAndTimString()
-            }
-        }
-
         fun creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps: Long): Pair<String, String> {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = creationTimestamps
