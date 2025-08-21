@@ -39,9 +39,11 @@ fun ScreenM14VentPeriod(
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
 ) {
 
-    var active_M14VentPeriode_AuFilterAchats by remember { mutableStateOf(
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
-    ) }
+    var active_M14VentPeriode_AuFilterAchats by remember {
+        mutableStateOf(
+            aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats
+        )
+    }
 
     val sortedList_M14VentPeriode = list_M14VentPeriode.sortedByDescending {
         it.keyID
@@ -83,12 +85,12 @@ fun ScreenM14VentPeriod(
                     focusedValuesGetter.update_activeCentralValues(
                         focusedValuesGetter.active_Central_Values.copy(
                             show_Dialog_filter_AChats_Par_Client_Acheteur = false,
-                            vent_Au_Dialog_filter_AChats_Par_Client_Acheteur=null
+                            vent_Au_Dialog_filter_AChats_Par_Client_Acheteur = null
                         )
                     )
                 },
                 activePeriod = active_Central_Values,
-                active_M14VentPeriode_AuFilterAchats =active_M14VentPeriode_AuFilterAchats
+                active_M14VentPeriode_AuFilterAchats = active_M14VentPeriode_AuFilterAchats
             )
         }
     }

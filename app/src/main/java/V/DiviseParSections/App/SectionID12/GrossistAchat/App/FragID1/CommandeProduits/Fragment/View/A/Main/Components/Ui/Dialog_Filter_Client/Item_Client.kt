@@ -124,6 +124,12 @@ fun Item_Client(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
+                set(
+                    value = focusedValuesGetter.active_Central_Values,
+                    key = SemanticsPropertyKey("focusedValuesGetter.active_Central_Values")
+                )
+            }
+            .semantics(mergeDescendants = true) {
                 set(value = updatedValues, key = SemanticsPropertyKey("updatedValues"))
             }
             .semantics(mergeDescendants = true) {
@@ -135,7 +141,7 @@ fun Item_Client(
             .clickable {
 
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
-                on_Pour_Dissmiss()
+                   on_Pour_Dissmiss()
             }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),

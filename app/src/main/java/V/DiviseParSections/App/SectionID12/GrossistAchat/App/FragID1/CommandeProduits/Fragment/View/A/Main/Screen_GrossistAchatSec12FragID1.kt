@@ -69,7 +69,6 @@ fun Screen_GrossistAchatSec12FragID1(
         Dialog_Filter_Client(
             viewModel,
             onDismiss = {
-                focusedValuesGetter.removeClientFilter()
                 viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
             },
             activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats,
