@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -232,20 +231,6 @@ private fun VentOperationItem(
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Bon Vent info
-        val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
-        }
-        bonVent?.let {
-            Text(
-                text = "Bon: ${it.keyID.takeLast(6)}",
-                fontSize = 12.sp,
-                color = textColor
-            )
         }
     }
 }
