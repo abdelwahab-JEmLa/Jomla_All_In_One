@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun WorkCompletionAlertDialog(
+    modifier: Modifier=Modifier,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,

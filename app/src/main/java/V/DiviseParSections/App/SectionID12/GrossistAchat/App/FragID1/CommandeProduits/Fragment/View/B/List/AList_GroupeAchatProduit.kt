@@ -5,7 +5,11 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +39,63 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Filters achat operations based on active central values
+ */
+private fun filterAchatOperations(
+    achatOperations: List<M11AchatOperation>, // Replace 'Any' with your actual AchatOperation type
+    activeCentralValues: ActiveCentralValues, // Replace 'Any' with your actual ActiveCentralValues type
+    repo10OperationVentCouleur: Repo10OperationVentCouleur, // Replace with actual repository type
+    repo8BonVent: Repo8BonVent // Replace with actual repository type
+): List<M11AchatOperation> { // Replace return type accordingly
+    var filteredData = achatOperations
+
+    // Apply period filter
+    activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
+        filteredData = filteredData.filter {
+            it.parent_M14VentPeriod_KeyID == period.keyID
+        }
+    }
+
+    // Apply grossist filter
+    activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
+        filteredData = filteredData.filter {
+            it.parent_M15Grossist_KeyID == grossist.keyID
+        }
+    }
+
+    // Apply client filter
+    activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
+        filteredData = filteredData.filter { achat ->
+            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+            sales.any { sale ->
+                if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
+                    return@any true
+                }
+
+                // Method 2: Check through BonVent relationship
+                val bonVent = repo8BonVent.datasValue
+                    .find { it.keyID == sale.parent_M8BonVent_KeyId }
+
+                bonVent?.parent_M2Client_KeyID == client.keyID
+            }
+        }
+    }
+
+    // Apply product filter
+    activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
+        filteredData = filteredData.filter { achat ->
+            // Get associated sales to find product
+            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+            sales.any { sale ->
+                sale.parent_M1Produit_KeyId == product.keyID
+            }
+        }
+    }
+
+    return filteredData
+}
+
 @Composable
 fun List_GroupeAchatProduit(
     modifier: Modifier,
@@ -47,58 +108,14 @@ fun List_GroupeAchatProduit(
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
     val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
 
-    // Get filtered data based on active filters
     val filteredAchatOperations by remember {
         derivedStateOf {
-            val activeCentralValues = focusedValuesGetter.active_Central_Values
-            var filteredData = repo.datasValue
-
-            // Apply period filter
-            activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
-                filteredData = filteredData.filter {
-                    it.parent_M14VentPeriod_KeyID == period.keyID
-                }
-            }
-
-            // Apply grossist filter
-            activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
-                filteredData = filteredData.filter {
-                    it.parent_M15Grossist_KeyID == grossist.keyID
-                }
-            }
-
-            // Apply client filter - FIXED IMPLEMENTATION
-            activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
-                filteredData = filteredData.filter { achat ->
-                    // Get associated sales to find client
-                    val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
-                    sales.any { sale ->
-                        // Method 1: Check if sale has direct client reference
-                        if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
-                            return@any true
-                        }
-
-                        // Method 2: Check through BonVent relationship
-                        val bonVent = repo8BonVent.datasValue
-                            .find { it.keyID == sale.parent_M8BonVent_KeyId }
-
-                        bonVent?.parent_M2Client_KeyID == client.keyID
-                    }
-                }
-            }
-
-            // Apply product filter - NEW IMPLEMENTATION
-            activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
-                filteredData = filteredData.filter { achat ->
-                    // Get associated sales to find product
-                    val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
-                    sales.any { sale ->
-                        sale.parent_M1Produit_KeyId == product.keyID
-                    }
-                }
-            }
-
-            filteredData
+            filterAchatOperations(
+                achatOperations = repo.datasValue,
+                activeCentralValues = focusedValuesGetter.active_Central_Values,
+                repo10OperationVentCouleur = repo10OperationVentCouleur,
+                repo8BonVent = repo8BonVent
+            )
         }
     }
 

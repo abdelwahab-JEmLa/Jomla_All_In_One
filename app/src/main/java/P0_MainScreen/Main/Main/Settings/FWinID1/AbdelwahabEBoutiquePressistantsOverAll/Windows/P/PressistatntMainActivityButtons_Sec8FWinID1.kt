@@ -54,6 +54,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -178,6 +180,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
 
     WorkCompletionAlertDialog(
+        modifier=Modifier.semantics(mergeDescendants = true) {
+            set(value = "fds" , key = SemanticsPropertyKey("dsq"))
+        } ,
         viewModel = viewModel,
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
