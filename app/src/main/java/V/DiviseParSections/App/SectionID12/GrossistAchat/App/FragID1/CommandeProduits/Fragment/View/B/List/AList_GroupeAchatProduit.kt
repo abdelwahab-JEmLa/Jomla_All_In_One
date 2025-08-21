@@ -39,32 +39,26 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-/**
- * Filters achat operations based on active central values
- */
 private fun filterAchatOperations(
-    achatOperations: List<M11AchatOperation>, // Replace 'Any' with your actual AchatOperation type
-    activeCentralValues: ActiveCentralValues, // Replace 'Any' with your actual ActiveCentralValues type
-    repo10OperationVentCouleur: Repo10OperationVentCouleur, // Replace with actual repository type
-    repo8BonVent: Repo8BonVent // Replace with actual repository type
-): List<M11AchatOperation> { // Replace return type accordingly
+    achatOperations: List<M11AchatOperation>,
+    activeCentralValues: ActiveCentralValues,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    repo8BonVent: Repo8BonVent
+): List<M11AchatOperation> {
     var filteredData = achatOperations
 
-    // Apply period filter
     activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
         filteredData = filteredData.filter {
             it.parent_M14VentPeriod_KeyID == period.keyID
         }
     }
 
-    // Apply grossist filter
     activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
         filteredData = filteredData.filter {
             it.parent_M15Grossist_KeyID == grossist.keyID
         }
     }
 
-    // Apply client filter
     activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
         filteredData = filteredData.filter { achat ->
             val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
@@ -72,20 +66,15 @@ private fun filterAchatOperations(
                 if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
                     return@any true
                 }
-
-                // Method 2: Check through BonVent relationship
                 val bonVent = repo8BonVent.datasValue
                     .find { it.keyID == sale.parent_M8BonVent_KeyId }
-
                 bonVent?.parent_M2Client_KeyID == client.keyID
             }
         }
     }
 
-    // Apply product filter
     activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
         filteredData = filteredData.filter { achat ->
-            // Get associated sales to find product
             val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             sales.any { sale ->
                 sale.parent_M1Produit_KeyId == product.keyID
@@ -119,73 +108,51 @@ fun List_GroupeAchatProduit(
         }
     }
 
-    // Préparation des données groupées par produit
     val items = remember(filteredAchatOperations) {
         filteredAchatOperations.mapNotNull { achat ->
-            // Vérification de la validité de l'ID couleur produit
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
                 return@mapNotNull null
             }
-
-            // Récupération des ventes associées
             val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             val produitId = sales.firstOrNull()?.parent_M1Produit_KeyId
-
-            // Validation de l'ID produit
             if (produitId.isNullOrBlank() || produitId == "null" || produitId.length <= 5) {
                 return@mapNotNull null
             }
-
             produitId to achat
         }.groupBy({ it.first }, { it.second }).entries.toList()
     }
 
-    // État de défilement pour la synchronisation
     val listState = rememberLazyListState()
     val uiState by headViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
 
-    // Synchronisation du défilement - Réception des positions depuis l'appareil hôte
     LaunchedEffect(uiState.productDisplayController.mainGridScrollPosition) {
         val targetPosition = uiState.productDisplayController.mainGridScrollPosition
-
-        // Ne pas synchroniser si c'est l'appareil hôte (pour éviter les boucles)
         if (!uiState.productDisplayController.isHostPhone &&
             uiState.productDisplayController.isConnected &&
             targetPosition >= 0 &&
             targetPosition < items.size) {
-
             scope.launch {
                 try {
-                    // Animation fluide vers la position cible
-                    listState.animateScrollToItem(
-                        index = targetPosition,
-                        scrollOffset = 0
-                    )
+                    listState.animateScrollToItem(index = targetPosition, scrollOffset = 0)
                 } catch (e: Exception) {
-                    // En cas d'échec de l'animation, défilement instantané
                     try {
                         listState.scrollToItem(targetPosition)
                     } catch (scrollException: Exception) {
-                        // Log de l'erreur ou gestion d'erreur si nécessaire
                     }
                 }
             }
         }
     }
 
-    // Diffusion du défilement - Envoi des positions aux appareils clients
     LaunchedEffect(listState) {
-        // Seulement si l'appareil est l'hôte et connecté
         if (uiState.productDisplayController.isHostPhone &&
             uiState.productDisplayController.isConnected) {
-
             snapshotFlow {
                 listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
             }
                 .distinctUntilChanged()
                 .collect { (position, offset) ->
-                    // Envoi de la position de défilement aux clients connectés
                     headViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                         position
@@ -196,7 +163,6 @@ fun List_GroupeAchatProduit(
 
     Box(modifier = modifier.fillMaxSize().padding(4.dp)) {
         if (items.isEmpty()) {
-            // Affichage des messages d'état quand la liste est vide
             ElevatedCard(
                 modifier = Modifier
                     .getSemanticsTag(repo.datasValue, "repo11AchatOperation_datasValue")
@@ -244,7 +210,6 @@ fun List_GroupeAchatProduit(
                 )
             }
         } else {
-            // Liste principale avec synchronisation de défilement
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize()
