@@ -3,9 +3,10 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.A.Base.filters_Central.calculateClientSalesSummary
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,7 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-// Utility function for consistent currency formatting
+@SuppressLint("DefaultLocale")
 fun formatCurrency(amount: Double): String {
     return String.format("%.2f DA", amount)
 }
@@ -60,89 +61,20 @@ fun Dialog_Filter_Client(
     val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
 
     val clientsSalesSummary = remember(
-        viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
-        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+        aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
+        aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
         activePeriod?.keyID,
         activeGrossist?.keyID
     ) {
-        val allClients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
-        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
-        var allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
-
-        // Filter achat operations by active period AND grossist if they are selected
-        activePeriod?.let { period ->
-            allAchatOperations = allAchatOperations.filter {
-                it.parent_M14VentPeriod_KeyID == period.keyID
-            }
-        }
-
-        activeGrossist?.let { grossist ->
-            allAchatOperations = allAchatOperations.filter {
-                it.parent_M15Grossist_KeyID == grossist.keyID
-            }
-        }
-
-        // Calculate total sales for all clients with the current filters
-        val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
-            val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(allVentOperations)
-            relatedVentOperations.mapNotNull { ventOperation ->
-                val bonVent = allBonVents.find { it.keyID == ventOperation.parent_M8BonVent_KeyId }
-                bonVent?.parent_M2Client_KeyID
-            }
-        }.toSet()
-
-        val clientsWithPurchases = allClients.filter { client ->
-            client.keyID in clientIdsWithPurchases
-        }
-
-        // Calculate aggregate totals
-        var totalSalesValue = 0.0
-        var totalQuantity = 0
-        var totalUniqueProducts = 0
-
-        clientsWithPurchases.forEach { client ->
-            val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == client.keyID }
-            val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
-            val clientVentOperations = allVentOperations.filter {
-                it.parent_M8BonVent_KeyId in clientBonVentIds
-            }
-
-            val relevantVentOperations = clientVentOperations.filter { ventOperation ->
-                allAchatOperations.any { achatOperation ->
-                    achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation)).isNotEmpty()
-                }
-            }
-
-            totalQuantity += relevantVentOperations.sumOf { it.quantity }
-
-            val clientSalesValue = relevantVentOperations.filter {
-                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-            }.sumOf {
-                val parentM13TarificationPrix = viewModel.aCentralFacade.repositorysMainGetter
-                    .find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
-                it.quantity * parentM13TarificationPrix
-            }
-            totalSalesValue += clientSalesValue
-
-            val relatedAchatOperations = allAchatOperations.filter { achatOperation ->
-                val relatedVentOps = achatOperation.get_list_v_Depuit_joinedStringKeys(clientVentOperations)
-                relatedVentOps.isNotEmpty()
-            }
-            totalUniqueProducts += relatedAchatOperations.map { it.parent_M1Produit_KeyID }.toSet().size
-        }
-
-        Triple(clientsWithPurchases.size, totalQuantity, totalSalesValue)
+        calculateClientSalesSummary(aCentralFacade,active_M14VentPeriode_AuFilterAchats)
     }
 
     Dialog(
         onDismissRequest = {
-
             onDismiss()
-
-                           },
+        },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = true
@@ -198,7 +130,7 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (clientsSalesSummary.first > 0) {
+                if (clientsSalesSummary.totalClients > 0) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -244,7 +176,7 @@ fun Dialog_Filter_Client(
                                             tint = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
-                                            text = "${clientsSalesSummary.first} clients",
+                                            text = "${clientsSalesSummary.totalClients} clients",
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                                             fontWeight = FontWeight.Medium
@@ -252,7 +184,7 @@ fun Dialog_Filter_Client(
                                     }
 
                                     Text(
-                                        text = "${clientsSalesSummary.second} articles",
+                                        text = "${clientsSalesSummary.totalQuantity} articles",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         fontWeight = FontWeight.Medium
@@ -260,7 +192,7 @@ fun Dialog_Filter_Client(
                                 }
 
                                 Text(
-                                    text = "Total: ${formatCurrency(clientsSalesSummary.third)}",
+                                    text = "Total: ${formatCurrency(clientsSalesSummary.totalSalesValue)}",
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold

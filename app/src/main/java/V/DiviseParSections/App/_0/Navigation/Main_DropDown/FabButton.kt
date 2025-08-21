@@ -41,7 +41,6 @@ fun FabButton(
     ) {
         Box {
             if (showWarningState) {
-                // Red background with warning icon instead of logo image
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

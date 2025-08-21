@@ -295,7 +295,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     ButtonVideoRecord()
 
-                    if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
+                    if (
+                        !itsFragmentProduitFastSearchDialog
+                        && travailleChezGrossisst3Ali == false
+                        ) {
+
                         (activeFragment != Screen.EditDatabaseWithCreateNewArticles
                                 && activeDialogSearchM1Produit == false).ifTrue {
                             B1CataloguesAffiche(
@@ -325,6 +329,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             },
                             viewModel = viewModel
                         )
+
                     }
                 }
 

@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.A.Base.filters_Central.calculateClientSalesSummary
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
@@ -233,69 +233,17 @@ fun View_M14VentPeriod(
 
         val balance = totalVentes - totalAchats + totalProduitsDepot_stagne_Cette_Period
 
-
-        val sum_Bon_Vents = run {
-            // Obtenir les filtres actifs comme dans Dialog_Filter_Client
-            val active_Central_Values = focusedValuesGetter.active_Central_Values
-            val activePeriod = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-            val activeGrossist = active_Central_Values.active_M15Grossist_AuFilterAchats
-            val activeClient = active_Central_Values.active_M2Client_AuFilterAchats
-
-            val allBonVents = repositorysMainGetter.repo8BonVent.datasValue
-            val allVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue
-            var allAchatOperations = repositorysMainGetter.repo11AchatOperation.datasValue
-
-            // Appliquer la même logique de filtrage que Dialog_Filter_Client
-            // 1. Filtrer les opérations d'achat par période active
-            activePeriod.let { period ->
-                if (period != null) {
-                    allAchatOperations = allAchatOperations.filter {
-                        it.parent_M14VentPeriod_KeyID == period.keyID
-                    }
-                }
-            }
-
-            // 2. Filtrer les opérations d'achat par grossiste actif
-            activeGrossist?.let { grossist ->
-                allAchatOperations = allAchatOperations.filter {
-                    it.parent_M15Grossist_KeyID == grossist.keyID
-                }
-            }
-
-            val relevantVentOperations = if (allAchatOperations.isNotEmpty()) {
-                allVentOperations.filter { ventOperation ->
-                    allAchatOperations.any { achatOperation ->
-                        achatOperation.get_list_v_Depuit_joinedStringKeys(listOf(ventOperation))
-                            .isNotEmpty()
-                    }
-                }
-            } else {
-                allVentOperations.filter {
-                    it.parent_M14VentPeriod_KeyId == relative_M14VentPeriode.keyID
-                }
-            }
-
-            // 4. Appliquer le filtre client si actif
-            val filteredVentOperations = activeClient?.let { client ->
-                val clientBonVentIds = allBonVents
-                    .filter { it.parent_M2Client_KeyID == client.keyID }
-                    .map { it.keyID }
-                    .toSet()
-
-                relevantVentOperations.filter {
-                    it.parent_M8BonVent_KeyId in clientBonVentIds
-                }
-            } ?: relevantVentOperations
-
-            filteredVentOperations.filter {
-                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-            }.sumOf { ventOperation ->
-                val parentM13TarificationPrix = repositorysMainGetter
-                    .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency
-                    ?: 0.0
-                ventOperation.quantity * parentM13TarificationPrix
-            }
+        val sum_Bon_Vents = remember(
+            aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
+            aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+            aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+            aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
+            relative_M14VentPeriode.keyID
+        ) {
+            val clientsSalesSummary = calculateClientSalesSummary(aCentralFacade, relative_M14VentPeriode)
+            clientsSalesSummary.totalSalesValue
         }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -472,7 +420,6 @@ fun View_M14VentPeriod(
                                         show_Dialog_filter_AChats_Par_Client_Acheteur = true,
                                         vent_Au_Dialog_filter_AChats_Par_Client_Acheteur = relative_M14VentPeriode
                                     )
-
                                 )
 
                             },
@@ -486,7 +433,8 @@ fun View_M14VentPeriod(
             }
 
             // Achats Section - Row with Manual and Calculated Cards
-            Row(
+            Row(     //<--
+            //TODO(1): extract
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
