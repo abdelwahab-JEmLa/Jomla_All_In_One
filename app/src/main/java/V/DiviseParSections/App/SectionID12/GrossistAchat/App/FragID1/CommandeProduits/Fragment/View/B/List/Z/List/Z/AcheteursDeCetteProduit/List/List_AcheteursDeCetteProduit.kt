@@ -2,9 +2,11 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View.Parent_Dispo_Vent_StateFull
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +37,7 @@ fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     relative_M11AchatOperation: M11AchatOperation
 ) {
@@ -116,6 +121,36 @@ fun List_AcheteursDeCetteProduit(
                                                     modifier = Modifier.fillMaxWidth(),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
+                                                    // Toggle button for EtateDelivery
+                                                    Button(
+                                                        onClick = {
+                                                            val updatedVentOperation = relative_M10Vent.copy(
+                                                                etateDelivery = when (relative_M10Vent.etateDelivery) {
+                                                                    M10OperationVentCouleur.EtateDelivery.Trouve -> M10OperationVentCouleur.EtateDelivery.NonTrouve
+                                                                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> M10OperationVentCouleur.EtateDelivery.Trouve
+                                                                }
+                                                            )
+                                                            repositorysMainSetter.updateListM10OperationVentCouleur(
+                                                               buildList { add(updatedVentOperation) }
+                                                            )
+                                                        },
+                                                        colors = ButtonDefaults.buttonColors(
+                                                            containerColor = when (relative_M10Vent.etateDelivery) {
+                                                                M10OperationVentCouleur.EtateDelivery.Trouve -> MaterialTheme.colorScheme.primary
+                                                                M10OperationVentCouleur.EtateDelivery.NonTrouve -> MaterialTheme.colorScheme.error
+                                                            }
+                                                        ),
+                                                        modifier = Modifier.padding(end = 8.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = when (relative_M10Vent.etateDelivery) {
+                                                                M10OperationVentCouleur.EtateDelivery.Trouve -> "Trouvé"
+                                                                M10OperationVentCouleur.EtateDelivery.NonTrouve -> "Non Trouvé"
+                                                            },
+                                                            fontSize = 12.sp
+                                                        )
+                                                    }
+
                                                     Text(
                                                         text = "• Qté: ${relative_M10Vent.quantity}",
                                                         fontSize = 14.sp,
@@ -124,17 +159,14 @@ fun List_AcheteursDeCetteProduit(
 
                                                     Spacer(modifier = Modifier.width(16.dp))
 
-                                                    val bonVent =
-                                                        viewModel.getter.repo8BonVent.datasValue.find {
-                                                            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
-                                                        }
+                                                    val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
+                                                        it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
+                                                    }
                                                     bonVent?.let {
                                                         Text(
                                                             text = "Bon: ${it.keyID.takeLast(6)}",
                                                             fontSize = 12.sp,
-                                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                                alpha = 0.7f
-                                                            )
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                                         )
                                                     }
                                                 }
