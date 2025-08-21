@@ -59,6 +59,8 @@ fun Item_Client(
         relative_client.keyID,
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
         viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats?.keyID,
+        focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats?.keyID,
         activePeriod?.keyID,
         activeGrossist?.keyID
     ) {
@@ -69,15 +71,17 @@ fun Item_Client(
         var clientBonVents =
             allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
 
-        activePeriod?.let { period ->
+        val periodToFilter = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats ?: activePeriod
+        periodToFilter?.let { period ->
             clientBonVents = clientBonVents.filter {
-                true
+                it.parent_M14VentPeriod_KeyId == period.keyID
             }
         }
 
-        activeGrossist?.let { grossist ->
+        val grossistToFilter = focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats ?: activeGrossist
+        grossistToFilter?.let { grossist ->
             clientBonVents = clientBonVents.filter {
-                true
+                it.parent_M9AppCompt_KeyID == grossist.keyID
             }
         }
 
@@ -90,11 +94,9 @@ fun Item_Client(
         val uniqueProducts = clientVentOperations.map { it.parent_M1Produit_KeyId }.toSet().size
         val totalQuantity = clientVentOperations.sumOf { it.quantity }
 
+        // Fixed: Calculate sales for delivered operations with proper filtering
         val deliveredOperations = clientVentOperations.filter {
-            (it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-                    && it.parent_M14VentPeriod_KeyId == (
-                    focusedValuesGetter.active_Central_Values.vent_Au_Dialog_filter_AChats_Par_Client_Acheteur?.keyID
-                        ?: ""))
+            it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
         }
 
         val totalSalesValue = deliveredOperations.sumOf { ventOperation ->
@@ -113,9 +115,10 @@ fun Item_Client(
     }
 
     val contextText = when {
-        activePeriod != null && activeGrossist != null -> "(période + grossiste actifs)"
-        activePeriod != null -> "(période active)"
-        activeGrossist != null -> "(grossiste actif)"
+        (focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats ?: activePeriod) != null &&
+                (focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats ?: activeGrossist) != null -> "(période + grossiste actifs)"
+        (focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats ?: activePeriod) != null -> "(période active)"
+        (focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats ?: activeGrossist) != null -> "(grossiste actif)"
         else -> null
     }
     val updatedValues =
@@ -135,13 +138,12 @@ fun Item_Client(
             .semantics(mergeDescendants = true) {
                 set(
                     value = clientPurchaseInfo.deliveredOperations,
-                    key = SemanticsPropertyKey("clientPurchaseInfo")
+                    key = SemanticsPropertyKey("deliveredOperations")
                 )
             }
             .clickable {
-
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
-                   on_Pour_Dissmiss()
+                on_Pour_Dissmiss()
             }
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),

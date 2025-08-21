@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -67,10 +66,7 @@ class RepositorysMainGetter(
     val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    getterFocusedVars: FocusedValuesGetter,
 ) {
-    val parametresAppComptNonSaved = repo18CentralParametresOfAllApps
-
     val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }

@@ -58,7 +58,25 @@ val composRepositorysModule = module {
     single { FocusedValuesSetter(get(), get(), get(), get(), get(),get(), ) }
     single { FocusedActiveValuesFacade(get(), get()) }
 
-    single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(),get(),get(), ) }
+    single { RepositorysMainGetter(
+        context = androidContext(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(),
+        get(), ) }
 
     single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),get(),) }

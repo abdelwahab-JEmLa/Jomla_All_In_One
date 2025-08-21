@@ -6,7 +6,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.Repository.A.Base.filters_Central.filterAchatOperations
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,58 +35,6 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-
-private fun filterAchatOperations(
-    aCentralFacade: ACentralFacade,
-): List<M11AchatOperation> {
-    val activeCentralValues =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
-    val repo11AchatOperation = aCentralFacade.repositorysMainGetter.repo11AchatOperation
-    val achatOperations = repo11AchatOperation.datasValue
-    val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
-
-    var filteredData = achatOperations
-
-    activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
-        filteredData = filteredData.filter {
-            it.parent_M14VentPeriod_KeyID == period.keyID
-        }
-    }
-
-    activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
-        filteredData = filteredData.filter {
-            it.parent_M15Grossist_KeyID == grossist.keyID
-        }
-    }
-
-    activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
-        filteredData = filteredData.filter { achat ->
-            val sales =
-                achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
-            sales.any { sale ->
-                if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
-                    return@any true
-                }
-                val bonVent = repo8BonVent.datasValue
-                    .find { it.keyID == sale.parent_M8BonVent_KeyId }
-                bonVent?.parent_M2Client_KeyID == client.keyID
-            }
-        }
-    }
-
-    activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
-        filteredData = filteredData.filter { achat ->
-            val sales =
-                achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
-            sales.any { sale ->
-                sale.parent_M1Produit_KeyId == product.keyID
-            }
-        }
-    }
-
-    return filteredData
-}
 
 @Composable
 fun List_GroupeAchatProduit(

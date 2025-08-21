@@ -6,16 +6,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
-import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
-import kotlinx.coroutines.delay
 
 class ACentralFacade(
     val repositorysMainGetter: RepositorysMainGetter,
@@ -41,79 +35,57 @@ object functions_central{
         )
     }
 }
+object filters_Central{
+     fun filterAchatOperations(
+        aCentralFacade: ACentralFacade,
+    ): List<M11AchatOperation> {
+        val activeCentralValues =
+            aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
+        val repo11AchatOperation = aCentralFacade.repositorysMainGetter.repo11AchatOperation
+        val achatOperations = repo11AchatOperation.datasValue
+        val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+        val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
 
-object DebugsTests {
-    const val TAG = "DebugsTests"
-    fun Modifier.getSemanticsTag_By_datas_A_Affiche_Au_Nom(
-        datas_A_Affiche_Au_Nom: Any?=null,
-        nomVal: String = "",
-        data: Any?=null,
-        index: Int = 0,
-        log: Boolean = false
-    ): Modifier {
-        if (log) {
-            log(nomVal, index, data)
+        var filteredData = achatOperations
+
+        activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
+            filteredData = filteredData.filter {
+                it.parent_M14VentPeriod_KeyID == period.keyID
+            }
         }
 
-        return this.semantics(mergeDescendants = true) {
-            val old = "${index + 1} TagDebug == [$nomVal]"
-            val new = "${index + 1}-SemDeb.$nomVal [${datas_A_Affiche_Au_Nom.toString()}]"
-            val name = if (datas_A_Affiche_Au_Nom != null) new else old
-            val dataWithNullSafety = data ?: datas_A_Affiche_Au_Nom
-            set(SemanticsPropertyKey(name), dataWithNullSafety)
+        activeCentralValues.active_M15Grossist_AuFilterAchats?.let { grossist ->
+            filteredData = filteredData.filter {
+                it.parent_M15Grossist_KeyID == grossist.keyID
+            }
         }
+
+        activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
+            filteredData = filteredData.filter { achat ->
+                val sales =
+                    achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+                sales.any { sale ->
+                    if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
+                        return@any true
+                    }
+                    val bonVent = repo8BonVent.datasValue
+                        .find { it.keyID == sale.parent_M8BonVent_KeyId }
+                    bonVent?.parent_M2Client_KeyID == client.keyID
+                }
+            }
+        }
+
+        activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
+            filteredData = filteredData.filter { achat ->
+                val sales =
+                    achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+                sales.any { sale ->
+                    sale.parent_M1Produit_KeyId == product.keyID
+                }
+            }
+        }
+
+        return filteredData
     }
-
-
-    @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(
-        data: Any?,
-        nomVal: String,
-        index: Int = 0,
-        log: Boolean = false
-    ): Modifier {
-        if (log) {
-            log(nomVal, index, data)
-        }
-
-        return this.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
-        }
-    }
-
-    private fun log(nomVal: String, index: Int, data: Any?) {
-        val logTag = "Debug_${nomVal}_${index + 1}"
-        val dataString = when (data) {
-            null -> "null"
-            is String -> data
-            is Number -> data.toString()
-            is Boolean -> data.toString()
-            else -> data.toString()
-        }
-
-        Log.d("getSemanticsTag", "[$logTag] $nomVal = $dataString")
-    }
-
-    suspend fun DebugTestsPerformInitialSearch(
-        enabled: Boolean,
-        focusRequester: FocusRequester,
-        onSearchTextChange: (String) -> Unit,
-        searchQuery: String
-    ) {
-        if (!enabled) return
-
-        try {
-            delay(200)
-
-            focusRequester.requestFocus()
-
-            onSearchTextChange(searchQuery)
-
-        } catch (e: IllegalStateException) {
-            println("Focus request failed in DebugTestsPerformInitialSearch: ${e.message}")
-            onSearchTextChange(searchQuery)
-        }
-    }
-
-
 }
+
