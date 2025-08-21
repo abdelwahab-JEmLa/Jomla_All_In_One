@@ -63,10 +63,11 @@ fun Item_Client(
         activeGrossist?.keyID
     ) {
         val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue  //<--
-        //TODO(1): fait toujout de filtre ou leur vents est 
+        val allVentOperations =
+            viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
 
-        var clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
+        var clientBonVents =
+            allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
 
         activePeriod?.let { period ->
             clientBonVents = clientBonVents.filter {
@@ -92,13 +93,14 @@ fun Item_Client(
         val deliveredOperations = clientVentOperations.filter {
             (it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
                     && it.parent_M14VentPeriod_KeyId == (
-                    focusedValuesGetter.active_Central_Values.
-                    vent_Au_Dialog_filter_AChats_Par_Client_Acheteur?.keyID ?: ""))
+                    focusedValuesGetter.active_Central_Values.vent_Au_Dialog_filter_AChats_Par_Client_Acheteur?.keyID
+                        ?: ""))
         }
 
         val totalSalesValue = deliveredOperations.sumOf { ventOperation ->
             val parentM13TarificationPrix = viewModel.aCentralFacade.repositorysMainGetter
-                .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency ?: 0.0
+                .find_M13Tarification_By_KeyID(ventOperation.parentM13TarificationKeyID)?.prixCurrency
+                ?: 0.0
             ventOperation.quantity * parentM13TarificationPrix
         }
 
@@ -116,9 +118,14 @@ fun Item_Client(
         activeGrossist != null -> "(grossiste actif)"
         else -> null
     }
+    val updatedValues =
+        focusedValuesGetter.active_Central_Values.copy(active_M2Client_AuFilterAchats = relative_client)
 
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = updatedValues, key = SemanticsPropertyKey("updatedValues"))
+            }
             .semantics(mergeDescendants = true) {
                 set(
                     value = clientPurchaseInfo.deliveredOperations,
@@ -126,7 +133,8 @@ fun Item_Client(
                 )
             }
             .clickable {
-                focusedValuesGetter.addClientFilter(relative_client)
+
+                focusedValuesGetter.update_activeCentralValues(updatedValues)
                 on_Pour_Dissmiss()
             }
             .fillMaxWidth(),
@@ -181,7 +189,12 @@ fun Item_Client(
                         tint = if (clientPurchaseInfo.totalSalesValue > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
                     )
                     Text(
-                        text = "Ventes: ${String.format("%.2f", clientPurchaseInfo.totalSalesValue)} DA",
+                        text = "Ventes: ${
+                            String.format(
+                                "%.2f",
+                                clientPurchaseInfo.totalSalesValue
+                            )
+                        } DA",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (clientPurchaseInfo.totalSalesValue > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                         fontWeight = if (clientPurchaseInfo.totalSalesValue > 0) FontWeight.SemiBold else FontWeight.Normal,
