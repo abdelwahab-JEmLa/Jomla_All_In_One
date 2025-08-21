@@ -5,10 +5,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
@@ -40,11 +37,15 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 private fun filterAchatOperations(
-    achatOperations: List<M11AchatOperation>,
-    activeCentralValues: ActiveCentralValues,
-    repo10OperationVentCouleur: Repo10OperationVentCouleur,
-    repo8BonVent: Repo8BonVent
+    aCentralFacade: ACentralFacade,
 ): List<M11AchatOperation> {
+    val activeCentralValues =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
+    val repo11AchatOperation = aCentralFacade.repositorysMainGetter.repo11AchatOperation
+    val achatOperations = repo11AchatOperation.datasValue
+    val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
+
     var filteredData = achatOperations
 
     activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
@@ -61,7 +62,8 @@ private fun filterAchatOperations(
 
     activeCentralValues.active_M2Client_AuFilterAchats?.let { client ->
         filteredData = filteredData.filter { achat ->
-            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+            val sales =
+                achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             sales.any { sale ->
                 if (sale.parentClientInfosKeyID.isNotBlank() && sale.parentClientInfosKeyID == client.keyID) {
                     return@any true
@@ -75,7 +77,8 @@ private fun filterAchatOperations(
 
     activeCentralValues.active_M1Produit_AuFilterAchats?.let { product ->
         filteredData = filteredData.filter { achat ->
-            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+            val sales =
+                achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             sales.any { sale ->
                 sale.parent_M1Produit_KeyId == product.keyID
             }
@@ -95,15 +98,11 @@ fun List_GroupeAchatProduit(
 ) {
     val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
 
     val filteredAchatOperations by remember {
         derivedStateOf {
             filterAchatOperations(
-                achatOperations = repo.datasValue,
-                activeCentralValues = focusedValuesGetter.active_Central_Values,
-                repo10OperationVentCouleur = repo10OperationVentCouleur,
-                repo8BonVent = repo8BonVent
+                aCentralFacade = aCentralFacade,
             )
         }
     }
@@ -113,7 +112,8 @@ fun List_GroupeAchatProduit(
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
                 return@mapNotNull null
             }
-            val sales = achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
+            val sales =
+                achat.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue)
             val produitId = sales.firstOrNull()?.parent_M1Produit_KeyId
             if (produitId.isNullOrBlank() || produitId == "null" || produitId.length <= 5) {
                 return@mapNotNull null
@@ -131,7 +131,8 @@ fun List_GroupeAchatProduit(
         if (!uiState.productDisplayController.isHostPhone &&
             uiState.productDisplayController.isConnected &&
             targetPosition >= 0 &&
-            targetPosition < items.size) {
+            targetPosition < items.size
+        ) {
             scope.launch {
                 try {
                     listState.animateScrollToItem(index = targetPosition, scrollOffset = 0)
@@ -147,7 +148,8 @@ fun List_GroupeAchatProduit(
 
     LaunchedEffect(listState) {
         if (uiState.productDisplayController.isHostPhone &&
-            uiState.productDisplayController.isConnected) {
+            uiState.productDisplayController.isConnected
+        ) {
             snapshotFlow {
                 listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
             }
@@ -161,7 +163,9 @@ fun List_GroupeAchatProduit(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize().padding(4.dp)) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(4.dp)) {
         if (items.isEmpty()) {
             ElevatedCard(
                 modifier = Modifier
@@ -173,7 +177,9 @@ fun List_GroupeAchatProduit(
                 elevation = CardDefaults.elevatedCardElevation(2.dp)
             ) {
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     text = when {
                         repo.datasValue.isEmpty() ->
                             "Aucune opération d'achat disponible\nAjoutez des opérations d'achat pour commencer"
