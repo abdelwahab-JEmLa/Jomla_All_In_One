@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -117,59 +119,11 @@ fun List_AcheteursDeCetteProduit(
                                     relative_ListM10Vent.forEach { relative_M10Vent ->
                                         when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {
                                             false -> {
-                                                Row(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    // Toggle button for EtateDelivery
-                                                    Button(
-                                                        onClick = {
-                                                            val updatedVentOperation = relative_M10Vent.copy(
-                                                                etateDelivery = when (relative_M10Vent.etateDelivery) {
-                                                                    M10OperationVentCouleur.EtateDelivery.Trouve -> M10OperationVentCouleur.EtateDelivery.NonTrouve
-                                                                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> M10OperationVentCouleur.EtateDelivery.Trouve
-                                                                }
-                                                            )
-                                                            repositorysMainSetter.updateListM10OperationVentCouleur(
-                                                               buildList { add(updatedVentOperation) }
-                                                            )
-                                                        },
-                                                        colors = ButtonDefaults.buttonColors(
-                                                            containerColor = when (relative_M10Vent.etateDelivery) {
-                                                                M10OperationVentCouleur.EtateDelivery.Trouve -> MaterialTheme.colorScheme.primary
-                                                                M10OperationVentCouleur.EtateDelivery.NonTrouve -> MaterialTheme.colorScheme.error
-                                                            }
-                                                        ),
-                                                        modifier = Modifier.padding(end = 8.dp)
-                                                    ) {
-                                                        Text(
-                                                            text = when (relative_M10Vent.etateDelivery) {
-                                                                M10OperationVentCouleur.EtateDelivery.Trouve -> "Trouvé"
-                                                                M10OperationVentCouleur.EtateDelivery.NonTrouve -> "Non Trouvé"
-                                                            },
-                                                            fontSize = 12.sp
-                                                        )
-                                                    }
-
-                                                    Text(
-                                                        text = "• Qté: ${relative_M10Vent.quantity}",
-                                                        fontSize = 14.sp,
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                    )
-
-                                                    Spacer(modifier = Modifier.width(16.dp))
-
-                                                    val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
-                                                        it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
-                                                    }
-                                                    bonVent?.let {
-                                                        Text(
-                                                            text = "Bon: ${it.keyID.takeLast(6)}",
-                                                            fontSize = 12.sp,
-                                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                                        )
-                                                    }
-                                                }
+                                                VentOperationItem(
+                                                    relative_M10Vent = relative_M10Vent,
+                                                    repositorysMainSetter = repositorysMainSetter,
+                                                    viewModel = viewModel
+                                                )
                                             }
 
                                             true -> Parent_Dispo_Vent_StateFull(
@@ -198,6 +152,100 @@ fun List_AcheteursDeCetteProduit(
                     }
                 }
             }
+        }
+    }
+}
+@Composable
+private fun VentOperationItem(
+    relative_M10Vent: M10OperationVentCouleur,
+    repositorysMainSetter: RepositorysMainSetter,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    modifier: Modifier = Modifier
+) {
+    val isNotFound = relative_M10Vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
+    val backgroundColor = if (isNotFound) Color.Black else Color.Transparent
+    val textColor = if (isNotFound) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+
+    // Get the tariff information for this vent operation
+    val tariffInfo = viewModel.aCentralFacade.repositorysMainGetter
+        .find_M13Tarification_By_KeyID(relative_M10Vent.parentM13TarificationKeyID)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Toggle button for EtateDelivery (always full opacity)
+        Button(
+            onClick = {
+                val updatedVentOperation = relative_M10Vent.copy(
+                    etateDelivery = when (relative_M10Vent.etateDelivery) {
+                        M10OperationVentCouleur.EtateDelivery.Trouve -> M10OperationVentCouleur.EtateDelivery.NonTrouve
+                        M10OperationVentCouleur.EtateDelivery.NonTrouve -> M10OperationVentCouleur.EtateDelivery.Trouve
+                    }
+                )
+                repositorysMainSetter.updateListM10OperationVentCouleur(
+                    buildList { add(updatedVentOperation) }
+                )
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = when (relative_M10Vent.etateDelivery) {
+                    M10OperationVentCouleur.EtateDelivery.Trouve -> MaterialTheme.colorScheme.primary
+                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> MaterialTheme.colorScheme.error
+                }
+            ),
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Text(
+                text = when (relative_M10Vent.etateDelivery) {
+                    M10OperationVentCouleur.EtateDelivery.Trouve -> "Trouvé"
+                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> "Non Trouvé"
+                },
+                fontSize = 12.sp
+            )
+        }
+
+        Column {
+            // Quantity text
+            Text(
+                text = "• Qté: ${relative_M10Vent.quantity}",
+                fontSize = 14.sp,
+                color = textColor
+            )
+
+            // Display tariff price for client in card with tariff color
+            tariffInfo?.let { tariff ->
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = tariff.typeChoisi.couleur
+                    ),
+                    modifier = Modifier.padding(top = 2.dp)
+                ) {
+                    Text(
+                        text = "Prix: ${tariff.prixCurrency} (${tariff.typeChoisi.nomArabe})",
+                        fontSize = 12.sp,
+                        color = tariff.typeChoisi.couleur_Text,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // Bon Vent info
+        val bonVent = viewModel.getter.repo8BonVent.datasValue.find {
+            it.keyID == relative_M10Vent.parent_M8BonVent_KeyId
+        }
+        bonVent?.let {
+            Text(
+                text = "Bon: ${it.keyID.takeLast(6)}",
+                fontSize = 12.sp,
+                color = textColor
+            )
         }
     }
 }
