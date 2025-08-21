@@ -163,9 +163,11 @@ fun List_GroupeAchatProduit(
         }
     }
 
-    Box(modifier = modifier
-        .fillMaxSize()
-        .padding(4.dp)) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(4.dp)
+    ) {
         if (items.isEmpty()) {
             ElevatedCard(
                 modifier = Modifier
