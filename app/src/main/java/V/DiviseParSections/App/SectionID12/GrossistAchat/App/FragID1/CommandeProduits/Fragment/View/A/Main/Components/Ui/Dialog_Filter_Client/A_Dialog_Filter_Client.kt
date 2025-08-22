@@ -53,7 +53,6 @@ fun Dialog_Filter_Client(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: () -> Unit,
-    activePeriod: M14VentPeriode?,
     active_M14VentPeriode_AuFilterAchats: M14VentPeriode?
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
@@ -65,7 +64,6 @@ fun Dialog_Filter_Client(
         aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
         aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
         aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue,
-        activePeriod?.keyID,
         activeGrossist?.keyID
     ) {
         calculateClientSalesSummary(aCentralFacade,active_M14VentPeriode_AuFilterAchats)
@@ -106,9 +104,9 @@ fun Dialog_Filter_Client(
                         )
 
                         // Show active filters for context
-                        if (activePeriod != null || activeGrossist != null) {
+                        if (active_M14VentPeriode_AuFilterAchats != null || activeGrossist != null) {
                             val filterTexts = mutableListOf<String>()
-                            activePeriod?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
+                            active_M14VentPeriode_AuFilterAchats?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
                             activeGrossist?.let { filterTexts.add("Grossiste: ${it.nom}") }
 
                             Text(
@@ -245,7 +243,7 @@ fun Dialog_Filter_Client(
                 LazyColumn_Client(
                     modifier = Modifier.weight(1f),
                     viewModel = viewModel,
-                    activePeriod = activePeriod,
+                    activePeriod = active_M14VentPeriode_AuFilterAchats,
                     activeGrossist = activeGrossist,
                     focusedValuesGetter = focusedValuesGetter,
                     on_Pour_Dissmiss = {

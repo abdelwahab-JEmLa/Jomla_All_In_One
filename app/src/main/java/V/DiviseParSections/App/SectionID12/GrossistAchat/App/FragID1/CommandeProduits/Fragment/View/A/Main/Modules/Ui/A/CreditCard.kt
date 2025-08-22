@@ -182,11 +182,9 @@ fun CreditCard(
         item.getAvailableLocalImages()
     }
 
-    // Firebase storage reference for receipts
     val storageRef = Firebase.storage.reference.child("Images Receipts").child("bons_achat")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BonsAchat"
 
-    // FIXED: Enhanced LaunchedEffect to download all images
     LaunchedEffect(item.receiptImagePath, item.receiptImage2Path, item.receiptImage3Path, item.receiptImage4Path) {
         checkAndDownloadAllImagesEnhanced(
             item = item,
@@ -287,7 +285,6 @@ fun CreditCard(
         }
     }
 
-    // Dialog pour afficher l'image
     if (showImageDialog && selectedImagePath != null) {
         ImageViewDialog(
             imagePath = selectedImagePath!!,
@@ -298,7 +295,6 @@ fun CreditCard(
         )
     }
 
-    // Dialog pour la caméra
     if (showCameraDialog) {
         CameraXDialog(
             onImageCaptured = { uri ->
