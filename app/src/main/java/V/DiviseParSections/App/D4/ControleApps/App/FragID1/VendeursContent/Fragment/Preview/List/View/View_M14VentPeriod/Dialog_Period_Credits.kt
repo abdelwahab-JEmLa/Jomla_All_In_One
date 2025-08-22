@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -495,7 +498,7 @@ fun Dialog_Period_Credits(
         }
     }
 }
-
+@SuppressLint("DefaultLocale")
 @Composable
 private fun PeriodTransactionCard(
     transaction: TransactionItem,
@@ -539,7 +542,11 @@ private fun PeriodTransactionCard(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = transaction, key = SemanticsPropertyKey("transaction"))
+            }
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
         ),
@@ -613,7 +620,7 @@ private fun PeriodTransactionCard(
                             }
                         ) {
                             Icon(
-                                Icons.Default.Receipt,
+                                Icons.Default.Image,
                                 contentDescription = "Photo du reçu",
                                 modifier = Modifier.size(12.dp),
                                 tint = MaterialTheme.colorScheme.secondary
