@@ -62,6 +62,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// FIXED: Enhanced TransactionItem with Firebase paths for all images
 data class TransactionItem(
     val id: String = generePushKey(),
     val parent_GrossistKeyID: String = "",
@@ -73,15 +74,39 @@ data class TransactionItem(
     val receiptImage2Path: String? = null,
     val receiptImage3Path: String? = null,
     val receiptImage4Path: String? = null,
-    val firebaseStoragePath: String? = null
+    // Enhanced: Firebase storage paths for all images
+    val firebaseStoragePath: String? = null,
+    val firebaseStorage2Path: String? = null,
+    val firebaseStorage3Path: String? = null,
+    val firebaseStorage4Path: String? = null
 ) {
     companion object {
         val ref = centralRef.child("TransactionItem")
         fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
     }
+
+    // Helper function to get all image paths with their corresponding Firebase paths
+    fun getAllImagePaths(): List<Pair<String?, String?>> {
+        return listOf(
+            receiptImagePath to firebaseStoragePath,
+            receiptImage2Path to firebaseStorage2Path,
+            receiptImage3Path to firebaseStorage3Path,
+            receiptImage4Path to firebaseStorage4Path
+        )
+    }
+
+    // Helper function to get available local images
+    fun getAvailableLocalImages(): List<String> {
+        return listOfNotNull(
+            receiptImagePath,
+            receiptImage2Path,
+            receiptImage3Path,
+            receiptImage4Path
+        ).filter { File(it).exists() }
+    }
 }
 
- data class VersementItem(
+data class VersementItem(
     val id: String = generePushKey(),
     val parent_GrossistKeyID: String = "",
     val versement: Double = 0.0,
@@ -226,13 +251,13 @@ fun TransactionDialog(
                 OutlinedTextField(
                     value = String.format("%.2f DA", totalSum),
                     onValueChange = { },
-                    label = { Text("Total des crédits") },
+                    label = { Text("Total des crÃ©dits") },
                     readOnly = true,
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
                         Icon(
                             Icons.Default.AccountBalance,
-                            contentDescription = "Crédit total"
+                            contentDescription = "CrÃ©dit total"
                         )
                     }
                 )
@@ -242,7 +267,7 @@ fun TransactionDialog(
                 OutlinedTextField(
                     value = creditText,
                     onValueChange = { creditText = it },
-                    label = { Text("Ajouter crédit") },
+                    label = { Text("Ajouter crÃ©dit") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal,
@@ -372,7 +397,7 @@ fun TransactionDialog(
 }
 
 @Composable
- fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
+fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
@@ -393,7 +418,7 @@ fun TransactionDialog(
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
                 Text(
-                    text = "${item.date} à ${item.time}",
+                    text = "${item.date} Ã  ${item.time}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
@@ -418,7 +443,7 @@ fun TransactionDialog(
 }
 
 // Firebase helper functions
- fun loadTransactionsForGrossist(
+fun loadTransactionsForGrossist(
     grossistKeyID: String,
     onLoaded: (List<TransactionItem>, List<VersementItem>) -> Unit
 ) {
@@ -491,7 +516,7 @@ fun saveTransactionToFirebase(transaction: TransactionItem) {
     }
 }
 
- fun saveVersementToFirebase(versement: VersementItem) {
+fun saveVersementToFirebase(versement: VersementItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             VersementItem.ref.child(versement.id).setValue(versement)
@@ -501,7 +526,7 @@ fun saveTransactionToFirebase(transaction: TransactionItem) {
     }
 }
 
- fun deleteTransactionFromFirebase(transaction: TransactionItem) {
+fun deleteTransactionFromFirebase(transaction: TransactionItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             TransactionItem.ref.child(transaction.id).removeValue()
@@ -511,7 +536,7 @@ fun saveTransactionToFirebase(transaction: TransactionItem) {
     }
 }
 
- fun deleteVersementFromFirebase(versement: VersementItem) {
+fun deleteVersementFromFirebase(versement: VersementItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             VersementItem.ref.child(versement.id).removeValue()
@@ -521,7 +546,7 @@ fun saveTransactionToFirebase(transaction: TransactionItem) {
     }
 }
 
-// Image management functions
+// FIXED: Enhanced image management functions
 suspend fun downloadImageFromFirebase(
     firebaseStoragePath: String,
     localPath: String

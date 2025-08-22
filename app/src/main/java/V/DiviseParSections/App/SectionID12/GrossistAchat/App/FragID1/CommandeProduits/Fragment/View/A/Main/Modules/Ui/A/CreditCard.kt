@@ -53,6 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -176,22 +178,17 @@ fun CreditCard(
     var isDownloadingImage by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
 
-    // Get all available image paths
     val availableImages = remember(item) {
-        listOfNotNull(
-            item.receiptImagePath,
-            item.receiptImage2Path,
-            item.receiptImage3Path,
-            item.receiptImage4Path
-        ).filter { File(it).exists() }
+        item.getAvailableLocalImages()
     }
 
     // Firebase storage reference for receipts
     val storageRef = Firebase.storage.reference.child("Images Receipts").child("bons_achat")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BonsAchat"
 
-    LaunchedEffect(item.receiptImagePath, item.receiptImage2Path, item.receiptImage3Path, item.receiptImage4Path, item.firebaseStoragePath) {
-        checkAndDownloadAllImages(
+    // FIXED: Enhanced LaunchedEffect to download all images
+    LaunchedEffect(item.receiptImagePath, item.receiptImage2Path, item.receiptImage3Path, item.receiptImage4Path) {
+        checkAndDownloadAllImagesEnhanced(
             item = item,
             onImagesReady = { /* handled in availableImages computation */ },
             onDownloadStart = { isDownloadingImage = true },
@@ -230,20 +227,23 @@ fun CreditCard(
                     }
 
                     withContext(Dispatchers.Main) {
-                        // Find the next available image slot and update the item
+                        // FIXED: Enhanced image slot assignment with Firebase paths
                         val updatedItem = when {
                             item.receiptImagePath == null -> item.copy(
                                 receiptImagePath = localFile.absolutePath,
                                 firebaseStoragePath = firebaseStoragePath
                             )
                             item.receiptImage2Path == null -> item.copy(
-                                receiptImage2Path = localFile.absolutePath
+                                receiptImage2Path = localFile.absolutePath,
+                                firebaseStorage2Path = firebaseStoragePath
                             )
                             item.receiptImage3Path == null -> item.copy(
-                                receiptImage3Path = localFile.absolutePath
+                                receiptImage3Path = localFile.absolutePath,
+                                firebaseStorage3Path = firebaseStoragePath
                             )
                             item.receiptImage4Path == null -> item.copy(
-                                receiptImage4Path = localFile.absolutePath
+                                receiptImage4Path = localFile.absolutePath,
+                                firebaseStorage4Path = firebaseStoragePath
                             )
                             else -> {
                                 // All slots full, replace the first one
@@ -315,6 +315,9 @@ fun CreditCard(
 
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = item, key = SemanticsPropertyKey("item"))
+            }
             .fillMaxWidth()
             .padding(vertical = 4.dp), // Add some vertical padding
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -414,34 +417,40 @@ fun CreditCard(
                             }
                         }
                     }
-                } else if (item.firebaseStoragePath != null && !isDownloadingImage) {
-                    // Show download button if image is only in Firebase
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                checkAndDownloadImage(
-                                    item = item,
-                                    onImageReady = { imagePath ->
-                                        if (imagePath != null) {
-                                            Toast.makeText(
-                                                context,
-                                                "Image téléchargée avec succès",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    },
-                                    onDownloadStart = { isDownloadingImage = true },
-                                    onDownloadEnd = { isDownloadingImage = false }
-                                )
+                } else {
+                    // FIXED: Enhanced download button logic for all images
+                    val hasFirebaseImages = item.getAllImagePaths().any { (_, firebasePath) ->
+                        firebasePath != null
+                    }
+
+                    if (hasFirebaseImages && !isDownloadingImage) {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    checkAndDownloadAllImagesEnhanced(
+                                        item = item,
+                                        onImagesReady = { imagePaths ->
+                                            if (imagePaths.isNotEmpty()) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Images téléchargées avec succès: ${imagePaths.size}",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        },
+                                        onDownloadStart = { isDownloadingImage = true },
+                                        onDownloadEnd = { isDownloadingImage = false }
+                                    )
+                                }
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CloudDownload,
+                                contentDescription = "Télécharger photos",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CloudDownload,
-                            contentDescription = "Télécharger photo",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
                     }
                 }
 
@@ -497,23 +506,17 @@ fun CreditCard(
         }
     }
 }
-// FIX 1: Enhanced image download function in CreditCard.kt
-// Replace the existing checkAndDownloadImage function with this enhanced version
 
-suspend fun checkAndDownloadAllImages(
+// FIXED: Enhanced image download function that handles all images with their Firebase paths
+suspend fun checkAndDownloadAllImagesEnhanced(
     item: TransactionItem,
     onImagesReady: (List<String>) -> Unit,
     onDownloadStart: () -> Unit,
     onDownloadEnd: () -> Unit
 ) {
-    val imagePaths = listOfNotNull(
-        item.receiptImagePath,
-        item.receiptImage2Path,
-        item.receiptImage3Path,
-        item.receiptImage4Path
-    )
+    val imagePaths = item.getAllImagePaths()
 
-    if (imagePaths.isEmpty()) {
+    if (imagePaths.all { (localPath, _) -> localPath == null }) {
         onImagesReady(emptyList())
         return
     }
@@ -522,42 +525,37 @@ suspend fun checkAndDownloadAllImages(
     var downloadStarted = false
 
     // Check each image path
-    for (imagePath in imagePaths) {
-        val localFile = File(imagePath)
+    for ((localPath, firebasePath) in imagePaths) {
+        if (localPath == null) continue
+
+        val localFile = File(localPath)
 
         if (localFile.exists()) {
-            availableImages.add(imagePath)
-        } else {
-            // Try to download from Firebase if path exists
-            val firebasePath = when (imagePath) {
-                item.receiptImagePath -> item.firebaseStoragePath
-                else -> null // For additional images, you might need separate Firebase paths
+            availableImages.add(localPath)
+        } else if (firebasePath != null) {
+            // Try to download from Firebase
+            if (!downloadStarted) {
+                onDownloadStart()
+                downloadStarted = true
             }
 
-            if (firebasePath != null) {
-                if (!downloadStarted) {
-                    onDownloadStart()
-                    downloadStarted = true
+            val success = withContext(Dispatchers.IO) {
+                try {
+                    val storageRef = Firebase.storage.reference.child(firebasePath)
+
+                    // Create parent directories if they don't exist
+                    localFile.parentFile?.mkdirs()
+
+                    // Download the file
+                    storageRef.getFile(localFile).await()
+                    true
+                } catch (e: Exception) {
+                    false
                 }
+            }
 
-                val success = withContext(Dispatchers.IO) {
-                    try {
-                        val storageRef = Firebase.storage.reference.child(firebasePath)
-
-                        // Create parent directories if they don't exist
-                        localFile.parentFile?.mkdirs()
-
-                        // Download the file
-                        storageRef.getFile(localFile).await()
-                        true
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-
-                if (success) {
-                    availableImages.add(imagePath)
-                }
+            if (success) {
+                availableImages.add(localPath)
             }
         }
     }
@@ -568,6 +566,7 @@ suspend fun checkAndDownloadAllImages(
 
     onImagesReady(availableImages)
 }
+
 @Composable
 fun ImageViewDialog(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -665,7 +664,7 @@ fun ImageViewDialog(
     }
 }
 
-// Helper function for image management
+// FIXED: Enhanced helper function for single image download (backward compatibility)
 suspend fun checkAndDownloadImage(
     item: TransactionItem,
     onImageReady: (String?) -> Unit,

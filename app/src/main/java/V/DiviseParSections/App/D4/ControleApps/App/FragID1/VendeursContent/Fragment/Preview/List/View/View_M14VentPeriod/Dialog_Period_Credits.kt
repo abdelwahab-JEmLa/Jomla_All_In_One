@@ -2,7 +2,6 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.ImageViewDialog
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.TransactionItem
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.checkAndDownloadAllImages
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.checkAndDownloadImage
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.saveTransactionToFirebase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -521,14 +520,6 @@ private fun PeriodTransactionCard(
         ).filter { File(it).exists() }
     }
 
-    LaunchedEffect(transaction.receiptImagePath, transaction.receiptImage2Path, transaction.receiptImage3Path, transaction.receiptImage4Path, transaction.firebaseStoragePath) {
-        checkAndDownloadAllImages(
-            item = transaction,
-            onImagesReady = { /* handled in availableImages computation */ },
-            onDownloadStart = { isDownloadingImage = true },
-            onDownloadEnd = { isDownloadingImage = false }
-        )
-    }
 
     // Dialog pour afficher l'image
     if (showImageDialog && selectedImagePath != null) {
