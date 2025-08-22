@@ -96,7 +96,6 @@ fun ScreenM14VentPeriod(
                         )
                     )
                 },
-                activePeriod = active_Central_Values,
                 active_M14VentPeriode_AuFilterAchats = active_M14VentPeriode_AuFilterAchats
             )
         }
