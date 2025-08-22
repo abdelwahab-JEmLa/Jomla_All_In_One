@@ -81,7 +81,7 @@ data class TransactionItem(
     }
 }
 
-private data class VersementItem(
+ data class VersementItem(
     val id: String = generePushKey(),
     val parent_GrossistKeyID: String = "",
     val versement: Double = 0.0,
@@ -372,7 +372,7 @@ fun TransactionDialog(
 }
 
 @Composable
-private fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
+ fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
@@ -418,7 +418,7 @@ private fun VersementCard(item: VersementItem, onDelete: () -> Unit) {
 }
 
 // Firebase helper functions
-private fun loadTransactionsForGrossist(
+ fun loadTransactionsForGrossist(
     grossistKeyID: String,
     onLoaded: (List<TransactionItem>, List<VersementItem>) -> Unit
 ) {
@@ -491,7 +491,7 @@ fun saveTransactionToFirebase(transaction: TransactionItem) {
     }
 }
 
-private fun saveVersementToFirebase(versement: VersementItem) {
+ fun saveVersementToFirebase(versement: VersementItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             VersementItem.ref.child(versement.id).setValue(versement)
@@ -501,7 +501,7 @@ private fun saveVersementToFirebase(versement: VersementItem) {
     }
 }
 
-private fun deleteTransactionFromFirebase(transaction: TransactionItem) {
+ fun deleteTransactionFromFirebase(transaction: TransactionItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             TransactionItem.ref.child(transaction.id).removeValue()
@@ -511,7 +511,7 @@ private fun deleteTransactionFromFirebase(transaction: TransactionItem) {
     }
 }
 
-private fun deleteVersementFromFirebase(versement: VersementItem) {
+ fun deleteVersementFromFirebase(versement: VersementItem) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             VersementItem.ref.child(versement.id).removeValue()

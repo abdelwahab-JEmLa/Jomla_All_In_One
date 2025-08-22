@@ -268,9 +268,6 @@ fun View_M14VentPeriod(
                 onEditingValueChange = { editingValue = it },
                 onSaveEditedValue = ::saveEditedValue,
                 focusRequester = focusRequester,
-                onCalculatedAchatClick = {
-                    onCalculatedAchatClick()
-                }
             )
 
             // Produits au Dépôt Section

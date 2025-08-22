@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -31,10 +33,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun AchatsSection(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M14VentPeriode: M14VentPeriode,
     editingField: String?,
     editingValue: String,
@@ -45,7 +50,6 @@ fun AchatsSection(
     onEditingValueChange: (String) -> Unit,
     onSaveEditedValue: () -> Unit,
     focusRequester: FocusRequester,
-    onCalculatedAchatClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -187,7 +191,13 @@ fun AchatsSection(
         ElevatedCard(
             modifier = Modifier
                 .weight(1f)
-                .clickable { onCalculatedAchatClick() },
+                .clickable {
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            dialog_achats_ventPeriod = relative_M14VentPeriode
+                        )
+                    )
+                },
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
             )

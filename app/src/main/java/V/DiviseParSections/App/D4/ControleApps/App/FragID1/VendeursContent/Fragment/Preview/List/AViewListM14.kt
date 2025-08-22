@@ -74,7 +74,7 @@ fun ViewList_M14VentPeriod(
                             viewModel = viewModel,
                             relative_M14VentPeriode = periode,
                             relative_M9AppCompt = relative_M9AppCompt,
-
+                            onCalculatedAchatClick = onCalculatedAchatClick
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

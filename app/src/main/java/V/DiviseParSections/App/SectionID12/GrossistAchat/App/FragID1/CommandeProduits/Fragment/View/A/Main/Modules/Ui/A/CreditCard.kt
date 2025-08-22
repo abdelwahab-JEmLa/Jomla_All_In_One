@@ -500,7 +500,7 @@ fun CreditCard(
 // FIX 1: Enhanced image download function in CreditCard.kt
 // Replace the existing checkAndDownloadImage function with this enhanced version
 
-private suspend fun checkAndDownloadAllImages(
+suspend fun checkAndDownloadAllImages(
     item: TransactionItem,
     onImagesReady: (List<String>) -> Unit,
     onDownloadStart: () -> Unit,
@@ -569,7 +569,7 @@ private suspend fun checkAndDownloadAllImages(
     onImagesReady(availableImages)
 }
 @Composable
-private fun ImageViewDialog(
+fun ImageViewDialog(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     imagePath: String,
@@ -666,7 +666,7 @@ private fun ImageViewDialog(
 }
 
 // Helper function for image management
-private suspend fun checkAndDownloadImage(
+suspend fun checkAndDownloadImage(
     item: TransactionItem,
     onImageReady: (String?) -> Unit,
     onDownloadStart: () -> Unit,

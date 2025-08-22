@@ -41,7 +41,6 @@ fun ScreenM14VentPeriod(
 ) {
     // State for dialog and selected period
     var showPeriodCreditsDialog by remember { mutableStateOf(false) }
-    var selectedPeriodForCredits by remember { mutableStateOf<M14VentPeriode?>(null) }
 
     var active_M14VentPeriode_AuFilterAchats by remember {
         mutableStateOf(
@@ -76,10 +75,11 @@ fun ScreenM14VentPeriod(
                     ViewList_M14VentPeriod(
                         viewModel,
                         list_M14VentPeriode = sortedList_M14VentPeriod,
-                        relative_M9AppCompt = relative_M9AppCompt
-                    ) {
-                        showPeriodCreditsDialog = true
-                    }
+                        relative_M9AppCompt = relative_M9AppCompt,
+                        onCalculatedAchatClick = {
+                            showPeriodCreditsDialog = true
+                        }
+                    )
                 }
             }
         }
@@ -101,14 +101,19 @@ fun ScreenM14VentPeriod(
             )
         }
 
-        // Fixed Dialog_Period_Credits with proper parameters
-        if (showPeriodCreditsDialog && selectedPeriodForCredits != null) {
+        val dialog_achats_ventPeriod =
+            focusedValuesGetter.active_Central_Values.dialog_achats_ventPeriod
+
+        if (dialog_achats_ventPeriod != null) {
             Dialog_Period_Credits(
-                ventPeriod = selectedPeriodForCredits!!,
+                ventPeriod = dialog_achats_ventPeriod,
                 repositorysMainGetter = aCentralFacade.repositorysMainGetter,
                 onDismiss = {
-                    showPeriodCreditsDialog = false
-                    selectedPeriodForCredits = null
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            dialog_achats_ventPeriod = null
+                        )
+                    )
                 }
             )
         }

@@ -49,6 +49,8 @@ data class ActiveCentralValues(
 
     val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
     val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode?= null,
+
+    val dialog_achats_ventPeriod: M14VentPeriode?= null,
     //-----------------Grossist----------------------------------------------------------------------------
     val image_Flotant: File? = null,
 

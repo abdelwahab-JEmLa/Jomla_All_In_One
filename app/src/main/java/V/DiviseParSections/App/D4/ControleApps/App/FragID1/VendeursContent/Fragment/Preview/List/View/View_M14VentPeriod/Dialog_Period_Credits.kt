@@ -2,9 +2,13 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.TransactionItem
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.saveTransactionToFirebase
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.checkAndDownloadAllImages
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.checkAndDownloadImage
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.ImageViewDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +24,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +64,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 @Composable
@@ -72,24 +86,25 @@ fun Dialog_Period_Credits(
     var totalVersement by remember { mutableStateOf(0.0) }
     var showFilterOptions by remember { mutableStateOf(false) }
     var selectedGrossistFilter by remember { mutableStateOf<String?>(null) }
-    
+
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    
+
     // Get period timestamp range
     val periodRange = remember(ventPeriod.keyID) {
         getPeriodTimestampRange(ventPeriod.keyID, repositorysMainGetter)
     }
-    
+
     // Load grossists map
     LaunchedEffect(Unit) {
         grossistMap = repositorysMainGetter.repo15Grossist.datasValue
             .associateBy { it.keyID }
     }
-    
+
     // Load transactions and versements for this period
     LaunchedEffect(ventPeriod.keyID, periodRange) {
-        if (periodRange != null) {
+        if (periodRange != null) {        //->
+            //TODO(FIXME):Fix erreur Unresolved reference: loadPeriodTransactions
             loadPeriodTransactions(
                 periodStartTimestamp = periodRange.first,
                 periodEndTimestamp = periodRange.second,
@@ -112,7 +127,7 @@ fun Dialog_Period_Credits(
             isLoading = false
         }
     }
-    
+
     // Filter transactions and versements based on selected grossist
     val filteredTransactions = remember(transactionItems, selectedGrossistFilter) {
         if (selectedGrossistFilter != null) {
@@ -121,7 +136,7 @@ fun Dialog_Period_Credits(
             transactionItems
         }
     }
-    
+
     val filteredVersements = remember(versementItems, selectedGrossistFilter) {
         if (selectedGrossistFilter != null) {
             versementItems.filter { it.parent_GrossistKeyID == selectedGrossistFilter }
@@ -129,16 +144,16 @@ fun Dialog_Period_Credits(
             versementItems
         }
     }
-    
+
     // Calculate filtered totals
     val filteredTotalCredit = filteredTransactions.sumOf { it.credit }
     val filteredTotalVersement = filteredVersements.sumOf { it.versement }
     val filteredBalance = filteredTotalCredit - filteredTotalVersement
-    
+
     // Get unique grossists from transactions
     val availableGrossists = remember(transactionItems, versementItems, grossistMap) {
-        val grossistIds = (transactionItems.map { it.parent_GrossistKeyID } + 
-                         versementItems.map { it.parent_GrossistKeyID }).distinct()
+        val grossistIds = (transactionItems.map { it.parent_GrossistKeyID } +
+                versementItems.map { it.parent_GrossistKeyID }).distinct()
         grossistIds.mapNotNull { grossistMap[it] }.sortedBy { it.nom }
     }
 
@@ -183,10 +198,10 @@ fun Dialog_Period_Credits(
                     Row {
                         IconButton(onClick = { showFilterOptions = !showFilterOptions }) {
                             Icon(
-                                Icons.Default.FilterList, 
+                                Icons.Default.FilterList,
                                 contentDescription = "Filtres",
-                                tint = if (selectedGrossistFilter != null) 
-                                    MaterialTheme.colorScheme.primary 
+                                tint = if (selectedGrossistFilter != null)
+                                    MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -195,7 +210,7 @@ fun Dialog_Period_Credits(
                         }
                     }
                 }
-                
+
                 // Filter dropdown
                 if (showFilterOptions) {
                     Card(
@@ -213,7 +228,7 @@ fun Dialog_Period_Credits(
                                 fontWeight = FontWeight.Medium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             // All grossists option
                             FilterChip(
                                 selected = selectedGrossistFilter == null,
@@ -221,7 +236,7 @@ fun Dialog_Period_Credits(
                                 label = { Text("Tous les grossistes") },
                                 modifier = Modifier.padding(end = 8.dp, bottom = 4.dp)
                             )
-                            
+
                             // Individual grossists
                             availableGrossists.chunked(2).forEach { rowGrossists ->
                                 Row(
@@ -231,7 +246,7 @@ fun Dialog_Period_Credits(
                                     rowGrossists.forEach { grossist ->
                                         FilterChip(
                                             selected = selectedGrossistFilter == grossist.keyID,
-                                            onClick = { 
+                                            onClick = {
                                                 selectedGrossistFilter = if (selectedGrossistFilter == grossist.keyID) {
                                                     null
                                                 } else {
@@ -251,9 +266,9 @@ fun Dialog_Period_Credits(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Summary Cards
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -288,7 +303,7 @@ fun Dialog_Period_Credits(
                             )
                         }
                     }
-                    
+
                     // Total Versements Card
                     Card(
                         modifier = Modifier.weight(1f),
@@ -319,14 +334,14 @@ fun Dialog_Period_Credits(
                         }
                     }
                 }
-                
+
                 // Balance Card
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (filteredBalance >= 0) 
+                        containerColor = if (filteredBalance >= 0)
                             MaterialTheme.colorScheme.secondaryContainer
                         else MaterialTheme.colorScheme.errorContainer
                     )
@@ -341,16 +356,16 @@ fun Dialog_Period_Credits(
                             text = "Balance: ${String.format("%.2f", filteredBalance)} DA",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (filteredBalance >= 0) 
+                            color = if (filteredBalance >= 0)
                                 MaterialTheme.colorScheme.secondary
                             else MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Content
                 when {
                     isLoading -> {
@@ -367,7 +382,7 @@ fun Dialog_Period_Credits(
                             }
                         }
                     }
-                    
+
                     errorMessage != null -> {
                         Box(
                             modifier = Modifier
@@ -395,7 +410,7 @@ fun Dialog_Period_Credits(
                             }
                         }
                     }
-                    
+
                     filteredTransactions.isEmpty() && filteredVersements.isEmpty() -> {
                         Box(
                             modifier = Modifier
@@ -427,7 +442,7 @@ fun Dialog_Period_Credits(
                             }
                         }
                     }
-                    
+
                     else -> {
                         // Transactions List
                         LazyColumn(
@@ -436,7 +451,7 @@ fun Dialog_Period_Credits(
                         ) {
                             // Combine and sort all items by timestamp (most recent first)
                             val allItems = (filteredTransactions.map { "credit" to it } +
-                                          filteredVersements.map { "versement" to it })
+                                    filteredVersements.map { "versement" to it })
                                 .sortedByDescending {
                                     when (it.first) {
                                         "credit" -> (it.second as TransactionItem).timestamp
@@ -449,7 +464,7 @@ fun Dialog_Period_Credits(
                                     "credit" -> {
                                         val transactionItem = item as TransactionItem
                                         val grossist = grossistMap[transactionItem.parent_GrossistKeyID]
-                                        
+
                                         PeriodTransactionCard(
                                             transaction = transactionItem,
                                             grossist = grossist,
@@ -464,7 +479,7 @@ fun Dialog_Period_Credits(
                                     "versement" -> {
                                         val versementItem = item as VersementItem
                                         val grossist = grossistMap[versementItem.parent_GrossistKeyID]
-                                        
+
                                         PeriodVersementCard(
                                             versement = versementItem,
                                             grossist = grossist
@@ -475,7 +490,7 @@ fun Dialog_Period_Credits(
                         }
                     }
                 }
-                
+
                 // Footer
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -497,6 +512,42 @@ private fun PeriodTransactionCard(
     grossist: M15Grossist?,
     onUpdateItem: (TransactionItem) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+    var showImageDialog by remember { mutableStateOf(false) }
+    var showImageDropdown by remember { mutableStateOf(false) }
+    var selectedImagePath by remember { mutableStateOf<String?>(null) }
+    var isDownloadingImage by remember { mutableStateOf(false) }
+
+    // Get all available image paths
+    val availableImages = remember(transaction) {
+        listOfNotNull(
+            transaction.receiptImagePath,
+            transaction.receiptImage2Path,
+            transaction.receiptImage3Path,
+            transaction.receiptImage4Path
+        ).filter { File(it).exists() }
+    }
+
+    LaunchedEffect(transaction.receiptImagePath, transaction.receiptImage2Path, transaction.receiptImage3Path, transaction.receiptImage4Path, transaction.firebaseStoragePath) {
+        checkAndDownloadAllImages(
+            item = transaction,
+            onImagesReady = { /* handled in availableImages computation */ },
+            onDownloadStart = { isDownloadingImage = true },
+            onDownloadEnd = { isDownloadingImage = false }
+        )
+    }
+
+    // Dialog pour afficher l'image
+    if (showImageDialog && selectedImagePath != null) {
+        ImageViewDialog(
+            imagePath = selectedImagePath!!,
+            onDismiss = {
+                showImageDialog = false
+                selectedImagePath = null
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -529,7 +580,7 @@ private fun PeriodTransactionCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
             }
-            
+
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "+${String.format("%.2f", transaction.credit)} DA",
@@ -537,23 +588,115 @@ private fun PeriodTransactionCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                
-                // Show image indicator if receipt image exists
-                if (transaction.receiptImagePath != null || transaction.firebaseStoragePath != null) {
+
+                // Show download indicator
+                if (isDownloadingImage) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Receipt,
-                            contentDescription = "Photo du reçu",
+                        CircularProgressIndicator(
                             modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.secondary
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
-                            text = "Photo",
+                            text = "Téléchargement...",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+                // Show clickable image indicator if receipt images exist
+                else if (availableImages.isNotEmpty()) {
+                    Box {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(3.dp),
+                            modifier = Modifier.clickable {
+                                if (availableImages.size == 1) {
+                                    selectedImagePath = availableImages.first()
+                                    showImageDialog = true
+                                } else {
+                                    showImageDropdown = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Receipt,
+                                contentDescription = "Photo du reçu",
+                                modifier = Modifier.size(12.dp),
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                            Text(
+                                text = if (availableImages.size > 1) "Photos (${availableImages.size})" else "Photo",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            if (availableImages.size > 1) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Plus d'images",
+                                    modifier = Modifier.size(10.dp),
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+
+                        DropdownMenu(
+                            expanded = showImageDropdown,
+                            onDismissRequest = { showImageDropdown = false }
+                        ) {
+                            availableImages.forEachIndexed { index, imagePath ->
+                                DropdownMenuItem(
+                                    text = { Text("Image ${index + 1}") },
+                                    onClick = {
+                                        selectedImagePath = imagePath
+                                        showImageDialog = true
+                                        showImageDropdown = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Default.Image,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                // Show download button if image is only in Firebase
+                else if (transaction.firebaseStoragePath != null && !isDownloadingImage) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(3.dp),
+                        modifier = Modifier.clickable {
+                            scope.launch {
+                                checkAndDownloadImage(
+                                    item = transaction,
+                                    onImageReady = { imagePath ->
+                                        if (imagePath != null) {
+                                            // Image downloaded successfully
+                                        }
+                                    },
+                                    onDownloadStart = { isDownloadingImage = true },
+                                    onDownloadEnd = { isDownloadingImage = false }
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.CloudDownload,
+                            contentDescription = "Télécharger photo",
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Télécharger",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -599,7 +742,7 @@ private fun PeriodVersementCard(
                     color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
                 )
             }
-            
+
             Text(
                 text = "-${String.format("%.2f", versement.versement)} DA",
                 style = MaterialTheme.typography.bodyLarge,
@@ -610,8 +753,8 @@ private fun PeriodVersementCard(
     }
 }
 
-// Data class for VersementItem (if not already defined)
-private data class VersementItem(
+// Data class for VersementItem
+data class VersementItem(
     val id: String = "",
     val parent_GrossistKeyID: String = "",
     val versement: Double = 0.0,
@@ -619,110 +762,3 @@ private data class VersementItem(
     val time: String = "",
     val timestamp: Long = System.currentTimeMillis()
 )
-
-// Function to load transactions for a specific period
-private fun loadPeriodTransactions(
-    periodStartTimestamp: Long,
-    periodEndTimestamp: Long,
-    ventPeriodKeyID: String,
-    repositorysMainGetter: RepositorysMainGetter,
-    onTransactionsLoaded: (List<TransactionItem>, List<VersementItem>) -> Unit,
-    onError: (String) -> Unit
-) {
-    val transactions = mutableListOf<TransactionItem>()
-    val versements = mutableListOf<VersementItem>()
-    var loadedCount = 0
-    val totalToLoad = 2
-
-    fun checkComplete() {
-        loadedCount++
-        if (loadedCount == totalToLoad) {
-            onTransactionsLoaded(transactions, versements)
-        }
-    }
-
-    // Load TransactionItems within the period timestamp range
-    val transactionListener = object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            transactions.clear()
-            for (child in snapshot.children) {
-                try {
-                    val transaction = child.getValue(TransactionItem::class.java)
-                    transaction?.let {
-                        // Filter by timestamp and active grossists
-                        if (it.timestamp >= periodStartTimestamp && 
-                            it.timestamp < periodEndTimestamp &&
-                            isGrossistActiveInPeriod(it.parent_GrossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
-                            transactions.add(it)
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Handle parsing error silently
-                }
-            }
-            checkComplete()
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            onError("Erreur lors du chargement des transactions: ${error.message}")
-            checkComplete()
-        }
-    }
-
-    TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
-
-    // Load VersementItems within the period timestamp range
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val versementRef = TransactionItem.ref.parent?.child("VersementItem")
-            val versementListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    versements.clear()
-                    for (child in snapshot.children) {
-                        try {
-                            val versement = child.child("versement").getValue(Double::class.java)
-                            val grossistKeyID = child.child("parent_GrossistKeyID").getValue(String::class.java)
-                            val timestamp = child.child("timestamp").getValue(Long::class.java) ?: 0L
-                            val date = child.child("date").getValue(String::class.java) ?: ""
-                            val time = child.child("time").getValue(String::class.java) ?: ""
-                            val id = child.child("id").getValue(String::class.java) ?: ""
-
-                            if (versement != null && grossistKeyID != null) {
-                                // Filter by timestamp and active grossists
-                                if (timestamp >= periodStartTimestamp && 
-                                    timestamp < periodEndTimestamp &&
-                                    isGrossistActiveInPeriod(grossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
-                                    versements.add(
-                                        VersementItem(
-                                            id = id,
-                                            parent_GrossistKeyID = grossistKeyID,
-                                            versement = versement,
-                                            date = date,
-                                            time = time,
-                                            timestamp = timestamp
-                                        )
-                                    )
-                                }
-                            }
-                        } catch (e: Exception) {
-                            // Handle parsing error silently
-                        }
-                    }
-                    checkComplete()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    onError("Erreur lors du chargement des versements: ${error.message}")
-                    checkComplete()
-                }
-            }
-
-            versementRef?.addListenerForSingleValueEvent(versementListener)
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                onError("Erreur lors de l'accès aux versements: ${e.message}")
-                checkComplete()
-            }
-        }
-    }
-}
