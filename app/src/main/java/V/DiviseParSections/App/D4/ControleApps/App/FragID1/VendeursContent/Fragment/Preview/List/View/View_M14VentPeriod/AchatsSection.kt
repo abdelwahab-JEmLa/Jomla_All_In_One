@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,8 +32,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@SuppressLint("DefaultLocale")
 @Composable
- fun AchatsSection(
+fun AchatsSection(
     relative_M14VentPeriode: M14VentPeriode,
     editingField: String?,
     editingValue: String,
@@ -42,13 +44,13 @@ import androidx.compose.ui.unit.sp
     onStartEditing: (String, Double) -> Unit,
     onEditingValueChange: (String) -> Unit,
     onSaveEditedValue: () -> Unit,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
+    onCalculatedAchatClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Manual Achats Card
         ElevatedCard(
             modifier = Modifier.weight(2f),
             colors = CardDefaults.elevatedCardColors(
@@ -70,7 +72,6 @@ import androidx.compose.ui.unit.sp
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Credit Achats
                     Column(modifier = Modifier.weight(1f)) {
                         if (editingField == "credit_achats") {
                             OutlinedTextField(
@@ -183,9 +184,10 @@ import androidx.compose.ui.unit.sp
             }
         }
 
-        // Calculated Achats Card
         ElevatedCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .clickable { onCalculatedAchatClick() },
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
             )
@@ -202,7 +204,7 @@ import androidx.compose.ui.unit.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Achats De period Vent ",
+                    text = "Achats De period Vent",
                     fontSize = 12.sp,
                     style = MaterialTheme.typography.labelMedium
                 )
@@ -226,3 +228,4 @@ import androidx.compose.ui.unit.sp
         }
     }
 }
+

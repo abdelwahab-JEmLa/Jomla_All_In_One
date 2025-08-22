@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A
 
 // Add these imports to CreditCard.kt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -190,11 +190,10 @@ fun CreditCard(
     val storageRef = Firebase.storage.reference.child("Images Receipts").child("bons_achat")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BonsAchat"
 
-    // Check for image availability on launch
-    LaunchedEffect(item.receiptImagePath, item.firebaseStoragePath) {
-        checkAndDownloadImage(
+    LaunchedEffect(item.receiptImagePath, item.receiptImage2Path, item.receiptImage3Path, item.receiptImage4Path, item.firebaseStoragePath) {
+        checkAndDownloadAllImages(
             item = item,
-            onImageReady = { /* handled in availableImages */ },
+            onImagesReady = { /* handled in availableImages computation */ },
             onDownloadStart = { isDownloadingImage = true },
             onDownloadEnd = { isDownloadingImage = false }
         )
@@ -498,7 +497,77 @@ fun CreditCard(
         }
     }
 }
+// FIX 1: Enhanced image download function in CreditCard.kt
+// Replace the existing checkAndDownloadImage function with this enhanced version
 
+private suspend fun checkAndDownloadAllImages(
+    item: TransactionItem,
+    onImagesReady: (List<String>) -> Unit,
+    onDownloadStart: () -> Unit,
+    onDownloadEnd: () -> Unit
+) {
+    val imagePaths = listOfNotNull(
+        item.receiptImagePath,
+        item.receiptImage2Path,
+        item.receiptImage3Path,
+        item.receiptImage4Path
+    )
+
+    if (imagePaths.isEmpty()) {
+        onImagesReady(emptyList())
+        return
+    }
+
+    val availableImages = mutableListOf<String>()
+    var downloadStarted = false
+
+    // Check each image path
+    for (imagePath in imagePaths) {
+        val localFile = File(imagePath)
+
+        if (localFile.exists()) {
+            availableImages.add(imagePath)
+        } else {
+            // Try to download from Firebase if path exists
+            val firebasePath = when (imagePath) {
+                item.receiptImagePath -> item.firebaseStoragePath
+                else -> null // For additional images, you might need separate Firebase paths
+            }
+
+            if (firebasePath != null) {
+                if (!downloadStarted) {
+                    onDownloadStart()
+                    downloadStarted = true
+                }
+
+                val success = withContext(Dispatchers.IO) {
+                    try {
+                        val storageRef = Firebase.storage.reference.child(firebasePath)
+
+                        // Create parent directories if they don't exist
+                        localFile.parentFile?.mkdirs()
+
+                        // Download the file
+                        storageRef.getFile(localFile).await()
+                        true
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+
+                if (success) {
+                    availableImages.add(imagePath)
+                }
+            }
+        }
+    }
+
+    if (downloadStarted) {
+        onDownloadEnd()
+    }
+
+    onImagesReady(availableImages)
+}
 @Composable
 private fun ImageViewDialog(
     aCentralFacade: ACentralFacade = koinInject(),

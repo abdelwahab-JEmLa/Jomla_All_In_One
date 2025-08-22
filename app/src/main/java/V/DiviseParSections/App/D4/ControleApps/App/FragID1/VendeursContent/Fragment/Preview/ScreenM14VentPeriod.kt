@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview
 
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod.Dialog_Period_Credits
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.ViewList_M14VentPeriod
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client.Dialog_Filter_Client
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -38,6 +39,9 @@ fun ScreenM14VentPeriod(
     relative_M9AppCompt: Z_AppCompt? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
 ) {
+    // State for dialog and selected period
+    var showPeriodCreditsDialog by remember { mutableStateOf(false) }
+    var selectedPeriodForCredits by remember { mutableStateOf<M14VentPeriode?>(null) }
 
     var active_M14VentPeriode_AuFilterAchats by remember {
         mutableStateOf(
@@ -45,7 +49,7 @@ fun ScreenM14VentPeriod(
         )
     }
 
-    val sortedList_M14VentPeriode = list_M14VentPeriode.sortedByDescending {
+    val sortedList_M14VentPeriod = list_M14VentPeriode.sortedByDescending {
         it.keyID
     }
 
@@ -65,18 +69,21 @@ fun ScreenM14VentPeriod(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = "Count: ${sortedList_M14VentPeriode.size}",
+                        text = "Count: ${sortedList_M14VentPeriod.size}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
                     ViewList_M14VentPeriod(
                         viewModel,
-                        list_M14VentPeriode = sortedList_M14VentPeriode,
+                        list_M14VentPeriode = sortedList_M14VentPeriod,
                         relative_M9AppCompt = relative_M9AppCompt
-                    )
+                    ) {
+                        showPeriodCreditsDialog = true
+                    }
                 }
             }
         }
+
         val active_Central_Values = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
         if (focusedValuesGetter.active_Central_Values.vent_Au_Dialog_filter_AChats_Par_Client_Acheteur != null) {
@@ -91,6 +98,18 @@ fun ScreenM14VentPeriod(
                 },
                 activePeriod = active_Central_Values,
                 active_M14VentPeriode_AuFilterAchats = active_M14VentPeriode_AuFilterAchats
+            )
+        }
+
+        // Fixed Dialog_Period_Credits with proper parameters
+        if (showPeriodCreditsDialog && selectedPeriodForCredits != null) {
+            Dialog_Period_Credits(
+                ventPeriod = selectedPeriodForCredits!!,
+                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
+                onDismiss = {
+                    showPeriodCreditsDialog = false
+                    selectedPeriodForCredits = null
+                }
             )
         }
     }

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.W_AchatProduitOperation.View.updated_Achats
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -188,7 +188,7 @@ fun GrossistItem(
                     Icons.Default.Receipt,
                     contentDescription = "Voir les transactions",
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp) // Smaller icon
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }

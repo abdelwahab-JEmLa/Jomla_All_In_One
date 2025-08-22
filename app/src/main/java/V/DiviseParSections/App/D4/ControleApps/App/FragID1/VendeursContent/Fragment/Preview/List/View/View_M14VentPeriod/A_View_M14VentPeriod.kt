@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.TransactionItem
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.TransactionItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -55,6 +55,7 @@ fun View_M14VentPeriod(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     relative_M14VentPeriode: M14VentPeriode,
     relative_M9AppCompt: Z_AppCompt?,
+    onCalculatedAchatClick: () -> Unit = {}
 ) {
     // State for showing delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -266,7 +267,10 @@ fun View_M14VentPeriod(
                 onStartEditing = ::startEditing,
                 onEditingValueChange = { editingValue = it },
                 onSaveEditedValue = ::saveEditedValue,
-                focusRequester = focusRequester
+                focusRequester = focusRequester,
+                onCalculatedAchatClick = {
+                    onCalculatedAchatClick()
+                }
             )
 
             // Produits au Dépôt Section
@@ -293,6 +297,7 @@ fun View_M14VentPeriod(
             )
         }
     }
+
 }
 
 // Helper function to check if a grossist has operations in a specific period

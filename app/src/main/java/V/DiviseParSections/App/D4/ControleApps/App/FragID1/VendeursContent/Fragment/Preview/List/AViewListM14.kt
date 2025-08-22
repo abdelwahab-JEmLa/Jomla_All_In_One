@@ -39,6 +39,7 @@ fun ViewList_M14VentPeriod(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     relative_M9AppCompt: Z_AppCompt?,
     list_M14VentPeriode: List<M14VentPeriode>,
+    onCalculatedAchatClick: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -72,7 +73,8 @@ fun ViewList_M14VentPeriod(
                         View_M14VentPeriod(
                             viewModel = viewModel,
                             relative_M14VentPeriode = periode,
-                            relative_M9AppCompt = relative_M9AppCompt
+                            relative_M9AppCompt = relative_M9AppCompt,
+
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

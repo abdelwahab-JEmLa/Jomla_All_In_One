@@ -1,0 +1,728 @@
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
+
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.TransactionItem
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.saveTransactionToFirebase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+@Composable
+fun Dialog_Period_Credits(
+    ventPeriod: M14VentPeriode,
+    repositorysMainGetter: RepositorysMainGetter,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // State variables
+    var transactionItems by remember { mutableStateOf<List<TransactionItem>>(emptyList()) }
+    var versementItems by remember { mutableStateOf<List<VersementItem>>(emptyList()) }
+    var grossistMap by remember { mutableStateOf<Map<String, M15Grossist>>(emptyMap()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var totalCredit by remember { mutableStateOf(0.0) }
+    var totalVersement by remember { mutableStateOf(0.0) }
+    var showFilterOptions by remember { mutableStateOf(false) }
+    var selectedGrossistFilter by remember { mutableStateOf<String?>(null) }
+    
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    
+    // Get period timestamp range
+    val periodRange = remember(ventPeriod.keyID) {
+        getPeriodTimestampRange(ventPeriod.keyID, repositorysMainGetter)
+    }
+    
+    // Load grossists map
+    LaunchedEffect(Unit) {
+        grossistMap = repositorysMainGetter.repo15Grossist.datasValue
+            .associateBy { it.keyID }
+    }
+    
+    // Load transactions and versements for this period
+    LaunchedEffect(ventPeriod.keyID, periodRange) {
+        if (periodRange != null) {
+            loadPeriodTransactions(
+                periodStartTimestamp = periodRange.first,
+                periodEndTimestamp = periodRange.second,
+                ventPeriodKeyID = ventPeriod.keyID,
+                repositorysMainGetter = repositorysMainGetter,
+                onTransactionsLoaded = { transactions, versements ->
+                    transactionItems = transactions
+                    versementItems = versements
+                    totalCredit = transactions.sumOf { it.credit }
+                    totalVersement = versements.sumOf { it.versement }
+                    isLoading = false
+                },
+                onError = { error ->
+                    errorMessage = error
+                    isLoading = false
+                }
+            )
+        } else {
+            errorMessage = "Impossible de déterminer la période"
+            isLoading = false
+        }
+    }
+    
+    // Filter transactions and versements based on selected grossist
+    val filteredTransactions = remember(transactionItems, selectedGrossistFilter) {
+        if (selectedGrossistFilter != null) {
+            transactionItems.filter { it.parent_GrossistKeyID == selectedGrossistFilter }
+        } else {
+            transactionItems
+        }
+    }
+    
+    val filteredVersements = remember(versementItems, selectedGrossistFilter) {
+        if (selectedGrossistFilter != null) {
+            versementItems.filter { it.parent_GrossistKeyID == selectedGrossistFilter }
+        } else {
+            versementItems
+        }
+    }
+    
+    // Calculate filtered totals
+    val filteredTotalCredit = filteredTransactions.sumOf { it.credit }
+    val filteredTotalVersement = filteredVersements.sumOf { it.versement }
+    val filteredBalance = filteredTotalCredit - filteredTotalVersement
+    
+    // Get unique grossists from transactions
+    val availableGrossists = remember(transactionItems, versementItems, grossistMap) {
+        val grossistIds = (transactionItems.map { it.parent_GrossistKeyID } + 
+                         versementItems.map { it.parent_GrossistKeyID }).distinct()
+        grossistIds.mapNotNull { grossistMap[it] }.sortedBy { it.nom }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Card(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Crédits de la Période",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = ventPeriod.get_DebugInfos(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Row {
+                        IconButton(onClick = { showFilterOptions = !showFilterOptions }) {
+                            Icon(
+                                Icons.Default.FilterList, 
+                                contentDescription = "Filtres",
+                                tint = if (selectedGrossistFilter != null) 
+                                    MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.Default.Clear, contentDescription = "Fermer")
+                        }
+                    }
+                }
+                
+                // Filter dropdown
+                if (showFilterOptions) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "Filtrer par grossiste:",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // All grossists option
+                            FilterChip(
+                                selected = selectedGrossistFilter == null,
+                                onClick = { selectedGrossistFilter = null },
+                                label = { Text("Tous les grossistes") },
+                                modifier = Modifier.padding(end = 8.dp, bottom = 4.dp)
+                            )
+                            
+                            // Individual grossists
+                            availableGrossists.chunked(2).forEach { rowGrossists ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                ) {
+                                    rowGrossists.forEach { grossist ->
+                                        FilterChip(
+                                            selected = selectedGrossistFilter == grossist.keyID,
+                                            onClick = { 
+                                                selectedGrossistFilter = if (selectedGrossistFilter == grossist.keyID) {
+                                                    null
+                                                } else {
+                                                    grossist.keyID
+                                                }
+                                            },
+                                            label = { Text(grossist.nom) },
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        )
+                                    }
+                                    // Fill remaining space if odd number
+                                    if (rowGrossists.size == 1) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Summary Cards
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Total Credits Card
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.AccountBalance,
+                                contentDescription = "Crédits",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "Crédits",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "${String.format("%.2f", filteredTotalCredit)} DA",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    // Total Versements Card
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.Receipt,
+                                contentDescription = "Versements",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Text(
+                                text = "Versements",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = "${String.format("%.2f", filteredTotalVersement)} DA",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+                
+                // Balance Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (filteredBalance >= 0) 
+                            MaterialTheme.colorScheme.secondaryContainer
+                        else MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Balance: ${String.format("%.2f", filteredBalance)} DA",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (filteredBalance >= 0) 
+                                MaterialTheme.colorScheme.secondary
+                            else MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Content
+                when {
+                    isLoading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                CircularProgressIndicator()
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Chargement des transactions...")
+                            }
+                        }
+                    }
+                    
+                    errorMessage != null -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Receipt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Erreur: $errorMessage",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    
+                    filteredTransactions.isEmpty() && filteredVersements.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Receipt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = if (selectedGrossistFilter != null) {
+                                        "Aucune transaction pour le grossiste sélectionné"
+                                    } else {
+                                        "Aucune transaction pour cette période"
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    
+                    else -> {
+                        // Transactions List
+                        LazyColumn(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Combine and sort all items by timestamp (most recent first)
+                            val allItems = (filteredTransactions.map { "credit" to it } +
+                                          filteredVersements.map { "versement" to it })
+                                .sortedByDescending {
+                                    when (it.first) {
+                                        "credit" -> (it.second as TransactionItem).timestamp
+                                        else -> (it.second as VersementItem).timestamp
+                                    }
+                                }
+
+                            items(allItems) { (type, item) ->
+                                when (type) {
+                                    "credit" -> {
+                                        val transactionItem = item as TransactionItem
+                                        val grossist = grossistMap[transactionItem.parent_GrossistKeyID]
+                                        
+                                        PeriodTransactionCard(
+                                            transaction = transactionItem,
+                                            grossist = grossist,
+                                            onUpdateItem = { updatedItem ->
+                                                transactionItems = transactionItems.map {
+                                                    if (it.id == updatedItem.id) updatedItem else it
+                                                }
+                                                saveTransactionToFirebase(updatedItem)
+                                            }
+                                        )
+                                    }
+                                    "versement" -> {
+                                        val versementItem = item as VersementItem
+                                        val grossist = grossistMap[versementItem.parent_GrossistKeyID]
+                                        
+                                        PeriodVersementCard(
+                                            versement = versementItem,
+                                            grossist = grossist
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Footer
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Fermer")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PeriodTransactionCard(
+    transaction: TransactionItem,
+    grossist: M15Grossist?,
+    onUpdateItem: (TransactionItem) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = grossist?.nom ?: "Grossiste inconnu",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "Crédit ajouté",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = "${transaction.date} à ${transaction.time}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+            }
+            
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "+${String.format("%.2f", transaction.credit)} DA",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                
+                // Show image indicator if receipt image exists
+                if (transaction.receiptImagePath != null || transaction.firebaseStoragePath != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Receipt,
+                            contentDescription = "Photo du reçu",
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "Photo",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PeriodVersementCard(
+    versement: VersementItem,
+    grossist: M15Grossist?
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = grossist?.nom ?: "Grossiste inconnu",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+                Text(
+                    text = "Versement effectué",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = "${versement.date} à ${versement.time}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                )
+            }
+            
+            Text(
+                text = "-${String.format("%.2f", versement.versement)} DA",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
+
+// Data class for VersementItem (if not already defined)
+private data class VersementItem(
+    val id: String = "",
+    val parent_GrossistKeyID: String = "",
+    val versement: Double = 0.0,
+    val date: String = "",
+    val time: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+// Function to load transactions for a specific period
+private fun loadPeriodTransactions(
+    periodStartTimestamp: Long,
+    periodEndTimestamp: Long,
+    ventPeriodKeyID: String,
+    repositorysMainGetter: RepositorysMainGetter,
+    onTransactionsLoaded: (List<TransactionItem>, List<VersementItem>) -> Unit,
+    onError: (String) -> Unit
+) {
+    val transactions = mutableListOf<TransactionItem>()
+    val versements = mutableListOf<VersementItem>()
+    var loadedCount = 0
+    val totalToLoad = 2
+
+    fun checkComplete() {
+        loadedCount++
+        if (loadedCount == totalToLoad) {
+            onTransactionsLoaded(transactions, versements)
+        }
+    }
+
+    // Load TransactionItems within the period timestamp range
+    val transactionListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            transactions.clear()
+            for (child in snapshot.children) {
+                try {
+                    val transaction = child.getValue(TransactionItem::class.java)
+                    transaction?.let {
+                        // Filter by timestamp and active grossists
+                        if (it.timestamp >= periodStartTimestamp && 
+                            it.timestamp < periodEndTimestamp &&
+                            isGrossistActiveInPeriod(it.parent_GrossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                            transactions.add(it)
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Handle parsing error silently
+                }
+            }
+            checkComplete()
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            onError("Erreur lors du chargement des transactions: ${error.message}")
+            checkComplete()
+        }
+    }
+
+    TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
+
+    // Load VersementItems within the period timestamp range
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val versementRef = TransactionItem.ref.parent?.child("VersementItem")
+            val versementListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    versements.clear()
+                    for (child in snapshot.children) {
+                        try {
+                            val versement = child.child("versement").getValue(Double::class.java)
+                            val grossistKeyID = child.child("parent_GrossistKeyID").getValue(String::class.java)
+                            val timestamp = child.child("timestamp").getValue(Long::class.java) ?: 0L
+                            val date = child.child("date").getValue(String::class.java) ?: ""
+                            val time = child.child("time").getValue(String::class.java) ?: ""
+                            val id = child.child("id").getValue(String::class.java) ?: ""
+
+                            if (versement != null && grossistKeyID != null) {
+                                // Filter by timestamp and active grossists
+                                if (timestamp >= periodStartTimestamp && 
+                                    timestamp < periodEndTimestamp &&
+                                    isGrossistActiveInPeriod(grossistKeyID, ventPeriodKeyID, repositorysMainGetter)) {
+                                    versements.add(
+                                        VersementItem(
+                                            id = id,
+                                            parent_GrossistKeyID = grossistKeyID,
+                                            versement = versement,
+                                            date = date,
+                                            time = time,
+                                            timestamp = timestamp
+                                        )
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Handle parsing error silently
+                        }
+                    }
+                    checkComplete()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    onError("Erreur lors du chargement des versements: ${error.message}")
+                    checkComplete()
+                }
+            }
+
+            versementRef?.addListenerForSingleValueEvent(versementListener)
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onError("Erreur lors de l'accès aux versements: ${e.message}")
+                checkComplete()
+            }
+        }
+    }
+}
