@@ -103,7 +103,6 @@ fun Dialog_Filter_Client(
                             fontWeight = FontWeight.Bold
                         )
 
-                        // Show active filters for context
                         if (active_M14VentPeriode_AuFilterAchats != null || activeGrossist != null) {
                             val filterTexts = mutableListOf<String>()
                             active_M14VentPeriode_AuFilterAchats?.let { filterTexts.add("Période: ${it.get_DebugInfos()}") }
@@ -239,7 +238,6 @@ fun Dialog_Filter_Client(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Client List
                 LazyColumn_Client(
                     modifier = Modifier.weight(1f),
                     viewModel = viewModel,

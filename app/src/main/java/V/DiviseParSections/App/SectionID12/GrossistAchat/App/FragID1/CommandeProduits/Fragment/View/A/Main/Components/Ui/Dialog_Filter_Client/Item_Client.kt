@@ -71,14 +71,15 @@ fun Item_Client(
         var clientBonVents =
             allBonVents.filter { it.parent_M2Client_KeyID == relative_client.keyID }
 
-        val periodToFilter = focusedValuesGetter.active_Central_Values.active_M14VentPeriode_AuFilterAchats ?: activePeriod
-        periodToFilter?.let { period ->
+        activePeriod?.let { period ->
             clientBonVents = clientBonVents.filter {
                 it.parent_M14VentPeriod_KeyId == period.keyID
             }
         }
 
-        val grossistToFilter = focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats ?: activeGrossist
+        val grossistToFilter =
+            focusedValuesGetter.active_Central_Values.active_M15Grossist_AuFilterAchats
+                ?: activeGrossist
         grossistToFilter?.let { grossist ->
             clientBonVents = clientBonVents.filter {
                 it.parent_M9AppCompt_KeyID == grossist.keyID
