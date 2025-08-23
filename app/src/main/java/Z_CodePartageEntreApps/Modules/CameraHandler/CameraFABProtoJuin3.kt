@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -44,7 +43,6 @@ fun CameraFABProtoJuin3(
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     webPQuality: Int = 85,
-    activeCatalogue: CataloguesCaegorie,
 ) {
     val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -82,7 +80,7 @@ fun CameraFABProtoJuin3(
 
                         withContext(Dispatchers.Main) {
                             val idParentCategorie =
-                                focusedValuesGetter.active_Central_Values.active_Categorie_Pour_NewAddedProduit?.id
+                                focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
                                     ?: 0
 
                             val keyID =

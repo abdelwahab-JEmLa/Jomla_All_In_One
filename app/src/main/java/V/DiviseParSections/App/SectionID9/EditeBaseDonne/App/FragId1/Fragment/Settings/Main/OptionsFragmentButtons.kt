@@ -397,7 +397,7 @@ fun OptionsFragmentButtons(
                         }
 
                         item {
-                            CameraFABProtoJuin3(activeCatalogue = uiState.activeCatalogue)
+                            CameraFABProtoJuin3()
                         }
 
                         item {

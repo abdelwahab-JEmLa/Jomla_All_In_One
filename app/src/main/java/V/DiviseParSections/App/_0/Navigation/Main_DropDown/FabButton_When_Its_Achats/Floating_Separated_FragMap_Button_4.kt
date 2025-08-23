@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ViewList
@@ -25,7 +25,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -86,10 +85,9 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
     var showDropdown by remember { mutableStateOf(false) }
 
     val catalogues = B4CatalogueCategoriesRepository()
-    val activeCategorie = currentValues.active_Categorie_Pour_NewAddedProduit
 
     val activeCatalogue = catalogues.find {
-        it.premierCategorieId == (activeCategorie?.catalogueParentId ?: 0)
+        it.keyID == (currentValues.active_Catalogue_Pour_NewAddedProduit?.keyID ?: 0)
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -128,7 +126,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
                             set(
-                                value = activeCategorie,
+                                value = activeCatalogue,
                                 key = SemanticsPropertyKey("activeCategorie")
                             )
                         }
@@ -150,18 +148,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     )
                 }
 
-                FloatingActionButton(
-                    modifier = Modifier.size(48.dp),
-                    onClick = { },
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "Open Camera",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                CameraFABProtoJuin3()
 
                 DropdownMenu(
                     expanded = showDropdown,
@@ -169,11 +156,8 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
                     catalogues.forEach { catalogue ->
-                        val newActiveCategory =
-                            repositorysMainGetter.find_M16CategorieProduit_By_OldID(catalogue.premierCategorieId)
-
                         val newValues =
-                            currentValues.copy(active_Categorie_Pour_NewAddedProduit = newActiveCategory)
+                            currentValues.copy(active_Catalogue_Pour_NewAddedProduit = catalogue)
 
                         DropdownMenuItem(
                             modifier = Modifier.semantics(mergeDescendants = true) {
@@ -187,7 +171,6 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                                 )
                             },
                             onClick = {
-
                                 focusedValuesGetter.update_activeCentralValues(newValues)
                                 showDropdown = false
                             }

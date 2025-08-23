@@ -178,7 +178,7 @@ class RepositorysMainGetter(
         val catalogueFilterId =
             repo9AppCompt.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.keyID }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
         val categoriesInCatalogue =

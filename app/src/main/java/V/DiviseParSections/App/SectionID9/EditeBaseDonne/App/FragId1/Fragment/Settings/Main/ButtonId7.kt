@@ -58,11 +58,10 @@ fun ButtonId7(
         FloatingActionButton(
             onClick = {
                 viewModel.toggleToCatalogue(nextCatalogue.id)
-                val cataloge = nextCatalogue.premierCategorieId
-                 val categorie = repositorysMainGetter.find_M16CategorieProduit_By_OldID(cataloge)
+                val cataloge = nextCatalogue
                 focusedValuesGetter.update_activeCentralValues(
                     focusedValuesGetter.active_Central_Values.copy(
-                        active_Categorie_Pour_NewAddedProduit = categorie
+                        active_Catalogue_Pour_NewAddedProduit = cataloge
                     )
                 )
             },
