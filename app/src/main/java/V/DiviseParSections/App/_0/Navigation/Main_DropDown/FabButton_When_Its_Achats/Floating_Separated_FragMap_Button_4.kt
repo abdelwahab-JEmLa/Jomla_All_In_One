@@ -2,11 +2,9 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_A
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -74,9 +74,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val currentVisibleClientsMode = currentValues.visibleClientsNow
-
     val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
-
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
     val configuration = LocalConfiguration.current
@@ -85,31 +83,14 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 250f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
-
     var showDropdown by remember { mutableStateOf(false) }
 
-    // Get catalogues list
     val catalogues = B4CatalogueCategoriesRepository()
-
-    // Get current active category
     val activeCategorie = currentValues.active_Categorie_Pour_NewAddedProduit
 
-    // Debug: Log the current catalogueParentId to see what we're trying to match
-    if (activeCategorie != null) {
-        Log.d("FloatingButton", "Current catalogueParentId: ${activeCategorie.catalogueParentId}")
-    }
-    catalogues.forEach { catalogue ->
-        Log.d("FloatingButton", "Available catalogue: ${catalogue.nom} with premierCategorieId: ${catalogue.premierCategorieId}")
-    }
-
-    // Find the catalogue that matches the active category's catalogueParentId
     val activeCatalogue = catalogues.find {
         it.premierCategorieId == (activeCategorie?.catalogueParentId ?: 0)
     }
-        ?: catalogues.find { it.id.toLong() == (activeCategorie?.catalogueParentId ?: 0) } // Try matching by catalogue ID as Long
-        ?: catalogues.firstOrNull() // Final fallback to first catalogue
-
-    Log.d("FloatingButton", "Selected catalogue: ${activeCatalogue?.nom ?: "None found"}")
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -120,7 +101,6 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                         change.consume()
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
-
                         offsetX = offsetX.coerceIn(0f, screenWidth.value - 150f)
                         offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
                     }
@@ -133,8 +113,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = activeCatalogue?.nom ?: "No Catalogue",    //<--
-                        //TODO(1): pk ca rest sans
+                        text = activeCatalogue?.nom ?: "RRR",
                         color = Color.White,
                         modifier = Modifier
                             .background(
@@ -145,14 +124,16 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     )
                 }
 
-                // Button 1: Filter Button (ButtonId7)
                 FloatingActionButton(
                     modifier = Modifier
-                        .getSemanticsTag(updatedButtonState, "clientFilterButtonState")
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = activeCategorie,
+                                key = SemanticsPropertyKey("activeCategorie")
+                            )
+                        }
                         .size(48.dp),
-                    onClick = {
-                        showDropdown = true
-                    },
+                    onClick = { showDropdown = true },
                     containerColor = if (updatedButtonState.its_Active)
                         updatedButtonState.colors.second
                     else
@@ -169,13 +150,9 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     )
                 }
 
-                // Button 2: Camera Button (CameraFABProtoJuin3)
                 FloatingActionButton(
-                    modifier = Modifier
-                        .size(48.dp),
-                    onClick = {
-                        // Camera functionality - implement as needed
-                    },
+                    modifier = Modifier.size(48.dp),
+                    onClick = { },
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(
@@ -191,9 +168,17 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-
                     catalogues.forEach { catalogue ->
+                        val newActiveCategory =
+                            repositorysMainGetter.find_M16CategorieProduit_By_OldID(catalogue.premierCategorieId)
+
+                        val newValues =
+                            currentValues.copy(active_Categorie_Pour_NewAddedProduit = newActiveCategory)
+
                         DropdownMenuItem(
+                            modifier = Modifier.semantics(mergeDescendants = true) {
+                                set(value = newValues, key = SemanticsPropertyKey("newValues"))
+                            },
                             text = {
                                 Text(
                                     text = catalogue.nom,
@@ -202,14 +187,6 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                                 )
                             },
                             onClick = {
-                                // Create a new category with the selected catalogue's premierCategorieId
-                                val newActiveCategory = activeCategorie?.copy(
-                                    catalogueParentId = catalogue.premierCategorieId
-                                )
-
-                                val newValues = currentValues.copy(
-                                    active_Categorie_Pour_NewAddedProduit = newActiveCategory
-                                )
 
                                 focusedValuesGetter.update_activeCentralValues(newValues)
                                 showDropdown = false
