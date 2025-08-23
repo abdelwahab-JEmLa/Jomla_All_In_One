@@ -172,7 +172,15 @@ class RepoM16CategorieProduit(
             }
         }
     }
-
+    fun delete(data: CategoriesTabelle) {
+        repoScope.launch {
+            try {
+                _datas.value = datasValue.filter { it.keyID != data.keyID }
+                dataBaseCreationFactory.delete(data)
+            } catch (e: Exception) {
+            }
+        }
+    }
 
 }
 

@@ -35,6 +35,9 @@ data class ActiveCentralValues(
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
 
+    //-----------------Delete.Safe-------------------------------------------------------------------------------------------------------------
+    val affiche_DeleteButtons: Boolean = false,
+
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
     val active_Categorie_Pour_NewAddedProduit: CategoriesTabelle? = null,
 
