@@ -26,7 +26,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             key = "t1",
             id = 1,
             nom = "Confiserie",
-            premierCategorieId = 3,
+            premierCategorieId = 1755942577975,
             position = 2,
             couleur = Color(0xFFFF9800) // Orange for confectionery
         ),
@@ -34,7 +34,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             key = "t3",
             id = 3,
             nom = "TeBnage",
-            premierCategorieId = 92,
+            premierCategorieId = 1755942590731,
             position = 3,
             couleur = Color(0xFF4CAF50) // Green for teenage category
         ),
