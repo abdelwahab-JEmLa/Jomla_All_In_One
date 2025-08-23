@@ -150,19 +150,21 @@ fun EditeBaseDonneMainScreenIdS9(
                 filtered = filtered.filter { it.heldPrioriteDemandAuGrossist }
             }
 
-            // Apply sorting
+            // Apply sorting with proper category-based product positioning
             when {
                 filterState.enableCategoryGrouping -> {
                     when (filterState.sortOrder) {
                         SortOrder.CATEGORY_GROUPED -> {
-                            groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts.filter { product ->
-                                filtered.contains(product)
-                            }
+                            // Sort products within categories by positionDonSonCesFrereCategorieProduits
+                            applyCategoryGroupedSortingWithPosition(
+                                filtered,
+                                groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts
+                            )
                         }
-                        else -> applySortOrder(filtered, filterState.sortOrder)
+                        else -> applySortOrderWithCategoryPosition(filtered, filterState.sortOrder)
                     }
                 }
-                else -> applySortOrder(filtered, filterState.sortOrder)
+                else -> applySortOrderWithCategoryPosition(filtered, filterState.sortOrder)
             }
         }
     }
@@ -260,8 +262,8 @@ private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesSta
     return if (contains(product)) this - product else this + product
 }
 
-// FIXED: Added default parameter and proper handling
-private fun applySortOrder(
+// NEW: Enhanced sorting function that considers product position within categories
+private fun applySortOrderWithCategoryPosition(
     products: List<ArticlesBasesStatsTable>,
     sortOrder: SortOrder
 ): List<ArticlesBasesStatsTable> {
@@ -272,6 +274,46 @@ private fun applySortOrder(
         SortOrder.NAME_DESC -> products.sortedByDescending { it.nom.lowercase() }
         SortOrder.PRIX_ACHAT_TIME_DESC -> products.sortedByDescending { it.prixAchatDernierTimeTempUpdate }
         SortOrder.PRIX_ACHAT_TIME_ASC -> products.sortedBy { it.prixAchatDernierTimeTempUpdate }
-        SortOrder.CATEGORY_GROUPED -> products // Return as-is for category grouped, should be handled upstream
+        SortOrder.CATEGORY_GROUPED -> {
+            // Group by category, then sort within each category by position
+            products.groupBy { it.idParentCategorie }
+                .toSortedMap(nullsFirst())
+                .flatMap { (_, categoryProducts) ->
+                    categoryProducts.sortedWith(
+                        compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                            .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+                            .thenBy { it.id }
+                    )
+                }
+        }
     }
+}
+
+// NEW: Function to apply category grouped sorting with proper position handling
+private fun applyCategoryGroupedSortingWithPosition(
+    filteredProducts: List<ArticlesBasesStatsTable>,
+    categoryGroupedProducts: List<ArticlesBasesStatsTable>
+): List<ArticlesBasesStatsTable> {
+    // Create a map for faster lookup
+    val filteredProductsSet = filteredProducts.toSet()
+
+    // First, get products that are in the pre-sorted category grouped list and apply filtering
+    val sortedFilteredFromGrouped = categoryGroupedProducts.filter { product ->
+        filteredProductsSet.contains(product)
+    }
+
+    // Then, handle any products that might not be in the grouped list but are in filtered
+    // Sort these by category and position as well
+    val remainingProducts = filteredProducts.filterNot { product ->
+        categoryGroupedProducts.contains(product)
+    }.groupBy { it.idParentCategorie }
+        .toSortedMap(nullsFirst())
+        .flatMap { (_, categoryProducts) ->
+            categoryProducts.sortedWith(
+                compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                    .thenByDescending { it.creationTimestamp }
+            )
+        }
+
+    return sortedFilteredFromGrouped + remainingProducts
 }

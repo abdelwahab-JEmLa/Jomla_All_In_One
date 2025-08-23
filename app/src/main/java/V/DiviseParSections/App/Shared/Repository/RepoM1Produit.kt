@@ -171,6 +171,7 @@ data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
+    var creationTimestamp: Long = System.currentTimeMillis(),
 
 
     var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),

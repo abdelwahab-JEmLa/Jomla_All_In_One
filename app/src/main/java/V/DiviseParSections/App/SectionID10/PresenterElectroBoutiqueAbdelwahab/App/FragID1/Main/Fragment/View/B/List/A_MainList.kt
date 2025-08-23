@@ -56,7 +56,7 @@ fun MainList(
             compareBy<CategoriesTabelle> { category ->
                 category.positionDouble
             }.thenByDescending {
-                it.dernierTimeTampsSynchronisationAvecFireBase
+                it.creationTimestamp
             }.thenBy {
                 it.nom
             }
@@ -72,7 +72,13 @@ fun MainList(
                     }
             }
 
-            articlesForCategory
+            articlesForCategory.sortedWith(
+                compareBy<ArticlesBasesStatsTable> { article ->
+                    article.positionDonSonCesFrereCategorieProduits
+                }.thenByDescending { article ->
+                    article.creationTimestamp
+                }
+            )
         }.filterValues { it.isNotEmpty() }
     }
 

@@ -35,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -82,14 +81,11 @@ fun OptionsFragmentButtons(
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
 
     var mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed by remember { mutableStateOf(false) }
     var button9AlwaysVisible by remember { mutableStateOf(false) }
-    var button8AlwaysVisible by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
