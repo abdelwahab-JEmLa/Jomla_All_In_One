@@ -1,8 +1,10 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -36,6 +38,8 @@ import java.io.FileOutputStream
 
 @Composable
 fun CameraFABProtoJuin3(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter = koinInject(),
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
@@ -72,27 +76,38 @@ fun CameraFABProtoJuin3(
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 storageRef.child(fileName).putBytes(bytes).await()
-                            } catch (e: Exception) {}
+                            } catch (e: Exception) {
+                            }
                         }
 
                         withContext(Dispatchers.Main) {
-                            val bsonObjectId = pendingProduct!!.bsonObjectId.takeLast(4).uppercase()
-                            val catalogue = activeCatalogue.nom.takeLast(3)
+                            val idParentCategorie =
+                                focusedValuesGetter.active_Central_Values.active_Categorie_Pour_NewAddedProduit?.id
+                                    ?: 0
 
+                            val keyID =
+                                RepositorysMainGetter.getPushFireBase(ArticlesBasesStatsTable.ref)
                             val updatedProduct = product.copy(
-                                nom = "Produit $catalogue keyID${pendingProduct!!.id} $bsonObjectId",
+                                keyID = keyID,
+                                nom = "Produit $idParentCategorie ${keyID.takeLast(4).uppercase()}",
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-                                etateActuelleOnFusionAvecBaseDonne =  ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
-                                idParentCategorie = activeCatalogue.premierCategorieId
+                                etateActuelleOnFusionAvecBaseDonne = ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
+                                idParentCategorie = idParentCategorie
                             )
 
-                            a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(updatedProduct)
+                            a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(
+                                updatedProduct
+                            )
 
 
-                            Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Produit WebP créé: ${updatedProduct.nom}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }

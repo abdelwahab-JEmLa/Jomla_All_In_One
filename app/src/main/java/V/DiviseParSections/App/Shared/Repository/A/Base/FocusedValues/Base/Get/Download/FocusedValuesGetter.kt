@@ -16,6 +16,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
@@ -33,6 +34,10 @@ data class ActiveCentralValues(
 
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
+
+    //-----------------Produit-------------------------------------------------------------------------------------------------------------
+    val active_Categorie_Pour_NewAddedProduit: CategoriesTabelle? = null,
+
     //-----------------Peride----------------------------------------------------------------------------
     val held_Period_Pour_copie_Leur_Vents: M14VentPeriode? = null,
 

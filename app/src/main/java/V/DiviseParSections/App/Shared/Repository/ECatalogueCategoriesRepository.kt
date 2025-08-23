@@ -18,7 +18,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             key = "t2",
             id = 2,
             nom = "Cosmétique",
-            premierCategorieId = 100,
+            premierCategorieId = 1755942163531,
             position = 1,
             couleur = Color(0xFFE91E63) // Pink for cosmetics
         ),

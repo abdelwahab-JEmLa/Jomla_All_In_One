@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun ButtonId7(
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     showLabels: Boolean,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
 ) {
@@ -50,8 +57,14 @@ fun ButtonId7(
         }
         FloatingActionButton(
             onClick = {
-                // Toggle to the next catalogue in the list (cycles through all catalogues)
                 viewModel.toggleToCatalogue(nextCatalogue.id)
+                val cataloge = nextCatalogue.premierCategorieId
+                 val categorie = repositorysMainGetter.find_M16CategorieProduit_By_OldID(cataloge)
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        active_Categorie_Pour_NewAddedProduit = categorie
+                    )
+                )
             },
             modifier = Modifier.size(48.dp),
             containerColor = Color.Blue

@@ -75,7 +75,7 @@ fun AppNavHost(
     val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
     val startUpScreen = when {
-        !itsDevMode -> Screen.FacadePresentoireProduits
+        !itsDevMode -> Screen.EditDatabaseWithCreateNewArticles
         else -> {
             val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
             getScreenFromRoute(devStartUpRoute)

@@ -76,7 +76,6 @@ internal fun MainItem(
         }
     }
 
-    val new_reordered_List_Categorie = performCategoryReorder()
 
     Box {
         Card(
@@ -163,13 +162,14 @@ internal fun MainItem(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(vertical = 2.dp)
                 ) {
+                    val positionDouble = relative_category.positionDouble
                     Text(
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
                                 set(SemanticsPropertyKey(""), relative_category.position)
                             }
                             .fillMaxWidth(),
-                        text = "${relative_category.positionDouble}_${relative_category.nom}-${relative_category.id}",
+                        text = "${relative_category.nom}-",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         textAlign = TextAlign.Center,

@@ -17,6 +17,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
@@ -126,6 +127,10 @@ class RepositorysMainGetter(
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }
+
+    //--------------M16----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_M16CategorieProduit_By_OldID(OldID: Long): CategoriesTabelle? =
+        repoM16CategorieProduit.datasValue.find { it.id == OldID }
 
     //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? =

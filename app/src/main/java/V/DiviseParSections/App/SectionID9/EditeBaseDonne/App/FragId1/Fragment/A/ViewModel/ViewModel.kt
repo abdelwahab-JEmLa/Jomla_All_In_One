@@ -100,17 +100,25 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
         val categoriesToMove =
-            categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+            categoriesCompoRepository.datasValue.filter {
+                it.cSelectionePourDeplace ||
+                        it.id == _uiState.value.selectionePourDeplacement_Categorie?.id
+            }
         if (categoriesToMove.isEmpty()) return
 
         val updatedCategories = categoriesToMove.map {
             it.copy(catalogueParentId = targetCatalogueId, cSelectionePourDeplace = false)
         }
         addOrUpdateCategories(updatedCategories)
+
+        // Clear the UI state selection after moving
+        if (_uiState.value.selectionePourDeplacement_Categorie != null) {
+            _uiState.value = _uiState.value.copy(selectionePourDeplacement_Categorie = null)
+        }
     }
 
+    // FIXED: Removed unused parameter and corrected function signature
     fun moveSelectedCategoriesRelativeToTarget(
-        performCategoryReorder: List<CategoriesTabelle>,
         targetCategoryId: Long,
         moveBefore: Boolean
     ) {
@@ -125,7 +133,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             targetId = targetCategoryId,
             moveBefore = moveBefore
         )
-
 
         val finalCategories = reorderedCategories.map { category ->
             if (selectedCategories.any { it.id == category.id }) {
@@ -159,7 +166,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
         return newList.mapIndexed { i, cat -> cat.copy(position = i + 1) }
     }
-
 
     fun getSelectedCategoryIds(): Set<Long> {
         return categoriesCompoRepository.datasValue

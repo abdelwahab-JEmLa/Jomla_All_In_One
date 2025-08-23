@@ -300,8 +300,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         && travailleChezGrossisst3Ali == false
                         ) {
 
-                        (activeFragment != Screen.EditDatabaseWithCreateNewArticles
-                                && activeDialogSearchM1Produit == false).ifTrue {
+                        ( activeDialogSearchM1Produit == false).ifTrue {
                             B1CataloguesAffiche(
                                 appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
                                 showLabels = showLabels,

@@ -216,6 +216,7 @@ fun OptionsFragmentButtons(
                                     "CatalogueMove",
                                     "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}"
                                 )
+                                viewModel.updateCate_cSelectionePourDeplace()
                             }
                         ) {
                             Row(
@@ -343,15 +344,6 @@ fun OptionsFragmentButtons(
                             ButtonId4(
                                 viewModel = viewModel,
                                 showLabels = showLabels,
-                            )
-                        }
-
-                        item {
-                            ButtonId3(
-                                viewModel = viewModel,
-                                showLabels = showLabels,
-                                selectedCount = selectedCategories.size,
-                                onCatalogueMove = { }
                             )
                         }
 

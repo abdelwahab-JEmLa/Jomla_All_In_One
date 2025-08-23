@@ -1,5 +1,4 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment
-
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.A_MainFilter
@@ -60,7 +59,9 @@ fun EditeBaseDonneMainScreenIdS9(
 
     val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
     val aProduitdatabasecomposerepositorypj17 = viewModel.a_ProduitDataBaseComposeRepositoryPJ17
-    val produitList = aProduitdatabasecomposerepositorypj17.datasValue
+
+    val produitList = a_CentralDatasHandlerProtoJuin9.filteredA_ProduitsParCatalogueBsonId
+
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
@@ -70,8 +71,11 @@ fun EditeBaseDonneMainScreenIdS9(
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
     var showBulkMoveDialog by remember { mutableStateOf(false) }
 
-    val selectedCategories = remember(categoriesList) {
-        categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+    // FIXED: Proper collection operation for selectedCategories
+    val selectedCategories = remember(categoriesList, uiState.selectionePourDeplacement_Categorie) {
+        val selectedFromList = categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+        val selectedFromState = uiState.selectionePourDeplacement_Categorie?.let { setOf(it.id) } ?: emptySet()
+        selectedFromList + selectedFromState
     }
 
     val filteredAndSortedProduitList by remember(
@@ -81,6 +85,7 @@ fun EditeBaseDonneMainScreenIdS9(
         derivedStateOf {
             var filtered = produitList
 
+            // Search filter
             filterState.searchText.takeIf { it.isNotEmpty() }?.let { searchQuery ->
                 val query = searchQuery.lowercase()
                 filtered = filtered.filter { product ->
@@ -90,6 +95,7 @@ fun EditeBaseDonneMainScreenIdS9(
                 }
             }
 
+            // State filters
             if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
                 filtered = filtered.filter {
                     it.etateActuelleOnFusionAvecBaseDonne ==
@@ -107,6 +113,8 @@ fun EditeBaseDonneMainScreenIdS9(
                 filtered =
                     filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
+
+            // Price filters
             if (filterState.hidePrixAchatZero) {
                 filtered = filtered.filter { it.prixAchat > 0.0 }
             }
@@ -114,14 +122,15 @@ fun EditeBaseDonneMainScreenIdS9(
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
 
-            // NEW: Time-based filter for prixAchatDernierTimeTempUpdate
+            // Time-based filter for prixAchatDernierTimeTempUpdate
             if (filterState.enablePrixAchatTimeFilter) {
                 val days = TimeFilterUtils.parseDaysString(filterState.prixAchatTimeFilterDays)
                 if (days > 0) {
                     filtered = filtered.filter { product ->
-                        // Assuming ArticlesBasesStatsTable has add_New field like prixAchatDernierTimeTempUpdate
-                        // You may need to adjust this field name based on your actual data model
-                        TimeFilterUtils.isOlderThanDays(product.prixAchatDernierTimeTempUpdate, days)
+                        TimeFilterUtils.isOlderThanDays(
+                            product.prixAchatDernierTimeTempUpdate,
+                            days
+                        )
                     }
                 }
             }
@@ -132,6 +141,8 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePrixVentePositif) {
                 filtered = filtered.filter { it.prixVent <= 0.0 }
             }
+
+            // Priority filters
             if (filterState.hideHeldPrioriteDemandAuGrossist) {
                 filtered = filtered.filter { !it.heldPrioriteDemandAuGrossist }
             }
@@ -139,19 +150,18 @@ fun EditeBaseDonneMainScreenIdS9(
                 filtered = filtered.filter { it.heldPrioriteDemandAuGrossist }
             }
 
+            // Apply sorting
             when {
                 filterState.enableCategoryGrouping -> {
                     when (filterState.sortOrder) {
                         SortOrder.CATEGORY_GROUPED -> {
-                            groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
+                            groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts.filter { product ->
                                 filtered.contains(product)
                             }
                         }
-
                         else -> applySortOrder(filtered, filterState.sortOrder)
                     }
                 }
-
                 else -> applySortOrder(filtered, filterState.sortOrder)
             }
         }
@@ -249,10 +259,11 @@ fun EditeBaseDonneMainScreenIdS9(
 private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
     return if (contains(product)) this - product else this + product
 }
+
+// FIXED: Added default parameter and proper handling
 private fun applySortOrder(
     products: List<ArticlesBasesStatsTable>,
-    sortOrder: SortOrder,
-    categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> = emptyList()
+    sortOrder: SortOrder
 ): List<ArticlesBasesStatsTable> {
     return when (sortOrder) {
         SortOrder.ID_DESC -> products.sortedByDescending { it.id }
@@ -261,10 +272,6 @@ private fun applySortOrder(
         SortOrder.NAME_DESC -> products.sortedByDescending { it.nom.lowercase() }
         SortOrder.PRIX_ACHAT_TIME_DESC -> products.sortedByDescending { it.prixAchatDernierTimeTempUpdate }
         SortOrder.PRIX_ACHAT_TIME_ASC -> products.sortedBy { it.prixAchatDernierTimeTempUpdate }
-        SortOrder.CATEGORY_GROUPED -> {
-            categoryGroupedSortedProducts.filter { categoryProduct ->
-                products.any { it.id == categoryProduct.id }
-            }
-        }
+        SortOrder.CATEGORY_GROUPED -> products // Return as-is for category grouped, should be handled upstream
     }
 }
