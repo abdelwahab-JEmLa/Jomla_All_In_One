@@ -68,6 +68,8 @@ data class ActiveCentralValues(
 
     val affiche_Floating_Button_gps_follow_mode_active: Boolean = false,
     val affiche_Floating_Button_AddCLient: Boolean = false,
+
+    val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
 ) {
     companion object {
         fun get_Default(): ActiveCentralValues {

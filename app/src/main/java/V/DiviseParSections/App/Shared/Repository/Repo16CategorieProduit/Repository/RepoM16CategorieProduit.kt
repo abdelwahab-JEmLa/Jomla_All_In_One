@@ -76,7 +76,6 @@ class RepoM16CategorieProduit(
         }
     }
 
-
     private suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
         try {
             val updates = mutableMapOf<String, Any>()

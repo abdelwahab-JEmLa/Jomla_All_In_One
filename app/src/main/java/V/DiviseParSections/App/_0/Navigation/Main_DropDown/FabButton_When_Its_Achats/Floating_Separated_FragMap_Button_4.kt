@@ -1,0 +1,223 @@
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats
+
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
+import kotlin.math.roundToInt
+
+data class Button_State(
+    val showLabels: Boolean = true,
+    val its_Active: Boolean = false,
+    val text_Label: String = "",
+    val colors: Pair<Color, Color> = Pair(Color.White, Color.White),
+    val icons: Pair<ImageVector, ImageVector> = Pair(Icons.Default.Remove, Icons.Default.Add),
+    val description_Functionement: String = "",
+) {
+    companion object {
+        fun get_Default(): Button_State {
+            return Button_State()
+        }
+    }
+}
+
+@Composable
+fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
+    aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    buttonState: Button_State = Button_State.get_Default().copy(
+        text_Label = "",
+        icons = Pair(Icons.Default.FilterList, Icons.Default.ViewList),
+        colors = Pair(Color.Red, Color.Green)
+    )
+) {
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val currentVisibleClientsMode = currentValues.visibleClientsNow
+
+    val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
+
+    val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeightDp = configuration.screenHeightDp.dp
+
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 250f)) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
+
+    var showDropdown by remember { mutableStateOf(false) }
+
+    // Get catalogues list
+    val catalogues = B4CatalogueCategoriesRepository()
+
+    // Get current active category
+    val activeCategorie = currentValues.active_Categorie_Pour_NewAddedProduit
+
+    // Debug: Log the current catalogueParentId to see what we're trying to match
+    if (activeCategorie != null) {
+        Log.d("FloatingButton", "Current catalogueParentId: ${activeCategorie.catalogueParentId}")
+    }
+    catalogues.forEach { catalogue ->
+        Log.d("FloatingButton", "Available catalogue: ${catalogue.nom} with premierCategorieId: ${catalogue.premierCategorieId}")
+    }
+
+    // Find the catalogue that matches the active category's catalogueParentId
+    val activeCatalogue = catalogues.find {
+        it.premierCategorieId == (activeCategorie?.catalogueParentId ?: 0)
+    }
+        ?: catalogues.find { it.id.toLong() == (activeCategorie?.catalogueParentId ?: 0) } // Try matching by catalogue ID as Long
+        ?: catalogues.firstOrNull() // Final fallback to first catalogue
+
+    Log.d("FloatingButton", "Selected catalogue: ${activeCatalogue?.nom ?: "None found"}")
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+
+                        offsetX = offsetX.coerceIn(0f, screenWidth.value - 150f)
+                        offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
+                    }
+                }
+                .padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (updatedButtonState.showLabels) {
+                    Text(
+                        text = activeCatalogue?.nom ?: "No Catalogue",    //<--
+                        //TODO(1): pk ca rest sans
+                        color = Color.White,
+                        modifier = Modifier
+                            .background(
+                                color = (activeCatalogue?.couleur ?: Color.Gray).copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
+                // Button 1: Filter Button (ButtonId7)
+                FloatingActionButton(
+                    modifier = Modifier
+                        .getSemanticsTag(updatedButtonState, "clientFilterButtonState")
+                        .size(48.dp),
+                    onClick = {
+                        showDropdown = true
+                    },
+                    containerColor = if (updatedButtonState.its_Active)
+                        updatedButtonState.colors.second
+                    else
+                        updatedButtonState.colors.first
+                ) {
+                    Icon(
+                        imageVector = if (updatedButtonState.its_Active)
+                            updatedButtonState.icons.second
+                        else
+                            updatedButtonState.icons.first,
+                        contentDescription = if (isShowingAll) "Switch to Targeted View" else "Switch to Show All",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                // Button 2: Camera Button (CameraFABProtoJuin3)
+                FloatingActionButton(
+                    modifier = Modifier
+                        .size(48.dp),
+                    onClick = {
+                        // Camera functionality - implement as needed
+                    },
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Open Camera",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showDropdown,
+                    onDismissRequest = { showDropdown = false },
+                    modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
+                ) {
+
+                    catalogues.forEach { catalogue ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = catalogue.nom,
+                                    color = if (activeCatalogue?.id == catalogue.id)
+                                        catalogue.couleur else Color.Black
+                                )
+                            },
+                            onClick = {
+                                // Create a new category with the selected catalogue's premierCategorieId
+                                val newActiveCategory = activeCategorie?.copy(
+                                    catalogueParentId = catalogue.premierCategorieId
+                                )
+
+                                val newValues = currentValues.copy(
+                                    active_Categorie_Pour_NewAddedProduit = newActiveCategory
+                                )
+
+                                focusedValuesGetter.update_activeCentralValues(newValues)
+                                showDropdown = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

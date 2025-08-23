@@ -2,12 +2,14 @@
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FabDropdownMenu_WhenItsAchatsFragment
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -22,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,7 @@ private const val TAG = "NavigationBarWithFab"
 fun NavigationBarWithFab(
     viewModelInitApp: ViewModelInitApp,
     aCentralFacade: ACentralFacade = viewModelInitApp.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo8BonVent: Repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
     items: List<Screen>,
@@ -49,7 +51,7 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    showWarningState: Boolean = true // New parameter to control warning display
+    showWarningState: Boolean = true
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
@@ -58,18 +60,9 @@ fun NavigationBarWithFab(
     var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
     var showFabDropdownAchats by remember { mutableStateOf(false) }
 
-    // Debug: Add logging to see current state
-    LaunchedEffect(activeFragment) {
-        println("DEBUG: Current active fragment: $activeFragment")
-    }
-
-    LaunchedEffect(showFabDropdownBaseDonne) {
-        println("DEBUG: showFabDropdownBaseDonne state: $showFabDropdownBaseDonne")
-    }
-
-    LaunchedEffect(showFabDropdownAchats) {
-        println("DEBUG: showFabDropdownAchats state: $showFabDropdownAchats")
-    }
+    // Get current focused values to check floating button visibility
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val shouldShowFloatingButton = currentValues.affiche_Floating_Button_SelecteCategorieEtAddNewProduit
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -118,36 +111,30 @@ fun NavigationBarWithFab(
         val its_EditDatabaseWithCreateNewArticles = activeFragment == Screen.EditDatabaseWithCreateNewArticles
         val its_Achats_Produits_Chez_Grossists = activeFragment == Screen.Achats_Produits_Chez_Grossists
 
-        // Show appropriate FAB button based on current fragment
         when {
             its_EditDatabaseWithCreateNewArticles -> {
-                // Show special FAB button for edit database mode
                 FabButton_When_ItsEditeBaseDonne(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = {
-                        println("DEBUG: Setting showFabDropdownBaseDonne to true")
                         showFabDropdownBaseDonne = true
                     }
                 )
             }
             its_Achats_Produits_Chez_Grossists -> {
-                // Show special FAB button for Achats mode
                 FabButton_When_Its_Achats(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = {
-                        println("DEBUG: Setting showFabDropdownAchats to true")
                         showFabDropdownAchats = true
                     }
                 )
             }
             else -> {
-                // Show regular FAB button for other fragments
                 FabButton(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
@@ -158,11 +145,10 @@ fun NavigationBarWithFab(
             }
         }
 
+        // All existing dialog handling...
         if (showCatalogDialog) {
             CatalogSelectionDialog(
-                onDismiss = {
-                    showCatalogDialog = false
-                },
+                onDismiss = { showCatalogDialog = false },
                 onCatalogSelected = { categoryId ->
                     onCatalogSelected(categoryId)
                     showCatalogDialog = false
@@ -179,7 +165,7 @@ fun NavigationBarWithFab(
             )
         }
 
-        // Regular dropdown menu for normal mode
+        // Existing dropdown menus...
         if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
@@ -188,18 +174,14 @@ fun NavigationBarWithFab(
             )
         }
 
-        // Database edit dropdown menu
         if (showFabDropdownBaseDonne && its_EditDatabaseWithCreateNewArticles) {
-            println("DEBUG: Showing FabDropdownMenu_BaseDonneEdite")
             FabDropdownMenu_BaseDonneEdite(
                 onDismissDropdown = {
-                    println("DEBUG: Dismissing FabDropdownMenu_BaseDonneEdite")
                     showFabDropdownBaseDonne = false
                 }
             )
         }
 
-        // Achats dropdown menu
         if (showFabDropdownAchats && its_Achats_Produits_Chez_Grossists) {
             FabDropdownMenu_WhenItsAchatsFragment(
                 onDismissDropdown = {
@@ -207,9 +189,16 @@ fun NavigationBarWithFab(
                 }
             )
         }
+
+        if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_SelecteCategorieEtAddNewProduit) {
+            Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
+                aCentralFacade = aCentralFacade,
+                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
+                focusedValuesGetter = focusedValuesGetter
+            )
+        }
     }
 }
-
 data class Item_States(
     val function_noms_separatedStrings: String = ",",
     val avec_Premier_Click_Jane: Boolean = true,
