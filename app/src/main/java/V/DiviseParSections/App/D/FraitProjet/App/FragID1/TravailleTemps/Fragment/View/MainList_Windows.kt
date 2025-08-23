@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.DayHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,10 +37,10 @@ fun MainList_Windows(
 ) {
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->
-            // Create add_New copy with filtered intervals
+            // Create new copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
 
-            // Create add_New new K_TempTravaille with the filtered intervals
+            // Create new K_TempTravaille with the filtered intervals
             K_TempTravaille(tempTravaille.vid).apply {
                 this.infosDeBase = tempTravaille.infosDeBase
                 this.intervalesDeTravaille.clear()
@@ -135,11 +136,22 @@ data class WeekInfo(
     val isCurrentWeek: Boolean
 )
 
-// Function to group K_TempTravaille objects by week
+// Function to group K_TempTravaille objects by week with Saturday as first day
 private fun groupItemsByWeek(dateList: List<K_TempTravaille>): Map<WeekInfo, List<K_TempTravaille>> {
-    val calendar = Calendar.getInstance()
-    val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
-    val currentYear = calendar.get(Calendar.YEAR)
+    val calendar = Calendar.getInstance().apply {
+        // Set Saturday as the first day of the week
+        firstDayOfWeek = Calendar.SATURDAY
+        // Set minimal days in first week to 1 to ensure proper week calculation
+        minimalDaysInFirstWeek = 1
+    }
+
+    val currentCalendar = Calendar.getInstance().apply {
+        firstDayOfWeek = Calendar.SATURDAY
+        minimalDaysInFirstWeek = 1
+    }
+
+    val currentWeek = currentCalendar.get(Calendar.WEEK_OF_YEAR)
+    val currentYear = currentCalendar.get(Calendar.YEAR)
     val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
 
     return dateList.groupBy { tempTravaille ->

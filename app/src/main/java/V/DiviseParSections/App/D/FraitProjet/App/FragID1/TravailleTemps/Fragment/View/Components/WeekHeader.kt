@@ -47,7 +47,7 @@ fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: RecordingViewModel
 ) {
-    // RepositorysMainGetter all records for this specific week and checkADD_1_4_PeriodeVent if all are paid
+    // Get all records for this specific week and check if all are paid
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
@@ -56,7 +56,11 @@ fun WeekHeader(
             val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
             val day = parts[2].toInt()
 
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance().apply {
+                // Set Saturday as first day of week for consistency
+                firstDayOfWeek = Calendar.SATURDAY
+                minimalDaysInFirstWeek = 1
+            }
             calendar.set(year, month, day)
 
             // Check if this record falls within the specified week and year
@@ -70,7 +74,7 @@ fun WeekHeader(
     val areAllDaysPaid = weekRecords.isNotEmpty() && weekRecords.all { it.infosDeBase.paye }
     val allDaysPaid = remember { mutableStateOf(areAllDaysPaid) }
 
-    // RepositorysMainGetter admin privileges status
+    // Get admin privileges status
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
     // Calculate total work time for the week
@@ -232,7 +236,7 @@ fun markAllDaysAsPaid(
     viewModel: RecordingViewModel,
     paidStatus: MutableState<Boolean>
 ) {
-    // RepositorysMainGetter all records for the specific week and year
+    // Get all records for the specific week and year with Saturday as first day
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
@@ -241,7 +245,10 @@ fun markAllDaysAsPaid(
             val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
             val day = parts[2].toInt()
 
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance().apply {
+                firstDayOfWeek = Calendar.SATURDAY
+                minimalDaysInFirstWeek = 1
+            }
             calendar.set(year, month, day)
 
             // Check if this record falls within the specified week and year
@@ -275,7 +282,7 @@ fun translateWeekTextToArabic(weekInfo: WeekInfo): String {
     }
 }
 
-// Function to translate work duration to Arabic (CORRIGÉE)
+// Function to translate work duration to Arabic (CORRECTED)
 fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String {
     return when {
         totalMinutes == 0 -> "0 يوم"  // "0 days" in Arabic
@@ -317,7 +324,7 @@ fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String
 fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel): Int {
     var totalMinutes = 0
 
-    // RepositorysMainGetter all records for the specific week and year
+    // Get all records for the specific week and year with Saturday as first day
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
@@ -326,7 +333,10 @@ fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel
             val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
             val day = parts[2].toInt()
 
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance().apply {
+                firstDayOfWeek = Calendar.SATURDAY
+                minimalDaysInFirstWeek = 1
+            }
             calendar.set(year, month, day)
 
             // Check if this record falls within the specified week and year
@@ -353,7 +363,10 @@ fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel
 }
 
 fun isLastWeek(weekInfo: WeekInfo): Boolean {
-    val calendar = Calendar.getInstance()
+    val calendar = Calendar.getInstance().apply {
+        firstDayOfWeek = Calendar.SATURDAY
+        minimalDaysInFirstWeek = 1
+    }
     val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
     val currentYear = calendar.get(Calendar.YEAR)
 
@@ -365,7 +378,10 @@ fun isLastWeek(weekInfo: WeekInfo): Boolean {
 }
 
 fun getWeekDifference(weekInfo: WeekInfo): Int {
-    val calendar = Calendar.getInstance()
+    val calendar = Calendar.getInstance().apply {
+        firstDayOfWeek = Calendar.SATURDAY
+        minimalDaysInFirstWeek = 1
+    }
     val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
     val currentYear = calendar.get(Calendar.YEAR)
 
@@ -376,6 +392,8 @@ fun getWeekDifference(weekInfo: WeekInfo): Int {
     val yearDiff = currentYear - weekInfo.year
     if (yearDiff == 1) {
         val weeksInLastYear = Calendar.getInstance(Locale.getDefault()).apply {
+            firstDayOfWeek = Calendar.SATURDAY
+            minimalDaysInFirstWeek = 1
             set(Calendar.YEAR, currentYear - 1)
             set(Calendar.MONTH, Calendar.DECEMBER)
             set(Calendar.DAY_OF_MONTH, 31)
@@ -384,6 +402,8 @@ fun getWeekDifference(weekInfo: WeekInfo): Int {
         return currentWeek + (weeksInLastYear - weekInfo.weekNumber)
     } else if (yearDiff == -1) {
         val weeksInCurrentYear = Calendar.getInstance(Locale.getDefault()).apply {
+            firstDayOfWeek = Calendar.SATURDAY
+            minimalDaysInFirstWeek = 1
             set(Calendar.YEAR, currentYear)
             set(Calendar.MONTH, Calendar.DECEMBER)
             set(Calendar.DAY_OF_MONTH, 31)

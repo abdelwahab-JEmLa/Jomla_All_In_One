@@ -35,7 +35,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
         var typeTemp by mutableStateOf(TypeTemp.ACHAT)
 
         enum class TypeTemp(val color: Color, val icon: ImageVector, val nomArabe: String = "") {
-            DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل"),
+            DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل و تحظيرات "),
             VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart, "بيع"),
             ACHAT(Color(0xFFFFC107), Icons.Filled.Store, "شراء"),
             ENTRE_PAR_MAIN(Color(0xFF7F7866), Icons.Filled.Timer, "غير محدد"),
