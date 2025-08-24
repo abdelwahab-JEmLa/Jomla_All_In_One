@@ -9,7 +9,6 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.FloatingImageDisplay
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.getGroupedVentsByTariffType
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurTelegram_MainScreen
@@ -22,7 +21,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -72,6 +70,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
+
 // Fixed the missing variable declaration and added proper implementation
 
 @Composable
@@ -126,12 +125,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent =
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
-    val tariffication_ListGroupedVentsParProduit: List<Map.Entry<M13TarificationInfos.TypeChoisi, List<ArticlesBasesStatsTable>>> =
-        getGroupedVentsByTariffType(
-            ventOperations = onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
-            allProducts = repositorysMainGetter.repo1ProduitInfos.datasValue,
-            tariffRepo = repositorysMainGetter.repo13TarificationInfos
-        )
 
     // Rest of the DisposableEffect and other logic remains the same...
     DisposableEffect(isRecording) {
@@ -308,13 +301,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 showAlertDialog = true
                             }
                         } else {
-                            // FIXED: Now properly using the calculated variable
-                            if (tariffication_ListGroupedVentsParProduit.isNotEmpty()) {
-                                Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
-                                    aCentralFacade = aCentralFacade,
-                                    focusedValuesGetter = focusedValuesGetter
-                                )
-                            }
+                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
+                                aCentralFacade = aCentralFacade,
+                                focusedValuesGetter = focusedValuesGetter
+                            )
                         }
                     }
 
@@ -337,7 +327,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin  && true && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
+                    (focusedValuesGetter.currentApp_Est_Admin && true && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,

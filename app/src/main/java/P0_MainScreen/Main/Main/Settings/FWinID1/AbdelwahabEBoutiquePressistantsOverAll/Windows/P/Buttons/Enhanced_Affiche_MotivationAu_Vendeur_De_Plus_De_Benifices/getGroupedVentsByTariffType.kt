@@ -35,31 +35,68 @@ fun getGroupedVentsByTariffType(
     ventOperations: List<M10OperationVentCouleur>,
     allProducts: List<ArticlesBasesStatsTable>,
     tariffRepo: Repo13TarificationInfos
-): List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> {
-    val groupedByTariffType = mutableMapOf<TypeChoisi, MutableList<ArticlesBasesStatsTable>>()
+): List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> {
+    val allowedTypes = setOf(
+        TypeChoisi.Prix_Detaille,
+        TypeChoisi.Prix_SupperGro_Et_PresentationService
+    )
+
+    val initialGroupedByTariffType = mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
 
     ventOperations.forEach { ventOperation ->
         val product = allProducts.find { it.keyID == ventOperation.parent_M1Produit_KeyId }
 
         if (product != null) {
-            val tariffType = if (ventOperation.parentM13TarificationKeyID != "null") {
-                tariffRepo.datasValue
-                    .find { it.keyID == ventOperation.parentM13TarificationKeyID }
-                    ?.typeChoisi ?: ventOperation.typeTarificationEnumT2
+            val tariffInfo: M13TarificationInfos = if (ventOperation.parentM13TarificationKeyID != "null") {
+                tariffRepo.datasValue.find { it.keyID == ventOperation.parentM13TarificationKeyID }
+                    ?: M13TarificationInfos(
+                        typeChoisi = ventOperation.typeTarificationEnumT2,
+                        parent_M1Produit_KeyId = product.keyID,
+                        parent_M1Produit_DebugInfos = product.getDebugInfos(),
+                        prixCurrency = product.prixVent
+                    )
             } else {
-                ventOperation.typeTarificationEnumT2
+                M13TarificationInfos(
+                    typeChoisi = ventOperation.typeTarificationEnumT2,
+                    parent_M1Produit_KeyId = product.keyID,
+                    parent_M1Produit_DebugInfos = product.getDebugInfos(),
+                    prixCurrency = product.prixVent
+                )
             }
 
-            groupedByTariffType.getOrPut(tariffType) { mutableListOf() }.add(product)
+            val tariffType = tariffInfo.typeChoisi
+            val productTariffPair = Pair(product, tariffInfo)
+            initialGroupedByTariffType.getOrPut(tariffType) { mutableListOf() }.add(productTariffPair)
         }
     }
 
-    return groupedByTariffType.entries.sortedByDescending { entry ->
+    val finalGroupedByTariffType = mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
+
+    // Add allowed types directly
+    initialGroupedByTariffType.filter { it.key in allowedTypes }.forEach { (type, productTariffPairs) ->
+        finalGroupedByTariffType.getOrPut(type) { mutableListOf() }.addAll(productTariffPairs)
+    }
+
+    // Process non-allowed types and assign them to closest match
+    initialGroupedByTariffType.filter { it.key !in allowedTypes }.forEach { (originalType, productTariffPairs) ->
+        if (productTariffPairs.isNotEmpty()) {
+            val products = productTariffPairs.map { it.first }
+            val targetType = findClosestPriceType(products, initialGroupedByTariffType.entries.toList().map {
+                it.key to it.value.map { pair -> pair.first }
+            })
+
+            // Update tariff info with new type and add to final grouped result
+            val updatedPairs = productTariffPairs.map { (product, tariffInfo) ->
+                Pair(product, tariffInfo.copy(typeChoisi = targetType))
+            }
+            finalGroupedByTariffType.getOrPut(targetType) { mutableListOf() }.addAll(updatedPairs)
+        }
+    }
+
+    return finalGroupedByTariffType.entries.toList().sortedByDescending { entry ->
         when (entry.key) {
-            TypeChoisi.LeMaxPrixArrive -> 4
-            TypeChoisi.Prix_Detaille -> 3
-            TypeChoisi.Edited_Pour_Client -> 2
-            TypeChoisi.Historique -> 1
+            TypeChoisi.Prix_Detaille -> 2
+            TypeChoisi.Prix_SupperGro_Et_PresentationService -> 1
             else -> 0
         }
     }
@@ -76,7 +113,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
 
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
 
-    val tariffication_ListGroupedVentsParProduit: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> =
+    val tariffication_ListGroupedVentsParProduit: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> =
         getGroupedVentsByTariffType(
             ventOperations = onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
             allProducts = repositorysMainGetter.repo1ProduitInfos.datasValue,
@@ -84,12 +121,17 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
         )
 
     val totalProducts = tariffication_ListGroupedVentsParProduit.sumOf { it.value.size }
-    val totalRevenue = tariffication_ListGroupedVentsParProduit.sumOf { (_, products) ->
-        products.sumOf { it.prixVent }
+    val totalRevenue = tariffication_ListGroupedVentsParProduit.sumOf { (_, productTariffPairs) ->
+        productTariffPairs.sumOf { it.first.prixVent }
     }
 
     val profitabilityAnalysis = M13TarificationInfos.analyzeSalesDistribution(
-        tariffication_ListGroupedVentsParProduit
+        tariffication_ListGroupedVentsParProduit.map { entry ->
+            object : Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>> {
+                override val key = entry.key
+                override val value = entry.value.map { pair -> pair.first }
+            }
+        }
     )
 
     Column(modifier = modifier) {
@@ -108,7 +150,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
 
 @Composable
 private fun EnhancedTariffTypeSalesDisplay(
-    groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>,
+    groupedSales: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>>,
     showLabels: Boolean
 ) {
     val processedSales = processHistoriqueSales(groupedSales)
@@ -125,11 +167,11 @@ private fun EnhancedTariffTypeSalesDisplay(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            processedSales.forEach { (tariffType, products) ->
+            processedSales.forEach { (tariffType, productTariffPairs) ->
                 EnhancedTariffTypeRow(
                     tariffType = tariffType,
-                    productCount = products.size,
-                    products = products,
+                    productCount = productTariffPairs.size,
+                    productTariffPairs = productTariffPairs,
                     showLabels = showLabels,
                     allGroupedSales = groupedSales
                 )
@@ -139,23 +181,33 @@ private fun EnhancedTariffTypeSalesDisplay(
 }
 
 private fun processHistoriqueSales(
-    groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
-): List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> {
-    val resultMap = mutableMapOf<TypeChoisi, MutableList<ArticlesBasesStatsTable>>()
+    groupedSales: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>>
+): List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> {
+    val resultMap = mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
 
     val allowedTypes = setOf(
         TypeChoisi.Prix_Detaille,
         TypeChoisi.Prix_SupperGro_Et_PresentationService
     )
 
-    groupedSales.filter { it.key in allowedTypes }.forEach { (type, products) ->
-        resultMap.getOrPut(type) { mutableListOf() }.addAll(products)
+    // Add allowed types directly
+    groupedSales.filter { it.key in allowedTypes }.forEach { (type, productTariffPairs) ->
+        resultMap.getOrPut(type) { mutableListOf() }.addAll(productTariffPairs)
     }
 
-    groupedSales.filter { it.key !in allowedTypes }.forEach { (_, products) ->
-        if (products.isNotEmpty()) {
-            val targetType = findClosestPriceType(products, groupedSales)
-            resultMap.getOrPut(targetType) { mutableListOf() }.addAll(products)
+    // Process non-allowed types
+    groupedSales.filter { it.key !in allowedTypes }.forEach { (_, productTariffPairs) ->
+        if (productTariffPairs.isNotEmpty()) {
+            val products = productTariffPairs.map { it.first }
+            val targetType = findClosestPriceType(products, groupedSales.map {
+                it.key to it.value.map { pair -> pair.first }
+            })
+
+            // Update tariff info with new type
+            val updatedPairs = productTariffPairs.map { (product, tariffInfo) ->
+                Pair(product, tariffInfo.copy(typeChoisi = targetType))
+            }
+            resultMap.getOrPut(targetType) { mutableListOf() }.addAll(updatedPairs)
         }
     }
 
@@ -172,17 +224,17 @@ private fun processHistoriqueSales(
 private fun EnhancedTariffTypeRow(
     tariffType: TypeChoisi,
     productCount: Int,
-    products: List<ArticlesBasesStatsTable>,
+    productTariffPairs: List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>,
     showLabels: Boolean,
-    allGroupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> = emptyList()
+    allGroupedSales: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> = emptyList()
 ) {
-    val totalValue = products.sumOf { it.prixVent }
+    val totalValue = productTariffPairs.sumOf { it.first.prixVent }
     var showProductDialog by remember { mutableStateOf(false) }
 
     if (showProductDialog) {
         ProductsListDialog(
             tariffType = tariffType,
-            products = products,
+            productTariffPairs = productTariffPairs,
             onDismiss = { showProductDialog = false }
         )
     }
@@ -226,11 +278,6 @@ private fun EnhancedTariffTypeRow(
                                 color = tariffType.couleur_Text,
                                 fontWeight = FontWeight.Medium
                             )
-                            Text(
-                                text = "${totalValue.toInt()} دج",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = tariffType.couleur_Text.copy(alpha = 0.7f)
-                            )
                         }
                     }
                 }
@@ -246,28 +293,20 @@ private fun EnhancedTariffTypeRow(
                     )
                 }
             }
-
-            Text(
-                text = getEnhancedMotivationalMessage(tariffType, productCount, allGroupedSales),
-                style = MaterialTheme.typography.bodySmall,
-                color = tariffType.couleur_Text.copy(alpha = 0.8f),
-                modifier = Modifier.padding(top = 4.dp),
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-            )
         }
     }
 }
 
 private fun findClosestPriceType(
     historicalProducts: List<ArticlesBasesStatsTable>,
-    allGroupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
+    allGroupedSales: List<Pair<TypeChoisi, List<ArticlesBasesStatsTable>>>
 ): TypeChoisi {
     if (historicalProducts.isEmpty()) return TypeChoisi.Prix_Detaille
 
     val avgHistoricalPrice = historicalProducts.map { it.prixVent }.average()
 
-    val prixDetailleProducts = allGroupedSales.find { it.key == TypeChoisi.Prix_Detaille }?.value
-    val prixSupperGroProducts = allGroupedSales.find { it.key == TypeChoisi.Prix_SupperGro_Et_PresentationService }?.value
+    val prixDetailleProducts = allGroupedSales.find { it.first == TypeChoisi.Prix_Detaille }?.second
+    val prixSupperGroProducts = allGroupedSales.find { it.first == TypeChoisi.Prix_SupperGro_Et_PresentationService }?.second
 
     val avgPrixDetaille = prixDetailleProducts?.map { it.prixVent }?.average()
         ?: (historicalProducts.first().prixVent * 1.2)
@@ -281,17 +320,5 @@ private fun findClosestPriceType(
         TypeChoisi.Prix_SupperGro_Et_PresentationService
     } else {
         TypeChoisi.Prix_Detaille
-    }
-}
-
-private fun getEnhancedMotivationalMessage(
-    tariffType: TypeChoisi,
-    count: Int,
-    allGroupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> = emptyList()
-): String {
-    return when (tariffType) {
-        TypeChoisi.Prix_Detaille -> "⭐ ممتاز! $count ${get_BestNomArabDuPlurieul(count)} بسعر التجزئة - ربح جيد!"
-        TypeChoisi.Prix_SupperGro_Et_PresentationService -> "⚠️ تحذير: $count ${get_BestNomArabDuPlurieul(count)} بسعر الجملة - ربح منخفض، حاول رفع السعر للتجزئة"
-        else -> "🔍 $count ${get_BestNomArabDuPlurieul(count)} بهذا السعر - راجع التسعيرة"
     }
 }

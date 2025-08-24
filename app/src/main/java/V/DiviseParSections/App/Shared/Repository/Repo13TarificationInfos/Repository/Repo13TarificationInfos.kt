@@ -150,7 +150,7 @@ data class M13TarificationInfos(
         Prix_SupperGro_Et_PresentationService(
             Icons.Filled.Warning,
             Color(0xFF000000),
-            "سعر السوبر جملة",
+            "سعر السوبر جملة - ربح عند الكمية",
             Color.Red,
             1
         ),
@@ -183,17 +183,6 @@ data class M13TarificationInfos(
             }
         }
 
-        fun getMotivationalMessage(): String {
-            return when (this) {
-                Tariff_Achat_Depuit_Grossisst -> "ابدأ برفع السعر للحصول على ربح أفضل!"
-                Prix_SupperGro_Et_PresentationService -> "يمكنك رفع السعر قليلاً للربح أكثر"
-                Historique -> "حاول الانتقال لسعر التجزئة لربح أعلى"
-                Edited_Pour_Client -> "سعر مناسب، حاول الوصول لسعر التجزئة"
-                Prix_Detaille -> "ممتاز! حاول الوصول للسعر الأقصى"
-                LeMaxPrixArrive -> "رائع! أعلى ربح محقق!"
-                DEFIN_OLd -> "قم بتحديث السعر"
-            }
-        }
 
         fun isTopProfitable(): Boolean {
             return profitabilityScore >= 3
@@ -211,27 +200,6 @@ data class M13TarificationInfos(
 
     fun getDebugInfos(): String {
         return "$parent_M1Produit_DebugInfos $typeChoisi"
-    }
-
-    fun getSellerMotivation(): String {
-        val baseMessage = typeChoisi.getMotivationalMessage()
-        val improvement = typeChoisi.getImprovementSuggestion()
-        return "$baseMessage\n$improvement"
-    }
-
-    fun canBeImproved(): Boolean {
-        return typeChoisi.getNextProfitableType() != null
-    }
-
-    fun getProfitOptimizationPriority(): Int {
-        return when (typeChoisi.profitabilityScore) {
-            5 -> 0
-            4 -> 1
-            3 -> 2
-            2 -> 3
-            1 -> 4
-            else -> 5
-        }
     }
 
     fun withProperDefaults(): M13TarificationInfos {
@@ -266,11 +234,6 @@ data class M13TarificationInfos(
             return M13TarificationInfos()
         }
 
-        fun getTopProfitableTypes(): List<TypeChoisi> {
-            return TypeChoisi.values()
-                .filter { it.isTopProfitable() }
-                .sortedByDescending { it.profitabilityScore }
-        }
 
         fun analyzeSalesDistribution(
             groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
