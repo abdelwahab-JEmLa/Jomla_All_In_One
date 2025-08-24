@@ -41,6 +41,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
 
     val groupedSales = getGroupedVentsByTariffType(
+        aCentralFacade,
         ventOperations,
         repositorysMainGetter.repo1ProduitInfos.datasValue,
         repositorysMainGetter.repo13TarificationInfos
@@ -58,11 +59,13 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     )
 
     Column(modifier = modifier) {
-      //  EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
+        //  EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
         EnhancedTariffTypeSalesDisplay(groupedSales)
     }
 }
+
 fun getGroupedVentsByTariffType(
+    aCentralFacade: ACentralFacade,
     ventOperations: List<M10OperationVentCouleur>,
     allProducts: List<ArticlesBasesStatsTable>,
     tariffRepo: Repo13TarificationInfos
@@ -74,6 +77,8 @@ fun getGroupedVentsByTariffType(
         .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
         .forEach { ventOperation ->
             allProducts.find { it.keyID == ventOperation.parent_M1Produit_KeyId }?.let { product ->
+                val existing_Prix_Detaille_Du_Produit = find_existing_Prix_Detaille_Du_Produit(aCentralFacade, product)
+
                 val tariffInfo = if (ventOperation.parentM13TarificationKeyID != "null") {
                     tariffRepo.datasValue.find { it.keyID == ventOperation.parentM13TarificationKeyID }
                         ?: createDefaultTariffInfo(ventOperation, product)
@@ -81,11 +86,19 @@ fun getGroupedVentsByTariffType(
                     createDefaultTariffInfo(ventOperation, product)
                 }
 
-                val adjustedTariffInfo = if (tariffInfo.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                    product.prixVent == 0.0) {
-                    tariffInfo.copy(typeChoisi = TypeChoisi.Prix_Detaille)
-                } else {
-                    tariffInfo
+                // If no existing retail price found, force the product to use Prix_Detaille
+                val adjustedTariffInfo = when {
+                    existing_Prix_Detaille_Du_Produit == null -> {
+                        // No existing retail price found, set to Prix_Detaille
+                        tariffInfo.copy(
+                            typeChoisi = TypeChoisi.Prix_Detaille,
+                            prixCurrency = if (product.prixVent > 0) product.prixVent else tariffInfo.prixCurrency
+                        )
+                    }
+                    tariffInfo.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService && product.prixVent == 0.0 -> {
+                        tariffInfo.copy(typeChoisi = TypeChoisi.Prix_Detaille)
+                    }
+                    else -> tariffInfo
                 }
 
                 if (adjustedTariffInfo.prixCurrency > 0) {
@@ -118,6 +131,18 @@ fun getGroupedVentsByTariffType(
             else -> 0
         }
     }
+}
+
+// Helper function to find existing retail price for a product
+fun find_existing_Prix_Detaille_Du_Produit(
+    aCentralFacade: ACentralFacade,
+    product: ArticlesBasesStatsTable
+): M13TarificationInfos? {
+    return aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+        .lastOrNull { tariff ->
+            tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
+                    tariff.parent_M1Produit_KeyId == product.keyID
+        }
 }
 
 @Composable

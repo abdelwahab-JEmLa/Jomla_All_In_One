@@ -212,6 +212,7 @@ fun TariffButtonItem(
         }
         isEditingPurchasePrice = false
     }
+
     Row(
         modifier = Modifier
             .getSemanticsTag(nomVal = "produit", data = produit.nom),

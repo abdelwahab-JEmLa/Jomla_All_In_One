@@ -70,11 +70,7 @@ fun MainList(
             )
         }
 
-    val existing_Prix_Detaille = list_M13TarificationInfos
-        .lastOrNull { tariff ->
-            tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                    tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
-        }
+    val existing_Prix_Detaille = find_existing_Prix_Detaille(aCentralFacade, relative_M1Produit)
 
     val relative_Tariff_Prix_Detaille =
         M13TarificationInfos.get_default().copy(
@@ -101,13 +97,15 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            add(relative_Tariff_Prix_Detaille)
+            if ( relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency ) {
+                add(relative_Tariff_Prix_Detaille)
+            }
 
 
-            add(relative_Tariff_Edited_Pour_Client)
+            add( relative_Tariff_Edited_Pour_Client )
 
-            if (relative_Tariff_Historique != null) {
-                add(relative_Tariff_Historique)
+            if ( relative_Tariff_Historique != null ) {
+                add( relative_Tariff_Historique )
             }
 
             if (
@@ -222,3 +220,12 @@ fun MainList(
         )
     }
 }
+
+fun find_existing_Prix_Detaille(
+    aCentralFacade: ACentralFacade,
+    relative_M1Produit: ArticlesBasesStatsTable
+) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    .lastOrNull { tariff ->
+        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
+                tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
+    }

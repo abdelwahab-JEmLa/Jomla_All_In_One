@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -96,17 +98,18 @@ fun ProductsListDialog(
         modifier = Modifier.fillMaxWidth()
     )
 }
-
 /**
  * Individual product card item for the dialog showing both product and tariff information
  */
 @SuppressLint("DefaultLocale")
 @Composable
 private fun ProductItemCard(
+    aCentralFacade: ACentralFacade= koinInject(),
     product: ArticlesBasesStatsTable,
     tariffInfo: M13TarificationInfos,
     tariffType: M13TarificationInfos.TypeChoisi
 ) {
+    val existing_Prix_Detaille_Du_Produit=  find_existing_Prix_Detaille_Du_Produit(aCentralFacade,product)
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -142,6 +145,13 @@ private fun ProductItemCard(
                 Column(
                     horizontalAlignment = Alignment.End
                 ) {
+                    Text(
+                        text = "${existing_Prix_Detaille_Du_Produit?.prixCurrency}ep دج",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = tariffType.couleur_Text,
+                        fontWeight = FontWeight.Bold
+                    )
+
                     Text(
                         text = "${product.prixVent.toInt()} دج",
                         style = MaterialTheme.typography.bodyMedium,
