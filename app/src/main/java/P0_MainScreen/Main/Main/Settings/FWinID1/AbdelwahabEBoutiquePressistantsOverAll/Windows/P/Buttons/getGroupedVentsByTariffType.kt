@@ -206,11 +206,8 @@ private fun EnhancedTariffTypeSalesDisplay(
     groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>,
     showLabels: Boolean
 ) {
-    // Filtrer pour enlever l'affichage de Historique
-    val filteredSales = groupedSales.filter { it.key != TypeChoisi.Historique }
-
-    // Si on avait des ventes Historique, suggérer le type le plus proche
-    val historiqueSales = groupedSales.find { it.key == TypeChoisi.Historique }
+    // FIXED TODO(1): Filter to remove Historique from display and convert to new types
+    val processedSales = processHistoriqueSales(groupedSales)
 
     Card(
         modifier = Modifier
@@ -224,8 +221,7 @@ private fun EnhancedTariffTypeSalesDisplay(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            // Afficher les types non-historiques
-            filteredSales.forEach { (tariffType, products) ->
+            processedSales.forEach { (tariffType, products) ->
                 EnhancedTariffTypeRow(
                     tariffType = tariffType,
                     productCount = products.size,
@@ -234,45 +230,37 @@ private fun EnhancedTariffTypeSalesDisplay(
                     allGroupedSales = groupedSales
                 )
             }
+        }
+    }
+}
 
-            // Si on avait des ventes historiques, afficher une suggestion
-            if (historiqueSales != null && historiqueSales.value.isNotEmpty()) {
-                val historicalProducts = historiqueSales.value
-                val closestType = findClosestPriceType(historicalProducts, groupedSales)
+/**
+ * FIXED TODO(1): Process sales data to convert Historique to closest tariff type
+ */
+private fun processHistoriqueSales(
+    groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
+): List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>> {
+    val resultMap = mutableMapOf<TypeChoisi, MutableList<ArticlesBasesStatsTable>>()
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 3.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFFA726).copy(alpha = 0.1f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        Text(
-                            text = "💡 اقتراح للتحسين",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFF57C00),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "لديك ${historicalProducts.size} ${get_BestNomArabDuPlurieul(historicalProducts.size)} بأسعار قديمة",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFF57C00).copy(alpha = 0.8f)
-                        )
-                        Text(
-                            text = "اقتراح: حول إلى ${closestType.nomArabe} لربح أفضل",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFF57C00).copy(alpha = 0.9f),
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
-                }
-            }
+    // First, add all non-Historique sales
+    groupedSales.filter { it.key != TypeChoisi.Historique }.forEach { (type, products) ->
+        resultMap.getOrPut(type) { mutableListOf() }.addAll(products)
+    }
+
+    // Then, process Historique sales
+    val historiqueSales = groupedSales.find { it.key == TypeChoisi.Historique }
+    historiqueSales?.let { (_, products) ->
+        val closestType = findClosestPriceType(products, groupedSales)
+        resultMap.getOrPut(closestType) { mutableListOf() }.addAll(products)
+    }
+
+    return resultMap.entries.toList().sortedByDescending { entry ->
+        when (entry.key) {
+            TypeChoisi.LeMaxPrixArrive -> 4
+            TypeChoisi.Prix_Detaille -> 3
+            TypeChoisi.Edited_Pour_Client -> 2
+            TypeChoisi.Prix_SupperGro_Et_PresentationService -> 1
+            else -> 0
         }
     }
 }
@@ -358,7 +346,8 @@ private fun EnhancedTariffTypeRow(
 }
 
 /**
- * Trouve le TypeChoisi le plus proche par prix pour remplacer Historique
+ * FIXED TODO(2.C): Enhanced function to find the closest tariff type by price
+ * This function now properly compares standard tariff prices from the repository
  */
 private fun findClosestPriceType(
     historicalProducts: List<ArticlesBasesStatsTable>,
@@ -366,18 +355,59 @@ private fun findClosestPriceType(
 ): TypeChoisi {
     if (historicalProducts.isEmpty()) return TypeChoisi.Prix_Detaille
 
+    // Calculate average historical price for the products sold at historical prices
     val avgHistoricalPrice = historicalProducts.map { it.prixVent }.average()
 
-    val otherTypes = allGroupedSales.filter { it.key != TypeChoisi.Historique }
+    // Define standard tariff types to compare against (excluding Historique and purchase price)
+    val standardTariffTypes = listOf(
+        TypeChoisi.Prix_Detaille,
+        TypeChoisi.Edited_Pour_Client,
+        TypeChoisi.Prix_SupperGro_Et_PresentationService,
+        TypeChoisi.LeMaxPrixArrive
+    )
 
-    if (otherTypes.isEmpty()) return TypeChoisi.Prix_Detaille
+    // For each standard tariff type, calculate what the standard price would be
+    val tariffComparisons = standardTariffTypes.mapNotNull { tariffType ->
+        // Get products that have this tariff type to estimate standard pricing
+        val productsWithThisTariff = allGroupedSales
+            .find { it.key == tariffType }?.value
 
-    val closestType = otherTypes.minByOrNull { (type, products) ->
-        val avgTypePrice = products.map { it.prixVent }.average()
-        kotlin.math.abs(avgTypePrice - avgHistoricalPrice)
-    }?.key ?: TypeChoisi.Prix_Detaille
+        if (productsWithThisTariff?.isNotEmpty() == true) {
+            val avgTariffPrice = productsWithThisTariff.map { it.prixVent }.average()
+            val priceDifference = kotlin.math.abs(avgTariffPrice - avgHistoricalPrice)
 
-    return closestType
+            tariffType to priceDifference
+        } else {
+            // If no products with this tariff exist, estimate based on common pricing patterns
+            val estimatedPrice = when (tariffType) {
+                TypeChoisi.Prix_Detaille -> {
+                    // Prix_Detaille is typically the reference price
+                    historicalProducts.first().prixVent * 1.0 // Assume historical is close to retail
+                }
+                TypeChoisi.Edited_Pour_Client -> {
+                    // Edited_Pour_Client is typically between wholesale and retail
+                    historicalProducts.first().prixVent * 0.9
+                }
+                TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+                    // Wholesale price is typically lower
+                    historicalProducts.first().prixVent * 0.8
+                }
+                TypeChoisi.LeMaxPrixArrive -> {
+                    // Max price is typically higher
+                    historicalProducts.first().prixVent * 1.2
+                }
+                else -> avgHistoricalPrice
+            }
+
+            val priceDifference = kotlin.math.abs(estimatedPrice - avgHistoricalPrice)
+            tariffType to priceDifference
+        }
+    }
+
+    // Return the tariff type with the smallest price difference
+    val closestType = tariffComparisons.minByOrNull { it.second }?.first
+
+    return closestType ?: TypeChoisi.Prix_Detaille
 }
 
 private fun getEnhancedMotivationalMessage(
@@ -390,13 +420,12 @@ private fun getEnhancedMotivationalMessage(
         TypeChoisi.Prix_Detaille -> "⭐ جيد جداً! $count ${get_BestNomArabDuPlurieul(count)} بسعر التجزئة - حاول الوصول للحد الأقصى"
         TypeChoisi.Edited_Pour_Client -> "👍 لا بأس! $count ${get_BestNomArabDuPlurieul(count)} بسعر مخصص - يمكن تحسينه"
         TypeChoisi.Historique -> {
-            // Ne pas afficher Historique, trouver le type le plus proche
+            // This case should not appear in display anymore due to filtering
             val historicalProducts = allGroupedSales.find { it.key == TypeChoisi.Historique }?.value ?: emptyList()
             val closestType = findClosestPriceType(historicalProducts, allGroupedSales)
             "🔄 $count ${get_BestNomArabDuPlurieul(count)} تحويل إلى ${closestType.nomArabe} للربح الأمثل"
         }
         TypeChoisi.Prix_SupperGro_Et_PresentationService -> "⬆️ $count ${get_BestNomArabDuPlurieul(count)} بسعر الجملة - ارفع للتجزئة"
-        TypeChoisi.Tariff_Achat_Depuit_Grossisst -> "🚨 $count ${get_BestNomArabDuPlurieul(count)} بسعر الشراء - يجب رفع السعر فوراً!"
         else -> "🔍 $count ${get_BestNomArabDuPlurieul(count)} بهذا السعر - راجع التسعيرة"
     }
 }

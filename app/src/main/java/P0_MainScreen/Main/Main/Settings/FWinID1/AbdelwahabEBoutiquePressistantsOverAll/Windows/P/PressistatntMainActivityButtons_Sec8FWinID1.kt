@@ -318,7 +318,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    // Rest of the UI components remain the same...
                     if (
                         !itsFragmentProduitFastSearchDialog
                         && travailleChezGrossisst3Ali == false
@@ -338,7 +337,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin && true).ifTrue {
+                    (focusedValuesGetter.currentApp_Est_Admin  && true && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,

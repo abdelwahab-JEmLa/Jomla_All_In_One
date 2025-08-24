@@ -150,7 +150,7 @@ data class M13TarificationInfos(
         Prix_SupperGro_Et_PresentationService(
             Icons.Filled.Warning,
             Color(0xFF000000),
-            "سعر السوبر جملة مع خدمة العرض",
+            "سعر السوبر جملة",
             Color.Red,
             1
         ),
@@ -158,7 +158,7 @@ data class M13TarificationInfos(
         Edited_Pour_Client(
             Icons.Filled.Edit,
             Color(0xFFEEEEEE),
-            "بينهما - سعر مخصص",
+            " سعر انتقالي",
             Color.Black,
             3
         ),
