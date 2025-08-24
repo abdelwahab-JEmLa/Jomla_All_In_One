@@ -236,7 +236,7 @@ fun ImageDisplayerProtoAvantJuin3(
                         .clip(CircleShape)
                         .background(Color.Red.copy(alpha = 0.6f))
                         .clickable {
-                        /*    val rel_Prd = repoMainGetter.find_M1Produit("-OV3rmTfv1RVCax896N1")
+                        /*    val rel_Prd = repoMainGetter.find_M1Produit_ByKeyID("-OV3rmTfv1RVCax896N1")
                             viewModel.sendOrderToClientDisplayer(
                                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                                 rel_Prd?.keyID

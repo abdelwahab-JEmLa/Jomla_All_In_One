@@ -158,7 +158,7 @@ fun ImageDisplayerGlide_Sec2FragID2_Panie(
                 SmallFloatingActionButton(
                     onClick = {
                         if (relative_M10OperationVentCouleur != null) {
-                            val m1Produit= repositorysMainGetter.find_M1Produit(
+                            val m1Produit= repositorysMainGetter.find_M1Produit_ByKeyID(
                                 relative_M10OperationVentCouleur
                                     .parent_M1Produit_KeyId
                             )

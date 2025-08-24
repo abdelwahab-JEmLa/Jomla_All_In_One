@@ -67,7 +67,7 @@ data class ActiveCentralValues(
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
 
-    val affiche_Floating_Button_gps_follow_mode_active: Boolean = false,
+    val affiche_Floating_Button_gps_follow_mode_active: Boolean = true,
     val affiche_Floating_Button_AddCLient: Boolean = false,
 
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
@@ -212,7 +212,7 @@ class FocusedValuesGetter(
             it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId
         }
     }
-
+    //-----------------------------M8BonVent-----------------------------------------------------------------------------------------------------------------------------------------------
     val activeonVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }
     }
@@ -270,11 +270,14 @@ class FocusedValuesGetter(
         repo10OperationVentCouleur.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM3CouleurProduitInfosKeyID }
     }
 
+    //-----------------------------M10OperationVentCouleur-----------------------------------------------------------------------------------------------------------------------------------------------
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
             it.parent_M8BonVent_KeyId == (currentActive_M9AppCompt?.onVentM8BonVentKey ?: "")
         }
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find { it.keyID == currentActive_M9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }

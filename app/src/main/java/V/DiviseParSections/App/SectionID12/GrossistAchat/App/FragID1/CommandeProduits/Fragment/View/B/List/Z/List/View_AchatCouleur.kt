@@ -138,7 +138,7 @@ fun View_AchatCouleur(
                                 quantity = "Quantité: $quantity",
                                 relative_M3CouleurInfos_KeyId = m3CouleurInfos.keyID,
                                 relative_M1Produit_Nom = repositorysMainGetter
-                                    .find_M1Produit(m3CouleurInfos.parentBProduitInfosKeyID)?.nom.empty_If_Null(
+                                    .find_M1Produit_ByKeyID(m3CouleurInfos.parentBProduitInfosKeyID)?.nom.empty_If_Null(
                                         ""
                                     )
                             )

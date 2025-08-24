@@ -85,7 +85,7 @@ fun MainList_Frag_Panie(
         // Fix: Check if groupedVents is not empty before accessing first()
         if (groupedVents.isNotEmpty()) {
             val key = groupedVents.entries.toList().first().key
-            val relative_FirstVent_Produit = repositorysMainGetter.find_M1Produit(key)
+            val relative_FirstVent_Produit = repositorysMainGetter.find_M1Produit_ByKeyID(key)
 
             LazyColumn(
                 modifier = modifier

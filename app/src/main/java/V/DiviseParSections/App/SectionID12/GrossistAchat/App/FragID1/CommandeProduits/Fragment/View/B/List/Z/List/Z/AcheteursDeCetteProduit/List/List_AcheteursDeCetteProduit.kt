@@ -128,7 +128,7 @@ fun List_AcheteursDeCetteProduit(
                                             true -> Parent_Dispo_Vent_StateFull(
                                                 relative_M10Vent = relative_M10Vent,
                                                 relative_M2Client = relative_M2Client,
-                                                relative_M1Produit = repositorysMainGetter.find_M1Produit(
+                                                relative_M1Produit = repositorysMainGetter.find_M1Produit_ByKeyID(
                                                     relative_M10Vent.parent_M1Produit_KeyId
                                                 )
                                             )

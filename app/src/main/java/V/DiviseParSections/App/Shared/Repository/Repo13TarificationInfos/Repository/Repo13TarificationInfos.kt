@@ -104,55 +104,140 @@ data class M13TarificationInfos(
     val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,
 
-    //---------------------------------ForgingIDsParent.M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    val profitMargin: Double = 0.0,
+    val suggestedUpgrade: TypeChoisi? = null,
+
     var parent_M1Produit_KeyId: String = "null",
     val parent_M1Produit_DebugInfos: String = "null",
-    //---------------------------------M8BonVent----------------------------------------------------------------------------------------------------------------------------------
     var parent_M8BonVent_KeyId: String = "null",
     val parent_M8BonVent_DebugInfos: String = "null",
-
-    //---------------------------------M2Client----------------------------------------------------------------------------------------------------------------------------------
     var parent_M2Client_KeyId: String = "null",
     val parent_M2Client_DebugInfos: String = "null",
-
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 ) {
-    fun getDebugInfos(): String {
-        return "$parent_M1Produit_DebugInfos $typeChoisi"
-    }
 
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
         val nomArabe: String = "",
         val couleur_Text: Color = Color.White,
+        val profitabilityScore: Int = 0,
     ) {
         Tariff_Achat_Depuit_Grossisst(
             Icons.Filled.History,
             Color(0xFF000000),
             "سعر الشراء",
-            Color(0xFF2196F3)
+            Color(0xFF2196F3),
+            1
         ),
-        DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "fd "),
-
+        DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "قديم", Color.Black, 0),
 
         LeMaxPrixArrive(
             Icons.Filled.ArrowUpward,
             Color(0xFFFF9800),
-            "فائدة محققة مع لاضا كثير من الزيناء"
+            "فائدة محققة مع الحصول على كثير من الزبناء",
+            Color.Black,
+            5
         ),
-        Historique(Icons.Filled.History, Color(0xFF2196F3), "السعر الااخير لي عطيناهولو"),
 
-        Prix_SupperGro_Et_PresentationService(Icons.Filled.Warning, Color(0xFF000000)
-            , "Supper Gro Prix", Color.Red),
+        Historique(
+            Icons.Filled.History,
+            Color(0xFF2196F3),
+            "السعر الأخير - يمكن تحسينه للربح الأكثر",
+            Color.White,
+            2
+        ),
 
-        Edited_Pour_Client(Icons.Filled.Edit, Color(0xFFEEEEEE), "بيــنهما", Color.Black),
+        Prix_SupperGro_Et_PresentationService(
+            Icons.Filled.Warning,
+            Color(0xFF000000),
+            "سعر السوبر جملة مع خدمة العرض",
+            Color.Red,
+            1
+        ),
 
-        Prix_Detaille(Icons.Filled.Person, Color(0xFFCDDC39), "Detaille Prix", Color.Black),
+        Edited_Pour_Client(
+            Icons.Filled.Edit,
+            Color(0xFFEEEEEE),
+            "بينهما - سعر مخصص",
+            Color.Black,
+            3
+        ),
+
+        Prix_Detaille(
+            Icons.Filled.Person,
+            Color(0xFFCDDC39),
+            "سعر التجزئة - ربح جيد",
+            Color.Black,
+            4
+        );
+
+        fun getNextProfitableType(): TypeChoisi? {
+            return when (this) {
+                Tariff_Achat_Depuit_Grossisst -> Prix_SupperGro_Et_PresentationService
+                Prix_SupperGro_Et_PresentationService -> Historique
+                Historique -> Edited_Pour_Client
+                Edited_Pour_Client -> Prix_Detaille
+                Prix_Detaille -> LeMaxPrixArrive
+                LeMaxPrixArrive -> null
+                DEFIN_OLd -> Historique
+            }
+        }
+
+        fun getMotivationalMessage(): String {
+            return when (this) {
+                Tariff_Achat_Depuit_Grossisst -> "ابدأ برفع السعر للحصول على ربح أفضل!"
+                Prix_SupperGro_Et_PresentationService -> "يمكنك رفع السعر قليلاً للربح أكثر"
+                Historique -> "حاول الانتقال لسعر التجزئة لربح أعلى"
+                Edited_Pour_Client -> "سعر مناسب، حاول الوصول لسعر التجزئة"
+                Prix_Detaille -> "ممتاز! حاول الوصول للسعر الأقصى"
+                LeMaxPrixArrive -> "رائع! أعلى ربح محقق!"
+                DEFIN_OLd -> "قم بتحديث السعر"
+            }
+        }
+
+        fun isTopProfitable(): Boolean {
+            return profitabilityScore >= 3
+        }
+
+        fun getImprovementSuggestion(): String {
+            val nextType = getNextProfitableType()
+            return if (nextType != null) {
+                "اقتراح: انتقل إلى ${nextType.nomArabe} لربح أكثر"
+            } else {
+                "ممتاز! أنت في أعلى مستوى ربح"
+            }
+        }
+    }
+
+    fun getDebugInfos(): String {
+        return "$parent_M1Produit_DebugInfos $typeChoisi"
+    }
+
+    fun getSellerMotivation(): String {
+        val baseMessage = typeChoisi.getMotivationalMessage()
+        val improvement = typeChoisi.getImprovementSuggestion()
+        return "$baseMessage\n$improvement"
+    }
+
+    fun canBeImproved(): Boolean {
+        return typeChoisi.getNextProfitableType() != null
+    }
+
+    fun getProfitOptimizationPriority(): Int {
+        return when (typeChoisi.profitabilityScore) {
+            5 -> 0
+            4 -> 1
+            3 -> 2
+            2 -> 3
+            1 -> 4
+            else -> 5
+        }
     }
 
     fun withProperDefaults(): M13TarificationInfos {
-        return this
+        return this.copy(
+            suggestedUpgrade = typeChoisi.getNextProfitableType()
+        )
     }
 
     companion object {
@@ -167,7 +252,8 @@ data class M13TarificationInfos(
             val m13TarificationInfos = M13TarificationInfos(
                 parent_M1Produit_KeyId = parentM1ProduitInfos.keyID,
                 parent_M1Produit_DebugInfos = parentM1ProduitInfos.getDebugInfos(),
-                prixCurrency = start_Prix_Depuit_Ancient
+                prixCurrency = start_Prix_Depuit_Ancient,
+                suggestedUpgrade = TypeChoisi.Historique.getNextProfitableType()
             )
             val modifier = Modifier.getSemanticsTag(
                 nomVal = "m13TarificationInfos",
@@ -178,6 +264,32 @@ data class M13TarificationInfos(
 
         fun get_default(): M13TarificationInfos {
             return M13TarificationInfos()
+        }
+
+        fun getTopProfitableTypes(): List<TypeChoisi> {
+            return TypeChoisi.values()
+                .filter { it.isTopProfitable() }
+                .sortedByDescending { it.profitabilityScore }
+        }
+
+        fun analyzeSalesDistribution(
+            groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
+        ): String {
+            val totalProducts = groupedSales.sumOf { it.value.size }
+            val topProfitableCount = groupedSales
+                .filter { it.key.isTopProfitable() }
+                .sumOf { it.value.size }
+
+            val profitablePercentage = if (totalProducts > 0) {
+                (topProfitableCount * 100) / totalProducts
+            } else 0
+
+            return when {
+                profitablePercentage >= 80 -> "ممتاز! ${profitablePercentage}% من مبيعاتك بأسعار مربحة"
+                profitablePercentage >= 60 -> "جيد! ${profitablePercentage}% مربح، حاول رفع النسبة"
+                profitablePercentage >= 40 -> "يمكن التحسين! ${profitablePercentage}% مربح، ركز على الأسعار العالية"
+                else -> "تحتاج تحسين! ${profitablePercentage}% فقط مربح، ارفع أسعارك"
+            }
         }
     }
 }
