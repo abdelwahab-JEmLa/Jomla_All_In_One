@@ -104,7 +104,7 @@ data class M18CentralParametresOfAllApps(
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true,
-    val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
+    val devStartUpScree: String = Screen.Screen1PanieVentsFinale.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
