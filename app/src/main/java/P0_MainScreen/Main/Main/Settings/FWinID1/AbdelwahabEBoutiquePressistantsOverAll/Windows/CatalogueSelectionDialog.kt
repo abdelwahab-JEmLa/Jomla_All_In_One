@@ -35,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -149,30 +151,31 @@ private fun CatalogueItem(
 ) {
     val backgroundColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
     val borderColor = if (isSelected) Color(0xFF2196F3) else Color(0xFFE0E0E0)
+    val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent!!
+    val updatedBonVent = when (catalogue.keyID) {
+        "t1" -> currentBonVent.copy(
+            pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+        )
+
+        "t2" -> currentBonVent.copy(
+            pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+        )
+
+        "t3" -> currentBonVent.copy(
+            pourcentage_AffichageDuCatalogue_tebnage = 100.0
+        )
+
+        else -> currentBonVent
+    }
 
     Card(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = updatedBonVent, key = SemanticsPropertyKey("updatedBonVent"))
+            }
             .fillMaxWidth()
             .clickable {
-                // FIXED: Ensure the update happens and triggers recomposition
-                focusedValuesGetter.activeOnVent_M8BonVent?.let { currentBonVent ->
-                    val updatedBonVent = when (catalogue.keyID) {
-                        "t1" -> currentBonVent.copy(
-                            pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
-                        )
-                        "t2" -> currentBonVent.copy(
-                            pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
-                        )
-                        "t3" -> currentBonVent.copy(
-                            pourcentage_AffichageDuCatalogue_tebnage = 100.0
-                        )
-                        else -> currentBonVent
-                    }
-
-                    // FIXED: Use upsert instead of update to ensure proper state management
-                    repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
-                }
-
+                repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
                 onSelect()
             }
             .border(
