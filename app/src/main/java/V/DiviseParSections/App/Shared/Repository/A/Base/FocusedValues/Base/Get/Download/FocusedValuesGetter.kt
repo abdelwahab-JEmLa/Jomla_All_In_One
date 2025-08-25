@@ -71,6 +71,11 @@ data class ActiveCentralValues(
     val affiche_Floating_Button_AddCLient: Boolean = false,
 
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
+    //-----------------Fabs.Affichage----------------------------------------------------------------------------
+    var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
+    var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
+    var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+
 ) {
     companion object {
         fun get_Default(): ActiveCentralValues {

@@ -1,4 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich
+
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -22,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,17 +40,11 @@ fun AffichePresentedCatalogues(
     modifier: Modifier = Modifier
 ) {
 
-    val activeOnVent_M8BonVent by remember(
-        aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
-    ) {
-        derivedStateOf { focusedValuesGetter.activeOnVent_M8BonVent }
-    }
-
     val catalogues by remember {
         derivedStateOf { B4CatalogueCategoriesRepository() }
     }
 
-    activeOnVent_M8BonVent?.let { bonVent ->
+    focusedValuesGetter.active_Central_Values.let { active_Central_Values ->
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -77,24 +71,21 @@ fun AffichePresentedCatalogues(
                     )
                 }
 
-                // Dynamic catalogue rows - now reactive to bonVent changes
+                // Dynamic catalogue rows - now reactive to active_Central_Values changes
                 catalogues.sortedBy { it.position }
                     .filter { it.keyID != "t4" } // Exclude "Sans Catalogue"
                     .forEach { catalogue ->
                         val percentage = when (catalogue.keyID) {
-                            "t1" -> bonVent.pourcentage_AffichageDuCatalogue_Conficerie
-                            "t2" -> bonVent.pourcentage_AffichageDuCatalogue_Cosmitiques
-                            "t3" -> bonVent.pourcentage_AffichageDuCatalogue_tebnage
+                            "t1" -> active_Central_Values.pourcentage_AffichageDuCatalogue_Conficerie
+                            "t2" -> active_Central_Values.pourcentage_AffichageDuCatalogue_Cosmitiques
+                            "t3" -> active_Central_Values.pourcentage_AffichageDuCatalogue_tebnage
                             else -> 0.0
                         }
 
-                        // Add a key to force recomposition when bonVent changes
-                        key("${catalogue.keyID}_${bonVent.keyID}_$percentage") {
-                            CompactCatalogueRow(
-                                catalogue = catalogue,
-                                percentage = percentage
-                            )
-                        }
+                        CompactCatalogueRow(
+                            catalogue = catalogue,
+                            percentage = percentage
+                        )
                     }
             }
         }
@@ -132,7 +123,10 @@ private fun CompactCatalogueRow(
             .padding(vertical = 2.dp)
             .semantics(mergeDescendants = true) {
                 val catalogueDebugInfo = SemanticsPropertyKey<String>("CatalogueDebug")
-                set(catalogueDebugInfo, "Catalogue: ${catalogue.nom}, ID: ${catalogue.keyID}, Percentage: $percentage%")
+                set(
+                    catalogueDebugInfo,
+                    "Catalogue: ${catalogue.nom}, ID: ${catalogue.keyID}, Percentage: $percentage%"
+                )
             },
         colors = CardDefaults.cardColors(
             containerColor = if (isComplete) {

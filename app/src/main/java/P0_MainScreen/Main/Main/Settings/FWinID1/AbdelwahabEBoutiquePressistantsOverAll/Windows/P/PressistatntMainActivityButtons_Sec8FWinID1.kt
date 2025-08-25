@@ -245,6 +245,26 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
                 repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
 
+                val currentActiveCentralValues = focusedValuesGetter.active_Central_Values
+                val updatedActiveCentralValues = when (catalogueId) {
+                    "t1" -> currentActiveCentralValues.copy(
+                        pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+                    )
+
+                    "t2" -> currentActiveCentralValues.copy(
+                        pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+                    )
+
+                    "t3" -> currentActiveCentralValues.copy(
+                        pourcentage_AffichageDuCatalogue_tebnage = 100.0,
+                    )
+
+                    else -> currentActiveCentralValues.copy()
+                }
+
+                // Update the focused values with the new active central values
+                focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
+
                 val updatedAppCompt = appCompt.copy(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )
