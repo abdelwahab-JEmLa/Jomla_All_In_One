@@ -48,15 +48,14 @@ fun AffichePresentedCatalogues(
         Card(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                ,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -64,7 +63,7 @@ fun AffichePresentedCatalogues(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "عرض المتجر",
+                        text = "ما عرض  من المتجر",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

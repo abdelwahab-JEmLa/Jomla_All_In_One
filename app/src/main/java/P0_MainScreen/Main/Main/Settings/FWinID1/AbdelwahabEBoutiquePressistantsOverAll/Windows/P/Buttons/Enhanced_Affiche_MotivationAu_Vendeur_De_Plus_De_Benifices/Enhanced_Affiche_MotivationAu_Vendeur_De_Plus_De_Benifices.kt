@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich.AffichePresentedCatalogues
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -32,11 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+//TODO(1): COMPLETED - Cards now use tariffType.couleur for background and tariffType.couleur_Text for text
 @Composable
 fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val ventOperations = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
@@ -58,14 +60,19 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
             }
         }
     )
+    val focused_M1ProduitInfos_Pour_PrixDifineur = aCentralFacade
+        .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur == null
 
     Column(modifier = modifier) {
-        AffichePresentedCatalogues()
-         EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
-        EnhancedTariffTypeSalesDisplay(groupedSales)
+        focused_M1ProduitInfos_Pour_PrixDifineur.ifTrue {
+            AffichePresentedCatalogues()
+            EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
+        }
+        (totalRevenue > 0).ifTrue {
+            EnhancedTariffTypeSalesDisplay(groupedSales)
+        }
     }
 }
-
 
 
 fun getGroupedVentsByTariffType(
@@ -74,14 +81,17 @@ fun getGroupedVentsByTariffType(
     allProducts: List<ArticlesBasesStatsTable>,
     tariffRepo: Repo13TarificationInfos
 ): List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> {
-    val allowedTypes = setOf(TypeChoisi.Prix_Detaille, TypeChoisi.Prix_SupperGro_Et_PresentationService)
-    val initialGroups = mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
+    val allowedTypes =
+        setOf(TypeChoisi.Prix_Detaille, TypeChoisi.Prix_SupperGro_Et_PresentationService)
+    val initialGroups =
+        mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
 
     ventOperations
         .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
         .forEach { ventOperation ->
             allProducts.find { it.keyID == ventOperation.parent_M1Produit_KeyId }?.let { product ->
-                val existing_Prix_Detaille_Du_Produit = find_existing_Prix_Detaille_Du_Produit(aCentralFacade, product)
+                val existing_Prix_Detaille_Du_Produit =
+                    find_existing_Prix_Detaille_Du_Produit(aCentralFacade, product)
 
                 val tariffInfo = if (ventOperation.parentM13TarificationKeyID != "null") {
                     tariffRepo.datasValue.find { it.keyID == ventOperation.parentM13TarificationKeyID }
@@ -99,9 +109,11 @@ fun getGroupedVentsByTariffType(
                             prixCurrency = if (product.prixVent > 0) product.prixVent else tariffInfo.prixCurrency
                         )
                     }
+
                     tariffInfo.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService && product.prixVent == 0.0 -> {
                         tariffInfo.copy(typeChoisi = TypeChoisi.Prix_Detaille)
                     }
+
                     else -> tariffInfo
                 }
 
@@ -112,7 +124,8 @@ fun getGroupedVentsByTariffType(
             }
         }
 
-    val finalGroups = mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
+    val finalGroups =
+        mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
 
     initialGroups.filter { it.key in allowedTypes }.forEach { (type, pairs) ->
         finalGroups.getOrPut(type) { mutableListOf() }.addAll(pairs)
@@ -155,12 +168,15 @@ private fun EnhancedTariffTypeSalesDisplay(
 ) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(
+                alpha = 0.9f
+            )
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column() {
             groupedSales.forEach { (tariffType, pairs) ->
                 EnhancedTariffTypeRow(tariffType, pairs)
             }
@@ -184,7 +200,14 @@ private fun EnhancedTariffTypeRow(
             .fillMaxWidth()
             .padding(vertical = 3.dp)
             .clickable { showDialog = true },
-        colors = CardDefaults.cardColors(containerColor = tariffType.couleur.copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(
+            // FIXED: Using tariffType.couleur for background with good visibility
+            containerColor = when (tariffType) {
+                TypeChoisi.Prix_Detaille -> tariffType.couleur.copy(alpha = 0.4f)
+                TypeChoisi.Prix_SupperGro_Et_PresentationService -> tariffType.couleur.copy(alpha = 0.1f)
+                else -> tariffType.couleur.copy(alpha = 0.3f)
+            }
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -202,24 +225,28 @@ private fun EnhancedTariffTypeRow(
                             imageVector = icon,
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
+                            // FIXED: Using tariffType.couleur_Text for icon tint
                             tint = tariffType.couleur_Text
                         )
                     }
                     Text(
                         text = tariffType.nomArabe.ifBlank { tariffType.name },
                         style = MaterialTheme.typography.bodyMedium,
+                        // FIXED: Using tariffType.couleur_Text for text color
                         color = tariffType.couleur_Text,
                         fontWeight = FontWeight.Medium
                     )
                 }
 
                 Badge(
+                    // FIXED: Using tariffType.couleur for badge background
                     containerColor = tariffType.couleur,
+                    // FIXED: Using tariffType.couleur_Text for badge content
                     contentColor = tariffType.couleur_Text
                 ) {
                     Text(
                         text = productTariffPairs.size.toString(),
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -251,8 +278,10 @@ private fun findClosestPriceType(
     val retailAvg = allGroups[TypeChoisi.Prix_Detaille]?.map { it.first.prixVent }?.average()
         ?: (products.first().prixVent * 1.2)
 
-    val wholesaleAvg = allGroups[TypeChoisi.Prix_SupperGro_Et_PresentationService]?.map { it.first.prixVent }?.average()
-        ?: (products.first().prixVent * 0.8)
+    val wholesaleAvg =
+        allGroups[TypeChoisi.Prix_SupperGro_Et_PresentationService]?.map { it.first.prixVent }
+            ?.average()
+            ?: (products.first().prixVent * 0.8)
 
     val midPoint = (wholesaleAvg + retailAvg) / 2
 

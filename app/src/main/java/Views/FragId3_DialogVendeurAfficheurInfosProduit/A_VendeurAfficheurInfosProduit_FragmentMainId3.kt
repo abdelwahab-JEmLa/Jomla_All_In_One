@@ -383,7 +383,7 @@ fun MainUi(
 
                 // Action buttons
                 PressistatntMainActivityButtons_Sec8FWinID1(
-                    cLenceDepuitFragmentsSepecialisteDeVents = true,
+                    its_Affiche_InfoProduit_Dialog = true,
                     onClickAnulationButton = {
                         updateState(
                             viewModelInitApp = viewModelInitApp,

@@ -80,7 +80,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
+    its_Affiche_InfoProduit_Dialog: Boolean = false,
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
@@ -298,7 +298,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
 
         val cLenceDepuitFragmentsSepecialicteDeVents =
-            (cLenceDepuitFragmentsSepecialisteDeVents
+            (its_Affiche_InfoProduit_Dialog
                     || itsFragmentProduitFastSearchDialog
                     && viewModel.aCentralFacade
                 .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
@@ -369,7 +369,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin && true && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
+                    (focusedValuesGetter.currentApp_Est_Admin  && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,

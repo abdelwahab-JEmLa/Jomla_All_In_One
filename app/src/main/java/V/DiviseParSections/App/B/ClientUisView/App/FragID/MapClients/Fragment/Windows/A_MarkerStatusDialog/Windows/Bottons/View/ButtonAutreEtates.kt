@@ -5,7 +5,9 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +35,14 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
-    modifier: Modifier=Modifier,
-    viewModel: MapClientsViewModel= koinViewModel(),
+    modifier: Modifier = Modifier,
+    viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     clickedClient: Long,
-    onClick: (M8BonVent) -> Unit={},
+    onClick: (M8BonVent) -> Unit = {},
 ) {
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
@@ -81,14 +84,35 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 onClick(found_Or_Default_M8BonVent.default_If_No_Found)
             }
 
+            (relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                .ifTrue {
+                    val lastCommande_Transaction_ON_MODE_COMMEND_ACTUELLEMENT =
+                        repositorysMainGetter.repo8BonVent.datasValue.lastOrNull {
+                            it.parent_M2Client_KeyID == relative_M2Client.keyID
+                                    && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        }
+                    if (lastCommande_Transaction_ON_MODE_COMMEND_ACTUELLEMENT != null
+                        && lastCommande_Transaction_ON_MODE_COMMEND_ACTUELLEMENT.confirmeCommande_TimeTamp == 0L
+                    ) {
+                        aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                            lastCommande_Transaction_ON_MODE_COMMEND_ACTUELLEMENT.copy(
+                                confirmeCommande_TimeTamp = System.currentTimeMillis()
+                            )
+                        )
+                    }
+                }
+
             if (relative_Etate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
+
+
                 relative_M2Client.edite_Exact_Gps_est_fait.ifFalse {
                     viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(relative_M2Client)
                 }
 
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+
             }
 
             aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()

@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
@@ -26,10 +27,11 @@ import org.koin.compose.koinInject
 
 @Composable
 fun CommandButton(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier,
     relative_M2Client: M2Client,
     relative_Etate: M8BonVent.EtateActuellementEst,
-    aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
     context: Context,
     onUpdateLongAppSetting: () -> Unit = {},
@@ -68,6 +70,35 @@ fun CommandButton(
 
             viewModel.updateLongAppSetting(relative_M2Client.id)
             onUpdateLongAppSetting()
+            val currentActiveCentralValues = focusedValuesGetter.active_Central_Values
+            val catalogueId =
+                focusedValuesGetter.currentActive_M9AppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+
+            val updatedActiveCentralValues = when (catalogueId) {
+                "t1" -> currentActiveCentralValues.copy(
+                    pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+                    pourcentage_AffichageDuCatalogue_Cosmitiques = 0.0,
+                    pourcentage_AffichageDuCatalogue_tebnage = 0.0,
+                )
+
+                "t2" -> currentActiveCentralValues.copy(
+                    pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+                    pourcentage_AffichageDuCatalogue_Conficerie = 0.0,
+                    pourcentage_AffichageDuCatalogue_tebnage = 0.0,
+
+                    )
+
+                "t3" -> currentActiveCentralValues.copy(
+                    pourcentage_AffichageDuCatalogue_tebnage = 100.0,
+                    pourcentage_AffichageDuCatalogue_Cosmitiques = 0.0,
+                    pourcentage_AffichageDuCatalogue_Conficerie = 0.0,
+                )
+
+                else -> currentActiveCentralValues.copy()
+            }
+
+            // Update the focused values with the new active central values
+            focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
