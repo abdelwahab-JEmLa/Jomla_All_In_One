@@ -80,7 +80,7 @@ fun TariffButtonItem(
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .activeOnVent_M2Client,
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .activeonVent_M8BonVent,
+            .activeOnVent_M8BonVent,
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         mutableStateOf(
@@ -92,9 +92,9 @@ fun TariffButtonItem(
                 parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                     .activeOnVent_M2Client?.get_DebugInfos() ?: "null",
                 parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeonVent_M8BonVent?.keyID ?: "null",
+                    .activeOnVent_M8BonVent?.keyID ?: "null",
                 parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .activeonVent_M8BonVent?.get_DebugInfos() ?: "null",
+                    .activeOnVent_M8BonVent?.get_DebugInfos() ?: "null",
             )
         )
     }

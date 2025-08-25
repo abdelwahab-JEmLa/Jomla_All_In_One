@@ -1,7 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,13 +38,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.koin.compose.koinInject
 
 @Composable
 fun CatalogueSelectionDialog(
     showDialog: Boolean,
     currentSelectedCatalogueId: String?,
     onDismiss: () -> Unit,
-    onCatalogueSelected:(String) -> Unit
+    onCatalogueSelected: (String) -> Unit
 ) {
     if (showDialog) {
         val catalogues = B4CatalogueCategoriesRepository()
@@ -111,7 +115,7 @@ fun CatalogueSelectionDialog(
                                 color = Color.Gray
                             )
                         }
-                        
+
                         TextButton(
                             onClick = {
                                 selectedCatalogueId?.let { catalogueId ->
@@ -136,17 +140,41 @@ fun CatalogueSelectionDialog(
 
 @Composable
 private fun CatalogueItem(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     catalogue: CataloguesCaegorie,
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
     val backgroundColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
     val borderColor = if (isSelected) Color(0xFF2196F3) else Color(0xFFE0E0E0)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onSelect() }
+            .clickable {
+                // FIXED: Ensure the update happens and triggers recomposition
+                focusedValuesGetter.activeOnVent_M8BonVent?.let { currentBonVent ->
+                    val updatedBonVent = when (catalogue.keyID) {
+                        "t1" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+                        )
+                        "t2" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+                        )
+                        "t3" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_tebnage = 100.0
+                        )
+                        else -> currentBonVent
+                    }
+
+                    // FIXED: Use upsert instead of update to ensure proper state management
+                    repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
+                }
+
+                onSelect()
+            }
             .border(
                 width = if (isSelected) 2.dp else 1.dp,
                 color = borderColor,
@@ -175,7 +203,7 @@ private fun CatalogueItem(
                     color = Color.Gray
                 )
             }
-            
+
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,

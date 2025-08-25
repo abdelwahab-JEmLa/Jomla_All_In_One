@@ -108,7 +108,7 @@ fun View_MainItem(
     val datesHandler = DatesHandler()
     val etateActuellementEst = relative_M8BonVent.etateActuellementEst
     val activeM8BonVentId =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent?.vid
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent?.vid
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -674,7 +674,7 @@ fun View_MainItem(
                 )
 
                 if (updatedBonVent != null) {
-                    repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+                    repositorysMainSetter.update_M8BonVent(updatedBonVent)
                 }
 
                 Toast.makeText(

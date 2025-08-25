@@ -212,8 +212,9 @@ class FocusedValuesGetter(
             it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId
         }
     }
+
     //-----------------------------M8BonVent-----------------------------------------------------------------------------------------------------------------------------------------------
-    val activeonVent_M8BonVent by derivedStateOf {
+    val activeOnVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }
     }
 
@@ -245,17 +246,17 @@ class FocusedValuesGetter(
 
     val activeOnVentM2ClientInfos by derivedStateOf {
         repo2Client.datasValue.find {
-            it.keyID == (activeonVent_M8BonVent?.parent_M2Client_KeyID ?: "")
+            it.keyID == (activeOnVent_M8BonVent?.parent_M2Client_KeyID ?: "")
         }
     }
 
     val activeOnVent_M2Client by derivedStateOf {
-        val targetKey = activeonVent_M8BonVent?.parent_M2Client_KeyID
+        val targetKey = activeOnVent_M8BonVent?.parent_M2Client_KeyID
         repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
     fun getDefaultM10VentOperation(): M10OperationVentCouleur? {
-        return activeonVent_M8BonVent?.let {
+        return activeOnVent_M8BonVent?.let {
             with(it) {
                 M10OperationVentCouleur(
                     parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
@@ -321,7 +322,7 @@ class FocusedValuesGetter(
             val map = buildMap {
                 with(getter) {
                     put("onVentM2ClientInfos", activeOnVent_M2Client?.let { it.nom } ?: "null")
-                    put("onVentM8BonVent", activeonVent_M8BonVent?.let { "${it.parent_M2Client_DebugInfos}/${it.etateActuellementEst}" } ?: "null")
+                    put("onVentM8BonVent", activeOnVent_M8BonVent?.let { "${it.parent_M2Client_DebugInfos}/${it.etateActuellementEst}" } ?: "null")
                     put("focused_M1ProduitInfos_Pour_PrixDifineur", focused_M1ProduitInfos_Pour_PrixDifineur?.let { it.nom + it.keyID } ?: "null")
                     put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent", onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map { "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}" })
                     put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit", focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })

@@ -102,7 +102,7 @@ fun ViewVentCouleur_T1(
 
     val defaultM10Vent = produit.let {
         M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-            focusedValuesGetter.activeonVent_M8BonVent,
+            focusedValuesGetter.activeOnVent_M8BonVent,
             relative_M3CouleurInfos
         ).copy(
             setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,

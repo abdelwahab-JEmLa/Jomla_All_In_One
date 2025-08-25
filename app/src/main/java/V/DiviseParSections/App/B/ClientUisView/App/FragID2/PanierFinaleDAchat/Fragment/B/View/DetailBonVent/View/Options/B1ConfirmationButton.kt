@@ -41,7 +41,7 @@ fun ConfirmationButton(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter
 ) {
     val relative_M8BonVent =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
         viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(

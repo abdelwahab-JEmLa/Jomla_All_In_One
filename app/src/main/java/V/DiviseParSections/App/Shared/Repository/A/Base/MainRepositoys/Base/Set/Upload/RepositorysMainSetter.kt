@@ -40,7 +40,7 @@ class RepositorysMainSetter(
     private val repoM1Produit: RepoM1Produit,
     private val repo2Client: Repo2Client,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
-    private val repo8BonVent: Repo8BonVent,
+     val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo11AchatOperation: Repo11AchatOperation,
     private val repo13TarificationInfos: Repo13TarificationInfos,
@@ -153,7 +153,6 @@ class RepositorysMainSetter(
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_M8BonVent(data: M8BonVent?) = data?.let { repo8BonVent.upsert(it) }
-    fun upsertM8BonVent(data: M8BonVent) { repo8BonVent.upsert(data) }
 
     fun delete_M8BonVent(data: M8BonVent) {
         repo8BonVent.delete(data)

@@ -94,15 +94,15 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            if ( relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency ) {
+            if (relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency) {
                 add(relative_Tariff_Prix_Detaille)
             }
 
 
-            add( relative_Tariff_Prix_Progressive )
+            add(relative_Tariff_Prix_Progressive)
 
-            if ( relative_Tariff_Historique != null ) {
-                add( relative_Tariff_Historique )
+            if (relative_Tariff_Historique != null) {
+                add(relative_Tariff_Historique)
             }
 
             if (
@@ -242,6 +242,7 @@ private fun createProgressiveTariff(
         )
     )
 }
+
 private fun calculateProgressivePrice(
     prixDetaille: Double,
     prixVent: Double,
@@ -249,7 +250,7 @@ private fun calculateProgressivePrice(
 ): Double {
     val priceDifference = prixDetaille - prixVent
 
-    val pourcentageProgressive1 = 60
+    val pourcentageProgressive1 = if (pourcentageProgressive == 50) 60 else pourcentageProgressive
 
     val progressiveAdjustment = priceDifference * (pourcentageProgressive1 / 100.0)
 

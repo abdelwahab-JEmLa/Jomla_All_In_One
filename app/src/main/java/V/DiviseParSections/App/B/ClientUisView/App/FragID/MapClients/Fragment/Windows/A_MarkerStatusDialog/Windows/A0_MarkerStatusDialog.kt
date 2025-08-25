@@ -133,7 +133,7 @@ private fun CustomStatusDropdownMenu(
                     }
 
                     if (updatedBonVent != null) {
-                        aCentralFacade.repositorysMainSetter.upsertM8BonVent(updatedBonVent)
+                        aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
                     }
 
                     val updated_active_Central_Values =
@@ -194,7 +194,7 @@ fun MarkerStatusDialog(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .activeonVent_M8BonVent,
+            .activeOnVent_M8BonVent,
     relative_M2Client: M2Client?,
     mapView: MapView,
     uiState: UiState,

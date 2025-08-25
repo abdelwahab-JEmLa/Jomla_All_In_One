@@ -135,7 +135,7 @@ fun ID4ClientSearchButton(
 
             if (showLabels) {
                 val nomClient = getter.activeOnVent_M2Client?.nom ?: ""
-                val onVentId8BonVent = getter.activeonVent_M8BonVent
+                val onVentId8BonVent = getter.activeOnVent_M8BonVent
 
                 Text(
                     text = if (isTextCollapsed) {

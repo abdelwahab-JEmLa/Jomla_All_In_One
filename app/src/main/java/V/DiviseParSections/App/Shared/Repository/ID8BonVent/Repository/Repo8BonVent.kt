@@ -175,6 +175,10 @@ data class M8BonVent(
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+    var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
+    var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
+    var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+
     //---------------------------------Parent.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     var parent_M9AppCompt_KeyID: String = "null",
     var parent_M9AppCompt_DebugInfos: String = "null",

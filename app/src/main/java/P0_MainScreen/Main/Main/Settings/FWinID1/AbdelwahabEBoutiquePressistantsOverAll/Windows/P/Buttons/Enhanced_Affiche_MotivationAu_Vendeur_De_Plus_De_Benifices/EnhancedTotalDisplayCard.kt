@@ -19,8 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-//<--
-//TODO(1): ajout totale produits presented 
+
 @Composable
  fun EnhancedTotalDisplayCard(
     totalProducts: Int,

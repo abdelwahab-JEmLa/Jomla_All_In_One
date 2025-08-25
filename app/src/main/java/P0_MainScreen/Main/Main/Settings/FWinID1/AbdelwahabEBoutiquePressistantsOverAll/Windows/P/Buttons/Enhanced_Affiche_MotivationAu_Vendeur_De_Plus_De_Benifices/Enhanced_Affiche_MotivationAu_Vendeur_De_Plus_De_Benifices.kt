@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich.AffichePresentedCatalogues
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -59,10 +60,13 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     )
 
     Column(modifier = modifier) {
+        AffichePresentedCatalogues()
         //  EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
         EnhancedTariffTypeSalesDisplay(groupedSales)
     }
 }
+
+
 
 fun getGroupedVentsByTariffType(
     aCentralFacade: ACentralFacade,
@@ -150,7 +154,9 @@ private fun EnhancedTariffTypeSalesDisplay(
     groupedSales: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>>
 ) {
     Card(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
