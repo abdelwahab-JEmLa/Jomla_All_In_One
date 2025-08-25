@@ -76,12 +76,23 @@ private fun HistoriqueWorckContent(
     repositorysMainGetter: RepositorysMainGetter,
     currentPeriod: M14VentPeriode?,
     modifier: Modifier = Modifier
-) {     //<--
-//TODO(1): afficeh les commands aved temp passe >0 s afficeh au top et eleve les autres sans temp passe >0
+) {
+    // Sort orders: confirmed orders (with confirmation time > 0) at top, others below
+    val sortedBons = bons_De_Cette_Period.sortedWith(
+        compareByDescending<M8BonVent> { it.confirmeCommande_TimeTamp > 0 }
+            .thenByDescending {
+                if (it.confirmeCommande_TimeTamp > 0) it.confirmeCommande_TimeTamp
+                else it.creationTimestamps
+            }
+    )
+
+    // Separate confirmed and unconfirmed orders for section headers
+    val confirmedOrders = sortedBons.filter { it.confirmeCommande_TimeTamp > 0 }
+    val unconfirmedOrders = sortedBons.filter { it.confirmeCommande_TimeTamp <= 0 }
+
     LazyColumn(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
@@ -98,33 +109,106 @@ private fun HistoriqueWorckContent(
             QuickStatsRow(bons = bons_De_Cette_Period)
         }
 
-        // Receipts list header
-        if (bons_De_Cette_Period.isNotEmpty()) {
+        // Confirmed orders section
+        if (confirmedOrders.isNotEmpty()) {
             item {
-                Text(
-                    text = "سجل الإيصالات",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                SectionHeader(
+                    title = "الطلبات المؤكدة",
+                    count = confirmedOrders.size,
+                    icon = Icons.Default.CheckCircle,
+                    color = Color.Green
+                )
+            }
+
+            items(
+                items = confirmedOrders,
+                key = { "confirmed_${it.keyID}" }
+            ) { bon ->
+                EnhancedBonVentCard(
+                    bon = bon,
+                    repositorysMainGetter = repositorysMainGetter
                 )
             }
         }
 
-        // Receipts sorted by creation time (newest first)
-        items(
-            items = bons_De_Cette_Period.sortedByDescending { it.creationTimestamps },
-            key = { it.keyID }
-        ) { bon ->
-            EnhancedBonVentCard(
-                bon = bon,
-                repositorysMainGetter = repositorysMainGetter
-            )
+        // Unconfirmed orders section
+        if (unconfirmedOrders.isNotEmpty()) {
+            item {
+                SectionHeader(
+                    title = "الطلبات غير المؤكدة",
+                    count = unconfirmedOrders.size,
+                    icon = Icons.Default.Schedule,
+                    color = Color.Red
+                )
+            }
+
+            items(
+                items = unconfirmedOrders.sortedByDescending { it.creationTimestamps },
+                key = { "unconfirmed_${it.keyID}" }
+            ) { bon ->
+                EnhancedBonVentCard(
+                    bon = bon,
+                    repositorysMainGetter = repositorysMainGetter
+                )
+            }
         }
 
         // Empty state
         if (bons_De_Cette_Period.isEmpty()) {
             item {
                 EmptyStateCard()
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    count: Int,
+    icon: ImageVector,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = color.copy(alpha = 0.1f)
+        ),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.3f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Surface(
+                shape = CircleShape,
+                color = color
+            ) {
+                Text(
+                    text = count.toString(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
         }
     }
@@ -139,7 +223,8 @@ private fun PeriodStatisticsCard(
     val totalRevenue = bons.sumOf { it.sum_De_Totale_Vents }
     val totalPayments = bons.sumOf { it.versement }
     val totalCredit = bons.sumOf { it.sum_De_Credit_Fait }
-    val confirmedOrders = bons.count { it.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME }
+    val confirmedOrders = bons.count { it.confirmeCommande_TimeTamp > 0 }
+    val totalOrders = bons.size
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -178,9 +263,23 @@ private fun PeriodStatisticsCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 StatisticItem(
+                    title = "المجموع الكلي",
+                    value = totalOrders.toString(),
+                    icon = Icons.Default.Assignment,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+                StatisticItem(
                     title = "الطلبات المؤكدة",
                     value = confirmedOrders.toString(),
                     icon = Icons.Default.CheckCircle,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+                StatisticItem(
+                    title = "غير مؤكدة",
+                    value = (totalOrders - confirmedOrders).toString(),
+                    icon = Icons.Default.Schedule,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -311,7 +410,7 @@ fun StatusIndicator(
 }
 
 @Composable
-private fun ClientInfo(
+fun ClientInfo(
     clientName: String,
     modifier: Modifier = Modifier
 ) {
@@ -331,30 +430,10 @@ private fun ClientInfo(
 }
 
 @Composable
-private fun AmountInfo(
+fun AmountInfo(
     totalAmount: Double,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.End
-    ) {
-        Text(
-            text = "المبلغ الإجمالي",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-        Text(
-            text = "${totalAmount.toInt()} دج",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (totalAmount > 0) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            }
-        )
-    }
 }
 
 @Composable
@@ -452,7 +531,7 @@ private fun TimeInfoItem(
 }
 
 @Composable
-private fun FinancialDetailsSection(
+fun FinancialDetailsSection(
     creditAmount: Double,
     paymentAmount: Double,
     modifier: Modifier = Modifier

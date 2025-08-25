@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -64,11 +62,11 @@ fun WorkCompletionAlertDialog(
 
     var isLoading by remember { mutableStateOf(false) }
     var showToast by remember { mutableStateOf(false) }
-    var showHistoryView by remember { mutableStateOf(false) }
+    var showHistoryView by remember { mutableStateOf(true) }
 
     val isVerificationChecked by remember {
         mutableStateOf(
-            related_M14VentPeriode?.son_verification_entre_vent_et_achat_est_fait ?: false
+            related_M14VentPeriode?.son_verification_entre_vent_et_achat_est_fait ?: true
         )
     }
 
@@ -88,11 +86,7 @@ fun WorkCompletionAlertDialog(
         Dialog(
             onDismissRequest = {
                 if (!isLoading) {
-                    if (showHistoryView) {
-                        showHistoryView = false
-                    } else {
-                        showToast = true
-                    }
+                    onDismiss()
                 }
             },
             properties = DialogProperties(
@@ -110,248 +104,173 @@ fun WorkCompletionAlertDialog(
                 color = MaterialTheme.colorScheme.surface,
                 tonalElevation = 6.dp
             ) {
-                if (showHistoryView) {
-                    // Display work history in a scrollable LazyColumn
-                    androidx.compose.foundation.lazy.LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                // Display everything in a single structure with the history at the top
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Header with title
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // History header with back button
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "سجل العمل للفترة",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                OutlinedButton(
-                                    onClick = { showHistoryView = false },
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Text("العودة")
-                                }
-                            }
-                        }
+                        Text(
+                            text = if (nombreClientAvecCibleCommeLastBonAchat > 0) "تنبيه - عملاء معلقون" else "جاهز للإغلاق",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                        // Include the HistoriqueWorck component as an item
-                        item {
-                            HistoriqueWorck(
-                                aCentralFacade = aCentralFacade,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                        Icon(
+                            imageVector = if (nombreClientAvecCibleCommeLastBonAchat > 0) Icons.Default.Warning else Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = if (nombreClientAvecCibleCommeLastBonAchat > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp)
+                        )
                     }
-                } else {
-                    // Original dialog content
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+
+                    // Message text
+                    val messageText = if (nombreClientAvecCibleCommeLastBonAchat >= 1) {
+                        "يرجى تعيين تقارير $nombreClientAvecCibleCommeLastBonAchat زبون لغلق فترة الطلبيات."
+                    } else {
+                        "يرجى تعيين تقارير الزبائن لغلق فترة الطلبيات."
+                    }
+
+                    Text(
+                        text = messageText,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+
+
+                    // Verification status indicator
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isVerificationChecked) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        ),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        // Header with icon and title
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.padding(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = if (nombreClientAvecCibleCommeLastBonAchat > 0) Icons.Default.Warning else Icons.Default.CheckCircle,
+                                imageVector = if (isVerificationChecked) Icons.Default.CheckCircle else Icons.Default.Warning,
                                 contentDescription = null,
-                                tint = if (nombreClientAvecCibleCommeLastBonAchat > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(32.dp)
+                                tint = if (isVerificationChecked) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = if (nombreClientAvecCibleCommeLastBonAchat > 0) "تنبيه - عملاء معلقون" else "جاهز للإغلاق",
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
+                                text = if (isVerificationChecked) {
+                                    "تم التحقق من الفترة"
+                                } else {
+                                    "لم يتم التحقق من الفترة بعد"
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (isVerificationChecked) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        }
+                    }
+
+
+                    HistoriqueWorck(
+                        aCentralFacade = aCentralFacade,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Action buttons at the bottom
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
+                    ) {
+                        OutlinedButton(
+                            onClick = onDismiss,
+                            enabled = !isLoading,
+                            border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.5.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                "العودة",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Medium
                             )
                         }
 
-                        // Content section
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            val messageText = if (nombreClientAvecCibleCommeLastBonAchat >= 1) {
-                                "يرجى تعيين تقارير $nombreClientAvecCibleCommeLastBonAchat زبون لغلق فترة الطلبيات."
-                            } else {
-                                "يرجى تعيين تقارير الزبائن لغلق فترة الطلبيات."
-                            }
+                        val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 ||
+                                repo18CentralParametresOfAllApps.dataValue?.itsDevMode ?: false
 
-                            Text(
-                                text = messageText,
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
-
-                            // Warning card for pending clients
-                            if (nombreClientAvecCibleCommeLastBonAchat > 0) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(12.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "العملاء المعلقون",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onErrorContainer
-                                        )
-                                        Text(
-                                            text = nombreClientAvecCibleCommeLastBonAchat.toString(),
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            color = MaterialTheme.colorScheme.onErrorContainer,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                        if (canConfirm) {
+                            Button(
+                                onClick = {
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        updateVerificationStatus(true)
+                                        delay(500) // Small delay for better UX
+                                        onConfirm()
+                                        onDismiss()
                                     }
-                                }
-                            }
-
-                            // Verification status indicator
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (isVerificationChecked) {
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    } else {
-                                        MaterialTheme.colorScheme.surfaceVariant
-                                    }
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = if (isVerificationChecked) Icons.Default.CheckCircle else Icons.Default.Warning,
-                                        contentDescription = null,
-                                        tint = if (isVerificationChecked) {
-                                            MaterialTheme.colorScheme.onPrimaryContainer
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        },
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = if (isVerificationChecked) {
-                                            "تم التحقق من الفترة"
-                                        } else {
-                                            "لم يتم التحقق من الفترة بعد"
-                                        },
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = if (isVerificationChecked) {
-                                            MaterialTheme.colorScheme.onPrimaryContainer
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        }
-                                    )
-
-                                    // History button
-                                    IconButton(
-                                        onClick = { showHistoryView = true },
-                                        modifier = Modifier.size(24.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.History,
-                                            contentDescription = "عرض السجل",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        // Action buttons
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
-                        ) {
-                            OutlinedButton(
-                                onClick = onDismiss,
+                                },
                                 enabled = !isLoading,
-                                border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text(
-                                    "العودة",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-
-                            val canConfirm = nombreClientAvecCibleCommeLastBonAchat == 0 ||
-                                    repo18CentralParametresOfAllApps.dataValue?.itsDevMode ?: false
-
-                            if (canConfirm) {
-                                Button(
-                                    onClick = {
-                                        kotlinx.coroutines.GlobalScope.launch {
-                                            updateVerificationStatus(true)
-                                            delay(500) // Small delay for better UX
-                                            onConfirm()
-                                            onDismiss()
-                                        }
-                                    },
-                                    enabled = !isLoading,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    if (isLoading) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(16.dp),
-                                                strokeWidth = 2.dp,
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                            Text(
-                                                "جاري المعالجة...",
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                        }
-                                    } else {
+                                if (isLoading) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(16.dp),
+                                            strokeWidth = 2.dp,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
                                         Text(
-                                            "موافق",
+                                            "جاري المعالجة...",
                                             style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Medium,
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
-                                }
-                            } else {
-                                Button(
-                                    onClick = { showToast = true },
-                                    enabled = false,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.outline
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
+                                } else {
                                     Text(
-                                        "غير متاح",
+                                        "موافق",
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
+                            }
+                        } else {
+                            Button(
+                                onClick = { showToast = true },
+                                enabled = false,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.outline
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    "غير متاح",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }

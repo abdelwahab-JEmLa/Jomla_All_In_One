@@ -13,10 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-private fun EnhancedBonVentCard(
+fun EnhancedBonVentCard(
     bon: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter,
     modifier: Modifier = Modifier
@@ -42,16 +43,26 @@ private fun EnhancedBonVentCard(
     val client = repositorysMainGetter.find_M2Client(bon.parent_M2Client_KeyID)
     val creationTime = remember(bon.creationTimestamps) {
         SimpleDateFormat(
-            "dd/MM/yyyy HH:mm",
+            "HH:mm",
             Locale.getDefault()
         ).format(Date(bon.creationTimestamps))
     }
     val confirmationTime = remember(bon.confirmeCommande_TimeTamp) {
         if (bon.confirmeCommande_TimeTamp > 0) {
             SimpleDateFormat(
-                "dd/MM/yyyy HH:mm",
+                "HH:mm",
                 Locale.getDefault()
             ).format(Date(bon.confirmeCommande_TimeTamp))
+        } else null
+    }
+
+    // Calculate duration between creation and confirmation
+    val orderDuration = remember(bon.creationTimestamps, bon.confirmeCommande_TimeTamp) {
+        if (bon.confirmeCommande_TimeTamp > 0) {
+            val durationMillis = bon.confirmeCommande_TimeTamp - bon.creationTimestamps
+            val minutes = (durationMillis / 1000 / 60).toInt()
+            val seconds = ((durationMillis / 1000) % 60).toInt()
+            "$minutes د و $seconds ثانية"
         } else null
     }
 
@@ -129,11 +140,62 @@ private fun EnhancedBonVentCard(
                 isConfirmed = confirmationTime != null
             )
 
+            // Duration Card - NEW FEATURE
+            if (orderDuration != null) {
+                OrderDurationCard(duration = orderDuration)
+            }
+
             // Financial Details (if any)
             if (bon.sum_De_Credit_Fait > 0 || bon.versement > 0) {
                 FinancialDetailsSection(
                     creditAmount = bon.sum_De_Credit_Fait,
                     paymentAmount = bon.versement
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrderDurationCard(
+    duration: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+        ),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Timer,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Column {
+                Text(
+                    text = "الوقت الإجمالي للطلبية",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = duration,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
             }
         }
@@ -165,7 +227,6 @@ private fun TimeInfoSection(
                 isLargeDisplay = false
             )
 
-            // Confirmation time - LARGER display as requested in TODO
             Column(
                 horizontalAlignment = Alignment.End
             ) {
@@ -202,29 +263,11 @@ private fun TimeInfoSection(
             }
         }
 
-        if (workHours != "Non Defini - Non Defini") {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Schedule,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Text(
-                    text = "ساعات العمل: $workHours",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-        }
     }
 }
 
 @Composable
-private fun TimeInfoItem(
+fun TimeInfoItem(
     label: String,
     time: String,
     icon: ImageVector,

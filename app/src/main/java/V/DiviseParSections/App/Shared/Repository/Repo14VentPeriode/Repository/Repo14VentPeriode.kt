@@ -157,7 +157,7 @@ data class M14VentPeriode(
     var parent_M9AppCompt_KeyID: String = "",
     var parent_M9AppCompt_DebugInfos: String = "",
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val son_verification_entre_vent_et_achat_est_fait: Boolean = false,
+    val son_verification_entre_vent_et_achat_est_fait: Boolean = true,
     // Section StatuesMutable
     val credit_Vents_Totale: Double = 0.0,
     val cash_Vents_Totale: Double = 0.0,
