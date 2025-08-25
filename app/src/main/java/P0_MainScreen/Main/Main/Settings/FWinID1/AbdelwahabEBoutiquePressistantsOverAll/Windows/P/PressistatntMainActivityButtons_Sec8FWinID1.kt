@@ -333,7 +333,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
 
                     if (!cLenceDepuitFragmentsSepecialicteDeVents) {
-                        if (focusedValuesGetter.currentActive_M9AppCompt?.onVentM8BonVentKey.isNullOrBlank()) {
+                        if (focusedValuesGetter.activeOnVent_M8BonVent == null) {
                             ID3RecordingButton(
                                 viewModel,
                                 isRecording,
