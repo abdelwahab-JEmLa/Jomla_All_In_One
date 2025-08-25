@@ -81,13 +81,10 @@ fun MainList(
                 ?: relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
         )
 
-    val relative_Tariff_Edited_Pour_Client =
-        M13TarificationInfos.get_default().copy(
-            typeChoisi = TypeChoisi.Edited_Pour_Client,
-            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-            parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            prixCurrency = (relative_Tariff_Prix_Detaille.prixCurrency + relative_M1Produit.prixVent) / 2
-        )
+    val relative_Tariff_Prix_Progressive = createProgressiveTariff(
+        relative_M1Produit = relative_M1Produit,
+        relative_Tariff_Prix_Detaille = relative_Tariff_Prix_Detaille
+    )
 
     val standardTariffs = remember(
         relative_M1Produit,
@@ -102,7 +99,7 @@ fun MainList(
             }
 
 
-            add( relative_Tariff_Edited_Pour_Client )
+            add( relative_Tariff_Prix_Progressive )
 
             if ( relative_Tariff_Historique != null ) {
                 add( relative_Tariff_Historique )
@@ -229,3 +226,32 @@ fun find_existing_Prix_Detaille(
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                 tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
     }
+
+private fun createProgressiveTariff(
+    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_Tariff_Prix_Detaille: M13TarificationInfos
+): M13TarificationInfos {
+    return M13TarificationInfos.get_default().copy(
+        typeChoisi = TypeChoisi.Edited_Pour_Client,
+        parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+        parent_M1Produit_KeyId = relative_M1Produit.keyID,
+        prixCurrency = calculateProgressivePrice(
+            prixDetaille = relative_Tariff_Prix_Detaille.prixCurrency,
+            prixVent = relative_M1Produit.prixVent,
+            pourcentageProgressive = relative_M1Produit.pourcentage_Prix_Progressive
+        )
+    )
+}
+private fun calculateProgressivePrice(
+    prixDetaille: Double,
+    prixVent: Double,
+    pourcentageProgressive: Int
+): Double {
+    val priceDifference = prixDetaille - prixVent
+
+    val pourcentageProgressive1 = 60
+
+    val progressiveAdjustment = priceDifference * (pourcentageProgressive1 / 100.0)
+
+    return prixVent + progressiveAdjustment
+}

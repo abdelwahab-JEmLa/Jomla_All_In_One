@@ -189,6 +189,7 @@ data class ArticlesBasesStatsTable(
     var nom: String = "",
     var nomMutable: String = "",
 
+
     // Garde la propriété originale pour la compatibilité
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
@@ -202,6 +203,8 @@ data class ArticlesBasesStatsTable(
     var prixDefiniParGerant: Double = 0.0,
     var prixVent: Double = 0.0,
     var cachePrixVent: Boolean = false,
+    var pourcentage_Prix_Progressive: Int = 50,
+
 
     var prixAchat: Double = 0.0,
     var prixAchatDernierTimeTempUpdate: Long = 0L,
