@@ -171,6 +171,9 @@ private fun CatalogueItem(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
+                set(value = currentBonVent, key = SemanticsPropertyKey("currentBonVent"))
+            }
+            .semantics(mergeDescendants = true) {
                 set(value = updatedBonVent, key = SemanticsPropertyKey("updatedBonVent"))
             }
             .fillMaxWidth()

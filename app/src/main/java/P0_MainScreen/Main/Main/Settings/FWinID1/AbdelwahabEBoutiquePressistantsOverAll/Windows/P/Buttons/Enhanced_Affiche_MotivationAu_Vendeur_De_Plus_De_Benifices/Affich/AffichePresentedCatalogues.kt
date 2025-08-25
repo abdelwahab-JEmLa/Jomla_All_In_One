@@ -3,6 +3,11 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +26,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +39,9 @@ fun AffichePresentedCatalogues(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier
 ) {
-    val activeOnVent_M8BonVent by remember {
+    val activeOnVent_M8BonVent by remember(
+        aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
+    ) {
         derivedStateOf { focusedValuesGetter.activeOnVent_M8BonVent }
     }
 
@@ -74,12 +82,6 @@ fun AffichePresentedCatalogues(
                         "t1" -> bonVent.pourcentage_AffichageDuCatalogue_Conficerie
                         "t2" -> bonVent.pourcentage_AffichageDuCatalogue_Cosmitiques
                         "t3" -> bonVent.pourcentage_AffichageDuCatalogue_tebnage
-                        "t4" -> {
-                            val totalUsed = bonVent.pourcentage_AffichageDuCatalogue_Conficerie +
-                                    bonVent.pourcentage_AffichageDuCatalogue_Cosmitiques +
-                                    bonVent.pourcentage_AffichageDuCatalogue_tebnage
-                            (100.0 - totalUsed).coerceAtLeast(0.0)
-                        }
                         else -> 0.0
                     }
 
@@ -102,44 +104,87 @@ private fun CompactCatalogueRow(
     percentage: Double,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    val isComplete = percentage >= 100.0
+
+    // Animation state for blinking effect
+    val infiniteTransition = rememberInfiniteTransition(label = "blinking")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isComplete) 1f else 0.3f,
+        animationSpec = if (isComplete) {
+            infiniteRepeatable(
+                animation = tween(0),
+                repeatMode = RepeatMode.Reverse
+            )
+        } else {
+            infiniteRepeatable(
+                animation = tween(800),
+                repeatMode = RepeatMode.Reverse
+            )
+        },
+        label = "alpha"
+    )
+
+    Card(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
             .semantics(mergeDescendants = true) {
                 val catalogueDebugInfo = SemanticsPropertyKey<String>("CatalogueDebug")
                 set(catalogueDebugInfo, "Catalogue: ${catalogue.nom}, ID: ${catalogue.keyID}, Percentage: $percentage%")
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isComplete) {
+                Color.White
+            } else {
+                catalogue.couleur.copy(alpha = alpha)
             }
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = catalogue.nom,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = catalogue.nom,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isComplete) catalogue.couleur else Color.White
+                )
+            }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            LinearProgressIndicator(
-                progress = { (percentage / 100.0).coerceIn(0.0, 1.0).toFloat() },
-                modifier = Modifier.width(40.dp),
-                color = catalogue.couleur,
-                trackColor = catalogue.couleur.copy(alpha = 0.3f)
-            )
-            Text(
-                text = "${String.format("%.0f", percentage)}%",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Medium,
-                color = catalogue.couleur
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                LinearProgressIndicator(
+                    progress = { (percentage / 100.0).coerceIn(0.0, 1.0).toFloat() },
+                    modifier = Modifier.width(40.dp),
+                    color = if (isComplete) catalogue.couleur else Color.White,
+                    trackColor = if (isComplete) {
+                        catalogue.couleur.copy(alpha = 0.3f)
+                    } else {
+                        Color.White.copy(alpha = 0.3f)
+                    }
+                )
+                Text(
+                    text = if (percentage.isNaN() || percentage.isInfinite()) {
+                        "0%"
+                    } else {
+                        "${percentage.toInt()}%"
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isComplete) catalogue.couleur else Color.White
+                )
+            }
         }
     }
 }
