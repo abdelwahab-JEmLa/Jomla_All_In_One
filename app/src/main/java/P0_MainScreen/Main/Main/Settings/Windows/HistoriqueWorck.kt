@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
 @Composable
@@ -109,7 +111,7 @@ private fun HistoriqueWorckContent(
             QuickStatsRow(bons = bons_De_Cette_Period)
         }
 
-        // Confirmed orders section
+        // Confirmed orders section with transition cards
         if (confirmedOrders.isNotEmpty()) {
             item {
                 SectionHeader(
@@ -120,10 +122,19 @@ private fun HistoriqueWorckContent(
                 )
             }
 
-            items(
+            itemsIndexed(
                 items = confirmedOrders,
-                key = { "confirmed_${it.keyID}" }
-            ) { bon ->
+                key = { _, bon -> "confirmed_${bon.keyID}" }
+            ) { index, bon ->
+                // Add transition card between confirmed orders
+                if (index > 0) {
+                    val previousBon = confirmedOrders[index - 1]
+                    TransitionCard(
+                        previousBon = previousBon,
+                        currentBon = bon
+                    )
+                }
+
                 EnhancedBonVentCard(
                     bon = bon,
                     repositorysMainGetter = repositorysMainGetter
@@ -142,10 +153,10 @@ private fun HistoriqueWorckContent(
                 )
             }
 
-            items(
+            itemsIndexed(
                 items = unconfirmedOrders.sortedByDescending { it.creationTimestamps },
-                key = { "unconfirmed_${it.keyID}" }
-            ) { bon ->
+                key = { _, bon -> "unconfirmed_${bon.keyID}" }
+            ) { _, bon ->
                 EnhancedBonVentCard(
                     bon = bon,
                     repositorysMainGetter = repositorysMainGetter
@@ -158,6 +169,81 @@ private fun HistoriqueWorckContent(
             item {
                 EmptyStateCard()
             }
+        }
+    }
+}
+
+@Composable
+private fun TransitionCard(
+    previousBon: M8BonVent,
+    currentBon: M8BonVent,
+    modifier: Modifier = Modifier
+) {
+    // Calculate transition time from previous confirmation to current creation
+    val transitionDurationMillis = currentBon.creationTimestamps - previousBon.confirmeCommande_TimeTamp
+    val minutes = (transitionDurationMillis / 1000 / 60).toInt()
+    val seconds = ((transitionDurationMillis / 1000) % 60).toInt()
+    val transitionDuration = "$minutes د و $seconds ثانية"
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF9C27B0).copy(alpha = 0.1f) // Purple background
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, Color(0xFF9C27B0).copy(alpha = 0.3f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Transition icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = Color(0xFF9C27B0).copy(alpha = 0.2f),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.SwapVert,
+                    contentDescription = null,
+                    tint = Color(0xFF9C27B0),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // Transition info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "التنقل وقته",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color(0xFF9C27B0),
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = transitionDuration,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF9C27B0),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+
+            // Arrow indicator
+            Icon(
+                imageVector = Icons.Default.AccessTime,
+                contentDescription = null,
+                tint = Color(0xFF9C27B0).copy(alpha = 0.6f),
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
