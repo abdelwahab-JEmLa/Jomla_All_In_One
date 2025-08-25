@@ -77,22 +77,24 @@ fun AffichePresentedCatalogues(
                 }
 
                 // Dynamic catalogue rows - now reactive to bonVent changes
-                catalogues.sortedBy { it.position }.forEach { catalogue ->
-                    val percentage = when (catalogue.keyID) {
-                        "t1" -> bonVent.pourcentage_AffichageDuCatalogue_Conficerie
-                        "t2" -> bonVent.pourcentage_AffichageDuCatalogue_Cosmitiques
-                        "t3" -> bonVent.pourcentage_AffichageDuCatalogue_tebnage
-                        else -> 0.0
-                    }
+                catalogues.sortedBy { it.position }
+                    .filter { it.keyID != "t4" } // Exclude "Sans Catalogue"
+                    .forEach { catalogue ->
+                        val percentage = when (catalogue.keyID) {
+                            "t1" -> bonVent.pourcentage_AffichageDuCatalogue_Conficerie
+                            "t2" -> bonVent.pourcentage_AffichageDuCatalogue_Cosmitiques
+                            "t3" -> bonVent.pourcentage_AffichageDuCatalogue_tebnage
+                            else -> 0.0
+                        }
 
-                    // Add a key to force recomposition when bonVent changes
-                    key("${catalogue.keyID}_${bonVent.keyID}_$percentage") {
-                        CompactCatalogueRow(
-                            catalogue = catalogue,
-                            percentage = percentage
-                        )
+                        // Add a key to force recomposition when bonVent changes
+                        key("${catalogue.keyID}_${bonVent.keyID}_$percentage") {
+                            CompactCatalogueRow(
+                                catalogue = catalogue,
+                                percentage = percentage
+                            )
+                        }
                     }
-                }
             }
         }
     }
@@ -106,24 +108,21 @@ private fun CompactCatalogueRow(
 ) {
     val isComplete = percentage >= 100.0
 
-    // Animation state for blinking effect
+    // Animation state for blinking effect (only animate if not complete)
     val infiniteTransition = rememberInfiniteTransition(label = "blinking")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (isComplete) 1f else 0.3f,
-        animationSpec = if (isComplete) {
-            infiniteRepeatable(
-                animation = tween(0),
-                repeatMode = RepeatMode.Reverse
-            )
-        } else {
-            infiniteRepeatable(
+    val alpha by if (!isComplete) {
+        infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 0.3f,
+            animationSpec = infiniteRepeatable(
                 animation = tween(800),
                 repeatMode = RepeatMode.Reverse
-            )
-        },
-        label = "alpha"
-    )
+            ),
+            label = "alpha"
+        )
+    } else {
+        remember { derivedStateOf { 1f } }
+    }
 
     Card(
         modifier = modifier
