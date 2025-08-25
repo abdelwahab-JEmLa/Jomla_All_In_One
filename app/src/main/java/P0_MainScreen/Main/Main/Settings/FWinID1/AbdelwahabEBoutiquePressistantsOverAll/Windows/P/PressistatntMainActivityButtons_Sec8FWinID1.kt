@@ -21,6 +21,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -69,17 +70,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 // Fixed the missing variable declaration and added proper implementation
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
-    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onClickAnulationButton: () -> Unit = {},
@@ -222,7 +225,26 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentSelectedCatalogueId = currentSelectedCatalogueId,
         onDismiss = { showCatalogueDialog = false },
         onCatalogueSelected = { catalogueId ->
+            val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent!!
+
             currentAppCompt?.let { appCompt ->
+                val updatedBonVent = when (catalogueId) {
+                    "t1" -> currentBonVent.copy(
+                        pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+                    )
+
+                    "t2" -> currentBonVent.copy(
+                        pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+                    )
+
+                    "t3" -> currentBonVent.copy(
+                        pourcentage_AffichageDuCatalogue_tebnage = 100.0
+                    )
+
+                    else -> currentBonVent
+                }
+                repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
+
                 val updatedAppCompt = appCompt.copy(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )

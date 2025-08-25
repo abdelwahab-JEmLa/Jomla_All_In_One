@@ -61,7 +61,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
 
     Column(modifier = modifier) {
         AffichePresentedCatalogues()
-        //  EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
+         EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
         EnhancedTariffTypeSalesDisplay(groupedSales)
     }
 }

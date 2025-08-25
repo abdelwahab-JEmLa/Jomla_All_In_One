@@ -39,6 +39,7 @@ fun AffichePresentedCatalogues(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier
 ) {
+
     val activeOnVent_M8BonVent by remember(
         aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
@@ -108,10 +109,10 @@ private fun CompactCatalogueRow(
 ) {
     val isComplete = percentage >= 100.0
 
-    // Animation state for blinking effect (only animate if not complete)
-    val infiniteTransition = rememberInfiniteTransition(label = "blinking")
-    val alpha by if (!isComplete) {
-        infiniteTransition.animateFloat(
+    // Simplified animation - only create if needed
+    val alpha = if (!isComplete) {
+        val infiniteTransition = rememberInfiniteTransition(label = "blinking")
+        val animatedAlpha by infiniteTransition.animateFloat(
             initialValue = 1f,
             targetValue = 0.3f,
             animationSpec = infiniteRepeatable(
@@ -120,8 +121,9 @@ private fun CompactCatalogueRow(
             ),
             label = "alpha"
         )
+        animatedAlpha
     } else {
-        remember { derivedStateOf { 1f } }
+        1f
     }
 
     Card(
