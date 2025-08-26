@@ -70,7 +70,8 @@ fun filterClientsBasedOnMode(
 
         MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == M2Client.DernierEtatAAffiche.Cible
+                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+                         it.actuelleEtat == M2Client.DernierEtatAAffiche.Cible
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.CIBLE_PRIORITE_2
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.VENDU_A_LUI
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.FERME
