@@ -33,7 +33,7 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.SportsMotorsports
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -179,19 +179,18 @@ private fun TransitionCard(
     currentBon: M8BonVent,
     modifier: Modifier = Modifier
 ) {
-    // Calculate transition time from previous confirmation to current creation
     val transitionDurationMillis = currentBon.creationTimestamps - previousBon.confirmeCommande_TimeTamp
-    val minutes = (transitionDurationMillis / 1000 / 60).toInt()
-    val seconds = ((transitionDurationMillis / 1000) % 60).toInt()
-    val transitionDuration = "$minutes د و $seconds ثانية"
-
+    val totalSeconds = (transitionDurationMillis / 1000).toInt()
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    val transitionDuration = "${minutes} min et ${seconds} sec"
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF9C27B0).copy(alpha = 0.1f) // Purple background
+            containerColor = Color(0xFF2196F3).copy(alpha = 0.1f) // Purple background
         ),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color(0xFF9C27B0).copy(alpha = 0.3f))
+        border = BorderStroke(1.dp, Color(0xFF2196F3).copy(alpha = 0.3f))
     ) {
         Row(
             modifier = Modifier
@@ -211,7 +210,7 @@ private fun TransitionCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.SwapVert,
+                    imageVector = Icons.Default.SportsMotorsports,
                     contentDescription = null,
                     tint = Color(0xFF9C27B0),
                     modifier = Modifier.size(20.dp)
@@ -239,7 +238,7 @@ private fun TransitionCard(
 
             // Arrow indicator
             Icon(
-                imageVector = Icons.Default.AccessTime,
+                imageVector = Icons.Default.SportsMotorsports,
                 contentDescription = null,
                 tint = Color(0xFF9C27B0).copy(alpha = 0.6f),
                 modifier = Modifier.size(16.dp)

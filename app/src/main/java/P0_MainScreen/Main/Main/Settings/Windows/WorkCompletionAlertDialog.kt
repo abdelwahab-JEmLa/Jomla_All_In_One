@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Warning
@@ -108,11 +106,10 @@ fun WorkCompletionAlertDialog(
                 tonalElevation = 6.dp
             ) {
                 Box {
-                    // Main content with scroll
+                    // Main content - no scroll here, let LazyColumn handle it
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
                             .padding(16.dp)
                             .padding(bottom = 80.dp), // Space for floating buttons
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -193,11 +190,17 @@ fun WorkCompletionAlertDialog(
                             }
                         }
 
-                        // History content
-                        HistoriqueWorck(
-                            aCentralFacade = aCentralFacade,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        // History content - wrapped in Box with height constraint
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f) // Take remaining space
+                        ) {
+                            HistoriqueWorck(
+                                aCentralFacade = aCentralFacade,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
 
                     // Floating action buttons

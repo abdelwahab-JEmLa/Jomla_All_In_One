@@ -56,15 +56,18 @@ fun EnhancedBonVentCard(
         } else null
     }
 
-    // Calculate duration between creation and confirmation
     val orderDuration = remember(bon.creationTimestamps, bon.confirmeCommande_TimeTamp) {
         if (bon.confirmeCommande_TimeTamp > 0) {
             val durationMillis = bon.confirmeCommande_TimeTamp - bon.creationTimestamps
-            val minutes = (durationMillis / 1000 / 60).toInt()
-            val seconds = ((durationMillis / 1000) % 60).toInt()
-            "$minutes د و $seconds ثانية"
+            val totalSeconds = (durationMillis / 1000).toInt()
+            val minutes = totalSeconds / 60
+            val seconds = totalSeconds % 60
+
+            // Format français
+            "${minutes} min et ${seconds} sec"
         } else null
     }
+
 
     Card(
         modifier = modifier.fillMaxWidth(),
