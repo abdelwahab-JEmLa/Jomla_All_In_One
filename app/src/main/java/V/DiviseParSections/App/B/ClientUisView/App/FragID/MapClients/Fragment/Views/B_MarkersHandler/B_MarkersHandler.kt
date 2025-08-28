@@ -160,7 +160,7 @@ fun createAndAddMarker(
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction ->{
                     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
 
-                    val onCommandBon_ventPeriod = datasValue.find {
+                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
                         it.parent_M2Client_KeyID == m2Client.keyID
                                 &&
                         it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode

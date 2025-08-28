@@ -39,26 +39,25 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
-
 @Composable
 fun Floating_Separated_FragMap_Button_1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "Mode Selection",
-        icons = Pair(Icons.Default.Remove, Icons.Default.Add),
-        colors = Pair(Color.Red, Color.Green)
+        icons = Pair(Icons.Default.Remove, Icons.Default.Add)
     )
-) {   //<--
-//TODO(1): fait que la couleur et par   enum class Click_On_Marque
-//        (
-//        val couleur: Color = Color(0xFF000000),
-//
-//        ) 
+) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val isActive = currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
-    val updatedButtonState = buttonState.copy(its_Active = isActive)
+    // Get the color from the current Click_On_Marque enum
+    val currentModeColor = currentValues.click_On_Marque.couleur
+
+    val updatedButtonState = buttonState.copy(
+        its_Active = isActive,
+        colors = Pair(currentModeColor, Color.Gray) // Use enum color as primary, gray as secondary
+    )
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -98,10 +97,7 @@ fun Floating_Separated_FragMap_Button_1(
                         color = Color.White,
                         modifier = Modifier
                             .background(
-                                color = if (updatedButtonState.its_Active)
-                                    updatedButtonState.colors.first.copy(alpha = 0.8f)
-                                else
-                                    updatedButtonState.colors.second.copy(alpha = 0.8f),
+                                color = currentModeColor.copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -116,10 +112,7 @@ fun Floating_Separated_FragMap_Button_1(
                         onClick = {
                             expanded = true
                         },
-                        containerColor = if (updatedButtonState.its_Active)
-                            updatedButtonState.colors.first
-                        else
-                            updatedButtonState.colors.second
+                        containerColor = currentModeColor
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -136,13 +129,27 @@ fun Floating_Separated_FragMap_Button_1(
                         ActiveCentralValues.Click_On_Marque.values().forEach { clickMode ->
                             DropdownMenuItem(
                                 text = {
-                                    Text(
-                                        text = when (clickMode) {
-                                            ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
-                                            ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Au Ciblage Clients"
-                                            ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Affiche OnCommand VentPeriod Transaction"
-                                        }
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        // Color indicator
+                                        Box(
+                                            modifier = Modifier
+                                                .size(16.dp)
+                                                .background(
+                                                    color = clickMode.couleur,
+                                                    shape = RoundedCornerShape(4.dp)
+                                                )
+                                        )
+                                        Text(
+                                            text = when (clickMode) {
+                                                ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
+                                                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Au Ciblage Clients"
+                                                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Affiche OnCommand VentPeriod Transaction"
+                                            }
+                                        )
+                                    }
                                 },
                                 onClick = {
                                     val newValues = currentValues.copy(

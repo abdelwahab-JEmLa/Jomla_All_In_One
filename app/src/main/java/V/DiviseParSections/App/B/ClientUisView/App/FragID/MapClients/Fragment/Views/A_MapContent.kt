@@ -57,8 +57,7 @@ fun MapContent(
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-) {      //<--
-//TODO(1): fait que au start de focuse current position pendnt  1 sec
+) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val defaultZoom = 18.2
@@ -69,8 +68,8 @@ fun MapContent(
     var currentFilterMode by remember {
         mutableStateOf(
             when (focusedValuesGetter.currentApp_Est_Admin) {
-                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                 true -> MapClientsViewModel.VisibleClientsNow.showAll
+                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
             }
         )
     }

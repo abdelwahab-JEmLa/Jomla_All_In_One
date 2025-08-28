@@ -43,15 +43,18 @@ data class ActiveCentralValues(
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
     val active_Catalogue_Pour_NewAddedProduit: CataloguesCaegorie? = null,
 
-    //-----------------Peride----------------------------------------------------------------------------
+    //-----------------Peride-------------------------------------------------------------------------------------------------------------------------
     val held_Period_Pour_copie_Leur_Vents: M14VentPeriode? = null,
 
-    //-----------------Bon8----------------------------------------------------------------------------
+    //-----------------Bon8-----------------------------------------------------------------------------------------------------------------------------------------
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
-    //-----------------Repo11AchatOperation----------------------------------------------------------------------------
+    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? =
+        if(M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter else MapClientsViewModel.VisibleClientsNow.showAll,
+
+    //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
     val active_M2Client_AuFilterAchats: M2Client? = null,
@@ -61,10 +64,10 @@ data class ActiveCentralValues(
     val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode?= null,
 
     val dialog_achats_ventPeriod: M14VentPeriode?= null,
-    //-----------------Grossist----------------------------------------------------------------------------
+    //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
 
-    //-----------------Fabs.Affichage----------------------------------------------------------------------------
+    //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
 
@@ -72,7 +75,7 @@ data class ActiveCentralValues(
     val affiche_Floating_Button_AddCLient: Boolean = false,
 
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
-    //-----------------Fabs.Affichage----------------------------------------------------------------------------
+    //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
