@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -102,12 +104,16 @@ fun GlidDisplaye(
             }
         }
     }
+    val displayFile = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
 
     Box(
-        modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize()),
+        modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = displayFile.name, key = SemanticsPropertyKey("displayFile"))
+            }
+            .then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize()),
         contentAlignment = Alignment.Center
     ) {
-        val displayFile = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
 
         if (displayFile.exists()) {
             GlideImage(

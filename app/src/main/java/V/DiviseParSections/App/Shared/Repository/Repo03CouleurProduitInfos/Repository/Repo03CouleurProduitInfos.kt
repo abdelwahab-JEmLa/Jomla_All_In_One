@@ -164,6 +164,10 @@ data class M3CouleurProduitInfos(
             ancien.parentBProduitOldID == newData.parentBProduitOldID &&
                     ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
                     ancien.nomImageFichieSansEtansion == newData.nomImageFichieSansEtansion
+
+        fun get_default(): M3CouleurProduitInfos {
+                return M3CouleurProduitInfos()
+        }
     }
 }
 

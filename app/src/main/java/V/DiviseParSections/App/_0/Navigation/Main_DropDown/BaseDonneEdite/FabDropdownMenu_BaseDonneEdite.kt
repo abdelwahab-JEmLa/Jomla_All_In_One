@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownItem_WhenItsAchatsFragment_1
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -32,6 +33,10 @@ fun FabDropdownMenu_BaseDonneEdite(
         ) {
             DropDownItemWBaseDonne_1(
                 nomFun = "Base Donnée Function",
+                onDismissDropdown = onDismissDropdown
+            )
+            DropDownItem_WhenItsAchatsFragment_1(
+                nomFun = "",
                 onDismissDropdown = onDismissDropdown
             )
         }

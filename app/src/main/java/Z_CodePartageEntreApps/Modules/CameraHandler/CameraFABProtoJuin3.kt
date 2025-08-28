@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Modules.CameraHandler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.net.Uri
@@ -40,6 +41,7 @@ import java.io.FileOutputStream
 fun CameraFABProtoJuin3(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter = koinInject(),
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
@@ -80,15 +82,19 @@ fun CameraFABProtoJuin3(
                         }
 
                         withContext(Dispatchers.Main) {
+                             val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } +1
                             val idParentCategorie =
                                 focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
                                     ?: 0
+                            val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
 
-                            val keyID =
-                                RepositorysMainGetter.getPushFireBase(ArticlesBasesStatsTable.ref)
+                            val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
+
                             val newProduit = product.copy(
+                                id = newOldId,
                                 keyID = keyID,
                                 nom = "Produit $idParentCategorie ${keyID.takeLast(4).uppercase()}",
+                                couleur1= keyIDM3CouleurProduitInfos,
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
@@ -102,13 +108,17 @@ fun CameraFABProtoJuin3(
                             )
 
 
+                            val newCouleurP = M3CouleurProduitInfos
+                                .get_default()
+                                .copy(
+                                    keyID = keyIDM3CouleurProduitInfos,
+                                    nomImageFichieSansEtansion=newOldId.toString() + "_1",
+                                    parentBProduitInfosKeyID = newProduit.keyID,
+                                    parentId1ProduitInfosDebugName = newProduit.nom,
+                                    parentBProduitOldID = newProduit.id,
 
-                            val newCouleurP = M3CouleurProduitInfos(
-                                parentBProduitOldID = newProduit.id,
-                                parentBProduitInfosKeyID = newProduit.keyID,
-                                parentId1ProduitInfosDebugName = newProduit.nom,
-                                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
-                            )
+                                    processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeAuGeneralHandler
+                                )
 
                             aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
                                 newCouleurP

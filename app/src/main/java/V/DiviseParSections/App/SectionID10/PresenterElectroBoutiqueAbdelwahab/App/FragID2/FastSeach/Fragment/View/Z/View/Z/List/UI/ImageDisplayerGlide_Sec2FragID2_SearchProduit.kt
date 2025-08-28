@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
@@ -67,7 +69,6 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
 
     val imageExists = imageFile?.exists() == true
 
-
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -81,7 +82,10 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
             if (imageExists && imageFile != null) {
                 GlideImage(
                     modifier = Modifier
-                        .getSemanticsTag(relative_M3CouleurInfos,"")
+                        .semantics(mergeDescendants = true) {
+                            set(value = imageFile.name, key = SemanticsPropertyKey("imageFile"))
+                        }
+                        .getSemanticsTag(relative_M3CouleurInfos, "")
                         .clickable {
                             onClickToOpenWindow()
                         }

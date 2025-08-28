@@ -51,6 +51,9 @@ fun ProductImageCaptureButton(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
+    var isProcessing by remember { mutableStateOf(false) }
+    // Store the created couleur keyID to use later
+    var createdCouleurKeyID by remember { mutableStateOf<String?>(null) }
 
     fun getNextColorIndex(): Int {
         for (i in 1..4) {
@@ -68,6 +71,9 @@ fun ProductImageCaptureButton(
     }
 
     suspend fun handleImageCapture(uri: Uri) {
+        if (isProcessing) return
+        isProcessing = true
+
         try {
             val colorIndex = getNextColorIndex()
             val fileName = "${product.id}_$colorIndex.webp"
@@ -96,7 +102,16 @@ fun ProductImageCaptureButton(
                     if (uploadSuccess && localFile.exists() && localFile.length() > 0) {
                         withContext(Dispatchers.Main) {
                             delay(200)
-                            val updatedProduct = product.copy(
+
+                            // Use the previously created couleur keyID
+                            val newCouleurKeyID = createdCouleurKeyID ?: ""
+
+                            val updatedProduct = when (colorIndex) {
+                                2 -> product.copy(couleur2 = newCouleurKeyID)
+                                3 -> product.copy(couleur3 = newCouleurKeyID)
+                                4 -> product.copy(couleur4 = newCouleurKeyID)
+                                else -> product.copy(couleur1 = newCouleurKeyID)
+                            }.copy(
                                 actualiseSonImage = product.actualiseSonImage + 1,
                                 actualiseSonImageTest2 = product.actualiseSonImageTest2 + 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
@@ -104,7 +119,11 @@ fun ProductImageCaptureButton(
 
                             onImageCaptured(updatedProduct)
 
-                            Toast.makeText(context, "Nouvelle image WebP ajoutée pour ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Nouvelle image WebP ajoutée pour ${updatedProduct.nom}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         throw Exception("WebP upload verification failed")
@@ -112,22 +131,63 @@ fun ProductImageCaptureButton(
                 } catch (e: Exception) {
                     if (localFile.exists() && !uploadSuccess) localFile.delete()
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Échec du téléchargement WebP: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Échec du téléchargement WebP: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                     throw e
                 }
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Erreur lors du traitement WebP: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Erreur lors du traitement WebP: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
+        } finally {
+            isProcessing = false
         }
+    }
+
+    fun handleAddNewM3Couleur(): String {
+        val newCouleurP = M3CouleurProduitInfos
+            .get_default()
+            .copy(
+                indexCouleurDansAncienProto = getNextColorIndex(),
+                nomImageFichieSansEtansion = buildString {
+                    append(product.id)
+                    append("_")
+                    append(getNextColorIndex())
+                },
+                parentBProduitOldID = product.id,
+                parentBProduitInfosKeyID = product.keyID,
+                parentId1ProduitInfosDebugName = product.nom,
+                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+            )
+
+        viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+            newCouleurP
+        )
+
+        return newCouleurP.keyID
+    }
+
+    fun getNewCouleurKeyID(): String {
+        // This should return the keyID of the newly created M3CouleurProduitInfos
+        // You might need to modify handleAddNewM3Couleur to return the keyID
+        // or retrieve it from the repository after creation
+        return handleAddNewM3Couleur()
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            handleAddNewM3Couleur()
             showCameraDialog = true
         } else {
             Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
@@ -140,39 +200,41 @@ fun ProductImageCaptureButton(
                 showCameraDialog = false
                 scope.launch { handleImageCapture(uri) }
             },
-            onDismiss = { showCameraDialog = false },
+            onDismiss = {
+                showCameraDialog = false
+                isProcessing = false
+            },
             webPQuality = webPQuality
         )
     }
-    val handle_Add_New_M3Couleur =  {
-        val newCouleurP = M3CouleurProduitInfos(
-            parentBProduitOldID = product.id,
-            parentBProduitInfosKeyID = product.keyID,
-            parentId1ProduitInfosDebugName = product.nom,
-            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
-        )
-        viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
-            newCouleurP
-        )
-    }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .clickable {
-                handle_Add_New_M3Couleur()
-                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                if (!isProcessing) {
+                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                }
             }
             .padding(2.dp)
             .size(20.dp)
             .background(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                color = if (isProcessing) {
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.4f)
+                } else {
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                },
                 shape = RoundedCornerShape(10.dp)
             )
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Ajouter une image WebP",
-            tint = MaterialTheme.colorScheme.primary,
+            tint = if (isProcessing) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+            } else {
+                MaterialTheme.colorScheme.primary
+            },
             modifier = Modifier.size(12.dp)
         )
     }
