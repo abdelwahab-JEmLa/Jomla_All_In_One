@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
- fun ProduitsDepotSection(
+fun ProduitsDepotSection(
     relative_M14VentPeriode: M14VentPeriode,
     editingField: String?,
     editingValue: String,

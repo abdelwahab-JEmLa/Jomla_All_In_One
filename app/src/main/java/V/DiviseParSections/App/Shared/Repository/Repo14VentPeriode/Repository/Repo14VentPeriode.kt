@@ -166,6 +166,7 @@ data class M14VentPeriode(
     val cash_achats_Totale: Double = 0.0,
 
     val credit_produitsAuDepot: Double = 0.0,
+    val valeur_Produits_depuit_Ancien_Vent_Period: Double = 0.0,
     val acheter_produitsAuDepot: Double = 0.0,
 
     var etateActuellementEst: EtateActuellementEst =

@@ -18,12 +18,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,8 +40,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.DataSnapshot
@@ -87,6 +95,7 @@ fun View_M14VentPeriod(
     }
 
     // Function to save edited value
+// Function to save edited value (Updated)
     fun saveEditedValue() {
         val newValue = editingValue.toDoubleOrNull() ?: 0.0
         val updatedPeriode = when (editingField) {
@@ -96,6 +105,7 @@ fun View_M14VentPeriod(
             "cash_achats" -> relative_M14VentPeriode.copy(cash_achats_Totale = newValue)
             "credit_produits_depot" -> relative_M14VentPeriode.copy(credit_produitsAuDepot = newValue)
             "acheter_produits_depot" -> relative_M14VentPeriode.copy(acheter_produitsAuDepot = newValue)
+            "ancien_produits" -> relative_M14VentPeriode.copy(valeur_Produits_depuit_Ancien_Vent_Period = newValue) // Fixed to use correct field
             else -> relative_M14VentPeriode
         }
         updatedPeriode.handel_Clavie_Donne()
@@ -218,7 +228,9 @@ fun View_M14VentPeriod(
         val totalProduitsDepot_stagne_Cette_Period =
             relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
 
-        val balance = totalVentes - totalAchats + totalProduitsDepot_stagne_Cette_Period
+        // FIXED: Complete the total_supplies calculation by adding products from depot
+        val total_supplies = totalAchats + totalProduitsDepot_stagne_Cette_Period
+        val balance = totalVentes - total_supplies + relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period
 
         val sum_Bon_Vents = remember(
             aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
@@ -270,6 +282,16 @@ fun View_M14VentPeriod(
                 focusRequester = focusRequester,
             )
 
+            Produits_Ancien_Period(
+                relative_M14VentPeriode = relative_M14VentPeriode,
+                editingField = editingField,
+                editingValue = editingValue,
+                onStartEditing = ::startEditing,
+                onEditingValueChange = { editingValue = it },
+                onSaveEditedValue = ::saveEditedValue,
+                focusRequester = focusRequester
+            )
+
             // Produits au Dépôt Section
             ProduitsDepotSection(
                 relative_M14VentPeriode = relative_M14VentPeriode,
@@ -282,7 +304,7 @@ fun View_M14VentPeriod(
                 focusRequester = focusRequester
             )
 
-            // Balance Section
+            // Balance Section (Updated call)
             BalanceSection(
                 balance = balance,
                 totalVentes = totalVentes,
@@ -290,7 +312,8 @@ fun View_M14VentPeriod(
                 totalProduitsDepot = totalProduitsDepot_stagne_Cette_Period,
                 sum_Bon_Vents = sum_Bon_Vents,
                 calculatedAchatTotal = calculatedAchatTotal,
-                isLoadingCalculatedAchat = isLoadingCalculatedAchat
+                isLoadingCalculatedAchat = isLoadingCalculatedAchat,
+                relative_M14VentPeriode = relative_M14VentPeriode // Pass the period object
             )
         }
     }
@@ -306,6 +329,117 @@ fun isGrossistActiveInPeriod(
     return repositorysMainGetter.repo11AchatOperation.datasValue.any { achatOperation ->
         achatOperation.parent_M15Grossist_KeyID == grossistKeyID &&
                 achatOperation.parent_M14VentPeriod_KeyID == ventPeriodKeyID
+    }
+}
+@Composable
+fun Produits_Ancien_Period(
+    relative_M14VentPeriode: M14VentPeriode,
+    editingField: String?,
+    editingValue: String,
+    onStartEditing: (String, Double) -> Unit,
+    onEditingValueChange: (String) -> Unit,
+    onSaveEditedValue: () -> Unit,
+    focusRequester: FocusRequester,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text(
+                text = "📦 Produits Ancien Période",
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+
+            Text(
+                text = "Produits restants des périodes précédentes",
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Use the correct field for ancient products
+            if (editingField == "ancien_produits") {
+                OutlinedTextField(
+                    value = editingValue,
+                    onValueChange = onEditingValueChange,
+                    label = { Text("Valeur des produits anciens") },
+                    placeholder = { Text("0.0") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onSaveEditedValue() }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    singleLine = true,
+                    suffix = { Text("DA") }
+                )
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onStartEditing(
+                                "ancien_produits",
+                                relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period // Use the correct field
+                            )
+                        },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "💼 Valeur totale",
+                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                            Text(
+                                text = "Cliquez pour modifier",
+                                fontSize = 11.sp,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                        Text(
+                            text = "${relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period} DA", // Use the correct field
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Cette valeur sera ajoutée aux calculs automatiquement",
+                fontSize = 10.sp,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+            )
+        }
     }
 }
 

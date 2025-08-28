@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,14 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
- fun BalanceSection(
+fun BalanceSection(
     balance: Double,
     totalVentes: Double,
     totalAchats: Double,
     totalProduitsDepot: Double,
     sum_Bon_Vents: Double,
     calculatedAchatTotal: Double,
-    isLoadingCalculatedAchat: Boolean
+    isLoadingCalculatedAchat: Boolean,
+    relative_M14VentPeriode: M14VentPeriode // Add this parameter to access the ancient products value
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -93,7 +95,7 @@ import androidx.compose.ui.unit.sp
             colors = CardDefaults.elevatedCardColors(
                 containerColor = when {
                     !isLoadingCalculatedAchat -> {
-                        val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal
+                        val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal + totalProduitsDepot + relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period
                         when {
                             calculatedBalance > 0 -> MaterialTheme.colorScheme.tertiaryContainer
                             calculatedBalance < 0 -> MaterialTheme.colorScheme.errorContainer.copy(
@@ -150,8 +152,7 @@ import androidx.compose.ui.unit.sp
                             )
                         }
                     } else {
-                        val calculatedBalance =
-                            sum_Bon_Vents - calculatedAchatTotal + totalProduitsDepot
+                        val calculatedBalance = sum_Bon_Vents - calculatedAchatTotal + totalProduitsDepot + relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period
                         Text(
                             text = String.format("%.2f", calculatedBalance),
                             fontSize = 22.sp,
@@ -177,7 +178,7 @@ import androidx.compose.ui.unit.sp
                                 "%.2f",
                                 calculatedAchatTotal
                             )
-                        }) + Dépôt stagne ($totalProduitsDepot)",
+                        }) + Dépôt stagne ($totalProduitsDepot) + Ancien période (${relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period})",
                         fontSize = 10.sp,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
