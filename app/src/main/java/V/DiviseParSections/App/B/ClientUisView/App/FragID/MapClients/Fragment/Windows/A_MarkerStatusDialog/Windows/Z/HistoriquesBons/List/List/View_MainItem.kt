@@ -255,7 +255,7 @@ fun View_MainItem(
         modifier = Modifier
             .getSemanticsTag(relative_M17Message, "")
             .fillMaxWidth()
-            .height(220.dp),
+            .height(130.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = etateActuellementEst.color)
         ),

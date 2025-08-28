@@ -161,8 +161,11 @@ fun createAndAddMarker(
                     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
 
                     val onCommandBon_ventPeriod = datasValue.find {
+                        it.parent_M2Client_KeyID == m2Client.keyID
+                                &&
                         it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-                            ?.keyID ?: "") && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                            ?.keyID ?: "")
+                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
 
                     if (onCommandBon_ventPeriod != null) {
