@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
@@ -89,7 +90,8 @@ fun createAndAddMarker(
     mapView: MapView,
     context: Context,
     showMarkerDetails: Boolean,
-) {
+    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
+    ) {
     val repo = viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
@@ -155,7 +157,25 @@ fun createAndAddMarker(
                     true
                 }
 
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> TODO()
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction ->{
+                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+
+                    val onCommandBon_ventPeriod = datasValue.find {
+                        it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                            ?.keyID ?: "") && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    }
+
+                    if (onCommandBon_ventPeriod != null) {
+                        aCentralFacade.focusedActiveValuesFacade
+                            .focusedValuesSetter
+                            .setIN_M9CurrentApp_onVentM8BonVentKey(
+                                onCommandBon_ventPeriod
+                            )
+                        fragmentNavigationHandler.navigateToCartScreen()
+                    }
+
+                    true
+                }
             }
         }
     }

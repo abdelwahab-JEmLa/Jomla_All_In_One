@@ -32,6 +32,10 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -40,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -68,17 +73,79 @@ fun Button_De_supprime_Avec_Securite(
     machina_li_t_supprime: Repo8BonVent,
     onDeleteConfirmed: () -> Unit = {}
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     IconButton(
         onClick = {
-            // Secure deletion logic
-            machina_li_t_supprime.delete(bon_Vent)
-            onDeleteConfirmed()
+            showDeleteDialog = true
         },
     ) {
         Icon(
             imageVector = Icons.Default.Delete,
             contentDescription = "Supprimer avec sécurité",
             tint = Color.White
+        )
+    }
+
+    // Security confirmation dialog for delete
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Warning",
+                    tint = Color.Red
+                )
+            },
+            title = {
+                Text(
+                    text = "تأكيد الحذف",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "هل أنت متأكد من حذف هذه المعاملة؟",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "رقم المعاملة: ${bon_Vent.keyID.takeLast(6)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "لا يمكن التراجع عن هذا الإجراء",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        machina_li_t_supprime.delete(bon_Vent)
+                        onDeleteConfirmed()
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("حذف نهائي", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("إلغاء")
+                }
+            }
         )
     }
 }
@@ -94,8 +161,10 @@ fun View_MainItem(
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
     printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
     relative_M8BonVent: M8BonVent,
-) {   //<--
-//TODO(1): augmetn le height
+) {
+    // State for delete confirmation dialog
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
@@ -186,7 +255,7 @@ fun View_MainItem(
         modifier = Modifier
             .getSemanticsTag(relative_M17Message, "")
             .fillMaxWidth()
-            ,
+            .height(220.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = etateActuellementEst.color)
         ),
@@ -216,34 +285,13 @@ fun View_MainItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(12.dp), // Increased padding for better height utilization
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Delete button
                 IconButton(
                     onClick = {
-                        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
-                            relative_M8BonVent
-                        )
-
-                        val audioKeyToDelete = if (hasVoiceMessage) {
-                            relative_M17Message?.nomDeSonOriginaleFichie ?: ""
-                        } else {
-                            relative_M8BonVent.vocaleKeyID
-                        }
-
-                        viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
-                            if (success) {
-                                viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Erreur lors de la suppression du message vocal",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
+                        showDeleteDialog = true
                     }
                 ) {
                     Icon(
@@ -307,7 +355,7 @@ fun View_MainItem(
                     }
                 }
 
-                // Sum display card with reduced height
+                // Sum display card with enhanced height
                 if (sumBonVents > 0.0) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -317,9 +365,9 @@ fun View_MainItem(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
-                            // Compact version - single Row instead of Column
+                            // Enhanced compact version with better spacing
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), // Increased padding
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Remaining amount (primary)
@@ -328,7 +376,7 @@ fun View_MainItem(
                                         "%.2f",
                                         sumBonVents - relative_M8BonVent.versement
                                     ),
-                                    style = MaterialTheme.typography.titleSmall,
+                                    style = MaterialTheme.typography.titleMedium, // Slightly larger
                                     fontWeight = FontWeight.Bold,
                                     color = if (sumBonVents - relative_M8BonVent.versement > 0) {
                                         Color.White.copy(alpha = 0.9f)
@@ -336,53 +384,53 @@ fun View_MainItem(
                                         Color.Green.copy(alpha = 0.9f)
                                     }
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "دج متبقي",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium, // Larger text
                                     color = Color.White.copy(alpha = 0.8f)
                                 )
 
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
 
                                 // Separator
                                 Text(
                                     text = "|",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = Color.White.copy(alpha = 0.6f)
                                 )
 
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
 
                                 // Amount paid (compact)
                                 Text(
                                     text = String.format("%.2f", relative_M8BonVent.versement),
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium, // Larger text
                                     fontWeight = FontWeight.Medium,
                                     color = Color.White.copy(alpha = 0.9f)
                                 )
-                                Spacer(modifier = Modifier.width(2.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "مدفوع",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = Color.White.copy(alpha = 0.7f)
                                 )
                             }
                         } else {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), // Increased padding
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     text = String.format("%.2f", sumBonVents),
-                                    style = MaterialTheme.typography.titleSmall,
+                                    style = MaterialTheme.typography.titleMedium, // Larger text
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "دج",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium, // Larger text
                                     color = Color.White.copy(alpha = 0.9f)
                                 )
                             }
@@ -394,10 +442,10 @@ fun View_MainItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .padding(top = 8.dp)
+                    .padding(horizontal = 12.dp, vertical = 8.dp) // Enhanced padding
+                    .padding(top = 12.dp) // More top padding for better spacing
             ) {
-                // Transaction info row
+                // Transaction info row with enhanced spacing
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -432,7 +480,7 @@ fun View_MainItem(
                                 relative_M8BonVent.creationTimestamps
                             ).time
                         }",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge, // Larger text
                         color = Color.White
                     )
 
@@ -440,7 +488,7 @@ fun View_MainItem(
 
                     Text(
                         text = etateActuellementEst.nomArabe,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium, // Enhanced text size
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
                         color = Color.White
@@ -448,7 +496,7 @@ fun View_MainItem(
 
                     Text(
                         text = " --",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
                         color = Color.White
@@ -456,7 +504,7 @@ fun View_MainItem(
 
                     Text(
                         text = relative_M8BonVent.keyID.takeLast(4),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
                         color = Color.White,
@@ -464,23 +512,25 @@ fun View_MainItem(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(8.dp)) // Enhanced spacing
+
                 if (relative_M8BonVent.sum_De_Totale_Vents > 0.0) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp),
+                            .padding(vertical = 4.dp), // Enhanced vertical padding
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "المجموع: ",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge, // Larger text
                             color = Color.White,
                             fontWeight = FontWeight.Medium
                         )
 
                         Text(
                             text = String.format("%.2f دج", relative_M8BonVent.sum_De_Totale_Vents),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge, // Larger text
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
@@ -491,7 +541,7 @@ fun View_MainItem(
                         if (relative_M8BonVent.sum_De_Credit_Fait > 0.0) {
                             Text(
                                 text = "دفع: ",
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
                             Text(
@@ -499,7 +549,7 @@ fun View_MainItem(
                                     "%.2f دج",
                                     relative_M8BonVent.sum_De_Credit_Fait
                                 ),
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.8f),
                                 fontWeight = FontWeight.Medium
                             )
@@ -516,15 +566,17 @@ fun View_MainItem(
                     }
                 }
 
-                // Voice message player section - compact version
+                // Voice message player section - enhanced for better height utilization
                 if (hasVoiceMessage) {
+                    Spacer(modifier = Modifier.height(8.dp)) // Enhanced spacing
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 8.dp), // Enhanced vertical padding
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Play/Stop button - smaller
+                        // Play/Stop button - enhanced size
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
@@ -591,7 +643,7 @@ fun View_MainItem(
                                 }
                             },
                             enabled = !isCurrentlyDownloading,
-                            modifier = Modifier.padding(2.dp)
+                            modifier = Modifier.padding(4.dp) // Enhanced padding
                         ) {
                             Icon(
                                 imageVector = when {
@@ -608,19 +660,19 @@ fun View_MainItem(
                             )
                         }
 
-                        // Progress indicator - more compact
+                        // Progress indicator - enhanced height
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(horizontal = 4.dp)
+                                .padding(horizontal = 8.dp) // Enhanced horizontal padding
                         ) {
                             when {
                                 isCurrentlyDownloading -> {
                                     LinearProgressIndicator(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(4.dp)
-                                            .clip(RoundedCornerShape(2.dp)),
+                                            .height(6.dp) // Enhanced height
+                                            .clip(RoundedCornerShape(3.dp)),
                                         color = Color.White,
                                         trackColor = Color.White.copy(alpha = 0.3f)
                                     )
@@ -631,8 +683,8 @@ fun View_MainItem(
                                         progress = { playbackProgress.progress.coerceIn(0f, 1f) },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(4.dp)
-                                            .clip(RoundedCornerShape(2.dp)),
+                                            .height(6.dp) // Enhanced height
+                                            .clip(RoundedCornerShape(3.dp)),
                                         color = Color.White,
                                         trackColor = Color.White.copy(alpha = 0.3f)
                                     )
@@ -643,8 +695,8 @@ fun View_MainItem(
                                         progress = { 0f },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(4.dp)
-                                            .clip(RoundedCornerShape(2.dp)),
+                                            .height(6.dp) // Enhanced height
+                                            .clip(RoundedCornerShape(3.dp)),
                                         color = Color.White.copy(alpha = 0.5f),
                                         trackColor = Color.White.copy(alpha = 0.2f)
                                     )
@@ -663,7 +715,101 @@ fun View_MainItem(
         )
     }
 
-// Credit Payment Dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Warning",
+                    tint = Color.Red
+                )
+            },
+            title = {
+                Text(
+                    text = "تأكيد الحذف",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "هل أنت متأكد من حذف هذه المعاملة؟",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "رقم المعاملة: ${relative_M8BonVent.keyID.takeLast(6)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (hasVoiceMessage) {
+                        Text(
+                            text = "تحتوي على رسالة صوتية",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "لا يمكن التراجع عن هذا الإجراء",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // Perform the secure deletion
+                        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
+                            relative_M8BonVent
+                        )
+
+                        val audioKeyToDelete = if (hasVoiceMessage) {
+                            relative_M17Message?.nomDeSonOriginaleFichie ?: ""
+                        } else {
+                            relative_M8BonVent.vocaleKeyID
+                        }
+
+                        viewModel.deleteVoiceRecordingFromStorage(audioKeyToDelete) { success ->
+                            if (success) {
+                                viewModel.getter.repo8BonVent.delete(relative_M8BonVent)
+                                Toast.makeText(
+                                    context,
+                                    "تم حذف المعاملة بنجاح",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "خطأ في حذف الرسالة الصوتية",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("حذف نهائي", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("إلغاء", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        )
+    }
+
+    // Credit Payment Dialog
     if (showCreditDialog) {
         CreditPaymentDialog(
             onDismiss = { showCreditDialog = false },

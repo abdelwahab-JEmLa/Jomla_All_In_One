@@ -27,6 +27,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import java.io.File
 
 data class ActiveCentralValues(
@@ -83,10 +84,15 @@ data class ActiveCentralValues(
         }
     }
 
-    enum class Click_On_Marque {
+    enum class Click_On_Marque
+        (
+        val couleur: Color = Color(0xFF000000),
+
+        )
+    {
         Standart,
-        ADD_Au_Ciblage_Clients,
-        Affiche_OnCommand_VentPeriod_Transaction;
+        ADD_Au_Ciblage_Clients(Color(0xFFFF5722),),
+        Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0),),;
     }
 
     sealed class RoleDefinieParSourceACetteFragment() {

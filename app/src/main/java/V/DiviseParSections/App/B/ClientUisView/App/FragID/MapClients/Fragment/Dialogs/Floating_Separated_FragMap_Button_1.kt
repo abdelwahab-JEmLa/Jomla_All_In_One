@@ -49,7 +49,12 @@ fun Floating_Separated_FragMap_Button_1(
         icons = Pair(Icons.Default.Remove, Icons.Default.Add),
         colors = Pair(Color.Red, Color.Green)
     )
-) {
+) {   //<--
+//TODO(1): fait que la couleur et par   enum class Click_On_Marque
+//        (
+//        val couleur: Color = Color(0xFF000000),
+//
+//        ) 
     val currentValues = focusedValuesGetter.active_Central_Values
     val isActive = currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
