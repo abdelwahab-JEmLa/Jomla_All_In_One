@@ -1,14 +1,15 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.Surface
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -30,7 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlipCameraAndroid
-import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,12 +45,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.graphics.scale
+import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,6 +62,86 @@ import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+// Helper function to get orientation from URI
+fun getOrientationFromUri(context: Context, uri: Uri): Int {
+    return try {
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            val exif = ExifInterface(inputStream)
+            when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+        } ?: 0
+    } catch (e: Exception) {
+        0
+    }
+}
+
+// Helper function to rotate bitmap
+fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+    return if (degrees == 0f) {
+        bitmap
+    } else {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+}
+
+// Helper function to convert YUV to RGB bitmap
+fun convertYuvToRgb(imageProxy: ImageProxy): Bitmap? {
+    return try {
+        val yBuffer = imageProxy.planes[0].buffer // Y
+        val vuBuffer = imageProxy.planes[2].buffer // VU
+
+        val ySize = yBuffer.remaining()
+        val vuSize = vuBuffer.remaining()
+
+        val nv21 = ByteArray(ySize + vuSize)
+
+        yBuffer.get(nv21, 0, ySize)
+        vuBuffer.get(nv21, ySize, vuSize)
+
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, imageProxy.width, imageProxy.height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+        val imageBytes = out.toByteArray()
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+// Helper function to convert bitmap to WebP bytes
+fun bitmapToWebPBytes(bitmap: Bitmap, quality: Int): ByteArray {
+    val outputStream = ByteArrayOutputStream()
+    val success = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+            bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, quality, outputStream)
+        }
+        else -> {
+            @Suppress("DEPRECATION")
+            bitmap.compress(Bitmap.CompressFormat.WEBP, quality, outputStream)
+        }
+    }
+
+    return if (success) {
+        outputStream.toByteArray()
+    } else {
+        // Fallback to JPEG if WebP fails
+        val jpegStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, jpegStream)
+        jpegStream.toByteArray()
+    }
+}
+
+// Extension function for Bitmap scaling
+fun Bitmap.scale(newWidth: Int, newHeight: Int): Bitmap {
+    return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
+}
+
+// Updated CameraXDialog with proper orientation handling for direct camera capture
 @Composable
 fun CameraXDialog(
     onImageCaptured: (Uri) -> Unit,
@@ -68,6 +149,7 @@ fun CameraXDialog(
     webPQuality: Int = 85
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var preview: Preview? by remember { mutableStateOf(null) }
@@ -77,86 +159,16 @@ fun CameraXDialog(
     var isCameraReady by remember { mutableStateOf(false) }
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
 
-    suspend fun processGalleryImageToWebP(selectedUri: Uri): Uri? {
-        return try {
-            withContext(Dispatchers.IO) {
-                val inputStream = context.contentResolver.openInputStream(selectedUri)
-                val originalBitmap = BitmapFactory.decodeStream(inputStream)
-                inputStream?.close()
-
-                if (originalBitmap == null) return@withContext null
-
-                val maxSize = 2048
-                val scaledBitmap = if (originalBitmap.width > maxSize || originalBitmap.height > maxSize) {
-                    val scale = minOf(maxSize.toFloat() / originalBitmap.width, maxSize.toFloat() / originalBitmap.height)
-                    val newWidth = (originalBitmap.width * scale).toInt()
-                    val newHeight = (originalBitmap.height * scale).toInt()
-                    originalBitmap.scale(newWidth, newHeight).also {
-                        if (it !== originalBitmap) originalBitmap.recycle()
-                    }
-                } else originalBitmap
-
-                val outputFile = File(context.cacheDir, "gallery_webp_${System.currentTimeMillis()}.webp")
-
-                val success = try {
-                    FileOutputStream(outputFile).use { outputStream ->
-                        when {
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, webPQuality, outputStream)
-                            }
-                            true -> {
-                                @Suppress("DEPRECATION")
-                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP, webPQuality, outputStream)
-                            }
-                            else -> {
-                                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, webPQuality, outputStream)
-                            }
-                        }
-                    }
-                } catch (e: Exception) { false }
-
-                scaledBitmap.recycle()
-
-                if (success && outputFile.exists() && outputFile.length() > 0) {
-                    Uri.fromFile(outputFile)
-                } else {
-                    outputFile.delete()
-                    null
-                }
-            }
-        } catch (e: Exception) { null }
-    }
-
-    // Gallery picker launcher
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let { selectedUri ->
-            CoroutineScope(Dispatchers.Main).launch {
-                val processedUri = processGalleryImageToWebP(selectedUri)
-                processedUri?.let { onImageCaptured(it) }
-            }
+    // Get current device rotation
+    val rotation = remember(configuration.orientation) {
+        when (configuration.orientation) {
+            android.content.res.Configuration.ORIENTATION_PORTRAIT -> Surface.ROTATION_0
+            android.content.res.Configuration.ORIENTATION_LANDSCAPE -> Surface.ROTATION_90
+            else -> Surface.ROTATION_0
         }
     }
 
-    fun convertYuvToRgb(imageProxy: ImageProxy): Bitmap {
-        val yBuffer = imageProxy.planes[0].buffer
-        val uBuffer = imageProxy.planes[1].buffer
-        val vBuffer = imageProxy.planes[2].buffer
-        val ySize = yBuffer.remaining()
-        val uSize = uBuffer.remaining()
-        val vSize = vBuffer.remaining()
-        val nv21 = ByteArray(ySize + uSize + vSize)
-        yBuffer.get(nv21, 0, ySize)
-        vBuffer.get(nv21, ySize, vSize)
-        uBuffer.get(nv21, ySize + vSize, uSize)
-        val yuvImage = YuvImage(nv21, ImageFormat.NV21, imageProxy.width, imageProxy.height, null)
-        val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 90, out)
-        return BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size())
-    }
-
-    suspend fun processImageToWebP(imageProxy: ImageProxy): Uri? {
+    suspend fun processImageToWebPWithOrientation(imageProxy: ImageProxy): Uri? {
         return try {
             withContext(Dispatchers.IO) {
                 val bitmap = when (imageProxy.format) {
@@ -171,55 +183,58 @@ fun CameraXDialog(
 
                 if (bitmap == null) return@withContext null
 
-                val maxSize = 2048
-                val scaledBitmap = if (bitmap.width > maxSize || bitmap.height > maxSize) {
-                    val scale = minOf(maxSize.toFloat() / bitmap.width, maxSize.toFloat() / bitmap.height)
-                    val newWidth = (bitmap.width * scale).toInt()
-                    val newHeight = (bitmap.height * scale).toInt()
-                    bitmap.scale(newWidth, newHeight).also {
+                // Apply rotation based on image proxy rotation info
+                val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                val correctedBitmap = if (rotationDegrees != 0) {
+                    rotateBitmap(bitmap, rotationDegrees.toFloat()).also {
                         if (it !== bitmap) bitmap.recycle()
                     }
                 } else bitmap
 
-                val outputFile = File(context.cacheDir, "webp_${System.currentTimeMillis()}.webp")
-
-                val success = try {
-                    FileOutputStream(outputFile).use { outputStream ->
-                        when {
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, webPQuality, outputStream)
-                            }
-                            true -> {
-                                @Suppress("DEPRECATION")
-                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP, webPQuality, outputStream)
-                            }
-                            else -> {
-                                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, webPQuality, outputStream)
-                            }
-                        }
+                // Scale if needed
+                val maxSize = 2048
+                val scaledBitmap = if (correctedBitmap.width > maxSize || correctedBitmap.height > maxSize) {
+                    val scale = minOf(maxSize.toFloat() / correctedBitmap.width, maxSize.toFloat() / correctedBitmap.height)
+                    val newWidth = (correctedBitmap.width * scale).toInt()
+                    val newHeight = (correctedBitmap.height * scale).toInt()
+                    correctedBitmap.scale(newWidth, newHeight).also {
+                        if (it !== correctedBitmap) correctedBitmap.recycle()
                     }
-                } catch (e: Exception) { false }
+                } else correctedBitmap
+
+                val outputFile = File(context.cacheDir, "webp_${System.currentTimeMillis()}.webp")
+                val webpBytes = bitmapToWebPBytes(scaledBitmap, webPQuality)
+
+                FileOutputStream(outputFile).use { outputStream ->
+                    outputStream.write(webpBytes)
+                }
 
                 scaledBitmap.recycle()
 
-                if (success && outputFile.exists() && outputFile.length() > 0) {
+                if (outputFile.exists() && outputFile.length() > 0) {
                     Uri.fromFile(outputFile)
                 } else {
                     outputFile.delete()
                     null
                 }
             }
-        } catch (e: Exception) { null }
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    LaunchedEffect(lensFacing) {
+    LaunchedEffect(lensFacing, rotation) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         try {
             cameraProvider = cameraProviderFuture.get()
-            preview = Preview.Builder().build()
+            preview = Preview.Builder()
+                .setTargetRotation(rotation)
+                .build()
+
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setJpegQuality(95)
+                .setTargetRotation(rotation) // Set target rotation for proper orientation
                 .build()
 
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
@@ -228,9 +243,13 @@ fun CameraXDialog(
                     provider.unbindAll()
                     provider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
                     isCameraReady = true
-                } catch (exc: Exception) { isCameraReady = false }
+                } catch (exc: Exception) {
+                    isCameraReady = false
+                }
             }
-        } catch (exc: Exception) { isCameraReady = false }
+        } catch (exc: Exception) {
+            isCameraReady = false
+        }
     }
 
     Dialog(
@@ -266,19 +285,6 @@ fun CameraXDialog(
                     }
 
                     Row {
-                        // Gallery selection button
-                        IconButton(
-                            onClick = {
-                                if (!isCapturing) {
-                                    galleryLauncher.launch("image/*")
-                                }
-                            },
-                            modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                        ) {
-                            Icon(Icons.Default.PhotoLibrary, "Galerie", tint = Color.White)
-                        }
-
-                        // Camera flip button
                         IconButton(
                             onClick = {
                                 if (!isCapturing && isCameraReady) {
@@ -305,7 +311,7 @@ fun CameraXDialog(
                                     object : ImageCapture.OnImageCapturedCallback() {
                                         override fun onCaptureSuccess(imageProxy: ImageProxy) {
                                             CoroutineScope(Dispatchers.Main).launch {
-                                                val uri = processImageToWebP(imageProxy)
+                                                val uri = processImageToWebPWithOrientation(imageProxy)
                                                 imageProxy.close()
                                                 isCapturing = false
                                                 uri?.let { onImageCaptured(it) }

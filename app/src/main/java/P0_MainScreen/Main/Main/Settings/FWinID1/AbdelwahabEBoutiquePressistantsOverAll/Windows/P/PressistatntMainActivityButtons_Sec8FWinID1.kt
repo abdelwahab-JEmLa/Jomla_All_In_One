@@ -225,25 +225,27 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentSelectedCatalogueId = currentSelectedCatalogueId,
         onDismiss = { showCatalogueDialog = false },
         onCatalogueSelected = { catalogueId ->
-            val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent!!
+            val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
             currentAppCompt?.let { appCompt ->
-                val updatedBonVent = when (catalogueId) {
-                    "t1" -> currentBonVent.copy(
-                        pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
-                    )
+                if (currentBonVent != null) {
+                    val updatedBonVent = when (catalogueId) {
+                        "t1" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
+                        )
 
-                    "t2" -> currentBonVent.copy(
-                        pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
-                    )
+                        "t2" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
+                        )
 
-                    "t3" -> currentBonVent.copy(
-                        pourcentage_AffichageDuCatalogue_tebnage = 100.0
-                    )
+                        "t3" -> currentBonVent.copy(
+                            pourcentage_AffichageDuCatalogue_tebnage = 100.0
+                        )
 
-                    else -> currentBonVent
+                        else -> currentBonVent
+                    }
+                    repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
                 }
-                repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
 
                 val currentActiveCentralValues = focusedValuesGetter.active_Central_Values
                 val updatedActiveCentralValues = when (catalogueId) {
@@ -262,7 +264,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     else -> currentActiveCentralValues.copy()
                 }
 
-                // Update the focused values with the new active central values
                 focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
 
                 val updatedAppCompt = appCompt.copy(
@@ -369,7 +370,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin  && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
+                    (focusedValuesGetter.currentApp_Est_Admin && !cLenceDepuitFragmentsSepecialicteDeVents).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,

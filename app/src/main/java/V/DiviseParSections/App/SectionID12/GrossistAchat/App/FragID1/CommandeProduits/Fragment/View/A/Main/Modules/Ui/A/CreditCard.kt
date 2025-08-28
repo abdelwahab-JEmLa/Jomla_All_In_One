@@ -4,6 +4,11 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
+import Z_CodePartageEntreApps.Modules.CameraHandler.bitmapToWebPBytes
+import Z_CodePartageEntreApps.Modules.CameraHandler.getOrientationFromUri
+import Z_CodePartageEntreApps.Modules.CameraHandler.rotateBitmap
+import android.content.Context
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -194,7 +199,9 @@ fun CreditCard(
         )
     }
 
-    suspend fun handleReceiptImageCapture(uri: Uri) {
+
+    // Modified handleReceiptImageCapture function with orientation fix
+    suspend fun handleReceiptImageCapture(uri: Uri, context: Context) {
         if (isProcessing) return
         isProcessing = true
 
@@ -205,12 +212,33 @@ fun CreditCard(
 
             withContext(Dispatchers.IO) {
                 context.contentResolver.openInputStream(uri)?.use { input ->
-                    val bytes = input.readBytes()
+                    // Decode the original bitmap
+                    val originalBitmap = BitmapFactory.decodeStream(input)
+
+                    // Get the correct orientation from EXIF data
+                    val orientationDegrees = getOrientationFromUri(context, uri)
+
+                    // Apply rotation if needed
+                    val correctedBitmap = if (orientationDegrees != 0) {
+                        rotateBitmap(originalBitmap, orientationDegrees.toFloat())
+                    } else {
+                        originalBitmap
+                    }
+
+                    val webPQuality = 85
+
+                    val webpBytes = bitmapToWebPBytes(correctedBitmap, webPQuality)
 
                     FileOutputStream(localFile).use { output ->
-                        output.write(bytes)
+                        output.write(webpBytes)
                         output.flush()
                     }
+
+                    // Clean up bitmaps
+                    if (correctedBitmap != originalBitmap) {
+                        originalBitmap.recycle()
+                    }
+                    correctedBitmap.recycle()
 
                     // Upload to Firebase Storage
                     val firebaseFileName = "receipt_${item.id}_${System.currentTimeMillis()}.webp"
@@ -218,14 +246,13 @@ fun CreditCard(
 
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            storageRef.child(firebaseFileName).putBytes(bytes).await()
+                            storageRef.child(firebaseFileName).putBytes(webpBytes).await()
                         } catch (e: Exception) {
                             // Handle upload error silently
                         }
                     }
 
                     withContext(Dispatchers.Main) {
-                        // FIXED: Enhanced image slot assignment with Firebase paths
                         val updatedItem = when {
                             item.receiptImagePath == null -> item.copy(
                                 receiptImagePath = localFile.absolutePath,
@@ -244,7 +271,6 @@ fun CreditCard(
                                 firebaseStorage4Path = firebaseStoragePath
                             )
                             else -> {
-                                // All slots full, replace the first one
                                 item.copy(
                                     receiptImagePath = localFile.absolutePath,
                                     firebaseStoragePath = firebaseStoragePath
@@ -299,7 +325,7 @@ fun CreditCard(
         CameraXDialog(
             onImageCaptured = { uri ->
                 showCameraDialog = false
-                scope.launch { handleReceiptImageCapture(uri) }
+                scope.launch { handleReceiptImageCapture(uri, context) }
             },
             onDismiss = {
                 showCameraDialog = false
@@ -308,7 +334,7 @@ fun CreditCard(
             webPQuality = 85
         )
     }
-
+    
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {

@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.3"
+        versionName = "1.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
@@ -186,6 +186,7 @@ dependencies {
     // If you need additional ExoPlayer extensions
     implementation ("com.google.android.exoplayer:extension-mediasession:2.19.1")
 
+    implementation ("androidx.exifinterface:exifinterface:1.3.6")
 }
 
 apply(plugin = "com.google.gms.google-services")
