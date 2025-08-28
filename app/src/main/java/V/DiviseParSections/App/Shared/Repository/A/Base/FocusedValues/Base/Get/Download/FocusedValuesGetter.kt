@@ -85,14 +85,8 @@ data class ActiveCentralValues(
 
     enum class Click_On_Marque {
         Standart,
-        ADD_Au_Ciblage_Clients;
-
-        fun toggle_retrn(): Click_On_Marque {
-            return when (this) {
-                Standart -> ADD_Au_Ciblage_Clients
-                ADD_Au_Ciblage_Clients -> Standart
-            }
-        }
+        ADD_Au_Ciblage_Clients,
+        Affiche_OnCommand_VentPeriod_Transaction;
     }
 
     sealed class RoleDefinieParSourceACetteFragment() {

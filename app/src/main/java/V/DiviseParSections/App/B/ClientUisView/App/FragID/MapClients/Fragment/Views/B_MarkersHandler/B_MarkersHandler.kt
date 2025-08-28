@@ -43,7 +43,7 @@ fun addOuUpdateMapMarkers(
 
     // Filter clientAchteurs based on the current mode
     val clientsToShow =
-            filterClientsBasedOnMode(viewModel, currentFilterMode)
+        filterClientsBasedOnMode(viewModel, currentFilterMode)
 
     // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(
@@ -154,6 +154,8 @@ fun createAndAddMarker(
                     if (showMarkerDetails) clickedMarker.showInfoWindow()
                     true
                 }
+
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> TODO()
             }
         }
     }
@@ -196,7 +198,7 @@ private fun Marker.title(
                 "$distanceSemain.$dayName (${timeStr})" +
                         "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         texy_Safe +
-                "\n${m2Client.nom}"
+                        "\n${m2Client.nom}"
             } else {
                 m2Client.nom
             }

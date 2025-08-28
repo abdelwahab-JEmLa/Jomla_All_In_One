@@ -1,4 +1,4 @@
-// File 1: Fixed Button State and Floating Button Component
+// File 1: Fixed Button State and Floating Button Component with Dropdown
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -17,13 +17,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,7 +45,7 @@ fun Floating_Separated_FragMap_Button_1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
-        text_Label = "Toggle Button",
+        text_Label = "Mode Selection",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add),
         colors = Pair(Color.Red, Color.Green)
     )
@@ -57,6 +61,7 @@ fun Floating_Separated_FragMap_Button_1(
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 200f) }
+    var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -80,7 +85,11 @@ fun Floating_Separated_FragMap_Button_1(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = updatedButtonState.text_Label,
+                        text = when (currentValues.click_On_Marque) {
+                            ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
+                            ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Ciblage"
+                            ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Vent Period"
+                        },
                         color = Color.White,
                         modifier = Modifier
                             .background(
@@ -93,30 +102,53 @@ fun Floating_Separated_FragMap_Button_1(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .getSemanticsTag(updatedButtonState, "buttonState")
-                        .size(48.dp),
-                    onClick = {
-                        val newValues = currentValues.copy(
-                            click_On_Marque = currentValues.click_On_Marque.toggle_retrn()
-                        )
-                        focusedValuesGetter.update_activeCentralValues(newValues)
-                    },
-                    containerColor = if (updatedButtonState.its_Active)
-                        updatedButtonState.colors.first
-                    else
-                        updatedButtonState.colors.second
-                ) {
-                    Icon(
-                        imageVector = if (updatedButtonState.its_Active)
-                            updatedButtonState.icons.first
+
+                Box {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .getSemanticsTag(updatedButtonState, "buttonState")
+                            .size(48.dp),
+                        onClick = {
+                            expanded = true
+                        },
+                        containerColor = if (updatedButtonState.its_Active)
+                            updatedButtonState.colors.first
                         else
-                            updatedButtonState.icons.second,
-                        contentDescription = updatedButtonState.description_Functionement,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                            updatedButtonState.colors.second
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Select Click On Marque Mode",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        ActiveCentralValues.Click_On_Marque.values().forEach { clickMode ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = when (clickMode) {
+                                            ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
+                                            ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Au Ciblage Clients"
+                                            ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Affiche OnCommand VentPeriod Transaction"
+                                        }
+                                    )
+                                },
+                                onClick = {
+                                    val newValues = currentValues.copy(
+                                        click_On_Marque = clickMode
+                                    )
+                                    focusedValuesGetter.update_activeCentralValues(newValues)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

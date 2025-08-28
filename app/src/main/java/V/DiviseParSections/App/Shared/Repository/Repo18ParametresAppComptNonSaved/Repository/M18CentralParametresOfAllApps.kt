@@ -104,7 +104,7 @@ data class M18CentralParametresOfAllApps(
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true ,
-    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
+    val devStartUpScree: String = Screen.A_Clients_LocationGps.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
