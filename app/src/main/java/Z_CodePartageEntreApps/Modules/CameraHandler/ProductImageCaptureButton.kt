@@ -176,13 +176,6 @@ fun ProductImageCaptureButton(
         return newCouleurP.keyID
     }
 
-    fun getNewCouleurKeyID(): String {
-        // This should return the keyID of the newly created M3CouleurProduitInfos
-        // You might need to modify handleAddNewM3Couleur to return the keyID
-        // or retrieve it from the repository after creation
-        return handleAddNewM3Couleur()
-    }
-
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
