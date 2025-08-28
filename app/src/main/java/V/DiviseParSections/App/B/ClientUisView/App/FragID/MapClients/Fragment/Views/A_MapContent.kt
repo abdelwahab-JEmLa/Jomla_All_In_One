@@ -16,6 +16,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -97,7 +98,8 @@ fun MapContent(
     }
 
     // FIXED: Listen for GPS follow mode changes from the FAB dropdown
-    val gpsFollowModeActive = focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
+    val gpsFollowModeActive =
+        focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
 
     LaunchedEffect(gpsFollowModeActive) {
         if (gpsFollowModeActive) {
@@ -254,8 +256,13 @@ fun MapContent(
         // Marker status dialog
         val activeOnVentM2ClientInfos =
             viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
+        val currentValues = focusedValuesGetter.active_Central_Values
+        val its_ADD_Au_Ciblage_Clients =
+            currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
-        if (activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null) {
+        if ((activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null)
+            && !its_ADD_Au_Ciblage_Clients
+        ) {
             MarkerStatusDialog(
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
@@ -292,15 +299,16 @@ fun MapContent(
             focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active
         affiche_Floating_Button_gps_follow_mode_active.ifTrue {
             Floating_Separated_FragMap_Button_2(
-                buttonState= Button_State.get_Default().copy(
-                text_Label = "affiche_Floating_Button_gps_follow_mode_active",
-                icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),
-                colors = Pair(Color.Red, Color.Green)
-            )
+                buttonState = Button_State.get_Default().copy(
+                    text_Label = "affiche_Floating_Button_gps_follow_mode_active",
+                    icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),
+                    colors = Pair(Color.Red, Color.Green)
+                )
             )
         }
     }
 }
+
 private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
     val locationOverlay = mapView.overlays.find { overlay ->
         overlay.javaClass.simpleName.contains("Location") ||
