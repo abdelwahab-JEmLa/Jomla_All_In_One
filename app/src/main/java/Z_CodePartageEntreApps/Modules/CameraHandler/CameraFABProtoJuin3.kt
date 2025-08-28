@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -85,7 +86,7 @@ fun CameraFABProtoJuin3(
 
                             val keyID =
                                 RepositorysMainGetter.getPushFireBase(ArticlesBasesStatsTable.ref)
-                            val updatedProduct = product.copy(
+                            val newProduit = product.copy(
                                 keyID = keyID,
                                 nom = "Produit $idParentCategorie ${keyID.takeLast(4).uppercase()}",
                                 actualiseSonImage = 1,
@@ -97,13 +98,25 @@ fun CameraFABProtoJuin3(
                             )
 
                             a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(
-                                updatedProduct
+                                newProduit
                             )
 
 
+
+                            val newCouleurP = M3CouleurProduitInfos(
+                                parentBProduitOldID = newProduit.id,
+                                parentBProduitInfosKeyID = newProduit.keyID,
+                                parentId1ProduitInfosDebugName = newProduit.nom,
+                                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                            )
+
+                            aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                                newCouleurP
+                            )
+
                             Toast.makeText(
                                 context,
-                                "Produit WebP créé: ${updatedProduct.nom}",
+                                "Produit WebP créé: ${newProduit.nom}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
