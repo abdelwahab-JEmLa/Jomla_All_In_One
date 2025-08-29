@@ -53,7 +53,7 @@ fun PrixsVents_Handler(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-) {    //<--
+) {
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
@@ -80,7 +80,8 @@ fun PrixsVents_Handler(
             .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
-    fun handelClick() {
+    fun handelClick() {   //<--
+    //TODO(1)pk au click ca update data base mais le ui n ai pas reactive
         executeClickLogic()
     }
 
@@ -92,8 +93,8 @@ fun PrixsVents_Handler(
     fun handel_Add_Diminue_Prix(newPrix: Double) {
         repositorysMainSetter.upsert_M13TarificationInfos(
             relative_Tariff.copy(
-                parent_M1Produit_KeyId = relative_Produit.keyID,
-                prixCurrency = newPrix
+                prixCurrency = newPrix,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
         )
     }
