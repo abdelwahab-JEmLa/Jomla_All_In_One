@@ -28,7 +28,8 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 sealed class ItsLancedDepuit {
-    data class EditeBaseDonne(val relative_Produit: ArticlesBasesStatsTable?) : ItsLancedDepuit()
+    data class EditeBaseDonne(val relative_Produit: ArticlesBasesStatsTable? =null) : ItsLancedDepuit()
+    data object Autres : ItsLancedDepuit()
 }
 
 @Composable

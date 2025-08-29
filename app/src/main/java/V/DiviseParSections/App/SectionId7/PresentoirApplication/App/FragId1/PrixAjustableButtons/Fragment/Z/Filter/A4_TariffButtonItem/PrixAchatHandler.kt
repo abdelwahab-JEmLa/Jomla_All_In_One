@@ -55,7 +55,8 @@ fun PrixAchatHandler(
 
     showLabels: Boolean,
     nombreUnite: Int = 1,
-) {
+) {    //<--
+//TODO(1): ajout un affiche de 
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 

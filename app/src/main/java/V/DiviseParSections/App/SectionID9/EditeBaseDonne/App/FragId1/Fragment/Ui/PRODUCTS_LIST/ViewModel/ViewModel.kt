@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class Sec9FragId1ViewId2ViewModel(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
+
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,
         var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
@@ -17,7 +19,9 @@ class Sec9FragId1ViewId2ViewModel(
 
         var its_Mode_Regle_Prixs: Boolean = false,
         var mode_Edites: Mode_Edites = Mode_Edites.its_Mode_Regle_Prixs,
-    ) {
+        var itsLancedDepuit: ItsLancedDepuit = ItsLancedDepuit.Autres,
+
+        ) {
         enum class Mode_Edites {
             its_Mode_Regle_Prixs, standart
         }
