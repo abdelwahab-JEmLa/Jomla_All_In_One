@@ -73,16 +73,6 @@ fun PrixAchatHandler(
     fun toggleUnitPriceMode() {
         isEditingUnitPrice = !isEditingUnitPrice
         editablePurchasePriceText = ""
-
-        // Set the appropriate initial value based on the mode
-        if (isEditingUnitPrice) {
-            // Show unit price
-            val unitPrice = relative_Produit.prixAchat / nombreUnite
-            editablePurchasePriceText = String.format("%.2f", unitPrice)
-        } else {
-            // Show total price
-            editablePurchasePriceText = relative_Produit.prixAchat.toString()
-        }
     }
 
     fun handel_Add_Diminue_Prix(newPrix: Double) {
@@ -127,10 +117,6 @@ fun PrixAchatHandler(
                     if (isEditingPurchasePrice) {
                         OutlinedTextField(
                             modifier = Modifier
-                                .getSemanticsTag(
-                                    nomVal = "editablePurchasePriceText",
-                                    data = editablePurchasePriceText
-                                )
                                 .width(100.dp)
                                 .focusRequester(purchasePriceFocusRequester),
                             value = editablePurchasePriceText,
