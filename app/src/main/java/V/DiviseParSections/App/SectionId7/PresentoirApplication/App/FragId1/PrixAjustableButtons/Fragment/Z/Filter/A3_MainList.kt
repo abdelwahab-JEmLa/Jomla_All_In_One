@@ -63,14 +63,15 @@ fun MainList(
                         && it.parent_M14VentPeriod_KeyId == (focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: ""))
             } ?: M13TarificationInfos(
-            parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?:"",
+            parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+                ?: "",
             typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
             prixCurrency = relative_M1Produit.prixVent,
             creationTimestamps = System.currentTimeMillis()
         )
     }
 
-    val tariffPrix_SupperGro_Et_PresentationService by remember (list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }) {
+    val tariffPrix_SupperGro_Et_PresentationService by remember(list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }) {
         derivedStateOf {
             getOrSet_TariffPrix_SupperGro_Et_PresentationService()
         }
@@ -101,7 +102,10 @@ fun MainList(
             )
         }
 
-    val existing_Prix_Detaille = find_existing_Prix_Detaille(aCentralFacade, relative_M1Produit)
+    val existing_Prix_Detaille = find_existing_Prix_Detaille(
+        aCentralFacade,
+        relative_M1Produit,
+    )
 
     val relative_Tariff_Prix_Detaille =
         M13TarificationInfos.get_default().copy(
@@ -122,7 +126,7 @@ fun MainList(
         max_Prix,
         clientDefiniTariffs,
         travailleChezGrossisst3Ali,
-        repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase } ,
+        repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
@@ -163,8 +167,6 @@ fun MainList(
                     )
                 )
             }
-
-
         }
     }
 
@@ -219,12 +221,14 @@ fun MainList(
                         }
                     }
 
-                    TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+                    TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                    TypeChoisi.Prix_Detaille -> {
                         val relative_Tariff =
                             relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
                         if (relative_Tariff != null) {
                             PrixsVents_Handler(
+                                allTariffsGroupedAndSorted=allTariffsGroupedAndSorted,
                                 relative_Produit = relative_M1Produit,
                                 relative_Tariff = relative_Tariff,
                             )
@@ -280,10 +284,9 @@ fun MainList(
     }
 }
 
-
 fun find_existing_Prix_Detaille(
     aCentralFacade: ACentralFacade,
-    relative_M1Produit: ArticlesBasesStatsTable
+    relative_M1Produit: ArticlesBasesStatsTable,
 ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     .lastOrNull { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
