@@ -5,9 +5,11 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +41,8 @@ fun TariffsButtonsSec7ID2(
     lancedDepuitAffiche: ItsLancedDepuit? = null,
 ) {
     val context = LocalContext.current
-    val relative_Produit = (lancedDepuitAffiche as? ItsLancedDepuit.EditeBaseDonne)?.relative_Produit
+    val relative_Produit =
+        (lancedDepuitAffiche as? ItsLancedDepuit.EditeBaseDonne)?.relative_Produit
     val itsLancedDepuitEditeBaseDonne = lancedDepuitAffiche is ItsLancedDepuit.EditeBaseDonne
 
     val bonVentComQuiFilterButtons =
@@ -91,11 +94,13 @@ fun TariffsButtonsSec7ID2(
     val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, android.content.Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
-            viewModel.updateListRelativeVentCouleurPrixVent(
-                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
-                m1produitInfos = m1produitInfos,
-                newPrix = latestTariffLocalData.prixCurrency
-            )
+            (typeTarification != TypeChoisi.Prix_SupperGro_Et_PresentationService).ifFalse {
+                viewModel.updateListRelativeVentCouleurPrixVent(
+                    listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                    m1produitInfos = m1produitInfos,
+                    newPrix = latestTariffLocalData.prixCurrency
+                )
+            }
 
             if (!itsLancedDepuitEditeBaseDonne) {
                 // Normal mode: full message with price details
@@ -140,7 +145,7 @@ fun TariffsButtonsSec7ID2(
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (filterProductId != null) {
                     MainFilter(
-                        lancedDepuitAffiche=lancedDepuitAffiche,
+                        lancedDepuitAffiche = lancedDepuitAffiche,
                         viewModel = viewModel,
                         list_M8BonVent = bonVentList,
                         tarificationList = tarificationList,

@@ -2,6 +2,8 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixAchatHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.TariffButtonItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -41,13 +43,13 @@ fun MainList(
     onClickAnulationButton: (() -> Unit)? = null,
     itsLancedDepuitComposeParent: ItsLancedDepuit?
 ) {
-
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
 
-    val itsLancedDepuit_EditeBaseDonne = itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
+    val itsLancedDepuit_EditeBaseDonne =
+        itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     val max_Prix = list_M13TarificationInfos
@@ -177,18 +179,35 @@ fun MainList(
                     }, key = SemanticsPropertyKey("filter"))
                 }
         ) {
-            allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
-                TariffButtonItem(
-                    produit = relative_M1Produit,
-                    viewModel = viewModel,
-                    typeTarification = type,
-                    tariffs = typeTariffs,
-                    showLabels = showLabels,
-                    onClickPrixButton = onClickPrixButton,
-                    context = context,
-                    nombreUnite = relative_M1Produit.nombreUniteInt,
-                )
+            allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
+                when (centralType) {
+                    TypeChoisi.Tariff_Achat_Depuit_Grossisst -> {
+                        val relative_Tariff =
+                            relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+
+                        if (relative_Tariff != null) {
+                            PrixAchatHandler(
+                                relative_Produit = relative_M1Produit,
+                                relative_Tariff = relative_Tariff,
+                                showLabels = showLabels,
+                                nombreUnite = relative_M1Produit.nombreUniteInt,
+                            )
+                        }
+                    }
+
+                    else -> TariffButtonItem(
+                        produit = relative_M1Produit,
+                        viewModel = viewModel,
+                        typeTarification = centralType,
+                        tariffs = relativeList_Tariff,
+                        showLabels = showLabels,
+                        onClickPrixButton = onClickPrixButton,
+                        context = context,
+                        nombreUnite = relative_M1Produit.nombreUniteInt,
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
+
             }
         }
 
