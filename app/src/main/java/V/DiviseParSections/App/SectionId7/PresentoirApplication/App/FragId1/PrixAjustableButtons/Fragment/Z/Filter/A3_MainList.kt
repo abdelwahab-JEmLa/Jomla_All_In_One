@@ -55,25 +55,24 @@ fun MainList(
         itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
-    val tariffPrix_SupperGro_Et_PresentationService by remember(
-        list_M13TarificationInfos,
-        relative_M1Produit.keyID,
-        relative_M1Produit.prixVent,
-        focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-    ) {
+    fun getOrSet_TariffPrix_SupperGro_Et_PresentationService(): M13TarificationInfos {
+        return list_M13TarificationInfos
+            .lastOrNull {
+                (it.parent_M1Produit_KeyId == relative_M1Produit.keyID
+                        && it.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService
+                        && it.parent_M14VentPeriod_KeyId == (focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+                    ?: ""))
+            } ?: M13TarificationInfos(
+            parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?:"",
+            typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
+            prixCurrency = relative_M1Produit.prixVent,
+            creationTimestamps = System.currentTimeMillis()
+        )
+    }
+
+    val tariffPrix_SupperGro_Et_PresentationService by remember (list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }) {
         derivedStateOf {
-            list_M13TarificationInfos
-                .lastOrNull {
-                    (it.parent_M1Produit_KeyId == relative_M1Produit.keyID
-                            && it.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService
-                            && it.parent_M14VentPeriod_KeyId == (focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-                        ?: ""))
-                } ?: M13TarificationInfos(
-                parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?:"",
-                typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
-                prixCurrency = relative_M1Produit.prixVent,
-                creationTimestamps = System.currentTimeMillis()
-            )
+            getOrSet_TariffPrix_SupperGro_Et_PresentationService()
         }
     }
 
@@ -123,7 +122,8 @@ fun MainList(
         max_Prix,
         clientDefiniTariffs,
         travailleChezGrossisst3Ali,
-        repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
+        repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase } ,
+        list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
             if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {

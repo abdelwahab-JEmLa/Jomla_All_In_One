@@ -80,8 +80,7 @@ fun PrixsVents_Handler(
             .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
-    fun handelClick() {   //<--
-    //TODO(1)pk au click ca update data base mais le ui n ai pas reactive
+    fun handelClick() {
         executeClickLogic()
     }
 
