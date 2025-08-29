@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixAchatHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.TariffButtonItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +54,25 @@ fun MainList(
     val itsLancedDepuit_EditeBaseDonne =
         itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
+
+
+    fun getOrSet_TariffPrix_SupperGro_Et_PresentationService(): M13TarificationInfos {
+        return list_M13TarificationInfos
+            .lastOrNull {
+                it.parent_M1Produit_KeyId == relative_M1Produit.keyID
+                        && it.parent_M2Client_KeyId == relative_M2Client?.keyID
+                        && it.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService
+            } ?: M13TarificationInfos(
+            typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
+            prixCurrency = relative_M1Produit.prixVent,
+        )
+    }
+
+    val tariffPrix_SupperGro_Et_PresentationService by remember {
+        derivedStateOf {
+            getOrSet_TariffPrix_SupperGro_Et_PresentationService()
+        }
+    }
 
     val max_Prix = list_M13TarificationInfos
         .filter {
@@ -101,11 +123,26 @@ fun MainList(
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
+            if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
+                add(
+                    M13TarificationInfos(
+                        typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
+                        prixCurrency = relative_M1Produit.prixAchat,
+                        parent_M1Produit_KeyId = relative_M1Produit.keyID,
+                        parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+                    )
+                )
+            }
+
+            add(
+                tariffPrix_SupperGro_Et_PresentationService
+            )
+
+            add(relative_Tariff_Prix_Progressive)
+
             if (relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency) {
                 add(relative_Tariff_Prix_Detaille)
             }
-
-            add(relative_Tariff_Prix_Progressive)
 
             if (relative_Tariff_Historique != null && !itsLancedDepuit_EditeBaseDonne) {
                 add(relative_Tariff_Historique)
@@ -124,23 +161,7 @@ fun MainList(
                 )
             }
 
-            add(
-                M13TarificationInfos(
-                    typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
-                    prixCurrency = relative_M1Produit.prixVent,
-                )
-            )
 
-            if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
-                add(
-                    M13TarificationInfos(
-                        typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
-                        prixCurrency = relative_M1Produit.prixAchat,
-                        parent_M1Produit_KeyId = relative_M1Produit.keyID,
-                        parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-                    )
-                )
-            }
         }
     }
 
@@ -195,6 +216,17 @@ fun MainList(
                         }
                     }
 
+                    TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
+                        val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+
+                        if (relative_Tariff != null) {
+                            PrixsVents_Handler(
+                                relative_Produit = relative_M1Produit,
+                                relative_Tariff = relative_Tariff,
+                            )
+                        }
+                    }
+
                     else -> TariffButtonItem(
                         produit = relative_M1Produit,
                         viewModel = viewModel,
@@ -243,6 +275,7 @@ fun MainList(
         }
     }
 }
+
 
 fun find_existing_Prix_Detaille(
     aCentralFacade: ACentralFacade,

@@ -263,14 +263,37 @@ class DatesHandler {
             return ""
         }
     }
-    // Updated usage in Item_VentPeriod composable:
-// Replace this line:
-// text = get_PersonaleDateFormatArab(), //<--
-// With:
-// text = DatesHandler.get_PersonaleDateFormatArab(relative_Period.creationTimestamp),
 
-    // Updated companion function in DatesHandler class
     companion object {
+        fun getTimeDifferenceInArabicWithMintes(timestamp: Long): String {
+            val currentTime = System.currentTimeMillis()
+            val difference = currentTime - timestamp
+
+            val seconds = difference / 1000
+            val minutes = seconds / 60
+            val hours = minutes / 60
+            val days = hours / 24
+            val months = days / 30
+            val years = days / 365
+
+            return when {
+                years > 0 -> "${years} سنة"
+                months > 0 -> "${months} شهر"
+                days > 0 -> "${days} يوم"
+                hours > 0 -> "${hours} ساعة"
+                minutes > 0 -> {
+                    val remainingSeconds = seconds % 60
+                    if (remainingSeconds > 0) {
+                        "$minutes دقيقة و $remainingSeconds ثانية"
+                    } else {
+                        "${minutes} دقيقة"
+                    }
+                }
+                seconds > 0 -> "${seconds} ثانية"
+                else -> "الآن"
+            }
+        }
+
         fun get_PersonaleDateFormatArab(timestamp: Long?): String {
             if (timestamp == null) return ""
 

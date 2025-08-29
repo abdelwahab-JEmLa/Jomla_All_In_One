@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.getTimeDifferenceInArabicWithMintes
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,35 +45,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
-
-fun getTimeDifferenceInArabicWithMintes(timestamp: Long): String {
-    val currentTime = System.currentTimeMillis()
-    val difference = currentTime - timestamp
-
-    val seconds = difference / 1000
-    val minutes = seconds / 60
-    val hours = minutes / 60
-    val days = hours / 24
-    val months = days / 30
-    val years = days / 365
-
-    return when {
-        years > 0 -> "${years} سنة"
-        months > 0 -> "${months} شهر"
-        days > 0 -> "${days} يوم"
-        hours > 0 -> "${hours} ساعة"
-        minutes > 0 -> {
-            val remainingSeconds = seconds % 60
-            if (remainingSeconds > 0) {
-                "$minutes دقيقة و $remainingSeconds ثانية"
-            } else {
-                "${minutes} دقيقة"
-            }
-        }
-        seconds > 0 -> "${seconds} ثانية"
-        else -> "الآن"
-    }
-}
 
 @SuppressLint("DefaultLocale")
 @Composable
