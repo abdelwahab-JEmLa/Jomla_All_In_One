@@ -17,15 +17,8 @@ class Sec9FragId1ViewId2ViewModel(
         var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet(),
 
-        var its_Mode_Regle_Prixs: Boolean = false,
-        var mode_Edites: Mode_Edites = Mode_Edites.its_Mode_Regle_Prixs,
-        var itsLancedDepuit: ItsLancedDepuit = ItsLancedDepuit.Autres,
-
-        ) {
-        enum class Mode_Edites {
-            its_Mode_Regle_Prixs, standart
-        }
-    }
+        var itsLancedDepuit: ItsLancedDepuit = ItsLancedDepuit.EditeBaseDonne(),
+    )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
