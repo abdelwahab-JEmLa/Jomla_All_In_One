@@ -103,7 +103,6 @@ fun MainList(
                 add(relative_Tariff_Prix_Detaille)
             }
 
-
             add(relative_Tariff_Prix_Progressive)
 
             if (relative_Tariff_Historique != null && !itsLancedDepuit_EditeBaseDonne) {

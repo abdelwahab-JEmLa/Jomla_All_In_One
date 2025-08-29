@@ -38,6 +38,7 @@ fun TariffsButtonsSec7ID2(
     lancedDepuitAffiche: ItsLancedDepuit? = null,
 ) {
     val relative_Produit = (lancedDepuitAffiche as? ItsLancedDepuit.EditeBaseDonne)?.relative_Produit
+    val itsLancedDepuitEditeBaseDonne = lancedDepuitAffiche is ItsLancedDepuit.EditeBaseDonne
 
     val bonVentComQuiFilterButtons =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent
@@ -85,8 +86,6 @@ fun TariffsButtonsSec7ID2(
         suspendFunction1(datasValueDeM1ProduitInfos, viewModel)
     )
 
-    val isEditeBaseDonne = lancedDepuitAffiche is ItsLancedDepuit.EditeBaseDonne
-
     val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
@@ -98,22 +97,17 @@ fun TariffsButtonsSec7ID2(
             )
 
             // Only hide buttons when NOT in price editing mode
-            if (!isEditeBaseDonne) {
+            if (!itsLancedDepuitEditeBaseDonne) {
                 afficheButtons = false
                 fermeDialog(latestTariffLocalData)
-                currentToast = ToastData(
-                    message = message,
-                    type = ToastType.SUCCESS,
-                    duration = 1500L
-                )
-            } else {
-                // In price editing mode, just show success toast but keep buttons visible
+                // Show toast only when NOT in price editing mode
                 currentToast = ToastData(
                     message = message,
                     type = ToastType.SUCCESS,
                     duration = 1500L
                 )
             }
+            // In price editing mode: don't show toast, don't hide buttons, don't call fermeDialog
         }
 
     val onClickAnulationButton: () -> Unit = {
@@ -123,21 +117,17 @@ fun TariffsButtonsSec7ID2(
             )
         }
 
-        if (!isEditeBaseDonne) {
+        if (!itsLancedDepuitEditeBaseDonne) {
             onFermDialogeAvecAnllation()
             afficheButtons = false
-            currentToast = ToastData(
-                message = "تم الإلغاء",
-                type = ToastType.INFO,
-                duration = 1500L
-            )
-        } else {
+            // Show toast only when NOT in price editing mode
             currentToast = ToastData(
                 message = "تم الإلغاء",
                 type = ToastType.INFO,
                 duration = 1500L
             )
         }
+        // In price editing mode: don't show toast, don't hide buttons, don't call dialog functions
     }
 
     if (afficheButtons) {
@@ -161,7 +151,8 @@ fun TariffsButtonsSec7ID2(
         }
     }
 
-    if (currentToast != null) {
+    // Only show toast when NOT in price editing mode
+    if (currentToast != null && !itsLancedDepuitEditeBaseDonne) {
         ModernToastMessage(
             toastData = currentToast,
             onDismiss = { currentToast = null }

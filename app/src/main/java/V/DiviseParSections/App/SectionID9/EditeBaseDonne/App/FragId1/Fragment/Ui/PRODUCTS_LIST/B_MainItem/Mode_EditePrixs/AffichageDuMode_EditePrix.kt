@@ -3,12 +3,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
-import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
-import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,22 +20,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -48,9 +37,6 @@ fun AffichageDuMode_EditePrix(
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     paddingDefaulte: Dp,
 ) {
-    val uiStateSec9FragId1ViewId2ViewModel by viewModel.uiState.collectAsState()
-    var currentToast by remember { mutableStateOf<ToastData?>(null) }
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
@@ -144,32 +130,6 @@ fun AffichageDuMode_EditePrix(
                 lancedDepuitAffiche= ItsLancedDepuit.EditeBaseDonne(relative_produit),
                 its_ProduitVentsInfosDialog = true
             )
-        }
-
-        currentToast?.let { toast ->
-            LaunchedEffect(toast) {
-                delay(toast.duration)
-                currentToast = null
-            }
-
-            Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(
-                        color = when (toast.type) {
-                            ToastType.SUCCESS -> Color.Green
-                            ToastType.INFO -> Color.Blue
-                            else -> Color.Gray
-                        },
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = toast.message,
-                    color = Color.White
-                )
-            }
         }
     }
 }
