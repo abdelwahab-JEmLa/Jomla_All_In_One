@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Mode_EditePrixs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
@@ -136,14 +137,15 @@ fun AffichageDuMode_EditePrix(
                                 .padding(top = 2.dp)
                         )
                     }
-
-                    TariffsButtonsSec7ID2(
-                        relative_Produit = relative_produit,
-                        its_ProduitVentsInfosDialog = true
-                    )
                 }
             }
+
+            TariffsButtonsSec7ID2(
+                lancedDepuitAffiche= ItsLancedDepuit.EditeBaseDonne(relative_produit),
+                its_ProduitVentsInfosDialog = true
+            )
         }
+
         currentToast?.let { toast ->
             LaunchedEffect(toast) {
                 delay(toast.duration)

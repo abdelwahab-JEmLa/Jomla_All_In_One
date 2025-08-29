@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel.UiState.Mode_Edites
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.MainFilter
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +24,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
+sealed class ItsLancedDepuit {
+    data class EditeBaseDonne(val relative_Produit: ArticlesBasesStatsTable?) : ItsLancedDepuit()
+}
+
 @Composable
 fun TariffsButtonsSec7ID2(
-    viewModel_Sec9FragId1ViewId2ViewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    relative_Produit: ArticlesBasesStatsTable? = null,
     viewModel: TariffsButtonsViewModelSec7ID2 = koinViewModel(),
     showLabels: Boolean = true,
     fermeDialog: (M13TarificationInfos) -> Unit = {},
     onFermDialogeAvecAnllation: () -> Unit = {},
     its_ProduitVentsInfosDialog: Boolean = false,
+    lancedDepuitAffiche: ItsLancedDepuit? = null,
 ) {
+    val relative_Produit = (lancedDepuitAffiche as? ItsLancedDepuit.EditeBaseDonne)?.relative_Produit
 
     val bonVentComQuiFilterButtons =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent
@@ -84,10 +85,7 @@ fun TariffsButtonsSec7ID2(
         suspendFunction1(datasValueDeM1ProduitInfos, viewModel)
     )
 
-    val uiStateSec9FragId1ViewId2ViewModel by viewModel_Sec9FragId1ViewId2ViewModel.uiState.collectAsState()
-
-    val isInPriceEditingMode =
-        uiStateSec9FragId1ViewId2ViewModel.mode_Edites == Mode_Edites.its_Mode_Regle_Prixs
+    val isEditeBaseDonne = lancedDepuitAffiche is ItsLancedDepuit.EditeBaseDonne
 
     val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
@@ -99,8 +97,8 @@ fun TariffsButtonsSec7ID2(
                 newPrix = latestTariffLocalData.prixCurrency
             )
 
-            // FIXED: Now only hide buttons when NOT in price editing mode
-            if (!isInPriceEditingMode) {
+            // Only hide buttons when NOT in price editing mode
+            if (!isEditeBaseDonne) {
                 afficheButtons = false
                 fermeDialog(latestTariffLocalData)
                 currentToast = ToastData(
@@ -125,8 +123,7 @@ fun TariffsButtonsSec7ID2(
             )
         }
 
-        // FIXED: Same logic for cancellation button
-        if (!isInPriceEditingMode) {
+        if (!isEditeBaseDonne) {
             onFermDialogeAvecAnllation()
             afficheButtons = false
             currentToast = ToastData(
@@ -135,7 +132,6 @@ fun TariffsButtonsSec7ID2(
                 duration = 1500L
             )
         } else {
-            // In price editing mode, just show cancellation toast but keep buttons visible
             currentToast = ToastData(
                 message = "تم الإلغاء",
                 type = ToastType.INFO,
@@ -149,6 +145,7 @@ fun TariffsButtonsSec7ID2(
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (filterProductId != null) {
                     MainFilter(
+                        lancedDepuitAffiche=lancedDepuitAffiche,
                         viewModel = viewModel,
                         list_M8BonVent = bonVentList,
                         tarificationList = tarificationList,
@@ -159,7 +156,6 @@ fun TariffsButtonsSec7ID2(
                         onClickPrixButton = onClickPrixButton,
                         onClickAnulationButton = onClickAnulationButton
                     )
-                } else {
                 }
             }
         }

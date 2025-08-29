@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -21,7 +22,8 @@ fun MainFilter(
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null
+    onClickAnulationButton: (() -> Unit)? = null,
+    lancedDepuitAffiche: ItsLancedDepuit?
 ) {
     val relative_M1Produit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
@@ -44,6 +46,7 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
+            itsLancedDepuitComposeParent=lancedDepuitAffiche,
             viewModel = viewModel,
             relative_M1Produit = relative_M1Produit,
             showLabels = showLabels,

@@ -1,10 +1,12 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -36,13 +38,16 @@ fun MainList(
     showLabels: Boolean,
     clientDefiniTariffs: List<M13TarificationInfos>,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null
+    onClickAnulationButton: (() -> Unit)? = null,
+    itsLancedDepuitComposeParent: ItsLancedDepuit?
 ) {
+
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
 
+    val itsLancedDepuit_EditeBaseDonne = itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     val max_Prix = list_M13TarificationInfos
@@ -101,7 +106,7 @@ fun MainList(
 
             add(relative_Tariff_Prix_Progressive)
 
-            if (relative_Tariff_Historique != null) {
+            if (relative_Tariff_Historique != null && !itsLancedDepuit_EditeBaseDonne) {
                 add(relative_Tariff_Historique)
             }
 
@@ -148,6 +153,7 @@ fun MainList(
             .groupBy { it.typeChoisi }
             .toSortedMap(compareBy { it.ordinal })
     }
+
 
     Row(
         modifier = Modifier
@@ -204,17 +210,19 @@ fun MainList(
             prixCurrency = priceToUse,
         )
 
-        GerantButton(
-            relative_M1Produit = relative_M1Produit,
-            relative_Tariff = standardTariffs.find { it.typeChoisi == TypeChoisi.LeMaxPrixArrive },
-            viewModel = viewModel,
-            showLabels = showLabels,
-            tariffsGroupedByType = allTariffsGroupedAndSorted,
-            onClickPrixButton = {
-                onClickPrixButton(typeToUse, tarificationInfo, context)
-            },
-            onClickAnulationButton = onClickAnulationButton
-        )
+        itsLancedDepuit_EditeBaseDonne.ifFalse {
+            GerantButton(
+                relative_M1Produit = relative_M1Produit,
+                relative_Tariff = standardTariffs.find { it.typeChoisi == TypeChoisi.LeMaxPrixArrive },
+                viewModel = viewModel,
+                showLabels = showLabels,
+                tariffsGroupedByType = allTariffsGroupedAndSorted,
+                onClickPrixButton = {
+                    onClickPrixButton(typeToUse, tarificationInfo, context)
+                },
+                onClickAnulationButton = onClickAnulationButton
+            )
+        }
     }
 }
 
