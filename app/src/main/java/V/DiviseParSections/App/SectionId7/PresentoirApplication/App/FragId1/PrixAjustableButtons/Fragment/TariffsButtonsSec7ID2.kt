@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -37,6 +38,7 @@ fun TariffsButtonsSec7ID2(
     its_ProduitVentsInfosDialog: Boolean = false,
     lancedDepuitAffiche: ItsLancedDepuit? = null,
 ) {
+    val context = LocalContext.current
     val relative_Produit = (lancedDepuitAffiche as? ItsLancedDepuit.EditeBaseDonne)?.relative_Produit
     val itsLancedDepuitEditeBaseDonne = lancedDepuitAffiche is ItsLancedDepuit.EditeBaseDonne
 
@@ -86,28 +88,29 @@ fun TariffsButtonsSec7ID2(
         suspendFunction1(datasValueDeM1ProduitInfos, viewModel)
     )
 
-    val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit =
+    val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, android.content.Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
-            val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
             viewModel.updateListRelativeVentCouleurPrixVent(
                 listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
                 m1produitInfos = m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )
 
-            // Only hide buttons when NOT in price editing mode
             if (!itsLancedDepuitEditeBaseDonne) {
+                // Normal mode: full message with price details
+                val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
                 afficheButtons = false
                 fermeDialog(latestTariffLocalData)
-                // Show toast only when NOT in price editing mode
                 currentToast = ToastData(
                     message = message,
                     type = ToastType.SUCCESS,
                     duration = 1500L
                 )
+            } else {
+                // Edit mode: use native Android Toast
+                Toast.makeText(context, "تم التحديث", Toast.LENGTH_SHORT).show()
             }
-            // In price editing mode: don't show toast, don't hide buttons, don't call fermeDialog
         }
 
     val onClickAnulationButton: () -> Unit = {
@@ -118,16 +121,18 @@ fun TariffsButtonsSec7ID2(
         }
 
         if (!itsLancedDepuitEditeBaseDonne) {
+            // Normal mode: hide buttons and call dialog functions
             onFermDialogeAvecAnllation()
             afficheButtons = false
-            // Show toast only when NOT in price editing mode
             currentToast = ToastData(
                 message = "تم الإلغاء",
                 type = ToastType.INFO,
                 duration = 1500L
             )
+        } else {
+            // Edit mode: use native Android Toast
+            Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
         }
-        // In price editing mode: don't show toast, don't hide buttons, don't call dialog functions
     }
 
     if (afficheButtons) {
@@ -151,12 +156,19 @@ fun TariffsButtonsSec7ID2(
         }
     }
 
-    // Only show toast when NOT in price editing mode
-    if (currentToast != null && !itsLancedDepuitEditeBaseDonne) {
+    // Show ModernToastMessage only in normal mode and when currentToast is not null
+    if (!itsLancedDepuitEditeBaseDonne && currentToast != null) {
         ModernToastMessage(
             toastData = currentToast,
             onDismiss = { currentToast = null }
         )
+    }
+
+    // Clear toast if we're in edit mode to prevent it from showing
+    LaunchedEffect(itsLancedDepuitEditeBaseDonne) {
+        if (itsLancedDepuitEditeBaseDonne) {
+            currentToast = null
+        }
     }
 }
 
