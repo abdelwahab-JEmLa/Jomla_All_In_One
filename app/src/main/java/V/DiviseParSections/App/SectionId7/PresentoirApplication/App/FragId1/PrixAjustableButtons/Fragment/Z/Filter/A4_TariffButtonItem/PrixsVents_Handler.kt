@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -37,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun PrixsVents_Handler(
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-) {
+) {    //<--
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
@@ -112,11 +113,15 @@ fun PrixsVents_Handler(
     Column {
         Row(
             modifier = Modifier
-                .getSemanticsTag(nomVal = "produit", data = relative_Produit.nom),
+                .semantics(mergeDescendants = true) {
+                    set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            val couleurButton = Color.Cyan
+            // Use the tariff type's color instead of hardcoded Cyan
+            val couleurButton = typeTarification.couleur
+            val textColor = typeTarification.couleur_Text
 
             val typeName = typeTarification.nomArabe
 
@@ -140,11 +145,11 @@ fun PrixsVents_Handler(
                                         "Prix unitaire: ${
                                             String.format(
                                                 "%.2f",
-                                                relative_Produit.prixAchat / relative_Produit.nombreUniteInt
+                                                relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
                                             )
                                         }"
                                     } else {
-                                        "Prix d'achat: ${relative_Produit.prixAchat}"
+                                        "Prix de vente: ${relative_Tariff.prixCurrency}"
                                     }
                                 )
                             },
@@ -193,7 +198,7 @@ fun PrixsVents_Handler(
                                         Modifier
                                     }
                                 ),
-                            color = Color.Black,
+                            color = textColor,
                             fontSize = 14.sp,
                             maxLines = 2
                         )
@@ -201,20 +206,20 @@ fun PrixsVents_Handler(
                 }
 
                 // Decrease button
-                val decrease_Value = if (relative_Produit.prixAchat < 200.0) 1.0 else 5.0
+                val decrease_Value = if (relative_Tariff.prixCurrency < 200.0) 1.0 else 5.0
 
                 if (currentApp_Est_Admin) {
                     IconButton(
                         onClick = {
                             val newPrice =
-                                (relative_Produit.prixAchat - decrease_Value).coerceAtLeast(0.0)
+                                (relative_Tariff.prixCurrency - decrease_Value).coerceAtLeast(0.0)
                             handel_Add_Diminue_Prix(newPrice)
                         },
                         modifier = Modifier.size(16.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Remove,
-                            contentDescription = "Diminuer le prix d'achat",
+                            contentDescription = "Diminuer le prix de vente",
                             tint = Color.Black
                         )
                     }
@@ -223,7 +228,7 @@ fun PrixsVents_Handler(
                 ElevatedCard(
                     onClick = {
                         if (currentApp_Est_Admin) {
-                            val newPrice = relative_Produit.prixAchat + decrease_Value
+                            val newPrice = relative_Tariff.prixCurrency + decrease_Value
                             handel_Add_Diminue_Prix(newPrice)
                         }
                     }
@@ -232,20 +237,20 @@ fun PrixsVents_Handler(
 
                     Column {
                         Text(
-                            "${relative_Produit.prixAchat}$pls",
+                            "${relative_Tariff.prixCurrency}$pls",
                             modifier = Modifier
                                 .background(couleurButton)
                                 .padding(4.dp),
-                            color = Color.Black
+                            color = textColor
                         )
 
-                        val unitPrice = relative_Produit.prixAchat / relative_Produit.nombreUniteInt
+                        val unitPrice = relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
                         Text(
                             "س.و: ${String.format("%.2f", unitPrice)}",
                             modifier = Modifier
                                 .background(couleurButton.copy(alpha = 0.6f))
                                 .padding(2.dp),
-                            color = Color.Black,
+                            color = textColor,
                             fontSize = 10.sp
                         )
                     }
@@ -254,14 +259,14 @@ fun PrixsVents_Handler(
 
             FloatingActionButton(
                 modifier = Modifier.size(40.dp),
-                onClick =::handelClick,
+                onClick = ::handelClick,
                 containerColor = couleurButton
             ) {
                 typeTarification.iconVector?.let { iconVector ->
                     Icon(
                         imageVector = iconVector,
                         contentDescription = null,
-                        tint = Color.Black
+                        tint = textColor
                     )
                 }
             }
