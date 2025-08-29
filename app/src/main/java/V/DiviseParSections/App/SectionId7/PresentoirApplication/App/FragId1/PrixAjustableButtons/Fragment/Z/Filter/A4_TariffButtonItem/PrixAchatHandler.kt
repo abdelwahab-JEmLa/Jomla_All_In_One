@@ -45,8 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
-// Add the time difference function (copy from QuickInfoSection)
-fun getTimeDifferenceInArabic(timestamp: Long): String {
+fun getTimeDifferenceInArabicWithMintes(timestamp: Long): String {
     val currentTime = System.currentTimeMillis()
     val difference = currentTime - timestamp
 
@@ -62,7 +61,15 @@ fun getTimeDifferenceInArabic(timestamp: Long): String {
         months > 0 -> "${months} شهر"
         days > 0 -> "${days} يوم"
         hours > 0 -> "${hours} ساعة"
-        minutes > 0 -> "${minutes} دقيقة"
+        minutes > 0 -> {
+            val remainingSeconds = seconds % 60
+            if (remainingSeconds > 0) {
+                "$minutes دقيقة و $remainingSeconds ثانية"
+            } else {
+                "${minutes} دقيقة"
+            }
+        }
+        seconds > 0 -> "${seconds} ثانية"
         else -> "الآن"
     }
 }
@@ -124,10 +131,21 @@ fun PrixAchatHandler(
 
     // Calculate time difference for display
     val timeDifference = remember(relative_Produit.prixAchatDernierTimeTempUpdate) {
-        getTimeDifferenceInArabic(relative_Produit.prixAchatDernierTimeTempUpdate)
+        getTimeDifferenceInArabicWithMintes(relative_Produit.prixAchatDernierTimeTempUpdate)
     }
 
     Column {
+        if (showLabels && relative_Produit.prixAchatDernierTimeTempUpdate != 0L) {
+            Text(
+                text = "آخر تحديث: $timeDifference",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                modifier = Modifier,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
         Row(
             modifier = Modifier
                 .getSemanticsTag(nomVal = "produit", data = relative_Produit.nom),
@@ -286,16 +304,6 @@ fun PrixAchatHandler(
             }
         }
 
-        if (showLabels && relative_Produit.prixAchatDernierTimeTempUpdate != 0L) {
-            Text(
-                text = "آخر تحديث: $timeDifference",         //<--
-                //TODO(1): afficeh la defferen des minutes et seconds
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                modifier = Modifier.padding(start = 8.dp, top = 2.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+
     }
 }
