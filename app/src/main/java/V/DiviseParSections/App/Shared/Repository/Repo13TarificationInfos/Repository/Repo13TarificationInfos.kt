@@ -106,7 +106,11 @@ data class M13TarificationInfos(
 
     val profitMargin: Double = 0.0,
     val suggestedUpgrade: TypeChoisi? = null,
+    //---------------------------------Parent.M14VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M14VentPeriod_KeyId: String = "",
+    var parent_M14VentPeriod_DebugInfos: String = "",
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
     var parent_M1Produit_KeyId: String = "null",
     val parent_M1Produit_DebugInfos: String = "null",
     var parent_M8BonVent_KeyId: String = "null",

@@ -71,7 +71,8 @@ fun PrixsVents_Handler(
     fun executeClickLogic() {
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                m13TarificationInfos_Pour_Produit = relative_Tariff,
+                m13TarificationInfos_Pour_Produit =
+                    relative_Tariff,
                 m10OperationVentCouleurs = m10OperationVentCouleurs
             )
 
@@ -91,6 +92,7 @@ fun PrixsVents_Handler(
     fun handel_Add_Diminue_Prix(newPrix: Double) {
         repositorysMainSetter.upsert_M13TarificationInfos(
             relative_Tariff.copy(
+                parent_M1Produit_KeyId = relative_Produit.keyID,
                 prixCurrency = newPrix
             )
         )
@@ -244,7 +246,8 @@ fun PrixsVents_Handler(
                             color = textColor
                         )
 
-                        val unitPrice = relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
+                        val unitPrice =
+                            relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
                         Text(
                             "س.و: ${String.format("%.2f", unitPrice)}",
                             modifier = Modifier

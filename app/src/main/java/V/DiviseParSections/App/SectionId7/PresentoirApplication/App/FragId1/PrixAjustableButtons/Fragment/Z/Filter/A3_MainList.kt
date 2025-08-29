@@ -60,11 +60,13 @@ fun MainList(
         return list_M13TarificationInfos
             .lastOrNull {
                 it.parent_M1Produit_KeyId == relative_M1Produit.keyID
-                        && it.parent_M2Client_KeyId == relative_M2Client?.keyID
                         && it.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService
+                        && it.parent_M14VentPeriod_KeyId == focusedValuesGetter.currentActiveFocuced_M14VentPeriode!!.keyID
             } ?: M13TarificationInfos(
+            parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode!!.keyID,
             typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
             prixCurrency = relative_M1Produit.prixVent,
+            creationTimestamps = System.currentTimeMillis()
         )
     }
 
@@ -217,7 +219,8 @@ fun MainList(
                     }
 
                     TypeChoisi.Prix_SupperGro_Et_PresentationService -> {
-                        val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+                        val relative_Tariff =
+                            relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
                         if (relative_Tariff != null) {
                             PrixsVents_Handler(
