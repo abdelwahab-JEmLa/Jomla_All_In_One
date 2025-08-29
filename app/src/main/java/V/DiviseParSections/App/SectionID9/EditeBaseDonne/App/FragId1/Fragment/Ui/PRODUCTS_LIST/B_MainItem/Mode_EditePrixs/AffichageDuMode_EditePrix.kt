@@ -1,11 +1,13 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Mode_EditePrixs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,36 +18,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HeaderSection(
+fun AffichageDuMode_EditePrix(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    produit: ArticlesBasesStatsTable,
-    onShowNameEditorChange: (Boolean) -> Unit,
-    onShowDeleteDialogChange: (Boolean) -> Unit,
+    relative_produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     paddingDefaulte: Dp,
 ) {
-    // FIXED: Use collectAsState() instead of collect()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiStateSec9FragId1ViewId2ViewModel by viewModel.uiState.collectAsState()
+    var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -75,16 +78,16 @@ fun HeaderSection(
                         shadowElevation = 4.dp
                     ) {
                         A_GlideDisplayImageByKeyId_Proto_5(
-                            product = produit,
-                            produitVID = produit.id,
-                            refreshImage = produit.actualiseSonImageTest2,
+                            product = relative_produit,
+                            produitVID = relative_produit.id,
+                            refreshImage = relative_produit.actualiseSonImageTest2,
                             size = 70.dp,
                         )
                     }
 
                     // Camera button overlay
                     ProductImageCaptureButton(
-                        product = produit,
+                        product = relative_produit,
                         onImageCaptured = updateProduct,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -100,13 +103,13 @@ fun HeaderSection(
                 ) {
                     // Product Name (Primary) - Clickable
                     Surface(
-                        onClick = { onShowNameEditorChange(true) },
+                        onClick = {  },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
                     ) {
-                        val bsonObjectId = produit.bsonObjectId.takeLast(4).uppercase()
-                        val nom = produit.nom
+                        val bsonObjectId = relative_produit.bsonObjectId.takeLast(4).uppercase()
+                        val nom = relative_produit.nom
                         Text(
                             text = "$nom->$bsonObjectId",
                             style = MaterialTheme.typography.titleMedium,
@@ -115,14 +118,14 @@ fun HeaderSection(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(paddingDefaulte),
                             color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = if (produit.nom.any { it.code > 127 }) TextAlign.End else TextAlign.Start
+                            textAlign = if (relative_produit.nom.any { it.code > 127 }) TextAlign.End else TextAlign.Start
                         )
                     }
 
                     // Arabic Name (if different and available)
-                    if (produit.nomArab.isNotEmpty() && produit.nomArab != produit.nom) {
+                    if (relative_produit.nomArab.isNotEmpty() && relative_produit.nomArab != relative_produit.nom) {
                         Text(
-                            text = produit.nomArab,
+                            text = relative_produit.nomArab,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -133,64 +136,37 @@ fun HeaderSection(
                                 .padding(top = 2.dp)
                         )
                     }
-                }
-            }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingDefaulte),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Delete button (on the right)
-                Surface(
-                    onClick = { onShowDeleteDialogChange(true) },
-                    modifier = Modifier.size(32.dp),
-                    shape = RoundedCornerShape(paddingDefaulte),
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shadowElevation = 2.dp
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer le produit",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-                // Availability status button (on the left - priority)
-                Surface(
-                    onClick = {
-                        val updatedProduct = produit.toggleDisponibilityEtates()
-                        updateProduct(updatedProduct)
-                    },
-                    modifier = Modifier.weight(1f),
-                    color = when (produit.disponibilityEtates) {
-                        DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
-                        DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
-                        DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    shadowElevation = 2.dp
-                ) {
-                    Text(
-                        text = produit.disponibilityEtates.nomArabe,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = when (produit.disponibilityEtates) {
-                            DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
-                            DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
-                            DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
-                        },
-                        modifier = Modifier.padding(paddingDefaulte),
-                        textAlign = TextAlign.Center
+                    TariffsButtonsSec7ID2(
+                        relative_Produit = relative_produit,
+                        its_ProduitVentsInfosDialog = true
                     )
                 }
+            }
+        }
+        currentToast?.let { toast ->
+            LaunchedEffect(toast) {
+                delay(toast.duration)
+                currentToast = null
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(
+                        color = when (toast.type) {
+                            ToastType.SUCCESS -> Color.Green
+                            ToastType.INFO -> Color.Blue
+                            else -> Color.Gray
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = toast.message,
+                    color = Color.White
+                )
             }
         }
     }

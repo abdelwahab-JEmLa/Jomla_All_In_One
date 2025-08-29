@@ -306,6 +306,10 @@ data class M8BonVent(
         ).child("Datas08BonVent")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
+        fun get_default2(
+        ): M8BonVent {
+            return M8BonVent()
+        }
 
         fun get_default(
             parent_M9AppCompt_KeyID: String,

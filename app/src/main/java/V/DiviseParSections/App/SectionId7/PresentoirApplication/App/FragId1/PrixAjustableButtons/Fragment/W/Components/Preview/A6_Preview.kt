@@ -75,7 +75,7 @@ fun TariffsButtonsPrev() {
                                 TariffsButtonsSec7ID2(
                                     fermeDialog = { showDialog = false },
                                     onFermDialogeAvecAnllation = { showDialog = false },
-                                    cLenceDepuitFragmentsSepecialicteDeVents = true,
+                                    its_ProduitVentsInfosDialog = true,
                                 )
                             }
                         }

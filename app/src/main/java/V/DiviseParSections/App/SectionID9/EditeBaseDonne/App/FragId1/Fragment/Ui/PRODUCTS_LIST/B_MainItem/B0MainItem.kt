@@ -1,13 +1,14 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Mode_EditePrixs.AffichageDuMode_EditePrix
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.ActionButtons
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components.Prix_Detailer_Section
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.HeaderSection
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components.Prix_Detailer_Section
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.QuickInfoSection
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.StringEditor
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -125,46 +126,59 @@ fun ProductItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
-        Column(
-            modifier = modifierWithDefinedPadding.fillMaxWidth()
-        ) {
-            // Header Section with Image, Name, Status and Delete
-            HeaderSection(
-                produit = produit,
-                onShowNameEditorChange = { showNameEditor = it },
-                onShowDeleteDialogChange = { showDeleteDialog = it },
-                updateProduct = ::updateProduct,
-                paddingDefaulte = paddingDefaulte
-            )
-
-            if (!shouldHideQuickInfoCards) {
-                // Action Buttons - Fixed parameter passing
-                ActionButtons(
-                    uiState = uiState,
-                    viewModel = viewModel,
-                    modifier = modifierWithDefinedPadding,
-                    produit = produit,
-                    updateProduct = ::updateProduct
+        when (uiState.mode_Edites) {
+            Sec9FragId1ViewId2ViewModel.UiState.Mode_Edites.its_Mode_Regle_Prixs -> {
+                AffichageDuMode_EditePrix(
+                    relative_produit = produit,
+                    updateProduct = ::updateProduct,
+                    paddingDefaulte = paddingDefaulte
                 )
             }
 
-            QuickInfoSection(
-                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
-                modifier = modifier,
-                produit = produit,
-                updateProduct = ::updateProduct,
-            )
+            else -> {
+                Column(
+                    modifier = modifierWithDefinedPadding.fillMaxWidth()
+                ) {
+                    // Header Section with Image, Name, Status and Delete
+                    HeaderSection(
+                        produit = produit,
+                        onShowNameEditorChange = { showNameEditor = it },
+                        onShowDeleteDialogChange = { showDeleteDialog = it },
+                        updateProduct = ::updateProduct,
+                        paddingDefaulte = paddingDefaulte
+                    )
 
-            // Details Section - Pass viewModel to enable individual expand/collapse
-            Prix_Detailer_Section(
-                modifier = modifierWithDefinedPadding,
-                viewModel = viewModel,
-                relative_M1Produit = produit,
-                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
-                showDetailsExpanded = uiState.showDetailsExpandedPourTout,
-                onNextField = onNextField,
-                updateProduct = ::updateProduct // Added viewModel parameter
-            )
+                    if (!shouldHideQuickInfoCards) {
+                        // Action Buttons - Fixed parameter passing
+                        ActionButtons(
+                            uiState = uiState,
+                            viewModel = viewModel,
+                            modifier = modifierWithDefinedPadding,
+                            produit = produit,
+                            updateProduct = ::updateProduct
+                        )
+                    }
+
+                    QuickInfoSection(
+                        shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                        modifier = modifier,
+                        produit = produit,
+                        updateProduct = ::updateProduct,
+                    )
+
+                    // Details Section - Pass viewModel to enable individual expand/collapse
+                    Prix_Detailer_Section(
+                        modifier = modifierWithDefinedPadding,
+                        viewModel = viewModel,
+                        relative_M1Produit = produit,
+                        shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                        showDetailsExpanded = uiState.showDetailsExpandedPourTout,
+                        onNextField = onNextField,
+                        updateProduct = ::updateProduct // Added viewModel parameter
+                    )
+                }
+            }
         }
+
     }
 }
