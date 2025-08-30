@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -113,79 +114,77 @@ fun BenificeAdjustmentButtons(
     val displayBenefit = pendingBenefit ?: benefice
     val displayUnitBenefit = pendingUnitBenefit ?: beneficeUnitaire
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Total benefit section
+    // Card with both benefits in column
+    ElevatedCard {
         Column {
+            // Total benefit section at top
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Decrease total benefit button
+                // Decrease total benefit button (left side like unit benefit)
                 IconButton(
                     onClick = {
                         val newBenefit = (displayBenefit - benefitAdjustmentValue).coerceAtLeast(0.0)
                         debouncedBenefitChange(newBenefit)
                     },
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(
+                            color = Color(0xFF9C27B0), // Même bleu clair que les autres boutons
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Remove,
                         contentDescription = "تقليل الفائدة",
-                        tint = Color.Black
+                        tint = Color.White,
+                        modifier = Modifier.size(12.dp)
                     )
                 }
 
-                // Total benefit display and increase button
-                ElevatedCard(
+                Text(
+                    String.format("%.0f", displayBenefit),
+                    modifier = Modifier
+                        .background(Color(0xFF9C27B0)) // Arrière-plan plus foncé
+                        .padding(4.dp),
+                    color = Color.White
+                )
+
+                // Increase total benefit button (separate circular button)
+                IconButton(
                     onClick = {
                         val newBenefit = displayBenefit + benefitAdjustmentValue
                         debouncedBenefitChange(newBenefit)
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "${String.format("%.0f", displayBenefit)} +",
-                            modifier = Modifier
-                                .background(benefitColor)
-                                .padding(4.dp),
-                            color = Color.White
+                    },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(
+                            color = Color(0xFF9C27B0), // Même bleu clair que les boutons unitaires
+                            shape = androidx.compose.foundation.shape.CircleShape
                         )
+                        .padding(2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "زيادة الفائدة",
+                        tint = Color.White,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
 
-                        // Show loading indicator when there's a pending change
-                        if (pendingBenefit != null) {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(12.dp),
-                                strokeWidth = 1.dp,
-                                color = Color.White
-                            )
-                        }
-                    }
+                // Show loading indicator when there's a pending change
+                if (pendingBenefit != null) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 1.dp,
+                        color = Color.White
+                    )
                 }
             }
 
-            // Show benefit percentage
-            val benefitPercentage = if (prixAchat > 0) {
-                (displayBenefit / prixAchat) * 100
-            } else 0.0
-
-            Text(
-                "ف: ${String.format("%.0f", benefitPercentage)}%",
-                modifier = Modifier
-                    .background(benefitColor.copy(alpha = 0.6f))
-                    .padding(2.dp),
-                color = Color.White,
-                fontSize = 10.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Unit benefit section
-        Column {
+            // Unit benefit section below total benefit
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -195,12 +194,19 @@ fun BenificeAdjustmentButtons(
                         val newUnitBenefit = (displayUnitBenefit - unitBenefitAdjustmentValue).coerceAtLeast(0.0)
                         debouncedUnitBenefitChange(newUnitBenefit)
                     },
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(
+                            color = Color(0xFF64B5F6),
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Remove,
                         contentDescription = "تقليل الفائدة الوحدة",
-                        tint = Color.Black
+                        tint = Color.White,
+                        modifier = Modifier.size(10.dp)
                     )
                 }
 
@@ -209,8 +215,8 @@ fun BenificeAdjustmentButtons(
                     OutlinedTextField(
                         value = unitBenefitText,
                         onValueChange = { unitBenefitText = it },
-                        modifier = Modifier.width(80.dp),
-                        label = { Text("ف.وحدة", fontSize = 10.sp) },
+                        modifier = Modifier.width(70.dp),
+                        label = { Text("ف.وحدة", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
@@ -221,62 +227,52 @@ fun BenificeAdjustmentButtons(
                         singleLine = true
                     )
                 } else {
-                    ElevatedCard(
-                        onClick = {
-                            unitBenefitText = String.format("%.2f", displayUnitBenefit)
-                            isEditingUnitBenefit = true
-                        }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "${String.format("%.2f", displayUnitBenefit)}",
-                                modifier = Modifier
-                                    .background(benefitColor.copy(alpha = 0.8f))
-                                    .padding(4.dp),
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
+                    Text(
+                        "${String.format("%.2f", displayUnitBenefit)}",
+                        modifier = Modifier
+                            .background(benefitColor.copy(alpha = 0.8f))
+                            .padding(2.dp)
+                            .clickable {
+                                unitBenefitText = String.format("%.2f", displayUnitBenefit)
+                                isEditingUnitBenefit = true
+                            },
+                        color = Color.White,
+                        fontSize = 10.sp
+                    )
+                }
 
-                            // Increase unit benefit button
-                            IconButton(
-                                onClick = {
-                                    val newUnitBenefit = displayUnitBenefit + unitBenefitAdjustmentValue
-                                    debouncedUnitBenefitChange(newUnitBenefit)
-                                },
-                                modifier = Modifier.size(16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Add,
-                                    contentDescription = "زيادة الفائدة الوحدة",
-                                    tint = Color.White
-                                )
-                            }
+                // Increase unit benefit button
+                IconButton(
+                    onClick = {
+                        val newUnitBenefit = displayUnitBenefit + unitBenefitAdjustmentValue
+                        debouncedUnitBenefitChange(newUnitBenefit)
+                    },
+                    modifier = Modifier
+                        .size(25.dp)
+                        .background(
+                            color = Color(0xFF64B5F6),
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .padding(2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "زيادة الفائدة الوحدة",
+                        tint = Color.White,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
 
-                            // Show loading indicator when there's a pending unit benefit change
-                            if (pendingUnitBenefit != null) {
-                                Spacer(modifier = Modifier.width(2.dp))
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(10.dp),
-                                    strokeWidth = 1.dp,
-                                    color = Color.White
-                                )
-                            }
-                        }
-                    }
+                // Show loading indicator when there's a pending unit benefit change
+                if (pendingUnitBenefit != null) {
+                    Spacer(modifier = Modifier.width(2.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 1.dp,
+                        color = Color.White
+                    )
                 }
             }
-
-            // Show unit count
-            Text(
-                "وحدة: $nombreUnite",
-                modifier = Modifier
-                    .background(benefitColor.copy(alpha = 0.4f))
-                    .padding(2.dp),
-                color = Color.White,
-                fontSize = 10.sp
-            )
         }
     }
 }
