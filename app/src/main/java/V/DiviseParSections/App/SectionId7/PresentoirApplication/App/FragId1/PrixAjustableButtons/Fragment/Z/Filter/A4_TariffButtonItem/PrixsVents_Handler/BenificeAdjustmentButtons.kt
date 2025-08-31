@@ -4,8 +4,10 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,12 +22,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +58,22 @@ fun BenificeAdjustmentButtons(
 
     var isEditingUnitBenefit by remember { mutableStateOf(false) }
     var unitBenefitText by remember { mutableStateOf("") }
+    var isEditingTotalBenefit by remember { mutableStateOf(false) }
+    var totalBenefitText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val totalBenefitFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(isEditingUnitBenefit) {
+        if (isEditingUnitBenefit) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(isEditingTotalBenefit) {
+        if (isEditingTotalBenefit) {
+            totalBenefitFocusRequester.requestFocus()
+        }
+    }
 
     val benefitAdjustmentValue = when {
         benefice < 10.0 -> 1.0
@@ -105,6 +126,14 @@ fun BenificeAdjustmentButtons(
         isEditingUnitBenefit = false
     }
 
+    fun handleTotalBenefitEditDone() {
+        val newTotalBenefit = totalBenefitText.toDoubleOrNull()
+        if (newTotalBenefit != null && newTotalBenefit >= 0) {
+            updateBenefitImmediately(newTotalBenefit)
+        }
+        isEditingTotalBenefit = false
+    }
+
     // Card with both benefits in column
     ElevatedCard {
         Column {
@@ -134,13 +163,36 @@ fun BenificeAdjustmentButtons(
                     )
                 }
 
-                Text(
-                    String.format("%.0f", benefice),
-                    modifier = Modifier
-                        .background(Color(0xFF9C27B0))
-                        .padding(4.dp),
-                    color = Color.White
-                )
+                // Total benefit display/edit
+                if (isEditingTotalBenefit) {
+                    OutlinedTextField(
+                        value = totalBenefitText,
+                        onValueChange = { totalBenefitText = it },
+                        modifier = Modifier
+                            .width(80.dp)
+                            .focusRequester(totalBenefitFocusRequester),
+                        label = { Text("${String.format("%.0f", benefice)}", fontSize = 8.sp) },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { handleTotalBenefitEditDone() }
+                        ),
+                        singleLine = true
+                    )
+                } else {
+                    Text(
+                        String.format("%.0f", benefice),
+                        modifier = Modifier
+                            .background(Color(0xFF9C27B0))
+                            .padding(4.dp)
+                            .clickable {
+                                isEditingTotalBenefit = true
+                            },
+                        color = Color.White
+                    )
+                }
 
                 // Increase total benefit button
                 IconButton(
@@ -165,8 +217,10 @@ fun BenificeAdjustmentButtons(
                 }
             }
 
-            // Unit benefit section below total benefit
+            // Unit benefit section below total benefit - CENTERED
             Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Decrease unit benefit button
@@ -196,8 +250,10 @@ fun BenificeAdjustmentButtons(
                     OutlinedTextField(
                         value = unitBenefitText,
                         onValueChange = { unitBenefitText = it },
-                        modifier = Modifier.width(70.dp),
-                        label = { Text("ف.وحدة", fontSize = 8.sp) },
+                        modifier = Modifier
+                            .width(70.dp)
+                            .focusRequester(focusRequester),
+                        label = { Text("${String.format("%.2f", beneficeUnitaire)}", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
@@ -214,7 +270,6 @@ fun BenificeAdjustmentButtons(
                             .background(benefitColor.copy(alpha = 0.8f))
                             .padding(2.dp)
                             .clickable {
-                                unitBenefitText = String.format("%.2f", beneficeUnitaire)
                                 isEditingUnitBenefit = true
                             },
                         color = Color.White,

@@ -6,26 +6,13 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
@@ -49,7 +32,6 @@ import java.util.SortedMap
 fun PrixsVents_Handler(
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
@@ -92,11 +74,11 @@ fun PrixsVents_Handler(
         editablePurchasePriceText = ""
     }
 
-    fun handel_Add_Diminue_Prix(newPrix: Double) {
+    // FIXED: Updated to match new signature with shouldCreateNew parameter
+    fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
-        val timeDifferenceSeconds = (currentTime - relative_Tariff.creationTimestamps) / 1000
 
-        if (timeDifferenceSeconds > 20) {
+        if (shouldCreateNew) {
             val newTariff = relative_Tariff.copy(
                 prixCurrency = newPrix,
                 creationTimestamps = currentTime,
@@ -123,7 +105,8 @@ fun PrixsVents_Handler(
             } else {
                 newPurchasePrice
             }
-            handel_Add_Diminue_Prix(finalPrice)
+            // Always create new for manual edits
+            handel_Add_Diminue_Prix(finalPrice, true)
         }
         isEditingPurchasePrice = false
         isEditingUnitPrice = false
@@ -146,86 +129,6 @@ fun PrixsVents_Handler(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                ElevatedCard(
-                    modifier = Modifier.width(
-                        if (currentApp_Est_Admin && !isEditingPurchasePrice) 20.dp else 100.dp
-                    )
-                ) {
-                    if (isEditingPurchasePrice) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .width(100.dp)
-                                .focusRequester(purchasePriceFocusRequester),
-                            value = editablePurchasePriceText,
-                            onValueChange = { newInput ->
-                                editablePurchasePriceText = newInput
-                            },
-                            label = {
-                                Text(
-                                    if (isEditingUnitPrice) {
-                                        "Prix unitaire: ${
-                                            String.format(
-                                                "%.2f",
-                                                currentTariffPrice / relative_Produit.nombreUniteInt
-                                            )
-                                        }"
-                                    } else {
-                                        "Prix de vente: ${currentTariffPrice}"
-                                    }
-                                )
-                            },
-                            leadingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        toggleUnitPriceMode()
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Calculate,
-                                        contentDescription = if (isEditingUnitPrice) "Éditer prix total" else "Éditer prix unitaire",
-                                        tint = if (isEditingUnitPrice) Color.Blue else Color.Gray
-                                    )
-                                }
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = { handlePurchasePriceEditDone() }
-                            ),
-                        )
-
-                        LaunchedEffect(isEditingPurchasePrice) {
-                            if (isEditingPurchasePrice) {
-                                purchasePriceFocusRequester.requestFocus()
-                            }
-                        }
-                    } else {
-                        Text(
-                            typeName,
-                            modifier = Modifier
-                                .width(100.dp)
-                                .background(couleurButton)
-                                .padding(4.dp)
-                                .then(
-                                    if (currentApp_Est_Admin) {
-                                        Modifier.clickable {
-                                            editablePurchasePriceText = ""
-                                            isEditingPurchasePrice = true
-                                            isEditingUnitPrice = false
-                                        }
-                                    } else {
-                                        Modifier
-                                    }
-                                ),
-                            color = textColor,
-                            fontSize = 14.sp,
-                            maxLines = 2
-                        )
-                    }
-                }
-
                 if (currentApp_Est_Admin) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -236,27 +139,7 @@ fun PrixsVents_Handler(
                             relative_Produit = relative_Produit,
                             relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
                             onPriceChange = { newPrice, shouldCreateNew ->
-                                val currentTime = System.currentTimeMillis()
-
-                                if (shouldCreateNew) {
-                                    // Créer un nouveau tarif
-                                    val newTariff = relative_Tariff.copy(
-                                        prixCurrency = newPrice,
-                                        creationTimestamps = currentTime,
-                                        dernierTimeTampsSynchronisationAvecFireBase = currentTime
-                                    )
-                                    repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
-                                } else {
-                                    // Mettre à jour le tarif existant
-                                    repositorysMainSetter.upsert_M13TarificationInfos(
-                                        relative_Tariff.copy(
-                                            prixCurrency = newPrice,
-                                            dernierTimeTampsSynchronisationAvecFireBase = currentTime
-                                        )
-                                    )
-                                }
-
-                                currentTariffPrice = newPrice
+                                handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
                             }
                         )
                     }
@@ -268,24 +151,25 @@ fun PrixsVents_Handler(
                     couleurButton = couleurButton,
                     textColor = textColor,
                     relative_Produit = relative_Produit,
-                    onPriceChange = ::handel_Add_Diminue_Prix
+                    onPriceChange = { newPrice, shouldCreateNew ->
+                        handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                    }
                 )
             }
 
+            // FIXED: Changed icon to show type name instead of icon
             FloatingActionButton(
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.width(80.dp),
                 onClick = ::handelClick,
                 containerColor = couleurButton
             ) {
-                typeTarification.iconVector?.let { iconVector ->
-                    Icon(
-                        imageVector = iconVector,
-                        contentDescription = null,
-                        tint = textColor
-                    )
-                }
+                Text(
+                    text = typeTarification.nomArabe,
+                    color = textColor,
+                    fontSize = 10.sp,
+                    maxLines = 2
+                )
             }
         }
     }
 }
-

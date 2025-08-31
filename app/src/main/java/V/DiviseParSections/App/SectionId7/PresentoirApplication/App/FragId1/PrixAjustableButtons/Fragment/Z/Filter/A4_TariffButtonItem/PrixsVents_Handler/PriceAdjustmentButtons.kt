@@ -25,9 +25,8 @@ fun PriceAdjustmentButtons(
     couleurButton: Color,
     textColor: Color,
     relative_Produit: ArticlesBasesStatsTable,
-    onPriceChange: (Double) -> Unit
-) {            //<--
-//TODO(1): fait que ca soit comme BenificeAdjustmentButtons au click pri
+    onPriceChange: (Double, Boolean) -> Unit // FIXED: Changed to match BenificeAdjustmentButtons signature
+) {
     val decrease_Value = when {
         relative_Tariff.prixCurrency < 50.0 -> 1.0
         relative_Tariff.prixCurrency < 200.0 -> 5.0
@@ -35,12 +34,21 @@ fun PriceAdjustmentButtons(
         else -> 25.0
     }
 
+    // FIXED: Added shouldCreateNewTariff function like in BenificeAdjustmentButtons
+    fun shouldCreateNewTariff(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val tariffCreationTime = relative_Tariff.creationTimestamps
+        val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
+        return timeDifferenceSeconds > 20
+    }
+
     // Decrease button
     if (currentApp_Est_Admin) {
         IconButton(
             onClick = {
                 val newPrice = (relative_Tariff.prixCurrency - decrease_Value).coerceAtLeast(0.0)
-                onPriceChange(newPrice)
+                val shouldCreateNew = shouldCreateNewTariff()
+                onPriceChange(newPrice, shouldCreateNew) // FIXED: Pass shouldCreateNew parameter
             },
             modifier = Modifier.size(16.dp)
         ) {
@@ -57,7 +65,8 @@ fun PriceAdjustmentButtons(
         onClick = {
             if (currentApp_Est_Admin) {
                 val newPrice = relative_Tariff.prixCurrency + decrease_Value
-                onPriceChange(newPrice)
+                val shouldCreateNew = shouldCreateNewTariff()
+                onPriceChange(newPrice, shouldCreateNew) // FIXED: Pass shouldCreateNew parameter
             }
         }
     ) {
