@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import java.util.SortedMap
 
 @Composable
-fun BenificeAdjustmentButtons(
+fun PrixVentAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
@@ -50,52 +51,56 @@ fun BenificeAdjustmentButtons(
 
     val prixAchat = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
     val prixVente = relative_Tariff.prixCurrency
-    val benefice = prixVente - prixAchat
     val nombreUnite = relative_Produit.nombreUniteInt
 
-    val beneficeUnitaire = if (nombreUnite > 0) benefice / nombreUnite else 0.0
+    // Calculate unit selling price
+    val prixVenteUnitaire = if (nombreUnite > 0) prixVente / nombreUnite else 0.0
 
-    var isEditingUnitBenefit by remember { mutableStateOf(false) }
-    var unitBenefitText by remember { mutableStateOf("") }
-    var isEditingTotalBenefit by remember { mutableStateOf(false) }
-    var totalBenefitText by remember { mutableStateOf("") }
+    var isEditingUnitPrice by remember { mutableStateOf(false) }
+    var unitPriceText by remember { mutableStateOf("") }
+    var isEditingTotalPrice by remember { mutableStateOf(false) }
+    var totalPriceText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    val totalBenefitFocusRequester = remember { FocusRequester() }
+    val totalPriceFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(isEditingUnitBenefit) {
-        if (isEditingUnitBenefit) {
+    LaunchedEffect(isEditingUnitPrice) {
+        if (isEditingUnitPrice) {
             focusRequester.requestFocus()
         }
     }
 
-    LaunchedEffect(isEditingTotalBenefit) {
-        if (isEditingTotalBenefit) {
-            totalBenefitFocusRequester.requestFocus()
+    LaunchedEffect(isEditingTotalPrice) {
+        if (isEditingTotalPrice) {
+            totalPriceFocusRequester.requestFocus()
         }
     }
 
-    val benefitAdjustmentValue = when {
-        benefice < 10.0 -> 1.0
-        benefice < 50.0 -> 5.0
-        benefice < 200.0 -> 10.0
-        benefice < 500.0 -> 25.0
+    val totalPriceAdjustmentValue = when {
+        prixVente < 10.0 -> 1.0
+        prixVente < 50.0 -> 5.0
+        prixVente < 200.0 -> 10.0
+        prixVente < 500.0 -> 25.0
         else -> 50.0
     }
 
-    val unitBenefitAdjustmentValue = when {
-        beneficeUnitaire < 1.0 -> 0.1
-        beneficeUnitaire < 5.0 -> 0.5
-        beneficeUnitaire < 20.0 -> 1.0
-        beneficeUnitaire < 50.0 -> 2.0
+    val unitPriceAdjustmentValue = when {
+        prixVenteUnitaire < 1.0 -> 0.1
+        prixVenteUnitaire < 5.0 -> 0.5
+        prixVenteUnitaire < 20.0 -> 1.0
+        prixVenteUnitaire < 50.0 -> 2.0
         else -> 5.0
     }
 
-    val benefitColor = when {
-        benefice < 0 -> Color.Red
-        benefice < 20 -> Color(0xFFFF9800) // Orange
-        benefice < 50 -> Color(0xFF4CAF50) // Green
-        else -> Color(0xFF2196F3) // Blue
+    val priceColor = when {
+        prixVente < prixAchat -> Color.Red
+        prixVente < prixAchat * 1.2 -> Color(0xFFFF9800) // Orange - low margin
+        prixVente < prixAchat * 1.5 -> Color(0xFF4CAF50) // Green - good margin
+        else -> Color(0xFF2196F3) // Blue - high margin
     }
+
+    // Get tariff colors from the TypeChoisi enum
+    val tariffColor = relative_Tariff.typeChoisi.couleur
+    val tariffTextColor = relative_Tariff.typeChoisi.couleur_Text
 
     fun shouldCreateNewTariff(): Boolean {
         val currentTime = System.currentTimeMillis()
@@ -104,198 +109,215 @@ fun BenificeAdjustmentButtons(
         return timeDifferenceSeconds > 20
     }
 
-    fun updateBenefitImmediately(newBenefit: Double) {
-        val newSellingPrice = prixAchat + newBenefit
+    fun updateTotalPriceImmediately(newTotalPrice: Double) {
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newTotalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
     }
 
-    fun updateUnitBenefitImmediately(newUnitBenefit: Double) {
-        val totalBenefit = newUnitBenefit * nombreUnite
-        val newSellingPrice = prixAchat + totalBenefit
+    fun updateUnitPriceImmediately(newUnitPrice: Double) {
+        val totalPrice = newUnitPrice * nombreUnite
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(totalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
     }
 
-    fun handleUnitBenefitEditDone() {
-        val newUnitBenefit = unitBenefitText.toDoubleOrNull()
-        if (newUnitBenefit != null && newUnitBenefit >= 0) {
-            updateUnitBenefitImmediately(newUnitBenefit)
+    fun handleUnitPriceEditDone() {
+        val newUnitPrice = unitPriceText.toDoubleOrNull()
+        if (newUnitPrice != null && newUnitPrice >= 0) {
+            updateUnitPriceImmediately(newUnitPrice)
         }
-        isEditingUnitBenefit = false
+        isEditingUnitPrice = false
     }
 
-    fun handleTotalBenefitEditDone() {
-        val newTotalBenefit = totalBenefitText.toDoubleOrNull()
-        if (newTotalBenefit != null && newTotalBenefit >= 0) {
-            updateBenefitImmediately(newTotalBenefit)
+    fun handleTotalPriceEditDone() {
+        val newTotalPrice = totalPriceText.toDoubleOrNull()
+        if (newTotalPrice != null && newTotalPrice >= 0) {
+            updateTotalPriceImmediately(newTotalPrice)
         }
-        isEditingTotalBenefit = false
+        isEditingTotalPrice = false
     }
 
-    // Card with both benefits in column
-    val colorUnite = Color(0xD8D9C3DC)
-    ElevatedCard {
-        Column {
-            // Total benefit section at top
+    // Card with both selling prices in column
+    ElevatedCard(
+        modifier = Modifier
+            .width(100.dp)
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(4.dp)
+        ) {
+
+
+            // Total selling price section at top
             Row(
+                modifier = Modifier
+                    .fillMaxWidth() ,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Decrease total benefit button
+                // Decrease total price button
                 IconButton(
                     onClick = {
-                        val newBenefit = (benefice - benefitAdjustmentValue).coerceAtLeast(0.0)
-                        updateBenefitImmediately(newBenefit)
+                        val newPrice =
+                            (prixVente - totalPriceAdjustmentValue).coerceAtLeast(prixAchat)
+                        updateTotalPriceImmediately(newPrice)
                     },
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            color = Color(0xFF9C27B0),
+                            color = tariffColor.copy(alpha = 0.8f),
                             shape = androidx.compose.foundation.shape.CircleShape
                         )
                         .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Remove,
-                        contentDescription = "تقليل الفائدة",
-                        tint = Color.White,
+                        contentDescription = "تقليل السعر الإجمالي",
+                        tint = tariffTextColor,
                         modifier = Modifier.size(12.dp)
                     )
                 }
 
-                // Total benefit display/edit
-                if (isEditingTotalBenefit) {
+                // Total price display/edit
+                if (isEditingTotalPrice) {
                     OutlinedTextField(
-                        value = totalBenefitText,
-                        onValueChange = { totalBenefitText = it },
+                        value = totalPriceText,
+                        onValueChange = { totalPriceText = it },
                         modifier = Modifier
                             .width(80.dp)
-                            .focusRequester(totalBenefitFocusRequester),
-                        label = { Text("${String.format("%.0f", benefice)}", fontSize = 8.sp) },
+                            .focusRequester(totalPriceFocusRequester),
+                        label = { Text("${String.format("%.0f", prixVente)}", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { handleTotalBenefitEditDone() }
+                            onDone = { handleTotalPriceEditDone() }
                         ),
                         singleLine = true
                     )
                 } else {
                     Text(
-                        String.format("%.0f", benefice),
+                        String.format("%.0f", prixVente),
                         modifier = Modifier
-                            .background(Color(0xFF9C27B0))
+                            .background(tariffColor)
                             .padding(4.dp)
                             .clickable {
-                                isEditingTotalBenefit = true
+                                isEditingTotalPrice = true
+                                totalPriceText = ""
                             },
-                        color = Color.White
+                        color = tariffTextColor
                     )
                 }
 
-                // Increase total benefit button
+                // Increase total price button
                 IconButton(
                     onClick = {
-                        val newBenefit = benefice + benefitAdjustmentValue
-                        updateBenefitImmediately(newBenefit)
+                        val newPrice = prixVente + totalPriceAdjustmentValue
+                        updateTotalPriceImmediately(newPrice)
                     },
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            color = Color(0xFF9C27B0),
+                            color = tariffColor.copy(alpha = 0.8f),
                             shape = androidx.compose.foundation.shape.CircleShape
                         )
                         .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "زيادة الفائدة",
-                        tint = Color.White,
+                        contentDescription = "زيادة السعر الإجمالي",
+                        tint = tariffTextColor,
                         modifier = Modifier.size(12.dp)
                     )
                 }
             }
 
-            // Unit benefit section - centered in Box
+            // Unit price section - centered
             Box(
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Decrease unit benefit button
+                    // Decrease unit price button
                     IconButton(
                         onClick = {
-                            val newUnitBenefit = (beneficeUnitaire - unitBenefitAdjustmentValue).coerceAtLeast(0.0)
-                            updateUnitBenefitImmediately(newUnitBenefit)
+                            val newUnitPrice =
+                                (prixVenteUnitaire - unitPriceAdjustmentValue).coerceAtLeast(0.0)
+                            updateUnitPriceImmediately(newUnitPrice)
                         },
                         modifier = Modifier
                             .size(20.dp)
                             .background(
-                                color = colorUnite,
+                                color = tariffColor.copy(alpha = 0.7f),
                                 shape = androidx.compose.foundation.shape.CircleShape
                             )
                             .padding(2.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Remove,
-                            contentDescription = "تقليل الفائدة الوحدة",
-                            tint = Color.White,
+                            contentDescription = "تقليل السعر الوحدة",
+                            tint = tariffTextColor,
                             modifier = Modifier.size(10.dp)
                         )
                     }
 
-                    // Unit benefit display/edit
-                    if (isEditingUnitBenefit) {
+                    // Unit price display/edit
+                    if (isEditingUnitPrice) {
                         OutlinedTextField(
-                            value = unitBenefitText,
-                            onValueChange = { unitBenefitText = it },
+                            value = unitPriceText,
+                            onValueChange = { unitPriceText = it },
                             modifier = Modifier
                                 .width(70.dp)
                                 .focusRequester(focusRequester),
-                            label = { Text("${String.format("%.2f", beneficeUnitaire)}", fontSize = 8.sp) },
+                            label = {
+                                Text(
+                                    "${String.format("%.2f", prixVenteUnitaire)}",
+                                    fontSize = 8.sp
+                                )
+                            },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Decimal,
                                 imeAction = ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(
-                                onDone = { handleUnitBenefitEditDone() }
+                                onDone = { handleUnitPriceEditDone() }
                             ),
                             singleLine = true
                         )
                     } else {
                         Text(
-                            "${String.format("%.2f", beneficeUnitaire)}",
+                            "${String.format("%.2f", prixVenteUnitaire)}",
                             modifier = Modifier
-                                .background(colorUnite)
+                                .background(tariffColor.copy(alpha = 0.3f))
                                 .padding(2.dp)
                                 .clickable {
-                                    isEditingUnitBenefit = true
+                                    isEditingUnitPrice = true
+                                    unitPriceText = ""
                                 },
-                            color = Color.White,
+                            color = tariffTextColor,
                             fontSize = 10.sp
                         )
                     }
 
-                    // Increase unit benefit button
+                    // Increase unit price button
                     IconButton(
                         onClick = {
-                            val newUnitBenefit = beneficeUnitaire + unitBenefitAdjustmentValue
-                            updateUnitBenefitImmediately(newUnitBenefit)
+                            val newUnitPrice = prixVenteUnitaire + unitPriceAdjustmentValue
+                            updateUnitPriceImmediately(newUnitPrice)
                         },
                         modifier = Modifier
                             .size(25.dp)
                             .background(
-                                color = colorUnite,
+                                color = tariffColor.copy(alpha = 0.7f),
                                 shape = androidx.compose.foundation.shape.CircleShape
                             )
                             .padding(2.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Add,
-                            contentDescription = "زيادة الفائدة الوحدة",
-                            tint = Color.White,
+                            contentDescription = "زيادة السعر الوحدة",
+                            tint = tariffTextColor,
                             modifier = Modifier.size(12.dp)
                         )
                     }

@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -40,15 +39,9 @@ fun PrixsVents_Handler(
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
-    var editablePurchasePriceText by remember(relative_Produit) { mutableStateOf("") }
-    var isEditingPurchasePrice by remember(relative_Produit) { mutableStateOf(false) }
-    var isEditingUnitPrice by remember(relative_Produit) { mutableStateOf(false) }
-
     var currentTariffPrice by remember(relative_Tariff.prixCurrency) {
         mutableStateOf(relative_Tariff.prixCurrency)
     }
-
-    val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val m10OperationVentCouleurs =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -69,12 +62,6 @@ fun PrixsVents_Handler(
         executeClickLogic()
     }
 
-    fun toggleUnitPriceMode() {
-        isEditingUnitPrice = !isEditingUnitPrice
-        editablePurchasePriceText = ""
-    }
-
-    // FIXED: Updated to match new signature with shouldCreateNew parameter
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
 
@@ -97,21 +84,6 @@ fun PrixsVents_Handler(
         }
     }
 
-    fun handlePurchasePriceEditDone() {
-        val newPurchasePrice = editablePurchasePriceText.toDoubleOrNull()
-        if (newPurchasePrice != null && newPurchasePrice >= 0) {
-            val finalPrice = if (isEditingUnitPrice) {
-                newPurchasePrice * relative_Produit.nombreUniteInt
-            } else {
-                newPurchasePrice
-            }
-            // Always create new for manual edits
-            handel_Add_Diminue_Prix(finalPrice, true)
-        }
-        isEditingPurchasePrice = false
-        isEditingUnitPrice = false
-    }
-
     Column {
         Row(
             modifier = Modifier
@@ -123,41 +95,32 @@ fun PrixsVents_Handler(
         ) {
             val couleurButton = typeTarification.couleur
             val textColor = typeTarification.couleur_Text
-            val typeName = typeTarification.nomArabe
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                // Only show price adjustment buttons for admin users
                 if (currentApp_Est_Admin) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        BenificeAdjustmentButtons(
-                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                            relative_Produit = relative_Produit,
-                            relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                            onPriceChange = { newPrice, shouldCreateNew ->
-                                handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
-                            }
-                        )
-                    }
+                    BenificeAdjustmentButtons(
+                        allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                        relative_Produit = relative_Produit,
+                        relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
+                        onPriceChange = { newPrice, shouldCreateNew ->
+                            handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                        }
+                    )
                 }
-
-                PriceAdjustmentButtons(
-                    currentApp_Est_Admin = currentApp_Est_Admin,
-                    relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                    couleurButton = couleurButton,
-                    textColor = textColor,
+                PrixVentAdjustmentButtons(
+                    allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                     relative_Produit = relative_Produit,
+                    relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
                     onPriceChange = { newPrice, shouldCreateNew ->
                         handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
                     }
                 )
             }
 
-            // FIXED: Changed icon to show type name instead of icon
             FloatingActionButton(
                 modifier = Modifier.width(80.dp),
                 onClick = ::handelClick,
