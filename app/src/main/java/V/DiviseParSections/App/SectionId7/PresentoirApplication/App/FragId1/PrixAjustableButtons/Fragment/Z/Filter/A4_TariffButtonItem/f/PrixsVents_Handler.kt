@@ -141,7 +141,6 @@ fun PrixsVents_Handler(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            // Use the tariff type's color instead of hardcoded Cyan
             val couleurButton = typeTarification.couleur
             val textColor = typeTarification.couleur_Text
             val typeName = typeTarification.nomArabe
