@@ -38,7 +38,7 @@ fun BenificeAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double) -> Unit
+    onPriceChange: (Double, Boolean) -> Unit // Boolean indicates if should create new tariff
 ) {
     // Find purchase price from tariffs
     val prixAchatTariff =
@@ -67,16 +67,27 @@ fun BenificeAdjustmentButtons(
         else -> Color(0xFF2196F3) // Blue
     }
 
+    fun shouldCreateNewTariff(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val tariffCreationTime = relative_Tariff.creationTimestamps
+        val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
+        return timeDifferenceSeconds > 20
+    }
+
     fun updateBenefitImmediately(newBenefit: Double) {
         val newSellingPrice = prixAchat + newBenefit
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat))
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
     }
 
     fun updateUnitBenefitImmediately(newUnitBenefit: Double) {
         val totalBenefit = newUnitBenefit * nombreUnite
         val newSellingPrice = prixAchat + totalBenefit
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat))
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
     }
+
+
 
     fun handleUnitBenefitEditDone() {
         val newUnitBenefit = unitBenefitText.toDoubleOrNull()

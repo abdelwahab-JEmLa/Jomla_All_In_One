@@ -95,14 +95,27 @@ fun PrixsVents_Handler(
     }
 
     fun handel_Add_Diminue_Prix(newPrix: Double) {
-        // Update both the local state and the repository
-        currentTariffPrice = newPrix
-        repositorysMainSetter.upsert_M13TarificationInfos(
-            relative_Tariff.copy(
+        val currentTime = System.currentTimeMillis()
+        val timeDifferenceSeconds = (currentTime - relative_Tariff.creationTimestamps) / 1000
+
+        if (timeDifferenceSeconds > 20) {
+            // Créer un nouveau tarif si plus de 20 secondes
+            val newTariff = relative_Tariff.copy(
                 prixCurrency = newPrix,
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                creationTimestamps = currentTime,
+                dernierTimeTampsSynchronisationAvecFireBase = currentTime
             )
-        )
+            repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
+            currentTariffPrice = newPrix
+        } else {
+            currentTariffPrice = newPrix
+            repositorysMainSetter.upsert_M13TarificationInfos(
+                relative_Tariff.copy(
+                    prixCurrency = newPrix,
+                    dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                )
+            )
+        }
     }
 
     fun handlePurchasePriceEditDone() {
@@ -218,17 +231,36 @@ fun PrixsVents_Handler(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+// Dans PrixsVents_Handler.kt, mettez à jour l'appel à BenificeAdjustmentButtons:
+
                         BenificeAdjustmentButtons(
                             allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             relative_Produit = relative_Produit,
                             relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                            onPriceChange = { newPrice ->
-                                // This callback now properly updates the selling price tariff
+                            onPriceChange = { newPrice, shouldCreateNew ->
+                                val currentTime = System.currentTimeMillis()
+
+                                if (shouldCreateNew) {
+                                    // Créer un nouveau tarif
+                                    val newTariff = relative_Tariff.copy(
+                                        prixCurrency = newPrice,
+                                        creationTimestamps = currentTime,
+                                        dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                                    )
+                                    repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
+                                } else {
+                                    // Mettre à jour le tarif existant
+                                    repositorysMainSetter.upsert_M13TarificationInfos(
+                                        relative_Tariff.copy(
+                                            prixCurrency = newPrice,
+                                            dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                                        )
+                                    )
+                                }
+
                                 currentTariffPrice = newPrice
-                                handel_Add_Diminue_Prix(newPrice)
                             }
                         )
-
                     }
                 }
 
