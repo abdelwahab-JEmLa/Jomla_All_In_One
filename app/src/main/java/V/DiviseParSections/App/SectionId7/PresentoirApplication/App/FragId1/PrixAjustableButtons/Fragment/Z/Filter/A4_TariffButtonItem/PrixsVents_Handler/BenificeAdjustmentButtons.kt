@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.f
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -38,9 +38,8 @@ fun BenificeAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean) -> Unit // Boolean indicates if should create new tariff
+    onPriceChange: (Double, Boolean) -> Unit
 ) {
-    // Find purchase price from tariffs
     val prixAchatTariff =
         allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
             ?.maxByOrNull { it.creationTimestamps }
@@ -50,15 +49,26 @@ fun BenificeAdjustmentButtons(
     val benefice = prixVente - prixAchat
     val nombreUnite = relative_Produit.nombreUniteInt
 
-    // Calculate unit benefit
     val beneficeUnitaire = if (nombreUnite > 0) benefice / nombreUnite else 0.0
 
-    // State for unit benefit editing
     var isEditingUnitBenefit by remember { mutableStateOf(false) }
     var unitBenefitText by remember { mutableStateOf("") }
 
-    val benefitAdjustmentValue = if (benefice < 50.0) 5.0 else 10.0
-    val unitBenefitAdjustmentValue = if (beneficeUnitaire < 5.0) 0.5 else 1.0
+    val benefitAdjustmentValue = when {
+        benefice < 10.0 -> 1.0
+        benefice < 50.0 -> 5.0
+        benefice < 200.0 -> 10.0
+        benefice < 500.0 -> 25.0
+        else -> 50.0
+    }
+
+    val unitBenefitAdjustmentValue = when {
+        beneficeUnitaire < 1.0 -> 0.1
+        beneficeUnitaire < 5.0 -> 0.5
+        beneficeUnitaire < 20.0 -> 1.0
+        beneficeUnitaire < 50.0 -> 2.0
+        else -> 5.0
+    }
 
     val benefitColor = when {
         benefice < 0 -> Color.Red
@@ -87,8 +97,6 @@ fun BenificeAdjustmentButtons(
         onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
     }
 
-
-
     fun handleUnitBenefitEditDone() {
         val newUnitBenefit = unitBenefitText.toDoubleOrNull()
         if (newUnitBenefit != null && newUnitBenefit >= 0) {
@@ -104,7 +112,7 @@ fun BenificeAdjustmentButtons(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Decrease total benefit button (left side like unit benefit)
+                // Decrease total benefit button
                 IconButton(
                     onClick = {
                         val newBenefit = (benefice - benefitAdjustmentValue).coerceAtLeast(0.0)
@@ -113,14 +121,14 @@ fun BenificeAdjustmentButtons(
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            color = Color(0xFF9C27B0), // MÃªme bleu clair que les autres boutons
+                            color = Color(0xFF9C27B0),
                             shape = androidx.compose.foundation.shape.CircleShape
                         )
                         .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Remove,
-                        contentDescription = "ØªÙ‚Ù„ÙŠÙ„ Ø§Ù„ÙØ§Ø¦Ø¯Ø©",
+                        contentDescription = "تقليل الفائدة",
                         tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )
@@ -129,12 +137,12 @@ fun BenificeAdjustmentButtons(
                 Text(
                     String.format("%.0f", benefice),
                     modifier = Modifier
-                        .background(Color(0xFF9C27B0)) // ArriÃ¨re-plan plus foncÃ©
+                        .background(Color(0xFF9C27B0))
                         .padding(4.dp),
                     color = Color.White
                 )
 
-                // Increase total benefit button (separate circular button)
+                // Increase total benefit button
                 IconButton(
                     onClick = {
                         val newBenefit = benefice + benefitAdjustmentValue
@@ -143,14 +151,14 @@ fun BenificeAdjustmentButtons(
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            color = Color(0xFF9C27B0), // MÃªme bleu clair que les boutons unitaires
+                            color = Color(0xFF9C27B0),
                             shape = androidx.compose.foundation.shape.CircleShape
                         )
                         .padding(2.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Ø²ÙŠØ§Ø¯Ø© Ø§Ù„ÙØ§Ø¦Ø¯Ø©",
+                        contentDescription = "زيادة الفائدة",
                         tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )
@@ -177,7 +185,7 @@ fun BenificeAdjustmentButtons(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Remove,
-                        contentDescription = "ØªÙ‚Ù„ÙŠÙ„ Ø§Ù„ÙØ§Ø¦Ø¯Ø© Ø§Ù„ÙˆØ­Ø¯Ø©",
+                        contentDescription = "تقليل الفائدة الوحدة",
                         tint = Color.White,
                         modifier = Modifier.size(10.dp)
                     )
@@ -189,7 +197,7 @@ fun BenificeAdjustmentButtons(
                         value = unitBenefitText,
                         onValueChange = { unitBenefitText = it },
                         modifier = Modifier.width(70.dp),
-                        label = { Text("Ù.ÙˆØ­Ø¯Ø©", fontSize = 8.sp) },
+                        label = { Text("ف.وحدة", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
@@ -230,7 +238,7 @@ fun BenificeAdjustmentButtons(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Ø²ÙŠØ§Ø¯Ø© Ø§Ù„ÙØ§Ø¦Ø¯Ø© Ø§Ù„ÙˆØ­Ø¯Ø©",
+                        contentDescription = "زيادة الفائدة الوحدة",
                         tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.f
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -63,7 +62,6 @@ fun PrixsVents_Handler(
     var isEditingPurchasePrice by remember(relative_Produit) { mutableStateOf(false) }
     var isEditingUnitPrice by remember(relative_Produit) { mutableStateOf(false) }
 
-    // Add state to track the current tariff price, allowing BenificeAdjustmentButtons to update it
     var currentTariffPrice by remember(relative_Tariff.prixCurrency) {
         mutableStateOf(relative_Tariff.prixCurrency)
     }
@@ -99,7 +97,6 @@ fun PrixsVents_Handler(
         val timeDifferenceSeconds = (currentTime - relative_Tariff.creationTimestamps) / 1000
 
         if (timeDifferenceSeconds > 20) {
-            // Créer un nouveau tarif si plus de 20 secondes
             val newTariff = relative_Tariff.copy(
                 prixCurrency = newPrix,
                 creationTimestamps = currentTime,
@@ -149,7 +146,11 @@ fun PrixsVents_Handler(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                ElevatedCard {
+                ElevatedCard(
+                    modifier = Modifier.width(
+                        if (currentApp_Est_Admin && !isEditingPurchasePrice) 20.dp else 100.dp
+                    )
+                ) {
                     if (isEditingPurchasePrice) {
                         OutlinedTextField(
                             modifier = Modifier
@@ -230,8 +231,6 @@ fun PrixsVents_Handler(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-// Dans PrixsVents_Handler.kt, mettez à jour l'appel à BenificeAdjustmentButtons:
-
                         BenificeAdjustmentButtons(
                             allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             relative_Produit = relative_Produit,
@@ -290,64 +289,3 @@ fun PrixsVents_Handler(
     }
 }
 
-
-@Composable
-private fun PriceAdjustmentButtons(
-    currentApp_Est_Admin: Boolean,
-    relative_Tariff: M13TarificationInfos,
-    couleurButton: Color,
-    textColor: Color,
-    relative_Produit: ArticlesBasesStatsTable,
-    onPriceChange: (Double) -> Unit
-) {
-    val decrease_Value = if (relative_Tariff.prixCurrency < 200.0) 1.0 else 5.0
-
-    // Decrease button
-    if (currentApp_Est_Admin) {
-        IconButton(
-            onClick = {
-                val newPrice = (relative_Tariff.prixCurrency - decrease_Value).coerceAtLeast(0.0)
-                onPriceChange(newPrice)
-            },
-            modifier = Modifier.size(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Remove,
-                contentDescription = "Diminuer le prix de vente",
-                tint = Color.Black
-            )
-        }
-    }
-
-    // Price display and increase button
-    ElevatedCard(
-        onClick = {
-            if (currentApp_Est_Admin) {
-                val newPrice = relative_Tariff.prixCurrency + decrease_Value
-                onPriceChange(newPrice)
-            }
-        }
-    ) {
-        val pls = if (currentApp_Est_Admin) " +" else ""
-
-        Column {
-            Text(
-                "${relative_Tariff.prixCurrency}$pls",
-                modifier = Modifier
-                    .background(couleurButton)
-                    .padding(4.dp),
-                color = textColor
-            )
-
-            val unitPrice = relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
-            Text(
-                "س.و: ${String.format("%.2f", unitPrice)}",
-                modifier = Modifier
-                    .background(couleurButton.copy(alpha = 0.6f))
-                    .padding(2.dp),
-                color = textColor,
-                fontSize = 10.sp
-            )
-        }
-    }
-}
