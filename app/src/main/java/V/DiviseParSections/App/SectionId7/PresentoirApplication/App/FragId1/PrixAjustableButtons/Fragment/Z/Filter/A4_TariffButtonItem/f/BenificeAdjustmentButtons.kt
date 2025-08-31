@@ -47,8 +47,9 @@ fun BenificeAdjustmentButtons(
     onPriceChange: (Double) -> Unit
 ) {
     // Find purchase price from tariffs
-    val prixAchatTariff = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
-        ?.maxByOrNull { it.creationTimestamps }
+    val prixAchatTariff =
+        allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
+            ?.maxByOrNull { it.creationTimestamps }
 
     val prixAchat = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
     val prixVente = relative_Tariff.prixCurrency
@@ -124,7 +125,8 @@ fun BenificeAdjustmentButtons(
                 // Decrease total benefit button (left side like unit benefit)
                 IconButton(
                     onClick = {
-                        val newBenefit = (displayBenefit - benefitAdjustmentValue).coerceAtLeast(0.0)
+                        val newBenefit =
+                            (displayBenefit - benefitAdjustmentValue).coerceAtLeast(0.0)
                         debouncedBenefitChange(newBenefit)
                     },
                     modifier = Modifier
@@ -191,7 +193,8 @@ fun BenificeAdjustmentButtons(
                 // Decrease unit benefit button
                 IconButton(
                     onClick = {
-                        val newUnitBenefit = (displayUnitBenefit - unitBenefitAdjustmentValue).coerceAtLeast(0.0)
+                        val newUnitBenefit =
+                            (displayUnitBenefit - unitBenefitAdjustmentValue).coerceAtLeast(0.0)
                         debouncedUnitBenefitChange(newUnitBenefit)
                     },
                     modifier = Modifier

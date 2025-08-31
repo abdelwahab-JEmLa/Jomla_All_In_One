@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,13 +19,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,14 +38,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.util.SortedMap
 
@@ -72,6 +63,11 @@ fun PrixsVents_Handler(
     var isEditingPurchasePrice by remember(relative_Produit) { mutableStateOf(false) }
     var isEditingUnitPrice by remember(relative_Produit) { mutableStateOf(false) }
 
+    // Add state to track the current tariff price, allowing BenificeAdjustmentButtons to update it
+    var currentTariffPrice by remember(relative_Tariff.prixCurrency) {
+        mutableStateOf(relative_Tariff.prixCurrency)
+    }
+
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val m10OperationVentCouleurs =
@@ -81,7 +77,7 @@ fun PrixsVents_Handler(
     fun executeClickLogic() {
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                m13TarificationInfos_Pour_Produit = relative_Tariff,
+                m13TarificationInfos_Pour_Produit = relative_Tariff.copy(prixCurrency = currentTariffPrice),
                 m10OperationVentCouleurs = m10OperationVentCouleurs
             )
 
@@ -99,6 +95,8 @@ fun PrixsVents_Handler(
     }
 
     fun handel_Add_Diminue_Prix(newPrix: Double) {
+        // Update both the local state and the repository
+        currentTariffPrice = newPrix
         repositorysMainSetter.upsert_M13TarificationInfos(
             relative_Tariff.copy(
                 prixCurrency = newPrix,
@@ -155,11 +153,11 @@ fun PrixsVents_Handler(
                                         "Prix unitaire: ${
                                             String.format(
                                                 "%.2f",
-                                                relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
+                                                currentTariffPrice / relative_Produit.nombreUniteInt
                                             )
                                         }"
                                     } else {
-                                        "Prix de vente: ${relative_Tariff.prixCurrency}"
+                                        "Prix de vente: ${currentTariffPrice}"
                                     }
                                 )
                             },
@@ -223,8 +221,12 @@ fun PrixsVents_Handler(
                         BenificeAdjustmentButtons(
                             allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             relative_Produit = relative_Produit,
-                            relative_Tariff = relative_Tariff,
-                            onPriceChange = ::handel_Add_Diminue_Prix
+                            relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
+                            onPriceChange = { newPrice ->
+                                // This callback now properly updates the selling price tariff
+                                currentTariffPrice = newPrice
+                                handel_Add_Diminue_Prix(newPrice)
+                            }
                         )
 
                     }
@@ -232,7 +234,7 @@ fun PrixsVents_Handler(
 
                 PriceAdjustmentButtons(
                     currentApp_Est_Admin = currentApp_Est_Admin,
-                    relative_Tariff = relative_Tariff,
+                    relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
                     couleurButton = couleurButton,
                     textColor = textColor,
                     relative_Produit = relative_Produit,
@@ -267,42 +269,14 @@ private fun PriceAdjustmentButtons(
     relative_Produit: ArticlesBasesStatsTable,
     onPriceChange: (Double) -> Unit
 ) {
-    // Debouncing state
-    var pendingPrice by remember { mutableStateOf<Double?>(null) }
-    var debounceJob by remember { mutableStateOf<Job?>(null) }
-    val coroutineScope = rememberCoroutineScope()
-
     val decrease_Value = if (relative_Tariff.prixCurrency < 200.0) 1.0 else 5.0
-
-    // Debounced price change function
-    fun debouncedPriceChange(newPrice: Double) {
-        // Cancel previous job if exists
-        debounceJob?.cancel()
-
-        // Update pending price immediately for UI feedback
-        pendingPrice = newPrice
-
-        // Start new debounce job
-        debounceJob = coroutineScope.launch {
-            delay(4000) // Wait 4 seconds
-
-            // Execute the price change
-            onPriceChange(newPrice)
-
-            // Clear pending price
-            pendingPrice = null
-        }
-    }
-
-    // Use pending price for display if available, otherwise use actual price
-    val displayPrice = pendingPrice ?: relative_Tariff.prixCurrency
 
     // Decrease button
     if (currentApp_Est_Admin) {
         IconButton(
             onClick = {
-                val newPrice = (displayPrice - decrease_Value).coerceAtLeast(0.0)
-                debouncedPriceChange(newPrice)
+                val newPrice = (relative_Tariff.prixCurrency - decrease_Value).coerceAtLeast(0.0)
+                onPriceChange(newPrice)
             },
             modifier = Modifier.size(16.dp)
         ) {
@@ -318,37 +292,23 @@ private fun PriceAdjustmentButtons(
     ElevatedCard(
         onClick = {
             if (currentApp_Est_Admin) {
-                val newPrice = displayPrice + decrease_Value
-                debouncedPriceChange(newPrice)
+                val newPrice = relative_Tariff.prixCurrency + decrease_Value
+                onPriceChange(newPrice)
             }
         }
     ) {
         val pls = if (currentApp_Est_Admin) " +" else ""
 
         Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "${displayPrice}$pls",
-                    modifier = Modifier
-                        .background(couleurButton)
-                        .padding(4.dp),
-                    color = textColor
-                )
+            Text(
+                "${relative_Tariff.prixCurrency}$pls",
+                modifier = Modifier
+                    .background(couleurButton)
+                    .padding(4.dp),
+                color = textColor
+            )
 
-                // Show loading indicator when there's a pending change
-                if (pendingPrice != null) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(12.dp),
-                        strokeWidth = 1.dp,
-                        color = textColor
-                    )
-                }
-            }
-
-            val unitPrice = displayPrice / relative_Produit.nombreUniteInt
+            val unitPrice = relative_Tariff.prixCurrency / relative_Produit.nombreUniteInt
             Text(
                 "س.و: ${String.format("%.2f", unitPrice)}",
                 modifier = Modifier
