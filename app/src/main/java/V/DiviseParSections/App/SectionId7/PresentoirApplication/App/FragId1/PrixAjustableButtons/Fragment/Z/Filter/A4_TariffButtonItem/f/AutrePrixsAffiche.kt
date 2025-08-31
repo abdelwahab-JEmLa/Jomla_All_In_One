@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.f
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.sp
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun TariffButtonItem(
+fun AutrePrixsAffiche(
     produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
@@ -65,8 +65,8 @@ fun TariffButtonItem(
     nombreUnite: Int = 1,
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-) {
-    val proto_Affiche_Dialog_Au_Base = true
+) {             //<--
+//TODO(1): fait quer si Edited_Pour_Client de affiche un PourcentageProgressiveAdjustmentCard qui ajust le porcentage du tarriff progressive
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
