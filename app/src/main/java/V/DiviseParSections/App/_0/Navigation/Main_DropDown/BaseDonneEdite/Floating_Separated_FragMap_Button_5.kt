@@ -2,6 +2,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
@@ -70,12 +71,15 @@ fun Floating_Separated_FragMap_Button_5(
         icons = Pair(Icons.Default.FilterList, Icons.Default.ViewList),
         colors = Pair(Color.Red, Color.Green)
     )
-) {     //<--
-//TODO(1): fait que ca choisi     val active_ModeEditesProduit: ModeEditesProduit? = null, et update le centrale 
+) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val currentVisibleClientsMode = currentValues.visibleClientsNow
-    val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
-    val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
+
+    // Get current ModeEditesProduit state
+    val currentModeEditesProduit = currentValues.active_ModeEditesProduit
+    val isModeEditeActive = currentModeEditesProduit != null
+
+    val updatedButtonState = buttonState.copy(its_Active = isModeEditeActive)
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -112,11 +116,21 @@ fun Floating_Separated_FragMap_Button_5(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = activeCatalogue?.nom ?: "RRR",
+                        text = when (currentModeEditesProduit) {
+                            ActiveCentralValues.ModeEditesProduit.PrixHanled -> "Prix Mode"
+                            ActiveCentralValues.ModeEditesProduit.Standart -> "Standard"
+                            null -> activeCatalogue?.nom ?: "RRR"
+                        },
                         color = Color.White,
                         modifier = Modifier
                             .background(
-                                color = (activeCatalogue?.couleur ?: Color.Gray).copy(alpha = 0.8f),
+                                color = when (currentModeEditesProduit) {
+                                    ActiveCentralValues.ModeEditesProduit.PrixHanled ->
+                                        currentModeEditesProduit.couleur.copy(alpha = 0.8f)
+                                    ActiveCentralValues.ModeEditesProduit.Standart ->
+                                        currentModeEditesProduit.couleur.copy(alpha = 0.8f)
+                                    null -> (activeCatalogue?.couleur ?: Color.Gray).copy(alpha = 0.8f)
+                                },
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -127,8 +141,8 @@ fun Floating_Separated_FragMap_Button_5(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
                             set(
-                                value = activeCatalogue,
-                                key = SemanticsPropertyKey("activeCategorie")
+                                value = currentModeEditesProduit ?: activeCatalogue,
+                                key = SemanticsPropertyKey("activeMode")
                             )
                         }
                         .size(48.dp),
@@ -143,7 +157,7 @@ fun Floating_Separated_FragMap_Button_5(
                             updatedButtonState.icons.second
                         else
                             updatedButtonState.icons.first,
-                        contentDescription = if (isShowingAll) "Switch to Targeted View" else "Switch to Show All",
+                        contentDescription = if (isModeEditeActive) "Switch to Normal Mode" else "Switch to Edit Mode",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -156,9 +170,62 @@ fun Floating_Separated_FragMap_Button_5(
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
+                    // ModeEditesProduit options
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Mode Standard",
+                                color = if (currentModeEditesProduit == ActiveCentralValues.ModeEditesProduit.Standart)
+                                    ActiveCentralValues.ModeEditesProduit.Standart.couleur
+                                else Color.Black
+                            )
+                        },
+                        onClick = {
+                            val newValues = currentValues.copy(
+                                active_ModeEditesProduit = if (currentModeEditesProduit == ActiveCentralValues.ModeEditesProduit.Standart)
+                                    null
+                                else
+                                    ActiveCentralValues.ModeEditesProduit.Standart
+                            )
+                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            showDropdown = false
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Mode Prix",
+                                color = if (currentModeEditesProduit == ActiveCentralValues.ModeEditesProduit.PrixHanled)
+                                    ActiveCentralValues.ModeEditesProduit.PrixHanled.couleur
+                                else Color.Black
+                            )
+                        },
+                        onClick = {
+                            val newValues = currentValues.copy(
+                                active_ModeEditesProduit = if (currentModeEditesProduit == ActiveCentralValues.ModeEditesProduit.PrixHanled)
+                                    null
+                                else
+                                    ActiveCentralValues.ModeEditesProduit.PrixHanled
+                            )
+                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            showDropdown = false
+                        }
+                    )
+
+                    // Separator
+                    if (catalogues.isNotEmpty()) {
+                        androidx.compose.material3.HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+
+                    // Catalog options
                     catalogues.forEach { catalogue ->
-                        val newValues =
-                            currentValues.copy(active_Catalogue_Pour_NewAddedProduit = catalogue)
+                        val newValues = currentValues.copy(
+                            active_Catalogue_Pour_NewAddedProduit = catalogue,
+                            active_ModeEditesProduit = null // Reset mode when selecting catalogue
+                        )
 
                         DropdownMenuItem(
                             modifier = Modifier.semantics(mergeDescendants = true) {
@@ -167,7 +234,7 @@ fun Floating_Separated_FragMap_Button_5(
                             text = {
                                 Text(
                                     text = catalogue.nom,
-                                    color = if (activeCatalogue?.id == catalogue.id)
+                                    color = if (activeCatalogue?.id == catalogue.id && currentModeEditesProduit == null)
                                         catalogue.couleur else Color.Black
                                 )
                             },

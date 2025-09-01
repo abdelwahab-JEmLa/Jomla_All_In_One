@@ -17,7 +17,6 @@ class Sec9FragId1ViewId2ViewModel(
         var selectedTypeChoisi: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet(),
 
-        var itsLancedDepuit: ItsLancedDepuit = ItsLancedDepuit.EditeBaseDonne(),
     )
 
     private val _uiState = MutableStateFlow(UiState())

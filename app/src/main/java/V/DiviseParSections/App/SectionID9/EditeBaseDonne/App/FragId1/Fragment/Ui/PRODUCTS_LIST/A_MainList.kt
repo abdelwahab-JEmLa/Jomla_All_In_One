@@ -53,7 +53,7 @@ fun EditeInfosMainList(
             } else null
 
             ProductItem(
-                viewModel=viewModel,
+                viewModel =viewModel,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 uiState = uiState,
                 mainComposRepository = aProduitdatabasecomposerepositorypj17,

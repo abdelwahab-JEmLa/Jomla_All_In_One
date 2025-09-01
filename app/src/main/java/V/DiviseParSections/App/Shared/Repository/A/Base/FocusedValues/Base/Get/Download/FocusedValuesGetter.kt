@@ -67,7 +67,7 @@ data class ActiveCentralValues(
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
-    val active_ModeEditesProduit: ModeEditesProduit? = null,
+    val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.Standart,
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,

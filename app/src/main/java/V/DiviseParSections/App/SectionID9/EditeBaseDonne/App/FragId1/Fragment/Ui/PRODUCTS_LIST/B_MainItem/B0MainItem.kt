@@ -8,6 +8,9 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.StringEditor
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.ModeEditesProduit
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import androidx.compose.foundation.layout.Column
@@ -31,9 +34,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun ProductItem(
+    aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier,
     mainComposRepository: RepoM1Produit,
     produit: ArticlesBasesStatsTable,
@@ -117,6 +123,12 @@ fun ProductItem(
         )
     }
 
+    val itsLancedDepuit =
+        if (focusedValuesGetter.active_Central_Values.active_ModeEditesProduit == ModeEditesProduit.PrixHanled)
+            ItsLancedDepuit.EditeBaseDonne(relative_Produit = produit)
+        else
+            ItsLancedDepuit.Autres
+
     Card(
         modifier = modifierWithDefinedPadding
             .fillMaxWidth()
@@ -127,8 +139,8 @@ fun ProductItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
-        when (uiState.itsLancedDepuit) {
-            ItsLancedDepuit.EditeBaseDonne() -> {
+        when (itsLancedDepuit) {
+            is ItsLancedDepuit.EditeBaseDonne -> {
                 AffichageDuMode_EditePrix(
                     relative_produit = produit,
                     updateProduct = ::updateProduct,
