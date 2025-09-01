@@ -222,7 +222,9 @@ fun MainList(
                     }
 
                     TypeChoisi.Prix_SupperGro_Et_PresentationService,
-                    TypeChoisi.Prix_Detaille -> {
+                    TypeChoisi.Prix_Detaille,
+                    TypeChoisi.Edited_Pour_Client,
+                         -> {
                         val relative_Tariff =
                             relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.f
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler.ProgressivePercentageAdjustmentCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -49,7 +49,6 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -194,7 +193,7 @@ fun AutrePrixsAffiche(
                 TextButton(
                     onClick = { showConfirmationDialog = false }
                 ) {
-                    Text("Ù„Ø§", color = MaterialTheme.colorScheme.secondary)
+                    Text("لا", color = MaterialTheme.colorScheme.secondary)
                 }
             }
         )
@@ -262,8 +261,14 @@ fun AutrePrixsAffiche(
                     }
 
                     // Progressive percentage editor card for Edited_Pour_Client type
-                    ProgressivepercentageAdjustmentButtons(isProgressiveTariff, produit, typeTarification)    //<--
-                    //TODO(1): fait que ca soit comme BenificeAdjustmentButtons un card separe
+                    if (isProgressiveTariff) {
+                        ProgressivePercentageAdjustmentCard(
+                            produit = produit,
+                            typeTarification = typeTarification,
+                            repositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
+                            onPercentageChange = ::updateProgressivePercentage
+                        )
+                    }
 
                     if (isEditingPurchasePrice && isPurchasePriceTariff) {
                         OutlinedTextField(
@@ -306,8 +311,6 @@ fun AutrePrixsAffiche(
 
                     // Handle selling price editing
                     else if (isEditingPrice && isEditableTariff) {
-                        val nombreUniteInt = produit.nombreUniteInt
-
                         OutlinedTextField(
                             modifier = Modifier
                                 .getSemanticsTag(
@@ -533,59 +536,6 @@ fun AutrePrixsAffiche(
                     contentDescription = null,
                     tint = iconColor
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProgressivepercentageAdjustmentButtons(
-    isProgressiveTariff: Boolean,
-    produit: ArticlesBasesStatsTable,
-    typeTarification: TypeChoisi
-) {
-    if (isProgressiveTariff) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(4.dp)
-        ) {
-            Text(
-                text = "${produit.pourcentage_Prix_Progressive}%",
-                fontSize = 12.sp,
-                color = typeTarification.couleur_Text,
-                textAlign = TextAlign.Center
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive - 5)     //->
-                        //TODO(FIXME):Fix erreur Unresolved reference: updateProgressivePercentage
-                    },
-                    modifier = Modifier.size(20.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Remove,
-                        contentDescription = "Diminuer pourcentage",
-                        tint = typeTarification.couleur_Text,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive + 5)
-                    },
-                    modifier = Modifier.size(20.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Augmenter pourcentage",
-                        tint = typeTarification.couleur_Text,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
             }
         }
     }

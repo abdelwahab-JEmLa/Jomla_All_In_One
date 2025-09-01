@@ -100,17 +100,45 @@ fun PrixsVents_Handler(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Only show price adjustment buttons for admin users
+                // Show different adjustment buttons based on tariff type and admin status
                 if (currentApp_Est_Admin) {
-                    BenificeAdjustmentButtons(
-                        allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                        relative_Produit = relative_Produit,
-                        relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                        onPriceChange = { newPrice, shouldCreateNew ->
-                            handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                    when (typeTarification) {
+                        M13TarificationInfos.TypeChoisi.Edited_Pour_Client -> {
+                            // Use ProgressivePercentageAdjustmentCard for progressive pricing
+                            ProgressivePercentageAdjustmentCard(
+                                produit = relative_Produit,
+                                typeTarification = typeTarification,
+                                repositorysMainSetter = repositorysMainSetter,
+                                onPercentageChange = { newPercentage ->
+                                    // Recalculate the progressive price when percentage changes
+                                    val prixDetaille = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Prix_Detaille]
+                                        ?.maxByOrNull { it.creationTimestamps }?.prixCurrency
+                                        ?: relative_Produit.prixVent
+
+                                    val prixVent = relative_Produit.prixVent
+                                    val priceDifference = prixDetaille - prixVent
+                                    val adjustedPercentage = if (newPercentage == 50) 60 else newPercentage
+                                    val progressiveAdjustment = priceDifference * (adjustedPercentage / 100.0)
+                                    val newProgressivePrice = prixVent + progressiveAdjustment
+
+                                    handel_Add_Diminue_Prix(newProgressivePrice, false)
+                                }
+                            )
                         }
-                    )
+                        else -> {
+                            // Use BenificeAdjustmentButtons for other tariff types
+                            BenificeAdjustmentButtons(
+                                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                                relative_Produit = relative_Produit,
+                                relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
+                                onPriceChange = { newPrice, shouldCreateNew ->
+                                    handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                                }
+                            )
+                        }
+                    }
                 }
+
                 PrixVentAdjustmentButtons(
                     allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                     relative_Produit = relative_Produit,
