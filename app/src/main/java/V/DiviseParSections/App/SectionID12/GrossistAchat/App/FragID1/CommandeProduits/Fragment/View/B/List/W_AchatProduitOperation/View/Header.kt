@@ -117,7 +117,6 @@ fun Header(
         }
     }
 
-    // Use local dialog state instead of viewModel state
     if (showDialog) {
         Dialog_Choisire_Grossist_Modularized(
             viewModel = viewModel,

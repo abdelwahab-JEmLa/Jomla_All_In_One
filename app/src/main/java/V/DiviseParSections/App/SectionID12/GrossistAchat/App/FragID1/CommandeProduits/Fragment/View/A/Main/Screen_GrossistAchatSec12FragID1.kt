@@ -63,7 +63,7 @@ fun Screen_GrossistAchatSec12FragID1(
             viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = false)
         }
     }
-    val active_Central_Values = focusedValuesGetter.active_Central_Values
+
 
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
         Dialog_Filter_Client(

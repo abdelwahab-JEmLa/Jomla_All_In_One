@@ -211,9 +211,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                             modifier = Modifier
                                 .clickable {
                                     focusManager.clearFocus()
-                                    // FIXED: Use focusedValuesGetter extension function to remove grossist filter
-                                    focusedValuesGetter.removeGrossistFilter()
-                                    onDismiss(null)
+                                    onDismiss(null) // This is correct for removing filter
                                 }
                                 .fillMaxWidth(),
                             colors = CardDefaults.cardColors(
@@ -256,9 +254,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                                             nom = "Grossiste non défini",
                                             couleur_In_Str = "#FF0000"
                                         )
-                                        // FIXED: Use focusedValuesGetter extension function to add grossist filter
-                                        focusedValuesGetter.addGrossistFilter(nullGrossist)
-                                        onDismiss(null)
+                                        onDismiss(nullGrossist) // FIXED: Pass the nullGrossist instead of null
                                     }
                                     .fillMaxWidth(),
                                 colors = CardDefaults.cardColors(
@@ -333,7 +329,6 @@ fun Dialog_Choisire_Grossist_Modularized(
                             activePeriodId = activePeriodId,
                             onSelect = {
                                 focusManager.clearFocus()
-                                // FIXED: Use focusedValuesGetter extension function to add grossist filter
                                 focusedValuesGetter.addGrossistFilter(grossist)
                                 onDismiss(null)
                             }
