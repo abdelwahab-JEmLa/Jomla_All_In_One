@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -130,79 +129,69 @@ fun AffichageDuMode_EditePrix(
                                 .padding(top = 2.dp)
                         )
                     }
-                }
-            }
-
-            // FIXED TODO(1): Added availability status and delete controls
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingDefaulte),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Delete button (on the right)
-                Surface(
-                    onClick = { onShowDeleteDialogChange(true) },
-                    modifier = Modifier.size(32.dp),
-                    shape = RoundedCornerShape(paddingDefaulte),
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shadowElevation = 2.dp
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(paddingDefaulte),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer le produit",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
+                        // Delete button (on the right)
+                        Surface(
+                            onClick = { onShowDeleteDialogChange(true) },
+                            modifier = Modifier.size(32.dp),
+                            shape = RoundedCornerShape(paddingDefaulte),
+                            color = MaterialTheme.colorScheme.errorContainer,
+                            shadowElevation = 2.dp
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Supprimer le produit",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
+                        // Availability status button (on the left - priority)
+                        Surface(
+                            onClick = {
+                                val updatedProduct = relative_produit.toggleDisponibilityEtates()
+                                updateProduct(updatedProduct)
+                            },
+                            modifier = Modifier.weight(1f),
+                            color = when (relative_produit.disponibilityEtates) {
+                                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
+                                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
+                                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            shadowElevation = 2.dp
+                        ) {
+                            Text(
+                                text = relative_produit.disponibilityEtates.nomArabe,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = when (relative_produit.disponibilityEtates) {
+                                    DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
+                                    DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                                },
+                                modifier = Modifier.padding(paddingDefaulte),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
-                // Availability status button (on the left - priority)
-                Surface(
-                    onClick = {
-                        val updatedProduct = relative_produit.toggleDisponibilityEtates()
-                        updateProduct(updatedProduct)
-                    },
-                    modifier = Modifier.weight(1f),
-                    color = when (relative_produit.disponibilityEtates) {
-                        DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
-                        DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
-                        DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    shadowElevation = 2.dp
-                ) {
-                    Text(
-                        text = relative_produit.disponibilityEtates.nomArabe,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = when (relative_produit.disponibilityEtates) {
-                            DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
-                            DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
-                            DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
-                        },
-                        modifier = Modifier.padding(paddingDefaulte),
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
 
-            // Add spacing between header and content
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Price and Unit Section
             PriceAndUnitSection(
                 produit = relative_produit,
                 updateProduct = updateProduct
             )
-
-            // Add spacing between PriceAndUnitSection and TariffsButtons
-            Spacer(modifier = Modifier.height(12.dp))
-
             TariffsButtonsSec7ID2(
                 lancedDepuitAffiche= ItsLancedDepuit.EditeBaseDonne(relative_produit),
                 its_ProduitVentsInfosDialog = true

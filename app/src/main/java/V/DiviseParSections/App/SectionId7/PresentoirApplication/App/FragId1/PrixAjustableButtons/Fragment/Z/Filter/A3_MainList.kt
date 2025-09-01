@@ -193,7 +193,7 @@ fun MainList(
             .getSemanticsTag(last_list_M13TarificationInfos, "")
             .getSemanticsTag(relative_M2Client?.keyID, "", 1)
             .getSemanticsTag(list_M13TarificationInfos, "", 2),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalAlignment = Alignment.Top
     ) {
         Column(
