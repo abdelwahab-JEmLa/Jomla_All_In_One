@@ -63,7 +63,7 @@ fun DropDownItem_WhenItsAchatsFragment_1(
             text = {
                 Text(
                     text = if (isFloatingButtonVisible)
-                        "Hide Category Selection Button"
+                        "Affiche BUtt Creat Neveau Produit"
                     else
                         "Show Category Selection Button",
                     color = if (isFloatingButtonVisible) {

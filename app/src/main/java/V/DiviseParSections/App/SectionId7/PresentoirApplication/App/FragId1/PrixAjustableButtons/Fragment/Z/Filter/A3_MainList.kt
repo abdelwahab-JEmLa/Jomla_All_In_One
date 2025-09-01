@@ -147,7 +147,10 @@ fun MainList(
 
             add(relative_Tariff_Prix_Progressive)
 
-            if (relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency) {
+            val shouldShowPrixDetaille = focusedValuesGetter.currentApp_Est_Admin ||
+                    (relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency)
+
+            if (shouldShowPrixDetaille) {
                 add(relative_Tariff_Prix_Detaille)
             }
 
@@ -205,7 +208,7 @@ fun MainList(
                     }, key = SemanticsPropertyKey("filter"))
                 }
         ) {
-            allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
+            allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->      //<--
                 when (centralType) {
                     TypeChoisi.Tariff_Achat_Depuit_Grossisst -> {
                         val relative_Tariff =
@@ -224,7 +227,7 @@ fun MainList(
                     TypeChoisi.Prix_SupperGro_Et_PresentationService,
                     TypeChoisi.Prix_Detaille,
                     TypeChoisi.Edited_Pour_Client,
-                         -> {
+                        -> {
                         val relative_Tariff =
                             relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
