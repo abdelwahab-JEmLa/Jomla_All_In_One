@@ -27,6 +27,11 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
                 nomFun = "",
                 onDismissDropdown = onDismissDropdown
             )
+
+            DropDownItem_WhenItsAchatsFragment_2(
+                nomFun = "update_M8BonVent confirmeCommande_TimeTamp",
+                onDismissDropdown = onDismissDropdown
+            )
         }
     }
 }
