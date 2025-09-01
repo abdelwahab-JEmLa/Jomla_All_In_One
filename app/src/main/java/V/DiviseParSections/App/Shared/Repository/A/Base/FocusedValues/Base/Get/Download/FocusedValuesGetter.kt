@@ -47,7 +47,14 @@ data class ActiveCentralValues(
     val affiche_DeleteButtons: Boolean = false,
 
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
-    val active_Catalogue_Pour_NewAddedProduit: CataloguesCaegorie? = null,
+    val active_Catalogue_Pour_NewAddedProduit: CataloguesCaegorie? = CataloguesCaegorie(
+        keyID = "t1",
+        id = 1,
+        nom = "Confiserie",
+        premierCategorieId = 1755942577975,
+        position = 2,
+        couleur = Color(0xFFFF9800) // Orange for confectionery
+    ),
     val active_EtateDispoNonDifinieAuAddNew: Boolean = false,
 
     //-----------------Peride-------------------------------------------------------------------------------------------------------------------------
@@ -71,9 +78,9 @@ data class ActiveCentralValues(
     val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
 
     val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
-    val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode?= null,
+    val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode? = null,
 
-    val dialog_achats_ventPeriod: M14VentPeriode?= null,
+    val dialog_achats_ventPeriod: M14VentPeriode? = null,
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
@@ -135,16 +142,19 @@ class FocusedValuesGetter(
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
         val periods = repo14VentPeriode.datasValue
         if (periods.isEmpty()) return@derivedStateOf null
-        periods.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID } ?: periods.lastOrNull()
+        periods.find { it.keyID == currentActive_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
+            ?: periods.lastOrNull()
     }
 
     val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod by derivedStateOf {
-        val currentPeriod = currentActiveFocuced_M14VentPeriode ?: return@derivedStateOf emptyList<M8BonVent>()
+        val currentPeriod =
+            currentActiveFocuced_M14VentPeriode ?: return@derivedStateOf emptyList<M8BonVent>()
         repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
     }
 
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
-        val currentPeriod = currentActiveFocuced_M14VentPeriode ?: return@derivedStateOf emptyList<M10OperationVentCouleur>()
+        val currentPeriod = currentActiveFocuced_M14VentPeriode
+            ?: return@derivedStateOf emptyList<M10OperationVentCouleur>()
         repo10OperationVentCouleur.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
     }
 
@@ -154,9 +164,11 @@ class FocusedValuesGetter(
         parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode?.keyID ?: "null",
     )
 
-    private val _activeCentralValues = mutableStateOf(ActiveCentralValues(
-        active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode()
-    ))
+    private val _activeCentralValues = mutableStateOf(
+        ActiveCentralValues(
+            active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode()
+        )
+    )
     val active_Central_Values by derivedStateOf { _activeCentralValues.value }
 
     private fun getCurrentActiveVentPeriode(): M14VentPeriode? {
@@ -166,7 +178,8 @@ class FocusedValuesGetter(
             }
             val periods = repo14VentPeriode.datasValue
             if (periods.isEmpty()) return null
-            periods.find { it.keyID == currentAppCompt?.current_OnVent_M14VentPeriode_KeyID } ?: periods.lastOrNull()
+            periods.find { it.keyID == currentAppCompt?.current_OnVent_M14VentPeriode_KeyID }
+                ?: periods.lastOrNull()
         } catch (e: Exception) {
             null
         }
@@ -277,7 +290,8 @@ class FocusedValuesGetter(
 
     fun removePeriodFilter() {
         val currentValues = active_Central_Values
-        val updatedValues = currentValues.copy(active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode())
+        val updatedValues =
+            currentValues.copy(active_M14VentPeriode_AuFilterAchats = getCurrentActiveVentPeriode())
         update_activeCentralValues(updatedValues)
     }
 
@@ -356,7 +370,8 @@ class FocusedValuesGetter(
         repo2Client.datasValue.filter { client ->
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter {
-                    (it.parent_M2Client_KeyID == client.keyID && it.parent_M9AppCompt_KeyID == (currentActive_M9AppCompt?.keyID ?: ""))
+                    (it.parent_M2Client_KeyID == client.keyID && it.parent_M9AppCompt_KeyID == (currentActive_M9AppCompt?.keyID
+                        ?: ""))
                 }
                 .maxByOrNull { it.creationTimestamps }
 
@@ -425,7 +440,8 @@ class FocusedValuesGetter(
     val focused_M13TarificationInfos_Pour_Produit by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull { tariff ->
             tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                    tariff.parent_M1Produit_KeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
+                    tariff.parent_M1Produit_KeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID
+                ?: "")
         }
     }
 
@@ -443,12 +459,25 @@ class FocusedValuesGetter(
             val map = buildMap {
                 with(getter) {
                     put("onVentM2ClientInfos", activeOnVent_M2Client?.let { it.nom } ?: "null")
-                    put("onVentM8BonVent", activeOnVent_M8BonVent?.let { "${it.parent_M2Client_DebugInfos}/${it.etateActuellementEst}" } ?: "null")
-                    put("focused_M1ProduitInfos_Pour_PrixDifineur", focused_M1ProduitInfos_Pour_PrixDifineur?.let { it.nom + it.keyID } ?: "null")
-                    put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent", onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map { "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}" })
-                    put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit", focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })
+                    put(
+                        "onVentM8BonVent",
+                        activeOnVent_M8BonVent?.let { "${it.parent_M2Client_DebugInfos}/${it.etateActuellementEst}" }
+                            ?: "null")
+                    put(
+                        "focused_M1ProduitInfos_Pour_PrixDifineur",
+                        focused_M1ProduitInfos_Pour_PrixDifineur?.let { it.nom + it.keyID }
+                            ?: "null")
+                    put(
+                        "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
+                        onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map { "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}" })
+                    put(
+                        "focused_ListM10OpeVentCouleur_Par_PD_M1Produit",
+                        focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })
                     put("computedVisibleClientsMode", computedVisibleClientsMode.toString())
-                    put("isInTemporaryMode", active_Central_Values.isInTemporaryShowAllMode.toString())
+                    put(
+                        "isInTemporaryMode",
+                        active_Central_Values.isInTemporaryShowAllMode.toString()
+                    )
                 }
             }
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->

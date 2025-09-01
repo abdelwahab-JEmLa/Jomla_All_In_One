@@ -23,15 +23,16 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItem_WhenItsAchatsFragment_2(
+                nomFun = "update_M8BonVent confirmeCommande_TimeTamp",
+                onDismissDropdown = onDismissDropdown
+            )
+
             DropDownItem_WhenItsAchatsFragment_1(
                 nomFun = "",
                 onDismissDropdown = onDismissDropdown
             )
 
-            DropDownItem_WhenItsAchatsFragment_2(
-                nomFun = "update_M8BonVent confirmeCommande_TimeTamp",
-                onDismissDropdown = onDismissDropdown
-            )
         }
     }
 }
