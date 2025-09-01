@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -48,6 +49,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -65,8 +67,7 @@ fun AutrePrixsAffiche(
     nombreUnite: Int = 1,
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-) {             //<--
-//TODO(1): fait quer si Edited_Pour_Client de affiche un PourcentageProgressiveAdjustmentCard qui ajust le porcentage du tarriff progressive
+) {
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
@@ -119,6 +120,7 @@ fun AutrePrixsAffiche(
             typeTarification == TypeChoisi.Historique
 
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
+    val isProgressiveTariff = typeTarification == TypeChoisi.Edited_Pour_Client
 
     // Hide purchase price tariff if user is not admin
     if (isPurchasePriceTariff && !currentApp_Est_Admin) {
@@ -138,6 +140,28 @@ fun AutrePrixsAffiche(
 
     fun handelClick() {
         executeClickLogic()
+    }
+
+    // Function to update progressive percentage and recalculate price
+    fun updateProgressivePercentage(newPercentage: Int) {
+        val updatedProduit = produit.copy(
+            pourcentage_Prix_Progressive = newPercentage.coerceIn(0, 100)
+        )
+
+        // Update the product in the repository
+        viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+
+        // Recalculate the progressive price based on new percentage
+        val prixDetaille = latestTariffLocalData.prixCurrency // This should be base price
+        val prixVent = produit.prixVent
+        val priceDifference = prixDetaille - prixVent
+        val pourcentageProgressive1 = if (newPercentage == 50) 60 else newPercentage
+        val progressiveAdjustment = priceDifference * (pourcentageProgressive1 / 100.0)
+        val newPrice = prixVent + progressiveAdjustment
+
+        latestTariffLocalData = latestTariffLocalData.copy(
+            prixCurrency = newPrice
+        )
     }
 
     // Confirmation Dialog
@@ -170,7 +194,7 @@ fun AutrePrixsAffiche(
                 TextButton(
                     onClick = { showConfirmationDialog = false }
                 ) {
-                    Text("لا", color = MaterialTheme.colorScheme.secondary)
+                    Text("Ù„Ø§", color = MaterialTheme.colorScheme.secondary)
                 }
             }
         )
@@ -237,6 +261,52 @@ fun AutrePrixsAffiche(
                         couleurButton
                     }
 
+                    // Progressive percentage editor card for Edited_Pour_Client type
+                    if (isProgressiveTariff) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            Text(
+                                text = "${produit.pourcentage_Prix_Progressive}%",
+                                fontSize = 12.sp,
+                                color = typeTarification.couleur_Text,
+                                textAlign = TextAlign.Center
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive - 5)
+                                    },
+                                    modifier = Modifier.size(20.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Remove,
+                                        contentDescription = "Diminuer pourcentage",
+                                        tint = typeTarification.couleur_Text,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive + 5)
+                                    },
+                                    modifier = Modifier.size(20.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Add,
+                                        contentDescription = "Augmenter pourcentage",
+                                        tint = typeTarification.couleur_Text,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     if (isEditingPurchasePrice && isPurchasePriceTariff) {
                         OutlinedTextField(
                             modifier = Modifier
@@ -275,6 +345,7 @@ fun AutrePrixsAffiche(
                             }
                         }
                     }
+
                     // Handle selling price editing
                     else if (isEditingPrice && isEditableTariff) {
                         val nombreUniteInt = produit.nombreUniteInt
@@ -412,7 +483,6 @@ fun AutrePrixsAffiche(
                         Icon(
                             imageVector = Icons.Filled.Remove,
                             contentDescription = "Diminuer le prix d'achat",
-                            tint = Color.Black
                         )
                     }
                 }
