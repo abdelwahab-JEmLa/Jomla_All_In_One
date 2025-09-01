@@ -1,11 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -73,9 +71,6 @@ fun Floating_Separated_FragMap_Button_5(
     )
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
-    val currentVisibleClientsMode = currentValues.visibleClientsNow
-
-    // Get current ModeEditesProduit state
     val currentModeEditesProduit = currentValues.active_ModeEditesProduit
     val isModeEditeActive = currentModeEditesProduit != null
 
@@ -88,12 +83,6 @@ fun Floating_Separated_FragMap_Button_5(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 250f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
     var showDropdown by remember { mutableStateOf(false) }
-
-    val catalogues = B4CatalogueCategoriesRepository()
-
-    val activeCatalogue = catalogues.find {
-        it.keyID == (currentValues.active_Catalogue_Pour_NewAddedProduit?.keyID ?: 0)
-    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -119,7 +108,7 @@ fun Floating_Separated_FragMap_Button_5(
                         text = when (currentModeEditesProduit) {
                             ActiveCentralValues.ModeEditesProduit.PrixHanled -> "Prix Mode"
                             ActiveCentralValues.ModeEditesProduit.Standart -> "Standard"
-                            null -> activeCatalogue?.nom ?: "RRR"
+                            null -> "No Mode"
                         },
                         color = Color.White,
                         modifier = Modifier
@@ -129,7 +118,7 @@ fun Floating_Separated_FragMap_Button_5(
                                         currentModeEditesProduit.couleur.copy(alpha = 0.8f)
                                     ActiveCentralValues.ModeEditesProduit.Standart ->
                                         currentModeEditesProduit.couleur.copy(alpha = 0.8f)
-                                    null -> (activeCatalogue?.couleur ?: Color.Gray).copy(alpha = 0.8f)
+                                    null -> Color.Gray.copy(alpha = 0.8f)
                                 },
                                 shape = RoundedCornerShape(4.dp)
                             )
@@ -141,16 +130,19 @@ fun Floating_Separated_FragMap_Button_5(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
                             set(
-                                value = currentModeEditesProduit ?: activeCatalogue,
+                                value = currentModeEditesProduit ?: "NoMode",
                                 key = SemanticsPropertyKey("activeMode")
                             )
                         }
                         .size(48.dp),
                     onClick = { showDropdown = true },
-                    containerColor = if (updatedButtonState.its_Active)
-                        updatedButtonState.colors.second
-                    else
-                        updatedButtonState.colors.first
+                    containerColor = when (currentModeEditesProduit) {
+                        ActiveCentralValues.ModeEditesProduit.PrixHanled ->
+                            currentModeEditesProduit.couleur
+                        ActiveCentralValues.ModeEditesProduit.Standart ->
+                            currentModeEditesProduit.couleur
+                        null -> Color.Gray
+                    }
                 ) {
                     Icon(
                         imageVector = if (updatedButtonState.its_Active)
@@ -170,7 +162,7 @@ fun Floating_Separated_FragMap_Button_5(
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    // ModeEditesProduit options
+                    // ModeEditesProduit Standard option
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -192,6 +184,7 @@ fun Floating_Separated_FragMap_Button_5(
                         }
                     )
 
+                    // ModeEditesProduit Prix option
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -213,32 +206,19 @@ fun Floating_Separated_FragMap_Button_5(
                         }
                     )
 
-                    // Separator
-                    if (catalogues.isNotEmpty()) {
-                        androidx.compose.material3.HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-
-                    // Catalog options
-                    catalogues.forEach { catalogue ->
-                        val newValues = currentValues.copy(
-                            active_Catalogue_Pour_NewAddedProduit = catalogue,
-                            active_ModeEditesProduit = null // Reset mode when selecting catalogue
-                        )
-
+                    // Clear mode option
+                    if (currentModeEditesProduit != null) {
                         DropdownMenuItem(
-                            modifier = Modifier.semantics(mergeDescendants = true) {
-                                set(value = newValues, key = SemanticsPropertyKey("newValues"))
-                            },
                             text = {
                                 Text(
-                                    text = catalogue.nom,
-                                    color = if (activeCatalogue?.id == catalogue.id && currentModeEditesProduit == null)
-                                        catalogue.couleur else Color.Black
+                                    text = "Clear Mode",
+                                    color = Color.Black
                                 )
                             },
                             onClick = {
+                                val newValues = currentValues.copy(
+                                    active_ModeEditesProduit = null
+                                )
                                 focusedValuesGetter.update_activeCentralValues(newValues)
                                 showDropdown = false
                             }
