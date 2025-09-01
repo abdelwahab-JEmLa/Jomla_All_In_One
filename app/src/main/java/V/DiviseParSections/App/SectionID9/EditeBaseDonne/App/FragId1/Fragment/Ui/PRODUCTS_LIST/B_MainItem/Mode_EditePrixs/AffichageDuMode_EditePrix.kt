@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Mode_EditePrixs
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.PriceAndUnitSection
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -125,6 +127,18 @@ fun AffichageDuMode_EditePrix(
                     }
                 }
             }
+
+            // Add spacing between header and content
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // TODO(1): ajout au affichage - FIXED: Added PriceAndUnitSection
+            PriceAndUnitSection(
+                produit = relative_produit,
+                updateProduct = updateProduct
+            )
+
+            // Add spacing between PriceAndUnitSection and TariffsButtons
+            Spacer(modifier = Modifier.height(12.dp))
 
             TariffsButtonsSec7ID2(
                 lancedDepuitAffiche= ItsLancedDepuit.EditeBaseDonne(relative_produit),

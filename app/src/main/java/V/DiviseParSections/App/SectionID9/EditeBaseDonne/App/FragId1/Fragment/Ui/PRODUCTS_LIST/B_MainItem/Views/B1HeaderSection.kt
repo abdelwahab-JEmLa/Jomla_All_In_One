@@ -136,7 +136,9 @@ fun HeaderSection(
                 }
             }
 
-            Row(
+            Row(                 //<--
+            //TODO(2.C Relative Au Todo(1): 
+                    //... ca 
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(paddingDefaulte),

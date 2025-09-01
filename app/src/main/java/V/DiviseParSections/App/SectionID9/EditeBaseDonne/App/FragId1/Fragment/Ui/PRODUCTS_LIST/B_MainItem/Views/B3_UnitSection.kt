@@ -6,12 +6,12 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,21 +38,23 @@ fun PriceAndUnitSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp), // Reduced from 16dp
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // Reduced from 4dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(12.dp), // Reduced from 16dp
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced from 12dp
         ) {
             // First row: Price editors
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp) // Replaced individual Spacers
             ) {
                 if (produit.nombreUniteInt > 0 && produit.clientPrixVentUnite > 0) {
                     PriceEditor(
@@ -62,8 +64,6 @@ fun PriceAndUnitSection(
                         textColor = Color.Gray,
                         modifier = Modifier.weight(1f)
                     )
-
-                    Spacer(modifier = Modifier.width(12.dp))
                 }
 
                 if (produit.nombreUniteInt > 0) {
@@ -76,8 +76,6 @@ fun PriceAndUnitSection(
                         textColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
                     )
-
-                    Spacer(modifier = Modifier.width(12.dp))
                 }
 
                 // Unit Editor
@@ -91,12 +89,11 @@ fun PriceAndUnitSection(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
+            // Second row: Compact layout
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp) // Reduced spacing
             ) {
                 // Quantité Boîte par Carton Editor
                 UnitEditor(
@@ -132,24 +129,25 @@ private fun QuantityRepresentationDropdown(
 
     Column(modifier = modifier) {
         Text(
-            text = "startup Affiche Par->",
-            style = MaterialTheme.typography.labelMedium,
+            text = "Affiche Par",  // Shortened label
+            style = MaterialTheme.typography.labelSmall, // Smaller text
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp)) // Reduced from 4dp
 
         OutlinedButton(
             onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp) // Compact button padding
         ) {
             Text(
                 text = when (currentValue) {
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> "Par Boîte"
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> "Par Carton"
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> "Boîte"
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> "Carton"
                 },
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodySmall // Smaller text
             )
         }
 
@@ -164,7 +162,8 @@ private fun QuantityRepresentationDropdown(
                             text = when (option) {
                                 M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> "Par Boîte"
                                 M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> "Par Carton"
-                            }
+                            },
+                            style = MaterialTheme.typography.bodySmall
                         )
                     },
                     onClick = {
