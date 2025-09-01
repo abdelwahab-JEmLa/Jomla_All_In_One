@@ -262,50 +262,8 @@ fun AutrePrixsAffiche(
                     }
 
                     // Progressive percentage editor card for Edited_Pour_Client type
-                    if (isProgressiveTariff) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Text(
-                                text = "${produit.pourcentage_Prix_Progressive}%",
-                                fontSize = 12.sp,
-                                color = typeTarification.couleur_Text,
-                                textAlign = TextAlign.Center
-                            )
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive - 5)
-                                    },
-                                    modifier = Modifier.size(20.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Remove,
-                                        contentDescription = "Diminuer pourcentage",
-                                        tint = typeTarification.couleur_Text,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive + 5)
-                                    },
-                                    modifier = Modifier.size(20.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Add,
-                                        contentDescription = "Augmenter pourcentage",
-                                        tint = typeTarification.couleur_Text,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    ProgressivepercentageAdjustmentButtons(isProgressiveTariff, produit, typeTarification)    //<--
+                    //TODO(1): fait que ca soit comme BenificeAdjustmentButtons un card separe
 
                     if (isEditingPurchasePrice && isPurchasePriceTariff) {
                         OutlinedTextField(
@@ -575,6 +533,59 @@ fun AutrePrixsAffiche(
                     contentDescription = null,
                     tint = iconColor
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProgressivepercentageAdjustmentButtons(
+    isProgressiveTariff: Boolean,
+    produit: ArticlesBasesStatsTable,
+    typeTarification: TypeChoisi
+) {
+    if (isProgressiveTariff) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(4.dp)
+        ) {
+            Text(
+                text = "${produit.pourcentage_Prix_Progressive}%",
+                fontSize = 12.sp,
+                color = typeTarification.couleur_Text,
+                textAlign = TextAlign.Center
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive - 5)     //->
+                        //TODO(FIXME):Fix erreur Unresolved reference: updateProgressivePercentage
+                    },
+                    modifier = Modifier.size(20.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Remove,
+                        contentDescription = "Diminuer pourcentage",
+                        tint = typeTarification.couleur_Text,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        updateProgressivePercentage(produit.pourcentage_Prix_Progressive + 5)
+                    },
+                    modifier = Modifier.size(20.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Augmenter pourcentage",
+                        tint = typeTarification.couleur_Text,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
             }
         }
     }
