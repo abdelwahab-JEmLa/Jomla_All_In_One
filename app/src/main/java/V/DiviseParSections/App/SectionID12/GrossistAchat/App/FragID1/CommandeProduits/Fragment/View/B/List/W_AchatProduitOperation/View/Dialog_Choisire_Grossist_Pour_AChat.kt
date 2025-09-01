@@ -52,7 +52,7 @@ import com.google.firebase.database.ValueEventListener
 import org.koin.compose.koinInject
 
 @Composable
-fun Dialog_Choisire_Grossist_Pour_filter(
+fun Dialog_Choisire_Grossist_Pour_AChat(
     titel: String = "Choisir un Grossiste",
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList(),
@@ -60,6 +60,7 @@ fun Dialog_Choisire_Grossist_Pour_filter(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onDismiss: (M15Grossist?) -> Unit
 ) {
+    // FIXED: Now properly updates achat grossist instead of filtering
     val datasValue_repo11AchatOperation =
         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
@@ -319,7 +320,7 @@ fun Dialog_Choisire_Grossist_Pour_filter(
                         }
                     }
 
-                    // FIXED: Show all grossists regardless of period filter
+                    // FIXED: Show all grossists and pass them to onDismiss instead of adding filter
                     items(grossistsWithPurchaseCount) { (grossist, totalPurchaseCount, activePeriodPurchaseCount) ->
                         GrossistItem(
                             list_M11AchatOperation = list_M11AchatOperation,
@@ -330,8 +331,8 @@ fun Dialog_Choisire_Grossist_Pour_filter(
                             activePeriodId = activePeriodId,
                             onSelect = {
                                 focusManager.clearFocus()
-                                focusedValuesGetter.addGrossistFilter(grossist)
-                                onDismiss(null)
+                                // FIXED: Pass selected grossist to onDismiss instead of adding filter
+                                onDismiss(grossist)
                             }
                         )
                     }

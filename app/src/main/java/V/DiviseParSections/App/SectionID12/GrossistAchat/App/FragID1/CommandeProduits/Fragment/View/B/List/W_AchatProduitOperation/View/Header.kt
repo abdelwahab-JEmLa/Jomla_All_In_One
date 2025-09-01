@@ -117,7 +117,7 @@ fun Header(
     }
 
     if (showDialog) {
-        Dialog_Choisire_Grossist_Pour_filter(
+        Dialog_Choisire_Grossist_Pour_AChat(
             viewModel = viewModel,
             list_M11AchatOperation = list_M11AchatOperation,
         ) { grossistSelected ->
