@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -38,82 +36,67 @@ fun PriceAndUnitSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp), // Reduced from 16dp
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // Reduced from 4dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(
+        // Single Row layout - all elements in one row
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp), // Reduced from 16dp
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced from 12dp
+                .padding(6.dp), // Minimal padding
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp) // Minimal spacing
         ) {
-            // First row: Price editors
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp) // Replaced individual Spacers
-            ) {
-                if (produit.nombreUniteInt > 0 && produit.clientPrixVentUnite > 0) {
-                    PriceEditor(
-                        currentPrice = produit.clientPrixVentUnite * produit.nombreUniteInt,
-                        label = "تخرج",
-                        onPriceUpdate = { newClientPrixUnite -> },
-                        textColor = Color.Gray,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                if (produit.nombreUniteInt > 0) {
-                    PriceEditor(
-                        currentPrice = produit.clientPrixVentUnite,
-                        label = "clientPrixVentUnite",
-                        onPriceUpdate = { newClientPrixUnite ->
-                            updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
-                        },
-                        textColor = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                // Unit Editor
-                UnitEditor(
-                    currentUnits = produit.nombreUniteInt,
-                    label = "Unités",
-                    onUnitsUpdate = { newUnits ->
-                        updateProduct(produit.copy(nombreUniteInt = newUnits))
-                    },
+            if (produit.nombreUniteInt > 0 && produit.clientPrixVentUnite > 0) {
+                PriceEditor(
+                    currentPrice = produit.clientPrixVentUnite * produit.nombreUniteInt,
+                    label = "تخرج",
+                    onPriceUpdate = { newClientPrixUnite -> },
+                    textColor = Color.Gray,
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            // Second row: Compact layout
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp) // Reduced spacing
-            ) {
-                // Quantité Boîte par Carton Editor
-                UnitEditor(
-                    currentUnits = produit.quantite_Boit_Par_Carton,
-                    label = "Qté/Carton",
-                    onUnitsUpdate = { newQuantity ->
-                        updateProduct(produit.copy(quantite_Boit_Par_Carton = newQuantity))
+            if (produit.nombreUniteInt > 0) {
+                PriceEditor(
+                    currentPrice = produit.clientPrixVentUnite,
+                    label = "Prix",
+                    onPriceUpdate = { newClientPrixUnite ->
+                        updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
                     },
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Quantity Representation Dropdown
-                QuantityRepresentationDropdown(
-                    currentValue = produit.setIN_Vent_Its_Quantity_Represent,
-                    onValueChange = { newValue ->
-                        updateProduct(produit.copy(setIN_Vent_Its_Quantity_Represent = newValue))
-                    },
+                    textColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
             }
+
+            UnitEditor(
+                currentUnits = produit.nombreUniteInt,
+                label = "U",
+                onUnitsUpdate = { newUnits ->
+                    updateProduct(produit.copy(nombreUniteInt = newUnits))
+                },
+                modifier = Modifier.weight(1f)
+            )
+
+            UnitEditor(
+                currentUnits = produit.quantite_Boit_Par_Carton,
+                label = "Qté/C",
+                onUnitsUpdate = { newQuantity ->
+                    updateProduct(produit.copy(quantite_Boit_Par_Carton = newQuantity))
+                },
+                modifier = Modifier.weight(1f)
+            )
+
+            QuantityRepresentationDropdown(
+                currentValue = produit.setIN_Vent_Its_Quantity_Represent,
+                onValueChange = { newValue ->
+                    updateProduct(produit.copy(setIN_Vent_Its_Quantity_Represent = newValue))
+                },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -129,25 +112,23 @@ private fun QuantityRepresentationDropdown(
 
     Column(modifier = modifier) {
         Text(
-            text = "Affiche Par",  // Shortened label
-            style = MaterialTheme.typography.labelSmall, // Smaller text
+            text = "Mode",
+            style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.height(2.dp)) // Reduced from 4dp
-
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp) // Compact button padding
+            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
         ) {
             Text(
                 text = when (currentValue) {
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> "Boîte"
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> "Carton"
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> "B"
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> "C"
                 },
-                style = MaterialTheme.typography.bodySmall // Smaller text
+                style = MaterialTheme.typography.labelSmall
             )
         }
 

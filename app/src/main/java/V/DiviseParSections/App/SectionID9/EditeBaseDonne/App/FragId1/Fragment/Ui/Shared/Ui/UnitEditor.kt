@@ -64,9 +64,9 @@ fun UnitEditor(
                     onValueChange = { newValue ->
                         tempText = newValue.filter { it.isDigit() }
                     },
-                    label = { Text("Ancien: $currentUnits unités") },
-                    placeholder = { Text("Nouvelles unités") },
-                    suffix = { Text("unités") },
+                    label = { Text("Old: $currentUnits U") },
+                    placeholder = { Text("New U") },
+                    suffix = { Text("U") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
@@ -95,7 +95,7 @@ fun UnitEditor(
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = "$currentUnits unités",
+                            text = "$currentUnits U",
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color.Red,
                             fontWeight = FontWeight.SemiBold,
