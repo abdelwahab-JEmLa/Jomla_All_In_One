@@ -139,11 +139,14 @@ fun ProductItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
+// FIXED: Updated the AffichageDuMode_EditePrix call in ProductItem function
+
         when (itsLancedDepuit) {
             is ItsLancedDepuit.EditeBaseDonne -> {
                 AffichageDuMode_EditePrix(
                     relative_produit = produit,
                     updateProduct = ::updateProduct,
+                    onShowDeleteDialogChange = { showDeleteDialog = it }, // FIXED: Added delete dialog parameter
                     paddingDefaulte = paddingDefaulte
                 )
             }

@@ -5,8 +5,10 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +42,7 @@ fun AffichageDuMode_EditePrix(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
     relative_produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    onShowDeleteDialogChange: (Boolean) -> Unit, // FIXED: Added delete dialog parameter
     paddingDefaulte: Dp,
 ) {
     Surface(
@@ -90,9 +96,8 @@ fun AffichageDuMode_EditePrix(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    // Product Name (Primary) - Clickable
+                    // Product Name (Primary) - Non-clickable in edit mode
                     Surface(
-                        onClick = {  },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
@@ -128,10 +133,68 @@ fun AffichageDuMode_EditePrix(
                 }
             }
 
+            // FIXED TODO(1): Added availability status and delete controls
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingDefaulte),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Delete button (on the right)
+                Surface(
+                    onClick = { onShowDeleteDialogChange(true) },
+                    modifier = Modifier.size(32.dp),
+                    shape = RoundedCornerShape(paddingDefaulte),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shadowElevation = 2.dp
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Supprimer le produit",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+                // Availability status button (on the left - priority)
+                Surface(
+                    onClick = {
+                        val updatedProduct = relative_produit.toggleDisponibilityEtates()
+                        updateProduct(updatedProduct)
+                    },
+                    modifier = Modifier.weight(1f),
+                    color = when (relative_produit.disponibilityEtates) {
+                        DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
+                        DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
+                        DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    shadowElevation = 2.dp
+                ) {
+                    Text(
+                        text = relative_produit.disponibilityEtates.nomArabe,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = when (relative_produit.disponibilityEtates) {
+                            DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
+                            DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
+                            DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                        },
+                        modifier = Modifier.padding(paddingDefaulte),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
             // Add spacing between header and content
             Spacer(modifier = Modifier.height(12.dp))
 
-            // TODO(1): ajout au affichage - FIXED: Added PriceAndUnitSection
+            // Price and Unit Section
             PriceAndUnitSection(
                 produit = relative_produit,
                 updateProduct = updateProduct

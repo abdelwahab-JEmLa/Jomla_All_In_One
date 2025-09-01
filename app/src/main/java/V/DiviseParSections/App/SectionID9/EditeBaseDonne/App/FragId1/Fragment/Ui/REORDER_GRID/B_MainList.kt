@@ -42,42 +42,7 @@ internal fun MainList(
         categoriesCompoRepository.tigerDataRecompose,
         catalogues
     ) {
-        val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-
-        // Process catalogues in order
-        catalogues.forEach { catalogue ->
-            val categoriesForCatalogue = currentCategories
-                .filter { it.catalogueParentId == catalogue.id }
-                .sortedWith(
-                    compareBy<CategoriesTabelle> { it.positionDouble }
-                        .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
-                )
-
-            if (categoriesForCatalogue.isNotEmpty()) {
-                grouped[catalogue] = categoriesForCatalogue
-            }
-        }
-
-        val orphanCategories = currentCategories
-            .filter { category ->
-                category.catalogueParentId == 0L ||
-                        !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
-            }
-            .sortedWith(
-                compareBy<CategoriesTabelle> { it.positionDouble }
-                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
-            )
-
-        if (orphanCategories.isNotEmpty()) {
-            val othersCatalogue = CataloguesCaegorie(
-                id = 0,
-                nom = "Autres",
-                premierCategorieId = 0
-            )
-            grouped[othersCatalogue] = orphanCategories
-        }
-
-        grouped
+        groupCategoriesByCatalogue(currentCategories, catalogues)
     }
 
     Column(
@@ -115,4 +80,52 @@ internal fun MainList(
             }
         }
     }
+}
+
+/**
+ * Groups categories by their parent catalogue.
+ * This function handles the logic for organizing categories under their respective catalogues,
+ * including proper sorting and handling of orphan categories.
+ */
+private fun groupCategoriesByCatalogue(
+    currentCategories: List<CategoriesTabelle>,
+    catalogues: List<CataloguesCaegorie>
+): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
+    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+    // Process catalogues in order
+    catalogues.forEach { catalogue ->
+        val categoriesForCatalogue = currentCategories
+            .filter { it.catalogueParentId == catalogue.id }
+            .sortedWith(
+                compareBy<CategoriesTabelle> { it.positionDouble }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+            )
+
+        if (categoriesForCatalogue.isNotEmpty()) {
+            grouped[catalogue] = categoriesForCatalogue
+        }
+    }
+
+    // Handle orphan categories (categories without a valid catalogue parent)
+    val orphanCategories = currentCategories
+        .filter { category ->
+            category.catalogueParentId == 0L ||
+                    !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
+        }
+        .sortedWith(
+            compareBy<CategoriesTabelle> { it.positionDouble }
+                .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+        )
+
+    if (orphanCategories.isNotEmpty()) {
+        val othersCatalogue = CataloguesCaegorie(
+            id = 0,
+            nom = "Autres",
+            premierCategorieId = 0
+        )
+        grouped[othersCatalogue] = orphanCategories
+    }
+
+    return grouped
 }

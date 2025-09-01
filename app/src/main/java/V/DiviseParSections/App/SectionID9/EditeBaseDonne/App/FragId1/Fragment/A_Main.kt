@@ -11,10 +11,14 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Se
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.EditeCategoriesMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.EditeInfosMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -155,9 +159,10 @@ fun EditeBaseDonneMainScreenIdS9(
                 filterState.enableCategoryGrouping -> {
                     when (filterState.sortOrder) {
                         SortOrder.CATEGORY_GROUPED -> {
-                            // Sort products within categories by positionDonSonCesFrereCategorieProduits
-                            applyCategoryGroupedSortingWithPosition(
+                            // Use category grouped sorting with catalogue logic
+                            applyCategoryGroupedSortingWithCatalogueLogic(
                                 filtered,
+                                categoriesList,
                                 groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts
                             )
                         }
@@ -262,7 +267,10 @@ private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesSta
     return if (contains(product)) this - product else this + product
 }
 
-// NEW: Enhanced sorting function that considers product position within categories
+/**
+ * Applies sorting to products with consideration for category position.
+ * This function handles different sort orders while maintaining category-aware positioning.
+ */
 private fun applySortOrderWithCategoryPosition(
     products: List<ArticlesBasesStatsTable>,
     sortOrder: SortOrder
@@ -275,21 +283,39 @@ private fun applySortOrderWithCategoryPosition(
         SortOrder.PRIX_ACHAT_TIME_DESC -> products.sortedByDescending { it.prixAchatDernierTimeTempUpdate }
         SortOrder.PRIX_ACHAT_TIME_ASC -> products.sortedBy { it.prixAchatDernierTimeTempUpdate }
         SortOrder.CATEGORY_GROUPED -> {
-            // Group by category, then sort within each category by position
-            products.groupBy { it.idParentCategorie }
-                .toSortedMap(nullsFirst())
-                .flatMap { (_, categoryProducts) ->
-                    categoryProducts.sortedWith(
-                        compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
-                            .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
-                            .thenBy { it.id }
-                    )
-                }
+            // This case should not happen as it's handled separately above
+            applyCategoryGroupedSorting(products)
         }
     }
 }
 
-// NEW: Function to apply category grouped sorting with proper position handling
+/**
+ * Applies category-grouped sorting with proper position handling.
+ * This function groups products by category and sorts them within each category by their position.
+ *
+ * @param products List of products to sort
+ * @return List of products sorted by category and position within category
+ */
+private fun applyCategoryGroupedSorting(products: List<ArticlesBasesStatsTable>): List<ArticlesBasesStatsTable> {
+    return products.groupBy { it.idParentCategorie }
+        .toSortedMap(nullsFirst())
+        .flatMap { (_, categoryProducts) ->
+            categoryProducts.sortedWith(
+                compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+                    .thenBy { it.id }
+            )
+        }
+}
+
+/**
+ * Applies category grouped sorting with position handling using pre-sorted category grouped products.
+ * This function efficiently applies filtering to pre-sorted products and handles any remaining products.
+ *
+ * @param filteredProducts Products that have passed through filters
+ * @param categoryGroupedProducts Pre-sorted products grouped by category
+ * @return List of products maintaining category grouping and proper positioning
+ */
 private fun applyCategoryGroupedSortingWithPosition(
     filteredProducts: List<ArticlesBasesStatsTable>,
     categoryGroupedProducts: List<ArticlesBasesStatsTable>
@@ -306,14 +332,127 @@ private fun applyCategoryGroupedSortingWithPosition(
     // Sort these by category and position as well
     val remainingProducts = filteredProducts.filterNot { product ->
         categoryGroupedProducts.contains(product)
-    }.groupBy { it.idParentCategorie }
-        .toSortedMap(nullsFirst())
-        .flatMap { (_, categoryProducts) ->
-            categoryProducts.sortedWith(
-                compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
-                    .thenByDescending { it.creationTimestamp }
-            )
+    }
+
+    // Apply category grouped sorting to remaining products
+    val sortedRemainingProducts = if (remainingProducts.isNotEmpty()) {
+        applyCategoryGroupedSorting(remainingProducts)
+    } else {
+        emptyList()
+    }
+
+    return sortedFilteredFromGrouped + sortedRemainingProducts
+}
+
+/**
+ * Applies category grouped sorting using the catalogue-based logic from MainList.
+ * This function groups products by their catalogue hierarchy first, then by category,
+ * maintaining proper sorting within each category.
+ *
+ * @param filteredProducts Products that have passed through filters
+ * @param currentCategories List of all available categories
+ * @param categoryGroupedProducts Pre-sorted products grouped by category (fallback)
+ * @return List of products sorted by catalogue -> category -> position
+ */
+private fun applyCategoryGroupedSortingWithCatalogueLogic(
+    filteredProducts: List<ArticlesBasesStatsTable>,
+    currentCategories: List<CategoriesTabelle>,
+    categoryGroupedProducts: List<ArticlesBasesStatsTable>
+): List<ArticlesBasesStatsTable> {
+    val catalogues = B4CatalogueCategoriesRepository()
+
+    // Group categories by catalogue using the same logic as MainList
+    val categoriesByCatalogue = groupCategoriesByCatalogue(currentCategories, catalogues)
+
+    // Create a map of products by category for quick lookup
+    val productsByCategory = filteredProducts.groupBy { it.idParentCategorie ?: 0L }
+
+    val sortedProducts = mutableListOf<ArticlesBasesStatsTable>()
+
+    // Process each catalogue in order
+    categoriesByCatalogue.forEach { (catalogue, categories) ->
+        val shouldShowCatalogue = if (M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+            catalogue.id != 4L
+        } else {
+            true
         }
 
-    return sortedFilteredFromGrouped + remainingProducts
+        if (shouldShowCatalogue) {
+            // Process categories within this catalogue
+            categories.forEach { category ->
+                val productsInCategory = productsByCategory[category.id] ?: emptyList()
+
+                // Sort products within category by position
+                val sortedProductsInCategory = productsInCategory.sortedWith(
+                    compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                        .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+                        .thenBy { it.id }
+                )
+
+                sortedProducts.addAll(sortedProductsInCategory)
+            }
+        }
+    }
+
+    // Handle any remaining products that weren't processed (fallback)
+    val processedProductIds = sortedProducts.map { it.id }.toSet()
+    val remainingProducts = filteredProducts.filterNot { processedProductIds.contains(it.id) }
+
+    if (remainingProducts.isNotEmpty()) {
+        // Use fallback sorting for remaining products
+        val fallbackSorted = applyCategoryGroupedSortingWithPosition(remainingProducts, categoryGroupedProducts)
+        sortedProducts.addAll(fallbackSorted)
+    }
+
+    return sortedProducts
+}
+
+/**
+ * Groups categories by their parent catalogue.
+ * This function handles the logic for organizing categories under their respective catalogues,
+ * including proper sorting and handling of orphan categories.
+ *
+ * Extracted from MainList.kt to maintain consistency across the application.
+ */
+private fun groupCategoriesByCatalogue(
+    currentCategories: List<CategoriesTabelle>,
+    catalogues: List<CataloguesCaegorie>
+): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
+    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+    // Process catalogues in order
+    catalogues.forEach { catalogue ->
+        val categoriesForCatalogue = currentCategories
+            .filter { it.catalogueParentId == catalogue.id }
+            .sortedWith(
+                compareBy<CategoriesTabelle> { it.positionDouble }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+            )
+
+        if (categoriesForCatalogue.isNotEmpty()) {
+            grouped[catalogue] = categoriesForCatalogue
+        }
+    }
+
+    // Handle orphan categories (categories without a valid catalogue parent)
+    val orphanCategories = currentCategories
+        .filter { category ->
+            category.catalogueParentId == 0L ||
+                    !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
+        }
+        .sortedWith(
+            compareBy<CategoriesTabelle> { it.positionDouble }
+                .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+        )
+
+    if (orphanCategories.isNotEmpty()) {
+        val othersCatalogue = CataloguesCaegorie(
+            id = 0,
+            nom = "Autres",
+            premierCategorieId = 0
+        )
+        grouped[othersCatalogue] = orphanCategories
+    }
+
+    return grouped
 }
