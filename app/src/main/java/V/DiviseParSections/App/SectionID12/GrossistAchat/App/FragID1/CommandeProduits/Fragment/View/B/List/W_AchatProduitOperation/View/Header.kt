@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.W_AchatProduitOperation.View
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
@@ -118,7 +117,7 @@ fun Header(
     }
 
     if (showDialog) {
-        Dialog_Choisire_Grossist_Modularized(
+        Dialog_Choisire_Grossist_Pour_filter(
             viewModel = viewModel,
             list_M11AchatOperation = list_M11AchatOperation,
         ) { grossistSelected ->
