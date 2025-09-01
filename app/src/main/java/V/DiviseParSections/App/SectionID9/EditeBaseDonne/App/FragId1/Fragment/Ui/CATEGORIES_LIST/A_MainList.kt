@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,26 +38,17 @@ fun EditeCategoriesMainList(
         categoriesListLocal.associateBy { it.id }
     }
 
-    val groupedProducts = remember(produitList, categoriesListLocal) {
-        produitList.groupBy { it.idParentCategorie ?: 0L }
-            .toList().sortedBy { (id, _) ->
-                if (id == 0L) Int.MIN_VALUE else categoryMap[id]?.position ?: Int.MIN_VALUE
-            }.toMap()
-    }
-
     val catalogues = remember {
         B4CatalogueCategoriesRepository().sortedBy { it.position }
     }
 
+    // Use the catalogue-based grouping logic
     val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
-        val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-        catalogues.forEach { catalogue ->
-            val categoriesInCatalogue = categoriesListLocal.filter {
-                it.catalogueParentId == catalogue.id.toLong()
-            }
-            grouped[catalogue] = categoriesInCatalogue.sortedBy { it.position }
-        }
-        grouped
+        groupCategoriesByCatalogue(categoriesListLocal, catalogues)
+    }
+
+    val groupedProducts = remember(produitList, categoriesListLocal) {
+        produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
     val availableCategories = remember(produitList) {
@@ -79,6 +71,7 @@ fun EditeCategoriesMainList(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Products without category
             if (productsWithoutCategory.isNotEmpty()) {
                 item(key = "no_category_header_top") {
                     CatalogueHeader(
@@ -104,36 +97,44 @@ fun EditeCategoriesMainList(
                 )
             }
 
-            catalogues.forEachIndexed { catalogueIndex, catalogue ->
-                val categoriesInCatalogue = categoriesByCatalogue[catalogue] ?: emptyList()
-
-                item(key = "catalogue_header_${catalogue.id}_${catalogueIndex}") {
-                    CatalogueHeader(catalogue = catalogue)
+            // Process catalogues using the grouped structure
+            categoriesByCatalogue.forEach { (catalogue, categoriesInCatalogue) ->
+                val shouldShowCatalogue = if (M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+                    catalogue.id != 4L
+                } else {
+                    true
                 }
 
-                categoriesInCatalogue.forEachIndexed { categoryIndex, category ->
-                    val productsInCategory = groupedProducts[category.id] ?: emptyList()
+                if (shouldShowCatalogue) {
+                    item(key = "catalogue_header_${catalogue.id}") {
+                        CatalogueHeader(catalogue = catalogue)
+                    }
 
-                    if (productsInCategory.isNotEmpty()) {
-                        categorieSection(
-                            keyPrefix = "catalogue_${catalogue.id}_category_${category.id}_${categoryIndex}",
-                            viewModel = viewModel,
-                            groupedProducts = mapOf(category.id to productsInCategory),
-                            availableCategories = availableCategories,
-                            onProductCategoryChanged = onProductCategoryChanged,
-                            categoryMap = categoryMap,
-                            selectedProducts = selectedProducts,
-                            onProductSelectionToggle = onProductSelectionToggle,
-                            showBulkMoveDialog = showBulkMoveDialog,
-                            onShowBulkMoveDialog = onShowBulkMoveDialog,
-                        )
+                    categoriesInCatalogue.forEachIndexed { categoryIndex, category ->
+                        val productsInCategory = groupedProducts[category.id] ?: emptyList()
+
+                        if (productsInCategory.isNotEmpty()) {
+                            categorieSection(
+                                keyPrefix = "catalogue_${catalogue.id}_category_${category.id}_${categoryIndex}",
+                                viewModel = viewModel,
+                                groupedProducts = mapOf(category.id to productsInCategory),
+                                availableCategories = availableCategories,
+                                onProductCategoryChanged = onProductCategoryChanged,
+                                categoryMap = categoryMap,
+                                selectedProducts = selectedProducts,
+                                onProductSelectionToggle = onProductSelectionToggle,
+                                showBulkMoveDialog = showBulkMoveDialog,
+                                onShowBulkMoveDialog = onShowBulkMoveDialog,
+                            )
+                        }
                     }
                 }
             }
 
+            // Handle any remaining uncategorized products that don't belong to any catalogue
+            val processedCategoryIds = categoriesByCatalogue.values.flatten().map { it.id }.toSet()
             val uncategorizedProducts = groupedProducts.filterKeys { categoryId ->
-                categoryId != 0L && !categoriesByCatalogue.values.flatten()
-                    .any { it.id == categoryId }
+                categoryId != 0L && !processedCategoryIds.contains(categoryId)
             }
 
             if (uncategorizedProducts.isNotEmpty()) {
@@ -162,6 +163,56 @@ fun EditeCategoriesMainList(
             }
         }
     }
+}
+
+/**
+ * Groups categories by their parent catalogue.
+ * This function handles the logic for organizing categories under their respective catalogues,
+ * including proper sorting and handling of orphan categories.
+ *
+ * Extracted from A_Main.kt to maintain consistency across the application.
+ */
+private fun groupCategoriesByCatalogue(
+    currentCategories: List<CategoriesTabelle>,
+    catalogues: List<CataloguesCaegorie>
+): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
+    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+    // Process catalogues in order
+    catalogues.forEach { catalogue ->
+        val categoriesForCatalogue = currentCategories
+            .filter { it.catalogueParentId == catalogue.id.toLong() }
+            .sortedWith(
+                compareBy<CategoriesTabelle> { it.position }
+                    .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+            )
+
+        if (categoriesForCatalogue.isNotEmpty()) {
+            grouped[catalogue] = categoriesForCatalogue
+        }
+    }
+
+    // Handle orphan categories (categories without a valid catalogue parent)
+    val orphanCategories = currentCategories
+        .filter { category ->
+            category.catalogueParentId == 0L ||
+                    !catalogues.any { catalogue -> catalogue.id.toLong() == category.catalogueParentId }
+        }
+        .sortedWith(
+            compareBy<CategoriesTabelle> { it.position }
+                .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+        )
+
+    if (orphanCategories.isNotEmpty()) {
+        val othersCatalogue = CataloguesCaegorie(
+            id = 0,
+            nom = "Autres",
+            premierCategorieId = 0
+        )
+        grouped[othersCatalogue] = orphanCategories
+    }
+
+    return grouped
 }
 
 @Composable
