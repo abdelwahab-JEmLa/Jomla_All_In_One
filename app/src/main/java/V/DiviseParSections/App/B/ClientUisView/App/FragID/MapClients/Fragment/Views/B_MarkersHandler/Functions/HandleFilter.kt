@@ -60,8 +60,13 @@ fun filterClientsBasedOnMode(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
 ): List<M2Client> {
-    val clientDataBaseSnapList =repositorysMainGetter.repo2Client.datasValue
-    return when (currentFilterMode) {
+    val clientDataBaseSnapList = repositorysMainGetter.repo2Client.datasValue
+
+    // FIXED: Get always-visible clients based on active UI states
+    val alwaysVisibleClients = getAlwaysVisibleClients(viewModel, focusedValuesGetter)
+
+    // Apply the normal filter logic
+    val filteredClients = when (currentFilterMode) {
         MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat != M2Client.DernierEtatAAffiche.ACHETEUR_NON_DISPO
@@ -71,7 +76,7 @@ fun filterClientsBasedOnMode(
         MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
-                         it.actuelleEtat == M2Client.DernierEtatAAffiche.Cible
+                        it.actuelleEtat == M2Client.DernierEtatAAffiche.Cible
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.CIBLE_PRIORITE_2
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.VENDU_A_LUI
                         || it.actuelleEtat == M2Client.DernierEtatAAffiche.FERME
@@ -125,7 +130,6 @@ fun filterClientsBasedOnMode(
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Rapport_Entre_On_Etate_De_Bloquage
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Bloque_Probleme
-
             }
         }
 
@@ -154,10 +158,9 @@ fun filterClientsBasedOnMode(
                                 || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Passed_Sans_Livre
                                 )
                                 && (find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, lastTransaction)
-                                    ?.parent_M14VentPeriod_KeyId ?: "")
+                            ?.parent_M14VentPeriod_KeyId ?: "")
                                 == keyID_currentActiveFocuced_M14VentPeriode
                         )
-
             }
         }
 
@@ -171,4 +174,32 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList
         }
     }
+
+    // FIXED: Merge filtered clients with always-visible clients, removing duplicates
+    val finalClientsList = (filteredClients + alwaysVisibleClients).distinctBy { it.id }
+
+    return finalClientsList
+}
+
+/**
+ * FIXED: Helper function to get clients that should always be visible regardless of filter mode
+ * This addresses the TODO comment about making certain markers always visible when UI states are active
+ */
+private fun getAlwaysVisibleClients(
+    viewModel: MapClientsViewModel,
+    focusedValuesGetter: FocusedValuesGetter
+): List<M2Client> {
+    val alwaysVisibleClients = mutableListOf<M2Client>()
+
+    // Add client from activeOnVentM2ClientInfos if it exists
+    focusedValuesGetter.activeOnVentM2ClientInfos?.let { activeClient ->
+        alwaysVisibleClients.add(activeClient)
+    }
+
+    // Add client from markerStatusDialogActiveM2Client if it exists
+    viewModel.uiState.value.markerStatusDialogActiveM2Client?.let { dialogClient ->
+        alwaysVisibleClients.add(dialogClient)
+    }
+
+    return alwaysVisibleClients.distinctBy { it.id }
 }

@@ -1,3 +1,4 @@
+// FocusedValuesGetter.kt - FIXED VERSION
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -28,6 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
 data class ActiveCentralValues(
@@ -52,20 +58,11 @@ data class ActiveCentralValues(
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
 
-    // FIXED: Enhanced logic for visibleClientsNow with proper default handling and abdul_momen logic
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = run {
-        val params = M18CentralParametresOfAllApps()
-        when {
-            // For abdelmomen account (admin), show command/delivery filter
-            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-            // For other accounts, determine based on admin status
-            else -> {
-                // This will be overridden by the computed logic in FocusedValuesGetter
-                null
-            }
-        }
-    },
+    // FIXED: Enhanced logic for visibleClientsNow with proper default handling
+    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
+
+    // FIXED: Add flag to track if we're in temporary mode
+    val isInTemporaryShowAllMode: Boolean = false,
 
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
@@ -94,37 +91,25 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
-
-    ) {
+) {
     companion object {
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()
         }
     }
-    //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
 
-    enum class ModeEditesProduit
-        (
-        val couleur: Color = Color(0xFF000000),
-    )
-    {
+    enum class ModeEditesProduit(val couleur: Color = Color(0xFF000000)) {
         Standart,
-        PrixHanled(Color(0xFFFF5722),),
-    }
-    //-------------------------------------------------------------------------------------------------------------------------------------
-
-    enum class Click_On_Marque
-        (
-        val couleur: Color = Color(0xFF000000),
-
-        )
-    {
-        Standart,
-        ADD_Au_Ciblage_Clients(Color(0xFFFF5722),),
-        Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0),),;
+        PrixHanled(Color(0xFFFF5722)),
     }
 
-    sealed class RoleDefinieParSourceACetteFragment() {
+    enum class Click_On_Marque(val couleur: Color = Color(0xFF000000)) {
+        Standart,
+        ADD_Au_Ciblage_Clients(Color(0xFFFF5722)),
+        Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
+    }
+
+    sealed class RoleDefinieParSourceACetteFragment {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
             RoleDefinieParSourceACetteFragment()
@@ -143,6 +128,9 @@ class FocusedValuesGetter(
     private val repo14VentPeriode: Repo14VentPeriode,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
+    // FIXED: Add coroutine scope and job for timing control
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var temporaryModeJob: Job? = null
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
         val periods = repo14VentPeriode.datasValue
@@ -184,50 +172,71 @@ class FocusedValuesGetter(
         }
     }
 
-    // FIXED: Properly implemented computedVisibleClientsMode that's actually used
+    // FIXED: Properly implemented computedVisibleClientsMode with timing control
     val computedVisibleClientsMode by derivedStateOf {
         val activeClientInfos = activeOnVentM2ClientInfos
         val currentValues = active_Central_Values
 
-        // If there's an explicit setting, use it
-        currentValues.visibleClientsNow ?: run {
-            // Default logic based on admin status and special account handling
-            val params = M18CentralParametresOfAllApps()
-            when {
-                // Special handling for abdelmomen account - always show command/delivery filter
-                params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
-                    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-                // If there's an active client, temporarily show all for 2 seconds
-                activeClientInfos != null ->
-                    MapClientsViewModel.VisibleClientsNow.showAll
-                // For admin users, show all
-                currentApp_Est_Admin ->
-                    MapClientsViewModel.VisibleClientsNow.showAll
-                // For non-admin users, show targeted clients
-                else ->
-                    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-            }
+        // If there's an explicit setting and we're not in temporary mode, use it
+        if (currentValues.visibleClientsNow != null && !currentValues.isInTemporaryShowAllMode) {
+            return@derivedStateOf currentValues.visibleClientsNow!!
+        }
+
+        // If we're in temporary mode, always show all
+        if (currentValues.isInTemporaryShowAllMode) {
+            return@derivedStateOf MapClientsViewModel.VisibleClientsNow.showAll
+        }
+
+        // Default logic based on admin status and special account handling
+        val params = M18CentralParametresOfAllApps()
+        when {
+            // Special handling for abdelmomen account - always show command/delivery filter
+            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+            // For admin users, show all
+            currentApp_Est_Admin ->
+                MapClientsViewModel.VisibleClientsNow.showAll
+            // For non-admin users, show targeted clients
+            else ->
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
         }
     }
 
-    // Method to get the current visible clients mode (for use in UI components)
+    // Method to get the current visible clients mode
     fun getCurrentVisibleClientsMode(): MapClientsViewModel.VisibleClientsNow {
         return computedVisibleClientsMode
     }
 
-    // FIXED: Methods to handle temporary mode switching for activeOnVentM2ClientInfos
+    // FIXED: Enhanced temporary mode handling with proper timing control (2 seconds)
     fun handleTemporaryShowAllMode() {
+        // Cancel any existing timer
+        temporaryModeJob?.cancel()
+
         val currentValues = active_Central_Values
 
-        // Set to show all temporarily, regardless of admin status
+        // Set to temporary show all mode
         update_activeCentralValues(
             currentValues.copy(
-                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll
+                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll,
+                isInTemporaryShowAllMode = true
             )
         )
+
+        // FIXED: Start new timer for exactly 2 seconds (was 7 seconds before)
+        temporaryModeJob = coroutineScope.launch {
+            delay(2000) // 2 seconds instead of 7
+
+            // Check if we're still in temporary mode (user might have changed it manually)
+            if (_activeCentralValues.value.isInTemporaryShowAllMode) {
+                revertToStandardMode()
+            }
+        }
     }
 
     fun revertToStandardMode() {
+        // Cancel any running timer
+        temporaryModeJob?.cancel()
+
         val currentValues = active_Central_Values
         val params = M18CentralParametresOfAllApps()
 
@@ -244,8 +253,22 @@ class FocusedValuesGetter(
         }
 
         update_activeCentralValues(
-            currentValues.copy(visibleClientsNow = standardMode)
+            currentValues.copy(
+                visibleClientsNow = standardMode,
+                isInTemporaryShowAllMode = false
+            )
         )
+    }
+
+    // FIXED: Add method to handle activeOnVentM2ClientInfos changes automatically
+    fun handleActiveClientChange(newActiveClient: M2Client?) {
+        if (newActiveClient != null) {
+            // Start temporary show all mode when client becomes active
+            handleTemporaryShowAllMode()
+        } else {
+            // Immediately revert when no active client
+            revertToStandardMode()
+        }
     }
 
     fun update_activeCentralValues(new: ActiveCentralValues) {
@@ -425,6 +448,7 @@ class FocusedValuesGetter(
                     put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent", onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map { "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}" })
                     put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit", focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })
                     put("computedVisibleClientsMode", computedVisibleClientsMode.toString())
+                    put("isInTemporaryMode", active_Central_Values.isInTemporaryShowAllMode.toString())
                 }
             }
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->

@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.clientjetpack.R
-import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -74,29 +73,24 @@ fun MapContent(
         mutableStateOf(focusedValuesGetter.getCurrentVisibleClientsMode())
     }
 
-    // FIXED: Handle temporary "show all" mode when activeOnVentM2ClientInfos is active
+    // FIXED: Handle temporary "show all" mode when activeOnVentM2ClientInfos changes
+    // This replaces the previous LaunchedEffect that had the 7-second delay
     LaunchedEffect(focusedValuesGetter.activeOnVentM2ClientInfos) {
         val activeClientInfos = focusedValuesGetter.activeOnVentM2ClientInfos
 
-        if (activeClientInfos != null) {
-            // Use the temporary show all mode method
-            focusedValuesGetter.handleTemporaryShowAllMode()
-            currentFilterMode = MapClientsViewModel.VisibleClientsNow.showAll
-
-            // Wait 2 seconds then revert to standard mode
-            delay(2000)
-
-            focusedValuesGetter.revertToStandardMode()
-            currentFilterMode = focusedValuesGetter.getCurrentVisibleClientsMode()
-        }
+        // Use the enhanced method from FocusedValuesGetter that handles timing internally
+        focusedValuesGetter.handleActiveClientChange(activeClientInfos)
     }
 
-    // Handle normal filter mode changes using the computed property
+    // FIXED: Listen to the computed visible clients mode with proper timing control
     LaunchedEffect(focusedValuesGetter.computedVisibleClientsMode) {
-        // Only update if there's no active client (to avoid interfering with temporary mode)
-        if (focusedValuesGetter.activeOnVentM2ClientInfos == null) {
-            currentFilterMode = focusedValuesGetter.computedVisibleClientsMode
-        }
+        currentFilterMode = focusedValuesGetter.computedVisibleClientsMode
+    }
+
+    // FIXED: Also listen to the temporary mode flag for immediate UI updates
+    LaunchedEffect(focusedValuesGetter.active_Central_Values.isInTemporaryShowAllMode) {
+        // Update current filter mode when temporary mode changes
+        currentFilterMode = focusedValuesGetter.getCurrentVisibleClientsMode()
     }
 
     // Location tracker initialization
@@ -124,7 +118,6 @@ fun MapContent(
     // Initialize map and start location tracking
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
-
         locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
     }
@@ -194,6 +187,19 @@ fun MapContent(
                 .getSemanticsTag(
                     nomVal = "markerStatusDialogActiveM2Client",
                     data = markerStatusDialogActiveM2Client
+                )
+                // FIXED: Add debug info about timing state
+                .getSemanticsTag(
+                    nomVal = "currentFilterMode",
+                    data = currentFilterMode.toString()
+                )
+                .getSemanticsTag(
+                    nomVal = "isInTemporaryMode",
+                    data = focusedValuesGetter.active_Central_Values.isInTemporaryShowAllMode.toString()
+                )
+                .getSemanticsTag(
+                    nomVal = "activeClient",
+                    data = focusedValuesGetter.activeOnVentM2ClientInfos?.nom ?: "null"
                 ),
             factory = { mapView }
         )
@@ -229,10 +235,26 @@ fun MapContent(
             onFilterMarkers = {
                 handleFilterMarkersClick(mapView, currentFilterMode) { newMode ->
                     currentFilterMode = newMode
+                    // FIXED: Update the FocusedValuesGetter state when user manually changes filter
+                    val currentValues = focusedValuesGetter.active_Central_Values
+                    focusedValuesGetter.update_activeCentralValues(
+                        currentValues.copy(
+                            visibleClientsNow = newMode,
+                            isInTemporaryShowAllMode = false // Exit temporary mode if user manually changes
+                        )
+                    )
                 }
             },
             onPickFilter = {
                 currentFilterMode = it
+                // FIXED: Update the FocusedValuesGetter state when user picks a filter
+                val currentValues = focusedValuesGetter.active_Central_Values
+                focusedValuesGetter.update_activeCentralValues(
+                    currentValues.copy(
+                        visibleClientsNow = it,
+                        isInTemporaryShowAllMode = false // Exit temporary mode if user manually changes
+                    )
+                )
             }
         )
 
@@ -251,9 +273,7 @@ fun MapContent(
                         mapView = mapView,
                         onEditModeChange = { },
                         onMarkerKeyIdChange = {
-                            viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(
-                                null
-                            )
+                            viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null)
                         },
                         zoomLevel = defaultZoom
                     )
