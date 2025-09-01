@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ToggleOff
+import androidx.compose.material.icons.filled.ToggleOn
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -122,6 +124,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     )
                 }
 
+                // Main category selection button
                 FloatingActionButton(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
@@ -148,6 +151,32 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
                     )
                 }
 
+                FloatingActionButton(
+                    modifier = Modifier.size(40.dp),
+                    onClick = {
+                        // Toggle the active_EtateDispoNonDifinieAuAddNew state
+                        val newValues = currentValues.copy(
+                            active_EtateDispoNonDifinieAuAddNew = !currentValues.active_EtateDispoNonDifinieAuAddNew
+                        )
+                        focusedValuesGetter.update_activeCentralValues(newValues)
+                    },
+                    containerColor = if (currentValues.active_EtateDispoNonDifinieAuAddNew)
+                        Color(0xFFFF9800) // Orange when active
+                    else
+                        Color(0xFF757575) // Gray when inactive
+                ) {
+                    Icon(
+                        imageVector = if (currentValues.active_EtateDispoNonDifinieAuAddNew)
+                            Icons.Default.ToggleOn
+                        else
+                            Icons.Default.ToggleOff,
+                        contentDescription = "Toggle État Disponibilité Non Définie",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                // Camera FAB
                 CameraFABProtoJuin3()
 
                 DropdownMenu(

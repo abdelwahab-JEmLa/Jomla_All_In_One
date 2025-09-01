@@ -69,46 +69,33 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
 
+    // FIXED: Use the computed visible clients mode from FocusedValuesGetter
     var currentFilterMode by remember {
-        mutableStateOf(
-            when (focusedValuesGetter.currentApp_Est_Admin) {
-                true -> MapClientsViewModel.VisibleClientsNow.showAll
-                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-            }
-        )
+        mutableStateOf(focusedValuesGetter.getCurrentVisibleClientsMode())
     }
 
-    // Handle temporary "show all" mode when activeOnVentM2ClientInfos is active
+    // FIXED: Handle temporary "show all" mode when activeOnVentM2ClientInfos is active
     LaunchedEffect(focusedValuesGetter.activeOnVentM2ClientInfos) {
         val activeClientInfos = focusedValuesGetter.activeOnVentM2ClientInfos
 
         if (activeClientInfos != null) {
-            // Force show all clients temporarily regardless of admin status
+            // Use the temporary show all mode method
+            focusedValuesGetter.handleTemporaryShowAllMode()
             currentFilterMode = MapClientsViewModel.VisibleClientsNow.showAll
 
-            // Wait 2 seconds then revert to appropriate standard mode
+            // Wait 2 seconds then revert to standard mode
             delay(2000)
 
-            currentFilterMode = when (focusedValuesGetter.currentApp_Est_Admin) {
-                true -> MapClientsViewModel.VisibleClientsNow.showAll
-                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-            }
+            focusedValuesGetter.revertToStandardMode()
+            currentFilterMode = focusedValuesGetter.getCurrentVisibleClientsMode()
         }
     }
 
-    // Handle normal filter mode changes
-    LaunchedEffect(
-        focusedValuesGetter.currentApp_Est_Admin,
-        focusedValuesGetter.active_Central_Values.visibleClientsNow
-    ) {
+    // Handle normal filter mode changes using the computed property
+    LaunchedEffect(focusedValuesGetter.computedVisibleClientsMode) {
         // Only update if there's no active client (to avoid interfering with temporary mode)
         if (focusedValuesGetter.activeOnVentM2ClientInfos == null) {
-            currentFilterMode = focusedValuesGetter.active_Central_Values.visibleClientsNow ?: run {
-                when (focusedValuesGetter.currentApp_Est_Admin) {
-                    false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-                    true -> MapClientsViewModel.VisibleClientsNow.showAll
-                }
-            }
+            currentFilterMode = focusedValuesGetter.computedVisibleClientsMode
         }
     }
 

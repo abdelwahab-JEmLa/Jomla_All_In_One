@@ -42,6 +42,7 @@ data class ActiveCentralValues(
 
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
     val active_Catalogue_Pour_NewAddedProduit: CataloguesCaegorie? = null,
+    val active_EtateDispoNonDifinieAuAddNew: Boolean = false,
 
     //-----------------Peride-------------------------------------------------------------------------------------------------------------------------
     val held_Period_Pour_copie_Leur_Vents: M14VentPeriode? = null,
@@ -51,7 +52,7 @@ data class ActiveCentralValues(
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
 
-    // FIXED: Enhanced logic for visibleClientsNow with proper default handling
+    // FIXED: Enhanced logic for visibleClientsNow with proper default handling and abdul_momen logic
     val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = run {
         val params = M18CentralParametresOfAllApps()
         when {
@@ -183,7 +184,7 @@ class FocusedValuesGetter(
         }
     }
 
-    // FIXED: Enhanced computed property that handles the temporary show-all logic
+    // FIXED: Properly implemented computedVisibleClientsMode that's actually used
     val computedVisibleClientsMode by derivedStateOf {
         val activeClientInfos = activeOnVentM2ClientInfos
         val currentValues = active_Central_Values
@@ -193,9 +194,12 @@ class FocusedValuesGetter(
             // Default logic based on admin status and special account handling
             val params = M18CentralParametresOfAllApps()
             when {
-                // Special handling for abdelmomen account
+                // Special handling for abdelmomen account - always show command/delivery filter
                 params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
                     MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                // If there's an active client, temporarily show all for 2 seconds
+                activeClientInfos != null ->
+                    MapClientsViewModel.VisibleClientsNow.showAll
                 // For admin users, show all
                 currentApp_Est_Admin ->
                     MapClientsViewModel.VisibleClientsNow.showAll
@@ -204,6 +208,11 @@ class FocusedValuesGetter(
                     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
             }
         }
+    }
+
+    // Method to get the current visible clients mode (for use in UI components)
+    fun getCurrentVisibleClientsMode(): MapClientsViewModel.VisibleClientsNow {
+        return computedVisibleClientsMode
     }
 
     // FIXED: Methods to handle temporary mode switching for activeOnVentM2ClientInfos
@@ -415,6 +424,7 @@ class FocusedValuesGetter(
                     put("focused_M1ProduitInfos_Pour_PrixDifineur", focused_M1ProduitInfos_Pour_PrixDifineur?.let { it.nom + it.keyID } ?: "null")
                     put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent", onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map { "${it.parent_M1Produit_DebugInfos} / ${it.parent_M1Produit_KeyId}" })
                     put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit", focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })
+                    put("computedVisibleClientsMode", computedVisibleClientsMode.toString())
                 }
             }
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->

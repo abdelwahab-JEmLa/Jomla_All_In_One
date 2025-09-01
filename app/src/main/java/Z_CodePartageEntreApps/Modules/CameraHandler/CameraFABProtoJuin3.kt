@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.net.Uri
 import android.widget.Toast
@@ -82,13 +83,25 @@ fun CameraFABProtoJuin3(
                         }
 
                         withContext(Dispatchers.Main) {
-                             val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } +1
+                            val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
                             val idParentCategorie =
                                 focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
                                     ?: 0
                             val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
-
                             val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
+
+                            val currentValues = focusedValuesGetter.active_Central_Values
+                            val etateActuelle = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+                                ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
+                            } else {
+                                ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                            }
+
+                            val disponibilityState = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+                                DisponibilityEtates.NON_DISPO
+                            } else {
+                                DisponibilityEtates.DISPO // Default to available
+                            }
 
                             val newProduit = product.copy(
                                 id = newOldId,
@@ -99,36 +112,33 @@ fun CameraFABProtoJuin3(
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-                                etateActuelleOnFusionAvecBaseDonne = ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
+                                etateActuelleOnFusionAvecBaseDonne = etateActuelle, // Use the determined state
+                                disponibilityEtates = disponibilityState, // Set the availability state
                                 idParentCategorie = idParentCategorie
                             )
 
-                            a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(
-                                newProduit
-                            )
-
+                            a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(newProduit)
 
                             val newCouleurP = M3CouleurProduitInfos
                                 .get_default()
                                 .copy(
                                     keyID = keyIDM3CouleurProduitInfos,
-                                    nomImageFichieSansEtansion=newOldId.toString() + "_1",
+                                    nomImageFichieSansEtansion = newOldId.toString() + "_1",
                                     parentBProduitInfosKeyID = newProduit.keyID,
                                     parentId1ProduitInfosDebugName = newProduit.nom,
                                     parentBProduitOldID = newProduit.id,
-
                                     processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeAuGeneralHandler
                                 )
 
-                            aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
-                                newCouleurP
-                            )
+                            aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(newCouleurP)
 
-                            Toast.makeText(
-                                context,
-                                "Produit WebP créé: ${newProduit.nom}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            val statusMessage = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+                                "Produit créé (état non défini): ${newProduit.nom}"
+                            } else {
+                                "Produit WebP créé: ${newProduit.nom}"
+                            }
+
+                            Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
