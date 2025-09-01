@@ -78,23 +78,6 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
         return _data.value?.enableNotifications ?: true
     }
 
-    fun updateNotificationSettings(enabled: Boolean) {
-        repoScope.launch {
-            val currentData = _data.value ?: M18CentralParametresOfAllApps.get_Default()
-            val updatedData = currentData.copy(enableNotifications = enabled)
-            dao.upsert(updatedData)
-            _data.value = updatedData
-
-            // Update Firebase
-            refRepo.setValue(updatedData)
-                .addOnSuccessListener {
-                    Log.d(repoTAG, "Notification settings updated in Firebase: $enabled")
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(repoTAG, "Failed to update notification settings in Firebase", exception)
-                }
-        }
-    }
 }
 
 @Entity
@@ -113,7 +96,7 @@ data class M18CentralParametresOfAllApps(
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String =  abdelmomen_Compt_KeyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabCompt_KeyId,
    /*     if (itsDevMode) abdelmomen_Compt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")
                 abdelwahabCompt_KeyId

@@ -75,6 +75,7 @@ class RepositorysMainGetter(
     //--------------M1----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M1Produit_ByKeyID(keyId: String): ArticlesBasesStatsTable? =
         repo1ProduitInfos.datasValue.find { it.keyID == keyId }
+
     fun find_M1Produit_By_OldId(oldId: Long?): ArticlesBasesStatsTable? =
         repo1ProduitInfos.datasValue.find { it.id == oldId }
 
@@ -82,10 +83,11 @@ class RepositorysMainGetter(
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M2Client(keyID: String): M2Client? =
         repo2Client.datasValue.find { it.keyID == keyID }
+
     fun find_M2Client_By_M10Vent(key: M10OperationVentCouleur): M2Client? =
         repo2Client.datasValue.find {
             it.keyID == find_M8BonVent(key.parent_M8BonVent_KeyId)
-            ?.parent_M2Client_KeyID
+                ?.parent_M2Client_KeyID
         }
 
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
@@ -99,6 +101,7 @@ class RepositorysMainGetter(
     //--------------M3Couleur----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M3CouleurInfos_By_KeyID(keyId: String): M3CouleurProduitInfos? =
         repo03CouleurProduitInfos.datasValue.find { it.keyID == keyId }
+
     fun find_ListM3CouleurInfos_By_Parent_Produit_KeyID(keyId: String) =
         repo03CouleurProduitInfos.datasValue.filter { it.parentBProduitInfosKeyID == keyId }
 
@@ -193,13 +196,14 @@ class RepositorysMainGetter(
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         repo2Client.datasValue.count { client ->
-            val lastTransaction = get_Last_M8BonVent_Par_M2Client(client)
-            lastTransaction?.etateActuellementEst in listOf(
-                M8BonVent.EtateActuellementEst.Cible,
-            )
+            // Check if this client has any unconfirmed orders (confirmeCommande_TimeTamp == 0)
+            repo8BonVent.datasValue.any { bonVent ->
+                bonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT &&
+                        bonVent.parent_M2Client_KeyID == client.keyID &&
+                        bonVent.confirmeCommande_TimeTamp == 0L
+            }
         }
     }
-
 
     init {
         composScope.launch {
@@ -242,7 +246,8 @@ class RepositorysMainGetter(
         inline fun Boolean.ifFalse(block: () -> Unit) {
             if (!this) block()
         }
-        fun String?.empty_If_Null(value: String=""): String {
+
+        fun String?.empty_If_Null(value: String = ""): String {
             return this ?: value
         }
 

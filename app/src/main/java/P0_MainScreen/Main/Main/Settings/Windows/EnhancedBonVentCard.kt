@@ -1,5 +1,8 @@
 package P0_MainScreen.Main.Main.Settings.Windows
 
+import P0_MainScreen.Main.Main.Settings.Windows.g.ClientInfo
+import P0_MainScreen.Main.Main.Settings.Windows.g.FinancialDetailsSection
+import P0_MainScreen.Main.Main.Settings.Windows.g.StatusIndicator
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.BorderStroke
@@ -129,10 +132,6 @@ fun EnhancedBonVentCard(
                     modifier = Modifier.weight(1f)
                 )
 
-                AmountInfo(
-                    totalAmount = bon.sum_De_Totale_Vents,
-                    modifier = Modifier.weight(1f)
-                )
             }
 
             // Time Information - Enhanced confirmation time display
