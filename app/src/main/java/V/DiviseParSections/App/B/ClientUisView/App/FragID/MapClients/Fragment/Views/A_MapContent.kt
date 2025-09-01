@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -65,6 +67,7 @@ fun MapContent(
     val currentZoom by remember { mutableDoubleStateOf(defaultZoom) }
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
+    val coroutineScope = rememberCoroutineScope()
 
     var currentFilterMode by remember {
         mutableStateOf(
@@ -75,14 +78,36 @@ fun MapContent(
         )
     }
 
+    // Handle temporary "show all" mode when activeOnVentM2ClientInfos is active
+    LaunchedEffect(focusedValuesGetter.activeOnVentM2ClientInfos) {
+        val activeClientInfos = focusedValuesGetter.activeOnVentM2ClientInfos
+
+        if (activeClientInfos != null) {
+            // Force show all clients temporarily regardless of admin status
+            currentFilterMode = MapClientsViewModel.VisibleClientsNow.showAll
+
+            // Wait 2 seconds then revert to appropriate standard mode
+            delay(2000)
+
+            currentFilterMode = when (focusedValuesGetter.currentApp_Est_Admin) {
+                true -> MapClientsViewModel.VisibleClientsNow.showAll
+                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+            }
+        }
+    }
+
+    // Handle normal filter mode changes
     LaunchedEffect(
         focusedValuesGetter.currentApp_Est_Admin,
         focusedValuesGetter.active_Central_Values.visibleClientsNow
     ) {
-        currentFilterMode = focusedValuesGetter.active_Central_Values.visibleClientsNow ?: run {
-            when (focusedValuesGetter.currentApp_Est_Admin) {
-                false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-                true -> MapClientsViewModel.VisibleClientsNow.showAll
+        // Only update if there's no active client (to avoid interfering with temporary mode)
+        if (focusedValuesGetter.activeOnVentM2ClientInfos == null) {
+            currentFilterMode = focusedValuesGetter.active_Central_Values.visibleClientsNow ?: run {
+                when (focusedValuesGetter.currentApp_Est_Admin) {
+                    false -> MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                    true -> MapClientsViewModel.VisibleClientsNow.showAll
+                }
             }
         }
     }
@@ -97,7 +122,7 @@ fun MapContent(
         )
     }
 
-    // FIXED: Listen for GPS follow mode changes from the FAB dropdown
+    // Listen for GPS follow mode changes from the FAB dropdown
     val gpsFollowModeActive =
         focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
 
@@ -287,14 +312,15 @@ fun MapContent(
         affiche_Floating_Button_Cible_Client.ifTrue {
             Floating_Separated_FragMap_Button_1()
         }
-        // Floating button for client targeting
+
+        // Floating button for filter markers
         val affiche_Floating_Button_TogleFilterMarquers =
             focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers
         affiche_Floating_Button_TogleFilterMarquers.ifTrue {
             Floating_Separated_FragMap_Button_4()
         }
 
-        // Floating button for client targeting
+        // Floating button for GPS follow mode
         val affiche_Floating_Button_gps_follow_mode_active =
             focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active
         affiche_Floating_Button_gps_follow_mode_active.ifTrue {

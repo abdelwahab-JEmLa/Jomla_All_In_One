@@ -50,9 +50,21 @@ data class ActiveCentralValues(
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? =
-        if(M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter else MapClientsViewModel.VisibleClientsNow.showAll,
+
+    // FIXED: Enhanced logic for visibleClientsNow with proper default handling
+    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = run {
+        val params = M18CentralParametresOfAllApps()
+        when {
+            // For abdelmomen account (admin), show command/delivery filter
+            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+            // For other accounts, determine based on admin status
+            else -> {
+                // This will be overridden by the computed logic in FocusedValuesGetter
+                null
+            }
+        }
+    },
 
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
@@ -82,7 +94,7 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
 
-) {
+    ) {
     companion object {
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()
@@ -93,7 +105,7 @@ data class ActiveCentralValues(
     enum class ModeEditesProduit
         (
         val couleur: Color = Color(0xFF000000),
-        )
+    )
     {
         Standart,
         PrixHanled(Color(0xFFFF5722),),
@@ -169,6 +181,62 @@ class FocusedValuesGetter(
         } catch (e: Exception) {
             null
         }
+    }
+
+    // FIXED: Enhanced computed property that handles the temporary show-all logic
+    val computedVisibleClientsMode by derivedStateOf {
+        val activeClientInfos = activeOnVentM2ClientInfos
+        val currentValues = active_Central_Values
+
+        // If there's an explicit setting, use it
+        currentValues.visibleClientsNow ?: run {
+            // Default logic based on admin status and special account handling
+            val params = M18CentralParametresOfAllApps()
+            when {
+                // Special handling for abdelmomen account
+                params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
+                    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                // For admin users, show all
+                currentApp_Est_Admin ->
+                    MapClientsViewModel.VisibleClientsNow.showAll
+                // For non-admin users, show targeted clients
+                else ->
+                    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+            }
+        }
+    }
+
+    // FIXED: Methods to handle temporary mode switching for activeOnVentM2ClientInfos
+    fun handleTemporaryShowAllMode() {
+        val currentValues = active_Central_Values
+
+        // Set to show all temporarily, regardless of admin status
+        update_activeCentralValues(
+            currentValues.copy(
+                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll
+            )
+        )
+    }
+
+    fun revertToStandardMode() {
+        val currentValues = active_Central_Values
+        val params = M18CentralParametresOfAllApps()
+
+        val standardMode = when {
+            // Special handling for abdelmomen account
+            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+            // For admin users, show all
+            currentApp_Est_Admin ->
+                MapClientsViewModel.VisibleClientsNow.showAll
+            // For non-admin users, show targeted clients
+            else ->
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+        }
+
+        update_activeCentralValues(
+            currentValues.copy(visibleClientsNow = standardMode)
+        )
     }
 
     fun update_activeCentralValues(new: ActiveCentralValues) {
