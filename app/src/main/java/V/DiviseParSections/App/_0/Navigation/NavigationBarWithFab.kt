@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.Floating_Separated_FragMap_Button_5
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FabDropdownMenu_WhenItsAchatsFragment
@@ -192,6 +193,13 @@ fun NavigationBarWithFab(
 
         if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_SelecteCategorieEtAddNewProduit) {
             Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
+                aCentralFacade = aCentralFacade,
+                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
+                focusedValuesGetter = focusedValuesGetter
+            )
+        }
+        if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_FABsModeEditesProduit) {
+            Floating_Separated_FragMap_Button_5(
                 aCentralFacade = aCentralFacade,
                 repositorysMainGetter = aCentralFacade.repositorysMainGetter,
                 focusedValuesGetter = focusedValuesGetter

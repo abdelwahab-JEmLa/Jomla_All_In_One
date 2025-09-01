@@ -31,6 +31,10 @@ fun FabDropdownMenu_BaseDonneEdite(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItemWBaseDonne_2(
+                nomFun = "FABs Mode Edites Produit",
+                onDismissDropdown = onDismissDropdown
+            )
             DropDownItemWBaseDonne_1(
                 nomFun = "Givre le neveau Classement",
                 onDismissDropdown = onDismissDropdown

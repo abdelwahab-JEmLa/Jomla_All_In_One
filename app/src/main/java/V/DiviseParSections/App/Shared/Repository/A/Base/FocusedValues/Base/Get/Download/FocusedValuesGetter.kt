@@ -66,7 +66,8 @@ data class ActiveCentralValues(
     val dialog_achats_ventPeriod: M14VentPeriode?= null,
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
-
+    //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
+    val active_ModeEditesProduit: ModeEditesProduit? = null,
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
@@ -75,6 +76,7 @@ data class ActiveCentralValues(
     val affiche_Floating_Button_AddCLient: Boolean = false,
 
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
+    val affiche_Floating_Button_FABsModeEditesProduit: Boolean = false,
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
@@ -86,6 +88,17 @@ data class ActiveCentralValues(
             return ActiveCentralValues()
         }
     }
+    //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
+
+    enum class ModeEditesProduit
+        (
+        val couleur: Color = Color(0xFF000000),
+        )
+    {
+        Standart,
+        PrixHanled(Color(0xFFFF5722),),
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     enum class Click_On_Marque
         (
