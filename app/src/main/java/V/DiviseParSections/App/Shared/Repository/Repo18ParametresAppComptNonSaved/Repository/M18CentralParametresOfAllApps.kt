@@ -77,7 +77,6 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
     fun getNotificationSettings(): Boolean {
         return _data.value?.enableNotifications ?: true
     }
-
 }
 
 @Entity
@@ -87,7 +86,7 @@ data class M18CentralParametresOfAllApps(
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = true ,
-    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
+    val devStartUpScree: String = Screen.EditDatabaseWithCreateNewArticles.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 

@@ -266,7 +266,7 @@ fun AutrePrixsAffiche(
                             produit = produit,
                             typeTarification = typeTarification,
                             repositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
-                            onPercentageChange = ::updateProgressivePercentage
+                            onPercentageChange = ::updateProgressivePercentage,
                         )
                     }
 

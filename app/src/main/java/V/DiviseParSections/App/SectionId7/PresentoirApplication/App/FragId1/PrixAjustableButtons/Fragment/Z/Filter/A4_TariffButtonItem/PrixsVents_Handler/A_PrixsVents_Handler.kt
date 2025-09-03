@@ -6,21 +6,39 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
@@ -106,6 +124,13 @@ fun PrixsVents_Handler(
                         M13TarificationInfos.TypeChoisi.Edited_Pour_Client -> {
                             // Use ProgressivePercentageAdjustmentCard for progressive pricing
                             ProgressivePercentageAdjustmentCard(
+                                currentApp_Est_Admin=currentApp_Est_Admin,
+                                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                                relative_Produit = relative_Produit,
+                                currentTariffPrice = currentTariffPrice,
+                                onPriceChange = { newPrice, shouldCreateNew ->
+                                    handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                                },
                                 produit = relative_Produit,
                                 typeTarification = typeTarification,
                                 repositorysMainSetter = repositorysMainSetter,
@@ -162,5 +187,157 @@ fun PrixsVents_Handler(
                 )
             }
         }
+
+        // Added benefit row for Edited_Pour_Client tariff type
+        if (currentApp_Est_Admin && typeTarification == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+            BenefitDisplayRow(
+                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                relative_Produit = relative_Produit,
+                currentTariffPrice = currentTariffPrice,
+                onPriceChange = { newPrice, shouldCreateNew ->
+                    handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun BenefitDisplayRow(
+    allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
+    relative_Produit: ArticlesBasesStatsTable,
+    currentTariffPrice: Double,
+    onPriceChange: (Double, Boolean) -> Unit
+) {
+    val prixAchatTariff =
+        allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
+            ?.maxByOrNull { it.creationTimestamps }
+
+    val prixAchat = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
+    val benefice = currentTariffPrice - prixAchat
+    val nombreUnite = relative_Produit.nombreUniteInt
+    val beneficeUnitaire = if (nombreUnite > 0) benefice / nombreUnite else 0.0
+
+    var isEditingTotalBenefit by remember { mutableStateOf(false) }
+    var totalBenefitText by remember { mutableStateOf("") }
+    val totalBenefitFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(isEditingTotalBenefit) {
+        if (isEditingTotalBenefit) {
+            totalBenefitFocusRequester.requestFocus()
+        }
+    }
+
+    val benefitAdjustmentValue = when {
+        benefice < 10.0 -> 1.0
+        benefice < 50.0 -> 5.0
+        benefice < 200.0 -> 10.0
+        benefice < 500.0 -> 25.0
+        else -> 50.0
+    }
+
+    fun updateBenefitImmediately(newBenefit: Double) {
+        val newSellingPrice = prixAchat + newBenefit
+        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), false)
+    }
+
+    fun handleTotalBenefitEditDone() {
+        val newTotalBenefit = totalBenefitText.toDoubleOrNull()
+        if (newTotalBenefit != null && newTotalBenefit >= 0) {
+            updateBenefitImmediately(newTotalBenefit)
+        }
+        isEditingTotalBenefit = false
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 4.dp)
+    ) {
+        // Decrease total benefit button
+        IconButton(
+            onClick = {
+                val newBenefit = (benefice - benefitAdjustmentValue).coerceAtLeast(0.0)
+                updateBenefitImmediately(newBenefit)
+            },
+            modifier = Modifier
+                .size(24.dp)
+                .background(
+                    color = Color(0xFF9C27B0),
+                    shape = androidx.compose.foundation.shape.CircleShape
+                )
+                .padding(2.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Remove,
+                contentDescription = "تقليل الفائدة",
+                tint = Color.White,
+                modifier = Modifier.size(12.dp)
+            )
+        }
+
+        // Total benefit display/edit
+        if (isEditingTotalBenefit) {
+            OutlinedTextField(
+                value = totalBenefitText,
+                onValueChange = { totalBenefitText = it },
+                modifier = Modifier
+                    .width(80.dp)
+                    .focusRequester(totalBenefitFocusRequester),
+                label = { Text("${String.format("%.0f", benefice)}", fontSize = 8.sp) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { handleTotalBenefitEditDone() }
+                ),
+                singleLine = true
+            )
+        } else {
+            Text(
+                String.format("%.0f", benefice),
+                modifier = Modifier
+                    .background(Color(0xFF9C27B0))
+                    .padding(4.dp)
+                    .clickable {
+                        isEditingTotalBenefit = true
+                        totalBenefitText = ""
+                    },
+                color = Color.White
+            )
+        }
+
+        // Increase total benefit button
+        IconButton(
+            onClick = {
+                val newBenefit = benefice + benefitAdjustmentValue
+                updateBenefitImmediately(newBenefit)
+            },
+            modifier = Modifier
+                .size(24.dp)
+                .background(
+                    color = Color(0xFF9C27B0),
+                    shape = androidx.compose.foundation.shape.CircleShape
+                )
+                .padding(2.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "زيادة الفائدة",
+                tint = Color.White,
+                modifier = Modifier.size(12.dp)
+            )
+        }
+
+        // Show unit benefit as well for information
+        Text(
+            text = "وحدة: ${String.format("%.2f", beneficeUnitaire)}",
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .background(Color(0xD8D9C3DC))
+                .padding(horizontal = 4.dp, vertical = 2.dp),
+            color = Color.White,
+            fontSize = 8.sp
+        )
     }
 }

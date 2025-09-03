@@ -38,13 +38,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.SortedMap
 
 @Composable
 fun ProgressivePercentageAdjustmentCard(
     produit: ArticlesBasesStatsTable,
     typeTarification: M13TarificationInfos.TypeChoisi,
     repositorysMainSetter: RepositorysMainSetter,
-    onPercentageChange: (Int) -> Unit
+    onPercentageChange: (Int) -> Unit,
+    onPriceChange: (newPrix: Double, shouldCreateNew: Boolean) -> Unit ={_,_->},
+    allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>> ?=null,
+    relative_Produit: ArticlesBasesStatsTable ?=null,
+    currentTariffPrice: Double=0.0,
+    currentApp_Est_Admin: Boolean =false
 ) {
     var isEditingPercentage by remember { mutableStateOf(false) }
     var percentageText by remember { mutableStateOf("") }
@@ -170,6 +176,21 @@ fun ProgressivePercentageAdjustmentCard(
                         tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )
+                }
+            }
+            // Added benefit row for Edited_Pour_Client tariff type
+            if (currentApp_Est_Admin && typeTarification == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+                if (allTariffsGroupedAndSorted != null) {
+                    if (relative_Produit != null) {
+                        BenefitDisplayRow(
+                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                            relative_Produit = relative_Produit,
+                            currentTariffPrice = currentTariffPrice,
+                            onPriceChange = { newPrice, shouldCreateNew ->
+                                onPriceChange(newPrice, shouldCreateNew)
+                            }
+                        )
+                    }
                 }
             }
         }
