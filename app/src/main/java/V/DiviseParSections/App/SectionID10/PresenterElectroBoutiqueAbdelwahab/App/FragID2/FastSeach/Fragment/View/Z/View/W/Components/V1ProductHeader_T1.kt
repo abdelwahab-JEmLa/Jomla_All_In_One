@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.ViewModule
@@ -127,7 +129,7 @@ fun ProductHeader_T1(
             }
 
             Card_Produit_Nombre_Unites(
-                allNonTrouve, produit
+                allNonTrouve, produit,viewModel
             )
             {
                 shouldShowDialog_quantite_Unite_Par_Boit = true
@@ -250,13 +252,28 @@ fun ProductHeader_T1(
         }
     }
 }
-
 @Composable
 private fun Card_Produit_Nombre_Unites(
     allNonTrouve: Boolean,
     produit: ArticlesBasesStatsTable,
+    viewModel: ViewModelsProduit_T1,
     onClick_PourOuvrireDialog: () -> Unit
 ) {
+    // Track toggle state
+    var toggleState by remember { mutableStateOf(produit.afficheUniteAuPrint) }
+
+    fun clickHandel() {
+        // Toggle the state
+        toggleState = !toggleState
+
+        // Update the product with the new state
+        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(
+            produit.copy(
+                afficheUniteAuPrint = toggleState
+            )
+        )
+    }
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -270,6 +287,7 @@ private fun Card_Produit_Nombre_Unites(
             horizontalArrangement = Arrangement.spacedBy(petitePaddine),
             modifier = Modifier.padding(petitePaddine)
         ) {
+            // Original quantity display button
             IconButton(
                 onClick = {
                     onClick_PourOuvrireDialog()
@@ -294,6 +312,26 @@ private fun Card_Produit_Nombre_Unites(
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+
+            // Toggle button for afficheUniteAuPrint
+            IconButton(
+                onClick = { clickHandel() },
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (toggleState) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.surfaceVariant
+                    )
+            ) {
+                Icon(
+                    imageVector = if (toggleState) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                    contentDescription = if (toggleState) "Print units enabled" else "Print units disabled",
+                    tint = if (toggleState) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }
