@@ -6,8 +6,11 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -16,10 +19,10 @@ import java.util.Date
 import java.util.Locale
 
 class PrintReceiptHandler_Juil(
-    printInPdfHandler:PrintInPdfHandler,
-) {          //<--
-//TODO(1): integre la
+    private val printInPdfHandler: PrintInPdfHandler,
+) {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
+    private val TAG = "PrintReceiptHandler"
 
     data class ArticleImpression(
         val nomArticle: String,
@@ -28,79 +31,83 @@ class PrintReceiptHandler_Juil(
         val couleur: String? = null
     )
 
+    /**
+     * Check if Bluetooth is available and enabled
+     */
+    private fun isBluetoothAvailable(): Boolean {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled
+    }
+
+    /**
+     * Handle printing with Bluetooth check
+     */
+    private fun handlePrint(
+        context: Context,
+        texteImprimable: String,
+        clientName: String,
+        transactionId: String,
+        scope: CoroutineScope?,
+        generatePdf: Boolean
+    ) {
+        val isBluetoothAvailable = isBluetoothAvailable()
+
+        // If Bluetooth is available, print normally
+        if (isBluetoothAvailable) {
+            val intent = Intent(PRINT_INTENT).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, texteImprimable)
+            }
+            ContextCompat.startActivity(context, intent, null)
+        } else {
+            // Show toast that Bluetooth is offline
+            Toast.makeText(context, "Bluetooth hors ligne - Impression PDF uniquement", Toast.LENGTH_LONG).show()
+        }
+
+        // Generate PDF if requested OR if Bluetooth is offline
+        if (generatePdf || !isBluetoothAvailable) {
+            scope?.launch {
+                try {
+                    val result = printInPdfHandler.generateAndStorePdfReceipt(
+                        context,
+                        texteImprimable,
+                        clientName,
+                        transactionId
+                    )
+                    result.onSuccess { message ->
+                        Log.d(TAG, "PDF generated successfully: $message")
+                        // Show toast when PDF generation is complete
+                        Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+                    }.onFailure { error ->
+                        Log.e(TAG, "Failed to generate PDF: ${error.message}")
+                        Toast.makeText(context, "Erreur lors de la génération PDF", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error generating PDF: ${e.message}")
+                    Toast.makeText(context, "Erreur lors de la génération PDF", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Print credit receipt with optional PDF generation
+     */
     fun print_Credit(
         context: Context,
         client: M2Client?,
         bonVent: M8BonVent,
-        scope: CoroutineScope? = null
-    ) {
-        val printFunction = {
-            val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-            val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
-            val totalAmount = bonVent.sum_De_Totale_Vents
-            val paymentAmount = bonVent.versement
-            val remainingAmount = totalAmount - paymentAmount
-            val transactionId = bonVent.keyID.takeLast(4)
-
-            val texteImprimable = StringBuilder().apply {
-                append("<BIG><CENTER>Abdelwahab<BR>")
-                append("<BIG><CENTER>JeMla.Com<BR>")
-                append("<SMALL><CENTER>0553885037<BR>")
-                append("<SMALL><CENTER> - Credit Payment<BR>")
-                append("<BR>")
-                append("<SMALL><CENTER>$clientName                        $dateString<BR>")
-                append("<BR>")
-                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-                append("<BR>")
-                append("<MEDIUM1><LEFT> Total a Payer :<BR>")
-                append("<MEDIUM2><CENTER>${round(totalAmount)}Da<BR>")
-                append("<BR>")
-                append("<MEDIUM1><LEFT>Versement Effectue:<BR>")
-                append("<MEDIUM2><CENTER>${round(paymentAmount)}Da<BR>")
-                append("<BR>")
-                append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
-                if (remainingAmount > 0) {
-                    append("<MEDIUM1><LEFT> Credit Restant :<BR>")
-                    append("<MEDIUM3><RIGHT><BOLD>${round(remainingAmount)}Da<BR>")
-                } else if (remainingAmount < 0) {
-                    append("<MEDIUM1><LEFT> Surplus Paye :<BR>")
-                    append("<MEDIUM3><RIGHT><BOLD>${round(-remainingAmount)}Da<BR>")
-                } else {
-                    append("<MEDIUM1><CENTER> PAYE INTEGRALEMENT<BR>")
-                    append("<MEDIUM2><CENTER> ✓ SOLDE<BR>")
-                }
-                append("<BR>")
-                append("<SMALL><CENTER>Transaction: #$transactionId<BR>")
-                append("<BR><BR><BR>>")
-            }
-
-            val intent = Intent(PRINT_INTENT).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, texteImprimable.toString())
-            }
-            ContextCompat.startActivity(context, intent, null)
-        }
-
-        if (scope != null) {
-            scope.launch { printFunction() }
-        } else {
-            printFunction()
-        }
-    }
-
-    fun print_Credit_Detailed(
-        context: Context,
-        client: M2Client?,
-        bonVent: M8BonVent,
+        scope: CoroutineScope? = null,
+        generatePdf: Boolean = false,
         previousPayments: List<Double> = emptyList(),
-        scope: CoroutineScope? = null
+        showPaymentHistory: Boolean = false
     ) {
         val printFunction = {
             val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
             val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
             val totalAmount = bonVent.sum_De_Totale_Vents
             val currentPayment = bonVent.versement
-            val totalPaid = previousPayments.sum() + currentPayment
+            val totalPaid = if (showPaymentHistory) previousPayments.sum() + currentPayment else currentPayment
             val remainingAmount = totalAmount - totalPaid
             val transactionId = bonVent.keyID.takeLast(4)
 
@@ -108,55 +115,80 @@ class PrintReceiptHandler_Juil(
                 append("<BIG><CENTER>Abdelwahab<BR>")
                 append("<BIG><CENTER>JeMla.Com<BR>")
                 append("<SMALL><CENTER>0553885037<BR>")
-                append("<SMALL><CENTER> - Recu Credit Prix_Detaille<BR>")
+                append("<SMALL><CENTER> - Credit Payment${if (showPaymentHistory) " Prix_Detaille" else ""}<BR>")
                 append("<BR>")
                 append("<SMALL><CENTER>$clientName                        $dateString<BR>")
                 append("<BR>")
                 append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
                 append("<BR>")
-                append("<SMALL><LEFT>Transaction: #$transactionId<BR>")
-                append("<BR>")
-                append("<MEDIUM1><LEFT>Montant Total :<BR>")
+
+                if (showPaymentHistory) {
+                    append("<SMALL><LEFT>Transaction: #$transactionId<BR>")
+                    append("<BR>")
+                }
+
+                append("<MEDIUM1><LEFT>${if (showPaymentHistory) "Montant Total" else "Total a Payer"} :<BR>")
                 append("<MEDIUM2><CENTER>${round(totalAmount)}Da<BR>")
                 append("<BR>")
 
-                if (previousPayments.isNotEmpty()) {
+                if (showPaymentHistory && previousPayments.isNotEmpty()) {
                     append("<SMALL><LEFT>Paiements Precedents:<BR>")
                     previousPayments.forEachIndexed { index, payment ->
                         append("<SMALL><LEFT>  ${index + 1}. ${round(payment)}Da<BR>")
                     }
                     append("<SMALL><LEFT>Sous-total: ${round(previousPayments.sum())}Da<BR>")
                     append("<BR>")
+                    append("<MEDIUM1><LEFT>Paiement Actuel:<BR>")
+                } else {
+                    append("<MEDIUM1><LEFT>Versement Effectue:<BR>")
                 }
 
-                append("<MEDIUM1><LEFT>Paiement Actuel:<BR>")
                 append("<MEDIUM2><CENTER>${round(currentPayment)}Da<BR>")
                 append("<BR>")
-                append("<SMALL><LEFT>Total Paye: ${round(totalPaid)}Da<BR>")
-                append("<BR>")
+
+                if (showPaymentHistory) {
+                    append("<SMALL><LEFT>Total Paye: ${round(totalPaid)}Da<BR>")
+                    append("<BR>")
+                }
+
                 append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 when {
                     remainingAmount > 0 -> {
-                        append("<MEDIUM1><LEFT> Reste a Payer :<BR>")
+                        append("<MEDIUM1><LEFT> ${if (showPaymentHistory) "Reste a Payer" else "Credit Restant"} :<BR>")
                         append("<MEDIUM3><RIGHT><BOLD>${round(remainingAmount)}Da<BR>")
                     }
                     remainingAmount < 0 -> {
-                        append("<MEDIUM1><LEFT> Trop Paye :<BR>")
+                        append("<MEDIUM1><LEFT> ${if (showPaymentHistory) "Trop Paye" else "Surplus Paye"} :<BR>")
                         append("<MEDIUM3><RIGHT><BOLD>${round(-remainingAmount)}Da<BR>")
                     }
                     else -> {
-                        append("<MEDIUM1><CENTER> ✓ PAYE COMPLETEMENT ✓<BR>")
-                        append("<MEDIUM2><CENTER>Merci pour votre confiance<BR>")
+                        if (showPaymentHistory) {
+                            append("<MEDIUM1><CENTER> ✓ PAYE COMPLETEMENT ✓<BR>")
+                            append("<MEDIUM2><CENTER>Merci pour votre confiance<BR>")
+                        } else {
+                            append("<MEDIUM1><CENTER> PAYE INTEGRALEMENT<BR>")
+                            append("<MEDIUM2><CENTER> ✓ SOLDE<BR>")
+                        }
                     }
                 }
+
+                if (!showPaymentHistory) {
+                    append("<BR>")
+                    append("<SMALL><CENTER>Transaction: #$transactionId<BR>")
+                }
+
                 append("<BR><BR><BR>>")
             }
 
-            val intent = Intent(PRINT_INTENT).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, texteImprimable.toString())
-            }
-            ContextCompat.startActivity(context, intent, null)
+            // Handle printing with Bluetooth check
+            handlePrint(
+                context,
+                texteImprimable.toString(),
+                clientName,
+                transactionId,
+                scope,
+                generatePdf
+            )
         }
 
         if (scope != null) {
@@ -166,6 +198,9 @@ class PrintReceiptHandler_Juil(
         }
     }
 
+    /**
+     * Print sales receipt with optional PDF generation
+     */
     fun printVentReceipt(
         context: Context,
         repoM1Produit: RepoM1Produit,
@@ -173,7 +208,8 @@ class PrintReceiptHandler_Juil(
         client: M2Client?,
         scope: CoroutineScope? = null,
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
-        repo13TarificationInfos: Repo13TarificationInfos
+        repo13TarificationInfos: Repo13TarificationInfos,
+        generatePdf: Boolean = false
     ) {
         val printFunction = {
             val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
@@ -237,11 +273,17 @@ class PrintReceiptHandler_Juil(
                 repoM1Produit
             )
 
-            val intent = Intent(PRINT_INTENT).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, texteImprimable.toString())
-            }
-            ContextCompat.startActivity(context, intent, null)
+            val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
+
+            // Handle printing with Bluetooth check
+            handlePrint(
+                context,
+                texteImprimable.toString(),
+                clientName,
+                transactionId,
+                scope,
+                generatePdf
+            )
         }
 
         if (scope != null) {

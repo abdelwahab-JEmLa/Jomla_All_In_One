@@ -4,20 +4,20 @@ import android.content.Context
 import android.os.Environment
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.kernel.font.PdfFont
+import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Text
-import com.itextpdf.layout.property.TextAlignment
-import com.itextpdf.kernel.font.PdfFontFactory
-import com.itextpdf.kernel.font.PdfFont
-import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.layout.properties.TextAlignment
 import kotlinx.coroutines.tasks.await
 import java.io.File
-import java.io.FileInputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class PrintInPdfHandler {
 
