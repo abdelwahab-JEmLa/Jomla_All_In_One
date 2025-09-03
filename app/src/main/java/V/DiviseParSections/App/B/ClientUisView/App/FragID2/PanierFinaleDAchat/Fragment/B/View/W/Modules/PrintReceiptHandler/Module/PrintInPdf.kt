@@ -216,8 +216,8 @@ class PrintInPdf_itextpdf_Handler {
                 // Data rows matching the header order: Qté | P.U | Désignation | Montant
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
-                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.CENTER))
                 total += subtotal
             }
         }
