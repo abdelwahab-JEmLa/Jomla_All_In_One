@@ -50,73 +50,27 @@ class PrintInPdf_itextpdf_Handler {
         produitRepo: RepoM1Produit,
         transactionId: String = ""
     ): Result<String> {
-        return try {
-            if (operations.isEmpty()) {
-                return Result.failure(IllegalArgumentException("No operations to print"))
-            }
-
-            val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-            generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo)
-            val url = uploadToFirebaseStorage(file, file.name)
-
-            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
-        } catch (e: SecurityException) {
-            Result.failure(Exception("Permission denied. Please check storage permissions.", e))
-        } catch (e: java.io.IOException) {
-            Result.failure(Exception("Failed to create PDF file. Check storage space.", e))
-        } catch (e: com.google.firebase.FirebaseException) {
-            Result.failure(Exception("Failed to upload to Firebase. Check internet connection.", e))
-        } catch (e: Exception) {
-            Result.failure(Exception("PDF generation failed: ${e.message}", e))
-        }
+        if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
+        val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
+        generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo)
+        val url = uploadToFirebaseStorage(file, file.name)
+        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
     }
 
     suspend fun generateCreditReceiptPdf(context: Context, data: CreditReceiptData): Result<String> {
-        return try {
-            if (data.totalAmount <= 0) {
-                return Result.failure(IllegalArgumentException("Invalid total amount"))
-            }
-
-            val file = createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-            generateCreditPdf(file.absolutePath, data)
-            val url = uploadToFirebaseStorage(file, file.name)
-
-            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
-        } catch (e: SecurityException) {
-            Result.failure(Exception("Permission denied. Please check storage permissions.", e))
-        } catch (e: java.io.IOException) {
-            Result.failure(Exception("Failed to create PDF file. Check storage space.", e))
-        } catch (e: com.google.firebase.FirebaseException) {
-            Result.failure(Exception("Failed to upload to Firebase. Check internet connection.", e))
-        } catch (e: Exception) {
-            Result.failure(Exception("Credit PDF generation failed: ${e.message}", e))
-        }
+        if (data.totalAmount <= 0) return Result.failure(IllegalArgumentException("Invalid total amount"))
+        val file = createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
+        generateCreditPdf(file.absolutePath, data)
+        val url = uploadToFirebaseStorage(file, file.name)
+        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
     }
 
     private fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
-        val state = Environment.getExternalStorageState()
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            throw IllegalStateException("External storage not available")
-        }
-
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
-
-        if (!dir.exists()) {
-            val created = dir.mkdirs()
-            if (!created) {
-                throw java.io.IOException("Cannot create directory: ${dir.absolutePath}")
-            }
-        }
-
+        if (!dir.exists()) dir.mkdirs()
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val sanitizedClientName = clientName.replace("[^a-zA-Z0-9]".toRegex(), "_")
-        val file = File(dir, "${type}_${sanitizedClientName}_${timestamp}_$id.pdf")
-
-        if (!dir.canWrite()) {
-            throw SecurityException("No write permission for directory: ${dir.absolutePath}")
-        }
-
-        return file
+        return File(dir, "${type}_${sanitizedClientName}_${timestamp}_$id.pdf")
     }
 
     private fun generateVentPdf(
@@ -129,7 +83,6 @@ class PrintInPdf_itextpdf_Handler {
                     addHeader(doc, "Facture")
                     addClientDate(doc, client?.nom ?: "Client")
                     createProductTable(doc, operations, tarificationRepo, produitRepo)
-
                     client?.currentCreditBalance?.takeIf { it < 0 }?.let {
                         addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
                         addText(doc, "${round(it)}Da", regularFont, 14f, TextAlignment.CENTER)
@@ -146,7 +99,6 @@ class PrintInPdf_itextpdf_Handler {
                     val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
                     addHeader(doc, receiptType)
                     addClientDate(doc, data.client?.nom ?: "Client")
-
                     addSeparator(doc, "=====================")
 
                     if (data.showPaymentHistory) {
@@ -156,8 +108,8 @@ class PrintInPdf_itextpdf_Handler {
 
                     val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
                     val remaining = data.totalAmount - totalPaid
-
                     val totalLabel = if (data.showPaymentHistory) "Montant Total" else "Total à Payer"
+
                     addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
                     addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
                     doc.add(Paragraph("\n").setFontSize(8f))
@@ -223,11 +175,18 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun addClientDate(doc: Document, clientName: String) {
         val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-        val p = Paragraph()
-        p.add(Text(clientName).setFont(regularFont).setFontSize(12f))
-        p.add(Text("                        $date").setFont(regularFont).setFontSize(12f))
-        p.setTextAlignment(TextAlignment.LEFT)
-        doc.add(p)
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f)))
+        table.setWidth(UnitValue.createPercentValue(100f))
+
+        val clientCell = Cell().add(Paragraph(clientName).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+
+        val dateCell = Cell().add(Paragraph(date).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+
+        table.addCell(clientCell)
+        table.addCell(dateCell)
+        doc.add(table)
         doc.add(Paragraph("\n").setFontSize(8f))
     }
 
@@ -235,13 +194,13 @@ class PrintInPdf_itextpdf_Handler {
         doc: Document, operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit
     ) {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(40f, 15f, 20f, 25f)))
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
-        table.addCell(createCell("Désignation", boldFont, 11f, TextAlignment.LEFT, false))
-        table.addCell(createCell("Qté", boldFont, 11f, TextAlignment.CENTER, false))
-        table.addCell(createCell("P.U", boldFont, 11f, TextAlignment.CENTER, false))
-        table.addCell(createCell("Montant", boldFont, 11f, TextAlignment.RIGHT, false))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Montant", boldFont, 11f, TextAlignment.RIGHT))
 
         var total = 0.0
         operations.groupBy { it.parent_M1Produit_KeyId }.forEach { (produitId, ops) ->
@@ -253,10 +212,10 @@ class PrintInPdf_itextpdf_Handler {
 
             if (subtotal != 0.0) {
                 val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1)
-                table.addCell(createCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT, true))
-                table.addCell(createCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER, true))
-                table.addCell(createCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER, true))
-                table.addCell(createCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT, true))
+                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
                 total += subtotal
             }
         }
@@ -267,15 +226,14 @@ class PrintInPdf_itextpdf_Handler {
         addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
     }
 
-    private fun createCell(content: String, font: PdfFont, size: Float, align: TextAlignment, bordered: Boolean = false): Cell {
-        val cell = Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-        if (bordered) {
-            cell.setBorder(SolidBorder(0.2f)).setPadding(4f)
-        } else {
-            cell.setPadding(2f)
-        }
-        return cell
-    }
+    private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
+        Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
+            .setBorder(SolidBorder(0.5f)).setPadding(6f)
+            .setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.LIGHT_GRAY, 0.3f)
+
+    private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
+        Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
+            .setBorder(SolidBorder(0.2f)).setPadding(4f)
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align))
