@@ -9,11 +9,14 @@ import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -54,6 +57,59 @@ class PrintReceiptHandler_Juil(
             ContextCompat.startActivity(context, intent, null)
         } else {
             Toast.makeText(context, "Bluetooth hors ligne", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Open PDF file using system PDF viewer or file manager
+     */
+    private fun openPdfFile(context: Context, file: File) {
+        try {
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                // Fallback: open with file manager
+                val fileIntent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(Uri.fromFile(file), "*/*")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(fileIntent)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error opening PDF: ${e.message}")
+            Toast.makeText(context, "Impossible d'ouvrir le PDF", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Save PDF to local Downloads folder for easy access
+     */
+    private fun savePdfToDownloads(context: Context, sourceFile: File): File? {
+        return try {
+            val downloadsDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
+                ?: return null
+
+            if (!downloadsDir.exists()) {
+                downloadsDir.mkdirs()
+            }
+
+            val destFile = File(downloadsDir, sourceFile.name)
+            sourceFile.copyTo(destFile, overwrite = true)
+            destFile
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving PDF to downloads: ${e.message}")
+            null
         }
     }
 
@@ -99,7 +155,20 @@ class PrintReceiptHandler_Juil(
                         val result = printInPdfHandler.generateCreditReceiptPdf(context, creditData)
                         result.onSuccess { message ->
                             Log.d(TAG, "PDF generated successfully: $message")
-                            Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+
+                            // Extract file path from success message
+                            val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
+                            val pdfFile = File(filePath)
+
+                            if (pdfFile.exists()) {
+                                // Save to downloads for easy access
+                                savePdfToDownloads(context, pdfFile)
+
+                                Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+
+                                // Open PDF automatically
+                                openPdfFile(context, pdfFile)
+                            }
                         }.onFailure { error ->
                             Log.e(TAG, "Failed to generate PDF: ${error.message}")
                             Toast.makeText(context, "Erreur lors de la génération PDF", Toast.LENGTH_SHORT).show()
@@ -166,7 +235,25 @@ class PrintReceiptHandler_Juil(
                         )
                         result.onSuccess { message ->
                             Log.d(TAG, "PDF generated successfully: $message")
-                            Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+
+                            // Extract file path from success message
+                            val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
+                            val pdfFile = File(filePath)
+
+                            if (pdfFile.exists()) {
+                                // Save to downloads for easy access
+                                val downloadedFile = savePdfToDownloads(context, pdfFile)
+
+                                Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+
+                                // Open PDF automatically
+                                openPdfFile(context, pdfFile)
+
+                                // Show additional info about saved location
+                                if (downloadedFile != null) {
+                                    Toast.makeText(context, "PDF sauvegardé dans Téléchargements", Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }.onFailure { error ->
                             Log.e(TAG, "Failed to generate PDF: ${error.message}")
                             Toast.makeText(context, "Erreur lors de la génération PDF", Toast.LENGTH_SHORT).show()

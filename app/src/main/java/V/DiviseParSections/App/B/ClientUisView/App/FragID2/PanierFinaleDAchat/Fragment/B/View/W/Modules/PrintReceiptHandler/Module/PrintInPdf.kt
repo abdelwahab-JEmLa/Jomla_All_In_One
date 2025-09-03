@@ -37,7 +37,7 @@ data class CreditReceiptData(
 )
 
 class PrintInPdf_itextpdf_Handler {
-    // Fixed: Reduced spacing to 2dp equivalent (approximately 0.7f points)
+
     private val SPACING_2DP = 0.7f
 
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
@@ -182,11 +182,11 @@ class PrintInPdf_itextpdf_Handler {
     }
 
     private fun addClientDate(doc: Document, clientName: String) {
-        val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+        val date = formatDateWithAmPm(Date())
         val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
-        val clientCell = Cell().add(Paragraph(clientName).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
+        val clientCell = Cell().add(Paragraph(capitalizeFirstLetter(clientName)).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
 
         val dateCell = Cell().add(Paragraph(date).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
@@ -202,15 +202,18 @@ class PrintInPdf_itextpdf_Handler {
         doc: Document, operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit
     ) {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
+        // Headers with numbering column
+        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-        table.addCell(createHeaderCell("Montant", boldFont, 11f, TextAlignment.RIGHT))
+        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
 
         var total = 0.0
+        var rowNumber = 1
         operations.groupBy { it.parent_M1Produit_KeyId }.forEach { (produitId, ops) ->
             val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
@@ -220,12 +223,16 @@ class PrintInPdf_itextpdf_Handler {
 
             if (subtotal != 0.0) {
                 val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1)
+                val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
 
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell(productName, regularFont, 10f, TextAlignment.LEFT))
                 table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
                 total += subtotal
+                rowNumber++
             }
         }
 
@@ -237,11 +244,11 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f) // Minimum padding
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
 
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.1f)).setPadding(0f) // Minimum padding and border
+            .setBorder(SolidBorder(0.1f)).setPadding(0f)
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
@@ -254,6 +261,18 @@ class PrintInPdf_itextpdf_Handler {
             "${qty / cartonSize}x$cartonSize($qty)" else qty.toString()
 
     private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
+
+    private fun capitalizeFirstLetter(text: String): String {
+        return if (text.isBlank()) text
+        else text.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
+    }
+
+    private fun formatDateWithAmPm(date: Date): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+        return dateFormat.format(date)
+    }
 
     private suspend fun uploadToFirebaseStorage(file: File, fileName: String): String {
         val fileRef = storageRef.child(fileName)
