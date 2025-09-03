@@ -19,7 +19,6 @@ import com.itextpdf.layout.borders.SolidBorder
 import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
-import com.itextpdf.layout.element.Text
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
 import kotlinx.coroutines.tasks.await
@@ -197,9 +196,10 @@ class PrintInPdf_itextpdf_Handler {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        // Headers: Qté | P.U | Désignation | Montant
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
         table.addCell(createHeaderCell("Montant", boldFont, 11f, TextAlignment.RIGHT))
 
         var total = 0.0
@@ -212,9 +212,11 @@ class PrintInPdf_itextpdf_Handler {
 
             if (subtotal != 0.0) {
                 val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1)
-                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
-                table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
+
+                // Data rows matching the header order: Qté | P.U | Désignation | Montant
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
                 table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
                 total += subtotal
             }
@@ -228,8 +230,7 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.5f)).setPadding(6f)
-            .setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.LIGHT_GRAY, 0.3f)
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
 
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
