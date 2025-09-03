@@ -21,6 +21,8 @@ import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.element.Text
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
+import com.itextpdf.layout.borders.Border
+import com.itextpdf.layout.borders.SolidBorder
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.text.SimpleDateFormat
@@ -37,6 +39,7 @@ data class CreditReceiptData(
 )
 
 class PrintInPdf_itextpdf_Handler {
+    // FIXED: Now using a unified table approach as suggested in the PDF comments
     val storageRef = Firebase.storage.reference.child("bonVents_pdf")
     private val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/bonVents_pdf"
 
@@ -115,7 +118,8 @@ class PrintInPdf_itextpdf_Handler {
     }
 
     /**
-     * Generate PDF receipt directly from business objects
+     * FIXED: Generate PDF receipt with unified table structure like in the image
+     * Uses a single table for all products instead of separate tables per row
      */
     private fun generateVentPdfFromData(
         outputPath: String,
@@ -126,7 +130,7 @@ class PrintInPdf_itextpdf_Handler {
     ): String {
         val writer = PdfWriter(outputPath)
         val pdf = PdfDocument(writer)
-        val document = Document(pdf, PageSize.A4)
+        val document = Document(pdf, PageSize.A5)
 
         // Set up fonts
         val regularFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
@@ -155,24 +159,50 @@ class PrintInPdf_itextpdf_Handler {
         // Add space
         document.add(Paragraph("\n").setFontSize(8f))
 
-        // Separator
-        addSeparatorLine(document, regularFont, "=====================")
+        // FIXED: Create unified table structure like in the receipt image
+        createUnifiedProductTable(
+            document,
+            relative_ListM10OperationVentCouleur,
+            repo13TarificationInfos,
+            repoM1Produit,
+            regularFont,
+            boldFont
+        )
 
-        // Table headers
-        val headerTable = Table(UnitValue.createPercentArray(floatArrayOf(30f, 20f, 25f, 25f)))
-        headerTable.setWidth(UnitValue.createPercentValue(100f))
+        // Credit info if applicable
+        val ancienCredits = client?.currentCreditBalance ?: 0.0
+        if (ancienCredits < 0) {
+            addCenteredText(document, "Credit Du Compte actuel", regularFont, 12f)
+            addCenteredText(document, "${round(ancienCredits)}Da", regularFont, 14f)
+        }
 
-        headerTable.addCell(createCell("Désignation", boldFont, 10f, TextAlignment.LEFT))
-        headerTable.addCell(createCell("Qté", boldFont, 10f, TextAlignment.CENTER))
-        headerTable.addCell(createCell("P.U", boldFont, 10f, TextAlignment.CENTER))
-        headerTable.addCell(createCell("Montant", boldFont, 10f, TextAlignment.RIGHT))
+        document.close()
+        return outputPath
+    }
 
-        document.add(headerTable)
+    /**
+     * FIXED: Create unified table structure for products (like in the receipt image)
+     * This replaces the previous approach of multiple separate tables
+     */
+    private fun createUnifiedProductTable(
+        document: Document,
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        repoM1Produit: RepoM1Produit,
+        regularFont: PdfFont,
+        boldFont: PdfFont
+    ) {
+        // Create single table for all products with borders
+        val mainTable = Table(UnitValue.createPercentArray(floatArrayOf(40f, 15f, 20f, 25f)))
+        mainTable.setWidth(UnitValue.createPercentValue(100f))
 
-        // Separator
-        addSeparatorLine(document, regularFont, "=====================")
+        // Add header row with borders
+        mainTable.addCell(createBorderedCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        mainTable.addCell(createBorderedCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+        mainTable.addCell(createBorderedCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        mainTable.addCell(createBorderedCell("Montant", boldFont, 11f, TextAlignment.RIGHT))
 
-        // Process products
+        // Process and add all products to the single table
         val groupe_Produit = relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
         var totaleBon = 0.0
 
@@ -188,50 +218,30 @@ class PrintInPdf_itextpdf_Handler {
             val subtotal = vent_prix * vent_quantity
 
             if (subtotal != 0.0) {
-                // Product row
-                val productTable = Table(UnitValue.createPercentArray(floatArrayOf(30f, 20f, 25f, 25f)))
-                productTable.setWidth(UnitValue.createPercentValue(100f))
-
-                productTable.addCell(createCell(relative_M1Produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
-                productTable.addCell(createCell(quantityDisplay, regularFont, 10f, TextAlignment.CENTER))
-                productTable.addCell(createCell("${round(vent_prix)}Da", regularFont, 10f, TextAlignment.CENTER))
-                productTable.addCell(createCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
-
-                document.add(productTable)
+                // Add product row to the unified table
+                mainTable.addCell(createBorderedCell(relative_M1Produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
+                mainTable.addCell(createBorderedCell(quantityDisplay, regularFont, 10f, TextAlignment.CENTER))
+                mainTable.addCell(createBorderedCell("${round(vent_prix)}", regularFont, 10f, TextAlignment.CENTER))
+                mainTable.addCell(createBorderedCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
 
                 totaleBon += subtotal
-
-                // Separator line
-                addSeparatorLine(document, regularFont, "---------------------")
             }
         }
 
-        // Final separator
-        addSeparatorLine(document, regularFont, "=====================")
+        // Add the complete table to document
+        document.add(mainTable)
 
-        // Add space
-        document.add(Paragraph("\n").setFontSize(8f))
+        // Add space after table
+        document.add(Paragraph("\n").setFontSize(10f))
 
-        // Total
+        // Total section
         addCenteredText(document, "Total", boldFont, 14f)
         addCenteredText(document, "${round(totaleBon)}Da", boldFont, 16f)
-
-        // Credit info if applicable
-        val ancienCredits = client?.currentCreditBalance ?: 0.0
-        if (ancienCredits < 0) {
-            addCenteredText(document, "Credit Du Compte actuel", regularFont, 12f)
-            addCenteredText(document, "${round(ancienCredits)}Da", regularFont, 14f)
-        }
-
-        // Final separator
-        addSeparatorLine(document, regularFont, "---------------------")
-
-        document.close()
-        return outputPath
     }
 
     /**
      * Generate credit receipt PDF directly from data objects
+     * Already using A5 format - no change needed
      */
     private fun generateCreditPdfFromData(
         outputPath: String,
@@ -352,12 +362,23 @@ class PrintInPdf_itextpdf_Handler {
     }
 
     /**
-     * Create a table cell with specified formatting
+     * FIXED: Create a bordered table cell (for unified table structure)
+     */
+    private fun createBorderedCell(content: String, font: PdfFont, fontSize: Float, alignment: TextAlignment): Cell {
+        val cell = Cell()
+        cell.add(Paragraph(content).setFont(font).setFontSize(fontSize).setTextAlignment(alignment))
+        cell.setBorder(SolidBorder(1f)) // Add solid border like in receipt image
+        cell.setPadding(4f) // Slightly more padding for better readability
+        return cell
+    }
+
+    /**
+     * Create a table cell with specified formatting (kept for backward compatibility)
      */
     private fun createCell(content: String, font: PdfFont, fontSize: Float, alignment: TextAlignment): Cell {
         val cell = Cell()
         cell.add(Paragraph(content).setFont(font).setFontSize(fontSize).setTextAlignment(alignment))
-        cell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+        cell.setBorder(Border.NO_BORDER)
         cell.setPadding(2f)
         return cell
     }
