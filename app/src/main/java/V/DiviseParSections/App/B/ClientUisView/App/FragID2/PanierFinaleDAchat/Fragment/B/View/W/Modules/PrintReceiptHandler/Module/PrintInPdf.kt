@@ -37,6 +37,9 @@ data class CreditReceiptData(
 )
 
 class PrintInPdf_itextpdf_Handler {
+    // Fixed: Reduced spacing to 2dp equivalent (approximately 0.7f points)
+    private val SPACING_2DP = 0.7f
+
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
     private val regularFont: PdfFont by lazy { PdfFontFactory.createFont(StandardFonts.HELVETICA) }
     private val boldFont: PdfFont by lazy { PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD) }
@@ -105,7 +108,7 @@ class PrintInPdf_itextpdf_Handler {
 
                     if (data.showPaymentHistory) {
                         addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(4f))
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
                     }
 
                     val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
@@ -114,7 +117,7 @@ class PrintInPdf_itextpdf_Handler {
 
                     addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
                     addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
-                    doc.add(Paragraph("\n").setFontSize(4f))
+                    doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
 
                     if (data.showPaymentHistory && data.previousPayments.isNotEmpty()) {
                         addText(doc, "Paiements Précédents:", regularFont, 10f, TextAlignment.LEFT)
@@ -122,18 +125,18 @@ class PrintInPdf_itextpdf_Handler {
                             addText(doc, "  ${i + 1}. ${round(payment)}Da", regularFont, 10f, TextAlignment.LEFT)
                         }
                         addText(doc, "Sous-total: ${round(data.previousPayments.sum())}Da", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(4f))
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
                         addText(doc, "Paiement Actuel:", boldFont, 12f, TextAlignment.LEFT)
                     } else {
                         addText(doc, "Versement Effectué:", boldFont, 12f, TextAlignment.LEFT)
                     }
 
                     addText(doc, "${round(data.currentPayment)}Da", boldFont, 14f, TextAlignment.CENTER)
-                    doc.add(Paragraph("\n").setFontSize(4f))
+                    doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
 
                     if (data.showPaymentHistory) {
                         addText(doc, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(4f))
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
                     }
 
                     when {
@@ -159,7 +162,7 @@ class PrintInPdf_itextpdf_Handler {
                     }
 
                     if (!data.showPaymentHistory) {
-                        doc.add(Paragraph("\n").setFontSize(4f))
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
                         addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.CENTER)
                     }
                 }
@@ -169,13 +172,13 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun addHeader(doc: Document, title: String) {
         addText(doc, "Abdelwahab", boldFont, 18f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(2f))
+        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
         addText(doc, "JeMla.Com", boldFont, 16f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(2f))
+        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
         addText(doc, "0553885037", regularFont, 12f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(2f))
+        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
         addText(doc, title, regularFont, 12f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(6f))
+        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
     }
 
     private fun addClientDate(doc: Document, clientName: String) {
@@ -192,7 +195,7 @@ class PrintInPdf_itextpdf_Handler {
         table.addCell(clientCell)
         table.addCell(dateCell)
         doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(6f))
+        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
     }
 
     private fun createProductTable(
@@ -227,21 +230,21 @@ class PrintInPdf_itextpdf_Handler {
         }
 
         doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(6f))
+        doc.add(Paragraph("\n").setFontSize(0.1f))
         addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
         addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
     }
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(2f)
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f) // Minimum padding
 
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.2f)).setPadding(3f)
+            .setBorder(SolidBorder(0.1f)).setPadding(0f) // Minimum padding and border
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
-        doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align))
+        doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
 
     private fun addSeparator(doc: Document, separator: String) =
         addText(doc, separator, regularFont, 10f, TextAlignment.CENTER)
