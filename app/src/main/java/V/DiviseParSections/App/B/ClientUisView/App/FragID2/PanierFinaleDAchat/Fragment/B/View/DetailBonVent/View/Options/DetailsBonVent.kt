@@ -103,7 +103,7 @@ fun DetailsBonVent(
                 PrintButton(
                     showLabel = !isMinimized,
                     onPrint = {
-                        printHandler.printVentReceipt(
+                        printHandler.printVentReceiptWithDirectPdf(
                             context = context,
                             repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos ,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,

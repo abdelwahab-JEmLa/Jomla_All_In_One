@@ -1,5 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.os.Environment
 import com.google.firebase.Firebase
@@ -7,29 +11,44 @@ import com.google.firebase.storage.storage
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
+import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.element.Text
 import com.itextpdf.layout.properties.TextAlignment
+import com.itextpdf.layout.properties.UnitValue
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+data class CreditReceiptData(
+    val client: M2Client?,
+    val totalAmount: Double,
+    val currentPayment: Double,
+    val previousPayments: List<Double> = emptyList(),
+    val transactionId: String,
+    val showPaymentHistory: Boolean = false
+)
+
 class PrintInPdf_itextpdf_Handler {
     val storageRef = Firebase.storage.reference.child("bonVents_pdf")
     private val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/bonVents_pdf"
 
     /**
-     * Generate a PDF receipt and save it locally and to Firebase Storage
+     * Generate a PDF receipt directly from data objects
      */
-    suspend fun generateAndStorePdfReceipt(
+    suspend fun generateVentReceiptPdf(
         context: Context,
-        receiptText: String,
-        clientName: String = "Client",
+        client: M2Client?,
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        repoM1Produit: RepoM1Produit,
         transactionId: String = ""
     ): Result<String> {
         return try {
@@ -41,11 +60,18 @@ class PrintInPdf_itextpdf_Handler {
 
             // Generate filename with timestamp
             val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
             val fileName = "receipt_${clientName}_${timestamp}_${transactionId}.pdf"
             val localFile = File(localDir, fileName)
 
             // Generate PDF
-            val pdfPath = generatePdfFromText(receiptText, localFile.absolutePath)
+            val pdfPath = generateVentPdfFromData(
+                localFile.absolutePath,
+                client,
+                relative_ListM10OperationVentCouleur,
+                repo13TarificationInfos,
+                repoM1Produit
+            )
 
             // Upload to Firebase Storage
             val downloadUrl = uploadToFirebaseStorage(localFile, fileName)
@@ -57,187 +83,345 @@ class PrintInPdf_itextpdf_Handler {
     }
 
     /**
-     * Generate PDF from formatted receipt text
+     * Generate credit receipt PDF directly from data objects
      */
-    private fun generatePdfFromText(receiptText: String, outputPath: String): String {
+    suspend fun generateCreditReceiptPdf(
+        context: Context,
+        creditData: CreditReceiptData
+    ): Result<String> {
+        return try {
+            // Create local directory if it doesn't exist
+            val localDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
+            if (!localDir.exists()) {
+                localDir.mkdirs()
+            }
+
+            // Generate filename with timestamp
+            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val clientName = creditData.client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
+            val fileName = "credit_${clientName}_${timestamp}_${creditData.transactionId}.pdf"
+            val localFile = File(localDir, fileName)
+
+            // Generate PDF
+            val pdfPath = generateCreditPdfFromData(localFile.absolutePath, creditData)
+
+            // Upload to Firebase Storage
+            val downloadUrl = uploadToFirebaseStorage(localFile, fileName)
+
+            Result.success("PDF saved locally: $pdfPath\nFirebase URL: $downloadUrl")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Generate PDF receipt directly from business objects
+     */
+    private fun generateVentPdfFromData(
+        outputPath: String,
+        client: M2Client?,
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        repoM1Produit: RepoM1Produit
+    ): String {
         val writer = PdfWriter(outputPath)
         val pdf = PdfDocument(writer)
-        val document = Document(pdf)
+        val document = Document(pdf, PageSize.A4)
 
         // Set up fonts
         val regularFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
         val boldFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
 
-        // Parse the formatted text and convert to PDF
-        parseAndAddFormattedText(document, receiptText, regularFont, boldFont)
+        // Date and client info
+        val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+        val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
+
+        // Header - Store info
+        addCenteredText(document, "Abdelwahab", boldFont, 18f)
+        addCenteredText(document, "JeMla.Com", boldFont, 16f)
+        addCenteredText(document, "0553885037", regularFont, 12f)
+        addCenteredText(document, "Facture", regularFont, 12f)
+
+        // Add space
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Client and date info
+        val clientDateParagraph = Paragraph()
+        clientDateParagraph.add(Text(clientName).setFont(regularFont).setFontSize(12f))
+        clientDateParagraph.add(Text("                        $dateString").setFont(regularFont).setFontSize(12f))
+        clientDateParagraph.setTextAlignment(TextAlignment.LEFT)
+        document.add(clientDateParagraph)
+
+        // Add space
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Separator
+        addSeparatorLine(document, regularFont, "=====================")
+
+        // Table headers
+        val headerTable = Table(UnitValue.createPercentArray(floatArrayOf(30f, 20f, 25f, 25f)))
+        headerTable.setWidth(UnitValue.createPercentValue(100f))
+
+        headerTable.addCell(createCell("Désignation", boldFont, 10f, TextAlignment.LEFT))
+        headerTable.addCell(createCell("Qté", boldFont, 10f, TextAlignment.CENTER))
+        headerTable.addCell(createCell("P.U", boldFont, 10f, TextAlignment.CENTER))
+        headerTable.addCell(createCell("Montant", boldFont, 10f, TextAlignment.RIGHT))
+
+        document.add(headerTable)
+
+        // Separator
+        addSeparatorLine(document, regularFont, "=====================")
+
+        // Process products
+        val groupe_Produit = relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
+        var totaleBon = 0.0
+
+        groupe_Produit.forEach { produit_vent ->
+            val datas_repo13TarificationInfos = repo13TarificationInfos.datasValue
+            val standart_Vent = produit_vent.second.first()
+            val relative_Tariffication = datas_repo13TarificationInfos.find { it.keyID == standart_Vent.parentM13TarificationKeyID }
+            val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == produit_vent.first }
+            val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
+            val vent_quantity = produit_vent.second.sumOf { it.quantity }
+            val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
+            val vent_prix = relative_Tariffication?.prixCurrency ?: 0.0
+            val subtotal = vent_prix * vent_quantity
+
+            if (subtotal != 0.0) {
+                // Product row
+                val productTable = Table(UnitValue.createPercentArray(floatArrayOf(30f, 20f, 25f, 25f)))
+                productTable.setWidth(UnitValue.createPercentValue(100f))
+
+                productTable.addCell(createCell(relative_M1Produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
+                productTable.addCell(createCell(quantityDisplay, regularFont, 10f, TextAlignment.CENTER))
+                productTable.addCell(createCell("${round(vent_prix)}Da", regularFont, 10f, TextAlignment.CENTER))
+                productTable.addCell(createCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
+                document.add(productTable)
+
+                totaleBon += subtotal
+
+                // Separator line
+                addSeparatorLine(document, regularFont, "---------------------")
+            }
+        }
+
+        // Final separator
+        addSeparatorLine(document, regularFont, "=====================")
+
+        // Add space
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Total
+        addCenteredText(document, "Total", boldFont, 14f)
+        addCenteredText(document, "${round(totaleBon)}Da", boldFont, 16f)
+
+        // Credit info if applicable
+        val ancienCredits = client?.currentCreditBalance ?: 0.0
+        if (ancienCredits < 0) {
+            addCenteredText(document, "Credit Du Compte actuel", regularFont, 12f)
+            addCenteredText(document, "${round(ancienCredits)}Da", regularFont, 14f)
+        }
+
+        // Final separator
+        addSeparatorLine(document, regularFont, "---------------------")
 
         document.close()
         return outputPath
     }
 
     /**
-     * Parse the HTML-like formatted text and convert to PDF elements - FIXED VERSION
+     * Generate credit receipt PDF directly from data objects
      */
-    private fun parseAndAddFormattedText(
-        document: Document,
-        receiptText: String,
-        regularFont: PdfFont,
-        boldFont: PdfFont
-    ) {
-        val lines = receiptText.split("<BR>")
+    private fun generateCreditPdfFromData(
+        outputPath: String,
+        creditData: CreditReceiptData
+    ): String {
+        val writer = PdfWriter(outputPath)
+        val pdf = PdfDocument(writer)
+        val document = Document(pdf, PageSize.A5)
 
-        for (line in lines) {
-            if (line.trim().isEmpty() || line == ">") continue
+        // Set up fonts
+        val regularFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
+        val boldFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
 
-            val paragraph = Paragraph()
-            var currentLine = line.trim()
-
-            // Skip empty lines after cleaning
-            if (currentLine.isEmpty()) continue
-
-            // Handle separator lines first (common pattern)
-            if (currentLine.contains("=====") || currentLine.contains("-----")) {
-                val cleanText = cleanAllTags(currentLine)
-                if (cleanText.isNotEmpty()) {
-                    paragraph.add(Text(cleanText).setFont(regularFont).setFontSize(10f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                document.add(paragraph)
-                continue
-            }
-
-            // Extract and apply formatting
-            val formattedText = parseFormattedLine(currentLine)
-
-            if (formattedText.text.isNotEmpty()) {
-                val textElement = Text(formattedText.text)
-                    .setFont(if (formattedText.isBold) boldFont else regularFont)
-                    .setFontSize(formattedText.fontSize)
-
-                paragraph.add(textElement)
-                paragraph.setTextAlignment(formattedText.alignment)
-
-                document.add(paragraph)
-            }
-        }
-    }
-
-    private data class FormattedText(
-        val text: String,
-        val fontSize: Float,
-        val isBold: Boolean,
-        val alignment: TextAlignment
-    )
-
-    /**
-     * Parse a single line and extract formatting information
-     */
-    private fun parseFormattedLine(line: String): FormattedText {
-        var text = line
-        var fontSize = 11f // default
-        var isBold = false
-        var alignment = TextAlignment.LEFT
-
-        // Determine font size
-        when {
-            text.contains("<BIG>") -> {
-                fontSize = 16f
-                text = text.replace("<BIG>", "")
-            }
-            text.contains("<MEDIUM3>") -> {
-                fontSize = 14f
-                text = text.replace("<MEDIUM3>", "")
-            }
-            text.contains("<MEDIUM2>") -> {
-                fontSize = 14f
-                text = text.replace("<MEDIUM2>", "")
-            }
-            text.contains("<MEDIUM1>") -> {
-                fontSize = 12f
-                text = text.replace("<MEDIUM1>", "")
-            }
-            text.contains("<SMALL>") -> {
-                fontSize = 10f
-                text = text.replace("<SMALL>", "")
-            }
-        }
-
-        // Determine alignment
-        when {
-            text.contains("<CENTER>") -> {
-                alignment = TextAlignment.CENTER
-                text = text.replace("<CENTER>", "")
-            }
-            text.contains("<RIGHT>") -> {
-                alignment = TextAlignment.RIGHT
-                text = text.replace("<RIGHT>", "")
-            }
-            text.contains("<LEFT>") -> {
-                alignment = TextAlignment.LEFT
-                text = text.replace("<LEFT>", "")
-            }
-        }
-
-        // Determine if bold
-        if (text.contains("<BOLD>") || text.contains("<MEDIUM2>") || text.contains("<MEDIUM3>")) {
-            isBold = true
-            text = text.replace("<BOLD>", "")
-        }
-
-        // Clean remaining tags
-        text = cleanAllTags(text)
-
-        return FormattedText(
-            text = text,
-            fontSize = fontSize,
-            isBold = isBold,
-            alignment = alignment
-        )
-    }
-
-    /**
-     * Clean all remaining HTML-like tags from text
-     */
-    private fun cleanAllTags(text: String): String {
-        return text
-            .replace("<NORMAL>", "")
-            .replace("<UNDERLINE>", "")
-            .replace("<LINE>", "")
-            .replace("<DLINE>", "")
-            .replace("<LINE0>", "")
-            .replace("<DLINE0>", "")
-            .replace("<CUT>", "")
-            .replace("<AWAKE>", "")
-            .replace("<LOGO>", "")
-            .replace("<LOGO2>", "")
-            .replace("<INVERSE>", "")
-            .replace("<DRAWER>", "")
-            .replace("<COMMAND>", "")
-            // Remove any remaining tags with regex pattern
-            .replace(Regex("<[^>]*>"), "")
-            .trim()
-    }
-
-    /**
-     * Extract text between formatting tags (keeping old method for compatibility)
-     */
-    private fun extractTextBetweenTags(text: String, startTag: String, endTag: String): String {
-        val startIndex = text.indexOf(startTag)
-        if (startIndex == -1) return text
-
-        val textAfterStart = text.substring(startIndex + startTag.length)
-
-        if (endTag.isEmpty()) {
-            return textAfterStart.trim()
-        }
-
-        val endIndex = textAfterStart.indexOf(endTag)
-        return if (endIndex != -1) {
-            textAfterStart.substring(0, endIndex).trim()
+        // Date and client info
+        val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+        val clientName = creditData.client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
+        val totalAmount = creditData.totalAmount
+        val currentPayment = creditData.currentPayment
+        val totalPaid = if (creditData.showPaymentHistory) {
+            creditData.previousPayments.sum() + currentPayment
         } else {
-            textAfterStart.trim()
+            currentPayment
+        }
+        val remainingAmount = totalAmount - totalPaid
+
+        // Header - Store info
+        addCenteredText(document, "Abdelwahab", boldFont, 18f)
+        addCenteredText(document, "JeMla.Com", boldFont, 16f)
+        addCenteredText(document, "0553885037", regularFont, 12f)
+
+        val receiptType = if (creditData.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
+        addCenteredText(document, receiptType, regularFont, 12f)
+
+        // Add space
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Client and date info
+        val clientDateParagraph = Paragraph()
+        clientDateParagraph.add(Text(clientName).setFont(regularFont).setFontSize(12f))
+        clientDateParagraph.add(Text("                        $dateString").setFont(regularFont).setFontSize(12f))
+        clientDateParagraph.setTextAlignment(TextAlignment.LEFT)
+        document.add(clientDateParagraph)
+
+        // Add space
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Separator
+        addSeparatorLine(document, regularFont, "=====================")
+
+        // Transaction ID if showing payment history
+        if (creditData.showPaymentHistory) {
+            addLeftAlignedText(document, "Transaction: #${creditData.transactionId}", regularFont, 10f)
+            document.add(Paragraph("\n").setFontSize(8f))
+        }
+
+        // Total amount
+        val totalLabel = if (creditData.showPaymentHistory) "Montant Total" else "Total à Payer"
+        addLeftAlignedText(document, "$totalLabel :", boldFont, 12f)
+        addCenteredText(document, "${round(totalAmount)}Da", boldFont, 14f)
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Previous payments if showing history
+        if (creditData.showPaymentHistory && creditData.previousPayments.isNotEmpty()) {
+            addLeftAlignedText(document, "Paiements Précédents:", regularFont, 10f)
+            creditData.previousPayments.forEachIndexed { index, payment ->
+                addLeftAlignedText(document, "  ${index + 1}. ${round(payment)}Da", regularFont, 10f)
+            }
+            addLeftAlignedText(document, "Sous-total: ${round(creditData.previousPayments.sum())}Da", regularFont, 10f)
+            document.add(Paragraph("\n").setFontSize(8f))
+            addLeftAlignedText(document, "Paiement Actuel:", boldFont, 12f)
+        } else {
+            addLeftAlignedText(document, "Versement Effectué:", boldFont, 12f)
+        }
+
+        addCenteredText(document, "${round(currentPayment)}Da", boldFont, 14f)
+        document.add(Paragraph("\n").setFontSize(8f))
+
+        // Total paid if showing history
+        if (creditData.showPaymentHistory) {
+            addLeftAlignedText(document, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f)
+            document.add(Paragraph("\n").setFontSize(8f))
+        }
+
+        // Separator
+        addSeparatorLine(document, regularFont, "---------------------")
+
+        // Remaining amount or status
+        when {
+            remainingAmount > 0 -> {
+                val remainingLabel = if (creditData.showPaymentHistory) "Reste à Payer" else "Crédit Restant"
+                addLeftAlignedText(document, "$remainingLabel :", boldFont, 12f)
+                addRightAlignedText(document, "${round(remainingAmount)}Da", boldFont, 16f)
+            }
+            remainingAmount < 0 -> {
+                val overpayLabel = if (creditData.showPaymentHistory) "Trop Payé" else "Surplus Payé"
+                addLeftAlignedText(document, "$overpayLabel :", boldFont, 12f)
+                addRightAlignedText(document, "${round(-remainingAmount)}Da", boldFont, 16f)
+            }
+            else -> {
+                if (creditData.showPaymentHistory) {
+                    addCenteredText(document, "✓ PAYÉ COMPLÈTEMENT ✓", boldFont, 14f)
+                    addCenteredText(document, "Merci pour votre confiance", regularFont, 12f)
+                } else {
+                    addCenteredText(document, "PAYÉ INTÉGRALEMENT", boldFont, 14f)
+                    addCenteredText(document, "✓ SOLDÉ", boldFont, 12f)
+                }
+            }
+        }
+
+        // Transaction ID if not showing payment history
+        if (!creditData.showPaymentHistory) {
+            document.add(Paragraph("\n").setFontSize(8f))
+            addCenteredText(document, "Transaction: #${creditData.transactionId}", regularFont, 10f)
+        }
+
+        document.close()
+        return outputPath
+    }
+
+    /**
+     * Create a table cell with specified formatting
+     */
+    private fun createCell(content: String, font: PdfFont, fontSize: Float, alignment: TextAlignment): Cell {
+        val cell = Cell()
+        cell.add(Paragraph(content).setFont(font).setFontSize(fontSize).setTextAlignment(alignment))
+        cell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+        cell.setPadding(2f)
+        return cell
+    }
+
+    /**
+     * Add centered text to document
+     */
+    private fun addCenteredText(document: Document, text: String, font: PdfFont, fontSize: Float) {
+        val paragraph = Paragraph(text)
+            .setFont(font)
+            .setFontSize(fontSize)
+            .setTextAlignment(TextAlignment.CENTER)
+        document.add(paragraph)
+    }
+
+    /**
+     * Add left-aligned text to document
+     */
+    private fun addLeftAlignedText(document: Document, text: String, font: PdfFont, fontSize: Float) {
+        val paragraph = Paragraph(text)
+            .setFont(font)
+            .setFontSize(fontSize)
+            .setTextAlignment(TextAlignment.LEFT)
+        document.add(paragraph)
+    }
+
+    /**
+     * Add right-aligned text to document
+     */
+    private fun addRightAlignedText(document: Document, text: String, font: PdfFont, fontSize: Float) {
+        val paragraph = Paragraph(text)
+            .setFont(font)
+            .setFontSize(fontSize)
+            .setTextAlignment(TextAlignment.RIGHT)
+        document.add(paragraph)
+    }
+
+    /**
+     * Add separator line
+     */
+    private fun addSeparatorLine(document: Document, font: PdfFont, separator: String) {
+        val paragraph = Paragraph(separator)
+            .setFont(font)
+            .setFontSize(10f)
+            .setTextAlignment(TextAlignment.CENTER)
+        document.add(paragraph)
+    }
+
+    /**
+     * Format quantity display
+     */
+    private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
+        return if (quantiteBoitParCarton in 2..quantity && quantity % quantiteBoitParCarton == 0) {
+            val cartons = quantity / quantiteBoitParCarton
+            "${cartons}x${quantiteBoitParCarton}(${quantity})"
+        } else {
+            quantity.toString()
         }
     }
+
+    /**
+     * Round value to 1 decimal place
+     */
+    private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
 
     /**
      * Upload PDF file to Firebase Storage
