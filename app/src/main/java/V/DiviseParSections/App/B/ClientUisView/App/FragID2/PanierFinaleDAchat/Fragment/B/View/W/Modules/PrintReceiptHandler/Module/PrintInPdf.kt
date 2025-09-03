@@ -19,8 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PrintInPdfHandler {
-
+class PrintInPdf_itextpdf_Handler {
     val storageRef = Firebase.storage.reference.child("bonVents_pdf")
     private val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/bonVents_pdf"
 
@@ -77,7 +76,7 @@ class PrintInPdfHandler {
     }
 
     /**
-     * Parse the HTML-like formatted text and convert to PDF elements
+     * Parse the HTML-like formatted text and convert to PDF elements - FIXED VERSION
      */
     private fun parseAndAddFormattedText(
         document: Document,
@@ -91,82 +90,136 @@ class PrintInPdfHandler {
             if (line.trim().isEmpty() || line == ">") continue
 
             val paragraph = Paragraph()
-            var currentLine = line
+            var currentLine = line.trim()
 
-            // Process formatting tags
-            when {
-                currentLine.contains("<BIG><CENTER>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<BIG><CENTER>", "")
-                    paragraph.add(Text(text).setFont(boldFont).setFontSize(16f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                currentLine.contains("<SMALL><CENTER>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<SMALL><CENTER>", "")
-                    paragraph.add(Text(text).setFont(regularFont).setFontSize(10f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                currentLine.contains("<MEDIUM1><CENTER>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<MEDIUM1><CENTER>", "")
-                    paragraph.add(Text(text).setFont(regularFont).setFontSize(12f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                currentLine.contains("<MEDIUM2><CENTER>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<MEDIUM2><CENTER>", "")
-                    paragraph.add(Text(text).setFont(boldFont).setFontSize(14f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                currentLine.contains("<MEDIUM3><CENTER>") || currentLine.contains("<MEDIUM3><RIGHT>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<MEDIUM3>", "")
-                        .replace("<BOLD>", "").replace("<CENTER>", "").replace("<RIGHT>", "")
-                    paragraph.add(Text(text).setFont(boldFont).setFontSize(14f))
-                    if (currentLine.contains("<RIGHT>")) {
-                        paragraph.setTextAlignment(TextAlignment.RIGHT)
-                    } else {
-                        paragraph.setTextAlignment(TextAlignment.CENTER)
-                    }
-                }
-                currentLine.contains("<MEDIUM1><LEFT>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<MEDIUM1><LEFT>", "")
-                    paragraph.add(Text(text).setFont(regularFont).setFontSize(12f))
-                    paragraph.setTextAlignment(TextAlignment.LEFT)
-                }
-                currentLine.contains("<SMALL><LEFT>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<SMALL><LEFT>", "")
-                    paragraph.add(Text(text).setFont(regularFont).setFontSize(10f))
-                    paragraph.setTextAlignment(TextAlignment.LEFT)
-                }
-                currentLine.contains("<SMALL><BOLD>") -> {
-                    val text = extractTextBetweenTags(currentLine, "<SMALL><BOLD>", "<NORMAL>")
-                    paragraph.add(Text(text).setFont(boldFont).setFontSize(10f))
-                    paragraph.setTextAlignment(TextAlignment.LEFT)
-                }
-                currentLine.contains("=====") || currentLine.contains("-----") -> {
-                    // Separator lines
-                    paragraph.add(Text(currentLine.replace("<LEFT><NORMAL><MEDIUM1>", "")).setFont(regularFont).setFontSize(12f))
-                    paragraph.setTextAlignment(TextAlignment.CENTER)
-                }
-                else -> {
-                    // Default formatting
-                    val cleanText = currentLine
-                        .replace("<LEFT><NORMAL><MEDIUM1>", "")
-                        .replace("<NORMAL>", "")
-                        .replace("<MEDIUM1>", "")
-                        .replace("<LEFT>", "")
-                        .trim()
+            // Skip empty lines after cleaning
+            if (currentLine.isEmpty()) continue
 
-                    if (cleanText.isNotEmpty()) {
-                        paragraph.add(Text(cleanText).setFont(regularFont).setFontSize(11f))
-                        paragraph.setTextAlignment(TextAlignment.LEFT)
-                    }
+            // Handle separator lines first (common pattern)
+            if (currentLine.contains("=====") || currentLine.contains("-----")) {
+                val cleanText = cleanAllTags(currentLine)
+                if (cleanText.isNotEmpty()) {
+                    paragraph.add(Text(cleanText).setFont(regularFont).setFontSize(10f))
+                    paragraph.setTextAlignment(TextAlignment.CENTER)
                 }
+                document.add(paragraph)
+                continue
             }
 
-            document.add(paragraph)
+            // Extract and apply formatting
+            val formattedText = parseFormattedLine(currentLine)
+
+            if (formattedText.text.isNotEmpty()) {
+                val textElement = Text(formattedText.text)
+                    .setFont(if (formattedText.isBold) boldFont else regularFont)
+                    .setFontSize(formattedText.fontSize)
+
+                paragraph.add(textElement)
+                paragraph.setTextAlignment(formattedText.alignment)
+
+                document.add(paragraph)
+            }
         }
     }
 
+    private data class FormattedText(
+        val text: String,
+        val fontSize: Float,
+        val isBold: Boolean,
+        val alignment: TextAlignment
+    )
+
     /**
-     * Extract text between formatting tags
+     * Parse a single line and extract formatting information
+     */
+    private fun parseFormattedLine(line: String): FormattedText {
+        var text = line
+        var fontSize = 11f // default
+        var isBold = false
+        var alignment = TextAlignment.LEFT
+
+        // Determine font size
+        when {
+            text.contains("<BIG>") -> {
+                fontSize = 16f
+                text = text.replace("<BIG>", "")
+            }
+            text.contains("<MEDIUM3>") -> {
+                fontSize = 14f
+                text = text.replace("<MEDIUM3>", "")
+            }
+            text.contains("<MEDIUM2>") -> {
+                fontSize = 14f
+                text = text.replace("<MEDIUM2>", "")
+            }
+            text.contains("<MEDIUM1>") -> {
+                fontSize = 12f
+                text = text.replace("<MEDIUM1>", "")
+            }
+            text.contains("<SMALL>") -> {
+                fontSize = 10f
+                text = text.replace("<SMALL>", "")
+            }
+        }
+
+        // Determine alignment
+        when {
+            text.contains("<CENTER>") -> {
+                alignment = TextAlignment.CENTER
+                text = text.replace("<CENTER>", "")
+            }
+            text.contains("<RIGHT>") -> {
+                alignment = TextAlignment.RIGHT
+                text = text.replace("<RIGHT>", "")
+            }
+            text.contains("<LEFT>") -> {
+                alignment = TextAlignment.LEFT
+                text = text.replace("<LEFT>", "")
+            }
+        }
+
+        // Determine if bold
+        if (text.contains("<BOLD>") || text.contains("<MEDIUM2>") || text.contains("<MEDIUM3>")) {
+            isBold = true
+            text = text.replace("<BOLD>", "")
+        }
+
+        // Clean remaining tags
+        text = cleanAllTags(text)
+
+        return FormattedText(
+            text = text,
+            fontSize = fontSize,
+            isBold = isBold,
+            alignment = alignment
+        )
+    }
+
+    /**
+     * Clean all remaining HTML-like tags from text
+     */
+    private fun cleanAllTags(text: String): String {
+        return text
+            .replace("<NORMAL>", "")
+            .replace("<UNDERLINE>", "")
+            .replace("<LINE>", "")
+            .replace("<DLINE>", "")
+            .replace("<LINE0>", "")
+            .replace("<DLINE0>", "")
+            .replace("<CUT>", "")
+            .replace("<AWAKE>", "")
+            .replace("<LOGO>", "")
+            .replace("<LOGO2>", "")
+            .replace("<INVERSE>", "")
+            .replace("<DRAWER>", "")
+            .replace("<COMMAND>", "")
+            // Remove any remaining tags with regex pattern
+            .replace(Regex("<[^>]*>"), "")
+            .trim()
+    }
+
+    /**
+     * Extract text between formatting tags (keeping old method for compatibility)
      */
     private fun extractTextBetweenTags(text: String, startTag: String, endTag: String): String {
         val startIndex = text.indexOf(startTag)
@@ -199,42 +252,6 @@ class PrintInPdfHandler {
             downloadUrl.toString()
         } catch (e: Exception) {
             throw Exception("Failed to upload to Firebase: ${e.message}")
-        }
-    }
-
-    /**
-     * Simple method to create a basic PDF receipt
-     */
-    suspend fun createSimpleReceipt(
-        context: Context,
-        title: String,
-        items: List<String>,
-        total: String,
-        clientName: String = "Client"
-    ): Result<String> {
-        return try {
-            val receiptText = buildString {
-                append("<BIG><CENTER>$title<BR>")
-                append("<SMALL><CENTER>Abdelwahab JeMla.Com<BR>")
-                append("<SMALL><CENTER>0553885037<BR>")
-                append("<BR>")
-                append("<MEDIUM1><LEFT>Client: $clientName<BR>")
-                append("<SMALL><LEFT>Date: ${SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())}<BR>")
-                append("<BR>")
-                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-
-                items.forEach { item ->
-                    append("<SMALL><LEFT>$item<BR>")
-                }
-
-                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-                append("<MEDIUM2><CENTER>Total: $total<BR>")
-                append("<BR><BR><BR>>")
-            }
-
-            generateAndStorePdfReceipt(context, receiptText, clientName)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 }

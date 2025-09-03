@@ -19,7 +19,7 @@ import java.util.Date
 import java.util.Locale
 
 class PrintReceiptHandler_Juil(
-    private val printInPdfHandler: PrintInPdfHandler,
+    private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
     private val TAG = "PrintReceiptHandler"
