@@ -187,18 +187,6 @@ fun PrixsVents_Handler(
                 )
             }
         }
-
-        // Added benefit row for Edited_Pour_Client tariff type
-        if (currentApp_Est_Admin && typeTarification == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-            BenefitDisplayRow(
-                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                relative_Produit = relative_Produit,
-                currentTariffPrice = currentTariffPrice,
-                onPriceChange = { newPrice, shouldCreateNew ->
-                    handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
-                }
-            )
-        }
     }
 }
 
