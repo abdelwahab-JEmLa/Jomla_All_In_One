@@ -17,7 +17,8 @@ import java.util.Locale
 
 class PrintReceiptHandler_Juil(
     printInPdfHandler:PrintInPdfHandler,
-) {
+) {          //<--
+//TODO(1): integre la
     private val PRINT_INTENT = "pe.diegoveloper.printing"
 
     data class ArticleImpression(

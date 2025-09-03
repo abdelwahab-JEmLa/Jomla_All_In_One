@@ -144,6 +144,21 @@ dependencies {
     // MongoDB
     implementation("org.mongodb:bson:4.11.1")
 
+    // PDF Generation - iText7 (NEW DEPENDENCY)
+    implementation("com.itextpdf:itext7-core:7.2.5")
+    implementation("com.itextpdf:html2pdf:4.0.5") // Optional: for HTML to PDF conversion
+
+    // For coroutines with Firebase
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // ExoPlayer
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("com.google.android.exoplayer:extension-mediasession:2.19.1")
+
+    // ExifInterface
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
+
     // ================== TESTING DEPENDENCIES ==================
     // Unit Testing
     testImplementation(libs.junit)
@@ -159,14 +174,14 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:3.5.0")
     testImplementation("io.insert-koin:koin-test-junit4:3.5.0")
 
-    // Android Instrumented Testing - FIXED MISSING DEPENDENCIES
+    // Android Instrumented Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 
-    // CRITICAL: Compose Testing Dependencies - THESE WERE MISSING
+    // Compose Testing Dependencies
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.compose.ui:ui-test-manifest")
 
@@ -177,16 +192,6 @@ dependencies {
     // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // For coroutines with Firebase
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
-
-    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation ("com.google.android.exoplayer:exoplayer-ui:2.19.1")
-
-    // If you need additional ExoPlayer extensions
-    implementation ("com.google.android.exoplayer:extension-mediasession:2.19.1")
-
-    implementation ("androidx.exifinterface:exifinterface:1.3.6")
 }
 
 apply(plugin = "com.google.gms.google-services")
