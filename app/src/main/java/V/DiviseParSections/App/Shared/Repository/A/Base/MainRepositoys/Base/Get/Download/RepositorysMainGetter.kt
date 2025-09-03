@@ -134,6 +134,8 @@ class RepositorysMainGetter(
     //--------------M16----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M16CategorieProduit_By_OldID(OldID: Long): CategoriesTabelle? =
         repoM16CategorieProduit.datasValue.find { it.id == OldID }
+    fun find_M16CategorieProduit_By_KeyId(keyID: String): CategoriesTabelle? =
+        repoM16CategorieProduit.datasValue.find { it.keyID == keyID }
 
     //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? =

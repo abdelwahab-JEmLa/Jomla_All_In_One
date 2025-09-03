@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.os.Environment
@@ -40,8 +41,37 @@ data class CreditReceiptData(
 )
 
 class PrintInPdf_itextpdf_Handler(
-    repositorysMainGetter: RepositorysMainGetter,
+    val repositorysMainGetter: RepositorysMainGetter,
 ) {
+
+    /**
+     * Find the relative category for a product
+     * Used to append category name after product name if category is not null
+     */
+    fun find_Relative_Categorie(rela_produit: ArticlesBasesStatsTable): CategoriesTabelle? {
+        return rela_produit.idParentCategorie?.let { parentCategoryId ->
+            repositorysMainGetter.find_M16CategorieProduit_By_OldID(parentCategoryId)
+        }
+    }
+
+    /**
+     * Format product name with category if available
+     * @param produit The product data
+     * @return Formatted product name with category appended if exists
+     */
+    private fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
+        val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
+
+        // Find and append category name if it exists
+        val category = produit?.let { find_Relative_Categorie(it) }
+
+        return if (category != null && category.nom.isNotBlank()) {
+            "$productName (${capitalizeFirstLetter(category.nom)})"
+        } else {
+            productName
+        }
+    }
+
     companion object {
         private const val SPACING_2DP = 0.7f
     }
@@ -186,7 +216,7 @@ class PrintInPdf_itextpdf_Handler(
             val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f)))
             table.setWidth(UnitValue.createPercentValue(100f))
 
-            val clientCell = Cell().add(Paragraph(capitalizeFirstLetter(clientName)).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
+            val clientCell = Cell().add(Paragraph("Client : ${capitalizeFirstLetter(clientName)}").setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
 
             val dateCell = Cell().add(Paragraph(date).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
@@ -346,7 +376,9 @@ class PrintInPdf_itextpdf_Handler(
 
                     if (subtotal != 0.0) {
                         val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
-                        val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
+
+                        // Use the new method to format product name with category
+                        val productNameWithCategory = formatProductNameWithCategory(produit)
 
                         val unitPrice = if (produit?.afficheUniteAuPrint == true) {
                             val nombreUniteInt = produit.nombreUniteInt
@@ -358,7 +390,7 @@ class PrintInPdf_itextpdf_Handler(
                         table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
                         table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                         table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
-                        table.addCell(createDataCell(productName, regularFont, 10f, TextAlignment.LEFT))
+                        table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
                         table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
 
                         total += subtotal
