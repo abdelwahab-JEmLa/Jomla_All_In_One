@@ -47,11 +47,12 @@ class PrintInPdf_itextpdf_Handler {
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
-        transactionId: String = ""
+        transactionId: String = "",
+        its_GrossistApp: Boolean = true
     ): Result<String> {
         if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
         val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-        generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo)
+        generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo, its_GrossistApp)
         val url = uploadToFirebaseStorage(file, file.name)
         return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
     }
@@ -74,12 +75,15 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun generateVentPdf(
         path: String, client: M2Client?, operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit
+        tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, its_GrossistApp: Boolean
     ) {
         PdfWriter(path).use { writer ->
             PdfDocument(writer).use { pdfDoc ->
                 Document(pdfDoc, PageSize.A5).use { doc ->
-                    addHeader(doc, "Facture")
+                    // Only add header if its_GrossistApp is false
+                    if (!its_GrossistApp) {
+                        addHeader(doc, "Facture")
+                    }
                     addClientDate(doc, client?.nom ?: "Client")
                     createProductTable(doc, operations, tarificationRepo, produitRepo)
                     client?.currentCreditBalance?.takeIf { it < 0 }?.let {
@@ -98,11 +102,10 @@ class PrintInPdf_itextpdf_Handler {
                     val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
                     addHeader(doc, receiptType)
                     addClientDate(doc, data.client?.nom ?: "Client")
-                    addSeparator(doc, "=====================")
 
                     if (data.showPaymentHistory) {
                         addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(8f))
+                        doc.add(Paragraph("\n").setFontSize(4f))
                     }
 
                     val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
@@ -111,7 +114,7 @@ class PrintInPdf_itextpdf_Handler {
 
                     addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
                     addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
-                    doc.add(Paragraph("\n").setFontSize(8f))
+                    doc.add(Paragraph("\n").setFontSize(4f))
 
                     if (data.showPaymentHistory && data.previousPayments.isNotEmpty()) {
                         addText(doc, "Paiements Précédents:", regularFont, 10f, TextAlignment.LEFT)
@@ -119,18 +122,18 @@ class PrintInPdf_itextpdf_Handler {
                             addText(doc, "  ${i + 1}. ${round(payment)}Da", regularFont, 10f, TextAlignment.LEFT)
                         }
                         addText(doc, "Sous-total: ${round(data.previousPayments.sum())}Da", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(8f))
+                        doc.add(Paragraph("\n").setFontSize(4f))
                         addText(doc, "Paiement Actuel:", boldFont, 12f, TextAlignment.LEFT)
                     } else {
                         addText(doc, "Versement Effectué:", boldFont, 12f, TextAlignment.LEFT)
                     }
 
                     addText(doc, "${round(data.currentPayment)}Da", boldFont, 14f, TextAlignment.CENTER)
-                    doc.add(Paragraph("\n").setFontSize(8f))
+                    doc.add(Paragraph("\n").setFontSize(4f))
 
                     if (data.showPaymentHistory) {
                         addText(doc, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(8f))
+                        doc.add(Paragraph("\n").setFontSize(4f))
                     }
 
                     when {
@@ -156,7 +159,7 @@ class PrintInPdf_itextpdf_Handler {
                     }
 
                     if (!data.showPaymentHistory) {
-                        doc.add(Paragraph("\n").setFontSize(8f))
+                        doc.add(Paragraph("\n").setFontSize(4f))
                         addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.CENTER)
                     }
                 }
@@ -166,10 +169,13 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun addHeader(doc: Document, title: String) {
         addText(doc, "Abdelwahab", boldFont, 18f, TextAlignment.CENTER)
+        doc.add(Paragraph("\n").setFontSize(2f))
         addText(doc, "JeMla.Com", boldFont, 16f, TextAlignment.CENTER)
+        doc.add(Paragraph("\n").setFontSize(2f))
         addText(doc, "0553885037", regularFont, 12f, TextAlignment.CENTER)
+        doc.add(Paragraph("\n").setFontSize(2f))
         addText(doc, title, regularFont, 12f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(8f))
+        doc.add(Paragraph("\n").setFontSize(6f))
     }
 
     private fun addClientDate(doc: Document, clientName: String) {
@@ -186,7 +192,7 @@ class PrintInPdf_itextpdf_Handler {
         table.addCell(clientCell)
         table.addCell(dateCell)
         doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(8f))
+        doc.add(Paragraph("\n").setFontSize(6f))
     }
 
     private fun createProductTable(
@@ -196,7 +202,6 @@ class PrintInPdf_itextpdf_Handler {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
-        // Headers: Qté | P.U | Désignation | Montant
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
@@ -213,28 +218,27 @@ class PrintInPdf_itextpdf_Handler {
             if (subtotal != 0.0) {
                 val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1)
 
-                // Data rows matching the header order: Qté | P.U | Désignation | Montant
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(produit?.nom ?: "Produit", regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
                 total += subtotal
             }
         }
 
         doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(10f))
+        doc.add(Paragraph("\n").setFontSize(6f))
         addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
         addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
     }
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(2f)
 
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.2f)).setPadding(4f)
+            .setBorder(SolidBorder(0.2f)).setPadding(3f)
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align))
