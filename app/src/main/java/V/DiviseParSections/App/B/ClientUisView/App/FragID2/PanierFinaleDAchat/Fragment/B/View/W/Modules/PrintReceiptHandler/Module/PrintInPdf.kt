@@ -37,8 +37,7 @@ data class CreditReceiptData(
     val showPaymentHistory: Boolean = false
 )
 
-class PrintInPdf_itextpdf_Handler {     //<--
-//TODO(1): utilise les commentaire don l image pour regle ce code 
+class PrintInPdf_itextpdf_Handler {
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
     private val regularFont: PdfFont by lazy { PdfFontFactory.createFont(StandardFonts.HELVETICA) }
     private val boldFont: PdfFont by lazy { PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD) }
@@ -50,114 +49,166 @@ class PrintInPdf_itextpdf_Handler {     //<--
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
         transactionId: String = ""
-    ): Result<String> = try {
-        val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-        generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo)
-        val url = uploadToFirebaseStorage(file, file.name)
-        Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
-    } catch (e: Exception) {
-        Result.failure(e)
+    ): Result<String> {
+        return try {
+            if (operations.isEmpty()) {
+                return Result.failure(IllegalArgumentException("No operations to print"))
+            }
+
+            val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
+            generateVentPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo)
+            val url = uploadToFirebaseStorage(file, file.name)
+
+            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        } catch (e: SecurityException) {
+            Result.failure(Exception("Permission denied. Please check storage permissions.", e))
+        } catch (e: java.io.IOException) {
+            Result.failure(Exception("Failed to create PDF file. Check storage space.", e))
+        } catch (e: com.google.firebase.FirebaseException) {
+            Result.failure(Exception("Failed to upload to Firebase. Check internet connection.", e))
+        } catch (e: Exception) {
+            Result.failure(Exception("PDF generation failed: ${e.message}", e))
+        }
     }
 
-    suspend fun generateCreditReceiptPdf(context: Context, data: CreditReceiptData): Result<String> = try {
-        val file = createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-        generateCreditPdf(file.absolutePath, data)
-        val url = uploadToFirebaseStorage(file, file.name)
-        Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
-    } catch (e: Exception) {
-        Result.failure(e)
+    suspend fun generateCreditReceiptPdf(context: Context, data: CreditReceiptData): Result<String> {
+        return try {
+            if (data.totalAmount <= 0) {
+                return Result.failure(IllegalArgumentException("Invalid total amount"))
+            }
+
+            val file = createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
+            generateCreditPdf(file.absolutePath, data)
+            val url = uploadToFirebaseStorage(file, file.name)
+
+            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        } catch (e: SecurityException) {
+            Result.failure(Exception("Permission denied. Please check storage permissions.", e))
+        } catch (e: java.io.IOException) {
+            Result.failure(Exception("Failed to create PDF file. Check storage space.", e))
+        } catch (e: com.google.firebase.FirebaseException) {
+            Result.failure(Exception("Failed to upload to Firebase. Check internet connection.", e))
+        } catch (e: Exception) {
+            Result.failure(Exception("Credit PDF generation failed: ${e.message}", e))
+        }
     }
 
     private fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
+        val state = Environment.getExternalStorageState()
+        if (!Environment.MEDIA_MOUNTED.equals(state)) {
+            throw IllegalStateException("External storage not available")
+        }
+
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
-        if (!dir.exists()) dir.mkdirs()
+
+        if (!dir.exists()) {
+            val created = dir.mkdirs()
+            if (!created) {
+                throw java.io.IOException("Cannot create directory: ${dir.absolutePath}")
+            }
+        }
+
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        return File(dir, "${type}_${clientName}_${timestamp}_$id.pdf")
+        val sanitizedClientName = clientName.replace("[^a-zA-Z0-9]".toRegex(), "_")
+        val file = File(dir, "${type}_${sanitizedClientName}_${timestamp}_$id.pdf")
+
+        if (!dir.canWrite()) {
+            throw SecurityException("No write permission for directory: ${dir.absolutePath}")
+        }
+
+        return file
     }
 
     private fun generateVentPdf(
         path: String, client: M2Client?, operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit
     ) {
-        Document(PdfDocument(PdfWriter(path)), PageSize.A5).use { doc ->
-            addHeader(doc, "Facture")
-            addClientDate(doc, client?.nom ?: "Client")
-            createProductTable(doc, operations, tarificationRepo, produitRepo)
-            client?.currentCreditBalance?.takeIf { it < 0 }?.let {
-                addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
-                addText(doc, "${round(it)}Da", regularFont, 14f, TextAlignment.CENTER)
+        PdfWriter(path).use { writer ->
+            PdfDocument(writer).use { pdfDoc ->
+                Document(pdfDoc, PageSize.A5).use { doc ->
+                    addHeader(doc, "Facture")
+                    addClientDate(doc, client?.nom ?: "Client")
+                    createProductTable(doc, operations, tarificationRepo, produitRepo)
+
+                    client?.currentCreditBalance?.takeIf { it < 0 }?.let {
+                        addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
+                        addText(doc, "${round(it)}Da", regularFont, 14f, TextAlignment.CENTER)
+                    }
+                }
             }
         }
     }
 
     private fun generateCreditPdf(path: String, data: CreditReceiptData) {
-        Document(PdfDocument(PdfWriter(path)), PageSize.A5).use { doc ->
-            val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
-            addHeader(doc, receiptType)
-            addClientDate(doc, data.client?.nom ?: "Client")
+        PdfWriter(path).use { writer ->
+            PdfDocument(writer).use { pdfDoc ->
+                Document(pdfDoc, PageSize.A5).use { doc ->
+                    val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
+                    addHeader(doc, receiptType)
+                    addClientDate(doc, data.client?.nom ?: "Client")
 
-            addSeparator(doc, "=====================")
+                    addSeparator(doc, "=====================")
 
-            if (data.showPaymentHistory) {
-                addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
-                doc.add(Paragraph("\n").setFontSize(8f))
-            }
-
-            val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
-            val remaining = data.totalAmount - totalPaid
-
-            val totalLabel = if (data.showPaymentHistory) "Montant Total" else "Total à Payer"
-            addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
-            addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(8f))
-
-            if (data.showPaymentHistory && data.previousPayments.isNotEmpty()) {
-                addText(doc, "Paiements Précédents:", regularFont, 10f, TextAlignment.LEFT)
-                data.previousPayments.forEachIndexed { i, payment ->
-                    addText(doc, "  ${i + 1}. ${round(payment)}Da", regularFont, 10f, TextAlignment.LEFT)
-                }
-                addText(doc, "Sous-total: ${round(data.previousPayments.sum())}Da", regularFont, 10f, TextAlignment.LEFT)
-                doc.add(Paragraph("\n").setFontSize(8f))
-                addText(doc, "Paiement Actuel:", boldFont, 12f, TextAlignment.LEFT)
-            } else {
-                addText(doc, "Versement Effectué:", boldFont, 12f, TextAlignment.LEFT)
-            }
-
-            addText(doc, "${round(data.currentPayment)}Da", boldFont, 14f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(8f))
-
-            if (data.showPaymentHistory) {
-                addText(doc, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f, TextAlignment.LEFT)
-                doc.add(Paragraph("\n").setFontSize(8f))
-            }
-
-            addSeparator(doc, "---------------------")
-
-            when {
-                remaining > 0 -> {
-                    val label = if (data.showPaymentHistory) "Reste à Payer" else "Crédit Restant"
-                    addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
-                    addText(doc, "${round(remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
-                }
-                remaining < 0 -> {
-                    val label = if (data.showPaymentHistory) "Trop Payé" else "Surplus Payé"
-                    addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
-                    addText(doc, "${round(-remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
-                }
-                else -> {
                     if (data.showPaymentHistory) {
-                        addText(doc, "✓ PAYÉ COMPLÈTEMENT ✓", boldFont, 14f, TextAlignment.CENTER)
-                        addText(doc, "Merci pour votre confiance", regularFont, 12f, TextAlignment.CENTER)
+                        addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
+                        doc.add(Paragraph("\n").setFontSize(8f))
+                    }
+
+                    val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
+                    val remaining = data.totalAmount - totalPaid
+
+                    val totalLabel = if (data.showPaymentHistory) "Montant Total" else "Total à Payer"
+                    addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
+                    addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
+                    doc.add(Paragraph("\n").setFontSize(8f))
+
+                    if (data.showPaymentHistory && data.previousPayments.isNotEmpty()) {
+                        addText(doc, "Paiements Précédents:", regularFont, 10f, TextAlignment.LEFT)
+                        data.previousPayments.forEachIndexed { i, payment ->
+                            addText(doc, "  ${i + 1}. ${round(payment)}Da", regularFont, 10f, TextAlignment.LEFT)
+                        }
+                        addText(doc, "Sous-total: ${round(data.previousPayments.sum())}Da", regularFont, 10f, TextAlignment.LEFT)
+                        doc.add(Paragraph("\n").setFontSize(8f))
+                        addText(doc, "Paiement Actuel:", boldFont, 12f, TextAlignment.LEFT)
                     } else {
-                        addText(doc, "PAYÉ INTÉGRALEMENT", boldFont, 14f, TextAlignment.CENTER)
-                        addText(doc, "✓ SOLDÉ", boldFont, 12f, TextAlignment.CENTER)
+                        addText(doc, "Versement Effectué:", boldFont, 12f, TextAlignment.LEFT)
+                    }
+
+                    addText(doc, "${round(data.currentPayment)}Da", boldFont, 14f, TextAlignment.CENTER)
+                    doc.add(Paragraph("\n").setFontSize(8f))
+
+                    if (data.showPaymentHistory) {
+                        addText(doc, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f, TextAlignment.LEFT)
+                        doc.add(Paragraph("\n").setFontSize(8f))
+                    }
+
+                    when {
+                        remaining > 0 -> {
+                            val label = if (data.showPaymentHistory) "Reste à Payer" else "Crédit Restant"
+                            addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
+                            addText(doc, "${round(remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
+                        }
+                        remaining < 0 -> {
+                            val label = if (data.showPaymentHistory) "Trop Payé" else "Surplus Payé"
+                            addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
+                            addText(doc, "${round(-remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
+                        }
+                        else -> {
+                            if (data.showPaymentHistory) {
+                                addText(doc, "✓ PAYÉ COMPLÈTEMENT ✓", boldFont, 14f, TextAlignment.CENTER)
+                                addText(doc, "Merci pour votre confiance", regularFont, 12f, TextAlignment.CENTER)
+                            } else {
+                                addText(doc, "PAYÉ INTÉGRALEMENT", boldFont, 14f, TextAlignment.CENTER)
+                                addText(doc, "✓ SOLDÉ", boldFont, 12f, TextAlignment.CENTER)
+                            }
+                        }
+                    }
+
+                    if (!data.showPaymentHistory) {
+                        doc.add(Paragraph("\n").setFontSize(8f))
+                        addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.CENTER)
                     }
                 }
-            }
-
-            if (!data.showPaymentHistory) {
-                doc.add(Paragraph("\n").setFontSize(8f))
-                addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.CENTER)
             }
         }
     }
@@ -187,10 +238,10 @@ class PrintInPdf_itextpdf_Handler {     //<--
         val table = Table(UnitValue.createPercentArray(floatArrayOf(40f, 15f, 20f, 25f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
-        table.addCell(createCell("Désignation", boldFont, 11f, TextAlignment.LEFT, true))
-        table.addCell(createCell("Qté", boldFont, 11f, TextAlignment.CENTER, true))
-        table.addCell(createCell("P.U", boldFont, 11f, TextAlignment.CENTER, true))
-        table.addCell(createCell("Montant", boldFont, 11f, TextAlignment.RIGHT, true))
+        table.addCell(createCell("Désignation", boldFont, 11f, TextAlignment.LEFT, false))
+        table.addCell(createCell("Qté", boldFont, 11f, TextAlignment.CENTER, false))
+        table.addCell(createCell("P.U", boldFont, 11f, TextAlignment.CENTER, false))
+        table.addCell(createCell("Montant", boldFont, 11f, TextAlignment.RIGHT, false))
 
         var total = 0.0
         operations.groupBy { it.parent_M1Produit_KeyId }.forEach { (produitId, ops) ->
@@ -218,7 +269,11 @@ class PrintInPdf_itextpdf_Handler {     //<--
 
     private fun createCell(content: String, font: PdfFont, size: Float, align: TextAlignment, bordered: Boolean = false): Cell {
         val cell = Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-        if (bordered) cell.setBorder(SolidBorder(1f)).setPadding(4f) else cell.setPadding(2f)
+        if (bordered) {
+            cell.setBorder(SolidBorder(0.2f)).setPadding(4f)
+        } else {
+            cell.setPadding(2f)
+        }
         return cell
     }
 
