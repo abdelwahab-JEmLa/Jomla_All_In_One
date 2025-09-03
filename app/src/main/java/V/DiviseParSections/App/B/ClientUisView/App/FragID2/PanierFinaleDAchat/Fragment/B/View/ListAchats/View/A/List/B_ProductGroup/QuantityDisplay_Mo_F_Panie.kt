@@ -8,7 +8,6 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,11 +44,8 @@ fun QuantityDisplay_Mo_F_Panie(
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
-
-    val getterFocusedVarsHandlerFacade =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-    val focusedValuesSetter =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+    val getterFocusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
 
     val totalQuantity by derivedStateOf {
         getterFocusedVarsHandlerFacade
@@ -124,31 +120,20 @@ fun QuantityDisplay_Mo_F_Panie(
             }
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
-        val parentM13TarificationKeyID =
-            relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
-
+        val parentM13TarificationKeyID = relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         val relative_Tariff = repositorysMainGetter.find_M13Tarification_By_KeyID(parentM13TarificationKeyID)
 
         Card(
             modifier = Modifier
-
                 .semantics(mergeDescendants = true) {
-                    val datasValuefilter =
-                        datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
+                    val datasValuefilter = datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
                     set(value = datasValue, key = SemanticsPropertyKey("datasValue"))
-                    Log.d("datasValuefilter", datasValuefilter.toString())
                 }
                 .semantics(mergeDescendants = true) {
-                    set(
-                        value = find_Tariff_Prix_Detaille,
-                        key = SemanticsPropertyKey("findTariff")
-                    )
+                    set(value = find_Tariff_Prix_Detaille, key = SemanticsPropertyKey("findTariff"))
                 }
                 .semantics(mergeDescendants = true) {
-                    set(
-                        value = relative_List_M10OperationVentCouleur,
-                        key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur")
-                    )
+                    set(value = relative_List_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur"))
                 }
                 .clickable(enabled = !allNonTrouve) {
                     focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
@@ -162,10 +147,9 @@ fun QuantityDisplay_Mo_F_Panie(
             )
         ) {
             Column(
-                modifier = Modifier
-                    .semantics(mergeDescendants = true) {
-                        set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
-                    }
+                modifier = Modifier.semantics(mergeDescendants = true) {
+                    set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                }
             ) {
                 Row(
                     modifier = Modifier

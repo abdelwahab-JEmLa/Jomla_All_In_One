@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -39,7 +40,6 @@ data class CreditReceiptData(
 )
 
 class PrintInPdf_itextpdf_Handler {
-
     companion object {
         private const val TAG = "PrintInPdf_Handler"
         private const val SPACING_2DP = 0.7f
@@ -263,80 +263,6 @@ class PrintInPdf_itextpdf_Handler {
         }
     }
 
-    private fun createProductTable(
-        doc: Document, operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit,
-        regularFont: PdfFont, boldFont: PdfFont
-    ) {
-        try {
-            Log.d(TAG, "Creating product table with ${operations.size} operations")
-
-            val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f)))
-            table.setWidth(UnitValue.createPercentValue(100f))
-
-            // Headers with numbering column
-            Log.d(TAG, "Adding table headers...")
-            table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
-            table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
-            table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-            table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-            table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
-
-            var total = 0.0
-            var rowNumber = 1
-
-            Log.d(TAG, "Processing grouped operations...")
-            val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
-            Log.d(TAG, "Found ${groupedOps.size} product groups")
-
-            groupedOps.forEach { (produitId, ops) ->
-                try {
-                    Log.d(TAG, "Processing product ID: $produitId with ${ops.size} operations")
-
-                    val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
-                    val produit = produitRepo.datasValue.find { it.keyID == produitId }
-                    val qty = ops.sumOf { it.quantity }
-                    val price = tarification?.prixCurrency ?: 0.0
-                    val subtotal = price * qty
-
-                    Log.d(TAG, "Product: ${produit?.nom}, Qty: $qty, Price: $price, Subtotal: $subtotal")
-
-                    if (subtotal != 0.0) {
-                        val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1)
-                        val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
-
-                        table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
-                        table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
-                        table.addCell(createDataCell("${round(price)}", regularFont, 10f, TextAlignment.CENTER))
-                        table.addCell(createDataCell(productName, regularFont, 10f, TextAlignment.LEFT))
-                        table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
-
-                        total += subtotal
-                        rowNumber++
-                        Log.d(TAG, "Added row $rowNumber for product: $productName")
-                    } else {
-                        Log.d(TAG, "Skipping product with zero subtotal")
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error processing product ID: $produitId", e)
-                    // Continue with next product instead of failing completely
-                }
-            }
-
-            Log.d(TAG, "Adding table to document...")
-            doc.add(table)
-            doc.add(Paragraph("\n").setFontSize(0.1f))
-
-            Log.d(TAG, "Adding total: $total")
-            addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
-            addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
-
-            Log.d(TAG, "Product table created successfully with total: $total")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error creating product table", e)
-            throw e
-        }
-    }
 
     // Initialize fonts with error handling
     private val regularFont: PdfFont? by lazy {
@@ -502,6 +428,119 @@ class PrintInPdf_itextpdf_Handler {
         }
     }
 
+    // Updated formatQuantity function to handle afficheUniteAuPrint
+    private fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
+        val shouldShowUnits = produit?.afficheUniteAuPrint == true
+        val nombreUniteInt = produit?.nombreUniteInt ?: 1
+
+        return when {
+            // Case 1: Show units and product has carton packaging
+            shouldShowUnits && cartonSize in 2..qty && qty % cartonSize == 0 -> {
+                val cartons = qty / cartonSize
+                "$cartons X $cartonSize X $nombreUniteInt"
+            }
+
+            // Case 2: Show units but no carton packaging (just boxes)
+            shouldShowUnits -> {
+                "$qty X $nombreUniteInt"
+            }
+
+            // Case 3: Don't show units but has carton packaging
+            cartonSize in 2..qty && qty % cartonSize == 0 -> {
+                val cartons = qty / cartonSize
+                "$cartons X $cartonSize"
+            }
+
+            // Case 4: Default - just show quantity
+            else -> qty.toString()
+        }
+    }
+
+    // Updated createProductTable function to pass the product object
+    private fun createProductTable(
+        doc: Document, operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit,
+        regularFont: PdfFont, boldFont: PdfFont
+    ) {
+        try {
+            Log.d(TAG, "Creating product table with ${operations.size} operations")
+
+            val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f)))
+            table.setWidth(UnitValue.createPercentValue(100f))
+
+            // Headers with numbering column
+            Log.d(TAG, "Adding table headers...")
+            table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+            table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
+
+            var total = 0.0
+            var rowNumber = 1
+
+            Log.d(TAG, "Processing grouped operations...")
+            val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
+            Log.d(TAG, "Found ${groupedOps.size} product groups")
+
+            groupedOps.forEach { (produitId, ops) ->
+                try {
+                    Log.d(TAG, "Processing product ID: $produitId with ${ops.size} operations")
+
+                    val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
+                    val produit = produitRepo.datasValue.find { it.keyID == produitId }
+                    val qty = ops.sumOf { it.quantity }
+                    val price = tarification?.prixCurrency ?: 0.0
+                    val subtotal = price * qty
+
+                    Log.d(TAG, "Product: ${produit?.nom}, Qty: $qty, Price: $price, Subtotal: $subtotal")
+                    Log.d(TAG, "Product afficheUniteAuPrint: ${produit?.afficheUniteAuPrint}")
+
+                    if (subtotal != 0.0) {
+                        // FIXED: Pass the product object to formatQuantity
+                        val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                        val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
+
+                        // Calculate unit price if showing units
+                        val unitPrice = if (produit?.afficheUniteAuPrint == true) {
+                            val nombreUniteInt = produit.nombreUniteInt
+                            if (nombreUniteInt > 0) price / nombreUniteInt else price
+                        } else {
+                            price
+                        }
+
+                        table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                        table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                        table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
+                        table.addCell(createDataCell(productName, regularFont, 10f, TextAlignment.LEFT))
+                        table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
+                        total += subtotal
+                        rowNumber++
+                        Log.d(TAG, "Added row $rowNumber for product: $productName with display: $qtyDisplay")
+                    } else {
+                        Log.d(TAG, "Skipping product with zero subtotal")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error processing product ID: $produitId", e)
+                    // Continue with next product instead of failing completely
+                }
+            }
+
+            Log.d(TAG, "Adding table to document...")
+            doc.add(table)
+            doc.add(Paragraph("\n").setFontSize(0.1f))
+
+            Log.d(TAG, "Adding total: $total")
+            addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
+            addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
+
+            Log.d(TAG, "Product table created successfully with total: $total")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creating product table", e)
+            throw e
+        }
+    }
     private fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
         Log.d(TAG, "Creating local file - Client: $clientName, Type: $type, ID: $id")
 
@@ -533,24 +572,6 @@ class PrintInPdf_itextpdf_Handler {
         }
     }
 
-    private fun addHeader(doc: Document, title: String) {
-        try {
-            Log.d(TAG, "Adding header with title: $title")
-            addText(doc, "Abdelwahab", boldFont!!, 18f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-            addText(doc, "JeMla.Com", boldFont!!, 16f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-            addText(doc, "0553885037", regularFont!!, 12f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-            addText(doc, title, regularFont!!, 12f, TextAlignment.CENTER)
-            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-            Log.d(TAG, "Header added successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error adding header", e)
-            throw e
-        }
-    }
-
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
@@ -561,10 +582,6 @@ class PrintInPdf_itextpdf_Handler {
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
-
-    private fun formatQuantity(qty: Int, cartonSize: Int): String =
-        if (cartonSize in 2..qty && qty % cartonSize == 0)
-            "${qty / cartonSize} X $cartonSize" else qty.toString()
 
     private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
 

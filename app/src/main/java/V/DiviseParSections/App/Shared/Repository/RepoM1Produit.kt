@@ -210,6 +210,9 @@ data class ArticlesBasesStatsTable(
     var prixAchatDernierTimeTempUpdate: Long = 0L,
     var clientPrixVentUnite: Double = 0.0,
 
+    var afficheUniteAuPrint: Boolean = false,
+
+
     //image
     var actualiseSonImage: Int = 0,
     var actualiseSonImageTest2: Int = 0,

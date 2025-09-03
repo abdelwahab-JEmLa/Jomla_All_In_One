@@ -5,6 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -302,13 +303,26 @@ fun ToggleButton_SemiModularized_F_Panie(
         )
     }
 }
-
 @Composable
 private fun Card_Produit_Nombre_Unites(
     allNonTrouve: Boolean,
-    produit: ArticlesBasesStatsTable,
+    relative_Produit: ArticlesBasesStatsTable,
+    aCentralFacade: ACentralFacade = koinInject(),
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     onClick_PourOuvrireDialog: () -> Unit
 ) {
+    var toggleState by remember { mutableStateOf(relative_Produit.afficheUniteAuPrint) }
+
+    fun clickHandel() {
+        toggleState = !toggleState
+
+        repositorysMainSetter.update_M1Produit(
+            relative_Produit.copy(
+                afficheUniteAuPrint = toggleState
+            )
+        )
+    }
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -322,6 +336,7 @@ private fun Card_Produit_Nombre_Unites(
             horizontalArrangement = Arrangement.spacedBy(petitePaddine),
             modifier = Modifier.padding(petitePaddine)
         ) {
+            // Original quantity display button
             IconButton(
                 onClick = {
                     onClick_PourOuvrireDialog()
@@ -340,12 +355,32 @@ private fun Card_Produit_Nombre_Unites(
                         else MaterialTheme.colorScheme.tertiary,
                     )
                     Text(
-                        text = "${produit.nombreUniteInt}",
+                        text = "${relative_Produit.nombreUniteInt}",
                         fontSize = 15.sp,
                         color = Color.Red,
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+
+            // Toggle button for afficheUniteAuPrint
+            IconButton(
+                onClick = { clickHandel() },
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (toggleState) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.surfaceVariant
+                    )
+            ) {
+                Icon(
+                    imageVector = if (toggleState) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                    contentDescription = if (toggleState) "Print units enabled" else "Print units disabled",
+                    tint = if (toggleState) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }
