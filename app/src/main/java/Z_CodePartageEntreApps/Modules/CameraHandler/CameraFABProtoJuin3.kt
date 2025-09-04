@@ -39,6 +39,8 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
 
+// TODO(1) Fix: Dynamic color index instead of hardcoded "1"
+
 suspend fun addNew(
     product: ArticlesBasesStatsTable,
     context: Context,
@@ -47,8 +49,8 @@ suspend fun addNew(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
     fileName: String,
-
-    ) {
+    colorIndex: Int = 1 // Add colorIndex parameter
+) {
     withContext(Dispatchers.Main) {
         val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
         val idParentCategorie =
@@ -67,7 +69,7 @@ suspend fun addNew(
         val disponibilityState = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
             DisponibilityEtates.NON_DISPO
         } else {
-            DisponibilityEtates.DISPO // Default to available
+            DisponibilityEtates.DISPO
         }
 
         val newProduit = product.copy(
@@ -90,10 +92,11 @@ suspend fun addNew(
             .get_default()
             .copy(
                 keyID = keyIDM3CouleurProduitInfos,
-                nomImageFichieSansEtansion = newOldId.toString() + "_1",
+                nomImageFichieSansEtansion = "${newOldId}_$colorIndex", // Use dynamic colorIndex
                 parentBProduitInfosKeyID = newProduit.keyID,
                 parentId1ProduitInfosDebugName = newProduit.nom,
                 parentBProduitOldID = newProduit.id,
+                indexCouleurDansAncienProto = colorIndex, // Set the proper index
                 processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeAuGeneralHandler
             )
 
@@ -110,7 +113,6 @@ suspend fun addNew(
         Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
     }
 }
-
 
 @Composable
 fun CameraFABProtoJuin3(
@@ -130,6 +132,10 @@ fun CameraFABProtoJuin3(
     var pendingProduct by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
 
+    fun getNextColorIndexForNewProduct(): Int {
+        // For new products, always start with color index 1
+        return 1
+    }
 
     suspend fun handleImageCapture(uri: Uri) {
         if (isProcessing) return
@@ -137,8 +143,8 @@ fun CameraFABProtoJuin3(
 
         try {
             pendingProduct?.let { product ->
-                val fileName = "${product.id}_1.webp"   //<--
-                //TODO(1): ici 1 c par index du couleur prix
+                val colorIndex = getNextColorIndexForNewProduct()
+                val fileName = "${product.id}_$colorIndex.webp"
                 val localDir = File(localPath).apply { if (!exists()) mkdirs() }
                 val localFile = File(localDir, fileName)
 
@@ -155,13 +161,17 @@ fun CameraFABProtoJuin3(
                             try {
                                 storageRef.child(fileName).putBytes(bytes).await()
                             } catch (e: Exception) {
+                                // Handle upload error but continue
                             }
                         }
 
                         addNew(
-                            product,context,aCentralFacade,
-                            a_CentralCompoRepositoryProtoJuin9=a_CentralCompoRepositoryProtoJuin9,
-                            fileName=fileName,
+                            product,
+                            context,
+                            aCentralFacade,
+                            a_CentralCompoRepositoryProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
+                            fileName = fileName,
+                            colorIndex = colorIndex // Pass the dynamic color index
                         )
                     }
                 }

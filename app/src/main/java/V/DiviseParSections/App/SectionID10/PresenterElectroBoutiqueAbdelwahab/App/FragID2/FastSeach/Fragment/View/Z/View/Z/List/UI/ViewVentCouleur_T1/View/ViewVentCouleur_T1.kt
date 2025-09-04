@@ -14,8 +14,12 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
-import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
+import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,6 +33,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BackHand
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Badge
@@ -36,6 +41,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
@@ -47,6 +53,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +62,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,7 +70,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -74,12 +91,23 @@ fun ViewVentCouleur_T1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    size: Dp = 200.dp
+    size: Dp = 200.dp,
+    webPQuality: Int = 85
 ) {
     // State for color name editing
     var isEditingColorName by remember { mutableStateOf(false) }
     var editingColorName by remember { mutableStateOf("") }
     val colorNameFocusRequester = remember { FocusRequester() }
+
+    // Camera dialog state
+    var showCameraDialog by remember { mutableStateOf(false) }
+    var isProcessingImage by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // Firebase and storage references for camera functionality
+    val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
+    val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
 
     val relative_M10OperationVentCouleur by remember {
         derivedStateOf {
@@ -109,15 +137,90 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    fun handleCameraCapture() {
-        val updatedCouleur = relative_M3CouleurInfos.copy(
-            aAffiche = M3CouleurProduitInfos.Type.Image,
-            nomImageFichieSansEtansion = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}",
-            extensionDisponible = "webp"
-        )
+    suspend fun handleImageCaptureForExistingColor(uri: Uri) {
+        if (isProcessingImage) return
+        isProcessingImage = true
 
-        viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+        try {
+            val fileName = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}.webp"
+            val localDir = File(localPath).apply { if (!exists()) mkdirs() }
+            val localFile = File(localDir, fileName)
+
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                val imageBytes = input.readBytes()
+
+                withContext(Dispatchers.IO) {
+                    // Save locally first
+                    FileOutputStream(localFile).use { output ->
+                        output.write(imageBytes)
+                        output.flush()
+                    }
+
+                    // Upload to Firebase in background
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            storageRef.child(fileName).putBytes(imageBytes).await()
+                        } catch (e: Exception) {
+                            // Handle upload error silently - local file is still available
+                        }
+                    }
+                }
+
+                // Update existing color to use image
+                val updatedCouleur = relative_M3CouleurInfos.copy(
+                    aAffiche = M3CouleurProduitInfos.Type.Image,
+                    nomImageFichieSansEtansion = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}",
+                    extensionDisponible = "webp"
+                )
+
+                viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+
+                // Update product timestamps
+                val updatedProduit = produit.copy(
+                    actualiseSonImage = produit.actualiseSonImage + 1,
+                    actualiseSonImageTest2 = produit.actualiseSonImageTest2 + 1,
+                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                )
+
+                viewModel.aCentralFacade.repositorysMainSetter.upsert_M1Produit(updatedProduit)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Image mise à jour pour ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Erreur lors de la mise à jour de l'image: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } finally {
+            isProcessingImage = false
+            showCameraDialog = false
+        }
+    }
+
+    fun handleCameraCapture() {
+        showCameraDialog = true
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
+    // Camera permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            handleCameraCapture()
+        } else {
+            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Function to handle color name editing
@@ -192,8 +295,6 @@ fun ViewVentCouleur_T1(
             .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
 
-// In your ViewVentCouleur_T1 component, replace this section:
-
         if (isEditingColorName) {
             ColorNameDropdownTextField(
                 value = editingColorName,
@@ -246,6 +347,7 @@ fun ViewVentCouleur_T1(
                 }
             }
         }
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
@@ -302,13 +404,43 @@ fun ViewVentCouleur_T1(
                             .offset(x = 4.dp, y = 4.dp)
                             .zIndex(2f)
                             .clickable {
-                                handleCameraCapture()
+                                if (!isProcessingImage) {
+                                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                                }
                             }
                     ) {
-                        CameraFABProtoJuin3(      //<--
-                        //TODO(1): au lieux affile button genaire separated buttton et lence directemnt CameraXDialog apre quand prix update couleur nomImageFichieSansEtansion
-                            size = 24.dp,
-                            aCentralFacade = aCentralFacade
+                        IconButton(
+                            onClick = {
+                                if (!isProcessingImage) {
+                                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                                }
+                            },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Camera,
+                                contentDescription = "Mettre à jour avec photo",
+                                tint = if (isProcessingImage) {
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                },
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+
+                    // Camera dialog
+                    if (showCameraDialog) {
+                        CameraXDialog(
+                            onImageCaptured = { uri ->
+                                scope.launch { handleImageCaptureForExistingColor(uri) }
+                            },
+                            onDismiss = {
+                                showCameraDialog = false
+                                isProcessingImage = false
+                            },
+                            webPQuality = webPQuality
                         )
                     }
 
