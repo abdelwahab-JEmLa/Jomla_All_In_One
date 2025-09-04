@@ -43,32 +43,103 @@ data class CreditReceiptData(
 class PrintInPdf_itextpdf_Handler(
     val repositorysMainGetter: RepositorysMainGetter,
 ) {
-
-    /**
-     * Find the relative category for a product
-     * Used to append category name after product name if category is not null
-     */
     fun find_Relative_Categorie(rela_produit: ArticlesBasesStatsTable): CategoriesTabelle? {
         return rela_produit.idParentCategorie?.let { parentCategoryId ->
             repositorysMainGetter.find_M16CategorieProduit_By_OldID(parentCategoryId)
         }
     }
 
-    /**
-     * Format product name with category if available
-     * @param produit The product data
-     * @return Formatted product name with category appended if exists
-     */
     private fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
         val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
 
-        // Find and append category name if it exists
         val category = produit?.let { find_Relative_Categorie(it) }
 
         return if (category != null && category.nom.isNotBlank()) {
             "$productName (${capitalizeFirstLetter(category.nom)})"
         } else {
             productName
+        }
+    }
+    data class CreditReceiptData(
+        val client: M2Client?,
+        val totalAmount: Double,
+        val currentPayment: Double,
+        val previousPayments: List<Double> = emptyList(),
+        val transactionId: String,
+        val showPaymentHistory: Boolean = false,
+        // Add these fields to match the receipt format
+        val oldBalance: Double = 0.0,  // "Ancien Soldé" - previous balance
+        val currentBill: Double = 0.0  // "Bon actuel" - current bill amount
+    )
+
+    private fun generateCreditPdf(path: String, data: CreditReceiptData) {
+        try {
+            val (regularFont, boldFont) = createFreshFonts()
+
+            PdfWriter(path).use { writer ->
+                PdfDocument(writer).use { pdfDoc ->
+                    Document(pdfDoc, PageSize.A5).use { doc ->
+                        val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Reçu de Paiement"
+                        addHeader(doc, receiptType, regularFont, boldFont)
+                        addClientDate(doc, data.client?.nom ?: "Client", regularFont)
+
+                        if (data.showPaymentHistory) {
+                            addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
+                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        }
+
+                        // Display old balance (Ancien Soldé)
+                        if (data.oldBalance != 0.0) {
+                            addText(doc, "Ancien Soldé :", regularFont, 12f, TextAlignment.LEFT)
+                            addText(doc, "${round(data.oldBalance)} Da", boldFont, 14f, TextAlignment.CENTER)
+                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        }
+
+                        // Display current bill (Bon actuel)
+                        if (data.currentBill > 0) {
+                            addText(doc, "Bon actuel :", regularFont, 12f, TextAlignment.LEFT)
+                            addText(doc, "${round(data.currentBill)} Da", boldFont, 14f, TextAlignment.CENTER)
+                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        }
+
+                        // Display payment (Versement)
+                        addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
+                        addText(doc, "${round(data.currentPayment)} Da", boldFont, 14f, TextAlignment.CENTER)
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+                        // Calculate and display new balance (Nouv. Soldé)
+                        val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
+                        val newBalance = data.oldBalance + data.currentBill - totalPaid
+
+                        addText(doc, "Nouv. Soldé :", boldFont, 12f, TextAlignment.LEFT)
+
+                        when {
+                            newBalance > 0 -> {
+                                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                                addText(doc, "(Reste à payer)", regularFont, 10f, TextAlignment.CENTER)
+                            }
+                            newBalance < 0 -> {
+                                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                                addText(doc, "(Crédit client)", regularFont, 10f, TextAlignment.CENTER)
+                            }
+                            else -> {
+                                addText(doc, "0.00 Da", boldFont, 16f, TextAlignment.CENTER)
+                                addText(doc, "✓ SOLDÉ ✓", boldFont, 12f, TextAlignment.CENTER)
+                                addText(doc, "Merci pour votre confiance", regularFont, 10f, TextAlignment.CENTER)
+                            }
+                        }
+
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        addText(doc, "Transaction: #${data.transactionId}", regularFont, 9f, TextAlignment.CENTER)
+
+                        // Add separator line like in the image
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        addText(doc, "————————————————————————", regularFont, 8f, TextAlignment.CENTER)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw e
         }
     }
 
@@ -108,84 +179,6 @@ class PrintInPdf_itextpdf_Handler(
                         client?.currentCreditBalance?.takeIf { it < 0 }?.let { credit ->
                             addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
                             addText(doc, "${round(credit)}Da", regularFont, 14f, TextAlignment.CENTER)
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    private fun generateCreditPdf(path: String, data: CreditReceiptData) {
-        try {
-            val (regularFont, boldFont) = createFreshFonts()
-
-            PdfWriter(path).use { writer ->
-                PdfDocument(writer).use { pdfDoc ->
-                    Document(pdfDoc, PageSize.A5).use { doc ->
-                        val receiptType = if (data.showPaymentHistory) "Credit Payment Prix_Détaillé" else "Credit Payment"
-                        addHeader(doc, receiptType, regularFont, boldFont)
-                        addClientDate(doc, data.client?.nom ?: "Client", regularFont)
-
-                        if (data.showPaymentHistory) {
-                            addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.LEFT)
-                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-                        }
-
-                        val totalPaid = if (data.showPaymentHistory) data.previousPayments.sum() + data.currentPayment else data.currentPayment
-                        val remaining = data.totalAmount - totalPaid
-                        val totalLabel = if (data.showPaymentHistory) "Montant Total" else "Total à Payer"
-
-                        addText(doc, "$totalLabel :", boldFont, 12f, TextAlignment.LEFT)
-                        addText(doc, "${round(data.totalAmount)}Da", boldFont, 14f, TextAlignment.CENTER)
-                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-
-                        if (data.showPaymentHistory && data.previousPayments.isNotEmpty()) {
-                            addText(doc, "Paiements Précédents:", regularFont, 10f, TextAlignment.LEFT)
-                            data.previousPayments.forEachIndexed { i, payment ->
-                                addText(doc, "  ${i + 1}. ${round(payment)}Da", regularFont, 10f, TextAlignment.LEFT)
-                            }
-                            addText(doc, "Sous-total: ${round(data.previousPayments.sum())}Da", regularFont, 10f, TextAlignment.LEFT)
-                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-                            addText(doc, "Paiement Actuel:", boldFont, 12f, TextAlignment.LEFT)
-                        } else {
-                            addText(doc, "Versement Effectué:", boldFont, 12f, TextAlignment.LEFT)
-                        }
-
-                        addText(doc, "${round(data.currentPayment)}Da", boldFont, 14f, TextAlignment.CENTER)
-                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-
-                        if (data.showPaymentHistory) {
-                            addText(doc, "Total Payé: ${round(totalPaid)}Da", regularFont, 10f, TextAlignment.LEFT)
-                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-                        }
-
-                        when {
-                            remaining > 0 -> {
-                                val label = if (data.showPaymentHistory) "Reste à Payer" else "Crédit Restant"
-                                addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
-                                addText(doc, "${round(remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
-                            }
-                            remaining < 0 -> {
-                                val label = if (data.showPaymentHistory) "Trop Payé" else "Surplus Payé"
-                                addText(doc, "$label :", boldFont, 12f, TextAlignment.LEFT)
-                                addText(doc, "${round(-remaining)}Da", boldFont, 16f, TextAlignment.RIGHT)
-                            }
-                            else -> {
-                                if (data.showPaymentHistory) {
-                                    addText(doc, "✓ PAYÉ COMPLÈTEMENT ✓", boldFont, 14f, TextAlignment.CENTER)
-                                    addText(doc, "Merci pour votre confiance", regularFont, 12f, TextAlignment.CENTER)
-                                } else {
-                                    addText(doc, "PAYÉ INTÉGRALEMENT", boldFont, 14f, TextAlignment.CENTER)
-                                    addText(doc, "✓ SOLDÉ", boldFont, 12f, TextAlignment.CENTER)
-                                }
-                            }
-                        }
-
-                        if (!data.showPaymentHistory) {
-                            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
-                            addText(doc, "Transaction: #${data.transactionId}", regularFont, 10f, TextAlignment.CENTER)
                         }
                     }
                 }
