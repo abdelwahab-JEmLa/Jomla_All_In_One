@@ -34,12 +34,15 @@ class PrintReceiptHandler_Juil(
         repo13TarificationInfos: Repo13TarificationInfos,
         generatePdf: Boolean = false,
         bonVent: M8BonVent? = null,
-        showCreditSection: Boolean = false,
+        showCreditSection: Boolean = true,
         versement: Double = 0.0
     ) {
         val printFunction = {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
             val isBluetoothAvailable = isBluetoothAvailable()
+
+            // Always show credit section when requested, even if values are 0.0
+            val shouldShowCreditSection = showCreditSection && bonVent != null
 
             if (isBluetoothAvailable) {
                 try {
@@ -52,7 +55,7 @@ class PrintReceiptHandler_Juil(
                         repoM1Produit
                     )
 
-                    val finalBluetoothText = if (showCreditSection && bonVent != null) {
+                    val finalBluetoothText = if (shouldShowCreditSection && bonVent!= null) {
                         addCreditSectionToBluetoothText(texteImprimable.toString(), client, bonVent, versement, transactionId)
                     } else {
                         texteImprimable.toString()
@@ -67,7 +70,7 @@ class PrintReceiptHandler_Juil(
             if (generatePdf || !isBluetoothAvailable) {
                 scope?.launch {
                     try {
-                        val result = if (showCreditSection && bonVent != null) {
+                        val result = if (shouldShowCreditSection && bonVent!= null) {
                             printInPdfHandler.generateVentReceiptWithCreditPdf(
                                 context,
                                 client,
@@ -143,11 +146,10 @@ class PrintReceiptHandler_Juil(
             append("<MEDIUM1><CENTER>SECTION CREDIT<BR>")
             append("<BR>")
 
-            if (oldBalance != 0.0) {
-                append("<MEDIUM1><LEFT>Ancien Solde :<BR>")
-                append("<MEDIUM2><CENTER>${round(oldBalance)}Da<BR>")
-                append("<BR>")
-            }
+            // Always show Ancien Solde, even if 0.0
+            append("<MEDIUM1><LEFT>Ancien Solde :<BR>")
+            append("<MEDIUM2><CENTER>${round(oldBalance)}Da<BR>")
+            append("<BR>")
 
             append("<MEDIUM1><LEFT>Bon actuel :<BR>")
             append("<MEDIUM2><CENTER>${round(currentBill)}Da<BR>")
