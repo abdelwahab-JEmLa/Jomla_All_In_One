@@ -24,34 +24,47 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -64,6 +77,11 @@ fun ViewVentCouleur_T1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     size: Dp = 200.dp
 ) {
+    // State for color name editing
+    var isEditingColorName by remember { mutableStateOf(false) }
+    var editingColorName by remember { mutableStateOf("") }
+    val colorNameFocusRequester = remember { FocusRequester() }
+
     val relative_M10OperationVentCouleur by remember {
         derivedStateOf {
             focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -101,6 +119,29 @@ fun ViewVentCouleur_T1(
 
         viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
+    // Function to handle color name editing
+    fun handleStartEditingColorName() {
+        editingColorName = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo
+        isEditingColorName = true
+        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+    }
+
+    fun handleSaveColorName() {
+        if (editingColorName.isNotBlank()) {
+            val updatedCouleur = relative_M3CouleurInfos.copy(
+                nomCouleurStrSiSonImageDispo = editingColorName.trim(),
+                aAffiche = if (relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image)
+                    M3CouleurProduitInfos.Type.Image
+                else
+                    M3CouleurProduitInfos.Type.Nom
+            )
+
+            viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+        isEditingColorName = false
     }
 
     val defaultM10Vent = produit.let {
@@ -151,6 +192,72 @@ fun ViewVentCouleur_T1(
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
+        // Color name editing field at the top
+        if (isEditingColorName) {
+            OutlinedTextField(
+                value = editingColorName,
+                onValueChange = { newText ->
+                    // Capitalize first letter of each word
+                    val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                        if (word.isNotEmpty()) {
+                            word.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase() else it.toString()
+                            }
+                        } else {
+                            word
+                        }
+                    }
+                    editingColorName = capitalizedText
+                },
+                placeholder = {
+                    Text(
+                        text = "Nom définiteur",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                },
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .focusRequester(colorNameFocusRequester)
+                    .zIndex(10f),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        handleSaveColorName()
+                    }
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+            // Auto-focus when editing starts
+            LaunchedEffect(isEditingColorName) {
+                if (isEditingColorName) {
+                    colorNameFocusRequester.requestFocus()
+                }
+            }
+
+            // Auto-close after 15 seconds if no changes
+            LaunchedEffect(isEditingColorName) {
+                if (isEditingColorName) {
+                    delay(15000)
+                    if (editingColorName.isBlank() || editingColorName == relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo) {
+                        isEditingColorName = false
+                    }
+                }
+            }
+        }
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
@@ -200,20 +307,47 @@ fun ViewVentCouleur_T1(
                         }
                     )
 
-                    if (relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image && !isImageAvailable) {
+                    // Camera button - always visible
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .offset(x = 4.dp, y = 4.dp)
+                            .zIndex(2f)
+                            .clickable {
+                                handleCameraCapture()
+                            }
+                    ) {
+                        CameraFABProtoJuin3(
+                            size = 24.dp,
+                            aCentralFacade = aCentralFacade
+                        )
+                    }
+
+                    // Edit color name button - only visible when image file doesn't exist
+                    if (!isImageAvailable) {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopStart)
-                                .offset(x = 4.dp, y = 4.dp)
+                                .offset(x = 32.dp, y = 4.dp)
                                 .zIndex(2f)
                                 .clickable {
-                                    handleCameraCapture()
+                                    handleStartEditingColorName()
                                 }
                         ) {
-                            CameraFABProtoJuin3(
-                                size = 24.dp,
-                                aCentralFacade = aCentralFacade
-                            )
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    handleStartEditingColorName()
+                                },
+                                containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f),
+                                contentColor = MaterialTheme.colorScheme.onTertiary,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit color name",
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
                         }
                     }
 

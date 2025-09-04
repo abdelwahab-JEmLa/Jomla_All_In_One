@@ -191,7 +191,19 @@ fun AddNewCouleur(
             if (isEditing) {
                 OutlinedTextField(
                     value = colorName,
-                    onValueChange = { colorName = it },
+                    onValueChange = { newText ->
+                        // Capitalize first letter of each word
+                        val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                            if (word.isNotEmpty()) {
+                                word.replaceFirstChar {
+                                    if (it.isLowerCase()) it.titlecase() else it.toString()
+                                }
+                            } else {
+                                word
+                            }
+                        }
+                        colorName = capitalizedText
+                    },
                     placeholder = {
                         Text(
                             text = "Nom couleur",
@@ -218,7 +230,6 @@ fun AddNewCouleur(
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline
                     )
                 )
-
                 LaunchedEffect(isEditing) {
                     if (isEditing) {
                         focusRequester.requestFocus()

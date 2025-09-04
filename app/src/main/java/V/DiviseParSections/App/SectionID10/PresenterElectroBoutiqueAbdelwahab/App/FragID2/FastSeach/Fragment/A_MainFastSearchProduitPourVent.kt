@@ -152,7 +152,17 @@ fun MainFastSearchProduitPourVent(
                     OutlinedTextField(
                         value = localSearchText,
                         onValueChange = { newText ->
-                            localSearchText = newText
+                            // Capitalize first letter of each word
+                            val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                                if (word.isNotEmpty()) {
+                                    word.replaceFirstChar {
+                                        if (it.isLowerCase()) it.titlecase() else it.toString()
+                                    }
+                                } else {
+                                    word
+                                }
+                            }
+                            localSearchText = capitalizedText
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -210,8 +220,8 @@ fun MainFastSearchProduitPourVent(
                                     )
                                 }
                             }
-                        })
-
+                        }
+                    )
                     Spacer(Modifier.height(16.dp))
 
                     // FIXED: Mark TextField as ready after it's composed
