@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +33,6 @@ class PrintReceiptHandler_Juil(
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
         repo13TarificationInfos: Repo13TarificationInfos,
         generatePdf: Boolean = false,
-        // Nouveaux paramètres pour la section crédit
         bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
         versement: Double = 0.0
@@ -54,7 +52,6 @@ class PrintReceiptHandler_Juil(
                         repoM1Produit
                     )
 
-                    // Ajouter la section crédit au texte Bluetooth si nécessaire
                     val finalBluetoothText = if (showCreditSection && bonVent != null) {
                         addCreditSectionToBluetoothText(texteImprimable.toString(), client, bonVent, versement, transactionId)
                     } else {
@@ -65,22 +62,11 @@ class PrintReceiptHandler_Juil(
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            } else {
-                Toast.makeText(context, "Bluetooth hors ligne - Impression PDF uniquement", Toast.LENGTH_LONG).show()
             }
 
             if (generatePdf || !isBluetoothAvailable) {
                 scope?.launch {
                     try {
-                        relative_ListM10OperationVentCouleur.forEachIndexed { index, operation ->
-                        }
-
-                        if (repo13TarificationInfos.datasValue.isEmpty()) {
-                        }
-                        if (repoM1Produit.datasValue.isEmpty()) {
-                        }
-
-                        // Générer le PDF avec ou sans section crédit
                         val result = if (showCreditSection && bonVent != null) {
                             printInPdfHandler.generateVentReceiptWithCreditPdf(
                                 context,
@@ -109,40 +95,14 @@ class PrintReceiptHandler_Juil(
                                 val pdfFile = File(filePath)
 
                                 if (pdfFile.exists()) {
-                                    val downloadedFile = savePdfToDownloads(context, pdfFile)
-                                    Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
+                                    savePdfToDownloads(context, pdfFile)
                                     openPdfFile(context, pdfFile)
-
-                                    if (downloadedFile != null) {
-                                        Toast.makeText(context, "PDF sauvegardé dans Téléchargements", Toast.LENGTH_LONG).show()
-                                    }
-                                } else {
-                                    Toast.makeText(context, "Erreur: Fichier PDF non trouvé", Toast.LENGTH_SHORT).show()
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Erreur lors du traitement du PDF", Toast.LENGTH_SHORT).show()
                             }
-
-                        }.onFailure { error ->
-                            val errorMessage = when {
-                                error.message?.contains("font", ignoreCase = true) == true ->
-                                    "Erreur de police PDF"
-                                error.message?.contains("permission", ignoreCase = true) == true ->
-                                    "Erreur de permission fichier"
-                                error.message?.contains("storage", ignoreCase = true) == true ->
-                                    "Erreur de stockage"
-                                error.message?.contains("firebase", ignoreCase = true) == true ->
-                                    "Erreur de téléchargement Firebase"
-                                else -> "Erreur lors de la génération PDF: ${error.message}"
-                            }
-
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Erreur critique PDF: ${e.message}", Toast.LENGTH_LONG).show()
                     }
-                } ?: run {
-                    Toast.makeText(context, "Erreur: Scope manquant pour PDF", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -164,7 +124,6 @@ class PrintReceiptHandler_Juil(
         }
     }
 
-    // Nouvelle méthode pour ajouter la section crédit au texte Bluetooth
     private fun addCreditSectionToBluetoothText(
         originalText: String,
         client: M2Client?,
@@ -175,8 +134,6 @@ class PrintReceiptHandler_Juil(
         val oldBalance = client?.currentCreditBalance ?: 0.0
         val currentBill = bonVent.sum_De_Totale_Vents
         val newBalance = oldBalance + currentBill - versement
-
-        // Enlever le ">>>" final du texte original
         val baseText = originalText.replace("<BR><BR><BR>>", "")
 
         return StringBuilder().apply {
@@ -231,7 +188,7 @@ class PrintReceiptHandler_Juil(
         ancienCredits: Double,
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit,
-        includeCreditSection: Boolean = false // Nouveau paramètre
+        includeCreditSection: Boolean = false
     ): Pair<StringBuilder, Double> {
         val groupe_Produit = relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
         val texteImprimable = StringBuilder()
@@ -284,7 +241,6 @@ class PrintReceiptHandler_Juil(
             append("<MEDIUM1><CENTER>Total<BR>")
             append("<MEDIUM3><CENTER>${round(totaleBon * 10) / 10}Da<BR>")
 
-            // Afficher l'ancien crédit seulement si includeCreditSection est false et qu'il y a un crédit
             if (!includeCreditSection && ancienCredits < 0) {
                 append("<MEDIUM1><CENTER>Credit Du Compte actuel<BR>")
                 append("<MEDIUM2><CENTER>${round(ancienCredits * 10) / 10}Da<BR>")
@@ -328,14 +284,11 @@ class PrintReceiptHandler_Juil(
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            } else {
-                Toast.makeText(context, "Bluetooth hors ligne - Impression PDF uniquement", Toast.LENGTH_LONG).show()
             }
 
             if (generatePdf || !isBluetoothAvailable) {
                 scope?.launch {
                     try {
-                        // Create the credit receipt data using the PrintInPdf's CreditReceiptData structure
                         val creditData = PrintInPdf_itextpdf_Handler.CreditReceiptData(
                             client = client,
                             totalAmount = bonVent.sum_De_Totale_Vents,
@@ -356,33 +309,13 @@ class PrintReceiptHandler_Juil(
 
                                 if (pdfFile.exists()) {
                                     savePdfToDownloads(context, pdfFile)
-                                    Toast.makeText(context, "PDF généré avec succès", Toast.LENGTH_SHORT).show()
                                     openPdfFile(context, pdfFile)
-                                } else {
-                                    Toast.makeText(context, "Erreur: Fichier PDF non trouvé", Toast.LENGTH_SHORT).show()
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Erreur lors du traitement du PDF", Toast.LENGTH_SHORT).show()
                             }
-
-                        }.onFailure { error ->
-                            val errorMessage = when {
-                                error.message?.contains("font", ignoreCase = true) == true ->
-                                    "Erreur de police PDF"
-                                error.message?.contains("permission", ignoreCase = true) == true ->
-                                    "Erreur de permission fichier"
-                                error.message?.contains("Invalid total amount", ignoreCase = true) == true ->
-                                    "Montant invalide: ${bonVent.sum_De_Totale_Vents}"
-                                else -> "Erreur lors de la génération PDF: ${error.message}"
-                            }
-
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Erreur critique PDF: ${e.message}", Toast.LENGTH_LONG).show()
                     }
-                } ?: run {
-                    Toast.makeText(context, "Erreur: Scope manquant pour PDF", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -410,16 +343,12 @@ class PrintReceiptHandler_Juil(
     }
 
     private fun handleBluetoothPrint(context: Context, texteImprimable: String) {
-        val isBluetoothAvailable = isBluetoothAvailable()
-
-        if (isBluetoothAvailable) {
+        if (isBluetoothAvailable()) {
             val intent = Intent(PRINT_INTENT).apply {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, texteImprimable)
             }
             ContextCompat.startActivity(context, intent, null)
-        } else {
-            Toast.makeText(context, "Bluetooth hors ligne", Toast.LENGTH_SHORT).show()
         }
     }
 
