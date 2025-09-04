@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
@@ -35,12 +36,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
+    aCentralFacade: ACentralFacade = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
@@ -52,9 +55,11 @@ fun MainFastSearchProduitPourVent(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
+
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
+
         null -> ""
     }
 
@@ -63,7 +68,8 @@ fun MainFastSearchProduitPourVent(
     var isTextFieldReady by remember { mutableStateOf(false) }
 
     // Only request focus if the OutlinedTextField will be shown
-    val shouldShowTextField = sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
+    val shouldShowTextField =
+        sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
     LaunchedEffect(localSearchText) {
         if (localSearchText.isNotEmpty()) {
@@ -179,7 +185,11 @@ fun MainFastSearchProduitPourVent(
 
                 MainFilterT1(
                     viewModel,
-                    products, categories, uiState.searchText, Modifier.fillMaxSize(), sourceLenceurDeCetteFragment
+                    products,
+                    categories,
+                    uiState.searchText,
+                    Modifier.fillMaxSize(),
+                    sourceLenceurDeCetteFragment
                 )
             }
         }

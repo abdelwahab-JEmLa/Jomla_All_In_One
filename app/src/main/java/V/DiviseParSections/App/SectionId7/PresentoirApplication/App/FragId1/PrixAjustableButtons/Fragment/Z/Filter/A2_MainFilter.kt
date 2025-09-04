@@ -2,6 +2,9 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.A3_MainList_ItsWorckChezGros
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -23,7 +26,9 @@ fun MainFilter(
     filterBonID: Long,
     onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
-    lancedDepuitAffiche: ItsLancedDepuit?
+    lancedDepuitAffiche: ItsLancedDepuit?,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
     val relative_M1Produit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
@@ -43,16 +48,31 @@ fun MainFilter(
                     it.parent_M2Client_KeyId == (relative_M2Client?.parent_M2Client_KeyID ?: "null")
         }
     }
+    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
     Column(modifier = modifier) {
-        MainList(
-            itsLancedDepuitComposeParent=lancedDepuitAffiche,
-            viewModel = viewModel,
-            relative_M1Produit = relative_M1Produit,
-            showLabels = showLabels,
-            clientDefiniTariffs = clientDefiniTariffs,
-            onClickPrixButton = onClickPrixButton,
-            onClickAnulationButton = onClickAnulationButton
-        )
+        when (currentApp_ItsWorkChezGrossisst) {
+            true -> A3_MainList_ItsWorckChezGros(
+                itsLancedDepuitComposeParent = lancedDepuitAffiche,
+                viewModel = viewModel,
+                relative_M1Produit = relative_M1Produit,
+                showLabels = showLabels,
+                clientDefiniTariffs = clientDefiniTariffs,
+                onClickPrixButton = onClickPrixButton,
+                onClickAnulationButton = onClickAnulationButton
+            )
+
+            false ->
+                MainList(
+                    itsLancedDepuitComposeParent = lancedDepuitAffiche,
+                    viewModel = viewModel,
+                    relative_M1Produit = relative_M1Produit,
+                    showLabels = showLabels,
+                    clientDefiniTariffs = clientDefiniTariffs,
+                    onClickPrixButton = onClickPrixButton,
+                    onClickAnulationButton = onClickAnulationButton
+                )
+        }
+
     }
 }

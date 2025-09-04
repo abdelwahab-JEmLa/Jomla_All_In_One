@@ -352,7 +352,7 @@ class FocusedValuesGetter(
         currentActive_M9AppCompt?.its_Admin == true
     }
 
-    val currentApp_Est_ItsWorkChezGrossisst by derivedStateOf {
+    val currentApp_ItsWorkChezGrossisst by derivedStateOf {
         currentActive_M9AppCompt?.travailleChezGrossisst3Ali == true
     }
 

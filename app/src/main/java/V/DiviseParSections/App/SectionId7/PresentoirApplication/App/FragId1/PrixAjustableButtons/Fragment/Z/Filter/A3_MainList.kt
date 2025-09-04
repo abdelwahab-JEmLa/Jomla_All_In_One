@@ -53,7 +53,8 @@ fun MainList(
 
     val itsLancedDepuit_EditeBaseDonne =
         itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
-    val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
+
+    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
     fun getOrSet_TariffPrix_SupperGro_Et_PresentationService(): M13TarificationInfos {
         return find_existing_PrixSuperGros(aCentralFacade,relative_M1Produit) ?: M13TarificationInfos(
@@ -119,7 +120,7 @@ fun MainList(
         relative_M1Produit,
         max_Prix,
         clientDefiniTariffs,
-        travailleChezGrossisst3Ali,
+        currentApp_ItsWorkChezGrossisst,
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {

@@ -126,6 +126,39 @@ data class M13TarificationInfos(
         val couleur_Text: Color = Color.White,
         val profitabilityScore: Int = 0,
     ) {
+        //---------------------------------------currentApp_ItsWorkChezGrossisst  ------------------------------------------------------------------------------------------------
+
+        Tariff_Grossist_Achat(
+            Icons.Filled.History,
+            Color(0xFF000000),
+            "",
+            Color(0xFF2196F3),
+            1
+        ),
+
+        Tariff_Grossist_SuperGros(
+            Icons.Filled.History,
+            Color(0xFF000000),
+            "",
+            Color(0xFFF44336),
+            1
+        ),
+        Tariff_Grossist_Progressive(
+            Icons.Filled.History,
+            Color(0xFFEEEEEE),
+            "",
+            Color(0xFF000000),
+            1
+        ),
+        Tariff_Grossist_Gro(
+            Icons.Filled.History,
+            Color(0xFFCDDC39),
+            "",
+            Color(0xFF2196F3),
+            1
+        ),
+
+        //--------------------------------------------------------------------------------------------------------------------------------
         Tariff_Achat_Depuit_Grossisst(
             Icons.Filled.History,
             Color(0xFF000000),
@@ -133,6 +166,7 @@ data class M13TarificationInfos(
             Color(0xFF2196F3),
             1
         ),
+
         DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "قديم", Color.Black, 0),
 
         LeMaxPrixArrive(
@@ -184,6 +218,8 @@ data class M13TarificationInfos(
                 Prix_Detaille -> LeMaxPrixArrive
                 LeMaxPrixArrive -> null
                 DEFIN_OLd -> Historique
+
+                else  -> null
             }
         }
 
