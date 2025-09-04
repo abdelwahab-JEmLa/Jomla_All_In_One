@@ -85,21 +85,8 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         addText(doc, "────────────────────", regularFont, 10f, TextAlignment.CENTER)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        addText(doc, "Nouv. Soldé :", boldFont, 12f, TextAlignment.LEFT)
+        addText(doc, "Nouv. Sold :", boldFont, 12f, TextAlignment.LEFT)
 
-        when {
-            newBalance > 0 -> {
-                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
-                addText(doc, "(Reste à payer)", regularFont, 10f, TextAlignment.CENTER)
-            }
-            newBalance < 0 -> {
-                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
-                addText(doc, "(Crédit client)", regularFont, 10f, TextAlignment.CENTER)
-            }
-            else -> {
-                addText(doc, "0.00 Da", boldFont, 16f, TextAlignment.CENTER)
-            }
-        }
 
         doc.add(Paragraph("\n").setFontSize(0.3f))
         addText(doc, "Transaction: #${creditData.transactionId}", regularFont, 9f, TextAlignment.CENTER)
@@ -218,7 +205,7 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         val currentBill = currentReceiptTotal
         val newBalance = oldBalance + currentBill - versement
 
-        addCompactLabelValue(doc, "Ancien Soldé :", "${round(oldBalance)} Da", regularFont, boldFont)
+        addCompactLabelValue(doc, "Ancien Solde :", "${round(oldBalance)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Bon actuel :", "${round(currentBill)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Versement :", "${round(versement)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Nouv. Soldé :", "${round(newBalance)} Da", regularFont, boldFont)
