@@ -62,61 +62,6 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
 
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
 
-    private fun generateUnifiedPdf(path: String, params: PdfGenerationParams) {
-        val (regularFont, boldFont) = PdfFontFactory.createFont(StandardFonts.HELVETICA) to PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
-
-        PdfWriter(path).use { writer ->
-            PdfDocument(writer).use { pdfDoc ->
-                Document(pdfDoc, PageSize.A5).use { doc ->
-                    when (params.type) {
-                        PdfType.RECEIPT_ONLY, PdfType.RECEIPT_WITH_CREDIT -> {
-                            if (!params.its_GrossistApp) addHeader(doc, "Facture", regularFont, boldFont)
-                        }
-                        PdfType.CREDIT_ONLY -> {
-                            val receiptType = if (params.creditData?.showPaymentHistory == true) "Credit Payment Prix_Détaillé" else "Reçu de Paiement"
-                            addHeader(doc, receiptType, regularFont, boldFont)
-                        }
-                    }
-
-                    addClientDate(doc, params.client?.nom ?: "Client", regularFont)
-
-                    if (params.type == PdfType.CREDIT_ONLY && params.creditData?.showPaymentHistory == true) {
-                        addText(doc, "Transaction: #${params.transactionId}", regularFont, 10f, TextAlignment.LEFT)
-                        doc.add(Paragraph("\n").setFontSize(0.7f))
-                    }
-
-                    if (params.type != PdfType.CREDIT_ONLY) {
-                        params.tarificationRepo?.let { tarificationRepo ->
-                            params.produitRepo?.let { produitRepo ->
-                                createProductTable(doc, params.operations, tarificationRepo, produitRepo, regularFont, boldFont)
-                            }
-                        }
-
-                        if (params.type == PdfType.RECEIPT_ONLY) {
-                            params.client?.currentCreditBalance?.takeIf { it < 0 }?.let { credit ->
-                                addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
-                                addText(doc, "${round(credit)}Da", regularFont, 14f, TextAlignment.CENTER)
-                            }
-                        }
-                    }
-
-                    if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
-                        if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
-                            doc.add(Paragraph("\n").setFontSize(0.7f))
-                            addText(doc, "━━━━━━━━━━━━━━━━━━━━━━━", regularFont, 10f, TextAlignment.CENTER)
-                            doc.add(Paragraph("\n").setFontSize(0.7f))
-                        }
-
-                        when (params.type) {
-                            PdfType.RECEIPT_WITH_CREDIT -> params.bonVent?.let { addCreditSection(doc, params.client, it, params.versement, regularFont, boldFont) }  //<--
-                            PdfType.CREDIT_ONLY -> params.creditData?.let { addCreditOnlySection(doc, it, regularFont, boldFont) }
-                            else -> {}
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     private fun addCreditOnlySection(doc: Document, creditData: CreditReceiptData, regularFont: PdfFont, boldFont: PdfFont) {
         if (creditData.oldBalance != 0.0) {
@@ -211,43 +156,6 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         return if (category != null && category.nom.isNotBlank()) "$productName (${capitalizeFirstLetter(category.nom)})" else productName
     }
 
-    private fun addCreditSection(doc: Document, client: M2Client?, bonVent: M8BonVent, versement: Double, regularFont: PdfFont, boldFont: PdfFont) {
-        val oldBalance = client?.currentCreditBalance ?: 0.0
-        val currentBill = bonVent.sum_De_Totale_Vents // This should be the total from the receipt
-        val newBalance = oldBalance + currentBill - versement
-
-        // Create a more compact layout with labels and values side by side
-        addCompactLabelValue(doc, "Ancien Soldé :", "${round(oldBalance)} Da", regularFont, boldFont)
-        addCompactLabelValue(doc, "Bon actuel :", "${round(currentBill)} Da", regularFont, boldFont)      //<--
-        //TODO(1): enleve le Totale .. et fait l affiche ici si bon avec credit section
-        addCompactLabelValue(doc, "Versement :", "${round(versement)} Da", regularFont, boldFont)
-
-        // Add separator line
-        doc.add(Paragraph("\n").setFontSize(2f))
-        addText(doc, "────────────────────", regularFont, 10f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(2f))
-
-        // New balance section
-        addCompactLabelValue(doc, "Nouv. Soldé :", "${round(newBalance)} Da", boldFont, boldFont)
-
-        // Add status text below new balance
-        when {
-            newBalance > 0 -> {
-                doc.add(Paragraph("\n").setFontSize(1f))
-                addText(doc, "(Reste à payer)", regularFont, 10f, TextAlignment.CENTER)
-            }
-            newBalance < 0 -> {
-                doc.add(Paragraph("\n").setFontSize(1f))
-                addText(doc, "(Crédit client)", regularFont, 10f, TextAlignment.CENTER)
-            }
-            else -> {
-                doc.add(Paragraph("\n").setFontSize(1f))
-                addText(doc, "SOLDÉ", regularFont, 10f, TextAlignment.CENTER)
-            }
-        }
-    }
-
-    // Helper function to create compact label-value pairs on same line
     private fun addCompactLabelValue(doc: Document, label: String, value: String, labelFont: PdfFont, valueFont: PdfFont) {
         // Create a single paragraph with both label and value
         val paragraph = Paragraph()
@@ -262,17 +170,28 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         doc.add(Paragraph("\n").setFontSize(2f))
     }
 
-    private fun addHeader(doc: Document, title: String, regularFont: PdfFont, boldFont: PdfFont) {
-        addText(doc, "Abdelwahab", boldFont, 18f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-        addText(doc, "JeMla.Com", boldFont, 16f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-        addText(doc, "0553885037", regularFont, 12f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-        addText(doc, title, regularFont, 12f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-    }
+    private fun addHeader(doc: Document, title: String, regularFont: PdfFont, boldFont: PdfFont, bonVentKeyId: String? = null) {
+        // Add Bon Vent ID at the top if provided
+        bonVentKeyId?.let {
+            if (it.length >= 3) {
+                val prefix = it.dropLast(3)
+                val last3UpperCase = it.takeLast(3).uppercase()
 
+                // Create a paragraph with mixed fonts: regular for prefix, bold for last 3 chars
+                val paragraph = Paragraph()
+                    .add(com.itextpdf.layout.element.Text("Bon Vent : $prefix").setFont(regularFont).setFontSize(11f))
+                    .add(com.itextpdf.layout.element.Text(last3UpperCase).setFont(boldFont).setFontSize(11f))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMargin(0f)
+
+                doc.add(paragraph)
+            } else {
+                // If less than 3 characters, just make everything bold and uppercase
+                addText(doc, "Bon Vent : ${it.uppercase()}", boldFont, 11f, TextAlignment.CENTER)
+            }
+            doc.add(Paragraph("\n").setFontSize(0.7f))
+        }
+    }
     private fun addClientDate(doc: Document, clientName: String, regularFont: PdfFont) {
         val date = formatDateWithAmPm(Date())
         val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f))).setWidth(UnitValue.createPercentValue(100f))
@@ -298,6 +217,135 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)
         return "$dayOfWeek $dayOfMonth/$month/$year ${String.format("%02d:%02d", hour, minute)}"
+    }
+
+    // Updated method signature to include currentReceiptTotal parameter
+    private fun addCreditSection(doc: Document, client: M2Client?, bonVent: M8BonVent, versement: Double, regularFont: PdfFont, boldFont: PdfFont, currentReceiptTotal: Double) {
+        val oldBalance = client?.currentCreditBalance ?: 0.0
+        val currentBill = currentReceiptTotal // Use the actual receipt total instead of bonVent.sum_De_Totale_Vents
+        val newBalance = oldBalance + currentBill - versement
+
+        // Create a more compact layout with labels and values side by side
+        addCompactLabelValue(doc, "Ancien Soldé :", "${round(oldBalance)} Da", regularFont, boldFont)
+        addCompactLabelValue(doc, "Bon actuel :", "${round(currentBill)} Da", regularFont, boldFont)
+        addCompactLabelValue(doc, "Versement :", "${round(versement)} Da", regularFont, boldFont)
+        addCompactLabelValue(doc, "Nouv. Soldé :", "${round(newBalance)} Da", regularFont, boldFont)
+
+    }
+
+    // Update the generateUnifiedPdf method to conditionally show total section
+    private fun generateUnifiedPdf(path: String, params: PdfGenerationParams) {
+        val (regularFont, boldFont) = PdfFontFactory.createFont(StandardFonts.HELVETICA) to PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
+
+        PdfWriter(path).use { writer ->
+            PdfDocument(writer).use { pdfDoc ->
+                Document(pdfDoc, PageSize.A5).use { doc ->
+                    var currentReceiptTotal = 0.0 // Track the receipt total
+
+                    when (params.type) {
+                        PdfType.RECEIPT_ONLY, PdfType.RECEIPT_WITH_CREDIT -> {
+                            val title = if (!params.its_GrossistApp) "Facture" else ""
+                            addHeader(doc, title, regularFont, boldFont, params.bonVent?.keyID)
+                        }
+                        PdfType.CREDIT_ONLY -> {
+                            val receiptType = if (params.creditData?.showPaymentHistory == true) "Credit Payment Prix_Détaillé" else "Reçu de Paiement"
+                            addHeader(doc, receiptType, regularFont, boldFont, params.bonVent?.keyID)
+                        }
+                    }
+
+                    addClientDate(doc, params.client?.nom ?: "Client", regularFont)
+
+                    if (params.type == PdfType.CREDIT_ONLY && params.creditData?.showPaymentHistory == true) {
+                        addText(doc, "Transaction: #${params.transactionId}", regularFont, 10f, TextAlignment.LEFT)
+                        doc.add(Paragraph("\n").setFontSize(0.7f))
+                    }
+
+                    if (params.type != PdfType.CREDIT_ONLY) {
+                        params.tarificationRepo?.let { tarificationRepo ->
+                            params.produitRepo?.let { produitRepo ->
+                                // Don't show total section if credit section will be displayed
+                                val showTotalSection = params.type != PdfType.RECEIPT_WITH_CREDIT
+                                if (showTotalSection) {
+                                    // Use the regular createProductTable method for RECEIPT_ONLY
+                                    createProductTable(doc, params.operations, tarificationRepo, produitRepo, regularFont, boldFont)
+                                } else {
+                                    // Use the method that returns total for RECEIPT_WITH_CREDIT
+                                    currentReceiptTotal = createProductTableAndReturnTotal(doc, params.operations, tarificationRepo, produitRepo, regularFont, boldFont)
+                                }
+                            }
+                        }
+
+                        if (params.type == PdfType.RECEIPT_ONLY) {
+                            params.client?.currentCreditBalance?.takeIf { it < 0 }?.let { credit ->
+                                addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
+                                addText(doc, "${round(credit)}Da", regularFont, 14f, TextAlignment.CENTER)
+                            }
+                        }
+                    }
+
+                    if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
+                        if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
+                            doc.add(Paragraph("\n").setFontSize(0.7f))
+                            addText(doc, "━━━━━━━━━━━━━━━━━━━━━━━━━", regularFont, 10f, TextAlignment.CENTER)
+                            doc.add(Paragraph("\n").setFontSize(0.7f))
+                        }
+
+                        when (params.type) {
+                            PdfType.RECEIPT_WITH_CREDIT -> params.bonVent?.let { addCreditSection(doc, params.client, it, params.versement, regularFont, boldFont, currentReceiptTotal) }
+                            PdfType.CREDIT_ONLY -> params.creditData?.let { addCreditOnlySection(doc, it, regularFont, boldFont) }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Updated createProductTable to return the total
+    private fun createProductTableAndReturnTotal(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont): Double {
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f))).setWidth(UnitValue.createPercentValue(100f))
+
+        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
+
+        var total = 0.0
+        var rowNumber = 1
+        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
+
+        groupedOps.forEach { (produitId, ops) ->
+            val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val qty = ops.sumOf { it.quantity }
+            val price = tarification?.prixCurrency ?: 0.0
+            val subtotal = price * qty
+
+            if (subtotal != 0.0) {
+                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                val productNameWithCategory = formatProductNameWithCategory(produit)
+                val unitPrice = if (produit?.afficheUniteAuPrint == true) {
+                    val nombreUniteInt = produit.nombreUniteInt
+                    if (nombreUniteInt > 0) price / nombreUniteInt else price
+                } else price
+
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
+                total += subtotal
+                rowNumber++
+            }
+        }
+
+        doc.add(table)
+        doc.add(Paragraph("\n").setFontSize(0.1f))
+
+        // Don't add total section here since it will be handled in the credit section
+        return total // Return the calculated total
     }
 
     private fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
