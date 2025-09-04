@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
@@ -58,6 +59,144 @@ class PrintInPdf_itextpdf_Handler(
             "$productName (${capitalizeFirstLetter(category.nom)})"
         } else {
             productName
+        }
+    }
+    // Ajouter cette méthode dans PrintInPdf_itextpdf_Handler
+
+    suspend fun generateVentReceiptWithCreditPdf(
+        context: Context,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        transactionId: String = "",
+        bonVent: M8BonVent,
+        versement: Double,
+        its_GrossistApp: Boolean = true
+    ): Result<String> {
+        return try {
+            if (operations.isEmpty()) {
+                return Result.failure(IllegalArgumentException("No operations to print"))
+            }
+
+            if (regularFont == null || boldFont == null) {
+                return Result.failure(IllegalStateException("PDF fonts initialization failed"))
+            }
+
+            val file = createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
+            generateVentWithCreditPdf(file.absolutePath, client, operations, tarificationRepo, produitRepo, bonVent, versement, its_GrossistApp)
+
+            if (!file.exists()) {
+                return Result.failure(IllegalStateException("PDF file creation failed"))
+            }
+
+            val url = uploadToFirebaseStorage(file, file.name)
+            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun generateVentWithCreditPdf(
+        path: String,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        bonVent: M8BonVent,
+        versement: Double,
+        its_GrossistApp: Boolean
+    ) {
+        try {
+            val (regularFont, boldFont) = createFreshFonts()
+
+            PdfWriter(path).use { writer ->
+                PdfDocument(writer).use { pdfDoc ->
+                    Document(pdfDoc, PageSize.A5).use { doc ->
+                        if (!its_GrossistApp) {
+                            addHeader(doc, "Facture", regularFont, boldFont)
+                        }
+
+                        addClientDate(doc, client?.nom ?: "Client", regularFont)
+                        createProductTable(doc, operations, tarificationRepo, produitRepo, regularFont, boldFont)
+
+                        // Ne pas afficher l'ancien crédit ici car on va l'afficher dans la section crédit
+
+                        // Ajouter un séparateur avant la section crédit
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+                        addText(doc, "═══════════════════════", regularFont, 10f, TextAlignment.CENTER)
+                        doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+                        // Ajouter la section crédit
+                        addCreditSectionToPdf(doc, client, bonVent, versement, regularFont, boldFont)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    private fun addCreditSectionToPdf(
+        doc: Document,
+        client: M2Client?,
+        bonVent: M8BonVent,
+        versement: Double,
+        regularFont: PdfFont,
+        boldFont: PdfFont
+    ) {
+        try {
+            val oldBalance = client?.currentCreditBalance ?: 0.0
+            val currentBill = bonVent.sum_De_Totale_Vents
+            val newBalance = oldBalance + currentBill - versement
+
+            // Titre de la section
+            addText(doc, "SECTION CRÉDIT", boldFont, 14f, TextAlignment.CENTER)
+            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+            // Ancien solde
+            if (oldBalance != 0.0) {
+                addText(doc, "Ancien Soldé :", regularFont, 12f, TextAlignment.LEFT)
+                addText(doc, "${round(oldBalance)} Da", boldFont, 14f, TextAlignment.CENTER)
+                doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+            }
+
+            // Bon actuel
+            addText(doc, "Bon actuel :", regularFont, 12f, TextAlignment.LEFT)
+            addText(doc, "${round(currentBill)} Da", boldFont, 14f, TextAlignment.CENTER)
+            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+            // Versement
+            addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
+            addText(doc, "${round(versement)} Da", boldFont, 14f, TextAlignment.CENTER)
+            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+            // Ligne de séparation
+            addText(doc, "─────────────────────", regularFont, 10f, TextAlignment.CENTER)
+            doc.add(Paragraph("\n").setFontSize(SPACING_2DP))
+
+            // Nouveau solde
+            addText(doc, "Nouv. Soldé :", boldFont, 12f, TextAlignment.LEFT)
+
+            when {
+                newBalance > 0 -> {
+                    addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                    addText(doc, "(Reste à payer)", regularFont, 10f, TextAlignment.CENTER)
+                }
+                newBalance < 0 -> {
+                    addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                    addText(doc, "(Crédit client)", regularFont, 10f, TextAlignment.CENTER)
+                }
+                else -> {
+                    addText(doc, "0.00 Da", boldFont, 16f, TextAlignment.CENTER)
+                    addText(doc, "✓ SOLDÉ ✓", boldFont, 12f, TextAlignment.CENTER)
+                    addText(doc, "Merci pour votre confiance", regularFont, 10f, TextAlignment.CENTER)
+                }
+            }
+
+        } catch (e: Exception) {
+            throw e
         }
     }
     data class CreditReceiptData(

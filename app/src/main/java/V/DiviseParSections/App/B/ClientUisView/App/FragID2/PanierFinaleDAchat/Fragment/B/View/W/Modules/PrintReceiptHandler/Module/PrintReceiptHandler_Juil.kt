@@ -33,7 +33,11 @@ class PrintReceiptHandler_Juil(
         scope: CoroutineScope? = null,
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
         repo13TarificationInfos: Repo13TarificationInfos,
-        generatePdf: Boolean = false
+        generatePdf: Boolean = false,
+        // Nouveaux paramètres pour la section crédit
+        bonVent: M8BonVent? = null,
+        showCreditSection: Boolean = false,
+        versement: Double = 0.0
     ) {
         val printFunction = {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
@@ -41,7 +45,7 @@ class PrintReceiptHandler_Juil(
 
             if (isBluetoothAvailable) {
                 try {
-                    val (texteImprimable, _) = prepareTexteToPrint(
+                    val (texteImprimable, totaleBon) = prepareTexteToPrint(
                         relative_ListM10OperationVentCouleur,
                         client?.nom?.takeIf { it.isNotBlank() } ?: "Client",
                         SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
@@ -49,7 +53,15 @@ class PrintReceiptHandler_Juil(
                         repo13TarificationInfos,
                         repoM1Produit
                     )
-                    handleBluetoothPrint(context, texteImprimable.toString())
+
+                    // Ajouter la section crédit au texte Bluetooth si nécessaire
+                    val finalBluetoothText = if (showCreditSection && bonVent != null) {
+                        addCreditSectionToBluetoothText(texteImprimable.toString(), client, bonVent, versement, transactionId)
+                    } else {
+                        texteImprimable.toString()
+                    }
+
+                    handleBluetoothPrint(context, finalBluetoothText)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -68,14 +80,28 @@ class PrintReceiptHandler_Juil(
                         if (repoM1Produit.datasValue.isEmpty()) {
                         }
 
-                        val result = printInPdfHandler.generateVentReceiptPdf(
-                            context,
-                            client,
-                            relative_ListM10OperationVentCouleur,
-                            repo13TarificationInfos,
-                            repoM1Produit,
-                            transactionId
-                        )
+                        // Générer le PDF avec ou sans section crédit
+                        val result = if (showCreditSection && bonVent != null) {
+                            printInPdfHandler.generateVentReceiptWithCreditPdf(
+                                context,
+                                client,
+                                relative_ListM10OperationVentCouleur,
+                                repo13TarificationInfos,
+                                repoM1Produit,
+                                transactionId,
+                                bonVent,
+                                versement
+                            )
+                        } else {
+                            printInPdfHandler.generateVentReceiptPdf(
+                                context,
+                                client,
+                                relative_ListM10OperationVentCouleur,
+                                repo13TarificationInfos,
+                                repoM1Produit,
+                                transactionId
+                            )
+                        }
 
                         result.onSuccess { message ->
                             try {
@@ -136,6 +162,139 @@ class PrintReceiptHandler_Juil(
                 e.printStackTrace()
             }
         }
+    }
+
+    // Nouvelle méthode pour ajouter la section crédit au texte Bluetooth
+    private fun addCreditSectionToBluetoothText(
+        originalText: String,
+        client: M2Client?,
+        bonVent: M8BonVent,
+        versement: Double,
+        transactionId: String
+    ): String {
+        val oldBalance = client?.currentCreditBalance ?: 0.0
+        val currentBill = bonVent.sum_De_Totale_Vents
+        val newBalance = oldBalance + currentBill - versement
+
+        // Enlever le ">>>" final du texte original
+        val baseText = originalText.replace("<BR><BR><BR>>", "")
+
+        return StringBuilder().apply {
+            append(baseText)
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            append("<BR>")
+            append("<MEDIUM1><CENTER>SECTION CREDIT<BR>")
+            append("<BR>")
+
+            if (oldBalance != 0.0) {
+                append("<MEDIUM1><LEFT>Ancien Solde :<BR>")
+                append("<MEDIUM2><CENTER>${round(oldBalance)}Da<BR>")
+                append("<BR>")
+            }
+
+            append("<MEDIUM1><LEFT>Bon actuel :<BR>")
+            append("<MEDIUM2><CENTER>${round(currentBill)}Da<BR>")
+            append("<BR>")
+
+            append("<MEDIUM1><LEFT>Versement :<BR>")
+            append("<MEDIUM2><CENTER>${round(versement)}Da<BR>")
+            append("<BR>")
+
+            append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
+            append("<MEDIUM1><LEFT>Nouv. Solde :<BR>")
+
+            when {
+                newBalance > 0 -> {
+                    append("<MEDIUM3><RIGHT><BOLD>${round(newBalance)}Da<BR>")
+                    append("<SMALL><CENTER>(Reste a payer)<BR>")
+                }
+                newBalance < 0 -> {
+                    append("<MEDIUM3><RIGHT><BOLD>${round(newBalance)}Da<BR>")
+                    append("<SMALL><CENTER>(Credit client)<BR>")
+                }
+                else -> {
+                    append("<MEDIUM2><CENTER>0.00 Da<BR>")
+                    append("<MEDIUM1><CENTER> ✓ SOLDE ✓<BR>")
+                }
+            }
+
+            append("<BR>")
+            append("<SMALL><CENTER>Transaction: #$transactionId<BR>")
+            append("<BR><BR><BR>>")
+        }.toString()
+    }
+
+    private fun prepareTexteToPrint(
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        nomClient: String,
+        dateString: String,
+        ancienCredits: Double,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        repoM1Produit: RepoM1Produit,
+        includeCreditSection: Boolean = false // Nouveau paramètre
+    ): Pair<StringBuilder, Double> {
+        val groupe_Produit = relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
+        val texteImprimable = StringBuilder()
+        var totaleBon = 0.0
+        var pageCounter = 0
+
+        texteImprimable.apply {
+            append("<BIG><CENTER>Abdelwahab<BR>")
+            append("<BIG><CENTER>JeMla.Com<BR>")
+            append("<SMALL><CENTER>0553885037<BR>")
+            append("<SMALL><CENTER>Facture<BR>")
+            append("<BR>")
+            append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
+            append("<BR>")
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+        }
+
+        groupe_Produit.forEachIndexed { index, produit_vent ->
+            val datas_repo13TarificationInfos = repo13TarificationInfos.datasValue
+            val standart_Vent = produit_vent.second.first()
+            val relative_Tariffication = datas_repo13TarificationInfos.find { it.keyID == standart_Vent.parentM13TarificationKeyID }
+            val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == produit_vent.first }
+            val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
+            val vent_quantity = produit_vent.second.sumOf { it.quantity }
+            val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
+            val vent_prix = relative_Tariffication!!.prixCurrency
+            val subtotal = vent_prix * vent_quantity
+
+            if (subtotal != 0.0) {
+                texteImprimable.apply {
+                    append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
+                    append(" <MEDIUM1><LEFT>$quantityDisplay ")
+                    append("<MEDIUM1><LEFT>${vent_prix}Da ")
+                    append("<SMALL>$subtotal<BR>")
+                    append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
+                }
+                totaleBon += subtotal
+                if ((index + 1) % 15 == 0) {
+                    pageCounter++
+                    texteImprimable.append("<BR><CENTER>PAGE $pageCounter<BR><BR><BR>")
+                }
+            }
+        }
+
+        texteImprimable.apply {
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            append("<BR><BR>")
+            append("<MEDIUM1><CENTER>Total<BR>")
+            append("<MEDIUM3><CENTER>${round(totaleBon * 10) / 10}Da<BR>")
+
+            // Afficher l'ancien crédit seulement si includeCreditSection est false et qu'il y a un crédit
+            if (!includeCreditSection && ancienCredits < 0) {
+                append("<MEDIUM1><CENTER>Credit Du Compte actuel<BR>")
+                append("<MEDIUM2><CENTER>${round(ancienCredits * 10) / 10}Da<BR>")
+            }
+
+            append("<CENTER>---------------------<BR>")
+            append("<BR><BR><BR>>")
+        }
+
+        return Pair(texteImprimable, totaleBon)
     }
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
@@ -386,75 +545,6 @@ class PrintReceiptHandler_Juil(
 
             append("<BR><BR><BR>>")
         }.toString()
-    }
-
-    private fun prepareTexteToPrint(
-        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
-        nomClient: String,
-        dateString: String,
-        ancienCredits: Double,
-        repo13TarificationInfos: Repo13TarificationInfos,
-        repoM1Produit: RepoM1Produit
-    ): Pair<StringBuilder, Double> {
-        val groupe_Produit = relative_ListM10OperationVentCouleur.groupBy { it.parent_M1Produit_KeyId }.toList()
-        val texteImprimable = StringBuilder()
-        var totaleBon = 0.0
-        var pageCounter = 0
-
-        texteImprimable.apply {
-            append("<BIG><CENTER>Abdelwahab<BR>")
-            append("<BIG><CENTER>JeMla.Com<BR>")
-            append("<SMALL><CENTER>0553885037<BR>")
-            append("<SMALL><CENTER>Facture<BR>")
-            append("<BR>")
-            append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
-            append("<BR>")
-            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-            append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
-            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-        }
-
-        groupe_Produit.forEachIndexed { index, produit_vent ->
-            val datas_repo13TarificationInfos = repo13TarificationInfos.datasValue
-            val standart_Vent = produit_vent.second.first()
-            val relative_Tariffication = datas_repo13TarificationInfos.find { it.keyID == standart_Vent.parentM13TarificationKeyID }
-            val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == produit_vent.first }
-            val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
-            val vent_quantity = produit_vent.second.sumOf { it.quantity }
-            val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
-            val vent_prix = relative_Tariffication!!.prixCurrency
-            val subtotal = vent_prix * vent_quantity
-
-            if (subtotal != 0.0) {
-                texteImprimable.apply {
-                    append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
-                    append(" <MEDIUM1><LEFT>$quantityDisplay ")
-                    append("<MEDIUM1><LEFT>${vent_prix}Da ")
-                    append("<SMALL>$subtotal<BR>")
-                    append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
-                }
-                totaleBon += subtotal
-                if ((index + 1) % 15 == 0) {
-                    pageCounter++
-                    texteImprimable.append("<BR><CENTER>PAGE $pageCounter<BR><BR><BR>")
-                }
-            }
-        }
-
-        texteImprimable.apply {
-            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-            append("<BR><BR>")
-            append("<MEDIUM1><CENTER>Total<BR>")
-            append("<MEDIUM3><CENTER>${round(totaleBon * 10) / 10}Da<BR>")
-            if (ancienCredits < 0) {
-                append("<MEDIUM1><CENTER>Credit Du Compte actuel<BR>")
-                append("<MEDIUM2><CENTER>${round(ancienCredits * 10) / 10}Da<BR>")
-            }
-            append("<CENTER>---------------------<BR>")
-            append("<BR><BR><BR>>")
-        }
-
-        return Pair(texteImprimable, totaleBon)
     }
 
     private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
