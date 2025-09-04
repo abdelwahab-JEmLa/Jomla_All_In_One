@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -38,6 +39,78 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
 
+suspend fun addNew(
+    product: ArticlesBasesStatsTable,
+    context: Context,
+    aCentralFacade: ACentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
+
+    ) {
+    withContext(Dispatchers.Main) {
+        val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
+        val idParentCategorie =
+            focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
+                ?: 0
+        val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
+        val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
+
+        val currentValues = focusedValuesGetter.active_Central_Values
+        val etateActuelle = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
+        } else {
+            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+        }
+
+        val disponibilityState = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+            DisponibilityEtates.NON_DISPO
+        } else {
+            DisponibilityEtates.DISPO // Default to available
+        }
+
+        val newProduit = product.copy(
+            id = newOldId,
+            keyID = keyID,
+            nom = "Produit $idParentCategorie ${keyID.takeLast(4).uppercase()}",
+            couleur1 = keyIDM3CouleurProduitInfos,
+            actualiseSonImage = 1,
+            actualiseSonImageTest2 = 1,
+            dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
+            etateActuelleOnFusionAvecBaseDonne = etateActuelle,
+            disponibilityEtates = disponibilityState,
+            idParentCategorie = idParentCategorie
+        )
+
+        a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(newProduit)
+
+        val newCouleurP = M3CouleurProduitInfos
+            .get_default()
+            .copy(
+                keyID = keyIDM3CouleurProduitInfos,
+                nomImageFichieSansEtansion = newOldId.toString() + "_1",
+                parentBProduitInfosKeyID = newProduit.keyID,
+                parentId1ProduitInfosDebugName = newProduit.nom,
+                parentBProduitOldID = newProduit.id,
+                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeAuGeneralHandler
+            )
+
+        aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+            newCouleurP
+        )
+
+        val statusMessage = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
+            "Produit créé (état non défini): ${newProduit.nom}"
+        } else {
+            "Produit WebP créé: ${newProduit.nom}"
+        }
+
+        Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
+    }
+}
+
+
 @Composable
 fun CameraFABProtoJuin3(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -55,6 +128,7 @@ fun CameraFABProtoJuin3(
     var showCameraDialog by remember { mutableStateOf(false) }
     var pendingProduct by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
+
 
     suspend fun handleImageCapture(uri: Uri) {
         if (isProcessing) return
@@ -82,64 +156,7 @@ fun CameraFABProtoJuin3(
                             }
                         }
 
-                        withContext(Dispatchers.Main) {
-                            val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
-                            val idParentCategorie =
-                                focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
-                                    ?: 0
-                            val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
-                            val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
-
-                            val currentValues = focusedValuesGetter.active_Central_Values
-                            val etateActuelle = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-                                ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
-                            } else {
-                                ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-                            }
-
-                            val disponibilityState = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-                                DisponibilityEtates.NON_DISPO
-                            } else {
-                                DisponibilityEtates.DISPO // Default to available
-                            }
-
-                            val newProduit = product.copy(
-                                id = newOldId,
-                                keyID = keyID,
-                                nom = "Produit $idParentCategorie ${keyID.takeLast(4).uppercase()}",
-                                couleur1= keyIDM3CouleurProduitInfos,
-                                actualiseSonImage = 1,
-                                actualiseSonImageTest2 = 1,
-                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
-                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-                                etateActuelleOnFusionAvecBaseDonne = etateActuelle, // Use the determined state
-                                disponibilityEtates = disponibilityState, // Set the availability state
-                                idParentCategorie = idParentCategorie
-                            )
-
-                            a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.upsert(newProduit)
-
-                            val newCouleurP = M3CouleurProduitInfos
-                                .get_default()
-                                .copy(
-                                    keyID = keyIDM3CouleurProduitInfos,
-                                    nomImageFichieSansEtansion = newOldId.toString() + "_1",
-                                    parentBProduitInfosKeyID = newProduit.keyID,
-                                    parentId1ProduitInfosDebugName = newProduit.nom,
-                                    parentBProduitOldID = newProduit.id,
-                                    processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeAuGeneralHandler
-                                )
-
-                            aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(newCouleurP)
-
-                            val statusMessage = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-                                "Produit créé (état non défini): ${newProduit.nom}"
-                            } else {
-                                "Produit WebP créé: ${newProduit.nom}"
-                            }
-
-                            Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
-                        }
+                        addNew(product,context,aCentralFacade,a_CentralCompoRepositoryProtoJuin9=a_CentralCompoRepositoryProtoJuin9)
                     }
                 }
             }

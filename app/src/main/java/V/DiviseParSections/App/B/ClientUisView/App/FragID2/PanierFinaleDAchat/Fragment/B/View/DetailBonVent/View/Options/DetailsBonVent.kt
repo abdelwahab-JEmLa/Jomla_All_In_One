@@ -87,13 +87,7 @@ fun DetailsBonVent(
     // Create list of action buttons for LazyColumn
     val actionButtons = remember(uiState, isMinimized) {
         listOf(
-            ActionButtonData("panie_mode") {
-                PanieModeButton(
-                    uiState = uiState,
-                    showLabel = !isMinimized,
-                    onTogglePanieMode = { viewModel.togglePanieMode() }
-                )
-            },
+
             ActionButtonData("filter") {
                 FilterButton(
                     uiState = uiState,

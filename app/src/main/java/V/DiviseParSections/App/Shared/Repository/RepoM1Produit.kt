@@ -221,7 +221,7 @@ data class ArticlesBasesStatsTable(
     var afficheCesDetailPourComptBsonId: String = "",
 
     // Garde la propriété originale pour la compatibilité
-    var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.DISPO,
+    var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.NON_DISPO,
 
     // Section keyFireBase
     var keyFireBase: String = "",
@@ -364,6 +364,9 @@ data class ArticlesBasesStatsTable(
     }
 
     companion object {
+        fun get_Default(): ArticlesBasesStatsTable {
+              return  ArticlesBasesStatsTable()
+        }
         val KeyTagModel = "IdKeyModel1"
 
         fun safe_Remove_DataBase_Ref(): Unit {
