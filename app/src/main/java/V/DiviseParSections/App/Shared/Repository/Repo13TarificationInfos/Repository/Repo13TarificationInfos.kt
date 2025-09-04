@@ -130,8 +130,8 @@ data class M13TarificationInfos(
 
         Tariff_Grossist_Achat(
             Icons.Filled.History,
-            Color(0xFF000000),
-            "",
+            Color(0xFFEEEEEE),
+            "Tariff_Grossist_Achat",
             Color(0xFF2196F3),
             1
         ),
@@ -139,21 +139,21 @@ data class M13TarificationInfos(
         Tariff_Grossist_SuperGros(
             Icons.Filled.History,
             Color(0xFF000000),
-            "",
+            "Tariff_Grossist_SuperGros",
             Color(0xFFF44336),
             1
         ),
         Tariff_Grossist_Progressive(
             Icons.Filled.History,
             Color(0xFFEEEEEE),
-            "",
+            "Tariff_Grossist_Progressive",
             Color(0xFF000000),
             1
         ),
         Tariff_Grossist_Gro(
             Icons.Filled.History,
             Color(0xFFCDDC39),
-            "",
+            "Tariff_Grossist_Gro",
             Color(0xFF2196F3),
             1
         ),
