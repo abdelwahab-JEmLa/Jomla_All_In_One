@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.content.Context
 import android.widget.Toast
@@ -50,34 +50,26 @@ fun addNewFastSearch(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
+    val catalogues =
+        B4CatalogueCategoriesRepository().sortedBy { it.position }
     val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
-    val idParentCategorie = 1755942577975
+    val idParentCategorie = catalogues.find {
+        it.keyID == "t1"
+    }?.premierCategorieId
+
     val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
     val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
 
     val currentValues = focusedValuesGetter.active_Central_Values
-    val etateActuelle = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-        ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
-    } else {
-        ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
-    }
-
-    val disponibilityState = DisponibilityEtates.NON_DISPO
 
     val newProduit = ArticlesBasesStatsTable
         .get_Default()
         .copy(
+            keyID = keyID,
             id = newOldId,
             creationTimestamp = System.currentTimeMillis(),
-            keyID = keyID,
             nom = searchQuery,
             couleur1 = keyIDM3CouleurProduitInfos,
-            actualiseSonImage = 1,
-            actualiseSonImageTest2 = 1,
-            dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-            etateActuelleOnFusionAvecBaseDonne = etateActuelle,
-            disponibilityEtates = disponibilityState,
             idParentCategorie = idParentCategorie
         )
 
@@ -91,7 +83,6 @@ fun addNewFastSearch(
             parentBProduitInfosKeyID = newProduit.keyID,
             parentId1ProduitInfosDebugName = newProduit.nom,
             parentBProduitOldID = newProduit.id,
-            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
         )
 
     aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
@@ -125,9 +116,11 @@ fun MainFastSearchProduitPourVent(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
+
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
+
         null -> ""
     }
 
