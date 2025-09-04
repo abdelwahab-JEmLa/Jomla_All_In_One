@@ -341,12 +341,21 @@ class FocusedValuesGetter(
         )
         update_activeCentralValues(updatedValues)
     }
-
+    //-----------------------------M9AppCompt-----------------------------------------------------------------------------------------------------------------------------------------------
     val currentActive_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull {
             it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId
         }
     }
+
+    val currentApp_Est_Admin by derivedStateOf {
+        currentActive_M9AppCompt?.its_Admin == true
+    }
+
+    val currentApp_Est_ItsWorkChezGrossisst by derivedStateOf {
+        currentActive_M9AppCompt?.travailleChezGrossisst3Ali == true
+    }
+
 
     //-----------------------------M8BonVent-----------------------------------------------------------------------------------------------------------------------------------------------
     val activeOnVent_M8BonVent by derivedStateOf {
@@ -360,10 +369,6 @@ class FocusedValuesGetter(
                 .lastOrNull { it.parent_M2Client_KeyID == client.keyID }
                 ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
         }
-    }
-
-    val currentApp_Est_Admin by derivedStateOf {
-        currentActive_M9AppCompt?.its_Admin == true
     }
 
     val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {

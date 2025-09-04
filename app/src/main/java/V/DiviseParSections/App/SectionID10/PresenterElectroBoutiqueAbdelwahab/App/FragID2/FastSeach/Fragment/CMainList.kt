@@ -54,7 +54,7 @@ fun MainListT1(
             }
         }
 
-        if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog ==true) {
+        if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
             item {
                 MainList_Frag_Panie(its_From_SearchPrd = true)
             }
