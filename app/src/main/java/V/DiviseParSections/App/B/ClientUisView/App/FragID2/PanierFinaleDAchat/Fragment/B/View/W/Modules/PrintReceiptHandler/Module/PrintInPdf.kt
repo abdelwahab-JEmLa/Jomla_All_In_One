@@ -156,18 +156,21 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
     }
 
     private fun cleanAndCapitalizeProductName(name: String): String {
-        // Remove # and digits and everything after the first digit or #
-        val nameWithoutDigitsAndHash = name.replace(Regex("[#\\d].*"), "").trim()
+        val nameWithoutHash = name.replace("#", "").trim()
+
+        // If we have a very short result, return as-is
+        if (nameWithoutHash.length < 2) {
+            return nameWithoutHash
+        }
 
         // Split by spaces and capitalize each word
-        return nameWithoutDigitsAndHash.split("\\s+".toRegex())
+        return nameWithoutHash.split("\\s+".toRegex())
             .filter { it.isNotBlank() }
             .joinToString(" ") { word ->
                 word.lowercase(Locale.getDefault())
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
     }
-
 
     private fun addCompactLabelValue(doc: Document, label: String, value: String, labelFont: PdfFont, valueFont: PdfFont) {
         val paragraph = Paragraph()
@@ -303,7 +306,7 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
     }
 
     private fun createProductTableAndReturnTotal(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont): Double {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f))).setWidth(UnitValue.createPercentValue(100f))
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(6f, 15f, 14f, 50f, 12f))).setWidth(UnitValue.createPercentValue(100f))
 
         table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
