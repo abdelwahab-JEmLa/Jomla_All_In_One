@@ -5,6 +5,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -71,10 +72,12 @@ fun ID4ClientSearchButton(
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<M2Client>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
+    var isFournisseurMode by remember { mutableStateOf(false) } // New state for toggle
     val focusRequester = remember { FocusRequester() }
     val searchQueryFlow = remember { MutableStateFlow("") }
 
-    val clientsWithCommandBonVents = getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
+    val clientsWithCommandBonVents =
+        getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
 
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
@@ -115,9 +118,16 @@ fun ID4ClientSearchButton(
 
     Row(
         modifier = Modifier
-            .getSemanticsTag(nomVal = "hClientRepository", data = hClientRepository.datasValue.filter { it.nom.contains("rach") }
-                .map { it.keyID }.takeLast(4))
-            .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "clientsWithCommandBonVents", clientsWithCommandBonVents),
+            .getSemanticsTag(
+                nomVal = "hClientRepository",
+                data = hClientRepository.datasValue.filter { it.nom.contains("rach") }
+                    .map { it.keyID }.takeLast(4)
+            )
+            .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
+                1,
+                "clientsWithCommandBonVents",
+                clientsWithCommandBonVents
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -172,6 +182,21 @@ fun ID4ClientSearchButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    // Toggle Button for Client/Fournisseur
+                    FloatingActionButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = { isFournisseurMode = !isFournisseurMode },
+                        containerColor = if (isFournisseurMode) Color(0xFFFF9800) else Color(
+                            0xFF2196F3
+                        )
+                    ) {
+                        Text(
+                            text = if (isFournisseurMode) "F" else "C",
+                            color = Color.White,
+                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                        )
+                    }
+
                     OutlinedTextField(
                         modifier = Modifier
                             .width(200.dp)
@@ -179,7 +204,12 @@ fun ID4ClientSearchButton(
                             .focusRequester(focusRequester),
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Etate ou téléphone...") },
+                        placeholder = {
+                            Text(
+                                if (isFournisseurMode) "Nom fournisseur ou téléphone..."
+                                else "Nom client ou téléphone..."
+                            )
+                        },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
@@ -197,10 +227,9 @@ fun ID4ClientSearchButton(
                                     searchQuery = ""
                                     showDropdown = false
                                 },
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                isFournisseurMode = isFournisseurMode // Pass the toggle state
                             )
-                            //<--
-                            //TODO(1): ajot a cote un toggle bton au click togle entre Fournisseur / Client si on add est fournisseur au client add fait its_Fournisseur=true
                         },
                         trailingIcon = {
                             IconButton(
@@ -218,6 +247,13 @@ fun ID4ClientSearchButton(
                     )
                 }
 
+                // Display current mode
+                Text(
+                    text = "Mode: ${if (isFournisseurMode) "Fournisseur" else "Client"}",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                    color = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3),
+                    modifier = Modifier.padding(horizontal = 36.dp, vertical = 2.dp)
+                )
 
                 if (showDropdown) {
                     View_List_DropDownButtons(
@@ -235,20 +271,6 @@ fun ID4ClientSearchButton(
     }
 }
 
-fun getTimeElapsedString(creationTimestamp: Long): String {
-    val elapsed = System.currentTimeMillis() - creationTimestamp
-    val days = TimeUnit.MILLISECONDS.toDays(elapsed)
-    val hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60
-
-    return when {
-        days > 0 -> "${days}j ${hours}h"
-        hours > 0 -> "${hours}h ${minutes}m"
-        minutes > 0 -> "${minutes}m"
-        else -> "< 1m"
-    }
-}
-
 @SuppressLint("DefaultLocale")
 @Composable
 private fun CreateNewClientIcon(
@@ -258,16 +280,22 @@ private fun CreateNewClientIcon(
     onClientSelectedToToast: (M2Client) -> Unit,
     onResetSearchMode: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
+    isFournisseurMode: Boolean = false, // New parameter
     repositorysMainSetter: RepositorysMainSetter = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
 ) {
     val currentLocation = locationTracker?.getCurrentPosition()
 
     val newClient = M2Client(
+        creationTimestamps = System.currentTimeMillis(),
         nom = searchQuery.ifEmpty { "Err Definition" },
-        title = searchQuery.ifEmpty { "Nouveau Client" },
+        title = searchQuery.ifEmpty {
+            if (isFournisseurMode) "Nouveau Fournisseur" else "Nouveau Client"
+        },
         latitude = 36.720027701275505,
         longitude = 3.1436710147865483,
         caMarqueGpsEstOuvert = currentLocation != null,
+        its_Fournisseur = isFournisseurMode, // Set based on toggle state
         snippet = currentLocation?.let {
             "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${
                 String.format(
@@ -275,7 +303,9 @@ private fun CreateNewClientIcon(
                     it.longitude
                 )
             }"
-        } ?: "Position non disponible"
+        } ?: "Position non disponible",
+        edite_Exact_Gps_est_fait = true,
+        parentComptCreateurKEyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: ""
     )
 
     val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
@@ -302,11 +332,26 @@ private fun CreateNewClientIcon(
         modifier = Modifier.semantics(mergeDescendants = true) {
             set(SemanticsPropertyKey("Debug new M8BonVent"), addedDefaultOnVentID8BonVentEtAdd)
             set(SemanticsPropertyKey("Debug currentM9AppCompt avec new M8BonVent"), updatedAppCompt)
+            set(SemanticsPropertyKey("Debug isFournisseurMode"), isFournisseurMode)
         }
     ) {
         Icon(
             imageVector = Icons.Default.Add,
-            contentDescription = "Créer nouveau client",
+            contentDescription = if (isFournisseurMode) "Créer nouveau fournisseur" else "Créer nouveau client",
+            tint = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3)
         )
+    }
+}
+fun getTimeElapsedString(creationTimestamp: Long): String {
+    val elapsed = System.currentTimeMillis() - creationTimestamp
+    val days = TimeUnit.MILLISECONDS.toDays(elapsed)
+    val hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60
+
+    return when {
+        days > 0 -> "${days}j ${hours}h"
+        hours > 0 -> "${hours}h ${minutes}m"
+        minutes > 0 -> "${minutes}m"
+        else -> "< 1m"
     }
 }

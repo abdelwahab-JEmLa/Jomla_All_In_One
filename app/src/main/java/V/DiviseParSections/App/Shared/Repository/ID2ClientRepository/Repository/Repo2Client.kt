@@ -177,6 +177,7 @@ data class M2Client(
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
     var its_Fournisseur: Boolean = false,
+    var parentComptCreateurKEyID: String = "",
 
     // Section Etates Mutable
     var numTelephone: String = "",
