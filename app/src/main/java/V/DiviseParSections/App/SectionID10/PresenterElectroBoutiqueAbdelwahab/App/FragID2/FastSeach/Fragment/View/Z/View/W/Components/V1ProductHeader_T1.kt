@@ -1,8 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components
 
+
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -59,6 +61,7 @@ fun ProductHeader_T1(
             produit
         )
     }
+    var shouldShowCategoryDialog by remember { mutableStateOf(false) }
 
     val allNonTrouve =
         listFiltered_M10OperationVentCouleurs_By_M1Produit.isNotEmpty() && listFiltered_M10OperationVentCouleurs_By_M1Produit.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
@@ -68,6 +71,12 @@ fun ProductHeader_T1(
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
+
+    // Get category name from the categories map
+    val categoriesMap = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
+    val categoryName = produit.idParentCategorie?.let { categoryId ->
+        categoriesMap[categoryId]?.nom
+    } ?: "Sans Catégorie"
 
     Box(
         modifier = Modifier
@@ -90,7 +99,7 @@ fun ProductHeader_T1(
             )
             .padding(12.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .getSemanticsTag(
                     produit,"produit"
@@ -104,109 +113,133 @@ fun ProductHeader_T1(
                     data = listFiltered_M10OperationVentCouleurs_By_M1Produit
                 )
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = produit.nom,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onPrimaryContainer,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (allNonTrouve) {
+            // Row 1: Product name and category
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Non disponible",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                        text = produit.nom,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        else MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Text(
+                        text = "Catégorie: $categoryName",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(top = 2.dp)
                     )
+
+                    if (allNonTrouve) {
+                        Text(
+                            text = "Non disponible",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
                 }
             }
 
-            Card_Produit_Nombre_Unites(
-                allNonTrouve, produit,viewModel
-            )
-            {
-                shouldShowDialog_quantite_Unite_Par_Boit = true
-            }
-
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                    else MaterialTheme.colorScheme.surface
-                ),
-                modifier = Modifier.padding(start = 8.dp)
+            // Row 2: Units and carton controls
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(8.dp)
+                Card_Produit_Nombre_Unites(
+                    allNonTrouve = allNonTrouve,
+                    produit = produit,
+                    viewModel = viewModel
                 ) {
-                    IconButton(
-                        onClick = {
-                            val toggled_setIN_Vent_Its_Quantity_Represent =
-                                produit.setIN_Vent_Its_Quantity_Represent.toggle()
+                    shouldShowDialog_quantite_Unite_Par_Boit = true
+                }
 
-                            produit.apply {
-                                setIN_Vent_Its_Quantity_Represent =
-                                    toggled_setIN_Vent_Its_Quantity_Represent
-                            }.also {
-                                repositorysMainGetter.repo1ProduitInfos.update(
-                                    it
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                        else MaterialTheme.colorScheme.surface
+                    ),
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        IconButton(
+                            onClick = {
+                                val toggled_setIN_Vent_Its_Quantity_Represent =
+                                    produit.setIN_Vent_Its_Quantity_Represent.toggle()
+
+                                produit.apply {
+                                    setIN_Vent_Its_Quantity_Represent =
+                                        toggled_setIN_Vent_Its_Quantity_Represent
+                                }.also {
+                                    repositorysMainGetter.repo1ProduitInfos.update(
+                                        it
+                                    )
+                                }
+                                viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
+                                    listFiltered_M10OperationVentCouleurs_By_M1Produit
+                                )
+                            }, modifier = Modifier.size(36.dp)
+                        ) {
+                            val carton =
+                                produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+
+                            Icon(
+                                imageVector = if (carton) Icons.Default.Inventory2
+                                else Icons.Default.ViewModule, contentDescription = null, tint = when {
+                                    allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    carton -> MaterialTheme.colorScheme.primary
+
+                                    else -> MaterialTheme.colorScheme.secondary
+                                }, modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                shouldShowDialog_quantite_Boit_Par_Carton = true
+                            }, modifier = Modifier.size(36.dp)
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Numbers,
+                                    contentDescription = "Quantity per carton",
+                                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = 0.6f
+                                    )
+                                    else MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "${produit.quantite_Boit_Par_Carton}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = 0.6f
+                                    )
+                                    else MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
-                            viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
-                                listFiltered_M10OperationVentCouleurs_By_M1Produit
-                            )
-                        }, modifier = Modifier.size(36.dp)
-                    ) {
-                        val carton =
-                            produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
-
-                        Icon(
-                            imageVector = if (carton) Icons.Default.Inventory2
-                            else Icons.Default.ViewModule, contentDescription = null, tint = when {
-                                allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                carton -> MaterialTheme.colorScheme.primary
-
-                                else -> MaterialTheme.colorScheme.secondary
-                            }, modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
-                            shouldShowDialog_quantite_Boit_Par_Carton = true
-                        }, modifier = Modifier.size(36.dp)
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Numbers,
-                                contentDescription = "Quantity per carton",
-                                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = 0.6f
-                                )
-                                else MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = "${produit.quantite_Boit_Par_Carton}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = 0.6f
-                                )
-                                else MaterialTheme.colorScheme.tertiary,
-                                fontWeight = FontWeight.Medium
-                            )
                         }
                     }
                 }
@@ -250,8 +283,30 @@ fun ProductHeader_T1(
                 shouldShowDialog_quantite_Boit_Par_Carton = false
             }
         }
+
+        // Category Selection Dialog
+        if (shouldShowCategoryDialog) {
+            CategorySelectionDialog(
+                product = produit,
+                onCategorySelected = { newCategoryId ->
+                    produit.copy(idParentCategorie = newCategoryId).also {
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                    }
+                    shouldShowCategoryDialog = false
+                },
+                onDismiss = { shouldShowCategoryDialog = false },
+                onUpdateCategory = { categoryId, newName ->
+                    categoriesMap[categoryId]?.copy(nom = newName)?.let { updatedCategory ->
+                        viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(updatedCategory)
+                    }
+                },
+                categoriesMap = categoriesMap,
+                availableCategories = categoriesMap.keys.toList()
+            )
+        }
     }
 }
+
 @Composable
 private fun Card_Produit_Nombre_Unites(
     allNonTrouve: Boolean,
