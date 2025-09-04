@@ -137,10 +137,37 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         rela_produit.idParentCategorie?.let { repositorysMainGetter.find_M16CategorieProduit_By_OldID(it) }
 
     private fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
-        val productName = capitalizeFirstLetter(produit?.nom ?: "Produit")
+        val productName = cleanAndCapitalizeProductName(produit?.nom ?: "Produit")
+
+        // Add © after product name if it doesn't already contain it
+        val productNameWithCopyright = if (!productName.contains("©")) {
+            "$productName ©"
+        } else {
+            productName
+        }
+
         val category = produit?.let { find_Relative_Categorie(it) }
-        return if (category != null && category.nom.isNotBlank()) "$productName (${capitalizeFirstLetter(category.nom)})" else productName
+        return if (category != null && category.nom.isNotBlank()) {
+            val cleanCategoryName = cleanAndCapitalizeProductName(category.nom)
+            "$productNameWithCopyright ($cleanCategoryName)"
+        } else {
+            productNameWithCopyright
+        }
     }
+
+    private fun cleanAndCapitalizeProductName(name: String): String {
+        // Remove # and digits and everything after the first digit or #
+        val nameWithoutDigitsAndHash = name.replace(Regex("[#\\d].*"), "").trim()
+
+        // Split by spaces and capitalize each word
+        return nameWithoutDigitsAndHash.split("\\s+".toRegex())
+            .filter { it.isNotBlank() }
+            .joinToString(" ") { word ->
+                word.lowercase(Locale.getDefault())
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
+    }
+
 
     private fun addCompactLabelValue(doc: Document, label: String, value: String, labelFont: PdfFont, valueFont: PdfFont) {
         val paragraph = Paragraph()
