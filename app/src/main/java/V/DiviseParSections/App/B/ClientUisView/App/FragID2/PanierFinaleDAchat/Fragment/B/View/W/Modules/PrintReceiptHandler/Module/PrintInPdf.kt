@@ -430,13 +430,25 @@ class PrintInPdf_itextpdf_Handler(
         }
     }
 
-    private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
-        Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+    private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
+        val paragraph = Paragraph(content)
+            .setFont(font)
+            .setFontSize(size)
+            .setTextAlignment(align)
+            .setMargin(0f)
+
+        return Cell()
+            .add(paragraph)
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+            .setPadding(4f)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+            .setTextAlignment(align)
+    }
 
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.1f)).setPadding(0f)
+            .setBorder(SolidBorder(0.1f)).setPadding(4f)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
 
     private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
