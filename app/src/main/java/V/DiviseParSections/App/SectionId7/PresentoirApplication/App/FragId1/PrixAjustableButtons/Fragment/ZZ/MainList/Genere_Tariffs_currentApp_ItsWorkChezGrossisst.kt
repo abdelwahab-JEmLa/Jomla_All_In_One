@@ -12,7 +12,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .lastOrNull { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Grossist_SuperGros &&
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
@@ -21,7 +21,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .lastOrNull { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Grossist_Achat &&
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
@@ -30,7 +30,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .lastOrNull { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Grossist_Progressive &&
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
@@ -39,7 +39,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .lastOrNull { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Grossist_Gro &&
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
@@ -52,7 +52,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
             ?: M13TarificationInfos(
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
-                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_Grossist_Achat,
+                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
                 prixCurrency = relative_M1Produit.prixAchat,
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.nom,
@@ -69,7 +69,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
             ?: M13TarificationInfos(
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
-                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_Grossist_SuperGros,
+                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 prixCurrency = calculateSuperGrosPrice(relative_M1Produit),
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.nom,
@@ -86,7 +86,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
             ?: M13TarificationInfos(
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
-                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_Grossist_Progressive,
+                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
                 prixCurrency = calculateProgressiveGrossistPrice(relative_M1Produit),
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.nom,
@@ -103,7 +103,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
             ?: M13TarificationInfos(
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
-                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_Grossist_Gro,
+                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro,
                 prixCurrency = calculateGroPrice(relative_M1Produit),
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.nom,
@@ -112,33 +112,16 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
     }
 
     private fun calculateSuperGrosPrice(relative_M1Produit: ArticlesBasesStatsTable): Double {
-        // Super Gros price: cost price + minimal margin (5-10%)
-        val minimalMargin = 0.05 // 5% minimal margin
-        return relative_M1Produit.prixAchat * (1 + minimalMargin)
+        return relative_M1Produit.prixAchat
     }
 
     private fun calculateProgressiveGrossistPrice(relative_M1Produit: ArticlesBasesStatsTable): Double {
-        // Progressive price: between super gros and regular gros
         val superGrosPrice = calculateSuperGrosPrice(relative_M1Produit)
         val groPrice = calculateGroPrice(relative_M1Produit)
         return (superGrosPrice + groPrice) / 2
     }
 
     private fun calculateGroPrice(relative_M1Produit: ArticlesBasesStatsTable): Double {
-        // Gro price: cost price + standard margin (15-20%)
-        val standardMargin = 0.15 // 15% standard margin
-        return relative_M1Produit.prixAchat * (1 + standardMargin)
-    }
-
-    private fun calculateProgressivePrice(
-        prixDetaille: Double,
-        prixVent: Double,
-        pourcentageProgressive: Int
-    ): Double {
-        val priceDifference = prixDetaille - prixVent
-        val pourcentageProgressive1 =
-            if (pourcentageProgressive == 50) 60 else pourcentageProgressive
-        val progressiveAdjustment = priceDifference * (pourcentageProgressive1 / 100.0)
-        return prixVent + progressiveAdjustment
+        return  calculateSuperGrosPrice(relative_M1Produit)
     }
 }

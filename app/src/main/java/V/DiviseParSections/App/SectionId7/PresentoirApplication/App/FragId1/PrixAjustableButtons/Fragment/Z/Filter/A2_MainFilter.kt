@@ -53,13 +53,10 @@ fun MainFilter(
     Column(modifier = modifier) {
         when (currentApp_ItsWorkChezGrossisst) {
             true -> A3_MainList_ItsWorckChezGros(
-                itsLancedDepuitComposeParent = lancedDepuitAffiche,
-                viewModel = viewModel,
                 relative_M1Produit = relative_M1Produit,
-                showLabels = showLabels,
+                viewModel = viewModel,
                 clientDefiniTariffs = clientDefiniTariffs,
-                onClickPrixButton = onClickPrixButton,
-                onClickAnulationButton = onClickAnulationButton
+                itsLancedDepuitComposeParent = lancedDepuitAffiche
             )
 
             false ->

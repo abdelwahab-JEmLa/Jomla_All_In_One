@@ -55,7 +55,18 @@ fun MainList_Frag_Panie(
                 fVentCouleurOperationRepository.onVentFilteredDatas
             }
 
-            filteredData.groupBy { it.parent_M1Produit_KeyId }
+            // Group by product and sort each group by creation date descending
+            filteredData
+                .groupBy { it.parent_M1Produit_KeyId }
+                .mapValues { (_, ventList) ->
+                    ventList.sortedByDescending { it.creationTimestamps }
+                }
+                // Sort the groups themselves by the latest creation date in each group
+                .toList()
+                .sortedByDescending { (_, ventList) ->
+                    ventList.maxOfOrNull { it.creationTimestamps } ?: 0L
+                }
+                .toMap()
         }
     }
 
@@ -138,7 +149,7 @@ fun Search_Prd(
             if (searchText.isBlank()) {
                 groupedVents
             } else {
-                groupedVents.filter { (productKeyId, _) ->
+                val filtered = groupedVents.filter { (productKeyId, _) ->
                     val product = bProduitDataBase_SubClassFunctionality.datasValue
                         .find { it.keyID == productKeyId }
 
@@ -148,6 +159,13 @@ fun Search_Prd(
 
                     productName.contains(searchText, ignoreCase = true)
                 }
+
+                // Maintain sorting even after filtering
+                filtered.toList()
+                    .sortedByDescending { (_, ventList) ->
+                        ventList.maxOfOrNull { it.creationTimestamps } ?: 0L
+                    }
+                    .toMap()
             }
         }
     }

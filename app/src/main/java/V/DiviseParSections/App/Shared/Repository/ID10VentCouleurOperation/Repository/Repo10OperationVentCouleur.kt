@@ -251,6 +251,7 @@ class Repo10OperationVentCouleur(
 @Entity
 data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
+    var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------

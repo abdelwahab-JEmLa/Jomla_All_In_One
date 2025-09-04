@@ -10,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -36,20 +34,11 @@ fun A3_MainList_ItsWorckChezGros(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
-    context: Context = LocalContext.current,
-    showLabels: Boolean,
     clientDefiniTariffs: List<M13TarificationInfos>,
-    onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null,
     itsLancedDepuitComposeParent: ItsLancedDepuit?
 ) {
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
-    val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-
-    val itsLancedDepuit_EditeBaseDonne =
-        itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
 
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
@@ -102,10 +91,10 @@ fun A3_MainList_ItsWorckChezGros(
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID &&
                     // Only include grossist tariff types for max calculation
                     it.typeChoisi in setOf(
-                TypeChoisi.Tariff_Grossist_Achat,
-                TypeChoisi.Tariff_Grossist_SuperGros,
-                TypeChoisi.Tariff_Grossist_Progressive,
-                TypeChoisi.Tariff_Grossist_Gro
+                TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
+                TypeChoisi.Tariff_ItsWorkInGrossist_Gro
             )
         }
         .maxOfOrNull { it.prixCurrency } ?: 0.0
@@ -116,10 +105,10 @@ fun A3_MainList_ItsWorckChezGros(
                     it.parent_M2Client_KeyId == relative_M2Client?.keyID &&
                     // Only include grossist tariff types for history
                     it.typeChoisi in setOf(
-                TypeChoisi.Tariff_Grossist_Achat,
-                TypeChoisi.Tariff_Grossist_SuperGros,
-                TypeChoisi.Tariff_Grossist_Progressive,
-                TypeChoisi.Tariff_Grossist_Gro
+                TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
+                TypeChoisi.Tariff_ItsWorkInGrossist_Gro
             )
         }
 
@@ -155,10 +144,10 @@ fun A3_MainList_ItsWorckChezGros(
             // Filter out non-grossist tariffs when in grossist mode
             val filteredClientTariffs = clientDefiniTariffs.filter { tariff ->
                 tariff.typeChoisi in setOf(
-                    TypeChoisi.Tariff_Grossist_Achat,
-                    TypeChoisi.Tariff_Grossist_SuperGros,
-                    TypeChoisi.Tariff_Grossist_Progressive,
-                    TypeChoisi.Tariff_Grossist_Gro,
+                    TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                    TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                    TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
+                    TypeChoisi.Tariff_ItsWorkInGrossist_Gro,
                 )
             }
             filteredClientTariffs + standardTariffs

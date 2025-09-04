@@ -128,32 +128,33 @@ data class M13TarificationInfos(
     ) {
         //---------------------------------------currentApp_ItsWorkChezGrossisst  ------------------------------------------------------------------------------------------------
 
-        Tariff_Grossist_Achat(
+        Tariff_ItsWorkInGrossist_Achat(
             Icons.Filled.History,
             Color(0xFFEEEEEE),
-            "Tariff_Grossist_Achat",
+            "Tariff_ItsWorkInGrossist_Achat",
             Color(0xFF2196F3),
             1
         ),
 
-        Tariff_Grossist_SuperGros(
+        Tariff_ItsWorkInGrossist_SuperGros(
             Icons.Filled.History,
             Color(0xFF000000),
-            "Tariff_Grossist_SuperGros",
+            "Tariff_ItsWorkInGrossist_SuperGros",
             Color(0xFFF44336),
             1
         ),
-        Tariff_Grossist_Progressive(
+        Tariff_ItsWorkInGrossist_Progressive(
             Icons.Filled.History,
             Color(0xFFEEEEEE),
-            "Tariff_Grossist_Progressive",
+            "Tariff_ItsWorkInGrossist_Progressive",
             Color(0xFF000000),
             1
         ),
-        Tariff_Grossist_Gro(
+
+        Tariff_ItsWorkInGrossist_Gro(
             Icons.Filled.History,
             Color(0xFFCDDC39),
-            "Tariff_Grossist_Gro",
+            "Tariff_ItsWorkInGrossist_Gro",
             Color(0xFF2196F3),
             1
         ),

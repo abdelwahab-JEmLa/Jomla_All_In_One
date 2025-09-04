@@ -183,10 +183,10 @@ fun ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler(
             // Seulement afficher BenefitDisplayRow pour les types de tarifs grossiste spécifiés
             if (currentApp_Est_Admin &&
                 typeTarification in setOf(
-                    M13TarificationInfos.TypeChoisi.Tariff_Grossist_Achat,
-                    M13TarificationInfos.TypeChoisi.Tariff_Grossist_SuperGros,
-                    M13TarificationInfos.TypeChoisi.Tariff_Grossist_Progressive,
-                    M13TarificationInfos.TypeChoisi.Tariff_Grossist_Gro
+                    M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                    M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                    M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
+                    M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
                 )) {
                 if (allTariffsGroupedAndSorted != null && relative_Produit != null) {
                     BenefitDisplayRow(

@@ -44,10 +44,10 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
     // Utilise seulement les types de tarifs spécifiés
     val isGrossistTariffType = typeTarification in setOf(
-        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Achat,
-        M13TarificationInfos.TypeChoisi.Tariff_Grossist_SuperGros,
-        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Progressive,
-        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Gro
+        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
+        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
     )
 
     // Don't render if not a grossist tariff type
@@ -119,7 +119,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                 // Show different adjustment buttons based on tariff type and admin status
                 if (currentApp_Est_Admin) {
                     when (typeTarification) {
-                        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Progressive -> {
+                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive -> {
                             // Use ProgressivePercentageAdjustmentCard for progressive pricing
                             ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler(
                                 currentApp_Est_Admin = currentApp_Est_Admin,
@@ -149,11 +149,11 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                                 }
                             )
                         }
-                        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Achat -> {
-                            // Aucun bouton d'ajustement spécial pour Tariff_Grossist_Achat
+                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat -> {
+                            // Aucun bouton d'ajustement spécial pour Tariff_ItsWorkInGrossist_Achat
                         }
-                        M13TarificationInfos.TypeChoisi.Tariff_Grossist_SuperGros,
-                        M13TarificationInfos.TypeChoisi.Tariff_Grossist_Gro -> {
+                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> {
                             BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler(
                                 allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                                 relative_Produit = relative_Produit,
