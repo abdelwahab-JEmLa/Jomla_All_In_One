@@ -58,8 +58,6 @@ fun ProductHeader_SemiModularized(
     viewModel: ZViewModel_Sec1Frag3,
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
-    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
-
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(

@@ -414,13 +414,6 @@ fun DetailsBonVent(
                     }
                 )
             },
-            // NOUVEAU: Bouton pour test d'impression USB
-            ActionButtonData("usb_test_print") {
-                UsbTestPrintButton(
-                    context = context,
-                    showLabel = !isMinimized
-                )
-            },
             ActionButtonData("confirmation") {
                 ConfirmationButton(
                     viewModel = viewModel,

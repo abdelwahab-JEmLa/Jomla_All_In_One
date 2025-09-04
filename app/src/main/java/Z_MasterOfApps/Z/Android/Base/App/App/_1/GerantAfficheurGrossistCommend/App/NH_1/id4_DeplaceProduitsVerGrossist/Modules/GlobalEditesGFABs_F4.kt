@@ -105,13 +105,13 @@ fun GlobalEditesGFABs_F4(
                             }
                         }
 
-                        // Upload vers Firebase Storage avec gestion de la progression
+                        // UploadHandler vers Firebase Storage avec gestion de la progression
                         val uploadTask = imagesProduitsFireBaseStorageRef
                             .child(fileName)
                             .putBytes(imageBytes)
                             .addOnProgressListener { taskSnapshot ->
                                 val progress = (100.0 * taskSnapshot.bytesTransferred) / taskSnapshot.totalByteCount
-                                Log.d("Upload", "Progress: $progress%")
+                                Log.d("UploadHandler", "Progress: $progress%")
                             }
                             .await()
 

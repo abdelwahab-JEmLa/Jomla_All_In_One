@@ -139,7 +139,7 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
 
                             val recordedFile = stopResult.getOrThrow()
 
-                            // Upload the recorded file
+                            // UploadHandler the recorded file
                             val parentMessageVID = System.currentTimeMillis()
                             val uploadResult = audioRecorderAndPlayHandler.uploadAudioFile(
                                 recordedFile,

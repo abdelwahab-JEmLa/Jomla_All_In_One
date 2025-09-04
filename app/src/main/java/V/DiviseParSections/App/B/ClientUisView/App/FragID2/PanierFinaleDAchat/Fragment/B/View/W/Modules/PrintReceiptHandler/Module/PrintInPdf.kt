@@ -9,9 +9,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
-import android.os.Environment
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
@@ -25,14 +22,14 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
-import kotlinx.coroutines.tasks.await
-import java.io.File
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGetter) {
+class PrintInPdf_itextpdf_Handler(
+    val repositorysMainGetter: RepositorysMainGetter,
+    val uploadHandler: UploadHandler,
+) {
 
     enum class PdfType { RECEIPT_ONLY, RECEIPT_WITH_CREDIT, CREDIT_ONLY }
 
@@ -46,7 +43,8 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         val versement: Double = 0.0,
         val transactionId: String = "",
         val its_GrossistApp: Boolean = true,
-        val creditData: CreditReceiptData? = null
+        val creditData: CreditReceiptData? = null,
+        val autoShare: Boolean = false // New parameter to control auto-sharing
     )
 
     data class CreditReceiptData(
@@ -60,7 +58,11 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         val currentBill: Double = 0.0
     )
 
-    private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
+    data class PdfResult(
+        val localPath: String,
+        val firebaseUrl: String,
+        val file: java.io.File
+    )
 
     private fun addCreditOnlySection(doc: Document, creditData: CreditReceiptData, regularFont: PdfFont, boldFont: PdfFont) {
         if (creditData.oldBalance != 0.0) {
@@ -86,51 +88,126 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         addText(doc, "Nouv. Sold :", boldFont, 12f, TextAlignment.LEFT)
-
+        addText(doc, "${round(newBalance)} Da", boldFont, 14f, TextAlignment.CENTER)
 
         doc.add(Paragraph("\n").setFontSize(0.3f))
         addText(doc, "Transaction: #${creditData.transactionId}", regularFont, 9f, TextAlignment.CENTER)
         doc.add(Paragraph("\n").setFontSize(0.3f))
-        addText(doc, "————————————————————————", regularFont, 8f, TextAlignment.CENTER)
+        addText(doc, "────────────────────────", regularFont, 8f, TextAlignment.CENTER)
     }
 
-    suspend fun generateVentReceiptPdf(context: Context, client: M2Client?, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, transactionId: String = "", its_GrossistApp: Boolean = true): Result<String> {
+    suspend fun generateVentReceiptPdf(
+        context: Context,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        transactionId: String = "",
+        its_GrossistApp: Boolean = true,
+        autoShare: Boolean = false
+    ): Result<PdfResult> {
         if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
 
-        val file = createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-        val params = PdfGenerationParams(PdfType.RECEIPT_ONLY, client, operations, tarificationRepo, produitRepo, transactionId = transactionId, its_GrossistApp = its_GrossistApp)
+        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
+        val params = PdfGenerationParams(
+            PdfType.RECEIPT_ONLY,
+            client,
+            operations,
+            tarificationRepo,
+            produitRepo,
+            transactionId = transactionId,
+            its_GrossistApp = its_GrossistApp,
+            autoShare = autoShare
+        )
 
         generateUnifiedPdf(file.absolutePath, params)
         if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
 
-        val url = uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
+
+        // Auto-share if requested
+        if (autoShare) {
+            uploadHandler.shareDocument(context, file)
+        }
+
+        return Result.success(PdfResult(file.absolutePath, url, file))
     }
 
-    suspend fun generateVentReceiptWithCreditPdf(context: Context, client: M2Client?, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, transactionId: String = "", bonVent: M8BonVent, versement: Double, its_GrossistApp: Boolean = true): Result<String> {
+    suspend fun generateVentReceiptWithCreditPdf(
+        context: Context,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        transactionId: String = "",
+        bonVent: M8BonVent,
+        versement: Double,
+        its_GrossistApp: Boolean = true,
+        autoShare: Boolean = false
+    ): Result<PdfResult> {
         if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
 
-        val file = createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
-        val params = PdfGenerationParams(PdfType.RECEIPT_WITH_CREDIT, client, operations, tarificationRepo, produitRepo, bonVent, versement, transactionId, its_GrossistApp)
+        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
+        val params = PdfGenerationParams(
+            PdfType.RECEIPT_WITH_CREDIT,
+            client,
+            operations,
+            tarificationRepo,
+            produitRepo,
+            bonVent,
+            versement,
+            transactionId,
+            its_GrossistApp,
+            autoShare = autoShare
+        )
 
         generateUnifiedPdf(file.absolutePath, params)
         if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
 
-        val url = uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
+
+        // Auto-share if requested
+        if (autoShare) {
+            uploadHandler.shareDocument(context, file)
+        }
+
+        return Result.success(PdfResult(file.absolutePath, url, file))
     }
 
-    suspend fun generateCreditReceiptPdf(context: Context, data: CreditReceiptData): Result<String> {
+    suspend fun generateCreditReceiptPdf(
+        context: Context,
+        data: CreditReceiptData,
+        autoShare: Boolean = false
+    ): Result<PdfResult> {
         if (data.totalAmount <= 0) return Result.failure(IllegalArgumentException("Invalid total amount"))
 
-        val file = createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-        val params = PdfGenerationParams(PdfType.CREDIT_ONLY, data.client, transactionId = data.transactionId, creditData = data)
+        val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
+        val params = PdfGenerationParams(
+            PdfType.CREDIT_ONLY,
+            data.client,
+            transactionId = data.transactionId,
+            creditData = data,
+            autoShare = autoShare
+        )
 
         generateUnifiedPdf(file.absolutePath, params)
         if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
 
-        val url = uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
+
+        // Auto-share if requested
+        if (autoShare) {
+            uploadHandler.shareDocument(context, file)
+        }
+
+        return Result.success(PdfResult(file.absolutePath, url, file))
+    }
+
+    /**
+     * Convenience method to share an already generated PDF
+     */
+    fun sharePdf(context: Context, pdfResult: PdfResult) {
+        uploadHandler.shareDocument(context, pdfResult.file)
     }
 
     private fun find_Relative_Categorie(rela_produit: ArticlesBasesStatsTable): CategoriesTabelle? =
@@ -290,7 +367,7 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
                     if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
                         if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
                             doc.add(Paragraph("\n").setFontSize(0.3f))
-                            addText(doc, "━━━━━━━━━━━━━━━━━━━━━━━━━", regularFont, 10f, TextAlignment.CENTER)
+                            addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
                             doc.add(Paragraph("\n").setFontSize(0.3f))
                         }
 
@@ -303,6 +380,46 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
                 }
             }
         }
+    }
+
+
+    suspend fun generateVentReceiptPdf(context: Context, client: M2Client?, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, transactionId: String = "", its_GrossistApp: Boolean = true): Result<String> {
+        if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
+
+        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
+        val params = PdfGenerationParams(PdfType.RECEIPT_ONLY, client, operations, tarificationRepo, produitRepo, transactionId = transactionId, its_GrossistApp = its_GrossistApp)
+
+        generateUnifiedPdf(file.absolutePath, params)
+        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
+
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
+        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+    }
+
+    suspend fun generateVentReceiptWithCreditPdf(context: Context, client: M2Client?, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, transactionId: String = "", bonVent: M8BonVent, versement: Double, its_GrossistApp: Boolean = true): Result<String> {
+        if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
+
+        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
+        val params = PdfGenerationParams(PdfType.RECEIPT_WITH_CREDIT, client, operations, tarificationRepo, produitRepo, bonVent, versement, transactionId, its_GrossistApp)
+
+        generateUnifiedPdf(file.absolutePath, params)
+        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
+
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
+        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+    }
+
+    suspend fun generateCreditReceiptPdf(context: Context, data: CreditReceiptData): Result<String> {
+        if (data.totalAmount <= 0) return Result.failure(IllegalArgumentException("Invalid total amount"))
+
+        val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
+        val params = PdfGenerationParams(PdfType.CREDIT_ONLY, data.client, transactionId = data.transactionId, creditData = data)
+
+        generateUnifiedPdf(file.absolutePath, params)
+        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
+
+        val url =uploadHandler. uploadToFirebaseStorage(file, file.name)
+        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
     }
 
     private fun createProductTableAndReturnTotal(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont): Double {
@@ -414,14 +531,6 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
     }
 
-    private fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
-        val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
-        if (!dir.exists()) dir.mkdirs()
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val sanitizedClientName = clientName.replace("[^a-zA-Z0-9]".toRegex(), "_")
-        val fileName = "${type}_${sanitizedClientName}_${timestamp}_$id.pdf"
-        return File(dir, fileName)
-    }
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
         val paragraph = Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f)
@@ -444,10 +553,4 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         else text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-    private suspend fun uploadToFirebaseStorage(file: File, fileName: String): String {
-        val fileRef = storageRef.child(fileName)
-        val uploadTask = fileRef.putFile(android.net.Uri.fromFile(file))
-        uploadTask.await()
-        return fileRef.downloadUrl.await().toString()
-    }
 }

@@ -1,28 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module// ============================================================================
-// EXEMPLE COMPLET : Android Print Framework avec USB
-// ============================================================================
-
-// 1. PERMISSIONS (AndroidManifest.xml)
-/*
-<uses-permission android:name="android.permission.USB_PERMISSION" />
-<uses-feature android:name="android.hardware.usb.host" android:required="true" />
-
-<activity android:name=".PrintActivity">
-    <intent-filter>
-        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-    </intent-filter>
-    <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-        android:resource="@xml/device_filter" />
-</activity>
-*/
-
-// 2. DEVICE FILTER (res/xml/device_filter.xml)
-/*
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <usb-device class="7" subclass="1" protocol="2" />
-</resources>
-*/
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Componants
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -45,7 +21,7 @@ class USBPrintActivity : AppCompatActivity() {
 
     private lateinit var usbManager: UsbManager
     private var targetPrinter: UsbDevice? = null
-    
+
     companion object {
         private const val ACTION_USB_PERMISSION = "com.yourapp.USB_PERMISSION"
         private const val USB_VENDOR_ID_EPSON = 0x04b8
@@ -62,7 +38,11 @@ class USBPrintActivity : AppCompatActivity() {
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             device?.apply {
                                 targetPrinter = this
-                                Toast.makeText(context, "Imprimante USB connectée: $productName", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Imprimante USB connectée: $productName",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
                             Toast.makeText(context, "Permission USB refusée", Toast.LENGTH_SHORT).show()
@@ -87,9 +67,9 @@ class USBPrintActivity : AppCompatActivity() {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        
+
+        usbManager = getSystemService(USB_SERVICE) as UsbManager
+
         // Enregistrer les listeners USB
         val filter = IntentFilter().apply {
             addAction(ACTION_USB_PERMISSION)
@@ -97,10 +77,10 @@ class USBPrintActivity : AppCompatActivity() {
             addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         }
         registerReceiver(usbPermissionReceiver, filter)
-        
+
         // Vérifier les imprimantes déjà connectées
         checkForConnectedPrinters()
-        
+
         // Test d'impression
         testPrintSimpleReceipt()
     }
@@ -123,12 +103,12 @@ class USBPrintActivity : AppCompatActivity() {
         // Vérifier par Vendor ID (marques courantes)
         val knownPrinterVendors = listOf(
             USB_VENDOR_ID_EPSON,
-            USB_VENDOR_ID_BROTHER, 
+            USB_VENDOR_ID_BROTHER,
             USB_VENDOR_ID_CANON,
             0x04e8, // Samsung
             0x03f0  // HP
         )
-        
+
         return knownPrinterVendors.contains(device.vendorId) ||
                device.deviceClass == 7 || // Printer class
                device.productName?.lowercase()?.contains("print") == true
@@ -140,7 +120,7 @@ class USBPrintActivity : AppCompatActivity() {
             Toast.makeText(this, "Imprimante prête: ${device.productName}", Toast.LENGTH_SHORT).show()
         } else {
             val permissionIntent = PendingIntent.getBroadcast(
-                this, 0, 
+                this, 0,
                 Intent(ACTION_USB_PERMISSION),
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -155,20 +135,20 @@ class USBPrintActivity : AppCompatActivity() {
     fun testPrintSimpleReceipt() {
         // Créer un PDF simple en mémoire
         val pdfFile = createSimpleReceiptPDF()
-        
+
         // Imprimer via Android Print Framework
         printPDFFile(pdfFile, "Test Receipt")
     }
 
     private fun createSimpleReceiptPDF(): File {
         val file = File(cacheDir, "test_receipt.pdf")
-        
+
         // Utilisation d'iText pour créer un PDF simple
         try {
             val writer = com.itextpdf.kernel.pdf.PdfWriter(file.absolutePath)
             val pdfDoc = com.itextpdf.kernel.pdf.PdfDocument(writer)
             val document = com.itextpdf.layout.Document(pdfDoc)
-            
+
             // Contenu simple
             document.add(com.itextpdf.layout.element.Paragraph("REÇU DE TEST"))
             document.add(com.itextpdf.layout.element.Paragraph("=================="))
@@ -177,42 +157,42 @@ class USBPrintActivity : AppCompatActivity() {
             document.add(com.itextpdf.layout.element.Paragraph("Prix: 100.00 Da"))
             document.add(com.itextpdf.layout.element.Paragraph("=================="))
             document.add(com.itextpdf.layout.element.Paragraph("TOTAL: 100.00 Da"))
-            
+
             document.close()
-            
+
         } catch (e: Exception) {
             e.printStackTrace()
             // Créer un fichier vide si erreur
             file.createNewFile()
         }
-        
+
         return file
     }
 
     private fun printPDFFile(file: File, jobName: String) {
-        val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-        
+        val printManager = getSystemService(PRINT_SERVICE) as PrintManager
+
         val printAdapter = SimplePDFPrintAdapter(file)
-        
+
         // Attributs d'impression pour USB
         val printAttributes = PrintAttributes.Builder()
             .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
             .setResolution(PrintAttributes.Resolution("default", "default", 300, 300))
             .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
             .build()
-        
+
         // Lancer l'impression
         printManager.print(jobName, printAdapter, printAttributes)
-        
+
         Toast.makeText(this, "Document envoyé vers l'imprimante USB", Toast.LENGTH_SHORT).show()
     }
 
     // ============================================================================
     // ADAPTER POUR PDF PRINT
     // ============================================================================
-    
+
     private inner class SimplePDFPrintAdapter(private val pdfFile: File) : PrintDocumentAdapter() {
-        
+
         override fun onLayout(
             oldAttributes: PrintAttributes?,
             newAttributes: PrintAttributes,
@@ -281,7 +261,7 @@ class USBPrintActivity : AppCompatActivity() {
     // ============================================================================
     // INTÉGRATION AVEC VOTRE CLASSE EXISTANTE
     // ============================================================================
-    
+
     // Ajoutez cette méthode dans votre PrintInPdf_itextpdf_Handler
     /*
     suspend fun generateAndPrintViaUSB(
@@ -292,22 +272,22 @@ class USBPrintActivity : AppCompatActivity() {
         produitRepo: RepoM1Produit,
         transactionId: String = ""
     ): Result<String> {
-        
+
         return try {
             // 1. Générer le PDF
             val pdfResult = generateVentReceiptPdf(
-                context, client, operations, 
+                context, client, operations,
                 tarificationRepo, produitRepo, transactionId
             )
-            
+
             pdfResult.fold(
                 onSuccess = { path ->
                     val filePath = path.substringAfter("PDF saved: ").substringBefore("\nFirebase:")
-                    
+
                     // 2. Imprimer via USB
                     val usbActivity = context as? USBPrintActivity
                     usbActivity?.printExistingPDF(filePath, "Receipt_$transactionId")
-                    
+
                     Result.success("PDF généré et envoyé vers imprimante USB")
                 },
                 onFailure = { Result.failure(it) }
@@ -318,30 +298,3 @@ class USBPrintActivity : AppCompatActivity() {
     }
     */
 }
-
-// ============================================================================
-// EXEMPLE D'UTILISATION SIMPLE
-// ============================================================================
-
-/*
-// Dans votre Activity principale:
-class MainActivity : AppCompatActivity() {
-    
-    private lateinit var usbPrintActivity: USBPrintActivity
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        
-        usbPrintActivity = USBPrintActivity()
-        
-        // Test d'impression
-        findViewById<Button>(R.id.btnPrint).setOnClickListener {
-            if (usbPrintActivity.isUSBPrinterConnected()) {
-                usbPrintActivity.testPrintSimpleReceipt()
-            } else {
-                Toast.makeText(this, "Aucune imprimante USB connectée", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-}
-*/

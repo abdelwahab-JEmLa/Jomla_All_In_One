@@ -98,7 +98,7 @@ fun GlobalEditesGFABs_F1(
                             }
                         }
 
-                        // Upload vers Firebase Storage
+                        // UploadHandler vers Firebase Storage
                         val uploadTask = imagesProduitsFireBaseStorageRef
                             .child(fileName)
                             .putBytes(imageBytes)

@@ -164,7 +164,7 @@ fun ButtonVideoRecord(
                             val localFile = saveVideoLocally(videoFile, context)
                             logUserAction("VIDEO_SAVED_LOCALLY", context, localFile?.absolutePath)
 
-                            // Upload to Firebase
+                            // UploadHandler to Firebase
                             val fileName = uploadVideoToFirebase(videoFile)
                             isUploading = false
 
@@ -179,7 +179,7 @@ fun ButtonVideoRecord(
 
                         } catch (e: Exception) {
                             isUploading = false
-                            android.util.Log.e("VideoUpload", "Upload failed", e)
+                            android.util.Log.e("VideoUpload", "UploadHandler failed", e)
                             Toast.makeText(context, "Échec de l'upload: ${e.message}", Toast.LENGTH_LONG).show()
                             logUserAction("VIDEO_UPLOAD_ERROR", context, e.message)
                         }
@@ -230,7 +230,7 @@ fun ButtonVideoRecord(
                     .padding(bottom = 8.dp)
             )
             Text(
-                text = "Upload...",
+                text = "UploadHandler...",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF4CAF50)
             )

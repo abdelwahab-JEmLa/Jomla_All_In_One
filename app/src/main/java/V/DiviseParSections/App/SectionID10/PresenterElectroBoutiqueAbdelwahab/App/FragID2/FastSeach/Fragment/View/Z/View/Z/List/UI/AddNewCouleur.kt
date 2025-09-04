@@ -159,7 +159,7 @@ fun AddNewCouleur(
                         output.flush()
                     }
 
-                    // Upload to Firebase in background
+                    // UploadHandler to Firebase in background
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             storageRef.child(fileName).putBytes(imageBytes).await()

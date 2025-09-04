@@ -240,7 +240,7 @@ fun CreditCard(
                     }
                     correctedBitmap.recycle()
 
-                    // Upload to Firebase Storage
+                    // UploadHandler to Firebase Storage
                     val firebaseFileName = "receipt_${item.id}_${System.currentTimeMillis()}.webp"
                     val firebaseStoragePath = "Images Receipts/bons_achat/$firebaseFileName"
 

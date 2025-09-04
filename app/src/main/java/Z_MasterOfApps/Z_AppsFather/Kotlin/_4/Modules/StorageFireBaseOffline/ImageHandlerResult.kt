@@ -41,7 +41,7 @@ return try {
             }
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Download/Upload failed", e)
+            Log.e(TAG, "Download/UploadHandler failed", e)
         }
     }
 
