@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -157,7 +159,13 @@ fun MainFastSearchProduitPourVent(
             )
         }
     }
-
+    fun clickHandel(localSearchText: String): Unit {
+        addNewFastSearch(
+            searchQuery = localSearchText,
+            aCentralFacade = aCentralFacade,
+            context = context
+        )
+    }
     Surface(
         modifier = modifier
             .fillMaxSize()
@@ -180,17 +188,14 @@ fun MainFastSearchProduitPourVent(
                         placeholder = { Text("Rechercher un produit...") },
                         singleLine = true,
                         leadingIcon = {
-                            val searchQuery = localSearchText
-
                             IconButton(
-                                onClick = {
-                                    addNewFastSearch(
-                                        searchQuery = searchQuery,
-                                        aCentralFacade = aCentralFacade,
-                                        context = context
-                                    )
-                                },
                                 modifier = Modifier
+                                    .semantics(mergeDescendants = true) {
+                                        set(value = clickHandel(localSearchText), key = SemanticsPropertyKey("onClick()"))
+                                    },
+                                onClick = {
+                                    clickHandel(localSearchText)
+                                },
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
