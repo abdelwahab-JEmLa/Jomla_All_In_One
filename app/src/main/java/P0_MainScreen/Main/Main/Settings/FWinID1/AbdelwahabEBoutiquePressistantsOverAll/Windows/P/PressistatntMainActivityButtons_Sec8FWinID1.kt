@@ -351,20 +351,18 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
+                    (activeDialogSearchM1Produit == false).ifTrue {
+                        B1CataloguesAffiche(
+                            appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+                            showLabels = showLabels,
+                        ) {
+                            showCatalogueDialog = true
+                        }
+                    }
+
                     if (
                         !itsFragmentProduitFastSearchDialog
-                        && travailleChezGrossisst3Ali == false
                     ) {
-
-                        (activeDialogSearchM1Produit == false).ifTrue {
-                            B1CataloguesAffiche(
-                                appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                                showLabels = showLabels,
-                            ) {
-                                showCatalogueDialog = true
-                            }
-                        }
-
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )

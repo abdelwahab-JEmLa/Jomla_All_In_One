@@ -4,13 +4,11 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,15 +43,12 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-fun addNewFastSearch(
+fun get_New_Datas(
     searchQuery: String,
-    context: Context,
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-) {
-    val catalogues =
-        B4CatalogueCategoriesRepository().sortedBy { it.position }
+): Pair<ArticlesBasesStatsTable, M3CouleurProduitInfos> {
+    val catalogues = B4CatalogueCategoriesRepository().sortedBy { it.position }
     val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
     val idParentCategorie = catalogues.find {
         it.keyID == "t1"
@@ -62,43 +57,28 @@ fun addNewFastSearch(
     val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
     val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
 
-    val currentValues = focusedValuesGetter.active_Central_Values
 
-    val newProduit = ArticlesBasesStatsTable
-        .get_Default()
-        .copy(
-            keyID = keyID,
-            id = newOldId,
-            creationTimestamp = System.currentTimeMillis(),
-            nom = searchQuery,
-            couleur1 = keyIDM3CouleurProduitInfos,
-            idParentCategorie = idParentCategorie
-        )
-
-    aCentralFacade.repositorysMainSetter.update_M1Produit(newProduit)
-
-    val newCouleurP = M3CouleurProduitInfos
-        .get_default()
-        .copy(
-            keyID = keyIDM3CouleurProduitInfos,
-            creationTimestamp = System.currentTimeMillis(),
-            parentBProduitInfosKeyID = newProduit.keyID,
-            parentId1ProduitInfosDebugName = newProduit.nom,
-            parentBProduitOldID = newProduit.id,
-        )
-
-    aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
-        newCouleurP
+    val newProduit = ArticlesBasesStatsTable.get_Default().copy(
+        keyID = keyID,
+        id = newOldId,
+        creationTimestamp = System.currentTimeMillis(),
+        nom = searchQuery,
+        couleur1 = keyIDM3CouleurProduitInfos,
+        idParentCategorie = idParentCategorie
     )
 
-    val statusMessage = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-        "Produit créé (état non défini): ${newProduit.nom}"
-    } else {
-        "Produit WebP créé: ${newProduit.nom}"
-    }
 
-    Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
+    val newCouleurP = M3CouleurProduitInfos.get_default().copy(
+        keyID = keyIDM3CouleurProduitInfos,
+        creationTimestamp = System.currentTimeMillis(),
+        parentBProduitInfosKeyID = newProduit.keyID,
+        parentId1ProduitInfosDebugName = newProduit.nom,
+        parentBProduitOldID = newProduit.id,
+    )
+
+    return Pair(newProduit, newCouleurP)
 }
+
 
 @Composable
 fun MainFastSearchProduitPourVent(
@@ -159,16 +139,8 @@ fun MainFastSearchProduitPourVent(
             )
         }
     }
-    fun clickHandel(localSearchText: String): Unit {
-        addNewFastSearch(
-            searchQuery = localSearchText,
-            aCentralFacade = aCentralFacade,
-            context = context
-        )
-    }
     Surface(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Box {
             Column(
@@ -188,13 +160,36 @@ fun MainFastSearchProduitPourVent(
                         placeholder = { Text("Rechercher un produit...") },
                         singleLine = true,
                         leadingIcon = {
+                            val newDatas = get_New_Datas(
+                                searchQuery = localSearchText,
+                                aCentralFacade = aCentralFacade,
+                            )
                             IconButton(
                                 modifier = Modifier
                                     .semantics(mergeDescendants = true) {
-                                        set(value = clickHandel(localSearchText), key = SemanticsPropertyKey("onClick()"))
+                                        set(
+                                            value = newDatas,
+                                            key = SemanticsPropertyKey("newDatas")
+                                        )
                                     },
                                 onClick = {
-                                    clickHandel(localSearchText)
+                                    val newProduit = newDatas.first
+
+                                    aCentralFacade.repositorysMainSetter.upsert_M1Produit(newProduit)
+
+                                    aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                                        newDatas.second
+                                    )
+
+                                    val statusMessage =
+                                        if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_EtateDispoNonDifinieAuAddNew) {
+                                            "Produit créé (état non défini): ${newProduit.nom}"
+                                        } else {
+                                            "Produit WebP créé: ${newProduit.nom}"
+                                        }
+
+                                    Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT)
+                                        .show()
                                 },
                             ) {
                                 Icon(
@@ -208,16 +203,14 @@ fun MainFastSearchProduitPourVent(
                                 IconButton(
                                     onClick = {
                                         localSearchText = ""
-                                    }
-                                ) {
+                                    }) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
                                         contentDescription = "Effacer le texte"
                                     )
                                 }
                             }
-                        }
-                    )
+                        })
 
                     Spacer(Modifier.height(16.dp))
 

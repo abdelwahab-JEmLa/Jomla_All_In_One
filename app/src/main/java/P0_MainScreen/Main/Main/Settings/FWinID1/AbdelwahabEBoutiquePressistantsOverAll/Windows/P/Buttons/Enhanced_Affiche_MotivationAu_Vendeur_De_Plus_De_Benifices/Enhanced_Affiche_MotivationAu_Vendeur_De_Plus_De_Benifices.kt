@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
-//TODO(1): COMPLETED - Cards now use tariffType.couleur for background and tariffType.couleur_Text for text
 @Composable
 fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -64,7 +63,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
         .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur == null
 
     Column(modifier = modifier) {
-        focused_M1ProduitInfos_Pour_PrixDifineur.ifTrue {
+        (focused_M1ProduitInfos_Pour_PrixDifineur && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst).ifTrue {
             AffichePresentedCatalogues()
             EnhancedTotalDisplayCard(totalProducts, totalRevenue, profitabilityAnalysis)
         }
