@@ -176,6 +176,7 @@ data class M2Client(
     var nom: String = "Non Defini",
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
+    var its_Fournisseur: Boolean = false,
 
     // Section Etates Mutable
     var numTelephone: String = "",
@@ -206,6 +207,7 @@ data class M2Client(
     var keyByParent: String = "",
     var bsonObjectId: String = BsonObjectId().toHexString(),
 ) {
+
     fun get_DebugInfos(): String {
         return buildString {
             append("(M2=")

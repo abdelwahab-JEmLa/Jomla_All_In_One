@@ -40,6 +40,7 @@ class FocusedValuesSetter(
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
     fun add_M8BonVent(defaultM8BonVent: M8BonVent) = repo8BonVent.add(defaultM8BonVent)
 
+
     fun addNewM2ClientInfos(newClient: M2Client) = Repo2Client.addClient(newClient)
 
     fun ajoute_New_M10OperationVentCouleur(it: M10OperationVentCouleur) {

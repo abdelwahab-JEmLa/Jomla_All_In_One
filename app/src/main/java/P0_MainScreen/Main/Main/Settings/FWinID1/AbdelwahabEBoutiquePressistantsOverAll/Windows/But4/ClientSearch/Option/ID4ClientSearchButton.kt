@@ -5,6 +5,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.util.concurrent.TimeUnit
 
 @OptIn(FlowPreview::class)
@@ -197,6 +199,8 @@ fun ID4ClientSearchButton(
                                 },
                                 viewModel = viewModel
                             )
+                            //<--
+                            //TODO(1): ajot a cote un toggle bton au click togle entre Fournisseur / Client si on add est fournisseur au client add fait its_Fournisseur=true
                         },
                         trailingIcon = {
                             IconButton(
@@ -253,15 +257,16 @@ private fun CreateNewClientIcon(
     defaultId8BonVent: M8BonVent,
     onClientSelectedToToast: (M2Client) -> Unit,
     onResetSearchMode: () -> Unit,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1
+    viewModel: ViewModelPresistantButtonsSec8FWinID1,
+    repositorysMainSetter: RepositorysMainSetter = koinInject(),
 ) {
     val currentLocation = locationTracker?.getCurrentPosition()
 
     val newClient = M2Client(
         nom = searchQuery.ifEmpty { "Err Definition" },
         title = searchQuery.ifEmpty { "Nouveau Client" },
-        latitude = currentLocation?.latitude ?: M2Client.getCurrentDefaultLatitude(),
-        longitude = currentLocation?.longitude ?: M2Client.getCurrentDefaultLongitude(),
+        latitude = 36.720027701275505,
+        longitude = 3.1436710147865483,
         caMarqueGpsEstOuvert = currentLocation != null,
         snippet = currentLocation?.let {
             "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${
@@ -286,7 +291,7 @@ private fun CreateNewClientIcon(
 
     IconButton(
         onClick = {
-            viewModel.setter.addNewM2ClientInfos(newClient)
+            repositorysMainSetter.upsert_M2Client(newClient)
             viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
                 addedDefaultOnVentID8BonVentEtAdd,
                 updatedAppCompt

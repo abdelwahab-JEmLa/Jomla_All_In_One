@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,6 +40,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+
+// Extension function defined at top level
+fun String.capitalizeWords(): String {
+    return this.split(" ").joinToString(" ") { word ->
+        if (word.isNotEmpty()) {
+            word.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            }
+        } else {
+            word
+        }
+    }
+}
 
 @Composable
 fun ColorNameDropdownTextField(
@@ -73,22 +87,9 @@ fun ColorNameDropdownTextField(
             if (value.isBlank()) {
                 availableColors.take(10) // Show top 10 when no input
             } else {
-                availableColors.filter { 
-                    it.contains(value, ignoreCase = true) 
+                availableColors.filter {
+                    it.contains(value, ignoreCase = true)
                 }.take(8) // Show max 8 filtered results
-            }
-        }
-    }
-
-    // Capitalize words helper function
-    fun String.capitalizeWords(): String {
-        return this.split(" ").joinToString(" ") { word ->
-            if (word.isNotEmpty()) {
-                word.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase() else it.toString()
-                }
-            } else {
-                word
             }
         }
     }
