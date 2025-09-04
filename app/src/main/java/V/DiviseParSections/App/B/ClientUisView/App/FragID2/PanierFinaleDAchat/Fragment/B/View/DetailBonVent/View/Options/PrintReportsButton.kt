@@ -30,8 +30,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +48,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -359,13 +364,35 @@ fun PrintReportsDialog(
         }
     )
 }
-
-// Individual Print Report Item
+// Individual Print Report Item with countdown for ongoing jobs
 @Composable
 fun PrintReportItem(
     report: PrintPCBackEnd,
     modifier: Modifier = Modifier
 ) {
+    // State for countdown timer
+    var countdown by remember { mutableStateOf(30) }
+    var isJobOngoing by remember { mutableStateOf(report.end_du_job.isEmpty()) }
+
+    // Effect for countdown timer when job is ongoing
+    LaunchedEffect(isJobOngoing) {
+        if (isJobOngoing) {
+            while (countdown > 0 && isJobOngoing) {
+                delay(1000) // Wait 1 second
+
+                countdown--
+                // Check if job is still ongoing (you might want to refresh data here)
+                if (report.end_du_job.isNotEmpty()) {
+                    isJobOngoing = false
+                }
+            }
+            // After 30 seconds, assume job is complete or failed
+            if (countdown == 0) {
+                isJobOngoing = false
+            }
+        }
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -384,17 +411,35 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                
-                Icon(
-                    imageVector = Icons.Default.Print,
-                    contentDescription = "Impression",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
+
+                if (isJobOngoing) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "${countdown}s",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Print,
+                        contentDescription = "Impression",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
-            
+
             Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -411,7 +456,7 @@ fun PrintReportItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -426,7 +471,7 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -436,32 +481,116 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = formatDateTime(report.end_du_job),
-                    style = MaterialTheme.typography.bodySmall
-                )
+
+                if (isJobOngoing) {
+                    Text(
+                        text = "En cours...",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
+                } else {
+                    Text(
+                        text = if (report.end_du_job.isEmpty()) "Terminé/Échoué" else formatDateTime(report.end_du_job),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (report.end_du_job.isEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-            
-            // Calculate duration
-            val duration = calculateDuration(report.commencement_du_job, report.end_du_job)
-            if (duration.isNotEmpty()) {
+
+            // Calculate and show duration only for completed jobs
+            if (!isJobOngoing && report.end_du_job.isNotEmpty()) {
+                val duration = calculateDuration(report.commencement_du_job, report.end_du_job)
+                if (duration.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Durée:",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = duration,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            } else if (isJobOngoing) {
+                // Show elapsed time for ongoing jobs
+                val elapsedTime = calculateElapsedTime(report.commencement_du_job)
+                if (elapsedTime.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Temps écoulé:",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = elapsedTime,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+
+            // Status indicator
+            if (isJobOngoing) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Durée:",
+                        text = "Statut:",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = duration,
+                        text = "Impression en cours",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
+    }
+}
+
+// Helper function to calculate elapsed time from start
+private fun calculateElapsedTime(start: String): String {
+    return try {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val startTime = format.parse(start)
+        val currentTime = System.currentTimeMillis()
+
+        if (startTime != null) {
+            val elapsedMs = currentTime - startTime.time
+            val elapsedSeconds = elapsedMs / 1000
+
+            when {
+                elapsedSeconds < 60 -> "${elapsedSeconds}s"
+                elapsedSeconds < 3600 -> {
+                    val minutes = elapsedSeconds / 60
+                    val seconds = elapsedSeconds % 60
+                    "${minutes}m ${seconds}s"
+                }
+                else -> {
+                    val hours = elapsedSeconds / 3600
+                    val minutes = (elapsedSeconds % 3600) / 60
+                    "${hours}h ${minutes}m"
+                }
+            }
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
     }
 }
 
