@@ -230,27 +230,23 @@ data class ArticlesBasesStatsTable(
     var autreNomDarticle: String? = null,
 
     var couleur1: String? = "couleur1",
-    var idcolor1: Long = 1,
     var couleur2: String? = null,
-    var idcolor2: Long = 0,
     var couleur3: String? = null,
-    var idcolor3: Long = 0,
     var couleur4: String? = null,
-    var idcolor4: Long = 0,
-
     var couleur5: String? = null,
-    var idcolor5: Long = 0,
-
     var couleur6: String? = null,
-    var idcolor6: Long = 0,
-
     var couleur7: String? = null,
-    var idcolor7: Long = 0,
-
     var couleur8: String? = null,
-    var idcolor8: Long = 0,
-
     var couleur9: String? = null,
+
+    var idcolor2: Long = 0,
+    var idcolor7: Long = 0,
+    var idcolor8: Long = 0,
+    var idcolor4: Long = 0,
+    var idcolor6: Long = 0,
+    var idcolor5: Long = 0,
+    var idcolor3: Long = 0,
+    var idcolor1: Long = 1,
     var idcolor9: Long = 0,
 
     var nomCategorie2: String? = null,

@@ -148,7 +148,7 @@ fun AutrePrixsAffiche(
         )
 
         // Update the product in the repository
-        viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+        viewModel.aCentralFacade.repositorysMainSetter.upsert_M1Produit(updatedProduit)
 
         // Recalculate the progressive price based on new percentage
         val prixDetaille = latestTariffLocalData.prixCurrency // This should be base price
@@ -226,7 +226,7 @@ fun AutrePrixsAffiche(
             )
 
             // Update the product in the repository
-            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+            viewModel.aCentralFacade.repositorysMainSetter.upsert_M1Produit(updatedProduit)
 
             latestTariffLocalData = latestTariffLocalData.copy(
                 prixCurrency = newPurchasePrice
@@ -433,7 +433,7 @@ fun AutrePrixsAffiche(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
                             )
-                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(
+                            viewModel.aCentralFacade.repositorysMainSetter.upsert_M1Produit(
                                 updatedProduit
                             )
                             latestTariffLocalData =
@@ -461,7 +461,7 @@ fun AutrePrixsAffiche(
                                 prixAchat = newPrice,
                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
                             )
-                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(
+                            viewModel.aCentralFacade.repositorysMainSetter.upsert_M1Produit(
                                 updatedProduit
                             )
                             latestTariffLocalData =

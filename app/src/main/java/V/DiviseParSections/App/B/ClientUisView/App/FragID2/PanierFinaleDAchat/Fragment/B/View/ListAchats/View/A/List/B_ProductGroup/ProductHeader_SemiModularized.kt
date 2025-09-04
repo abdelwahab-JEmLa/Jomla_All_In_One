@@ -316,7 +316,7 @@ private fun Card_Produit_Nombre_Unites(
     fun clickHandel() {
         toggleState = !toggleState
 
-        repositorysMainSetter.update_M1Produit(
+        repositorysMainSetter.upsert_M1Produit(
             relative_Produit.copy(
                 afficheUniteAuPrint = toggleState
             )

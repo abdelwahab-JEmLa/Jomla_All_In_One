@@ -70,7 +70,7 @@ fun ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler(
             pourcentage_Prix_Progressive = coercedPercentage
         )
 
-        repositorysMainSetter.update_M1Produit(updatedProduit)
+        repositorysMainSetter.upsert_M1Produit(updatedProduit)
         onPercentageChange(coercedPercentage)
     }
 

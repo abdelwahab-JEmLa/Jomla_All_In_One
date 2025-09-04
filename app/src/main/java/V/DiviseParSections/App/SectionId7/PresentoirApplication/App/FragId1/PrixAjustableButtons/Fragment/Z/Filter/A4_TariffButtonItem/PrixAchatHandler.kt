@@ -79,7 +79,7 @@ fun PrixAchatHandler(
     }
 
     fun handel_Add_Diminue_Prix(newPrix: Double) {
-        repositorysMainSetter.update_M1Produit(
+        repositorysMainSetter.upsert_M1Produit(
             relative_Produit.copy(
                 prixAchat = newPrix,
                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()

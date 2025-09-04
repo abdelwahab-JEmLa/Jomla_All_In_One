@@ -138,7 +138,6 @@ class RepositorysMainSetter(
     }
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
-    fun update_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
     fun upsert_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.upsert(data)
 
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------

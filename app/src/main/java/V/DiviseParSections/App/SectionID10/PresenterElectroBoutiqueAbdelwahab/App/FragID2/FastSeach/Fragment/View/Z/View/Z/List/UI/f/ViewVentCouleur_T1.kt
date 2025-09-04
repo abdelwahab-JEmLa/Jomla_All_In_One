@@ -1,30 +1,29 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.f
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.f.Z.ImageDisplayerGlide_Sec2FragID2_SearchProduit
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.f.Z.View_LikedTo_FragSearcher
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
+import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BackHand
@@ -46,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
@@ -54,12 +52,11 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import org.koin.compose.koinInject
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -70,7 +67,6 @@ fun ViewVentCouleur_T1(
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     size: Dp = 200.dp
 ) {
     val relative_M10OperationVentCouleur by remember {
@@ -83,9 +79,6 @@ fun ViewVentCouleur_T1(
     val setter = viewModel.setterFocusedVarsHandlerFacade
 
     val uiState by viewModel.uiState.collectAsState()
-    val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
-    val parentM1ProduitDebugInfos = produit.getDebugInfos() ?: "null"
-
     val haptic = LocalHapticFeedback.current
 
     fun handelUiAction(haptic: HapticFeedback) {
@@ -99,6 +92,25 @@ fun ViewVentCouleur_T1(
         )
     }
 
+    // Check if image file exists and is available
+    val isImageAvailable by remember(imageFile) {
+        derivedStateOf {
+            imageFile?.exists() == true && relative_M3CouleurInfos.nomImageFichieSansEtansion != "Non Dispo"
+        }
+    }
+
+    // Function to handle camera capture and update color
+    fun handleCameraCapture() {
+        // Update the color to use image type and generate filename
+        val updatedCouleur = relative_M3CouleurInfos.copy(
+            aAffiche = M3CouleurProduitInfos.Type.Image,
+            nomImageFichieSansEtansion = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}",
+            extensionDisponible = "webp"
+        )
+
+        viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
 
     val defaultM10Vent = produit.let {
         M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
@@ -153,23 +165,18 @@ fun ViewVentCouleur_T1(
         // Image/Color display card
         Card(
             modifier = Modifier
-                .getSemanticsTag(
-                    defaultM10Vent,
-                    "defaultM10Vent"
+                .fillMaxWidth(),
+            colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
+                // Show different styling when image is not available
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
                 )
-                .getSemanticsTag(
-                    produit,
-                    "produit"
-                )
-                .getSemanticsTag(
-                    relative_M3CouleurInfos,
-                    "relative_M3CouleurInfos"
-                )
-                .getSemanticsTag(
-                    relative_M10OperationVentCouleur,
-                    "relative_M10OperationVentCouleur"
-                )
-                .fillMaxWidth()
+            } else {
+                CardDefaults.cardColors()
+            },
+            border = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
+                BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+            } else null
         ) {
             Column(
                 modifier = Modifier
@@ -195,8 +202,20 @@ fun ViewVentCouleur_T1(
                 }
 
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    when (relative_M3CouleurInfos.aAffiche) {
-                        M3CouleurProduitInfos.Type.Image -> {
+                    when {
+                        // Case 1: Explicitly set to show name
+                        relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Nom -> {
+                            ColorNameDisplayer_Sec2FragID2(
+                                modifier = Modifier.size(size),
+                                colorName = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
+                                onClickToOpenWindow = {
+                                    lenceVent()
+                                    handelUiAction(haptic)
+                                })
+                        }
+
+                        // Case 2: Set to show image but image is available
+                        relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image && isImageAvailable -> {
                             ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                                 modifier = Modifier.size(size),
                                 imageFile = imageFile,
@@ -204,9 +223,7 @@ fun ViewVentCouleur_T1(
                                 contentScale = ContentScale.Crop,
                                 imageSize = DpSize(size, size),
                                 colorFilter = ventUIState.colorMatrix?.let {
-                                    ColorFilter.colorMatrix(
-                                        it
-                                    )
+                                    ColorFilter.colorMatrix(it)
                                 },
                                 onClickToOpenWindow = {
                                     lenceVent()
@@ -215,14 +232,52 @@ fun ViewVentCouleur_T1(
                             )
                         }
 
-                        M3CouleurProduitInfos.Type.Nom -> {
-                            ColorNameDisplayer_Sec2FragID2(
-                                modifier = Modifier.size(size),
-                                colorName = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
-                                onClickToOpenWindow = {
-                                    lenceVent()
-                                    handelUiAction(haptic)
-                                })
+                        // Case 3: Set to show image but image is not available - show rotated text instead
+                        relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image && !isImageAvailable -> {
+                            Box(
+                                modifier = Modifier
+                                    .size(size)
+                                    .clickable {
+                                        lenceVent()
+                                        handelUiAction(haptic)
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo.isNotBlank()) {
+                                        relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo
+                                    } else {
+                                        "Image\nNon Dispo"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Center
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.graphicsLayer {
+                                        rotationZ = 45f
+                                    },
+                                    maxLines = 2
+                                )
+                            }
+                        }
+                    }
+
+                    // Camera button - show when image type but no image available
+                    if (relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image && !isImageAvailable) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .offset(x = 4.dp, y = 4.dp)
+                                .zIndex(2f)
+                                .clickable {
+                                    handleCameraCapture()
+                                }
+                        ) {
+                            CameraFABProtoJuin3(
+                                size = 24.dp,
+                                aCentralFacade = aCentralFacade
+                            )
                         }
                     }
 
@@ -360,144 +415,6 @@ fun ViewVentCouleur_T1(
             viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
                 relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
             )
-        }
-    }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-private fun View_LikedTo_FragSearcher(
-    modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade = koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    relative_M10OperationVentCouleur: M10OperationVentCouleur?,
-    viewModel: ViewModelsProduit_T1
-) {
-    val haptic = LocalHapticFeedback.current
-
-    relative_M10OperationVentCouleur?.let { ventOperation ->
-        val parent_linkVent_M10Vent = repositorysMainGetter.find_M10OperationVentCouleur(
-            ventOperation.linked_To_M10OperationVent_KeyID
-        )
-        val parent_linkVent_M10Vent_Relative_M3Couleur =
-            repositorysMainGetter.find_M3CouleurInfos_By_KeyID(
-                parent_linkVent_M10Vent?.parent_M3CouleurProduit_KeyID ?: ""
-            )
-
-        val text = ventOperation.linked_To_M10OperationVent_DebugInfos
-        if (text.isNotEmpty()) {
-
-            fun handleDeleteLink() {
-                val updatedVent = relative_M10OperationVentCouleur.copy(
-                    its_Linked_To_Autre_Vent_Si_NonDispo = false,
-                    linked_To_M10OperationVent_KeyID = "",
-                    linked_To_M10OperationVent_DebugInfos = "",
-                    siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId = "",
-                    siNonDispoParentM10Vent_it_parent_M1Produit_Nom = "",
-                )
-                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(updatedVent)
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-
-            Card(
-                modifier = modifier
-                    .padding(top = 4.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 4.dp
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .getSemanticsTag(relative_M10OperationVentCouleur, "")
-                        .padding(8.dp)
-                        .wrapContentHeight()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(bottom = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        SmallFloatingActionButton(
-                            onClick = { handleDeleteLink() },
-                            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.9f),
-                            contentColor = MaterialTheme.colorScheme.onError,
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Remove link",
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                    }
-
-                    val imageFile by derivedStateOf {
-                        parent_linkVent_M10Vent_Relative_M3Couleur?.let {
-                            viewModel.getImageFile(
-                                it.nomImageFichieSansEtansion, it.extensionDisponible
-                            )
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (parent_linkVent_M10Vent_Relative_M3Couleur != null) {
-                            when (parent_linkVent_M10Vent_Relative_M3Couleur.aAffiche) {
-                                M3CouleurProduitInfos.Type.Image -> {
-                                    ImageDisplayerGlide_Sec2FragID2_SearchProduit(
-                                        modifier = Modifier
-                                            .size(60.dp)
-                                            .clickable { handleDeleteLink() },
-                                        imageFile = imageFile,
-                                        colorName = parent_linkVent_M10Vent_Relative_M3Couleur.nomCouleurStrSiSonImageDispo,
-                                        contentScale = ContentScale.Crop,
-                                        imageSize = DpSize(60.dp, 60.dp),
-                                        onClickToOpenWindow = { handleDeleteLink() }
-                                    )
-                                }
-
-                                M3CouleurProduitInfos.Type.Nom -> {
-                                    ColorNameDisplayer_Sec2FragID2(
-                                        modifier = Modifier
-                                            .size(60.dp)
-                                            .clickable { handleDeleteLink() },
-                                        colorName = parent_linkVent_M10Vent_Relative_M3Couleur.nomCouleurStrSiSonImageDispo,
-                                        onClickToOpenWindow = { handleDeleteLink() }
-                                    )
-                                }
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "si ${
-                                    parent_linkVent_M10Vent?.parent_M1Produit_KeyId?.takeLast(
-                                        4
-                                    )
-                                } est non dispo",
-                                color = Color.White,
-                                fontSize = 8.sp,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
-
-            }
         }
     }
 }
