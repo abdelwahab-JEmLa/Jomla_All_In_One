@@ -81,11 +81,11 @@ fun ColorNameDropdownTextField(
         }
     }
 
-    // Filter colors based on current input
+    // Filter colors based on current input - only show dropdown if at least 2 characters
     val filteredColors by remember(value, availableColors) {
         derivedStateOf {
-            if (value.isBlank()) {
-                availableColors.take(10) // Show top 10 when no input
+            if (value.length < 2) {
+                emptyList() // Don't show any suggestions if less than 2 characters
             } else {
                 availableColors.filter {
                     it.contains(value, ignoreCase = true)
@@ -94,11 +94,14 @@ fun ColorNameDropdownTextField(
         }
     }
 
+    // Determine if dropdown should be shown - only if focused, has 2+ characters, and has results
+    val shouldShowDropdown = isFocused && value.length >= 2 && filteredColors.isNotEmpty()
+
     // Handle value changes with auto-capitalization
     fun handleValueChange(newText: String) {
         val capitalizedText = newText.capitalizeWords()
         onValueChange(capitalizedText)
-        showDropdown = isFocused && filteredColors.isNotEmpty()
+        showDropdown = shouldShowDropdown
     }
 
     // Handle color selection from dropdown
@@ -129,7 +132,7 @@ fun ColorNameDropdownTextField(
                     .onFocusChanged { focusState ->
                         isFocused = focusState.isFocused
                         if (focusState.isFocused) {
-                            showDropdown = filteredColors.isNotEmpty()
+                            showDropdown = shouldShowDropdown
                         } else {
                             showDropdown = false
                         }
@@ -143,7 +146,7 @@ fun ColorNameDropdownTextField(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 ),
-                trailingIcon = if (isFocused && filteredColors.isNotEmpty()) {
+                trailingIcon = if (shouldShowDropdown) {
                     {
                         IconButton(
                             onClick = { showDropdown = !showDropdown }
@@ -158,8 +161,8 @@ fun ColorNameDropdownTextField(
                 } else null
             )
 
-            // Dropdown menu
-            if (showDropdown && filteredColors.isNotEmpty()) {
+            // Dropdown menu - only show if dropdown state is true and conditions are met
+            if (showDropdown && shouldShowDropdown) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
