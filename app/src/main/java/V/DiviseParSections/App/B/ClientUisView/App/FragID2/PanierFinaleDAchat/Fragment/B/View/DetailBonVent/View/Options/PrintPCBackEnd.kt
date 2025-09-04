@@ -64,17 +64,66 @@ data class PrintPCBackEnd(
 class PrintReportsRepository {
     private val database = FirebaseDatabase.getInstance("https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app/")
     private val printReportsRef = database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/PrintPCBackEnd")
-
+    
+    private var currentListener: ValueEventListener? = null
+    
+    // Real-time listener for Firebase data changes
+    fun observePrintReports(onResult: (Result<List<PrintPCBackEnd>>) -> Unit) {
+        // Remove existing listener if any
+        removeListener()
+        
+        currentListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val reports = mutableListOf<PrintPCBackEnd>()
+                    
+                    snapshot.children.forEach { child ->
+                        val report = child.getValue(PrintPCBackEnd::class.java)
+                        report?.let { reports.add(it) }
+                    }
+                    
+                    // Sort by commencement_du_job in descending order (most recent first)
+                    val sortedReports = reports.sortedByDescending { report ->
+                        try {
+                            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            format.parse(report.commencement_du_job)?.time ?: 0L
+                        } catch (e: Exception) {
+                            0L
+                        }
+                    }
+                    
+                    onResult(Result.success(sortedReports))
+                } catch (exception: Exception) {
+                    onResult(Result.failure(exception))
+                }
+            }
+            
+            override fun onCancelled(error: DatabaseError) {
+                onResult(Result.failure(Exception(error.message)))
+            }
+        }
+        
+        printReportsRef.addValueEventListener(currentListener!!)
+    }
+    
+    fun removeListener() {
+        currentListener?.let { listener ->
+            printReportsRef.removeEventListener(listener)
+            currentListener = null
+        }
+    }
+    
+    // Keep the suspend function as backup if needed
     suspend fun fetchPrintReports(): Result<List<PrintPCBackEnd>> {
         return try {
             val snapshot = printReportsRef.get().await()
             val reports = mutableListOf<PrintPCBackEnd>()
-
+            
             snapshot.children.forEach { child ->
                 val report = child.getValue(PrintPCBackEnd::class.java)
                 report?.let { reports.add(it) }
             }
-
+            
             // Sort by commencement_du_job in descending order (most recent first)
             val sortedReports = reports.sortedByDescending { report ->
                 try {
@@ -84,52 +133,11 @@ class PrintReportsRepository {
                     0L
                 }
             }
-
+            
             Result.success(sortedReports)
         } catch (exception: Exception) {
             Result.failure(exception)
         }
-    }
-
-    // Alternative method using ValueEventListener for real-time updates
-    fun observePrintReports(onResult: (Result<List<PrintPCBackEnd>>) -> Unit) {
-        printReportsRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                try {
-                    val reports = mutableListOf<PrintPCBackEnd>()
-
-                    snapshot.children.forEach { child ->
-                        val report = child.getValue(PrintPCBackEnd::class.java)
-                        report?.let { reports.add(it) }
-                    }
-
-                    // Sort by commencement_du_job in descending order
-                    val sortedReports = reports.sortedByDescending { report ->
-                        try {
-                            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                            format.parse(report.commencement_du_job)?.time ?: 0L
-                        } catch (e: Exception) {
-                            0L
-                        }
-                    }
-
-                    onResult(Result.success(sortedReports))
-                } catch (exception: Exception) {
-                    onResult(Result.failure(exception))
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                onResult(Result.failure(Exception(error.message)))
-            }
-        })
-    }
-
-    fun removeListener() {
-        printReportsRef.removeEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {}
-            override fun onCancelled(error: DatabaseError) {}
-        })
     }
 }
 
@@ -137,30 +145,30 @@ class PrintReportsRepository {
 class PrintReportsViewModel(
     private val repository: PrintReportsRepository = PrintReportsRepository()
 ) : ViewModel() {
-
+    
     private val _uiState = MutableStateFlow(PrintReportsUiState())
     val uiState: StateFlow<PrintReportsUiState> = _uiState.asStateFlow()
-
+    
     data class PrintReportsUiState(
         val isLoading: Boolean = false,
         val printReports: List<PrintPCBackEnd> = emptyList(),
         val errorMessage: String? = null,
         val isDialogVisible: Boolean = false
     )
-
+    
     fun showDialog() {
         _uiState.value = _uiState.value.copy(isDialogVisible = true)
         fetchPrintReports()
     }
-
+    
     fun hideDialog() {
         _uiState.value = _uiState.value.copy(isDialogVisible = false)
     }
-
+    
     private fun fetchPrintReports() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-
+            
             repository.fetchPrintReports()
                 .onSuccess { reports ->
                     _uiState.value = _uiState.value.copy(
@@ -176,11 +184,11 @@ class PrintReportsViewModel(
                 }
         }
     }
-
+    
     // Alternative method for real-time updates
     fun enableRealTimeUpdates() {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-
+        
         repository.observePrintReports { result ->
             result.onSuccess { reports ->
                 _uiState.value = _uiState.value.copy(
@@ -195,7 +203,7 @@ class PrintReportsViewModel(
             }
         }
     }
-
+    
     override fun onCleared() {
         super.onCleared()
         repository.removeListener()
@@ -210,7 +218,7 @@ fun PrintReportsButton(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
+    
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -242,7 +250,7 @@ fun PrintReportsButton(
             )
         }
     }
-
+    
     // Show dialog when needed
     if (uiState.isDialogVisible) {
         PrintReportsDialog(
@@ -287,7 +295,7 @@ fun PrintReportsDialog(
                             )
                         }
                     }
-
+                    
                     uiState.errorMessage != null -> {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -309,7 +317,7 @@ fun PrintReportsDialog(
                             )
                         }
                     }
-
+                    
                     uiState.printReports.isEmpty() -> {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -330,7 +338,7 @@ fun PrintReportsDialog(
                             )
                         }
                     }
-
+                    
                     else -> {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -376,7 +384,7 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-
+                
                 Icon(
                     imageVector = Icons.Default.Print,
                     contentDescription = "Impression",
@@ -384,9 +392,9 @@ fun PrintReportItem(
                     modifier = Modifier.size(16.dp)
                 )
             }
-
+            
             Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -403,7 +411,7 @@ fun PrintReportItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -418,7 +426,7 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -433,7 +441,7 @@ fun PrintReportItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
+            
             // Calculate duration
             val duration = calculateDuration(report.commencement_du_job, report.end_du_job)
             if (duration.isNotEmpty()) {
@@ -475,11 +483,11 @@ private fun calculateDuration(start: String, end: String): String {
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val startTime = format.parse(start)
         val endTime = format.parse(end)
-
+        
         if (startTime != null && endTime != null) {
             val durationMs = endTime.time - startTime.time
             val durationSeconds = durationMs / 1000
-
+            
             when {
                 durationSeconds < 60 -> "${durationSeconds}s"
                 durationSeconds < 3600 -> {
@@ -500,3 +508,13 @@ private fun calculateDuration(start: String, end: String): String {
         ""
     }
 }
+
+// Updated action buttons list in your main composable
+// Add this to your actionButtons list in DetailsBonVent:
+/*
+ActionButtonData("reports") {
+    PrintReportsButton(
+        showLabel = !isMinimized
+    )
+},
+*/
