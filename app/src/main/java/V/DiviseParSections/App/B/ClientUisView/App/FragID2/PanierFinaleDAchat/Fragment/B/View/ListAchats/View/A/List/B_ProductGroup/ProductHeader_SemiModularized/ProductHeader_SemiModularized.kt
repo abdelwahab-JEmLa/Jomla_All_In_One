@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
@@ -11,6 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,8 +65,8 @@ fun ProductHeader_SemiModularized(
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
-            relative_M1Produit
-        )
+                relative_M1Produit
+            )
     }
 
     val allNonTrouve =
@@ -78,6 +81,13 @@ fun ProductHeader_SemiModularized(
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
+    var shouldShowCategoryDialog by remember { mutableStateOf(false) }
+
+    // Get category name from the categories map
+    val categoriesMap = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
+    val categoryName = relative_M1Produit.idParentCategorie?.let { categoryId ->
+        categoriesMap[categoryId]?.nom
+    } ?: "Sans Catégorie"
 
     Box(
         modifier = Modifier
@@ -124,6 +134,19 @@ fun ProductHeader_SemiModularized(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                // Category name display with click functionality
+                Text(
+                    text = categoryName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .clickable { shouldShowCategoryDialog = true }
+                )
+
                 if (allNonTrouve) {
                     Text(
                         text = "Non disponible",
@@ -261,6 +284,28 @@ fun ProductHeader_SemiModularized(
                 shouldShowDialog_quantite_Boit_Par_Carton = false
             }
         }
+
+        // Category Selection Dialog
+        if (shouldShowCategoryDialog) {
+            CategorySelectionDialog(
+                product = relative_M1Produit,
+                onCategorySelected = { newCategoryId ->
+                    relative_M1Produit.copy(idParentCategorie = newCategoryId).also {
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                    }
+                    shouldShowCategoryDialog = false
+                },
+                onDismiss = { shouldShowCategoryDialog = false },
+                onUpdateCategory = { categoryId, newName ->
+                    // Handle category name update if needed
+                    categoriesMap[categoryId]?.copy(nom = newName)?.let { updatedCategory ->
+                        viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(updatedCategory)
+                    }
+                },
+                categoriesMap = categoriesMap,
+                availableCategories = categoriesMap.keys.toList()
+            )
+        }
     }
 }
 
@@ -303,6 +348,7 @@ fun ToggleButton_SemiModularized_F_Panie(
         )
     }
 }
+
 @Composable
 private fun Card_Produit_Nombre_Unites(
     allNonTrouve: Boolean,

@@ -1,10 +1,12 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.ColorNameDropdownTextField
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -19,8 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -51,6 +50,7 @@ fun AddNewCouleur(
     size: Dp = 120.dp,
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
+    repo03CouleurProduitInfos: Repo03CouleurProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var colorName by remember { mutableStateOf("") }
@@ -189,47 +189,21 @@ fun AddNewCouleur(
             }
 
             if (isEditing) {
-                OutlinedTextField(
+                ColorNameDropdownTextField(
                     value = colorName,
-                    onValueChange = { newText ->
-                        // Capitalize first letter of each word
-                        val capitalizedText = newText.split(" ").joinToString(" ") { word ->
-                            if (word.isNotEmpty()) {
-                                word.replaceFirstChar {
-                                    if (it.isLowerCase()) it.titlecase() else it.toString()
-                                }
-                            } else {
-                                word
-                            }
-                        }
-                        colorName = capitalizedText
-                    },
-                    placeholder = {
-                        Text(
-                            text = "Nom couleur",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    },
-                    textStyle = MaterialTheme.typography.bodySmall.copy(
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
+                    onValueChange = { colorName = it },
+                    placeholder = "Nom couleur",
+                    focusRequester = focusRequester,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            handleAddNewCouleur()
-                        }
+                        onDone = { handleAddNewCouleur() }
                     ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                    )
+                    repo03CouleurProduitInfos = repo03CouleurProduitInfos,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                // Keep the existing LaunchedEffect blocks
                 LaunchedEffect(isEditing) {
                     if (isEditing) {
                         focusRequester.requestFocus()
@@ -244,7 +218,7 @@ fun AddNewCouleur(
                         }
                     }
                 }
-            } else {
+            }else {
                 Text(
                     text = "nouvelle\ncouleur",
                     style = MaterialTheme.typography.bodySmall.copy(

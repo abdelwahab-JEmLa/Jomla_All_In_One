@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
@@ -36,8 +37,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -74,6 +72,7 @@ fun ViewVentCouleur_T1(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repo03CouleurProduitInfos: Repo03CouleurProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     size: Dp = 200.dp
 ) {
@@ -192,62 +191,32 @@ fun ViewVentCouleur_T1(
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
-        // Color name editing field at the top
+
         if (isEditingColorName) {
-            OutlinedTextField(
+            ColorNameDropdownTextField(
                 value = editingColorName,
-                onValueChange = { newText ->
-                    // Capitalize first letter of each word
-                    val capitalizedText = newText.split(" ").joinToString(" ") { word ->
-                        if (word.isNotEmpty()) {
-                            word.replaceFirstChar {
-                                if (it.isLowerCase()) it.titlecase() else it.toString()
-                            }
-                        } else {
-                            word
-                        }
-                    }
-                    editingColorName = capitalizedText
-                },
-                placeholder = {
-                    Text(
-                        text = "Nom définiteur",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                },
-                textStyle = MaterialTheme.typography.bodySmall.copy(
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium
+                onValueChange = { editingColorName = it },
+                placeholder = "Nom définiteur",
+                focusRequester = colorNameFocusRequester,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { handleSaveColorName() }
                 ),
+                repo03CouleurProduitInfos = repo03CouleurProduitInfos,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
-                    .focusRequester(colorNameFocusRequester)
-                    .zIndex(10f),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        handleSaveColorName()
-                    }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                )
+                    .zIndex(10f)
             )
-            // Auto-focus when editing starts
+
+            // Keep the existing LaunchedEffect blocks
             LaunchedEffect(isEditingColorName) {
                 if (isEditingColorName) {
                     colorNameFocusRequester.requestFocus()
                 }
             }
 
-            // Auto-close after 15 seconds if no changes
             LaunchedEffect(isEditingColorName) {
                 if (isEditingColorName) {
                     delay(15000)

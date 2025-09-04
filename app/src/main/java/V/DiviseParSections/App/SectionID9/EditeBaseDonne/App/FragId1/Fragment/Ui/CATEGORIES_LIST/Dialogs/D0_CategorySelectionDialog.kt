@@ -55,10 +55,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategorySelectionDialog(
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
     product: ArticlesBasesStatsTable,
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
@@ -81,6 +82,7 @@ fun CategorySelectionDialog(
             keyboard?.show()
         }
     }
+
 
     val catalogues = remember { B4CatalogueCategoriesRepository() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
