@@ -1,0 +1,502 @@
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Print
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+// Data class for PrintPCBackEnd
+data class PrintPCBackEnd(
+    val id: String = "",
+    val commencement_du_job: String = "",
+    val end_du_job: String = "",
+    val nom_fichier: String = ""
+)
+
+// Repository for Firebase operations
+class PrintReportsRepository {
+    private val database = FirebaseDatabase.getInstance("https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app/")
+    private val printReportsRef = database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/PrintPCBackEnd")
+
+    suspend fun fetchPrintReports(): Result<List<PrintPCBackEnd>> {
+        return try {
+            val snapshot = printReportsRef.get().await()
+            val reports = mutableListOf<PrintPCBackEnd>()
+
+            snapshot.children.forEach { child ->
+                val report = child.getValue(PrintPCBackEnd::class.java)
+                report?.let { reports.add(it) }
+            }
+
+            // Sort by commencement_du_job in descending order (most recent first)
+            val sortedReports = reports.sortedByDescending { report ->
+                try {
+                    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    format.parse(report.commencement_du_job)?.time ?: 0L
+                } catch (e: Exception) {
+                    0L
+                }
+            }
+
+            Result.success(sortedReports)
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
+    }
+
+    // Alternative method using ValueEventListener for real-time updates
+    fun observePrintReports(onResult: (Result<List<PrintPCBackEnd>>) -> Unit) {
+        printReportsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val reports = mutableListOf<PrintPCBackEnd>()
+
+                    snapshot.children.forEach { child ->
+                        val report = child.getValue(PrintPCBackEnd::class.java)
+                        report?.let { reports.add(it) }
+                    }
+
+                    // Sort by commencement_du_job in descending order
+                    val sortedReports = reports.sortedByDescending { report ->
+                        try {
+                            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            format.parse(report.commencement_du_job)?.time ?: 0L
+                        } catch (e: Exception) {
+                            0L
+                        }
+                    }
+
+                    onResult(Result.success(sortedReports))
+                } catch (exception: Exception) {
+                    onResult(Result.failure(exception))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onResult(Result.failure(Exception(error.message)))
+            }
+        })
+    }
+
+    fun removeListener() {
+        printReportsRef.removeEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {}
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+}
+
+// ViewModel for managing print reports state
+class PrintReportsViewModel(
+    private val repository: PrintReportsRepository = PrintReportsRepository()
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(PrintReportsUiState())
+    val uiState: StateFlow<PrintReportsUiState> = _uiState.asStateFlow()
+
+    data class PrintReportsUiState(
+        val isLoading: Boolean = false,
+        val printReports: List<PrintPCBackEnd> = emptyList(),
+        val errorMessage: String? = null,
+        val isDialogVisible: Boolean = false
+    )
+
+    fun showDialog() {
+        _uiState.value = _uiState.value.copy(isDialogVisible = true)
+        fetchPrintReports()
+    }
+
+    fun hideDialog() {
+        _uiState.value = _uiState.value.copy(isDialogVisible = false)
+    }
+
+    private fun fetchPrintReports() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+            repository.fetchPrintReports()
+                .onSuccess { reports ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        printReports = reports
+                    )
+                }
+                .onFailure { exception ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = exception.message ?: "Erreur inconnue"
+                    )
+                }
+        }
+    }
+
+    // Alternative method for real-time updates
+    fun enableRealTimeUpdates() {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+        repository.observePrintReports { result ->
+            result.onSuccess { reports ->
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    printReports = reports
+                )
+            }.onFailure { exception ->
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = exception.message ?: "Erreur inconnue"
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.removeListener()
+    }
+}
+
+// Print Reports Button Composable
+@Composable
+fun PrintReportsButton(
+    showLabel: Boolean,
+    viewModel: PrintReportsViewModel = viewModel(),
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            onClick = { viewModel.showDialog() },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Assessment,
+                contentDescription = "Voir rapports d'impression",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "Rapports",
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = MaterialTheme.colorScheme.onTertiary,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+
+    // Show dialog when needed
+    if (uiState.isDialogVisible) {
+        PrintReportsDialog(
+            uiState = uiState,
+            onDismiss = { viewModel.hideDialog() }
+        )
+    }
+}
+
+// Print Reports Dialog Composable
+@Composable
+fun PrintReportsDialog(
+    uiState: PrintReportsViewModel.PrintReportsUiState,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Rapports d'Impression",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) {
+                when {
+                    uiState.isLoading -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Chargement des rapports...",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    uiState.errorMessage != null -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Error,
+                                contentDescription = "Erreur",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Erreur: ${uiState.errorMessage}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    uiState.printReports.isEmpty() -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = "Aucun rapport",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Aucun rapport d'impression trouvé",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
+
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(uiState.printReports) { report ->
+                                PrintReportItem(report = report)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Fermer")
+            }
+        }
+    )
+}
+
+// Individual Print Report Item
+@Composable
+fun PrintReportItem(
+    report: PrintPCBackEnd,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "ID: ${report.id}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Icon(
+                    imageVector = Icons.Default.Print,
+                    contentDescription = "Impression",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Fichier:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = report.nom_fichier,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Début:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = formatDateTime(report.commencement_du_job),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Fin:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = formatDateTime(report.end_du_job),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Calculate duration
+            val duration = calculateDuration(report.commencement_du_job, report.end_du_job)
+            if (duration.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Durée:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = duration,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Helper function to format date time for better display
+private fun formatDateTime(dateTime: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
+        val date = inputFormat.parse(dateTime)
+        date?.let { outputFormat.format(it) } ?: dateTime
+    } catch (e: Exception) {
+        dateTime
+    }
+}
+
+// Helper function to calculate duration
+private fun calculateDuration(start: String, end: String): String {
+    return try {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val startTime = format.parse(start)
+        val endTime = format.parse(end)
+
+        if (startTime != null && endTime != null) {
+            val durationMs = endTime.time - startTime.time
+            val durationSeconds = durationMs / 1000
+
+            when {
+                durationSeconds < 60 -> "${durationSeconds}s"
+                durationSeconds < 3600 -> {
+                    val minutes = durationSeconds / 60
+                    val seconds = durationSeconds % 60
+                    "${minutes}m ${seconds}s"
+                }
+                else -> {
+                    val hours = durationSeconds / 3600
+                    val minutes = (durationSeconds % 3600) / 60
+                    "${hours}h ${minutes}m"
+                }
+            }
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
+    }
+}
