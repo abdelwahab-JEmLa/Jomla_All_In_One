@@ -64,7 +64,8 @@ fun ColorNameDropdownTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
-    textAlign: TextAlign = TextAlign.Start
+    textAlign: TextAlign = TextAlign.Start,
+    onColorSelected: ((String) -> Unit)? = null // Add this parameter with default null
 ) {
     var showDropdown by remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
@@ -109,6 +110,8 @@ fun ColorNameDropdownTextField(
         onValueChange(colorName)
         showDropdown = false
         keyboardController?.hide()
+        // Trigger immediate update if callback is provided
+        onColorSelected?.invoke(colorName)
     }
 
     Box(modifier = modifier) {

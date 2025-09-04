@@ -6,16 +6,31 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ErrorCard
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.PeriodDetailsSection
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintInPdf_itextpdf_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import android.content.Context
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
+import android.os.Bundle
+import android.os.CancellationSignal
+import android.os.ParcelFileDescriptor
+import android.print.PageRange
+import android.print.PrintAttributes
+import android.print.PrintDocumentAdapter
+import android.print.PrintDocumentInfo
+import android.print.PrintManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,9 +61,301 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.kernel.font.PdfFontFactory
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.properties.TextAlignment
 import org.koin.compose.koinInject
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.itextpdf.kernel.pdf.PdfDocument as ITextPdfDocument
+
+class UsbPrintHelper {
+
+    fun printHelloWorld(context: Context) {
+        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+        val jobName = "Hello World Test - ${System.currentTimeMillis()}"
+
+        val printAdapter = object : PrintDocumentAdapter() {
+
+            override fun onLayout(
+                oldAttributes: PrintAttributes?,
+                newAttributes: PrintAttributes,
+                cancellationSignal: CancellationSignal?,
+                callback: LayoutResultCallback,
+                extras: Bundle?
+            ) {
+                if (cancellationSignal?.isCanceled == true) {
+                    callback.onLayoutCancelled()
+                    return
+                }
+
+                val info = PrintDocumentInfo.Builder("hello_world.pdf")
+                    .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                    .setPageCount(1)
+                    .build()
+
+                callback.onLayoutFinished(info, true)
+            }
+
+            // CORRIGÉ: Signature correcte pour onWrite
+            override fun onWrite(
+                pages: Array<out PageRange>?,
+                destination: ParcelFileDescriptor,
+                cancellationSignal: CancellationSignal?,
+                callback: WriteResultCallback
+            ) {
+                if (cancellationSignal?.isCanceled == true) {
+                    callback.onWriteCancelled()
+                    return
+                }
+
+                try {
+                    // Créer un PDF simple avec "Hello World"
+                    val pdfDocument = createHelloWorldPdf()
+
+                    // Écrire le PDF dans le fichier de destination
+                    FileOutputStream(destination.fileDescriptor).use { output ->
+                        pdfDocument.writeTo(output)
+                    }
+
+                    pdfDocument.close()
+                    callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
+
+                } catch (e: Exception) {
+                    callback.onWriteFailed("Erreur: ${e.message}")
+                }
+            }
+        }
+
+        // Lancer l'impression
+        printManager.print(jobName, printAdapter, null)
+    }
+
+    private fun createHelloWorldPdf(): PdfDocument {
+        val pdfDocument = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4
+        val page = pdfDocument.startPage(pageInfo)
+
+        val canvas = page.canvas
+        val paint = Paint().apply {
+            textSize = 48f
+            typeface = Typeface.DEFAULT_BOLD
+            textAlign = Paint.Align.CENTER
+        }
+
+        // Dessiner "Hello World" au centre de la page
+        val centerX = pageInfo.pageWidth / 2f
+        val centerY = pageInfo.pageHeight / 2f
+
+        canvas.drawText("Hello World!", centerX, centerY - 100, paint)
+
+        // Ajouter la date et l'heure
+        paint.textSize = 24f
+        paint.typeface = Typeface.DEFAULT
+        val dateTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
+        canvas.drawText("Imprimé le: $dateTime", centerX, centerY + 50, paint)
+
+        // Ajouter des informations sur l'imprimante
+        paint.textSize = 18f
+        canvas.drawText("Test d'impression USB", centerX, centerY + 100, paint)
+        canvas.drawText("Samsung ML via Android Print Framework", centerX, centerY + 130, paint)
+
+        pdfDocument.finishPage(page)
+        return pdfDocument
+    }
+}
+
+// CORRIGÉ: Extension utilisée dans le bouton - plus d'erreur "never used"
+fun PrintInPdf_itextpdf_Handler.printTestDocument(context: Context): Result<String> {
+    return try {
+        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+        val jobName = "Test Document - ${System.currentTimeMillis()}"
+
+        val printAdapter = object : PrintDocumentAdapter() {
+            override fun onLayout(
+                oldAttributes: PrintAttributes?,
+                newAttributes: PrintAttributes,
+                cancellationSignal: CancellationSignal?,
+                callback: LayoutResultCallback,
+                extras: Bundle?
+            ) {
+                if (cancellationSignal?.isCanceled == true) {
+                    callback.onLayoutCancelled()
+                    return
+                }
+
+                val info = PrintDocumentInfo.Builder("test_receipt.pdf")
+                    .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                    .setPageCount(1)
+                    .build()
+
+                callback.onLayoutFinished(info, true)
+            }
+
+            // CORRIGÉ: Signature correcte pour onWrite
+            override fun onWrite(
+                pages: Array<out PageRange>?,
+                destination: ParcelFileDescriptor,
+                cancellationSignal: CancellationSignal?,
+                callback: WriteResultCallback
+            ) {
+                try {
+                    // Utiliser iText pour créer un PDF de test
+                    val tempFile = File.createTempFile("test_receipt", ".pdf")
+
+                    PdfWriter(tempFile.absolutePath).use { writer ->
+                        ITextPdfDocument(writer).use { pdfDoc ->
+                            Document(pdfDoc, PageSize.A5).use { doc ->
+                                val regularFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
+                                val boldFont =
+                                    PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
+
+                                doc.add(
+                                    Paragraph("TEST D'IMPRESSION")
+                                        .setFont(boldFont)
+                                        .setFontSize(20f)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                )
+
+                                doc.add(Paragraph("\n"))
+
+                                doc.add(
+                                    Paragraph("Hello World!")
+                                        .setFont(boldFont)
+                                        .setFontSize(16f)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                )
+
+                                doc.add(
+                                    Paragraph("Imprimante: Samsung ML")
+                                        .setFont(regularFont)
+                                        .setFontSize(12f)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                )
+
+                                doc.add(
+                                    Paragraph("Connexion: USB")
+                                        .setFont(regularFont)
+                                        .setFontSize(12f)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                )
+
+                                // CORRIGÉ: Utiliser une méthode de formatage simple
+                                val dateTime = SimpleDateFormat(
+                                    "dd/MM/yyyy HH:mm:ss",
+                                    Locale.getDefault()
+                                ).format(Date())
+                                doc.add(
+                                    Paragraph("Date: $dateTime")
+                                        .setFont(regularFont)
+                                        .setFontSize(10f)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                )
+                            }
+                        }
+                    }
+
+                    // Copier vers la destination
+                    tempFile.inputStream().use { input ->
+                        FileOutputStream(destination.fileDescriptor).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+
+                    tempFile.delete()
+                    callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
+
+                } catch (e: Exception) {
+                    callback.onWriteFailed("Erreur: ${e.message}")
+                }
+            }
+        }
+
+        printManager.print(jobName, printAdapter, null)
+        Result.success("Document de test envoyé à l'imprimante")
+
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+}
+
+// NOUVEAU: Bouton amélioré qui utilise l'extension
+@Composable
+fun UsbTestPrintButton(
+    context: Context,
+    showLabel: Boolean,
+    printHandler: PrintInPdf_itextpdf_Handler, // Ajout du paramètre
+    modifier: Modifier = Modifier
+) {
+    val usbPrintHelper = remember { UsbPrintHelper() }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            onClick = {
+                // Test d'impression simple avec Android natif
+                usbPrintHelper.printHelloWorld(context)
+            },
+            modifier = Modifier.size(if (showLabel) 56.dp else 48.dp),
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        ) {
+            Icon(
+                imageVector = Icons.Default.Print,
+                contentDescription = "Test Print USB",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        if (showLabel) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Test USB",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+
+            // NOUVEAU: Bouton pour test avec iText
+            Spacer(modifier = Modifier.height(8.dp))
+            FloatingActionButton(
+                onClick = {
+                    // Test d'impression avec iText (utilise l'extension)
+                    printHandler.printTestDocument(context)
+                },
+                modifier = Modifier.size(40.dp),
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Print,
+                    contentDescription = "Test iText Print",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Text(
+                text = "iText Test",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable
@@ -66,7 +373,7 @@ data class ActionButtonData(
 @Composable
 fun DetailsBonVent(
     modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ZViewModel_Sec1Frag3 = koinInject()
 ) {
@@ -76,18 +383,13 @@ fun DetailsBonVent(
     val scope = rememberCoroutineScope()
     val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
 
-    val zAppComptRepositoryComposable =
-        viewModel.uiStateCentralRepositorys.repo9AppCompt
+    val zAppComptRepositoryComposable = viewModel.uiStateCentralRepositorys.repo9AppCompt
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
-
-
     val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
-
 
     // Create list of action buttons for LazyColumn
     val actionButtons = remember(uiState, isMinimized) {
         listOf(
-
             ActionButtonData("filter") {
                 FilterButton(
                     uiState = uiState,
@@ -101,15 +403,22 @@ fun DetailsBonVent(
                     onPrint = {
                         printHandler.printVentReceiptWithDirectPdf(
                             context = context,
-                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos ,
+                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
                             repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                             scope = scope,
                             relative_ListM10OperationVentCouleur = it,
-                            bonVent= focusedValuesGetter.activeOnVent_M8BonVent
+                            bonVent = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     }
+                )
+            },
+            // NOUVEAU: Bouton pour test d'impression USB
+            ActionButtonData("usb_test_print") {
+                UsbTestPrintButton(
+                    context = context,
+                    showLabel = !isMinimized
                 )
             },
             ActionButtonData("confirmation") {
@@ -143,7 +452,6 @@ fun DetailsBonVent(
             ) {
                 Column(
                     modifier = Modifier.padding(petitePaddine),
-                    // FIXED: Compact spacing when minimized
                     verticalArrangement = Arrangement.spacedBy(if (isMinimized) 6.dp else 12.dp)
                 ) {
                     if (!isMinimized) {
@@ -161,18 +469,14 @@ fun DetailsBonVent(
                         viewModel = viewModel,
                     )
 
-                    // FIXED: Only show divider when not minimized to save space
                     if (!isMinimized) {
                         Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                     }
 
-                    CartSummarySection(
-                        viewModel,
-                    )
+                    CartSummarySection(viewModel)
                 }
             }
 
-            // FIXED: Using LazyColumn for better scrolling behavior
             LazyColumn(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -192,6 +496,43 @@ fun DetailsBonVent(
         ErrorCard(modifier = modifier)
     }
 }
+
+// NOUVEAU: Composable pour le bouton de test USB
+@Composable
+fun UsbTestPrintButton(
+    context: Context,
+    showLabel: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val usbPrintHelper = remember { UsbPrintHelper() }
+
+    FloatingActionButton(
+        onClick = {
+            // Test d'impression simple
+            usbPrintHelper.printHelloWorld(context)
+        },
+        modifier = modifier.size(if (showLabel) 56.dp else 48.dp),
+        containerColor = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onSecondary
+    ) {
+        Icon(
+            imageVector = Icons.Default.Print,
+            contentDescription = "Test Print USB",
+            modifier = Modifier.size(24.dp)
+        )
+    }
+
+    if (showLabel) {
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Test USB",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 
 @Composable
 fun PanieModeButton(
@@ -250,8 +591,7 @@ fun FilterButton(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {     //<--
-    //TODO(1): ajoute donne imprision et coomande
+    ) {
         FloatingActionButton(
             onClick = onToggleFilter,
             containerColor = if (uiState.filterNonTrouve) {
@@ -313,7 +653,7 @@ fun PrintButton(
             modifier = Modifier
                 .getSemanticsTag(activeVents.map {
                     it.getDebugInfos()
-                },"activeVents")
+                }, "activeVents")
                 .size(48.dp),
             onClick = { onPrint(activeVents) },
             containerColor = MaterialTheme.colorScheme.secondary

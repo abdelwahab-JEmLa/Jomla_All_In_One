@@ -192,6 +192,8 @@ fun ViewVentCouleur_T1(
             .graphicsLayer(alpha = if (relative_M10OperationVentCouleur?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
 
+// In your ViewVentCouleur_T1 component, replace this section:
+
         if (isEditingColorName) {
             ColorNameDropdownTextField(
                 value = editingColorName,
@@ -207,7 +209,25 @@ fun ViewVentCouleur_T1(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
-                    .zIndex(10f)
+                    .zIndex(10f),
+                // Add this new parameter for automatic update
+                onColorSelected = { selectedColorName ->
+                    // Immediately update the database when a color is selected from dropdown
+                    editingColorName = selectedColorName
+                    val updatedCouleur = relative_M3CouleurInfos.copy(
+                        nomCouleurStrSiSonImageDispo = selectedColorName.trim(),
+                        aAffiche = if (relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image)
+                            M3CouleurProduitInfos.Type.Image
+                        else
+                            M3CouleurProduitInfos.Type.Nom
+                    )
+
+                    viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+
+                    // Close editing mode after selection
+                    isEditingColorName = false
+                }
             )
 
             // Keep the existing LaunchedEffect blocks
@@ -226,7 +246,6 @@ fun ViewVentCouleur_T1(
                 }
             }
         }
-
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
@@ -286,7 +305,8 @@ fun ViewVentCouleur_T1(
                                 handleCameraCapture()
                             }
                     ) {
-                        CameraFABProtoJuin3(
+                        CameraFABProtoJuin3(      //<--
+                        //TODO(1): au lieux affile button genaire separated buttton et lence directemnt CameraXDialog apre quand prix update couleur nomImageFichieSansEtansion
                             size = 24.dp,
                             aCentralFacade = aCentralFacade
                         )

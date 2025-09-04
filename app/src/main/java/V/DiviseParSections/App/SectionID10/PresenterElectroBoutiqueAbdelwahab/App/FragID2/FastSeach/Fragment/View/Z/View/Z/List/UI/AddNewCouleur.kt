@@ -182,7 +182,8 @@ fun AddNewCouleur(
                         handleAddCameraColor()
                     }
             ) {
-                CameraFABProtoJuin3(
+                CameraFABProtoJuin3(       //<--
+                //TODO(1): ici aussi et fait add new 
                     size = 24.dp,
                     aCentralFacade = aCentralFacade
                 )
@@ -200,7 +201,12 @@ fun AddNewCouleur(
                     ),
                     repo03CouleurProduitInfos = repo03CouleurProduitInfos,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onColorSelected = { selectedColorName ->
+                        // Automatically save the color when selected from dropdown
+                        colorName = selectedColorName
+                        handleAddNewCouleur()
+                    }
                 )
 
                 // Keep the existing LaunchedEffect blocks
@@ -218,7 +224,7 @@ fun AddNewCouleur(
                         }
                     }
                 }
-            }else {
+            } else {
                 Text(
                     text = "nouvelle\ncouleur",
                     style = MaterialTheme.typography.bodySmall.copy(
@@ -234,4 +240,7 @@ fun AddNewCouleur(
             }
         }
     }
+}
+fun addNewCouleur_Key2(): Unit {
+    
 }

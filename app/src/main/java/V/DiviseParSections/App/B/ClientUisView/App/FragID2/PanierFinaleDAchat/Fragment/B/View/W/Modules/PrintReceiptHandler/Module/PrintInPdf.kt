@@ -217,7 +217,7 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
         doc.add(Paragraph("\n").setFontSize(0.3f))
     }
 
-    private fun formatDateWithAmPm(date: Date): String {
+    fun formatDateWithAmPm(date: Date): String {
         val calendar = Calendar.getInstance().apply { time = date }
         val frenchDays = arrayOf("Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam")
         val frenchMonths = arrayOf("Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc")

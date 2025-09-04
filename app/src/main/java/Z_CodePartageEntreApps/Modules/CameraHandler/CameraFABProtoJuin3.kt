@@ -46,6 +46,7 @@ suspend fun addNew(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
+    fileName: String,
 
     ) {
     withContext(Dispatchers.Main) {
@@ -136,7 +137,8 @@ fun CameraFABProtoJuin3(
 
         try {
             pendingProduct?.let { product ->
-                val fileName = "${product.id}_1.webp"
+                val fileName = "${product.id}_1.webp"   //<--
+                //TODO(1): ici 1 c par index du couleur prix
                 val localDir = File(localPath).apply { if (!exists()) mkdirs() }
                 val localFile = File(localDir, fileName)
 
@@ -156,7 +158,11 @@ fun CameraFABProtoJuin3(
                             }
                         }
 
-                        addNew(product,context,aCentralFacade,a_CentralCompoRepositoryProtoJuin9=a_CentralCompoRepositoryProtoJuin9)
+                        addNew(
+                            product,context,aCentralFacade,
+                            a_CentralCompoRepositoryProtoJuin9=a_CentralCompoRepositoryProtoJuin9,
+                            fileName=fileName,
+                        )
                     }
                 }
             }
@@ -209,6 +215,7 @@ fun CameraFABProtoJuin3(
         containerColor = if (isProcessing) containerColor.copy(alpha = 0.6f) else containerColor
     ) {
         Icon(
+            modifier = Modifier,
             imageVector = Icons.Default.AddAPhoto,
             contentDescription = "Créer produit WebP"
         )
