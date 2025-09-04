@@ -108,7 +108,7 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
                         }
 
                         when (params.type) {
-                            PdfType.RECEIPT_WITH_CREDIT -> params.bonVent?.let { addCreditSection(doc, params.client, it, params.versement, regularFont, boldFont) }
+                            PdfType.RECEIPT_WITH_CREDIT -> params.bonVent?.let { addCreditSection(doc, params.client, it, params.versement, regularFont, boldFont) }  //<--
                             PdfType.CREDIT_ONLY -> params.creditData?.let { addCreditOnlySection(doc, it, regularFont, boldFont) }
                             else -> {}
                         }
@@ -154,8 +154,6 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
             }
             else -> {
                 addText(doc, "0.00 Da", boldFont, 16f, TextAlignment.CENTER)
-                addText(doc, "✓ SOLDÉ ✓", boldFont, 12f, TextAlignment.CENTER)
-                addText(doc, "Merci pour votre confiance", regularFont, 10f, TextAlignment.CENTER)
             }
         }
 
@@ -215,44 +213,53 @@ class PrintInPdf_itextpdf_Handler(val repositorysMainGetter: RepositorysMainGett
 
     private fun addCreditSection(doc: Document, client: M2Client?, bonVent: M8BonVent, versement: Double, regularFont: PdfFont, boldFont: PdfFont) {
         val oldBalance = client?.currentCreditBalance ?: 0.0
-        val currentBill = bonVent.sum_De_Totale_Vents
+        val currentBill = bonVent.sum_De_Totale_Vents // This should be the total from the receipt
         val newBalance = oldBalance + currentBill - versement
 
-        addText(doc, "SECTION CRÉDIT", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
+        // Create a more compact layout with labels and values side by side
+        addCompactLabelValue(doc, "Ancien Soldé :", "${round(oldBalance)} Da", regularFont, boldFont)
+        addCompactLabelValue(doc, "Bon actuel :", "${round(currentBill)} Da", regularFont, boldFont)      //<--
+        //TODO(1): enleve le Totale .. et fait l affiche ici si bon avec credit section
+        addCompactLabelValue(doc, "Versement :", "${round(versement)} Da", regularFont, boldFont)
 
-        addText(doc, "Ancien Soldé :", regularFont, 12f, TextAlignment.LEFT)
-        addText(doc, "${round(oldBalance)} Da", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-
-        addText(doc, "Bon actuel :", regularFont, 12f, TextAlignment.LEFT)
-        addText(doc, "${round(currentBill)} Da", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-
-        addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
-        addText(doc, "${round(versement)} Da", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
-
+        // Add separator line
+        doc.add(Paragraph("\n").setFontSize(2f))
         addText(doc, "────────────────────", regularFont, 10f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.7f))
+        doc.add(Paragraph("\n").setFontSize(2f))
 
-        addText(doc, "Nouv. Soldé :", boldFont, 12f, TextAlignment.LEFT)
+        // New balance section
+        addCompactLabelValue(doc, "Nouv. Soldé :", "${round(newBalance)} Da", boldFont, boldFont)
 
+        // Add status text below new balance
         when {
             newBalance > 0 -> {
-                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                doc.add(Paragraph("\n").setFontSize(1f))
                 addText(doc, "(Reste à payer)", regularFont, 10f, TextAlignment.CENTER)
             }
             newBalance < 0 -> {
-                addText(doc, "${round(newBalance)} Da", boldFont, 16f, TextAlignment.CENTER)
+                doc.add(Paragraph("\n").setFontSize(1f))
                 addText(doc, "(Crédit client)", regularFont, 10f, TextAlignment.CENTER)
             }
             else -> {
-                addText(doc, "0.00 Da", boldFont, 16f, TextAlignment.CENTER)
-                addText(doc, "✓ SOLDÉ ✓", boldFont, 12f, TextAlignment.CENTER)
-                addText(doc, "Merci pour votre confiance", regularFont, 10f, TextAlignment.CENTER)
+                doc.add(Paragraph("\n").setFontSize(1f))
+                addText(doc, "SOLDÉ", regularFont, 10f, TextAlignment.CENTER)
             }
         }
+    }
+
+    // Helper function to create compact label-value pairs on same line
+    private fun addCompactLabelValue(doc: Document, label: String, value: String, labelFont: PdfFont, valueFont: PdfFont) {
+        // Create a single paragraph with both label and value
+        val paragraph = Paragraph()
+            .add(com.itextpdf.layout.element.Text(label).setFont(labelFont).setFontSize(12f))
+            .add(com.itextpdf.layout.element.Text(" $value").setFont(valueFont).setFontSize(12f))
+            .setTextAlignment(TextAlignment.LEFT)
+            .setMargin(0f)
+
+        doc.add(paragraph)
+
+        // Minimal spacing between rows
+        doc.add(Paragraph("\n").setFontSize(2f))
     }
 
     private fun addHeader(doc: Document, title: String, regularFont: PdfFont, boldFont: PdfFont) {
