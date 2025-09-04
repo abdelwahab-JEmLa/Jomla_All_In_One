@@ -1,530 +1,520 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.CartSummarySection
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ClientDetailsSection
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ErrorCard
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.PeriodDetailsSection
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import android.content.Context
-import android.graphics.Paint
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
-import android.os.Bundle
-import android.os.CancellationSignal
-import android.os.ParcelFileDescriptor
-import android.print.PageRange
-import android.print.PrintAttributes
-import android.print.PrintDocumentAdapter
-import android.print.PrintDocumentInfo
-import android.print.PrintManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Storefront
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
-import java.io.FileOutputStream
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
-class UsbPrintHelper {
-
-    fun printHelloWorld(context: Context) {
-        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
-        val jobName = "Hello World Test - ${System.currentTimeMillis()}"
-
-        val printAdapter = object : PrintDocumentAdapter() {
-
-            override fun onLayout(
-                oldAttributes: PrintAttributes?,
-                newAttributes: PrintAttributes,
-                cancellationSignal: CancellationSignal?,
-                callback: LayoutResultCallback,
-                extras: Bundle?
-            ) {
-                if (cancellationSignal?.isCanceled == true) {
-                    callback.onLayoutCancelled()
-                    return
-                }
-
-                val info = PrintDocumentInfo.Builder("hello_world.pdf")
-                    .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
-                    .setPageCount(1)
-                    .build()
-
-                callback.onLayoutFinished(info, true)
-            }
-
-            // CORRIGÉ: Signature correcte pour onWrite
-            override fun onWrite(
-                pages: Array<out PageRange>?,
-                destination: ParcelFileDescriptor,
-                cancellationSignal: CancellationSignal?,
-                callback: WriteResultCallback
-            ) {
-                if (cancellationSignal?.isCanceled == true) {
-                    callback.onWriteCancelled()
-                    return
-                }
-
-                try {
-                    // Créer un PDF simple avec "Hello World"
-                    val pdfDocument = createHelloWorldPdf()
-
-                    // Écrire le PDF dans le fichier de destination
-                    FileOutputStream(destination.fileDescriptor).use { output ->
-                        pdfDocument.writeTo(output)
-                    }
-
-                    pdfDocument.close()
-                    callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
-
-                } catch (e: Exception) {
-                    callback.onWriteFailed("Erreur: ${e.message}")
-                }
-            }
-        }
-
-        // Lancer l'impression
-        printManager.print(jobName, printAdapter, null)
-    }
-
-    private fun createHelloWorldPdf(): PdfDocument {
-        val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4
-        val page = pdfDocument.startPage(pageInfo)
-
-        val canvas = page.canvas
-        val paint = Paint().apply {
-            textSize = 48f
-            typeface = Typeface.DEFAULT_BOLD
-            textAlign = Paint.Align.CENTER
-        }
-
-        // Dessiner "Hello World" au centre de la page
-        val centerX = pageInfo.pageWidth / 2f
-        val centerY = pageInfo.pageHeight / 2f
-
-        canvas.drawText("Hello World!", centerX, centerY - 100, paint)
-
-        // Ajouter la date et l'heure
-        paint.textSize = 24f
-        paint.typeface = Typeface.DEFAULT
-        val dateTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
-        canvas.drawText("Imprimé le: $dateTime", centerX, centerY + 50, paint)
-
-        // Ajouter des informations sur l'imprimante
-        paint.textSize = 18f
-        canvas.drawText("Test d'impression USB", centerX, centerY + 100, paint)
-        canvas.drawText("Samsung ML via Android Print Framework", centerX, centerY + 130, paint)
-
-        pdfDocument.finishPage(page)
-        return pdfDocument
-    }
-}
-
-
-@Preview
-@Composable
-fun DetailsBonVentPrev() {
-    DetailsBonVent()
-}
-
-val petitePaddine = 4.dp //rename
-
-data class ActionButtonData(
-    val key: String,
-    val content: @Composable () -> Unit
+// Data class for PrintPCBackEnd
+data class PrintPCBackEnd(
+    val id: String = "",
+    val commencement_du_job: String = "",
+    val end_du_job: String = "",
+    val nom_fichier: String = ""
 )
 
-@Composable
-fun DetailsBonVent(
-    modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    viewModel: ZViewModel_Sec1Frag3 = koinInject()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val isMinimized = uiState.isMinimized
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
+// Repository for Firebase operations
+class PrintReportsRepository {
+    private val database = FirebaseDatabase.getInstance("https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app/")
+    private val printReportsRef = database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/PrintPCBackEnd")
 
-    val zAppComptRepositoryComposable = viewModel.uiStateCentralRepositorys.repo9AppCompt
-    val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
-    val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
+    private var currentListener: ValueEventListener? = null
 
-    // Create list of action buttons for LazyColumn
-// In your DetailsBonVent.kt file, update the actionButtons list:
+    // Real-time listener for Firebase data changes
+    fun observePrintReports(onResult: (Result<List<PrintPCBackEnd>>) -> Unit) {
+        // Remove existing listener if any
+        removeListener()
 
-// Create list of action buttons for LazyColumn
-    val actionButtons = remember(uiState, isMinimized) {
-        listOf(
-            ActionButtonData("filter") {
-                FilterButton(
-                    uiState = uiState,
-                    showLabel = !isMinimized,
-                    onToggleFilter = { viewModel.toggelePanierFilterNonTrouve() }
-                )
-            },
-            ActionButtonData("print") {
-                PrintButton(
-                    showLabel = !isMinimized,
-                    onPrint = {
-                        printHandler.printVentReceiptWithDirectPdf(
-                            context = context,
-                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
-                            repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
-                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
-                            client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                            scope = scope,
-                            relative_ListM10OperationVentCouleur = it,
-                            bonVent = focusedValuesGetter.activeOnVent_M8BonVent
-                        )
-                    }
-                )
-            },
-            ActionButtonData("reports") {
-                PrintReportsButton(
-                    showLabel = !isMinimized
-                )
-            },
-            ActionButtonData("confirmation") {
-                ConfirmationButton(
-                    viewModel = viewModel,
-                    showLabel = !isMinimized,
-                )
-            },
-            ActionButtonData("minimize") {
-                MinimizeButton(
-                    isMinimized = isMinimized,
-                    showLabel = !isMinimized,
-                    onToggleMinimized = { viewModel.toggleMinimizedState() }
-                )
-            }
-        )
-    }
+        currentListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val reports = mutableListOf<PrintPCBackEnd>()
 
-    if (comptAppActuelle != null) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .heightIn(min = 120.dp, max = if (isMinimized) 180.dp else 400.dp)
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(petitePaddine),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(petitePaddine),
-                    verticalArrangement = Arrangement.spacedBy(if (isMinimized) 6.dp else 12.dp)
-                ) {
-                    if (!isMinimized) {
-                        GBonVentInfosHeader(viewModel)
-                    }
-                    if (!isMinimized) {
-                        PeriodDetailsSection(
-                            viewModel = viewModel,
-                            ouvertPeriodKeyId = ouvertPeriodKeyId,
-                        )
+                    snapshot.children.forEach { child ->
+                        val report = child.getValue(PrintPCBackEnd::class.java)
+                        report?.let { reports.add(it) }
                     }
 
-                    ClientDetailsSection(
-                        modifier = Modifier,
-                        viewModel = viewModel,
-                    )
-
-                    if (!isMinimized) {
-                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    // Sort by commencement_du_job in descending order (most recent first)
+                    val sortedReports = reports.sortedByDescending { report ->
+                        try {
+                            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            format.parse(report.commencement_du_job)?.time ?: 0L
+                        } catch (e: Exception) {
+                            0L
+                        }
                     }
 
-                    CartSummarySection(viewModel)
+                    onResult(Result.success(sortedReports))
+                } catch (exception: Exception) {
+                    onResult(Result.failure(exception))
                 }
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(petitePaddine)
-                    .wrapContentHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = actionButtons,
-                    key = { it.key }
-                ) { buttonData ->
-                    buttonData.content()
-                }
+            override fun onCancelled(error: DatabaseError) {
+                onResult(Result.failure(Exception(error.message)))
             }
         }
-    } else {
-        ErrorCard(modifier = modifier)
+
+        printReportsRef.addValueEventListener(currentListener!!)
+    }
+
+    fun removeListener() {
+        currentListener?.let { listener ->
+            printReportsRef.removeEventListener(listener)
+            currentListener = null
+        }
+    }
+
+    // Keep the suspend function as backup if needed
+    suspend fun fetchPrintReports(): Result<List<PrintPCBackEnd>> {
+        return try {
+            val snapshot = printReportsRef.get().await()
+            val reports = mutableListOf<PrintPCBackEnd>()
+
+            snapshot.children.forEach { child ->
+                val report = child.getValue(PrintPCBackEnd::class.java)
+                report?.let { reports.add(it) }
+            }
+
+            // Sort by commencement_du_job in descending order (most recent first)
+            val sortedReports = reports.sortedByDescending { report ->
+                try {
+                    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    format.parse(report.commencement_du_job)?.time ?: 0L
+                } catch (e: Exception) {
+                    0L
+                }
+            }
+
+            Result.success(sortedReports)
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
     }
 }
 
-// NOUVEAU: Composable pour le bouton de test USB
+// ViewModel for managing print reports state
+class PrintReportsViewModel(
+    private val repository: PrintReportsRepository = PrintReportsRepository()
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(PrintReportsUiState())
+    val uiState: StateFlow<PrintReportsUiState> = _uiState.asStateFlow()
+
+    data class PrintReportsUiState(
+        val isLoading: Boolean = false,
+        val printReports: List<PrintPCBackEnd> = emptyList(),
+        val errorMessage: String? = null,
+        val isDialogVisible: Boolean = false
+    )
+
+    fun showDialog() {
+        _uiState.value = _uiState.value.copy(isDialogVisible = true)
+        fetchPrintReports()
+    }
+
+    fun hideDialog() {
+        _uiState.value = _uiState.value.copy(isDialogVisible = false)
+    }
+
+    private fun fetchPrintReports() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+            repository.fetchPrintReports()
+                .onSuccess { reports ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        printReports = reports
+                    )
+                }
+                .onFailure { exception ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = exception.message ?: "Erreur inconnue"
+                    )
+                }
+        }
+    }
+
+    // Alternative method for real-time updates
+    fun enableRealTimeUpdates() {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+        repository.observePrintReports { result ->
+            result.onSuccess { reports ->
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    printReports = reports
+                )
+            }.onFailure { exception ->
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = exception.message ?: "Erreur inconnue"
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.removeListener()
+    }
+}
+
+// Print Reports Button Composable
 @Composable
-fun UsbTestPrintButton(
-    context: Context,
+fun PrintReportsButton(
     showLabel: Boolean,
+    viewModel: PrintReportsViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val usbPrintHelper = remember { UsbPrintHelper() }
+    val uiState by viewModel.uiState.collectAsState()
 
-    FloatingActionButton(
-        onClick = {
-            // Test d'impression simple
-            usbPrintHelper.printHelloWorld(context)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            onClick = { viewModel.showDialog() },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Assessment,
+                contentDescription = "Voir rapports d'impression",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "Rapports",
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = MaterialTheme.colorScheme.onTertiary,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+
+    // Show dialog when needed
+    if (uiState.isDialogVisible) {
+        PrintReportsDialog(
+            uiState = uiState,
+            onDismiss = { viewModel.hideDialog() }
+        )
+    }
+}
+
+// Print Reports Dialog Composable
+@Composable
+fun PrintReportsDialog(
+    uiState: PrintReportsViewModel.PrintReportsUiState,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Rapports d'Impression",
+                style = MaterialTheme.typography.headlineSmall
+            )
         },
-        modifier = modifier.size(if (showLabel) 56.dp else 48.dp),
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.onSecondary
-    ) {
-        Icon(
-            imageVector = Icons.Default.Print,
-            contentDescription = "Test Print USB",
-            modifier = Modifier.size(24.dp)
-        )
-    }
-
-    if (showLabel) {
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Test USB",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-
-@Composable
-fun PanieModeButton(
-    uiState: ZViewModel_Sec1Frag3.UiState_Sec1Frag3,
-    showLabel: Boolean,
-    onTogglePanieMode: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FloatingActionButton(
-            onClick = onTogglePanieMode,
-            containerColor = when (uiState.panieMode) {
-                ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50) // Green for Delivery
-                ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3) // Blue for Vent
-            },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = when (uiState.panieMode) {
-                    ZViewModel_Sec1Frag3.PanieMode.Delivery -> Icons.Default.LocalShipping
-                    ZViewModel_Sec1Frag3.PanieMode.Vent -> Icons.Default.Storefront
-                },
-                contentDescription = "Basculer mode: ${uiState.panieMode.name}",
-                modifier = Modifier.size(20.dp),
-                tint = Color.White
-            )
-        }
-
-        if (showLabel) {
-            Text(
-                text = uiState.panieMode.name,
+        text = {
+            Box(
                 modifier = Modifier
-                    .background(
-                        color = when (uiState.panieMode) {
-                            ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50)
-                            ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3)
-                        },
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) {
+                when {
+                    uiState.isLoading -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Chargement des rapports...",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    uiState.errorMessage != null -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Error,
+                                contentDescription = "Erreur",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Erreur: ${uiState.errorMessage}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    uiState.printReports.isEmpty() -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = "Aucun rapport",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Aucun rapport d'impression trouvé",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
+
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(uiState.printReports) { report ->
+                                PrintReportItem(report = report)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Fermer")
+            }
         }
-    }
+    )
 }
 
+// Individual Print Report Item
 @Composable
-fun FilterButton(
-    uiState: ZViewModel_Sec1Frag3.UiState_Sec1Frag3,
-    showLabel: Boolean,
-    onToggleFilter: () -> Unit
+fun PrintReportItem(
+    report: PrintPCBackEnd,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        FloatingActionButton(
-            onClick = onToggleFilter,
-            containerColor = if (uiState.filterNonTrouve) {
-                Color(0xFFFF5722) // Orange when filter is active
-            } else {
-                MaterialTheme.colorScheme.tertiary
-            },
-            modifier = Modifier.size(48.dp)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = if (uiState.filterNonTrouve)
-                    "Désactiver filtre Non trouvé"
-                else
-                    "Activer filtre Non trouvé",
-                modifier = Modifier.size(20.dp),
-                tint = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary
-            )
-        }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "ID: ${report.id}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-        if (showLabel) {
-            Text(
-                text = if (uiState.filterNonTrouve) "Filtre actif" else "Filtre inactif",
-                modifier = Modifier
-                    .background(
-                        color = if (uiState.filterNonTrouve) {
-                            Color(0xFFFF5722)
-                        } else {
-                            MaterialTheme.colorScheme.tertiary
-                        },
-                        shape = RoundedCornerShape(4.dp)
+                Icon(
+                    imageVector = Icons.Default.Print,
+                    contentDescription = "Impression",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Fichier:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = report.nom_fichier,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Début:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = formatDateTime(report.commencement_du_job),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Fin:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = formatDateTime(report.end_du_job),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Calculate duration
+            val duration = calculateDuration(report.commencement_du_job, report.end_du_job)
+            if (duration.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Durée:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary,
-                style = MaterialTheme.typography.bodySmall
-            )
+                    Text(
+                        text = duration,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }
 
-@Composable
-fun PrintButton(
-    aCentralFacade: ACentralFacade = koinInject(),
-    showLabel: Boolean,
-    onPrint: (List<M10OperationVentCouleur>) -> Unit
-) {
-    val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { vent ->
-            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
-                    vent.quantity > 0
-        }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FloatingActionButton(
-            modifier = Modifier
-                .getSemanticsTag(activeVents.map {
-                    it.getDebugInfos()
-                }, "activeVents")
-                .size(48.dp),
-            onClick = { onPrint(activeVents) },
-            containerColor = MaterialTheme.colorScheme.secondary
-        ) {
-            Icon(
-                imageVector = Icons.Default.Print,
-                contentDescription = "Imprimer le reçu",
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        if (showLabel) {
-            Text(
-                text = "Imprimer",
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
+// Helper function to format date time for better display
+private fun formatDateTime(dateTime: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
+        val date = inputFormat.parse(dateTime)
+        date?.let { outputFormat.format(it) } ?: dateTime
+    } catch (e: Exception) {
+        dateTime
     }
 }
 
-@Composable
-fun MinimizeButton(
-    isMinimized: Boolean,
-    showLabel: Boolean,
-    onToggleMinimized: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FloatingActionButton(
-            onClick = onToggleMinimized,
-            containerColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails",
-                modifier = Modifier.size(20.dp)
-            )
-        }
+// Helper function to calculate duration
+private fun calculateDuration(start: String, end: String): String {
+    return try {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val startTime = format.parse(start)
+        val endTime = format.parse(end)
 
-        if (showLabel) {
-            Text(
-                text = if (isMinimized) "Afficher" else "Masquer",
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (startTime != null && endTime != null) {
+            val durationMs = endTime.time - startTime.time
+            val durationSeconds = durationMs / 1000
+
+            when {
+                durationSeconds < 60 -> "${durationSeconds}s"
+                durationSeconds < 3600 -> {
+                    val minutes = durationSeconds / 60
+                    val seconds = durationSeconds % 60
+                    "${minutes}m ${seconds}s"
+                }
+                else -> {
+                    val hours = durationSeconds / 3600
+                    val minutes = (durationSeconds % 3600) / 60
+                    "${hours}h ${minutes}m"
+                }
+            }
+        } else {
+            ""
         }
+    } catch (e: Exception) {
+        ""
     }
 }
+
+// Updated action buttons list in your main composable
+// Add this to your actionButtons list in DetailsBonVent:
+/*
+ActionButtonData("reports") {
+    PrintReportsButton(
+        showLabel = !isMinimized
+    )
+},
+*/
