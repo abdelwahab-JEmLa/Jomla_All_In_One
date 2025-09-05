@@ -44,7 +44,7 @@ class PrintInPdf_itextpdf_Handler(
         val transactionId: String = "",
         val its_GrossistApp: Boolean = true,
         val creditData: CreditReceiptData? = null,
-        val autoShare: Boolean = false // New parameter to control auto-sharing
+        val autoShare: Boolean = false
     )
 
     data class CreditReceiptData(
@@ -96,116 +96,6 @@ class PrintInPdf_itextpdf_Handler(
         addText(doc, "────────────────────────", regularFont, 8f, TextAlignment.CENTER)
     }
 
-    suspend fun generateVentReceiptPdf(
-        context: Context,
-        client: M2Client?,
-        operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
-        produitRepo: RepoM1Produit,
-        transactionId: String = "",
-        its_GrossistApp: Boolean = true,
-        autoShare: Boolean = false
-    ): Result<PdfResult> {
-        if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
-
-        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-        val params = PdfGenerationParams(
-            PdfType.RECEIPT_ONLY,
-            client,
-            operations,
-            tarificationRepo,
-            produitRepo,
-            transactionId = transactionId,
-            its_GrossistApp = its_GrossistApp,
-            autoShare = autoShare
-        )
-
-        generateUnifiedPdf(file.absolutePath, params)
-        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
-
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-
-        // Auto-share if requested
-        if (autoShare) {
-            uploadHandler.shareDocument(context, file)
-        }
-
-        return Result.success(PdfResult(file.absolutePath, url, file))
-    }
-
-    suspend fun generateVentReceiptWithCreditPdf(
-        context: Context,
-        client: M2Client?,
-        operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
-        produitRepo: RepoM1Produit,
-        transactionId: String = "",
-        bonVent: M8BonVent,
-        versement: Double,
-        its_GrossistApp: Boolean = true,
-        autoShare: Boolean = false
-    ): Result<PdfResult> {
-        if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
-
-        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
-        val params = PdfGenerationParams(
-            PdfType.RECEIPT_WITH_CREDIT,
-            client,
-            operations,
-            tarificationRepo,
-            produitRepo,
-            bonVent,
-            versement,
-            transactionId,
-            its_GrossistApp,
-            autoShare = autoShare
-        )
-
-        generateUnifiedPdf(file.absolutePath, params)
-        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
-
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-
-        // Auto-share if requested
-        if (autoShare) {
-            uploadHandler.shareDocument(context, file)
-        }
-
-        return Result.success(PdfResult(file.absolutePath, url, file))
-    }
-
-    suspend fun generateCreditReceiptPdf(
-        context: Context,
-        data: CreditReceiptData,
-        autoShare: Boolean = false
-    ): Result<PdfResult> {
-        if (data.totalAmount <= 0) return Result.failure(IllegalArgumentException("Invalid total amount"))
-
-        val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-        val params = PdfGenerationParams(
-            PdfType.CREDIT_ONLY,
-            data.client,
-            transactionId = data.transactionId,
-            creditData = data,
-            autoShare = autoShare
-        )
-
-        generateUnifiedPdf(file.absolutePath, params)
-        if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
-
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-
-        // Auto-share if requested
-        if (autoShare) {
-            uploadHandler.shareDocument(context, file)
-        }
-
-        return Result.success(PdfResult(file.absolutePath, url, file))
-    }
-
-    /**
-     * Convenience method to share an already generated PDF
-     */
     fun sharePdf(context: Context, pdfResult: PdfResult) {
         uploadHandler.shareDocument(context, pdfResult.file)
     }
@@ -216,7 +106,6 @@ class PrintInPdf_itextpdf_Handler(
     private fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
         val productName = cleanAndCapitalizeProductName(produit?.nom ?: "Produit")
 
-        // Add © after product name if it doesn't already contain it
         val productNameWithCopyright = if (!productName.contains("©")) {
             "$productName ©"
         } else {
@@ -235,12 +124,10 @@ class PrintInPdf_itextpdf_Handler(
     private fun cleanAndCapitalizeProductName(name: String): String {
         val nameWithoutHash = name.replace("#", "").trim()
 
-        // If we have a very short result, return as-is
         if (nameWithoutHash.length < 2) {
             return nameWithoutHash
         }
 
-        // Split by spaces and capitalize each word
         return nameWithoutHash.split("\\s+".toRegex())
             .filter { it.isNotBlank() }
             .joinToString(" ") { word ->
@@ -382,7 +269,168 @@ class PrintInPdf_itextpdf_Handler(
         }
     }
 
+    // FIXED: Create two separate methods to handle each use case
+    private fun createProductTableAndReturnTotal(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont): Double {
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(6f, 15f, 14f, 50f, 12f))).setWidth(UnitValue.createPercentValue(100f))
 
+        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
+
+        var total = 0.0
+        var rowNumber = 1
+        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
+
+        groupedOps.forEach { (produitId, ops) ->
+            val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val qty = ops.sumOf { it.quantity }
+            val price = tarification?.prixCurrency ?: 0.0
+            val subtotal = price * qty
+
+            // FIXED: Check if price OR subtotal is 0.0, not just subtotal
+            val shouldDisplayRow = price != 0.0 && subtotal != 0.0
+
+            if (shouldDisplayRow) {
+                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                val productNameWithCategory = formatProductNameWithCategory(produit)
+                val unitPrice = if (produit?.afficheUniteAuPrint == true) {
+                    val nombreUniteInt = produit.nombreUniteInt
+                    if (nombreUniteInt > 0) price / nombreUniteInt else price
+                } else price
+
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
+                total += subtotal
+                rowNumber++
+            } else {
+                // FIXED: When prevent is 0.0 or achat == vent, display row with product and quantity but empty price and subtotal
+                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                val productNameWithCategory = formatProductNameWithCategory(produit)
+
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.CENTER)) // Empty price
+                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.RIGHT)) // Empty subtotal
+
+                rowNumber++
+            }
+        }
+
+        doc.add(table)
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        return total
+    }
+
+    private fun createProductTable(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont) {
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f))).setWidth(UnitValue.createPercentValue(100f))
+
+        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
+
+        var total = 0.0
+        var rowNumber = 1
+        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
+
+        groupedOps.forEach { (produitId, ops) ->
+            val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val qty = ops.sumOf { it.quantity }
+            val price = tarification?.prixCurrency ?: 0.0
+            val subtotal = price * qty
+
+            // FIXED: Check if price OR subtotal is 0.0, not just subtotal
+            val shouldDisplayRow = price != 0.0 && subtotal != 0.0
+
+            if (shouldDisplayRow) {
+                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                val productNameWithCategory = formatProductNameWithCategory(produit)
+                val unitPrice = if (produit?.afficheUniteAuPrint == true) {
+                    val nombreUniteInt = produit.nombreUniteInt
+                    if (nombreUniteInt > 0) price / nombreUniteInt else price
+                } else price
+
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
+
+                total += subtotal
+                rowNumber++
+            } else {
+                // FIXED: When prevent is 0.0 or achat == vent, display row with product and quantity but empty price and subtotal
+                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+                val productNameWithCategory = formatProductNameWithCategory(produit)
+
+                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.CENTER)) // Empty price
+                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
+                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.RIGHT)) // Empty subtotal
+
+                rowNumber++
+            }
+        }
+
+        doc.add(table)
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
+        addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
+    }
+
+    private fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
+        val shouldShowUnits = produit?.afficheUniteAuPrint == true
+        val nombreUniteInt = produit?.nombreUniteInt ?: 1
+
+        return when {
+            shouldShowUnits && cartonSize in 2..qty && qty % cartonSize == 0 -> {
+                val cartons = qty / cartonSize
+                "$cartons X $cartonSize X $nombreUniteInt"
+            }
+            shouldShowUnits -> "$qty X $nombreUniteInt"
+            cartonSize in 2..qty && qty % cartonSize == 0 -> {
+                val cartons = qty / cartonSize
+                "$cartons X $cartonSize"
+            }
+            else -> qty.toString()
+        }
+    }
+
+    private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
+        val paragraph = Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f)
+        return Cell().add(paragraph).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(4f)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setTextAlignment(align)
+    }
+
+    private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
+        Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
+            .setBorder(SolidBorder(0.1f)).setPadding(4f)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+
+    private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
+        doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
+
+    private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
+
+    private fun capitalizeFirstLetter(text: String): String {
+        return if (text.isBlank()) text
+        else text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+
+    // Legacy methods for backward compatibility
     suspend fun generateVentReceiptPdf(context: Context, client: M2Client?, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, transactionId: String = "", its_GrossistApp: Boolean = true): Result<String> {
         if (operations.isEmpty()) return Result.failure(IllegalArgumentException("No operations to print"))
 
@@ -418,139 +466,8 @@ class PrintInPdf_itextpdf_Handler(
         generateUnifiedPdf(file.absolutePath, params)
         if (!file.exists()) return Result.failure(IllegalStateException("PDF file creation failed"))
 
-        val url =uploadHandler. uploadToFirebaseStorage(file, file.name)
+        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
         return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
-    }
-
-    private fun createProductTableAndReturnTotal(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont): Double {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(6f, 15f, 14f, 50f, 12f))).setWidth(UnitValue.createPercentValue(100f))
-
-        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
-
-        var total = 0.0
-        var rowNumber = 1
-        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
-
-        groupedOps.forEach { (produitId, ops) ->
-            val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
-            val qty = ops.sumOf { it.quantity }
-            val price = tarification?.prixCurrency ?: 0.0
-            val subtotal = price * qty
-
-            if (subtotal != 0.0) {
-                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
-                val productNameWithCategory = formatProductNameWithCategory(produit)
-                val unitPrice = if (produit?.afficheUniteAuPrint == true) {
-                    val nombreUniteInt = produit.nombreUniteInt
-                    if (nombreUniteInt > 0) price / nombreUniteInt else price
-                } else price
-
-                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
-                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
-
-                total += subtotal
-                rowNumber++
-            }
-        }
-
-        doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(0.3f))
-
-        return total
-    }
-
-    private fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
-        val shouldShowUnits = produit?.afficheUniteAuPrint == true
-        val nombreUniteInt = produit?.nombreUniteInt ?: 1
-
-        return when {
-            shouldShowUnits && cartonSize in 2..qty && qty % cartonSize == 0 -> {
-                val cartons = qty / cartonSize
-                "$cartons X $cartonSize X $nombreUniteInt"
-            }
-            shouldShowUnits -> "$qty X $nombreUniteInt"
-            cartonSize in 2..qty && qty % cartonSize == 0 -> {
-                val cartons = qty / cartonSize
-                "$cartons X $cartonSize"
-            }
-            else -> qty.toString()
-        }
-    }
-
-    private fun createProductTable(doc: Document, operations: List<M10OperationVentCouleur>, tarificationRepo: Repo13TarificationInfos, produitRepo: RepoM1Produit, regularFont: PdfFont, boldFont: PdfFont) {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f))).setWidth(UnitValue.createPercentValue(100f))
-
-        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
-
-        var total = 0.0
-        var rowNumber = 1
-        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
-
-        groupedOps.forEach { (produitId, ops) ->
-            val tarification = tarificationRepo.datasValue.find { it.keyID == ops.first().parentM13TarificationKeyID }
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
-            val qty = ops.sumOf { it.quantity }
-            val price = tarification?.prixCurrency ?: 0.0
-            val subtotal = price * qty
-
-            if (subtotal != 0.0) {
-                val qtyDisplay = formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
-                val productNameWithCategory = formatProductNameWithCategory(produit)
-                val unitPrice = if (produit?.afficheUniteAuPrint == true) {
-                    val nombreUniteInt = produit.nombreUniteInt
-                    if (nombreUniteInt > 0) price / nombreUniteInt else price
-                } else price
-
-                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell("${round(unitPrice)}", regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
-                table.addCell(createDataCell("${round(subtotal)}", regularFont, 10f, TextAlignment.RIGHT))
-
-                total += subtotal
-                rowNumber++
-            }
-        }
-
-        doc.add(table)
-        doc.add(Paragraph("\n").setFontSize(0.3f))
-
-        addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
-        addText(doc, "${round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
-    }
-
-
-    private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
-        val paragraph = Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f)
-        return Cell().add(paragraph).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(4f)
-            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setTextAlignment(align)
-    }
-
-    private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
-        Cell().add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.1f)).setPadding(4f)
-            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
-
-    private fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
-        doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
-
-    private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
-
-    private fun capitalizeFirstLetter(text: String): String {
-        return if (text.isBlank()) text
-        else text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
 }
