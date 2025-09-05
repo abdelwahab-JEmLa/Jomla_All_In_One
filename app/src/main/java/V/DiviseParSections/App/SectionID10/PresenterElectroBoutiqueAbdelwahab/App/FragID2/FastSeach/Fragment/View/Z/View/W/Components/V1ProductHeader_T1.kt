@@ -5,8 +5,10 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -179,36 +181,90 @@ fun ProductHeader_T1(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        IconButton(              //<--
-                        //TODO(1): pk le vendre par carton ne marche pas comme don le panie
-                            onClick = {
-                                val toggled_setIN_Vent_Its_Quantity_Represent =
-                                    produit.setIN_Vent_Its_Quantity_Represent.toggle()
+                        // Fixed section - replace the IconButton onClick and Icon logic
 
+                        IconButton(
+                            onClick = {
+                                val currentMode = produit.setIN_Vent_Its_Quantity_Represent
+                                val newMode = currentMode.toggle()
+
+                                // Store current total quantities before mode change
+                                val currentVentOperations = listFiltered_M10OperationVentCouleurs_By_M1Produit
+                                val totalQuantitiesByColor = currentVentOperations.groupBy { it.parent_M3CouleurProduit_KeyID }
+                                    .mapValues { entry -> entry.value.sumOf { it.quantity } }
+
+                                // Update product mode
                                 produit.apply {
-                                    setIN_Vent_Its_Quantity_Represent =
-                                        toggled_setIN_Vent_Its_Quantity_Represent
+                                    setIN_Vent_Its_Quantity_Represent = newMode
                                 }.also {
-                                    repositorysMainGetter.repo1ProduitInfos.update(
-                                        it
-                                    )
+                                    repositorysMainGetter.repo1ProduitInfos.update(it)
                                 }
+
+                                // Delete existing operations
                                 viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
-                                    listFiltered_M10OperationVentCouleurs_By_M1Produit
+                                    currentVentOperations
                                 )
-                            }, modifier = Modifier.size(36.dp)
+
+                                // Recreate operations with converted quantities if there were any
+                                if (totalQuantitiesByColor.isNotEmpty()) {
+                                    val repo3CouleurProduitInfos = viewModel.getter.repo03CouleurProduitInfos
+                                    val repo10OperationVentCouleur = viewModel.getter.repo10OperationVentCouleur
+                                    val defaultVent = viewModel.getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+
+                                    totalQuantitiesByColor.forEach { (colorKeyId, totalQuantity) ->
+                                        val colorInfo = repo3CouleurProduitInfos.datasValue.find { it.keyID == colorKeyId }
+
+                                        if (colorInfo != null && defaultVent != null && totalQuantity > 0) {
+                                            // Convert quantity based on new mode
+                                            val convertedQuantity = when (newMode) {
+                                                M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> {
+                                                    // Converting from units (boit) to cartons
+                                                    if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit) {
+                                                        // Convert units to cartons
+                                                        if (produit.quantite_Boit_Par_Carton > 0) {
+                                                            (totalQuantity / produit.quantite_Boit_Par_Carton).coerceAtLeast(1)
+                                                        } else totalQuantity
+                                                    } else totalQuantity
+                                                }
+                                                M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> {
+                                                    // Converting from cartons to units (boit)
+                                                    if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
+                                                        // Convert cartons to units
+                                                        totalQuantity * produit.quantite_Boit_Par_Carton
+                                                    } else totalQuantity
+                                                }
+                                            }
+
+                                            val newVent = defaultVent.copy(
+                                                keyID = getPushFireBase(ref),
+                                                parent_M1Produit_KeyId = produit.keyID,
+                                                parent_M1Produit_DebugInfos = produit.nom,
+                                                parent_M3CouleurProduit_KeyID = colorKeyId,
+                                                parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${colorInfo.indexCouleurDansAncienProto}",
+                                                quantity = convertedQuantity,
+                                                etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
+                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                            )
+
+                                            repo10OperationVentCouleur.addOrUpdateData(newVent)
+                                        }
+                                    }
+                                }
+                            },
+                            modifier = Modifier.size(36.dp)
                         ) {
-                            val carton =
-                                produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                            // FIXED: Corrected the toggle logic
+                            val isCartonMode = produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
                             Icon(
-                                imageVector = if (carton) Icons.Default.Inventory2
-                                else Icons.Default.ViewModule, contentDescription = null, tint = when {
+                                imageVector = if (isCartonMode) Icons.Default.Inventory2 else Icons.Default.ViewModule,
+                                contentDescription = if (isCartonMode) "Mode carton activé" else "Mode unité activé",
+                                tint = when {
                                     allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                    carton -> MaterialTheme.colorScheme.primary
-
+                                    isCartonMode -> MaterialTheme.colorScheme.primary
                                     else -> MaterialTheme.colorScheme.secondary
-                                }, modifier = Modifier.size(20.dp)
+                                },
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 

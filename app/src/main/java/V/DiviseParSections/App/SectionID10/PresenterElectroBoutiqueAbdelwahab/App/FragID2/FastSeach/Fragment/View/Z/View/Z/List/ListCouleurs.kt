@@ -41,7 +41,7 @@ fun ListCouleurs(
             ViewVentCouleur_T1(
                 modifier = Modifier.padding(4.dp),
                 relative_M3CouleurInfos = color,
-                produit = produit,
+                relative_produit = produit,
                 viewModel = viewModel,
                 size = 120.dp
             )

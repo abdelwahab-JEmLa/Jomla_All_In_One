@@ -86,7 +86,7 @@ import java.io.FileOutputStream
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
     relative_M3CouleurInfos: M3CouleurProduitInfos,
-    produit: ArticlesBasesStatsTable,
+    relative_produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
@@ -142,7 +142,7 @@ fun ViewVentCouleur_T1(
         isProcessingImage = true
 
         try {
-            val fileName = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}.webp"
+            val fileName = "${relative_produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}.webp"
             val localDir = File(localPath).apply { if (!exists()) mkdirs() }
             val localFile = File(localDir, fileName)
 
@@ -169,16 +169,16 @@ fun ViewVentCouleur_T1(
                 // Update existing color to use image
                 val updatedCouleur = relative_M3CouleurInfos.copy(
                     aAffiche = M3CouleurProduitInfos.Type.Image,
-                    nomImageFichieSansEtansion = "${produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}",
+                    nomImageFichieSansEtansion = "${relative_produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}",
                     extensionDisponible = "webp"
                 )
 
                 viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
 
                 // Update product timestamps
-                val updatedProduit = produit.copy(
-                    actualiseSonImage = produit.actualiseSonImage + 1,
-                    actualiseSonImageTest2 = produit.actualiseSonImageTest2 + 1,
+                val updatedProduit = relative_produit.copy(
+                    actualiseSonImage = relative_produit.actualiseSonImage + 1,
+                    actualiseSonImageTest2 = relative_produit.actualiseSonImageTest2 + 1,
                     dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
                 )
 
@@ -246,17 +246,17 @@ fun ViewVentCouleur_T1(
         isEditingColorName = false
     }
 
-    val defaultM10Vent = produit.let {
+    val defaultM10Vent = relative_produit.let {
         M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
             focusedValuesGetter.activeOnVent_M8BonVent,
             relative_M3CouleurInfos
         ).copy(
-            setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,
-            quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton,
-            quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
+            setIN_Vent_Its_Quantity_Represent = relative_produit.setIN_Vent_Its_Quantity_Represent,
+            quantite_Boit_Par_Carton = relative_produit.quantite_Boit_Par_Carton,
+            quantity = if (relative_produit.setIN_Vent_Its_Quantity_Represent ==
                 M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
             )
-                1 * produit.quantite_Boit_Par_Carton
+                1 * relative_produit.quantite_Boit_Par_Carton
             else 1
         )
     }
@@ -264,7 +264,7 @@ fun ViewVentCouleur_T1(
     val ventUIState = remember(relative_M10OperationVentCouleur, uiState) {
         derivedStateOf {
             viewModel.calculateUIState(
-                produit, relative_M10OperationVentCouleur, uiState
+                relative_produit, relative_M10OperationVentCouleur, uiState
             )
         }
     }.value
@@ -282,10 +282,10 @@ fun ViewVentCouleur_T1(
     val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff = datasValue.find { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                tariff.parent_M1Produit_KeyId == produit.keyID
+                tariff.parent_M1Produit_KeyId == relative_produit.keyID
     }
 
-    val default_Tariff = M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
+    val default_Tariff = M13TarificationInfos.get_default_P0(relative_produit, start_Prix_Depuit_Ancient = relative_produit.prixAchat)
     val finale_Tariff = findTariff ?: default_Tariff.first
 
     Column(
@@ -569,6 +569,7 @@ fun ViewVentCouleur_T1(
     if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            setIN_Vent_Its_Quantity_Represent=relative_produit.setIN_Vent_Its_Quantity_Represent,
             label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
             relative_M10OperationVentCouleur?.let { existingVent ->
