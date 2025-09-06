@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import org.koin.compose.koinInject
 import java.text.DecimalFormat
-
 @Composable
 fun Header(
     relative_produit: ArticlesBasesStatsTable,
@@ -50,6 +49,11 @@ fun Header(
     val formattedPrixAchat =
         priceFormatter.format(firstAchatOperation?.prix_Achat_De_Cette_Grossist)
 
+    val grossist = firstAchatOperation?.let { achat ->
+        viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+            .find { it.keyID == achat.parent_M15Grossist_KeyID }
+    }
+
     Card(
         modifier = Modifier
             .getSemanticsTag(relative_produit,"produit")
@@ -58,66 +62,72 @@ fun Header(
             .padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Product info column
-            Column(
-                modifier = Modifier.weight(1f)
+            // First Row: Product name and purchase info
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = relative_produit.nom,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(top = 4.dp)
+                // Product info column
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
+                    Text(
+                        text = relative_produit.nom,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
                     Text(
                         text = "Achat: $formattedPrixAchat DA",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
-            Card_StatueDuProduit(
-                relative_produit
-            )
-            val grossist = firstAchatOperation?.let { achat ->
-                viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
-                    .find { it.keyID == achat.parent_M15Grossist_KeyID }
-            }
 
-            Button(
-                modifier = Modifier
-                    .getSemanticsTag(list_M11AchatOperation, "list_M11AchatOperation")
-                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(list_M11AchatOperation.map { it.parent_M15Grossist_DebugInfos }
-                        , "list_M11AchatOperation")
-                    .getSemanticsTag(grossist, "grossist"),
-                onClick = { showDialog = true }, // Use local state instead of viewModel
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (grossist != null) {
-                        try {
-                            Color(grossist.couleur_In_Str.toColorInt())
-                        } catch (e: Exception) {
+            // Second Row: Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card_StatueDuProduit(
+                    relative_Produit = relative_produit
+                )
+
+                Button(
+                    modifier = Modifier
+                        .getSemanticsTag(list_M11AchatOperation, "list_M11AchatOperation")
+                        .getSemanticsTag_By_datas_A_Affiche_Au_Nom(list_M11AchatOperation.map { it.parent_M15Grossist_DebugInfos }
+                            , "list_M11AchatOperation")
+                        .getSemanticsTag(grossist, "grossist"),
+                    onClick = { showDialog = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (grossist != null) {
+                            try {
+                                Color(grossist.couleur_In_Str.toColorInt())
+                            } catch (e: Exception) {
+                                MaterialTheme.colorScheme.primary
+                            }
+                        } else {
                             MaterialTheme.colorScheme.primary
                         }
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    }
-                )
-            ) {
-                Text(
-                    text = grossist?.nom ?: "Choisir Grossiste",
-                    color = Color.White
-                )
+                    )
+                ) {
+                    Text(
+                        text = grossist?.nom ?: "Choisir Grossiste",
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -140,7 +150,6 @@ fun Header(
         }
     }
 }
-
 fun updated_Achats(
     list_M11AchatOperation: List<M11AchatOperation>,
     grossistSelected: M15Grossist
@@ -197,15 +206,6 @@ fun Card_StatueDuProduit(
                 )
             )
 
-            Text(
-                text = if (relative_Produit.its_Carton) "Oui" else "Non",
-                style = MaterialTheme.typography.labelSmall,
-                color = if (relative_Produit.its_Carton)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }
