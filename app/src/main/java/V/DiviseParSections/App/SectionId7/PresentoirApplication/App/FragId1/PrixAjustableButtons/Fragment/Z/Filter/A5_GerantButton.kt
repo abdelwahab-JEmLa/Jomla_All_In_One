@@ -15,12 +15,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,20 +86,6 @@ fun GerantButton(
         label = "textColorAnimation"
     )
 
-    val gerantButtonHeight = remember(tariffsGroupedByType) {
-        val fabButtonSize = 50
-        val spacerBetweenItems = 4
-        val numberOfTariffTypes = tariffsGroupedByType.size
-        val totalItemsHeight = numberOfTariffTypes * fabButtonSize
-        val totalSpacersHeight = if (numberOfTariffTypes > 1) {
-            (numberOfTariffTypes - 1) * spacerBetweenItems
-        } else 0
-        val extraPadding = 16
-        val calculatedHeight = totalItemsHeight + totalSpacersHeight + extraPadding
-        val minHeight = 60
-        maxOf(calculatedHeight, minHeight).dp
-    }
-
     val m10OperationVentCouleurs =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
@@ -131,95 +111,74 @@ fun GerantButton(
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    // Now it's a horizontal row like other tariff buttons
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Box {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+        if (showLabels) {
+            ElevatedCard(
+                Modifier.clickable {
+                    onClickPrixButton()
+                    handelClick()
+                }
             ) {
-                if (showLabels) {
-                    ElevatedCard(
-                        Modifier.clickable {
-                            onClickPrixButton()
-                            handelClick()
-                        }) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .background(animatedBackgroundColor)
-                                .padding(vertical = 4.dp, horizontal = 4.dp)
-                                .height(gerantButtonHeight)
-                                .width(30.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                val fontSize = 12.sp
-
-                                Text(
-                                    text = "التقدير",
-                                    maxLines = 1,
-                                    fontSize = fontSize,
-                                    modifier = Modifier.rotate(-90f),
-                                    color = animatedTextColor
-                                )
-
-                                Spacer(modifier = Modifier.height(20.dp))
-
-                                Text(
-                                    text = "للمدير",
-                                    maxLines = 1,
-                                    fontSize = fontSize,
-                                    modifier = Modifier.rotate(-90f),
-                                    color = animatedTextColor
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Cancellation button positioned at top-right with proper padding
-            if (onClickAnulationButton != null) {
-                FloatingActionButton(
-                    onClick = {
-
-                        onClickAnulationButton()
-                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
-                            ""
-                        )
-
-                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
-                        focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
-                        focusedValuesGetter.update_activeCentralValues(
-                            focusedValuesGetter.active_Central_Values.copy(
-                                affiche_Panier_au_Search_Dialog = false,
-                                handled_M10OperationVent_Pour_Link = null
-                            )
-                        )
-
-                    },
+                Text(
+                    text = "التقدير للمدير",
+                    maxLines = 2,
+                    fontSize = 14.sp,
                     modifier = Modifier
-                        .size(32.dp)
-                        .align(Alignment.TopEnd)
-                        .padding(top = 4.dp, end = 4.dp),
-                    containerColor = cancelColor
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "إلغاء",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+                        .width(100.dp)
+                        .background(animatedBackgroundColor)
+                        .padding(4.dp),
+                    color = animatedTextColor
+                )
             }
+        }
 
+        // Main action button (similar to FloatingActionButton in other handlers)
+        FloatingActionButton(
+            modifier = Modifier.width(80.dp),
+            onClick = {
+                onClickPrixButton()
+                handelClick()
+            },
+            containerColor = animatedBackgroundColor
+        ) {
+            Text(
+                text = "تقدير",
+                color = animatedTextColor,
+                fontSize = 10.sp,
+                maxLines = 1
+            )
+        }
+
+        // Cancellation button (smaller, positioned at the end)
+        if (onClickAnulationButton != null) {
+            FloatingActionButton(
+                onClick = {
+                    onClickAnulationButton()
+                    focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
+                    focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit("")
+                    focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+                    focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            affiche_Panier_au_Search_Dialog = false,
+                            handled_M10OperationVent_Pour_Link = null
+                        )
+                    )
+                },
+                modifier = Modifier.size(40.dp),
+                containerColor = cancelColor
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "إلغاء",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

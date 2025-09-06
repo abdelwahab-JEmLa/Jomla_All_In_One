@@ -16,14 +16,12 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -179,98 +177,88 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-
-    Row(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .semantics(mergeDescendants = true) {
-                set(SemanticsPropertyKey("allTariffsGroupedAndSorted"), allTariffsGroupedAndSorted)
+                set(value = existing_Prix_Detaille, key = SemanticsPropertyKey(""))
+            }
+            .semantics(mergeDescendants = true) {
+                set(value = list_M13TarificationInfos.filter { tariff ->
+                    tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
+                            tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
+                }, key = SemanticsPropertyKey("filter"))
             }
             .getSemanticsTag(last_list_M13TarificationInfos, "")
             .getSemanticsTag(relative_M2Client?.keyID, "", 1)
             .getSemanticsTag(list_M13TarificationInfos, "", 2),
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
-        verticalAlignment = Alignment.Top
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Column(
-            modifier = modifier
-                .semantics(mergeDescendants = true) {
-                    set(value = existing_Prix_Detaille, key = SemanticsPropertyKey(""))
-                }
-                .semantics(mergeDescendants = true) {
-                    set(value = list_M13TarificationInfos.filter { tariff ->
-                        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                                tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
-                    }, key = SemanticsPropertyKey("filter"))
-                }
-        ) {
-            allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->      //<--
-                when (centralType) {
-                    TypeChoisi.Tariff_Achat_Depuit_Grossisst -> {
-                        val relative_Tariff =
-                            relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+        allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
+            when (centralType) {
+                TypeChoisi.Tariff_Achat_Depuit_Grossisst -> {
+                    val relative_Tariff =
+                        relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
-                        if (relative_Tariff != null) {
-                            PrixAchatHandler(
-                                relative_Produit = relative_M1Produit,
-                                relative_Tariff = relative_Tariff,
-                                showLabels = showLabels,
-                                nombreUnite = relative_M1Produit.nombreUniteInt,
-                                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted
-                            )
-                        }
+                    if (relative_Tariff != null) {
+                        PrixAchatHandler(
+                            relative_Produit = relative_M1Produit,
+                            relative_Tariff = relative_Tariff,
+                            showLabels = showLabels,
+                            nombreUnite = relative_M1Produit.nombreUniteInt,
+                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted
+                        )
                     }
-
-                    TypeChoisi.Prix_SupperGro_Et_PresentationService,
-                    TypeChoisi.Prix_Detaille,
-                    TypeChoisi.Edited_Pour_Client,
-                        -> {
-                        val relative_Tariff =
-                            relativeList_Tariff.maxByOrNull { it.creationTimestamps }
-
-                        if (relative_Tariff != null) {
-                            PrixsVents_Handler(
-                                allTariffsGroupedAndSorted=allTariffsGroupedAndSorted,
-                                relative_Produit = relative_M1Produit,
-                                relative_Tariff = relative_Tariff,
-                            )
-                        }
-                    }
-
-
-                    else -> AutrePrixsAffiche(
-                        produit = relative_M1Produit,
-                        viewModel = viewModel,
-                        typeTarification = centralType,
-                        tariffs = relativeList_Tariff,
-                        showLabels = showLabels,
-                        onClickPrixButton = onClickPrixButton,
-                        context = context,
-                        nombreUnite = relative_M1Produit.nombreUniteInt,
-                    )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
 
+                TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                TypeChoisi.Prix_Detaille,
+                TypeChoisi.Edited_Pour_Client,
+                    -> {
+                    val relative_Tariff =
+                        relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+
+                    if (relative_Tariff != null) {
+                        PrixsVents_Handler(
+                            allTariffsGroupedAndSorted=allTariffsGroupedAndSorted,
+                            relative_Produit = relative_M1Produit,
+                            relative_Tariff = relative_Tariff,
+                        )
+                    }
+                }
+
+                else -> AutrePrixsAffiche(
+                    produit = relative_M1Produit,
+                    viewModel = viewModel,
+                    typeTarification = centralType,
+                    tariffs = relativeList_Tariff,
+                    showLabels = showLabels,
+                    onClickPrixButton = onClickPrixButton,
+                    context = context,
+                    nombreUnite = relative_M1Produit.nombreUniteInt,
+                )
             }
+            Spacer(modifier = Modifier.height(4.dp))
         }
 
-        val priceToUse = if (max_Prix != 0.0) {
-            max_Prix
-        } else {
-            relative_M1Produit.prixVent
-        }
-
-        val typeToUse = if (max_Prix != 0.0) {
-            TypeChoisi.LeMaxPrixArrive
-        } else {
-            TypeChoisi.Prix_SupperGro_Et_PresentationService
-        }
-
-        val tarificationInfo = M13TarificationInfos(
-            typeChoisi = typeToUse,
-            prixCurrency = priceToUse,
-        )
-
+        // Add GerantButton as the last item in the main column (not in a separate row)
         itsLancedDepuit_EditeBaseDonne.ifFalse {
+            val priceToUse = if (max_Prix != 0.0) {
+                max_Prix
+            } else {
+                relative_M1Produit.prixVent
+            }
+
+            val typeToUse = if (max_Prix != 0.0) {
+                TypeChoisi.LeMaxPrixArrive
+            } else {
+                TypeChoisi.Prix_SupperGro_Et_PresentationService
+            }
+
+            val tarificationInfo = M13TarificationInfos(
+                typeChoisi = typeToUse,
+                prixCurrency = priceToUse,
+            )
+
             GerantButton(
                 relative_M1Produit = relative_M1Produit,
                 relative_Tariff = standardTariffs.find { it.typeChoisi == TypeChoisi.LeMaxPrixArrive },
