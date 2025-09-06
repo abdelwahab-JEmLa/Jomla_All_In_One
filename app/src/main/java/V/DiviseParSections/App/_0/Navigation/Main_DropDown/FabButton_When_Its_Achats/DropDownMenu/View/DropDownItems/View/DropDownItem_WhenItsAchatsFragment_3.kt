@@ -71,7 +71,7 @@ fun DropDownItem_WhenItsAchatsFragment_3(
             onClick = {
                 // Toggle the floating button visibility
                 val updatedValues = currentValues.copy(
-                    affiche_Floating_Button_FABsModeEditesProduit = !isFloatingButtonVisible
+                    afficheFloatingOutlinedSearcher_of_Achat = !isFloatingButtonVisible
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
 

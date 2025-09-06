@@ -99,14 +99,14 @@ fun App_PresenterEcran_Au_Client(
     }
 
     val its_Tablette = Build.MODEL.contains("ncar")      //<--
-    //TODO(1): fait que si
-    
+    //(1): fait que si
+
     val heights_telep = Pair(420.dp, 160.dp)    //<--
-    //TODO(1): si non ca
+    //(1): si non ca
     val fixedWidth_telep = 310.dp
 
     val heights = Pair(700.dp, 250.dp)   //<--
-    //TODO(1): ca
+    //(1): ca
     val fixedWidth = 450.dp
 
     fun handelClick(

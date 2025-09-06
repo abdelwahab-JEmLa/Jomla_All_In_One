@@ -37,8 +37,10 @@ object functions_central{
         )
     }
 }
-object filters_Central{
-     fun filterAchatOperations(
+
+object filtersAndSorts_Central {
+
+    fun filterAnSortsAchatOperations(
         aCentralFacade: ACentralFacade,
     ): List<M11AchatOperation> {
         val activeCentralValues =
@@ -47,9 +49,11 @@ object filters_Central{
         val achatOperations = repo11AchatOperation.datasValue
         val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
         val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
+        val repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 
         var filteredData = achatOperations
 
+        // Apply existing filters
         activeCentralValues.active_M14VentPeriode_AuFilterAchats?.let { period ->
             filteredData = filteredData.filter {
                 it.parent_M14VentPeriod_KeyID == period.keyID
@@ -87,13 +91,60 @@ object filters_Central{
             }
         }
 
-        return filteredData
+        activeCentralValues.outlined_filter_searcher_achat?.let { searchQuery ->
+            if (searchQuery.isNotBlank()) {
+                filteredData = filteredData.filter { achat ->
+                    // Search in product debug info (which contains the product name)
+                    val productNameInDebugInfo = achat.parent_M1Produit_DebugInfos
+                        .contains(searchQuery, ignoreCase = true)
+
+                    // Also search in actual product name from repository
+                    val actualProduct = repoM1Produit.datasValue
+                        .find { it.keyID == achat.parent_M1Produit_KeyID }
+                    val productNameInRepo = actualProduct?.nom?.contains(searchQuery, ignoreCase = true) == true
+                    val productNomMutable = actualProduct?.nomMutable?.contains(searchQuery, ignoreCase = true) == true
+                    val productNomArab = actualProduct?.nomArab?.contains(searchQuery, ignoreCase = true) == true
+
+                    // Search in color debug info as well
+                    val colorNameInDebugInfo = achat.parent_M3CouleurProduit_DebugInfos
+                        .contains(searchQuery, ignoreCase = true)
+
+                    // Return true if any of the search criteria match
+                    productNameInDebugInfo || productNameInRepo || productNomMutable || productNomArab || colorNameInDebugInfo
+                }
+            }
+        }
+
+        val sortedData = filteredData.sortedWith { achat1, achat2 ->
+            val product1 = repoM1Produit.datasValue.find { it.keyID == achat1.parent_M1Produit_KeyID }
+            val product2 = repoM1Produit.datasValue.find { it.keyID == achat2.parent_M1Produit_KeyID }
+
+            val isCarton1 = product1?.its_Carton == true
+            val isCarton2 = product2?.its_Carton == true
+
+            when {
+                // Both are cartons or both are not cartons - sort by product name
+                isCarton1 == isCarton2 -> {
+                    val name1 = product1?.nom ?: achat1.parent_M1Produit_DebugInfos
+                    val name2 = product2?.nom ?: achat2.parent_M1Produit_DebugInfos
+                    name1.compareTo(name2, ignoreCase = true)
+                }
+                // Carton products come first
+                isCarton1 && !isCarton2 -> -1
+                !isCarton1 && isCarton2 -> 1
+                else -> 0
+            }
+        }
+
+        return sortedData
     }
+    
     data class ClientSalesSummary(
         val totalClients: Int,
         val totalQuantity: Int,
         val totalSalesValue: Double
     )
+    
     fun calculateClientSalesSummary(
         aCentralFacade: ACentralFacade,
         activePeriod: M14VentPeriode?,

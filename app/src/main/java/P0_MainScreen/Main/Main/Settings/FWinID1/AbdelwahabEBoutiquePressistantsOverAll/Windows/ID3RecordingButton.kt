@@ -74,7 +74,7 @@ fun ID3RecordingButton(
 
             Text(
                 "$warped_displayTime | بقي $remain_M2Client_Size زبون",           //<--
-                //TODO(1): pk ca afficeh 1 meme si remain == 0
+                //(1): pk ca afficeh 1 meme si remain == 0
                 modifier = Modifier
                     .getSemanticsTag(focusedValuesGetter.its_Developing_Mode,"focusedValuesGetter.its_Developing_Mode")
 

@@ -6,7 +6,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.filters_Central.filterAchatOperations
+import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.filterAnSortsAchatOperations
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,29 +35,30 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-
+// Enhanced UI component to use the search filter
 @Composable
-fun List_GroupeAchatProduit(
+fun List_GroupeAchatProduit_Enhanced(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     headViewModel: HeadViewModel = koinViewModel(),
 ) {
-   val outlined_filter_searcher_achat=  focusedValuesGetter.active_Central_Values.outlined_filter_searcher_achat
+    // Get the search query from focused values
+    val outlined_filter_searcher_achat = focusedValuesGetter.active_Central_Values.outlined_filter_searcher_achat
     val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
 
+    // Use the enhanced filter function that now includes search and sorting
     val filteredAchatOperations by remember {
         derivedStateOf {
-            filterAchatOperations(
+            filterAnSortsAchatOperations(
                 aCentralFacade = aCentralFacade,
             )
         }
     }
 
-    val items = remember(filteredAchatOperations) {  //<--
-    //TODO(1): ajout un filtre apre que les autre son fait que suit outlined_filter_searcher_achat par nom du produit
+    val items = remember(filteredAchatOperations) {
         filteredAchatOperations.mapNotNull { achat ->
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
                 return@mapNotNull null
@@ -149,6 +150,10 @@ fun List_GroupeAchatProduit(
                             }
                             focusedValuesGetter.active_Central_Values.active_M1Produit_AuFilterAchats?.let {
                                 activeFilters.add("Produit: ${it.nom}")
+                            }
+                            // Add search filter info
+                            outlined_filter_searcher_achat?.takeIf { it.isNotBlank() }?.let {
+                                activeFilters.add("Recherche: '$it'")
                             }
 
                             "Aucune opération d'achat ne correspond aux filtres actifs:\n" +
