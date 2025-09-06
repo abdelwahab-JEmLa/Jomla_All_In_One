@@ -54,7 +54,6 @@ fun List_AcheteursDeCetteProduit(
             }
             gBonVent?.parent_M2Client_KeyID?.let { repositorysMainGetter.find_M2Client(it) }
         }.filterKeys { it != null }
-
     val clientsList = relative_Map_M2Client_To_ListM10Vent.entries.toList()
 
     Card(
@@ -116,9 +115,17 @@ fun List_AcheteursDeCetteProduit(
                                     Spacer(modifier = Modifier.height(4.dp))
 
                                     relative_ListM10Vent.forEach { relative_M10Vent ->
+
+                                        val size_vents_pour_bon = repo10OperationVentCouleur.datasValue.filter { ventOperation ->
+                                            val produitForThisVent = repositorysMainGetter.find_M1Produit_ByKeyID(ventOperation.parent_M1Produit_KeyId)
+                                            ventOperation.parent_M8BonVent_KeyId == relative_M10Vent.parent_M8BonVent_KeyId &&
+                                                    produitForThisVent?.its_Carton != true  // Exclude carton products
+                                        }.size
+
                                         when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {
                                             false -> {
                                                 VentOperationItem(
+                                                    size_vents_pour_bon=size_vents_pour_bon,
                                                     relative_M10Vent = relative_M10Vent,
                                                     repositorysMainSetter = repositorysMainSetter,
                                                     viewModel = viewModel
@@ -126,6 +133,7 @@ fun List_AcheteursDeCetteProduit(
                                             }
 
                                             true -> Parent_Dispo_Vent_StateFull(
+
                                                 relative_M10Vent = relative_M10Vent,
                                                 relative_M2Client = relative_M2Client,
                                                 relative_M1Produit = repositorysMainGetter.find_M1Produit_ByKeyID(
@@ -138,7 +146,7 @@ fun List_AcheteursDeCetteProduit(
                                     val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }
                                     if (relative_ListM10Vent.size > 1) {
                                         Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
+                                        Text(                                                                      
                                             text = "Total: $totalQuantity",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp,
@@ -154,18 +162,19 @@ fun List_AcheteursDeCetteProduit(
         }
     }
 }
+
 @Composable
 private fun VentOperationItem(
     relative_M10Vent: M10OperationVentCouleur,
     repositorysMainSetter: RepositorysMainSetter,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    size_vents_pour_bon: Int, // Add this parameter
     modifier: Modifier = Modifier
 ) {
     val isNotFound = relative_M10Vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
     val backgroundColor = if (isNotFound) Color.Black else Color.Transparent
     val textColor = if (isNotFound) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
 
-    // Get the tariff information for this vent operation
     val tariffInfo = viewModel.aCentralFacade.repositorysMainGetter
         .find_M13Tarification_By_KeyID(relative_M10Vent.parentM13TarificationKeyID)
 
@@ -207,11 +216,18 @@ private fun VentOperationItem(
         }
 
         Column {
-            // Quantity text
             Text(
                 text = "• Qté: ${relative_M10Vent.quantity}",
                 fontSize = 14.sp,
                 color = textColor
+            )
+
+            // NEW: Display the count of sales for this bon
+            Text(
+                text = "• Ventes dans ce bon: $size_vents_pour_bon",
+                fontSize = 12.sp,
+                color = textColor.copy(alpha = 0.8f),
+                modifier = Modifier.padding(top = 2.dp)
             )
 
             // Display tariff price for client in card with tariff color
@@ -234,3 +250,4 @@ private fun VentOperationItem(
         }
     }
 }
+
