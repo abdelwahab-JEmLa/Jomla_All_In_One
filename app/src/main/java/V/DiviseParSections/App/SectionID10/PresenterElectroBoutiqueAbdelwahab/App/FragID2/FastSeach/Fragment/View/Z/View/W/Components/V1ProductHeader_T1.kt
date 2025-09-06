@@ -181,9 +181,8 @@ fun ProductHeader_T1(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        // Fixed section - replace the IconButton onClick and Icon logic
-
                         IconButton(
+                            // FIXED: Properly handle carton toggle with quantity recalculation
                             onClick = {
                                 val currentMode = produit.setIN_Vent_Its_Quantity_Represent
                                 val newMode = currentMode.toggle()
@@ -253,15 +252,16 @@ fun ProductHeader_T1(
                             },
                             modifier = Modifier.size(36.dp)
                         ) {
-                            // FIXED: Corrected the toggle logic
-                            val isCartonMode = produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                            val carton =
+                                produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
                             Icon(
-                                imageVector = if (isCartonMode) Icons.Default.Inventory2 else Icons.Default.ViewModule,
-                                contentDescription = if (isCartonMode) "Mode carton activé" else "Mode unité activé",
+                                imageVector = if (carton) Icons.Default.Inventory2
+                                else Icons.Default.ViewModule,
+                                contentDescription = if (carton) "Mode carton activé" else "Mode unité activé",
                                 tint = when {
                                     allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                    isCartonMode -> MaterialTheme.colorScheme.primary
+                                    carton -> MaterialTheme.colorScheme.primary
                                     else -> MaterialTheme.colorScheme.secondary
                                 },
                                 modifier = Modifier.size(20.dp)
