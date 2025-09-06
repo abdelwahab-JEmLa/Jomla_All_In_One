@@ -45,12 +45,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
+import java.util.SortedMap
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun PrixAchatHandler(
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
+    allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
 
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
@@ -58,33 +60,115 @@ fun PrixAchatHandler(
 
     showLabels: Boolean,
     nombreUnite: Int = 1,
-) {    //<--
+) {
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
     var editablePurchasePriceText by remember(relative_Produit) { mutableStateOf("") }
     var isEditingPurchasePrice by remember(relative_Produit) { mutableStateOf(false) }
-
     var isEditingUnitPrice by remember(relative_Produit) { mutableStateOf(false) }
 
     val purchasePriceFocusRequester = remember { FocusRequester() }
-
-    val m10OperationVentCouleurs =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
     fun toggleUnitPriceMode() {
         isEditingUnitPrice = !isEditingUnitPrice
         editablePurchasePriceText = ""
     }
 
+    /**
+     * Met à jour les tarifs récents (créés dans la dernière minute)
+     * Logique: ancien_benefice = prix_vente_actuel - ancien_prix_achat
+     * nouveau_prix = nouveau_prix_achat + ancien_benefice
+     */
+    fun updateRecentRelatedTariffs(newPurchasePrice: Double) {
+        val currentTime = System.currentTimeMillis()
+        val oneMinuteAgo = currentTime - (60 * 1000)
+        val oldPurchasePrice = relative_Produit.prixAchat
+
+        val recentTariffs = allTariffsGroupedAndSorted.values.flatten().filter { tariff ->
+            tariff.parent_M1Produit_KeyId == relative_Produit.keyID &&
+                    tariff.typeChoisi in setOf(
+                M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                M13TarificationInfos.TypeChoisi.Prix_Detaille
+            ) &&
+                    tariff.creationTimestamps >= oneMinuteAgo
+        }
+
+        recentTariffs.forEach { tariff ->
+            val ancienBenefice = tariff.prixCurrency - oldPurchasePrice
+            val nouveauPrix = newPurchasePrice + ancienBenefice
+
+            val updatedTariff = tariff.copy(
+                prixCurrency = nouveauPrix.coerceAtLeast(newPurchasePrice),
+                dernierTimeTampsSynchronisationAvecFireBase = currentTime
+            )
+            repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+        }
+    }
+
+    /**
+     * Créé ou met à jour les tarifs Prix_SupperGro_Et_PresentationService et Prix_Detaille
+     * Pour tarifs existants: ancien_benefice = prix_vente_actuel - ancien_prix_achat, nouveau_prix = nouveau_prix_achat + ancien_benefice
+     * Pour nouveaux tarifs: bénéfices fixes (50 DA pour SuperGros, 150 DA pour Détaille)
+     */
+    fun createOrUpdateRelatedTariffs(newPurchasePrice: Double) {
+        val currentTime = System.currentTimeMillis()
+        val oldPurchasePrice = relative_Produit.prixAchat
+
+        val targetTariffTypes = listOf(
+            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
+            M13TarificationInfos.TypeChoisi.Prix_Detaille
+        )
+
+        targetTariffTypes.forEach { tariffType ->
+            val existingTariff = allTariffsGroupedAndSorted[tariffType]
+                ?.filter { it.parent_M1Produit_KeyId == relative_Produit.keyID }
+                ?.maxByOrNull { it.creationTimestamps }
+
+            if (existingTariff != null) {
+                // Tarif existant: préserver l'ancien bénéfice
+                val ancienBenefice = existingTariff.prixCurrency - oldPurchasePrice
+                val nouveauPrix = newPurchasePrice + ancienBenefice
+
+                val updatedTariff = existingTariff.copy(
+                    prixCurrency = nouveauPrix.coerceAtLeast(newPurchasePrice),
+                    dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                )
+                repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+            } else {
+                val beneficeFixe = when (tariffType) {
+                    M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 0.0
+                    M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0.0
+                    else -> 0.0
+                }
+
+                val newTariff = M13TarificationInfos(
+                    parent_M1Produit_KeyId = relative_Produit.keyID,
+                    parent_M1Produit_DebugInfos = relative_Produit.getDebugInfos(),
+                    typeChoisi = tariffType,
+                    prixCurrency = newPurchasePrice + beneficeFixe,
+                    creationTimestamps = currentTime,
+                    dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                )
+                repositorysMainSetter.add_M13TarificationInfos(newTariff)
+            }
+        }
+    }
+
     fun handel_Add_Diminue_Prix(newPrix: Double) {
+        // Met à jour le prix d'achat du produit
         repositorysMainSetter.upsert_M1Produit(
             relative_Produit.copy(
                 prixAchat = newPrix,
                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
             )
         )
+
+        // Met à jour les tarifs récents
+        updateRecentRelatedTariffs(newPrix)
+
+        // Créé ou met à jour tous les tarifs SuperGros et Détaille
+        createOrUpdateRelatedTariffs(newPrix)
     }
 
     fun handlePurchasePriceEditDone() {
@@ -101,7 +185,6 @@ fun PrixAchatHandler(
         isEditingUnitPrice = false
     }
 
-    // Calculate time difference for display
     val timeDifference = remember(relative_Produit.prixAchatDernierTimeTempUpdate) {
         getTimeDifferenceInArabicWithMintes(relative_Produit.prixAchatDernierTimeTempUpdate)
     }
@@ -124,7 +207,7 @@ fun PrixAchatHandler(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            val couleurButton = Color.Cyan // Purchase price specific color
+            val couleurButton = Color.Cyan
 
             if (showLabels) {
                 val typeName = typeTarification.nomArabe
@@ -209,7 +292,6 @@ fun PrixAchatHandler(
                         }
                     }
 
-                    // Decrease button
                     val decrease_Value = if (relative_Produit.prixAchat < 200.0) 1.0 else 5.0
 
                     if (currentApp_Est_Admin) {
@@ -275,7 +357,5 @@ fun PrixAchatHandler(
                 }
             }
         }
-
-
     }
 }
