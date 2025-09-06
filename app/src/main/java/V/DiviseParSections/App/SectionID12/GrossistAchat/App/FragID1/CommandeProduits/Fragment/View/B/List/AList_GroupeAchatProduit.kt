@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 // Enhanced UI component to use the search filter
 @Composable
-fun List_GroupeAchatProduit_Enhanced(
+fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
