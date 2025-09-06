@@ -39,7 +39,6 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
 
-// TODO(1) Fix: Dynamic color index instead of hardcoded "1"
 
 suspend fun addNew(
     product: ArticlesBasesStatsTable,

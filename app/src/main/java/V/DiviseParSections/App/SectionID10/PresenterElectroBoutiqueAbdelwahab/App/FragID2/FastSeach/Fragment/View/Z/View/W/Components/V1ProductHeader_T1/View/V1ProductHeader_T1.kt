@@ -1,11 +1,12 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.V1ProductHeader_T1.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
@@ -16,14 +17,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.ViewModule
@@ -32,6 +29,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -43,23 +42,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ProductHeader_T1(
-    produit: ArticlesBasesStatsTable,
+    relative_Produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
+    aCentralFacade: ACentralFacade= koinInject(),
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
-            produit
+            relative_Produit
         )
     }
     var shouldShowCategoryDialog by remember { mutableStateOf(false) }
@@ -75,10 +75,14 @@ fun ProductHeader_T1(
 
     // Get category name from the categories map
     val categoriesMap = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
-    val categoryName = produit.idParentCategorie?.let { categoryId ->
+    val categoryName = relative_Produit.idParentCategorie?.let { categoryId ->
         categoriesMap[categoryId]?.nom
     } ?: "Sans Catégorie"
-
+    fun update_produit(produit:ArticlesBasesStatsTable): Unit {
+        repositorysMainSetter.upsert_M1Produit(
+            produit
+        )
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -103,7 +107,7 @@ fun ProductHeader_T1(
         Column(
             modifier = Modifier
                 .getSemanticsTag(
-                    produit,"produit"
+                    relative_Produit, "produit"
                 )
                 .getSemanticsTag(
                     nomVal = "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
@@ -124,7 +128,7 @@ fun ProductHeader_T1(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = produit.nom,
+                        text = relative_Produit.nom,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -154,7 +158,6 @@ fun ProductHeader_T1(
                 }
             }
 
-            // Row 2: Units and carton controls
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -162,11 +165,16 @@ fun ProductHeader_T1(
             ) {
                 Card_Produit_Nombre_Unites(
                     allNonTrouve = allNonTrouve,
-                    produit = produit,
+                    produit = relative_Produit,
                     viewModel = viewModel
                 ) {
                     shouldShowDialog_quantite_Unite_Par_Boit = true
                 }
+
+                Card_StatueDuProduit(
+                    relative_Produit = relative_Produit,
+                    onUpdateProduit = ::update_produit
+                )
 
                 Card(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -184,7 +192,7 @@ fun ProductHeader_T1(
                         IconButton(
                             // FIXED: Properly handle carton toggle with quantity recalculation
                             onClick = {
-                                val currentMode = produit.setIN_Vent_Its_Quantity_Represent
+                                val currentMode = relative_Produit.setIN_Vent_Its_Quantity_Represent
                                 val newMode = currentMode.toggle()
 
                                 // Store current total quantities before mode change
@@ -193,7 +201,7 @@ fun ProductHeader_T1(
                                     .mapValues { entry -> entry.value.sumOf { it.quantity } }
 
                                 // Update product mode
-                                produit.apply {
+                                relative_Produit.apply {
                                     setIN_Vent_Its_Quantity_Represent = newMode
                                 }.also {
                                     repositorysMainGetter.repo1ProduitInfos.update(it)
@@ -220,8 +228,8 @@ fun ProductHeader_T1(
                                                     // Converting from units (boit) to cartons
                                                     if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit) {
                                                         // Convert units to cartons
-                                                        if (produit.quantite_Boit_Par_Carton > 0) {
-                                                            (totalQuantity / produit.quantite_Boit_Par_Carton).coerceAtLeast(1)
+                                                        if (relative_Produit.quantite_Boit_Par_Carton > 0) {
+                                                            (totalQuantity / relative_Produit.quantite_Boit_Par_Carton).coerceAtLeast(1)
                                                         } else totalQuantity
                                                     } else totalQuantity
                                                 }
@@ -229,17 +237,17 @@ fun ProductHeader_T1(
                                                     // Converting from cartons to units (boit)
                                                     if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
                                                         // Convert cartons to units
-                                                        totalQuantity * produit.quantite_Boit_Par_Carton
+                                                        totalQuantity * relative_Produit.quantite_Boit_Par_Carton
                                                     } else totalQuantity
                                                 }
                                             }
 
                                             val newVent = defaultVent.copy(
                                                 keyID = getPushFireBase(ref),
-                                                parent_M1Produit_KeyId = produit.keyID,
-                                                parent_M1Produit_DebugInfos = produit.nom,
+                                                parent_M1Produit_KeyId = relative_Produit.keyID,
+                                                parent_M1Produit_DebugInfos = relative_Produit.nom,
                                                 parent_M3CouleurProduit_KeyID = colorKeyId,
-                                                parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${colorInfo.indexCouleurDansAncienProto}",
+                                                parent_M3CouleurProduit_DebugInfos = "${relative_Produit.nom}_${colorInfo.indexCouleurDansAncienProto}",
                                                 quantity = convertedQuantity,
                                                 etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
                                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -253,7 +261,7 @@ fun ProductHeader_T1(
                             modifier = Modifier.size(36.dp)
                         ) {
                             val carton =
-                                produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                                relative_Produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
                             Icon(
                                 imageVector = if (carton) Icons.Default.Inventory2
@@ -287,7 +295,7 @@ fun ProductHeader_T1(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    text = "${produit.quantite_Boit_Par_Carton}",
+                                    text = "${relative_Produit.quantite_Boit_Par_Carton}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
                                         alpha = 0.6f
@@ -304,11 +312,11 @@ fun ProductHeader_T1(
 
         if (shouldShowDialog_quantite_Unite_Par_Boit) {
             Dialog_Choisire_Quantity_Modularized(
-                old_quantity = produit.nombreUniteInt,
+                old_quantity = relative_Produit.nombreUniteInt,
                 label = "nombreUniteInt",
             ) { new_Qyt ->
                 if (new_Qyt != null) {
-                    produit.apply {
+                    relative_Produit.apply {
                         nombreUniteInt = new_Qyt
 
                     }.also {
@@ -325,11 +333,11 @@ fun ProductHeader_T1(
 
         if (shouldShowDialog_quantite_Boit_Par_Carton) {
             Dialog_Choisire_Quantity_Modularized(
-                old_quantity = produit.quantite_Boit_Par_Carton,
+                old_quantity = relative_Produit.quantite_Boit_Par_Carton,
                 label = "quantite_Boit_Par_Carton",
             ) { new_Qyt ->
                 if (new_Qyt != null) {
-                    produit.apply {
+                    relative_Produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
                     }.also {
                         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
@@ -343,9 +351,9 @@ fun ProductHeader_T1(
         // Category Selection Dialog
         if (shouldShowCategoryDialog) {
             CategorySelectionDialog(
-                product = produit,
+                product = relative_Produit,
                 onCategorySelected = { newCategoryId ->
-                    produit.copy(idParentCategorie = newCategoryId).also {
+                    relative_Produit.copy(idParentCategorie = newCategoryId).also {
                         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
                     shouldShowCategoryDialog = false
@@ -364,86 +372,55 @@ fun ProductHeader_T1(
 }
 
 @Composable
-private fun Card_Produit_Nombre_Unites(
-    allNonTrouve: Boolean,
-    produit: ArticlesBasesStatsTable,
-    viewModel: ViewModelsProduit_T1,
-    onClick_PourOuvrireDialog: () -> Unit
+fun Card_StatueDuProduit(
+    relative_Produit: ArticlesBasesStatsTable,
+    onUpdateProduit: (ArticlesBasesStatsTable) -> Unit
 ) {
-    // Track toggle state
-    var toggleState by remember { mutableStateOf(produit.afficheUniteAuPrint) }
-
-    fun clickHandel() {
-        // Toggle the state
-        toggleState = !toggleState
-
-        // Update the product with the new state
-        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(
-            produit.copy(
-                afficheUniteAuPrint = toggleState
-            )
-        )
-    }
-
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-            else MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        modifier = Modifier.padding(start = petitePaddine)
+        modifier = Modifier.padding(horizontal = 4.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(petitePaddine),
-            modifier = Modifier.padding(petitePaddine)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(8.dp)
         ) {
-            // Original quantity display button
-            IconButton(
-                onClick = {
-                    onClick_PourOuvrireDialog()
-                },
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(36.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Nbr.U ",
-                        fontSize = 8.sp,
-                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.6f
-                        )
-                        else MaterialTheme.colorScheme.tertiary,
-                    )
-                    Text(
-                        text = "${produit.nombreUniteInt}",
-                        fontSize = 15.sp,
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            Text(
+                text = "Carton:",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium
+            )
 
-            // Toggle button for afficheUniteAuPrint
-            IconButton(
-                onClick = { clickHandel() },
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        if (toggleState) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.surfaceVariant
+            Switch(
+                checked = relative_Produit.its_Carton,
+                onCheckedChange = { isChecked ->
+                    val updatedProduit = relative_Produit.copy(
+                        its_Carton = isChecked,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                     )
-            ) {
-                Icon(
-                    imageVector = if (toggleState) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                    contentDescription = if (toggleState) "Print units enabled" else "Print units disabled",
-                    tint = if (toggleState) MaterialTheme.colorScheme.onPrimaryContainer
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp)
+                    onUpdateProduit(updatedProduit)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
-            }
+            )
+
+            Text(
+                text = if (relative_Produit.its_Carton) "Oui" else "Non",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (relative_Produit.its_Carton)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

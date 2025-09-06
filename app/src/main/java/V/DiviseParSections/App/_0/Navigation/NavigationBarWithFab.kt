@@ -147,7 +147,6 @@ fun NavigationBarWithFab(
             }
         }
 
-        // All existing dialog handling...
         if (showCatalogDialog) {
             CatalogSelectionDialog(
                 onDismiss = { showCatalogDialog = false },
@@ -167,7 +166,6 @@ fun NavigationBarWithFab(
             )
         }
 
-        // Existing dropdown menus...
         if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
@@ -206,10 +204,10 @@ fun NavigationBarWithFab(
                 focusedValuesGetter = focusedValuesGetter
             )
         }
+
         if (focusedValuesGetter.active_Central_Values.afficheFloatingOutlinedSearcher_of_Achat) {
             FragAchats_FloatingOutlinedSearcher_4(
                 aCentralFacade = aCentralFacade,
-                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
                 focusedValuesGetter = focusedValuesGetter
             )
         }

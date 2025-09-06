@@ -220,7 +220,6 @@ fun AudioPlayerControls(
                 )
             }
 
-            // FIXED TODO(1): Display "not listened" card below the play bar
             StatusIndicatorBelowPlayBar(
                 isListened = isListened,
                 isAdminMessage = isAdminMessage,
@@ -265,7 +264,6 @@ private fun EnhancedPlaybackButton(
         ) {
             when (audioAvailabilityState) {
                 AudioAvailabilityState.CHECKING, AudioAvailabilityState.DOWNLOADING -> {
-                    // FIXED TODO(1): Conditional animation based on flag
                     if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
                         // Static icon instead of animated progress indicator
                         Icon(
@@ -334,7 +332,6 @@ private fun EnhancedProgressSection(
         // Progress Bar
         when (audioAvailabilityState) {
             AudioAvailabilityState.CHECKING, AudioAvailabilityState.DOWNLOADING -> {
-                // FIXED TODO(1): Conditional animation based on flag
                 if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
                     // Static progress bar at 50% when animations are disabled
                     LinearProgressIndicator(
@@ -369,7 +366,6 @@ private fun EnhancedProgressSection(
                         trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     )
                 } else {
-                    // FIXED TODO(1): Conditional animation based on flag
                     if (desactive_Le_Animation_Pour_Layout_Inspecteur) {
                         LinearProgressIndicator(
                             progress = { 0.5f },
@@ -548,7 +544,6 @@ private fun MinimalStatusIndicator(
     }
 }
 
-// FIXED TODO(1): New component to display status below the play bar
 @Composable
 private fun StatusIndicatorBelowPlayBar(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -580,7 +575,6 @@ private fun UnlistenedMessageCard(
 ) {
     var isBlinkVisible by remember { mutableStateOf(true) }
 
-    // FIXED TODO(1): Conditional blinking animation based on flag
     if (!desactive_Le_Animation_Pour_Layout_Inspecteur) {
         LaunchedEffect(Unit) {
             while (true) {

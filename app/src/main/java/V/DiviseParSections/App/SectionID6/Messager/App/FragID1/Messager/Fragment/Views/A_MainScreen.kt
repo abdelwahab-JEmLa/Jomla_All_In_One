@@ -232,7 +232,7 @@ private fun List_Messages(
                     val isDownloading = checkVideoDownloadState(latestEtate, viewModel)
                     if (isDownloading) {
                         VideoLoadingMessage(       //<--
-                        //TODO(1): fait affiche ca si le video est dispo a storage firebase et non au local ici fait downold depuit storage ...
+                        //(1): fait affiche ca si le video est dispo a storage firebase et non au local ici fait downold depuit storage ...
                         //au local
                             list_D_EtateMessageVocale = allEtatesForMessage,
                             relative_M17MessageVocale = latestEtate,
@@ -251,7 +251,7 @@ private fun List_Messages(
                     val isDownloading = checkAudioDownloadState(latestEtate, viewModel)
                     if (isDownloading) {
                         AudioLoadingMessage(     //<--
-                        //TODO(1): mem chose ici
+                        //(1): mem chose ici
                             list_D_EtateMessageVocale = allEtatesForMessage,
                             relative_M17MessageVocale = latestEtate,
                             viewModel = viewModel,

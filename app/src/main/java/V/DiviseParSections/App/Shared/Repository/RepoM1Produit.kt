@@ -195,6 +195,7 @@ data class ArticlesBasesStatsTable(
 
     var nombreUniteInt: Int = 1,
     var nombreProduitDonSonCarton: Int = 1,
+    val its_Carton: Boolean = false,
 
     // Section Etates Mutable
     val heldPrioriteDemandAuGrossist: Boolean = false,

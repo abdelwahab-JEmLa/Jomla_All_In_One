@@ -44,6 +44,7 @@ fun List_GroupeAchatProduit(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     headViewModel: HeadViewModel = koinViewModel(),
 ) {
+   val outlined_filter_searcher_achat=  focusedValuesGetter.active_Central_Values.outlined_filter_searcher_achat
     val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
 
@@ -55,7 +56,8 @@ fun List_GroupeAchatProduit(
         }
     }
 
-    val items = remember(filteredAchatOperations) {
+    val items = remember(filteredAchatOperations) {  //<--
+    //TODO(1): ajout un filtre apre que les autre son fait que suit outlined_filter_searcher_achat par nom du produit
         filteredAchatOperations.mapNotNull { achat ->
             if (achat.parent_M3CouleurProduit_KeyID.isBlank() || achat.parent_M3CouleurProduit_KeyID == "null") {
                 return@mapNotNull null

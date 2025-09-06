@@ -22,9 +22,7 @@ fun A_APP3FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: RecordingViewModel = koinViewModel(),
     fabsVisibility: Boolean = true,
-) {        //<--
-//TODO(1): fait que le premier jour de la semain est samedi
-    // Collect recording state
+) {        
     val isRecording by viewModel.isRecording.collectAsState()
 
     // Lifecycle observer to log state changes

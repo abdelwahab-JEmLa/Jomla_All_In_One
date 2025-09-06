@@ -181,10 +181,6 @@ fun filterClientsBasedOnMode(
     return finalClientsList
 }
 
-/**
- * FIXED: Helper function to get clients that should always be visible regardless of filter mode
- * This addresses the TODO comment about making certain markers always visible when UI states are active
- */
 private fun getAlwaysVisibleClients(
     viewModel: MapClientsViewModel,
     focusedValuesGetter: FocusedValuesGetter
