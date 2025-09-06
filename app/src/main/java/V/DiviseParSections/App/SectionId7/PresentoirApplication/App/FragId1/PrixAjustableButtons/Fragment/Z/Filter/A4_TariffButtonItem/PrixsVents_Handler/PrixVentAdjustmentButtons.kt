@@ -183,7 +183,7 @@ fun PrixVentAdjustmentButtons(
                 }
 
                 // Total price display/edit
-                if (isEditingTotalPrice && its_Pour_Abdelwahab) {
+                if (isEditingTotalPrice) {
                     OutlinedTextField(
                         value = totalPriceText,
                         onValueChange = { totalPriceText = it },
@@ -207,8 +207,11 @@ fun PrixVentAdjustmentButtons(
                             .background(tariffColor)
                             .padding(4.dp)
                             .clickable {
-                                isEditingTotalPrice = true
-                                totalPriceText = ""
+                                its_Pour_Abdelwahab.ifTrue {
+
+                                    isEditingTotalPrice = true
+                                    totalPriceText = ""
+                                }
                             },
                         color = tariffTextColor
                     )
@@ -273,7 +276,7 @@ fun PrixVentAdjustmentButtons(
                     }
 
                     // Unit price display/edit
-                    if (isEditingUnitPrice && its_Pour_Abdelwahab) {
+                    if (isEditingUnitPrice) {
                         OutlinedTextField(
                             value = unitPriceText,
                             onValueChange = { unitPriceText = it },
@@ -302,8 +305,10 @@ fun PrixVentAdjustmentButtons(
                                 .background(tariffColor.copy(alpha = 0.3f))
                                 .padding(2.dp)
                                 .clickable {
-                                    isEditingUnitPrice = true
-                                    unitPriceText = ""
+                                    its_Pour_Abdelwahab.ifTrue {
+                                        isEditingUnitPrice = true
+                                        unitPriceText = ""
+                                    }
                                 },
                             color = tariffTextColor,
                             fontSize = 10.sp

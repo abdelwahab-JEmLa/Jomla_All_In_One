@@ -54,16 +54,18 @@ fun MainList(
 
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
-    val  currentApp_ItsNotWorkChezGrossisst_And_NotAdmin = !currentApp_Est_Admin &&  !currentApp_ItsWorkChezGrossisst
+    val currentApp_ItsNotWorkChezGrossisst_And_NotAdmin =
+        !currentApp_Est_Admin && !currentApp_ItsWorkChezGrossisst
 
     fun getOrSet_TariffPrix_SupperGro_Et_PresentationService(): M13TarificationInfos {
-        return find_existing_PrixSuperGros(aCentralFacade,relative_M1Produit) ?: M13TarificationInfos(
-            parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-                ?: "",
-            typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
-            prixCurrency = relative_M1Produit.prixVent,
-            creationTimestamps = System.currentTimeMillis()
-        )
+        return find_existing_PrixSuperGros(aCentralFacade, relative_M1Produit)
+            ?: M13TarificationInfos(
+                parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+                    ?: "",
+                typeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                prixCurrency = relative_M1Produit.prixVent,
+                creationTimestamps = System.currentTimeMillis()
+            )
     }
 
     val tariffPrix_SupperGro_Et_PresentationService by remember(list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }) {
@@ -126,7 +128,7 @@ fun MainList(
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            if (relative_M1Produit.prixAchat != 0.0 || currentApp_ItsNotWorkChezGrossisst_And_NotAdmin) {
+            if (relative_M1Produit.prixAchat != 0.0 && currentApp_Est_Admin && currentApp_ItsWorkChezGrossisst) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
@@ -196,13 +198,15 @@ fun MainList(
             .getSemanticsTag(list_M13TarificationInfos, "", 2),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
+// Fixed section of the MainList function
+
         allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
             when (centralType) {
                 (TypeChoisi.Tariff_Achat_Depuit_Grossisst) -> {
-                    val relative_Tariff =
-                        relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+                    // FIXED: Ne s'affiche que si l'utilisateur n'est PAS dans le mode "NotWorkChezGrossisst_And_NotAdmin"
+                    val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
-                    if (relative_Tariff != null && currentApp_ItsNotWorkChezGrossisst_And_NotAdmin) {
+                    if (relative_Tariff != null) {
                         PrixAchatHandler(
                             relative_Produit = relative_M1Produit,
                             relative_Tariff = relative_Tariff,
@@ -217,20 +221,21 @@ fun MainList(
                 TypeChoisi.Prix_Detaille,
                 TypeChoisi.Edited_Pour_Client,
                     -> {
-                    val relative_Tariff =
-                        relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+                    val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
                     if (relative_Tariff != null) {
                         PrixsVents_Handler(
-                            currentApp_ItsNotWorkChezGrossisst_And_NotAdmin=currentApp_ItsNotWorkChezGrossisst_And_NotAdmin,
-                            allTariffsGroupedAndSorted=allTariffsGroupedAndSorted,
+                            currentApp_ItsNotWorkChezGrossisst_And_NotAdmin = currentApp_ItsNotWorkChezGrossisst_And_NotAdmin,
+                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             relative_Produit = relative_M1Produit,
                             relative_Tariff = relative_Tariff,
                         )
                     }
                 }
 
-                else -> AutrePrixsAffiche(
+                TypeChoisi.Historique,
+                TypeChoisi.LeMaxPrixArrive,
+                    -> AutrePrixsAffiche(
                     produit = relative_M1Produit,
                     viewModel = viewModel,
                     typeTarification = centralType,
@@ -240,10 +245,11 @@ fun MainList(
                     context = context,
                     nombreUnite = relative_M1Produit.nombreUniteInt,
                 )
+
+                else -> {}
             }
             Spacer(modifier = Modifier.height(4.dp))
         }
-
         // Add GerantButton as the last item in the main column (not in a separate row)
         itsLancedDepuit_EditeBaseDonne.ifFalse {
             val priceToUse = if (max_Prix != 0.0) {

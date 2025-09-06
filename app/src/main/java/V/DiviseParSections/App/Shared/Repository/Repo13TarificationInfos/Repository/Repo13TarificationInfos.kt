@@ -190,7 +190,7 @@ data class M13TarificationInfos(
         Prix_SupperGro_Et_PresentationService(
             Icons.Filled.Warning,
             Color(0xFF000000),
-            "سعر السوبر جملة - ربح عند الكمية",
+            "عرض + السوبر جملة عند الكمية",
             Color.Red,
             1
         ),
