@@ -1,9 +1,7 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -23,18 +21,15 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
-fun DropDownItem_WhenItsAchatsFragment_1(
+fun DropDownItem_WhenItsAchatsFragment_3(
     nomFun: String,
     onDismissDropdown: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     context: Context = LocalContext.current
 ) {
-    // Fixed: Now it's a toggle button for affiche_Floating_Button_SelecteCategorieEtAddNewProduit
     val currentValues = focusedValuesGetter.active_Central_Values
-    val isFloatingButtonVisible = currentValues.affiche_Floating_Button_SelecteCategorieEtAddNewProduit
+    val isFloatingButtonVisible = currentValues.afficheFloatingOutlinedSearcher_of_Achat
 
     Card(
         modifier = Modifier
@@ -63,9 +58,9 @@ fun DropDownItem_WhenItsAchatsFragment_1(
             text = {
                 Text(
                     text = if (isFloatingButtonVisible)
-                        "Affiche BUtt Creat Neveau Produit"
+                        nomFun
                     else
-                        "Show Category Selection Button",
+                        nomFun,
                     color = if (isFloatingButtonVisible) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -76,16 +71,16 @@ fun DropDownItem_WhenItsAchatsFragment_1(
             onClick = {
                 // Toggle the floating button visibility
                 val updatedValues = currentValues.copy(
-                    affiche_Floating_Button_SelecteCategorieEtAddNewProduit = !isFloatingButtonVisible
+                    affiche_Floating_Button_FABsModeEditesProduit = !isFloatingButtonVisible
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
 
                 Toast.makeText(
                     context,
                     if (isFloatingButtonVisible)
-                        "Category Selection Button Hidden"
+                        nomFun
                     else
-                        "Category Selection Button Shown",
+                        nomFun,
                     Toast.LENGTH_SHORT
                 ).show()
 

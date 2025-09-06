@@ -94,6 +94,8 @@ data class ActiveCentralValues(
 
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
     val affiche_Floating_Button_FABsModeEditesProduit: Boolean = false,
+
+    val afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,

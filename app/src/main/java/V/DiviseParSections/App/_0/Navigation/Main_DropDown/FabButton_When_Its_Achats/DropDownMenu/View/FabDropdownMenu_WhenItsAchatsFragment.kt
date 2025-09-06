@@ -1,5 +1,8 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View
 
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.DropDownItem_WhenItsAchatsFragment_3
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_1
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_2
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -23,6 +26,12 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+
+
+            DropDownItem_WhenItsAchatsFragment_3(
+                nomFun = "afficheFloatingOutlinedSearcher_of_Achat",
+                onDismissDropdown = onDismissDropdown
+            )
             DropDownItem_WhenItsAchatsFragment_2(
                 nomFun = "update_M8BonVent confirmeCommande_TimeTamp",
                 onDismissDropdown = onDismissDropdown
