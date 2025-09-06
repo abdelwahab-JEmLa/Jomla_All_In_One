@@ -52,7 +52,9 @@ fun MainList(
     val itsLancedDepuit_EditeBaseDonne =
         itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
 
+    val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val  currentApp_ItsNotWorkChezGrossisst_And_NotAdmin = !currentApp_Est_Admin &&  !currentApp_ItsWorkChezGrossisst
 
     fun getOrSet_TariffPrix_SupperGro_Et_PresentationService(): M13TarificationInfos {
         return find_existing_PrixSuperGros(aCentralFacade,relative_M1Produit) ?: M13TarificationInfos(
@@ -114,6 +116,7 @@ fun MainList(
         relative_Tariff_Prix_Detaille = relative_Tariff_Prix_Detaille
     )
 
+
     val standardTariffs = remember(
         relative_M1Produit,
         max_Prix,
@@ -123,7 +126,7 @@ fun MainList(
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
+            if (relative_M1Produit.prixAchat != 0.0 || currentApp_ItsNotWorkChezGrossisst_And_NotAdmin) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
@@ -140,7 +143,7 @@ fun MainList(
 
             add(relative_Tariff_Prix_Progressive)
 
-            val shouldShowPrixDetaille = focusedValuesGetter.currentApp_Est_Admin ||
+            val shouldShowPrixDetaille = currentApp_Est_Admin ||
                     (relative_M1Produit.prixVent != relative_Tariff_Prix_Detaille.prixCurrency)
 
             if (shouldShowPrixDetaille) {
@@ -195,11 +198,11 @@ fun MainList(
     ) {
         allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
             when (centralType) {
-                TypeChoisi.Tariff_Achat_Depuit_Grossisst -> {
+                (TypeChoisi.Tariff_Achat_Depuit_Grossisst) -> {
                     val relative_Tariff =
                         relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
-                    if (relative_Tariff != null) {
+                    if (relative_Tariff != null && currentApp_ItsNotWorkChezGrossisst_And_NotAdmin) {
                         PrixAchatHandler(
                             relative_Produit = relative_M1Produit,
                             relative_Tariff = relative_Tariff,
@@ -219,6 +222,7 @@ fun MainList(
 
                     if (relative_Tariff != null) {
                         PrixsVents_Handler(
+                            currentApp_ItsNotWorkChezGrossisst_And_NotAdmin=currentApp_ItsNotWorkChezGrossisst_And_NotAdmin,
                             allTariffsGroupedAndSorted=allTariffsGroupedAndSorted,
                             relative_Produit = relative_M1Produit,
                             relative_Tariff = relative_Tariff,

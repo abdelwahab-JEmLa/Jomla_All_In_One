@@ -53,6 +53,7 @@ fun PrixsVents_Handler(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
+    currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean,
 ) {
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
@@ -165,6 +166,7 @@ fun PrixsVents_Handler(
                 }
 
                 PrixVentAdjustmentButtons(
+                    currentApp_ItsNotWorkChezGrossisst_And_NotAdmin=currentApp_ItsNotWorkChezGrossisst_And_NotAdmin,
                     allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                     relative_Produit = relative_Produit,
                     relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),

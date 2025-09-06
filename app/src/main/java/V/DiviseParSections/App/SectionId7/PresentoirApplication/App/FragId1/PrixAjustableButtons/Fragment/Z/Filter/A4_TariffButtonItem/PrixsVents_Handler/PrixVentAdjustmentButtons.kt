@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
@@ -43,7 +44,8 @@ fun PrixVentAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean) -> Unit
+    onPriceChange: (Double, Boolean) -> Unit,
+    currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean
 ) {
     val prixAchatTariff =
         allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
@@ -137,6 +139,8 @@ fun PrixVentAdjustmentButtons(
     }
 
     // Card with both selling prices in column
+    val its_Pour_Abdelwahab = (!currentApp_ItsNotWorkChezGrossisst_And_NotAdmin
+            || relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client)
     ElevatedCard(
         modifier = Modifier
             .width(100.dp)
@@ -150,34 +154,36 @@ fun PrixVentAdjustmentButtons(
             // Total selling price section at top
             Row(
                 modifier = Modifier
-                    .fillMaxWidth() ,
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Decrease total price button
-                IconButton(
-                    onClick = {
-                        val newPrice =
-                            (prixVente - totalPriceAdjustmentValue).coerceAtLeast(prixAchat)
-                        updateTotalPriceImmediately(newPrice)
-                    },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            color = tariffColor.copy(alpha = 0.8f),
-                            shape = androidx.compose.foundation.shape.CircleShape
+                its_Pour_Abdelwahab.ifTrue {
+                    IconButton(
+                        onClick = {
+                            val newPrice =
+                                (prixVente - totalPriceAdjustmentValue).coerceAtLeast(prixAchat)
+                            updateTotalPriceImmediately(newPrice)
+                        },
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = tariffColor.copy(alpha = 0.8f),
+                                shape = androidx.compose.foundation.shape.CircleShape
+                            )
+                            .padding(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Remove,
+                            contentDescription = "تقليل السعر الإجمالي",
+                            tint = tariffTextColor,
+                            modifier = Modifier.size(12.dp)
                         )
-                        .padding(2.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Remove,
-                        contentDescription = "تقليل السعر الإجمالي",
-                        tint = tariffTextColor,
-                        modifier = Modifier.size(12.dp)
-                    )
+                    }
                 }
 
                 // Total price display/edit
-                if (isEditingTotalPrice) {
+                if (isEditingTotalPrice && its_Pour_Abdelwahab) {
                     OutlinedTextField(
                         value = totalPriceText,
                         onValueChange = { totalPriceText = it },
@@ -208,27 +214,29 @@ fun PrixVentAdjustmentButtons(
                     )
                 }
 
-                // Increase total price button
-                IconButton(
-                    onClick = {
-                        val newPrice = prixVente + totalPriceAdjustmentValue
-                        updateTotalPriceImmediately(newPrice)
-                    },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            color = tariffColor.copy(alpha = 0.8f),
-                            shape = androidx.compose.foundation.shape.CircleShape
-                        )
-                        .padding(2.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "زيادة السعر الإجمالي",
-                        tint = tariffTextColor,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
+                its_Pour_Abdelwahab
+                    .ifTrue {
+                        IconButton(
+                            onClick = {
+                                val newPrice = prixVente + totalPriceAdjustmentValue
+                                updateTotalPriceImmediately(newPrice)
+                            },
+                            modifier = Modifier
+                                .size(24.dp)
+                                .background(
+                                    color = tariffColor.copy(alpha = 0.8f),
+                                    shape = androidx.compose.foundation.shape.CircleShape
+                                )
+                                .padding(2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "زيادة السعر الإجمالي",
+                                tint = tariffTextColor,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
             }
 
             // Unit price section - centered
@@ -239,31 +247,33 @@ fun PrixVentAdjustmentButtons(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Decrease unit price button
-                    IconButton(
-                        onClick = {
-                            val newUnitPrice =
-                                (prixVenteUnitaire - unitPriceAdjustmentValue).coerceAtLeast(0.0)
-                            updateUnitPriceImmediately(newUnitPrice)
-                        },
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(
-                                color = tariffColor.copy(alpha = 0.7f),
-                                shape = androidx.compose.foundation.shape.CircleShape
+
+                    its_Pour_Abdelwahab.ifTrue {    // Decrease unit price button
+                        IconButton(
+                            onClick = {
+                                val newUnitPrice =
+                                    (prixVenteUnitaire - unitPriceAdjustmentValue).coerceAtLeast(0.0)
+                                updateUnitPriceImmediately(newUnitPrice)
+                            },
+                            modifier = Modifier
+                                .size(20.dp)
+                                .background(
+                                    color = tariffColor.copy(alpha = 0.7f),
+                                    shape = androidx.compose.foundation.shape.CircleShape
+                                )
+                                .padding(2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Remove,
+                                contentDescription = "تقليل السعر الوحدة",
+                                tint = tariffTextColor,
+                                modifier = Modifier.size(10.dp)
                             )
-                            .padding(2.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Remove,
-                            contentDescription = "تقليل السعر الوحدة",
-                            tint = tariffTextColor,
-                            modifier = Modifier.size(10.dp)
-                        )
+                        }
                     }
 
                     // Unit price display/edit
-                    if (isEditingUnitPrice) {
+                    if (isEditingUnitPrice && its_Pour_Abdelwahab) {
                         OutlinedTextField(
                             value = unitPriceText,
                             onValueChange = { unitPriceText = it },
@@ -299,27 +309,28 @@ fun PrixVentAdjustmentButtons(
                             fontSize = 10.sp
                         )
                     }
-
-                    // Increase unit price button
-                    IconButton(
-                        onClick = {
-                            val newUnitPrice = prixVenteUnitaire + unitPriceAdjustmentValue
-                            updateUnitPriceImmediately(newUnitPrice)
-                        },
-                        modifier = Modifier
-                            .size(25.dp)
-                            .background(
-                                color = tariffColor.copy(alpha = 0.7f),
-                                shape = androidx.compose.foundation.shape.CircleShape
+                    its_Pour_Abdelwahab.ifTrue {
+                        // Increase unit price button
+                        IconButton(
+                            onClick = {
+                                val newUnitPrice = prixVenteUnitaire + unitPriceAdjustmentValue
+                                updateUnitPriceImmediately(newUnitPrice)
+                            },
+                            modifier = Modifier
+                                .size(25.dp)
+                                .background(
+                                    color = tariffColor.copy(alpha = 0.7f),
+                                    shape = androidx.compose.foundation.shape.CircleShape
+                                )
+                                .padding(2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "زيادة السعر الوحدة",
+                                tint = tariffTextColor,
+                                modifier = Modifier.size(12.dp)
                             )
-                            .padding(2.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "زيادة السعر الوحدة",
-                            tint = tariffTextColor,
-                            modifier = Modifier.size(12.dp)
-                        )
+                        }
                     }
                 }
             }
