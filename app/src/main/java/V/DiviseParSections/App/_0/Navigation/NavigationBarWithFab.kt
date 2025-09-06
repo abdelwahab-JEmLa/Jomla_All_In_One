@@ -11,6 +11,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.Floati
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.FabDropdownMenu_WhenItsAchatsFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FabButton_When_Its_Achats
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -200,6 +201,13 @@ fun NavigationBarWithFab(
         }
         if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_FABsModeEditesProduit) {
             Floating_Separated_FragMap_Button_5(
+                aCentralFacade = aCentralFacade,
+                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
+                focusedValuesGetter = focusedValuesGetter
+            )
+        }
+        if (focusedValuesGetter.active_Central_Values.afficheFloatingOutlinedSearcher_of_Achat) {
+            FragAchats_FloatingOutlinedSearcher_4(
                 aCentralFacade = aCentralFacade,
                 repositorysMainGetter = aCentralFacade.repositorysMainGetter,
                 focusedValuesGetter = focusedValuesGetter
