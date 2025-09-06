@@ -78,8 +78,54 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         executeClickLogic()
     }
 
+    /**
+     * Updates related grossist tariffs when the purchase price (Tariff_ItsWorkInGrossist_Achat) changes
+     */
+    fun updateRelatedGrossistTariffs(newPurchasePrice: Double) {
+        val currentTime = System.currentTimeMillis()
+        val oneMinuteAgo = currentTime - (60 * 1000) // 1 minute in milliseconds
+
+        // Get all related grossist tariffs for this product that were created within the last minute
+        val relatedTariffs = allTariffsGroupedAndSorted.values.flatten().filter { tariff ->
+            tariff.parent_M1Produit_KeyId == relative_Produit.keyID &&
+                    tariff.typeChoisi in setOf(
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
+            ) &&
+                    tariff.creationTimestamps >= oneMinuteAgo
+        }
+
+        // Update each related tariff by recalculating price = benefit + new purchase price
+        relatedTariffs.forEach { tariff ->
+            // Get the current purchase price from the tariff to calculate existing benefit
+            val oldPurchasePrice = relative_Produit.prixAchat
+            val currentSellingPrice = tariff.prixCurrency
+            val existingBenefit = currentSellingPrice - oldPurchasePrice
+
+            // Calculate new selling price = existing benefit + new purchase price
+            val newSellingPrice = existingBenefit + newPurchasePrice
+
+            // Update the tariff with new price
+            val updatedTariff = tariff.copy(
+                prixCurrency = newSellingPrice.coerceAtLeast(newPurchasePrice), // Ensure selling price >= purchase price
+                dernierTimeTampsSynchronisationAvecFireBase = currentTime
+            )
+
+            repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+        }
+    }
+
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
+
+        // If this is a purchase price tariff being updated, also update related grossist tariffs
+        if (typeTarification == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat) {
+            updateRelatedGrossistTariffs(newPrix)
+
+            // Also update the product's base purchase price
+            val updatedProduit = relative_Produit.copy(prixAchat = newPrix)
+            repositorysMainSetter.upsert_M1Produit(updatedProduit)
+        }
 
         if (shouldCreateNew) {
             val newTariff = relative_Tariff.copy(
@@ -102,10 +148,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
     Column {
         Row(
-            modifier = Modifier
-                .semantics(mergeDescendants = true) {
-                    set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
-                },
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+            },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
@@ -116,11 +161,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Show different adjustment buttons based on tariff type and admin status
                 if (currentApp_Est_Admin) {
                     when (typeTarification) {
                         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive -> {
-                            // Use ProgressivePercentageAdjustmentCard for progressive pricing
                             ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler(
                                 currentApp_Est_Admin = currentApp_Est_Admin,
                                 allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
@@ -133,8 +176,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                                 typeTarification = typeTarification,
                                 repositorysMainSetter = repositorysMainSetter,
                                 onPercentageChange = { newPercentage ->
-                                    // Recalcule le prix progressif quand le pourcentage change
-                                    // Utilise Prix_Detaille au lieu de Tariff_Achat_Depuit_Grossisst
                                     val prixDetaille = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Prix_Detaille]
                                         ?.maxByOrNull { it.creationTimestamps }?.prixCurrency
                                         ?: relative_Produit.prixVent
@@ -148,9 +189,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                                     handel_Add_Diminue_Prix(newProgressivePrice, false)
                                 }
                             )
-                        }
-                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat -> {
-                            // Aucun bouton d'ajustement spécial pour Tariff_ItsWorkInGrossist_Achat
                         }
                         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> {
@@ -179,7 +217,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
             FloatingActionButton(
                 modifier = Modifier.width(80.dp),
-                onClick = ::handelClick,
+                onClick = ::executeClickLogic,
                 containerColor = couleurButton
             ) {
                 Text(

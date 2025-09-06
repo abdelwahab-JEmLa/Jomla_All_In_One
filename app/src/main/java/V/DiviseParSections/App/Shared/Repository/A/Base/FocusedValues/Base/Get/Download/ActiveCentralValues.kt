@@ -60,7 +60,9 @@ data class ActiveCentralValues(
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
+    val afficheFloatingOutlinedSearcher_of_Achat: Boolean = true,
     val outlined_filter_searcher_achat: String = "",
+
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
     val affiche_Floating_Button_Cible_Client: Boolean = false,
@@ -71,7 +73,6 @@ data class ActiveCentralValues(
     val affiche_Floating_Button_SelecteCategorieEtAddNewProduit: Boolean = false,
     val affiche_Floating_Button_FABsModeEditesProduit: Boolean = false,
 
-    val afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,

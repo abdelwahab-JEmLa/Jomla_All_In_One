@@ -173,7 +173,6 @@ fun ProductHeader_T1(
 
                 Card_StatueDuProduit(
                     relative_Produit = relative_Produit,
-                    onUpdateProduit = ::update_produit
                 )
 
                 Card(
@@ -374,8 +373,13 @@ fun ProductHeader_T1(
 @Composable
 fun Card_StatueDuProduit(
     relative_Produit: ArticlesBasesStatsTable,
-    onUpdateProduit: (ArticlesBasesStatsTable) -> Unit
+    repositorysMainSetter:RepositorysMainSetter= koinInject()
 ) {
+    fun update_produit(produit:ArticlesBasesStatsTable): Unit {
+        repositorysMainSetter.upsert_M1Produit(
+            produit
+        )
+    }
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -402,7 +406,7 @@ fun Card_StatueDuProduit(
                         its_Carton = isChecked,
                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                     )
-                    onUpdateProduit(updatedProduit)
+                    update_produit(updatedProduit)
                 },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,

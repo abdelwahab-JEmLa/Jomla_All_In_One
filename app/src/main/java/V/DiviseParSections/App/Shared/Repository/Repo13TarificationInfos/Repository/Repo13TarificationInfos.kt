@@ -127,7 +127,6 @@ data class M13TarificationInfos(
         val profitabilityScore: Int = 0,
     ) {
         //---------------------------------------currentApp_ItsWorkChezGrossisst  ------------------------------------------------------------------------------------------------
-
         Tariff_ItsWorkInGrossist_Achat(
             Icons.Filled.History,
             Color(0xFFEEEEEE),

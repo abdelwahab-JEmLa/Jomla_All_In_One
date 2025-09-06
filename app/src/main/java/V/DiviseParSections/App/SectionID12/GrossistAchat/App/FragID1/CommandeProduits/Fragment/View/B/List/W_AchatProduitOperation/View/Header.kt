@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
@@ -16,6 +17,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,11 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import org.koin.compose.koinInject
 import java.text.DecimalFormat
 
 @Composable
 fun Header(
-    produit: ArticlesBasesStatsTable,
+    relative_produit: ArticlesBasesStatsTable,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>
 ) {
@@ -48,7 +52,7 @@ fun Header(
 
     Card(
         modifier = Modifier
-            .getSemanticsTag(produit,"produit")
+            .getSemanticsTag(relative_produit,"produit")
             .getSemanticsTag(list_M11AchatOperation,"list_M11AchatOperation")
             .fillMaxWidth()
             .padding(4.dp),
@@ -66,7 +70,7 @@ fun Header(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = produit.nom,
+                    text = relative_produit.nom,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -83,7 +87,9 @@ fun Header(
                     )
                 }
             }
-
+            Card_StatueDuProduit(
+                relative_produit
+            )
             val grossist = firstAchatOperation?.let { achat ->
                 viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
                     .find { it.keyID == achat.parent_M15Grossist_KeyID }
@@ -143,4 +149,63 @@ fun updated_Achats(
         parent_M15Grossist_DebugInfos = grossistSelected.get_DebugInfos(),
         parent_M15Grossist_KeyID = grossistSelected.keyID
     )
+}
+
+@Composable
+fun Card_StatueDuProduit(
+    relative_Produit: ArticlesBasesStatsTable,
+    repositorysMainSetter: RepositorysMainSetter = koinInject()
+) {
+    fun update_produit(produit:ArticlesBasesStatsTable): Unit {
+        repositorysMainSetter.upsert_M1Produit(
+            produit
+        )
+    }
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        modifier = Modifier.padding(horizontal = 4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = "Carton:",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium
+            )
+
+            Switch(
+                checked = relative_Produit.its_Carton,
+                onCheckedChange = { isChecked ->
+                    val updatedProduit = relative_Produit.copy(
+                        its_Carton = isChecked,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                    update_produit(updatedProduit)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            )
+
+            Text(
+                text = if (relative_Produit.its_Carton) "Oui" else "Non",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (relative_Produit.its_Carton)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
 }

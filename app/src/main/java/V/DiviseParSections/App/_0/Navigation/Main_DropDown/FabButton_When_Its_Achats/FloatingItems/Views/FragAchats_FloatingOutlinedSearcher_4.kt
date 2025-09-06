@@ -13,60 +13,46 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
-@OptIn(FlowPreview::class)
 @Composable
 fun FragAchats_FloatingOutlinedSearcher_4(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    // Use local state for immediate UI updates
-    var localSearchText by remember { mutableStateOf("") }
-
-    // Initialize local state from central state only once
-    LaunchedEffect(Unit) {
-        localSearchText = focusedValuesGetter.active_Central_Values.outlined_filter_searcher_achat
-    }
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
 
     fun update_active(search: String): Unit {
         focusedValuesGetter.update_activeCentralValues(
-            focusedValuesGetter.active_Central_Values.copy(
+            active_Central_Values.copy(
                 outlined_filter_searcher_achat = search
             )
         )
     }
 
-    // Debounce updates to central state to avoid crashes during rapid typing
-    LaunchedEffect(localSearchText) {
-        snapshotFlow { localSearchText }
-            .debounce(300) // Wait 300ms after user stops typing
-            .collect { searchText ->
-                update_active(searchText)
-            }
-    }
+    val currentValues = focusedValuesGetter.active_Central_Values
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -75,10 +61,20 @@ fun FragAchats_FloatingOutlinedSearcher_4(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 350f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
 
+    // Add keyboard controller and focus requester
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        // Draggable container - drag gestures applied here instead of the text field
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .background(
+                    color = Color.White.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(16.dp)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
@@ -86,21 +82,19 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                         offsetY += dragAmount.y
                         offsetX = offsetX.coerceIn(0f, screenWidth.value - 250f)
                         offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
+
+                        // Hide keyboard when dragging
+                        keyboardController?.hide()
                     }
                 }
-                .padding(16.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedTextField(
-                    // Use local state for immediate UI responsiveness
-                    value = localSearchText,
-                    onValueChange = { newValue ->
-                        localSearchText = newValue // Update local state immediately
-                        // Central state is updated via LaunchedEffect with debounce
-                    },
+                    value = currentValues.outlined_filter_searcher_achat,
+                    onValueChange = { newValue -> update_active(newValue) },
                     label = { Text("Search Achats") },
                     leadingIcon = {
                         Icon(
@@ -109,12 +103,34 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                             tint = Color.Gray
                         )
                     },
+                    trailingIcon = {
+                        if (currentValues.outlined_filter_searcher_achat.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    update_active("")
+                                    // Clear focus and hide keyboard when clearing
+                                    focusRequester.freeFocus()
+                                    keyboardController?.hide()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear search",
+                                    tint = Color.Gray
+                                )
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .width(200.dp)
-                        .background(
-                            color = Color.White.copy(alpha = 0.9f),
-                            shape = RoundedCornerShape(8.dp)
-                        ),
+                        .focusRequester(focusRequester)
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                // When dragging on the text field, hide keyboard and clear focus
+                                keyboardController?.hide()
+                                focusRequester.freeFocus()
+                            }
+                        },
                     shape = RoundedCornerShape(8.dp)
                 )
             }

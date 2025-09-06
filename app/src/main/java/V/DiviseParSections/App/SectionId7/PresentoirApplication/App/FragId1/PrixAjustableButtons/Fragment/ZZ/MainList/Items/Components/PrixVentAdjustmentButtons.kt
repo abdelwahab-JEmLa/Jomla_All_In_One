@@ -43,7 +43,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean) -> Unit
+    onPriceChange: (Double, Boolean,) -> Unit
 ) {
     // Utilise le prix d'achat du produit directement au lieu de chercher Tariff_Achat_Depuit_Grossisst
     val prixAchat = relative_Produit.prixAchat
