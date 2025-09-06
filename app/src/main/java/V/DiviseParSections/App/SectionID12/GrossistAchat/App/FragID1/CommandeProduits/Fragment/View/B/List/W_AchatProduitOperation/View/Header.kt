@@ -27,19 +27,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import org.koin.compose.koinInject
 import java.text.DecimalFormat
+
 @Composable
 fun Header(
     relative_produit: ArticlesBasesStatsTable,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>
 ) {
-    // Use local state for this specific item's dialog
     var showDialog by remember { mutableStateOf(false) }
     val list_M11AchatOperation = groupeAchatProduit.value
 
@@ -138,7 +139,6 @@ fun Header(
             list_M11AchatOperation = list_M11AchatOperation,
         ) { grossistSelected ->
             if (grossistSelected != null) {
-                // Update only the specific operations for this product
                 val datas = updated_Achats(list_M11AchatOperation, grossistSelected)
                 datas.forEach { achatOperation ->
                     viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_update_If_Exist(
@@ -146,7 +146,7 @@ fun Header(
                     )
                 }
             }
-            showDialog = false // Close local dialog
+            showDialog = false
         }
     }
 }
@@ -165,11 +165,12 @@ fun Card_StatueDuProduit(
     relative_Produit: ArticlesBasesStatsTable,
     repositorysMainSetter: RepositorysMainSetter = koinInject()
 ) {
-    fun update_produit(produit:ArticlesBasesStatsTable): Unit {
+    fun update_produit(produit: ArticlesBasesStatsTable): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )
     }
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -179,12 +180,12 @@ fun Card_StatueDuProduit(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp), // Reduced from 8.dp
+            modifier = Modifier.padding(6.dp) // Reduced from 8.dp
         ) {
             Text(
                 text = "Carton:",
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall, // Changed from labelMedium
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Medium
             )
@@ -198,6 +199,8 @@ fun Card_StatueDuProduit(
                     )
                     update_produit(updatedProduit)
                 },
+                modifier = Modifier
+                    .scale(0.8f), // Scale down the switch to make it smaller
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
@@ -205,7 +208,6 @@ fun Card_StatueDuProduit(
                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
-
         }
     }
 }

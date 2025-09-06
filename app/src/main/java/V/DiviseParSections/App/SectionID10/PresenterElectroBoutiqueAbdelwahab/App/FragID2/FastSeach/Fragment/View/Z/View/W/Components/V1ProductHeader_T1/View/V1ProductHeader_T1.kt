@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -374,13 +375,14 @@ fun ProductHeader_T1(
 @Composable
 fun Card_StatueDuProduit(
     relative_Produit: ArticlesBasesStatsTable,
-    repositorysMainSetter:RepositorysMainSetter= koinInject()
+    repositorysMainSetter: RepositorysMainSetter = koinInject()
 ) {
-    fun update_produit(produit:ArticlesBasesStatsTable): Unit {
+    fun update_produit(produit: ArticlesBasesStatsTable): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )
     }
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -390,12 +392,12 @@ fun Card_StatueDuProduit(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp), // Reduced from 8.dp
+            modifier = Modifier.padding(6.dp) // Reduced from 8.dp
         ) {
             Text(
                 text = "C",
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall, // Changed from labelMedium
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Medium
             )
@@ -409,6 +411,8 @@ fun Card_StatueDuProduit(
                     )
                     update_produit(updatedProduit)
                 },
+                modifier = Modifier
+                    .scale(0.8f), // Scale down the switch to make it smaller
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
@@ -416,7 +420,6 @@ fun Card_StatueDuProduit(
                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
-
         }
     }
 }
