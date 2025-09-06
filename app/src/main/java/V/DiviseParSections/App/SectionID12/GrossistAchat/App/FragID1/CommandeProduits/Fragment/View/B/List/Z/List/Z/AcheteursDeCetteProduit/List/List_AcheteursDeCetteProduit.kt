@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +18,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -146,7 +150,7 @@ fun List_AcheteursDeCetteProduit(
                                     val totalQuantity = relative_ListM10Vent.sumOf { it.quantity }
                                     if (relative_ListM10Vent.size > 1) {
                                         Spacer(modifier = Modifier.height(4.dp))
-                                        Text(                                                                      
+                                        Text(
                                             text = "Total: $totalQuantity",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp,
@@ -168,7 +172,7 @@ private fun VentOperationItem(
     relative_M10Vent: M10OperationVentCouleur,
     repositorysMainSetter: RepositorysMainSetter,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    size_vents_pour_bon: Int, // Add this parameter
+    size_vents_pour_bon: Int,
     modifier: Modifier = Modifier
 ) {
     val isNotFound = relative_M10Vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
@@ -178,76 +182,88 @@ private fun VentOperationItem(
     val tariffInfo = viewModel.aCentralFacade.repositorysMainGetter
         .find_M13Tarification_By_KeyID(relative_M10Vent.parentM13TarificationKeyID)
 
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(4.dp)
     ) {
-        // Toggle button for EtateDelivery (always full opacity)
-        Button(
-            onClick = {
-                val updatedVentOperation = relative_M10Vent.copy(
-                    etateDelivery = when (relative_M10Vent.etateDelivery) {
-                        M10OperationVentCouleur.EtateDelivery.Trouve -> M10OperationVentCouleur.EtateDelivery.NonTrouve
-                        M10OperationVentCouleur.EtateDelivery.NonTrouve -> M10OperationVentCouleur.EtateDelivery.Trouve
-                    }
-                )
-                repositorysMainSetter.updateListM10OperationVentCouleur(
-                    buildList { add(updatedVentOperation) }
-                )
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = when (relative_M10Vent.etateDelivery) {
-                    M10OperationVentCouleur.EtateDelivery.Trouve -> MaterialTheme.colorScheme.primary
-                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> MaterialTheme.colorScheme.error
-                }
-            ),
-            modifier = Modifier.padding(end = 8.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = when (relative_M10Vent.etateDelivery) {
-                    M10OperationVentCouleur.EtateDelivery.Trouve -> "Trouvé"
-                    M10OperationVentCouleur.EtateDelivery.NonTrouve -> "Non Trouvé"
-                },
-                fontSize = 12.sp
-            )
-        }
-
-        Column {
-            Text(
-                text = "• Qté: ${relative_M10Vent.quantity}",
-                fontSize = 14.sp,
-                color = textColor
-            )
-
-            // NEW: Display the count of sales for this bon
-            Text(
-                text = "• Ventes dans ce bon: $size_vents_pour_bon",
-                fontSize = 12.sp,
-                color = textColor.copy(alpha = 0.8f),
-                modifier = Modifier.padding(top = 2.dp)
-            )
-
-            // Display tariff price for client in card with tariff color
-            tariffInfo?.let { tariff ->
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = tariff.typeChoisi.couleur
-                    ),
-                    modifier = Modifier.padding(top = 2.dp)
-                ) {
-                    Text(
-                        text = "Prix: ${tariff.prixCurrency} (${tariff.typeChoisi.nomArabe})",
-                        fontSize = 12.sp,
-                        color = tariff.typeChoisi.couleur_Text,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            // Toggle button for EtateDelivery (always full opacity)
+            Button(
+                onClick = {
+                    val updatedVentOperation = relative_M10Vent.copy(
+                        etateDelivery = when (relative_M10Vent.etateDelivery) {
+                            M10OperationVentCouleur.EtateDelivery.Trouve -> M10OperationVentCouleur.EtateDelivery.NonTrouve
+                            M10OperationVentCouleur.EtateDelivery.NonTrouve -> M10OperationVentCouleur.EtateDelivery.Trouve
+                        }
                     )
+                    repositorysMainSetter.updateListM10OperationVentCouleur(
+                        buildList { add(updatedVentOperation) }
+                    )
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when (relative_M10Vent.etateDelivery) {
+                        M10OperationVentCouleur.EtateDelivery.Trouve -> MaterialTheme.colorScheme.primary
+                        M10OperationVentCouleur.EtateDelivery.NonTrouve -> MaterialTheme.colorScheme.error
+                    }
+                ),
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Text(
+                    text = when (relative_M10Vent.etateDelivery) {
+                        M10OperationVentCouleur.EtateDelivery.Trouve -> "Trouvé"
+                        M10OperationVentCouleur.EtateDelivery.NonTrouve -> "Non Trouvé"
+                    },
+                    fontSize = 12.sp
+                )
+            }
+
+            Column {
+                Text(
+                    text = "• Qté: ${relative_M10Vent.quantity}",
+                    fontSize = 14.sp,
+                    color = textColor
+                )
+
+                // Display tariff price for client in card with tariff color
+                tariffInfo?.let { tariff ->
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = tariff.typeChoisi.couleur
+                        ),
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Text(
+                            text = "Prix: ${tariff.prixCurrency} (${tariff.typeChoisi.nomArabe})",
+                            fontSize = 12.sp,
+                            color = tariff.typeChoisi.couleur_Text,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
             }
         }
+
+        // Floating Action Button for sales count - positioned at top-end
+        FloatingActionButton(
+            onClick = { /* Add your click action here if needed */ },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(36.dp),
+            shape = CircleShape,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        ) {
+            Text(
+                text = "$size_vents_pour_bon",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
-
