@@ -124,7 +124,7 @@ fun GerantButton(
                 }
             ) {
                 Text(
-                    text = "التقدير للمدير",
+                    text = "لم يعطى سعر",
                     maxLines = 2,
                     fontSize = 14.sp,
                     modifier = Modifier

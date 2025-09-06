@@ -191,7 +191,7 @@ fun MainList(
             .getSemanticsTag(last_list_M13TarificationInfos, "")
             .getSemanticsTag(relative_M2Client?.keyID, "", 1)
             .getSemanticsTag(list_M13TarificationInfos, "", 2),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
             when (centralType) {

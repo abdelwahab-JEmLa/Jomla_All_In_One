@@ -75,11 +75,6 @@ fun PrixAchatHandler(
         editablePurchasePriceText = ""
     }
 
-    /**
-     * Met à jour les tarifs récents (créés dans la dernière minute)
-     * Logique: ancien_benefice = prix_vente_actuel - ancien_prix_achat
-     * nouveau_prix = nouveau_prix_achat + ancien_benefice
-     */
     fun updateRecentRelatedTariffs(newPurchasePrice: Double) {
         val currentTime = System.currentTimeMillis()
         val oneMinuteAgo = currentTime - (60 * 1000)
@@ -106,11 +101,6 @@ fun PrixAchatHandler(
         }
     }
 
-    /**
-     * Créé ou met à jour les tarifs Prix_SupperGro_Et_PresentationService et Prix_Detaille
-     * Pour tarifs existants: ancien_benefice = prix_vente_actuel - ancien_prix_achat, nouveau_prix = nouveau_prix_achat + ancien_benefice
-     * Pour nouveaux tarifs: bénéfices fixes (50 DA pour SuperGros, 150 DA pour Détaille)
-     */
     fun createOrUpdateRelatedTariffs(newPurchasePrice: Double) {
         val currentTime = System.currentTimeMillis()
         val oldPurchasePrice = relative_Produit.prixAchat
