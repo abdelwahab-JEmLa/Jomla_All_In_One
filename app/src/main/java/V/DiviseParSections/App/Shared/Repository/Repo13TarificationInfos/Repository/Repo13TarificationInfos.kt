@@ -101,6 +101,8 @@ data class M13TarificationInfos(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var defaultNonSaved_Entre: Boolean = true,
 
+    var its_From_CalculeParNewBenifice: Boolean = true,
+
     val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,
 

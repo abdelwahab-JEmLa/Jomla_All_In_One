@@ -173,7 +173,6 @@ data class Z_AppCompt(
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
     var ouvertProduitOnVentNom: String = "",
@@ -209,7 +208,6 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
-
     ) {
 
     fun get_DebugInfos(): String {

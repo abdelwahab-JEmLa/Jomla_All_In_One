@@ -126,7 +126,7 @@ fun Floating_Separated_FragMap_Button_1(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        ActiveCentralValues.Click_On_Marque.values().forEach { clickMode ->
+                        ActiveCentralValues.Click_On_Marque.entries.forEach { clickMode ->
                             DropdownMenuItem(
                                 text = {
                                     Row(
@@ -156,6 +156,7 @@ fun Floating_Separated_FragMap_Button_1(
                                         click_On_Marque = clickMode
                                     )
                                     focusedValuesGetter.update_activeCentralValues(newValues)
+
                                     expanded = false
                                 }
                             )
