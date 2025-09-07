@@ -3,8 +3,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -120,10 +120,12 @@ fun ViewVentCouleur_Module(
     val datasValue =
         aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-    val findTariff = datasValue.find { tariff ->
+    val findTariff = datasValue.lastOrNull { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
                 tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
+                && tariff.parent_M2Client_KeyId == focusedValuesGetter.activeOnVentM2ClientInfos?.keyID
     }
+
     val default_Tariff =
         M13TarificationInfos.get_default_P0(relative_M1Produit, start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat)
 
