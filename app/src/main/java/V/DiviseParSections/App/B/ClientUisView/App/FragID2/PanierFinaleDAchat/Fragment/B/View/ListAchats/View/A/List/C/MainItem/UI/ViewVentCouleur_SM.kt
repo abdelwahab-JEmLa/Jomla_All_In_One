@@ -11,7 +11,6 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +50,7 @@ import java.io.File
 fun ViewVentCouleur_Module(
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
-    focusedVarsHandlerFacade: FocusedActiveValuesFacade =  aCentralFacade.focusedActiveValuesFacade,
+    focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M1Produit: ArticlesBasesStatsTable,
     relative_M3CouleurProduit: M3CouleurProduitInfos,
@@ -60,7 +59,8 @@ fun ViewVentCouleur_Module(
     val relative_M10OperationVentCouleur by remember {
         derivedStateOf {
             focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find {
-                it.parent_M3CouleurProduit_KeyID == relative_M3CouleurProduit.keyID }
+                it.parent_M3CouleurProduit_KeyID == relative_M3CouleurProduit.keyID
+            }
         }
     }
 
@@ -110,7 +110,10 @@ fun ViewVentCouleur_Module(
         }
     }.value
 
-    val shouldShowDialog by remember(relative_M10OperationVentCouleur, relative_M3CouleurProduit.keyID) {
+    val shouldShowDialog by remember(
+        relative_M10OperationVentCouleur,
+        relative_M3CouleurProduit.keyID
+    ) {
         derivedStateOf {
             val onVentM3 = getterFocusedVarsHandlerFacade.onVentM10VentOperation
 
@@ -121,13 +124,15 @@ fun ViewVentCouleur_Module(
         aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
     val findTariff = datasValue.lastOrNull { tariff ->
-        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
+        tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
                 && tariff.parent_M2Client_KeyId == focusedValuesGetter.activeOnVentM2ClientInfos?.keyID
     }
 
     val default_Tariff =
-        M13TarificationInfos.get_default_P0(relative_M1Produit, start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat)
+        M13TarificationInfos.get_default_P0(
+            relative_M1Produit,
+            start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat
+        )
 
     val finale_Tariff = findTariff ?: default_Tariff.first
 
@@ -180,8 +185,8 @@ fun ViewVentCouleur_Module(
                         M3CouleurProduitInfos.Type.Image -> {
                             ImageDisplayerGlide_Sec2FragID2_Panie(
                                 modifier = Modifier.size(size),
-                                relative_M10OperationVentCouleur =relative_M10OperationVentCouleur,
-                                relative_M3CouleurProduit =relative_M3CouleurProduit,
+                                relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                                relative_M3CouleurProduit = relative_M3CouleurProduit,
                                 imageFile = imageFile,
                                 colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
                                 contentScale = ContentScale.Crop,
@@ -252,7 +257,7 @@ fun ViewVentCouleur_Module(
     if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
-            setIN_Vent_Its_Quantity_Represent=relative_M1Produit.setIN_Vent_Its_Quantity_Represent,
+            setIN_Vent_Its_Quantity_Represent = relative_M1Produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_M1Produit.quantite_Boit_Par_Carton,
             label = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->

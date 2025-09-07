@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.ColorImageDisplayer
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.PickQantity.Dialog.Dialog_Choisire_Quantity_Carton
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.View_LikedTo_FragSearcher
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -98,6 +100,7 @@ fun ViewVentCouleur_T1(
     var isEditingColorName by remember { mutableStateOf(false) }
     var editingColorName by remember { mutableStateOf("") }
     val colorNameFocusRequester = remember { FocusRequester() }
+    var showCartonDialogForVent by remember { mutableStateOf<M10OperationVentCouleur?>(null) }
 
     // Camera dialog state
     var showCameraDialog by remember { mutableStateOf(false) }
@@ -279,6 +282,19 @@ fun ViewVentCouleur_T1(
         }
     }
 
+    // State for carton dialog
+    val shouldShowCartonDialog by remember(
+        relative_M10OperationVentCouleur,
+        relative_M3CouleurInfos.keyID,
+        relative_produit.setIN_Vent_Its_Quantity_Represent
+    ) {
+        derivedStateOf {
+            val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation
+            onVentM3?.parent_M3CouleurProduit_KeyID == relative_M3CouleurInfos.keyID &&
+                    relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+        }
+    }
+
     val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff = datasValue.find { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
@@ -430,6 +446,46 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
+                    if (relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-4).dp, y = 4.dp)
+                                .zIndex(2f)
+                        ) {
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    relative_M10OperationVentCouleur?.let { findVent ->
+                                        viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                                            finale_Tariff,
+                                            buildList { add(findVent) }
+                                        )
+                                        showCartonDialogForVent = findVent
+
+                                    } ?: run {
+                                        defaultM10Vent?.let { defaultVent ->
+                                            setter.ajoute_New_M10OperationVentCouleur(defaultVent)
+                                            viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                                                finale_Tariff,
+                                                buildList { add(defaultVent) }
+                                            )
+                                        }
+                                    }
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                },
+                                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f),
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ShoppingCart,
+                                    contentDescription = "Add by carton",
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                        }
+                    }
+
                     // Camera dialog
                     if (showCameraDialog) {
                         CameraXDialog(
@@ -566,10 +622,11 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (shouldShowDialog) {
+    // Regular quantity dialog for unit-based operations
+    if (shouldShowDialog && relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
-            setIN_Vent_Its_Quantity_Represent=relative_produit.setIN_Vent_Its_Quantity_Represent,
+            setIN_Vent_Its_Quantity_Represent = relative_produit.setIN_Vent_Its_Quantity_Represent,
             label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
             relative_M10OperationVentCouleur?.let { existingVent ->
@@ -585,6 +642,27 @@ fun ViewVentCouleur_T1(
             viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
                 relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
             )
+        }
+    }
+
+    if (shouldShowCartonDialog) {
+        Dialog_Choisire_Quantity_Carton(
+            old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            quantite_Boit_Par_Carton = relative_produit.quantite_Boit_Par_Carton,
+            label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
+        ) { new_Qyt ->
+            relative_M10OperationVentCouleur?.let { existingVent ->
+                val updatedVent = new_Qyt?.let {
+                    existingVent.copy(quantity = it)
+                }
+
+                if (updatedVent != null) {
+                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(updatedVent)
+                }
+            }
+
+            showCartonDialogForVent = null
+
         }
     }
 }
