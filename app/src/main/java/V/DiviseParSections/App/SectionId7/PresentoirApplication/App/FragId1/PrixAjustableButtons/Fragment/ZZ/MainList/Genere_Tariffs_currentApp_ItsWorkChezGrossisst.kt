@@ -87,7 +87,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
-                prixCurrency = calculateProgressiveGrossistPrice(relative_M1Produit),
+                prixCurrency = calculateProgressiveGrossistPrice(aCentralFacade, relative_M1Produit),
                 parent_M1Produit_KeyId = relative_M1Produit.keyID,
                 parent_M1Produit_DebugInfos = relative_M1Produit.nom,
                 creationTimestamps = System.currentTimeMillis()
@@ -115,13 +115,48 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         return relative_M1Produit.prixAchat
     }
 
-    private fun calculateProgressiveGrossistPrice(relative_M1Produit: ArticlesBasesStatsTable): Double {
-        val superGrosPrice = calculateSuperGrosPrice(relative_M1Produit)
-        val groPrice = calculateGroPrice(relative_M1Produit)
+    private fun calculateProgressiveGrossistPrice(
+        aCentralFacade: ACentralFacade,
+        relative_M1Produit: ArticlesBasesStatsTable
+    ): Double {
+        // Get the actual current prices from existing tariffs, not the calculated base prices
+        val superGrosTariff = find_existing_Tariff_Grossist_SuperGros(aCentralFacade, relative_M1Produit)
+        val groTariff = find_existing_Tariff_Grossist_Gro(aCentralFacade, relative_M1Produit)
+
+        val superGrosPrice = superGrosTariff?.prixCurrency ?: calculateSuperGrosPrice(relative_M1Produit)
+        val groPrice = groTariff?.prixCurrency ?: calculateGroPrice(relative_M1Produit)
+
         return (superGrosPrice + groPrice) / 2
     }
 
+    /**
+     * Updates the progressive tariff when SuperGros or Gro tariffs are modified
+     */
+    fun updateProgressiveTariffOnRelatedChange(
+        aCentralFacade: ACentralFacade,
+        relative_M1Produit: ArticlesBasesStatsTable,
+        focusedValuesGetter: FocusedValuesGetter
+    ) {
+        val existingProgressiveTariff = find_existing_Tariff_Grossist_Progressive(aCentralFacade, relative_M1Produit)
+
+        if (existingProgressiveTariff != null) {
+            val newProgressivePrice = calculateProgressiveGrossistPrice(aCentralFacade, relative_M1Produit)
+
+            // Only update if price has changed
+            if (newProgressivePrice != existingProgressiveTariff.prixCurrency) {
+                val updatedProgressiveTariff = existingProgressiveTariff.copy(
+                    prixCurrency = newProgressivePrice,
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+
+                aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedProgressiveTariff)
+            }
+        }
+    }
+
     private fun calculateGroPrice(relative_M1Produit: ArticlesBasesStatsTable): Double {
-        return  calculateSuperGrosPrice(relative_M1Produit)
+        // This should probably have different logic than SuperGros
+        // For now, adding a small margin to differentiate from SuperGros
+        return calculateSuperGrosPrice(relative_M1Produit) * 1.1 // 10% markup over SuperGros
     }
 }

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Genere_Tariffs_currentApp_ItsWorkChezGrossisst
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler
@@ -41,6 +42,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 ) {
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
+
+    // Create instance of tariff generator for progressive updates
+    val tariffGenerator = remember { Genere_Tariffs_currentApp_ItsWorkChezGrossisst() }
 
     // Utilise seulement les types de tarifs spécifiés
     val isGrossistTariffType = typeTarification in setOf(
@@ -115,6 +119,23 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         }
     }
 
+    /**
+     * Updates progressive tariff when SuperGros or Gro prices change
+     */
+    fun updateProgressiveTariffIfNeeded() {
+        // Only update progressive if the current tariff being modified is SuperGros or Gro
+        if (typeTarification in setOf(
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
+            )) {
+            tariffGenerator.updateProgressiveTariffOnRelatedChange(
+                aCentralFacade = aCentralFacade,
+                relative_M1Produit = relative_Produit,
+                focusedValuesGetter = focusedValuesGetter
+            )
+        }
+    }
+
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
 
@@ -144,6 +165,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                 )
             )
         }
+
+        // Update progressive tariff if SuperGros or Gro was modified
+        updateProgressiveTariffIfNeeded()
     }
 
     Column {
