@@ -111,7 +111,8 @@ fun TopAppBar_With_DropDownMenu(
                         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                             .currentActiveFocuced_M14VentPeriode,
                         filtered_ListM10Vent_BY_Curr_M14VentPeriod,
-                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
+                        bonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
                     )
 
             DropdownMenu(

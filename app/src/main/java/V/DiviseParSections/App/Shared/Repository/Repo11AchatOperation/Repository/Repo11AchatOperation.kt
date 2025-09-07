@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
@@ -42,9 +43,16 @@ class Repo11AchatOperation(
     fun genere_Achats_Depuit_M11AchatOperation_List(
         m14VentPeriod: M14VentPeriode?,
         filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>,
-        produits: List<ArticlesBasesStatsTable>
+        produits: List<ArticlesBasesStatsTable>,
+        bonVents: List<M8BonVent> = emptyList()
     ): List<M11AchatOperation> {
-        return filtered_ListM10Vent_BY_Curr_M14VentPeriod
+        // Filter out vents where parent bon vent has its_working_for_wholesaler = true
+        val filteredVents = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
+            val parentBonVent = bonVents.find { it.keyID == vent.parent_M8BonVent_KeyId }
+            parentBonVent?.its_working_for_wholesaler != true
+        }
+
+        return filteredVents
             .groupBy { it.parent_M3CouleurProduit_KeyID }
             .mapNotNull { (couleurId, vents) ->
                 if (!isValidKey(couleurId)) return@mapNotNull null

@@ -311,7 +311,8 @@ private fun CreateNewClientIcon(
     val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
         creationTimestamps = System.currentTimeMillis(),
         parent_M2Client_KeyID = newClient.keyID,
-        parent_M2Client_DebugInfos = newClient.nom
+        parent_M2Client_DebugInfos = newClient.nom,
+        its_working_for_wholesaler = true
     )
 
     val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentActive_M9AppCompt?.copy(

@@ -33,9 +33,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @Composable
 fun List_AcheteursDeCetteProduit(
@@ -170,6 +173,7 @@ fun List_AcheteursDeCetteProduit(
 @Composable
 private fun VentOperationItem(
     relative_M10Vent: M10OperationVentCouleur,
+    repositorysMainGetter: RepositorysMainGetter= koinInject(),
     repositorysMainSetter: RepositorysMainSetter,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     size_vents_pour_bon: Int,
@@ -181,7 +185,7 @@ private fun VentOperationItem(
 
     val tariffInfo = viewModel.aCentralFacade.repositorysMainGetter
         .find_M13Tarification_By_KeyID(relative_M10Vent.parentM13TarificationKeyID)
-
+    val relative_BonVent = repositorysMainGetter.find_M8BonVent(relative_M10Vent.parent_M8BonVent_KeyId)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -189,7 +193,11 @@ private fun VentOperationItem(
             .padding(4.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    set(value = relative_BonVent, key = SemanticsPropertyKey("relative_BonVent"))
+                }
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Toggle button for EtateDelivery (always full opacity)

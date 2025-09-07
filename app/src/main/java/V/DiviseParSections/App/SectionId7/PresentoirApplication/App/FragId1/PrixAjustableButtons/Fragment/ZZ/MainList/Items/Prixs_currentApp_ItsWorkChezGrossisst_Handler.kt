@@ -116,8 +116,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     }
 
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
-        //<--
-        //TODO(1): fait que si le type  Tariff_ItsWorkInGrossist_SuperGros de par temp add ou update une tariff de Tariff_Achat_Depuit_Grossisst prix = Tariff_ItsWorkInGrossist_SuperGros 
         val currentTime = System.currentTimeMillis()
 
         // If this is a purchase price tariff being updated, also update related grossist tariffs
