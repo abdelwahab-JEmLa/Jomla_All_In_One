@@ -37,7 +37,7 @@ import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -282,7 +282,6 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    // State for carton dialog
     val shouldShowCartonDialog by remember(
         relative_M10OperationVentCouleur,
         relative_M3CouleurInfos.keyID,
@@ -460,8 +459,8 @@ fun ViewVentCouleur_T1(
                                             finale_Tariff,
                                             buildList { add(findVent) }
                                         )
-                                        showCartonDialogForVent = findVent
-
+                                        // Use the same setter method as the regular dialog
+                                        setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                                     } ?: run {
                                         defaultM10Vent?.let { defaultVent ->
                                             setter.ajoute_New_M10OperationVentCouleur(defaultVent)
@@ -478,7 +477,7 @@ fun ViewVentCouleur_T1(
                                 modifier = Modifier.size(28.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.ShoppingCart,
+                                    imageVector = Icons.Default.Inventory2,
                                     contentDescription = "Add by carton",
                                     modifier = Modifier.size(14.dp)
                                 )
@@ -661,8 +660,10 @@ fun ViewVentCouleur_T1(
                 }
             }
 
-            showCartonDialogForVent = null
-
+            // Use the same dismiss method as the regular dialog
+            viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
+                relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
+            )
         }
     }
 }
