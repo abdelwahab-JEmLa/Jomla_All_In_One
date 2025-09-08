@@ -77,24 +77,16 @@ fun BenificeAdjustmentButtons(
     val benefitAdjustmentValue = when {
         benefice < 10.0 -> 1.0
         benefice < 50.0 -> 5.0
-        benefice < 200.0 -> 10.0
-        benefice < 500.0 -> 25.0
+        benefice < 200.0 -> 5.0
+        benefice < 1200.0 -> 25.0
         else -> 50.0
     }
 
     val unitBenefitAdjustmentValue = when {
-        beneficeUnitaire < 1.0 -> 0.1
-        beneficeUnitaire < 5.0 -> 0.5
-        beneficeUnitaire < 20.0 -> 1.0
-        beneficeUnitaire < 50.0 -> 2.0
+        beneficeUnitaire < 1.0 -> 1.0
+        beneficeUnitaire < 10.0 -> 2.0
+        beneficeUnitaire < 50.0 -> 1.0
         else -> 5.0
-    }
-
-    val benefitColor = when {
-        benefice < 0 -> Color.Red
-        benefice < 20 -> Color(0xFFFF9800) // Orange
-        benefice < 50 -> Color(0xFF4CAF50) // Green
-        else -> Color(0xFF2196F3) // Blue
     }
 
     fun shouldCreateNewTariff(): Boolean {

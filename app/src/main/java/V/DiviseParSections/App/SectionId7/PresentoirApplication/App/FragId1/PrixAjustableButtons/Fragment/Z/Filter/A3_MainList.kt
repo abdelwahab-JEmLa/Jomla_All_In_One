@@ -128,7 +128,7 @@ fun MainList(
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            if (relative_M1Produit.prixAchat != 0.0 && currentApp_Est_Admin && currentApp_ItsWorkChezGrossisst) {
+            if (relative_M1Produit.prixAchat != 0.0 && currentApp_Est_Admin ) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
@@ -203,7 +203,6 @@ fun MainList(
         allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
             when (centralType) {
                 (TypeChoisi.Tariff_Achat_Depuit_Grossisst) -> {
-                    // FIXED: Ne s'affiche que si l'utilisateur n'est PAS dans le mode "NotWorkChezGrossisst_And_NotAdmin"
                     val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
                     if (relative_Tariff != null) {
