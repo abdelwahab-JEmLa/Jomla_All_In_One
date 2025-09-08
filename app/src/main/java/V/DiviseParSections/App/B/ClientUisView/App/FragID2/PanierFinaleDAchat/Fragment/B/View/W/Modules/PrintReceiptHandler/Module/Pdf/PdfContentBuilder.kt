@@ -120,9 +120,9 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
             doc.add(Paragraph("\n").setFontSize(0.3f))
         }
 
-        addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
+      /*  addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
         addText(doc, "${formatter.round(creditData.currentPayment)} Da", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.3f))
+        doc.add(Paragraph("\n").setFontSize(0.3f))     */
 
         val totalPaid = if (creditData.showPaymentHistory) {
             creditData.previousPayments.sum() + creditData.currentPayment
