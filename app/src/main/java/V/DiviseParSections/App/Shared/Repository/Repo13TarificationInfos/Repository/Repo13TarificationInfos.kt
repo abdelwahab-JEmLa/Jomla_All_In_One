@@ -174,7 +174,7 @@ data class M13TarificationInfos(
         LeMaxPrixArrive(
             Icons.Filled.ArrowUpward,
             Color(0xFFFF9800),
-            "فائدة محققة مع الحصول على كثير من الزبناء",
+            "اعلى سعر وصل له",
             Color.Black,
             5
         ),

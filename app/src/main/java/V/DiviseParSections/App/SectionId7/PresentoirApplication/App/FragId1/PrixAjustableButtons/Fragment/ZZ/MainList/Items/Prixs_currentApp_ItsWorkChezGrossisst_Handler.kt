@@ -106,7 +106,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             val currentSellingPrice = tariff.prixCurrency
             val existingBenefit = currentSellingPrice - oldPurchasePrice
 
-            // Calculate new selling price = existing benefit + new purchase price
             val newSellingPrice = existingBenefit + newPurchasePrice
 
             // Update the tariff with new price

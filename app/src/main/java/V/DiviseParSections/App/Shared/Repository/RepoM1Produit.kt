@@ -204,7 +204,7 @@ data class ArticlesBasesStatsTable(
     var prixDefiniParGerant: Double = 0.0,
     var prixVent: Double = 0.0,
     var cachePrixVent: Boolean = false,
-    var pourcentage_Prix_Progressive: Int = 50,
+    var pourcentage_Prix_Progressive: Int = 60,
 
 
     var prixAchat: Double = 0.0,

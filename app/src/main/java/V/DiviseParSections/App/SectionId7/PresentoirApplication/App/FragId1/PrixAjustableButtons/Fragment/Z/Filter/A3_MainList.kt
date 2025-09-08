@@ -325,7 +325,7 @@ private fun calculateProgressivePrice(
 ): Double {
     val priceDifference = prixDetaille - prixVent
 
-    val pourcentageProgressive1 = if (pourcentageProgressive == 50) 60 else pourcentageProgressive
+    val pourcentageProgressive1 = pourcentageProgressive
 
     val progressiveAdjustment = priceDifference * (pourcentageProgressive1 / 100.0)
 

@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -80,8 +79,8 @@ fun PrixVentAdjustmentButtons(
     val totalPriceAdjustmentValue = when {
         prixVente < 10.0 -> 1.0
         prixVente < 50.0 -> 5.0
-        prixVente < 200.0 -> 10.0
-        prixVente < 500.0 -> 25.0
+        prixVente < 1000.0 -> 10.0
+        prixVente < 2000.0 -> 25.0
         else -> 50.0
     }
 
@@ -91,13 +90,6 @@ fun PrixVentAdjustmentButtons(
         prixVenteUnitaire < 20.0 -> 1.0
         prixVenteUnitaire < 50.0 -> 2.0
         else -> 5.0
-    }
-
-    val priceColor = when {
-        prixVente < prixAchat -> Color.Red
-        prixVente < prixAchat * 1.2 -> Color(0xFFFF9800) // Orange - low margin
-        prixVente < prixAchat * 1.5 -> Color(0xFF4CAF50) // Green - good margin
-        else -> Color(0xFF2196F3) // Blue - high margin
     }
 
     // Get tariff colors from the TypeChoisi enum
