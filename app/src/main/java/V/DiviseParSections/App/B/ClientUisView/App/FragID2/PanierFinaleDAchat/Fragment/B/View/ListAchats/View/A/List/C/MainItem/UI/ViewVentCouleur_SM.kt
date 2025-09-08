@@ -38,6 +38,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -136,10 +138,15 @@ fun ViewVentCouleur_Module(
 
     val finale_Tariff = findTariff ?: default_Tariff.first
 
-
     // Main container with proper layout structure
     Column(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = relative_M10OperationVentCouleur,
+                    key = SemanticsPropertyKey("relative_M10OperationVentCouleur")
+                )
+            }
             .getSemanticsTag(
                 nomVal = "defaultM3CouleurProduitInfos", data = defaultM10Vent
             )

@@ -199,9 +199,9 @@ fun View_M14VentPeriod(
                     tint = MaterialTheme.colorScheme.error
                 )
             }
-
+            val key =relative_M14VentPeriode.keyID.takeLast(3)
             Text(
-                text = "m14VentPeriode: ${relative_M14VentPeriode.get_DebugInfos()}",
+                text = "m14VentPeriode: key =  ${key}- ${relative_M14VentPeriode.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)

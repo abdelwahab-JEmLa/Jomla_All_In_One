@@ -10,26 +10,12 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import android.content.Context
-import android.graphics.Paint
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
-import android.os.Bundle
-import android.os.CancellationSignal
-import android.os.ParcelFileDescriptor
-import android.print.PageRange
-import android.print.PrintAttributes
-import android.print.PrintDocumentAdapter
-import android.print.PrintDocumentInfo
-import android.print.PrintManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,10 +24,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -60,14 +46,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Preview
 @Composable
@@ -81,6 +62,7 @@ data class ActionButtonData(
     val key: String,
     val content: @Composable () -> Unit
 )
+// Updated DetailsBonVent.kt - Adding separate Bluetooth and PDF print buttons
 
 @Composable
 fun DetailsBonVent(
@@ -99,10 +81,7 @@ fun DetailsBonVent(
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
     val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
 
-    // Create list of action buttons for LazyColumn
-// In your DetailsBonVent.kt file, update the actionButtons list:
-
-// Create list of action buttons for LazyColumn
+    // Updated action buttons with separate Bluetooth and PDF buttons
     val actionButtons = remember(uiState, isMinimized) {
         listOf(
             ActionButtonData("filter") {
@@ -112,18 +91,37 @@ fun DetailsBonVent(
                     onToggleFilter = { viewModel.toggelePanierFilterNonTrouve() }
                 )
             },
-            ActionButtonData("print") {
-                PrintButton(
+            // Bluetooth Print Button - Only prints via Bluetooth
+            ActionButtonData("print_bluetooth") {
+                BluetoothPrintButton(
                     showLabel = !isMinimized,
-                    onPrint = {
-                        printHandler.printVentReceiptWithDirectPdf(
+                    onPrint = { operations ->
+                        printHandler.printBluetoothOnly(
                             context = context,
                             repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
                             repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                             scope = scope,
-                            relative_ListM10OperationVentCouleur = it,
+                            relative_ListM10OperationVentCouleur = operations,
+                            bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                        )
+                    }
+                )
+            },
+            // PDF Print Button - Only creates PDF
+            ActionButtonData("print_pdf") {
+                PdfPrintButton(
+                    showLabel = !isMinimized,
+                    onPrint = { operations ->
+                        printHandler.printPdfOnly(
+                            context = context,
+                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+                            repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
+                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
+                            client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
+                            scope = scope,
+                            relative_ListM10OperationVentCouleur = operations,
                             bonVent = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     }
@@ -150,6 +148,7 @@ fun DetailsBonVent(
         )
     }
 
+    // Rest of the composable remains the same...
     if (comptAppActuelle != null) {
         Box(
             modifier = modifier
@@ -207,6 +206,98 @@ fun DetailsBonVent(
         }
     } else {
         ErrorCard(modifier = modifier)
+    }
+}
+
+@Composable
+fun BluetoothPrintButton(
+    aCentralFacade: ACentralFacade = koinInject(),
+    showLabel: Boolean,
+    onPrint: (List<M10OperationVentCouleur>) -> Unit
+) {
+    val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter { vent ->
+            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                    vent.quantity > 0
+        }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(48.dp),
+            onClick = { onPrint(activeVents) },
+            containerColor = Color(0xFF2196F3) // Blue for Bluetooth
+        ) {
+            Icon(
+                imageVector = Icons.Default.Bluetooth,
+                contentDescription = "Imprimer Bluetooth",
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "Bluetooth",
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFF2196F3),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun PdfPrintButton(
+    aCentralFacade: ACentralFacade = koinInject(),
+    showLabel: Boolean,
+    onPrint: (List<M10OperationVentCouleur>) -> Unit
+) {
+    val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter { vent ->
+            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                    vent.quantity > 0
+        }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(48.dp),
+            onClick = { onPrint(activeVents) },
+            containerColor = Color(0xFFFF5722) // Orange/Red for PDF
+        ) {
+            Icon(
+                imageVector = Icons.Default.PictureAsPdf,
+                contentDescription = "Créer PDF",
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "PDF",
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFFF5722),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 
