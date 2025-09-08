@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -291,7 +293,8 @@ class PrintReceiptHandler_Juil(
             if (generatePdf || !isBluetoothAvailable) {
                 scope?.launch {
                     try {
-                        val creditData = PrintInPdf_itextpdf_Handler.CreditReceiptData(
+                        // Fixed: Import and use CreditReceiptData from the correct package
+                        val creditData = CreditReceiptData(
                             client = client,
                             totalAmount = bonVent.sum_De_Totale_Vents,
                             currentPayment = bonVent.versement,

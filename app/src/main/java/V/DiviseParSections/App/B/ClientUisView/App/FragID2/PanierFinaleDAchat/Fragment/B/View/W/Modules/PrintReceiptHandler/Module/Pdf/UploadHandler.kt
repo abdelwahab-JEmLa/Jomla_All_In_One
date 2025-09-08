@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
 import android.content.Context
 import android.content.Intent
@@ -32,7 +32,7 @@ class UploadHandler {
 
     suspend fun uploadToFirebaseStorage(file: File, fileName: String): String {
         val fileRef = storageRef.child(fileName)
-        val uploadTask = fileRef.putFile(android.net.Uri.fromFile(file))
+        val uploadTask = fileRef.putFile(Uri.fromFile(file))
         uploadTask.await()
         return fileRef.downloadUrl.await().toString()
     }
