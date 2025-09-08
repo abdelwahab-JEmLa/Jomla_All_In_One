@@ -7,9 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import java.io.File
 
-/**
- * Enum defining different types of PDF receipts
- */
 enum class PdfType {
     RECEIPT_ONLY,           // Regular receipt with products only
     RECEIPT_WITH_CREDIT,    // Receipt with products + credit section
