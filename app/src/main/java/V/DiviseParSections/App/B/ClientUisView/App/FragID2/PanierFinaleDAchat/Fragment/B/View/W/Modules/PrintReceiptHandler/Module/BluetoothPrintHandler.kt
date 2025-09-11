@@ -46,7 +46,7 @@ class BluetoothPrintHandler {
                 repoM1Produit
             )
 
-            val finalBluetoothText = if (showCreditSection && bonVent != null) {
+            val finalBluetoothText = if (showCreditSection && bonVent != null && false) {
                 addCreditSectionToBluetoothText(
                     texteImprimable.toString(), 
                     client, 

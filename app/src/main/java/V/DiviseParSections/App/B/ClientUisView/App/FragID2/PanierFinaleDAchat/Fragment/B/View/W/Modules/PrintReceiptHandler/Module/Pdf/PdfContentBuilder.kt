@@ -1,10 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Cell
@@ -98,7 +95,7 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
 
         addCompactLabelValue(doc, "Ancien Solde :", "${formatter.round(oldBalance)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Bon actuel :", "${formatter.round(currentBill)} Da", regularFont, boldFont)
-        addCompactLabelValue(doc, "Versement :", "${formatter.round(versement)} Da", regularFont, boldFont)
+     //   addCompactLabelValue(doc, "Versement :", "${formatter.round(versement)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Nouv. Soldé :", "${formatter.round(newBalance)} Da", regularFont, boldFont)
     }
 
