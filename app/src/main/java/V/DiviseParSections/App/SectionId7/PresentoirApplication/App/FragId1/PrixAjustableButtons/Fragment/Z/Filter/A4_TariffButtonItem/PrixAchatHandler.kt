@@ -94,7 +94,7 @@ fun PrixAchatHandler(
             val nouveauPrix = newPurchasePrice + ancienBenefice
 
             val updatedTariff = tariff.copy(
-                prixCurrency = nouveauPrix.coerceAtLeast(newPurchasePrice),
+                prixCurrency = nouveauPrix,
                 dernierTimeTampsSynchronisationAvecFireBase = currentTime
             )
             repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)

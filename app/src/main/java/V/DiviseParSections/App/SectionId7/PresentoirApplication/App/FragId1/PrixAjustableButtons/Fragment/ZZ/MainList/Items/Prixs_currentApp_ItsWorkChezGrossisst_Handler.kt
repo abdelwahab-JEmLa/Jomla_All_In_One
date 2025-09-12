@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Genere_Tariffs_currentApp_ItsWorkChezGrossisst
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -83,6 +82,59 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     }
 
     /**
+     * Helper function to get current benefit margin for different tariff types
+     */
+    fun getCurrentBenefitForTariffType(tariffType: M13TarificationInfos.TypeChoisi): Double {
+        return when (tariffType) {
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros -> 5.0 // Minimum 5 unit benefit for SuperGros
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> 10.0 // Minimum 10 unit benefit for Gro
+            else -> 0.0
+        }
+    }
+
+    fun updatePurchasePriceIfNeeded(newSellingPrice: Double) {
+        // Apply this logic for SuperGros and Gro tariff types
+        if (typeTarification !in setOf(
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
+            )) {
+            return
+        }
+
+        // Get current purchase price tariff
+        val currentPurchaseTariff = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat]
+            ?.maxByOrNull { it.creationTimestamps }
+
+        // Calculate new purchase price with current benefit margin - no checks, always update
+        val currentBenefit = getCurrentBenefitForTariffType(typeTarification)
+        val newPurchasePrice = newSellingPrice - currentBenefit
+
+        // Update purchase price tariff
+        if (currentPurchaseTariff != null) {
+            val updatedPurchaseTariff = currentPurchaseTariff.copy(
+                prixCurrency = newPurchasePrice,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+            repositorysMainSetter.upsert_M13TarificationInfos(updatedPurchaseTariff)
+        } else {
+            // Create new purchase price tariff if it doesn't exist
+            val newPurchaseTariff = M13TarificationInfos(
+                parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: "",
+                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                prixCurrency = newPurchasePrice,
+                parent_M1Produit_KeyId = relative_Produit.keyID,
+                parent_M1Produit_DebugInfos = relative_Produit.nom,
+                creationTimestamps = System.currentTimeMillis()
+            )
+            repositorysMainSetter.upsert_M13TarificationInfos(newPurchaseTariff)
+        }
+
+        // Also update the product's base purchase price
+        val updatedProduit = relative_Produit.copy(prixAchat = newPurchasePrice)
+        repositorysMainSetter.upsert_M1Produit(updatedProduit)
+    }
+
+    /**
      * Updates related grossist tariffs when the purchase price (Tariff_ItsWorkInGrossist_Achat) changes
      */
     fun updateRelatedGrossistTariffs(newPurchasePrice: Double) {
@@ -110,7 +162,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
             // Update the tariff with new price
             val updatedTariff = tariff.copy(
-                prixCurrency = newSellingPrice.coerceAtLeast(newPurchasePrice), // Ensure selling price >= purchase price
+                prixCurrency = newSellingPrice, // Ensure selling price >= purchase price
                 dernierTimeTampsSynchronisationAvecFireBase = currentTime
             )
 
@@ -137,6 +189,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
+        updatePurchasePriceIfNeeded(newPrix)
 
         // If this is a purchase price tariff being updated, also update related grossist tariffs
         if (typeTarification == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat) {
@@ -213,17 +266,17 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                                 }
                             )
                         }
-                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> {
-                            BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler(
-                                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                                relative_Produit = relative_Produit,
-                                relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                                onPriceChange = { newPrice, shouldCreateNew ->
-                                    handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
-                                }
-                            )
-                        }
+                        /*  M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                          M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> {
+                              BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler(
+                                  allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                                  relative_Produit = relative_Produit,
+                                  relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
+                                  onPriceChange = { newPrice, shouldCreateNew ->
+                                      handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
+                                  }
+                              )
+                          }    */
                         else->{}
                     }
                 }

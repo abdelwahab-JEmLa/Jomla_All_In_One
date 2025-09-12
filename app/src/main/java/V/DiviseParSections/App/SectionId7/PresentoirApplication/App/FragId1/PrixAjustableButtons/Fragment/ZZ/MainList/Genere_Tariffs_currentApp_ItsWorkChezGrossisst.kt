@@ -11,37 +11,41 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
         aCentralFacade: ACentralFacade,
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-        .lastOrNull { tariff ->
+        .filter { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
+        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
     fun find_existing_Tariff_Grossist_Achat(
         aCentralFacade: ACentralFacade,
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-        .lastOrNull { tariff ->
+        .filter { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
+        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
     fun find_existing_Tariff_Grossist_Progressive(
         aCentralFacade: ACentralFacade,
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-        .lastOrNull { tariff ->
+        .filter { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
+        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
     fun find_existing_Tariff_Grossist_Gro(
         aCentralFacade: ACentralFacade,
         relative_M1Produit: ArticlesBasesStatsTable,
     ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-        .lastOrNull { tariff ->
+        .filter { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro &&
                     tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
+        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
     fun getOrCreate_Tariff_Grossist_Achat(
         aCentralFacade: ACentralFacade,

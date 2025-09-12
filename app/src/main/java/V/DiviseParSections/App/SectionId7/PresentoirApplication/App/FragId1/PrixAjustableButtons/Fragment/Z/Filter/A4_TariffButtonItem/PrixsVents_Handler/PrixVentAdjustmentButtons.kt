@@ -105,13 +105,13 @@ fun PrixVentAdjustmentButtons(
 
     fun updateTotalPriceImmediately(newTotalPrice: Double) {
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newTotalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newTotalPrice, shouldCreateNew)
     }
 
     fun updateUnitPriceImmediately(newUnitPrice: Double) {
         val totalPrice = newUnitPrice * nombreUnite
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(totalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(totalPrice, shouldCreateNew)
     }
 
     fun handleUnitPriceEditDone() {

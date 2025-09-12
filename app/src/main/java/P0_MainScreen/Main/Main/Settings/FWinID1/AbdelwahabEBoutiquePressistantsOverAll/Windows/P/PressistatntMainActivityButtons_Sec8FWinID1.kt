@@ -344,10 +344,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 showAlertDialog = true
                             }
                         } else {
-                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
-                                aCentralFacade = aCentralFacade,
-                                focusedValuesGetter = focusedValuesGetter
-                            )
+                            if (travailleChezGrossisst3Ali == false) {
+                                Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
+                                    aCentralFacade = aCentralFacade,
+                                    focusedValuesGetter = focusedValuesGetter
+                                )
+                            }
                         }
                     }
 
@@ -368,7 +370,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin ).ifTrue {
+                    (focusedValuesGetter.currentApp_Est_Admin).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,

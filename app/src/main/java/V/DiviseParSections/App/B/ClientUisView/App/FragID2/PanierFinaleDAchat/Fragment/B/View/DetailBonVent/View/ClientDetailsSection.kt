@@ -59,7 +59,6 @@ fun ClientDetailsSection(
 
             if (onVentClient != null) {
                 with(onVentClient) {
-                    // FIXED: Show client name on same line as status when minimized
                     if (isMinimized) {
                         Text(
                             text = "Etate: $nom",

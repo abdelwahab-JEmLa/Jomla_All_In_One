@@ -410,9 +410,7 @@ fun AutrePrixsAffiche(
                     IconButton(
                         onClick = {
                             val newPrice =
-                                (latestTariffLocalData.prixCurrency - decrease_Value).coerceAtLeast(
-                                    0.0
-                                )
+                                (latestTariffLocalData.prixCurrency - decrease_Value)
                             latestTariffLocalData = latestTariffLocalData.copy(
                                 prixCurrency = newPrice
                             )

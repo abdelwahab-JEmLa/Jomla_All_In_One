@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -44,12 +45,10 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean,) -> Unit
 ) {
-    // Utilise le prix d'achat du produit directement au lieu de chercher Tariff_Achat_Depuit_Grossisst
     val prixAchat = relative_Produit.prixAchat
     val prixVente = relative_Tariff.prixCurrency
     val nombreUnite = relative_Produit.nombreUniteInt
 
-    // Calculate unit selling price
     val prixVenteUnitaire = if (nombreUnite > 0) prixVente / nombreUnite else 0.0
 
     var isEditingUnitPrice by remember { mutableStateOf(false) }
@@ -58,6 +57,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
     var totalPriceText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val totalPriceFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(isEditingUnitPrice) {
         if (isEditingUnitPrice) {
@@ -99,13 +99,13 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
 
     fun updateTotalPriceImmediately(newTotalPrice: Double) {
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newTotalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newTotalPrice, shouldCreateNew)
     }
 
     fun updateUnitPriceImmediately(newUnitPrice: Double) {
         val totalPrice = newUnitPrice * nombreUnite
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(totalPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(totalPrice, shouldCreateNew)
     }
 
     fun handleUnitPriceEditDone() {
@@ -114,6 +114,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
             updateUnitPriceImmediately(newUnitPrice)
         }
         isEditingUnitPrice = false
+        focusManager.clearFocus()
     }
 
     fun handleTotalPriceEditDone() {
@@ -122,6 +123,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
             updateTotalPriceImmediately(newTotalPrice)
         }
         isEditingTotalPrice = false
+        focusManager.clearFocus()
     }
 
     // Card with both selling prices in column
@@ -133,8 +135,6 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
         Column(
             modifier = Modifier.padding(4.dp)
         ) {
-
-
             // Total selling price section at top
             Row(
                 modifier = Modifier
@@ -142,7 +142,8 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Decrease total price button
-                IconButton(
+                IconButton(         //<--
+                //TODO(1): pk quand je click au ca au Tariff_ItsWorkInGrossist_Achat ca ne cree pas le tariff avec prix diminue enleve les limites
                     onClick = {
                         val newPrice =
                             (prixVente - totalPriceAdjustmentValue).coerceAtLeast(prixAchat)
@@ -165,6 +166,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                 }
 
                 // Total price display/edit
+// Total price display/edit
                 if (isEditingTotalPrice) {
                     OutlinedTextField(
                         value = totalPriceText,
@@ -178,7 +180,9 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { handleTotalPriceEditDone() }
+                            onDone = {
+                                handleTotalPriceEditDone()
+                            }
                         ),
                         singleLine = true
                     )
@@ -190,7 +194,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                             .padding(4.dp)
                             .clickable {
                                 isEditingTotalPrice = true
-                                totalPriceText = ""
+                                totalPriceText = "" // <-- Champ vide
                             },
                         color = tariffTextColor
                     )
@@ -269,7 +273,9 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                                 imeAction = ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(
-                                onDone = { handleUnitPriceEditDone() }
+                                onDone = {
+                                    handleUnitPriceEditDone()
+                                }
                             ),
                             singleLine = true
                         )
@@ -281,7 +287,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                                 .padding(2.dp)
                                 .clickable {
                                     isEditingUnitPrice = true
-                                    unitPriceText = ""
+                                    unitPriceText = "" // <-- Champ vide
                                 },
                             color = tariffTextColor,
                             fontSize = 10.sp

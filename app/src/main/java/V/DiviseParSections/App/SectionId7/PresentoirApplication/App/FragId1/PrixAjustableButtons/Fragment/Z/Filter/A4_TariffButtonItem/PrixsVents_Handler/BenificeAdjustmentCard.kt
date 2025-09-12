@@ -99,14 +99,14 @@ fun BenificeAdjustmentButtons(
     fun updateBenefitImmediately(newBenefit: Double) {
         val newSellingPrice = prixAchat + newBenefit
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun updateUnitBenefitImmediately(newUnitBenefit: Double) {
         val totalBenefit = newUnitBenefit * nombreUnite
         val newSellingPrice = prixAchat + totalBenefit
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun handleUnitBenefitEditDone() {
@@ -219,7 +219,7 @@ fun BenificeAdjustmentButtons(
                     // Decrease unit benefit button
                     IconButton(
                         onClick = {
-                            val newUnitBenefit = (beneficeUnitaire - unitBenefitAdjustmentValue).coerceAtLeast(0.0)
+                            val newUnitBenefit = (beneficeUnitaire - unitBenefitAdjustmentValue)
                             updateUnitBenefitImmediately(newUnitBenefit)
                         },
                         modifier = Modifier

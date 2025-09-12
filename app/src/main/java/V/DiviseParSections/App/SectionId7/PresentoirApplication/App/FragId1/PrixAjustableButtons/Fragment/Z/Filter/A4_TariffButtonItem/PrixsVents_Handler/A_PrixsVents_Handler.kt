@@ -228,7 +228,7 @@ fun BenefitDisplayRow(
 
     fun updateBenefitImmediately(newBenefit: Double) {
         val newSellingPrice = prixAchat + newBenefit
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), false)
+        onPriceChange(newSellingPrice, false)
     }
 
     fun handleTotalBenefitEditDone() {

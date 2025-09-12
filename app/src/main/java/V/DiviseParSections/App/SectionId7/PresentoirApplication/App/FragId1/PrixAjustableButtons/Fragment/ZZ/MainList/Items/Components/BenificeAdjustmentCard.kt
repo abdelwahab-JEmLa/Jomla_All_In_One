@@ -107,14 +107,14 @@ fun BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler(
     fun updateBenefitImmediately(newBenefit: Double) {
         val newSellingPrice = prixAchat + newBenefit
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun updateUnitBenefitImmediately(newUnitBenefit: Double) {
         val totalBenefit = newUnitBenefit * nombreUnite
         val newSellingPrice = prixAchat + totalBenefit
         val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newSellingPrice.coerceAtLeast(prixAchat), shouldCreateNew)
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun handleUnitBenefitEditDone() {

@@ -287,8 +287,9 @@ private fun CreateNewClientIcon(
     val currentLocation = locationTracker?.getCurrentPosition()
 
     val newClient = M2Client(
+        keyID =M2Client.generePushKey(),
         creationTimestamps = System.currentTimeMillis(),
-        nom = searchQuery.ifEmpty { "Err Definition" },
+        nom = searchQuery.ifEmpty {" Person ${M2Client.generePushKey().takeLast(4)}"},
         title = searchQuery.ifEmpty {
             if (isFournisseurMode) "Nouveau Fournisseur" else "Nouveau Client"
         },
