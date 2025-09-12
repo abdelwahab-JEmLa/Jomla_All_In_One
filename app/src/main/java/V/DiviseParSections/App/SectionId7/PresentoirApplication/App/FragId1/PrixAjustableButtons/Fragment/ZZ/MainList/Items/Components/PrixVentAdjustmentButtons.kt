@@ -142,11 +142,10 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Decrease total price button
-                IconButton(         //<--
-                //TODO(1): pk quand je click au ca au Tariff_ItsWorkInGrossist_Achat ca ne cree pas le tariff avec prix diminue enleve les limites
+                IconButton(
                     onClick = {
                         val newPrice =
-                            (prixVente - totalPriceAdjustmentValue).coerceAtLeast(prixAchat)
+                            (prixVente - totalPriceAdjustmentValue)
                         updateTotalPriceImmediately(newPrice)
                     },
                     modifier = Modifier

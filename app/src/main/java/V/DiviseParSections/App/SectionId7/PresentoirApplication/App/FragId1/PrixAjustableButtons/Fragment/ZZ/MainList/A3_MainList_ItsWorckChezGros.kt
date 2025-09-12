@@ -188,6 +188,7 @@ fun A3_MainList_ItsWorckChezGros(
 
             }
             Spacer(modifier = Modifier.height(4.dp))
-        }
+        }    //<--
+        //TODO(1): ajout le button gerant comme au autre
     }
 }
