@@ -2,14 +2,17 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.GerantButton
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Prixs_currentApp_ItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -35,12 +39,18 @@ fun A3_MainList_ItsWorckChezGros(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
     clientDefiniTariffs: List<M13TarificationInfos>,
-    itsLancedDepuitComposeParent: ItsLancedDepuit?
+    itsLancedDepuitComposeParent: ItsLancedDepuit?,
+    showLabels: Boolean = true,
+    onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit = { _, _, _ -> },
+    onClickAnulationButton: (() -> Unit)? = null,
+    context: Context = LocalContext.current
 ) {
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
 
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val itsLancedDepuit_EditeBaseDonne =
+        itsLancedDepuitComposeParent is ItsLancedDepuit.EditeBaseDonne
 
     // Create instance of tariff generator
     val tariffGenerator = remember { Genere_Tariffs_currentApp_ItsWorkChezGrossisst() }
@@ -160,35 +170,75 @@ fun A3_MainList_ItsWorckChezGros(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
                 set(SemanticsPropertyKey("allTariffsGroupedAndSorted"), allTariffsGroupedAndSorted)
             }
             .getSemanticsTag(last_list_M13TarificationInfos, "")
             .getSemanticsTag(relative_M2Client?.keyID, "", 1)
-            .getSemanticsTag(list_M13TarificationInfos, "", 2),
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
-        verticalAlignment = Alignment.Top
+            .getSemanticsTag(list_M13TarificationInfos, "", 2)
     ) {
-        Column(
-            modifier = modifier
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            verticalAlignment = Alignment.Top
         ) {
-            allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
-                val relative_Tariff =
-                    relativeList_Tariff.maxByOrNull { it.creationTimestamps }
+            Column {
+                allTariffsGroupedAndSorted.forEach { (centralType, relativeList_Tariff) ->
+                    val relative_Tariff =
+                        relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
-                if (relative_Tariff != null) {
-                    Prixs_currentApp_ItsWorkChezGrossisst_Handler(
-                        allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                        relative_Produit = relative_M1Produit,
-                        relative_Tariff = relative_Tariff,
-                    )
+                    if (relative_Tariff != null) {
+                        Prixs_currentApp_ItsWorkChezGrossisst_Handler(
+                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
+                            relative_Produit = relative_M1Produit,
+                            relative_Tariff = relative_Tariff,
+                        )
+                    }
                 }
-
+                Spacer(modifier = Modifier.height(4.dp))
             }
-            Spacer(modifier = Modifier.height(4.dp))
-        }    //<--
-        //TODO(1): ajout le button gerant comme au autre
+        }
+
+        // Add GerantButton for grossist mode (similar to regular MainList)
+        itsLancedDepuit_EditeBaseDonne.ifFalse {
+            val priceToUse = if (max_Prix != 0.0) {
+                max_Prix
+            } else {
+                // Use the highest grossist price as fallback
+                standardTariffs.maxOfOrNull { it.prixCurrency } ?: relative_M1Produit.prixVent
+            }
+
+            val typeToUse = if (max_Prix != 0.0) {
+                // Find which grossist type has the max price
+                standardTariffs.find { it.prixCurrency == max_Prix }?.typeChoisi
+                    ?: TypeChoisi.Tariff_ItsWorkInGrossist_Gro
+            } else {
+                TypeChoisi.Tariff_ItsWorkInGrossist_Gro // Default to Gro type
+            }
+
+            val tarificationInfo = M13TarificationInfos(
+                typeChoisi = typeToUse,
+                prixCurrency = priceToUse,
+            )
+
+            // Find the corresponding tariff from standardTariffs
+            val correspondingTariff = standardTariffs.find {
+                it.typeChoisi == typeToUse || it.prixCurrency == priceToUse
+            } ?: standardTariffs.lastOrNull()
+
+            GerantButton(
+                relative_M1Produit = relative_M1Produit,
+                relative_Tariff = correspondingTariff,
+                viewModel = viewModel,
+                showLabels = showLabels,
+                tariffsGroupedByType = allTariffsGroupedAndSorted,
+                onClickPrixButton = {
+                    onClickPrixButton(typeToUse, tarificationInfo, context)
+                },
+                onClickAnulationButton = onClickAnulationButton
+            )
+        }
     }
 }

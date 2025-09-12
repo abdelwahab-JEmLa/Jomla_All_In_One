@@ -38,6 +38,8 @@ fun Dialog_Choisire_Quantity_Carton(
 
     AlertDialog(
         onDismissRequest = {
+            // Fixed: Provide haptic feedback on dismiss
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             onClick_Quantity_Button(null)
         },
         properties = DialogProperties(
@@ -94,11 +96,12 @@ fun Dialog_Choisire_Quantity_Carton(
             }
         },
         confirmButton = {
-            OutlinedButton(  //<--
-            //TODO(1): pk ca ne fermepad le dialoge ou le dissmiss 
+            OutlinedButton(
                 onClick = {
+                    // Fixed: Add haptic feedback and ensure proper dismissal
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onClick_Quantity_Button(null)
-                },
+                }
             ) {
                 Text("Close")
             }

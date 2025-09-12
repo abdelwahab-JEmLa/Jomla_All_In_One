@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.ViewModule
@@ -30,10 +34,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +49,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,16 +83,41 @@ fun ProductHeader_T1(
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
 
+    // State for editing product name
+    var isEditingName by remember { mutableStateOf(false) }
+    var editingNameText by remember { mutableStateOf(relative_Produit.nom) }
+    val focusRequester = remember { FocusRequester() }
+
     // Get category name from the categories map
     val categoriesMap = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
     val categoryName = relative_Produit.idParentCategorie?.let { categoryId ->
         categoriesMap[categoryId]?.nom
     } ?: "Sans Catégorie"
+
     fun update_produit(produit:ArticlesBasesStatsTable): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )
     }
+
+    // Function to save the edited name
+    fun saveEditedName() {
+        if (editingNameText.isNotBlank() && editingNameText != relative_Produit.nom) {
+            val updatedProduit = relative_Produit.copy(
+                nom = editingNameText.trim(),
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+            viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(updatedProduit)
+        }
+        isEditingName = false
+    }
+
+    // Function to cancel editing
+    fun cancelEditingName() {
+        editingNameText = relative_Produit.nom
+        isEditingName = false
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,15 +162,95 @@ fun ProductHeader_T1(
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = relative_Produit.nom,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else MaterialTheme.colorScheme.onPrimaryContainer,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    // Product name - now editable
+                    if (isEditingName) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = editingNameText,
+                                onValueChange = { editingNameText = it },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequester),
+                                singleLine = true,
+                                textStyle = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+
+                            // Save button
+                            IconButton(
+                                onClick = { saveEditedName() },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Sauvegarder",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            // Cancel button
+                            IconButton(
+                                onClick = { cancelEditingName() },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Annuler",
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+
+                        // Request focus when entering edit mode
+                        LaunchedEffect(isEditingName) {
+                            if (isEditingName) {
+                                focusRequester.requestFocus()
+                            }
+                        }
+                    } else {
+                        // Display mode - clickable to edit
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = relative_Produit.nom,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else MaterialTheme.colorScheme.onPrimaryContainer,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        editingNameText = relative_Produit.nom
+                                        isEditingName = true
+                                    }
+                            )
+
+                            // Edit icon to indicate clickability
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Modifier le nom",
+                                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clickable {
+                                        editingNameText = relative_Produit.nom
+                                        isEditingName = true
+                                    }
+                            )
+                        }
+                    }
 
                     Text(
                         text = "Catégorie: $categoryName",

@@ -100,6 +100,8 @@ fun ViewVentCouleur_T1(
     var isEditingColorName by remember { mutableStateOf(false) }
     var editingColorName by remember { mutableStateOf("") }
     val colorNameFocusRequester = remember { FocusRequester() }
+
+    // FIXED: Separate state for carton dialog specifically
     var showCartonDialogForVent by remember { mutableStateOf<M10OperationVentCouleur?>(null) }
 
     // Camera dialog state
@@ -282,16 +284,9 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    val shouldShowCartonDialog by remember(
-        relative_M10OperationVentCouleur,
-        relative_M3CouleurInfos.keyID,
-        relative_produit.setIN_Vent_Its_Quantity_Represent
-    ) {
-        derivedStateOf {
-            val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation
-            onVentM3?.parent_M3CouleurProduit_KeyID == relative_M3CouleurInfos.keyID &&
-                    relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
-        }
+    // FIXED: This should be controlled by our local state, not the global focused state
+    val shouldShowCartonDialog by remember(showCartonDialogForVent) {
+        derivedStateOf { showCartonDialogForVent != null }
     }
 
     val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
@@ -445,43 +440,48 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
-                    if (relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(x = (-4).dp, y = 4.dp)
-                                .zIndex(2f)
-                        ) {
-                            SmallFloatingActionButton(
-                                onClick = {
-                                    relative_M10OperationVentCouleur?.let { findVent ->
+                    // FIXED: Carton button now properly shows carton dialog - Always visible at top end
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = (-4).dp, y = 4.dp)
+                            .zIndex(2f)
+                    ) {
+                        SmallFloatingActionButton(
+                            onClick = {
+                                // FIXED: Set up the operation and show carton dialog
+                                val ventToUse = relative_M10OperationVentCouleur ?: run {
+                                    // Create default vent if it doesn't exist
+                                    defaultM10Vent?.also { defaultVent ->
+                                        setter.ajoute_New_M10OperationVentCouleur(defaultVent)
                                         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                             finale_Tariff,
-                                            buildList { add(findVent) }
+                                            buildList { add(defaultVent) }
                                         )
-                                        // Use the same setter method as the regular dialog
-                                        setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
-                                    } ?: run {
-                                        defaultM10Vent?.let { defaultVent ->
-                                            setter.ajoute_New_M10OperationVentCouleur(defaultVent)
-                                            viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                                                finale_Tariff,
-                                                buildList { add(defaultVent) }
-                                            )
-                                        }
                                     }
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                },
-                                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f),
-                                contentColor = MaterialTheme.colorScheme.onSecondary,
-                                modifier = Modifier.size(28.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Inventory2,
-                                    contentDescription = "Add by carton",
-                                    modifier = Modifier.size(14.dp)
-                                )
-                            }
+                                }
+
+                                // Show carton dialog with the specific operation
+                                showCartonDialogForVent = ventToUse
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            },
+                            containerColor = if (relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
+                            } else {
+                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+                            },
+                            contentColor = if (relative_produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
+                                MaterialTheme.colorScheme.onSecondary
+                            } else {
+                                MaterialTheme.colorScheme.onTertiary
+                            },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Inventory2,
+                                contentDescription = "Add by carton",
+                                modifier = Modifier.size(14.dp)
+                            )
                         }
                     }
 
@@ -644,13 +644,14 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (shouldShowCartonDialog) {
+    // FIXED: Carton-specific dialog using local state
+    if (shouldShowCartonDialog && showCartonDialogForVent != null) {
         Dialog_Choisire_Quantity_Carton(
-            old_quantity = relative_M10OperationVentCouleur!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            old_quantity = showCartonDialogForVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
             quantite_Boit_Par_Carton = relative_produit.quantite_Boit_Par_Carton,
             label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
-            relative_M10OperationVentCouleur?.let { existingVent ->
+            showCartonDialogForVent?.let { existingVent ->
                 val updatedVent = new_Qyt?.let {
                     existingVent.copy(quantity = it)
                 }
@@ -660,10 +661,8 @@ fun ViewVentCouleur_T1(
                 }
             }
 
-            // Use the same dismiss method as the regular dialog
-            viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
-                relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
-            )
+            // FIXED: Close the carton dialog using local state
+            showCartonDialogForVent = null
         }
     }
 }
