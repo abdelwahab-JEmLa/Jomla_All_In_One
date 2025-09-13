@@ -65,7 +65,11 @@ fun Produit_Vent(
 
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer
+            else MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier
@@ -82,7 +86,9 @@ fun Produit_Vent(
                 Text(
                     text = produit?.nom ?: "Produit inconnu",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer
+                    else MaterialTheme.colorScheme.onSurface
                 )
 
                 // NonTrouve_Handler component
@@ -101,7 +107,8 @@ fun Produit_Vent(
                 Text(
                     text = "Première commande: $timeString",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                    else MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -110,7 +117,9 @@ fun Produit_Vent(
             val totalQuantity = ventList.sumOf { it.quantity }
             Text(
                 text = "Quantité totale: $totalQuantity",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer
+                else MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -119,7 +128,8 @@ fun Produit_Vent(
             Text(
                 text = "${ventList.size} opération(s)",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                else MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             // Show latest operation details if available
@@ -128,7 +138,8 @@ fun Produit_Vent(
                 Text(
                     text = "État: ${latestVent.etateActuellementEst}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                    else MaterialTheme.colorScheme.primary
                 )
             }
         }
