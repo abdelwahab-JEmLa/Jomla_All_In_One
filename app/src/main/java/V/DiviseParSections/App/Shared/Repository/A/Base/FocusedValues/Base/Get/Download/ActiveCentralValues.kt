@@ -45,9 +45,6 @@ data class ActiveCentralValues(
     // FIXED: Add flag to track if we're in temporary mode
     val isInTemporaryShowAllMode: Boolean = false,
 
-    //-----------------Outlined texts.Values-------------------------------------------------------------------------------------------------------------------------
-    val fastSearchProduitPourVent: String = "",
-
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
@@ -60,11 +57,19 @@ data class ActiveCentralValues(
     val dialog_achats_ventPeriod: M14VentPeriode? = null,
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
+
+    //-----------------Fragmets-------------------------------------------------------------------------------------------------------------------------
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
     val afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     val outlined_filter_searcher_achat: String = "",
+    //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
+    val fastSearchProduitPourVent: String = "",
+    val affiche_Dialog_Fast_Affiche_Panie: Boolean = false,
+
+    // FIXED: Properly instantiate ActiveFilter with default value
+    val activeFilter: ActiveFilter = ActiveFilter.Standart,
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
@@ -102,5 +107,17 @@ data class ActiveCentralValues(
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
             RoleDefinieParSourceACetteFragment()
+    }
+
+    // FIXED: Properly defined sealed class with concrete implementations
+    sealed class ActiveFilter {
+        data object Standart : ActiveFilter()
+        data object NonTrouve : ActiveFilter()
+        data object PrixAuGerant : ActiveFilter()
+
+        // Add utility methods if needed
+        fun isStandart(): Boolean = this is Standart
+        fun isNonTrouve(): Boolean = this is NonTrouve
+        fun isPrixAuGerant(): Boolean = this is PrixAuGerant
     }
 }

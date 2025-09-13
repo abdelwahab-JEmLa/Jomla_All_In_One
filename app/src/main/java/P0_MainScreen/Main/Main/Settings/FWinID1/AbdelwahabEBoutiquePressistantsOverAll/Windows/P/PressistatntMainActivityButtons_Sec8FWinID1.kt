@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
@@ -353,7 +354,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    (activeDialogSearchM1Produit == false).ifTrue {
+                    (activeDialogSearchM1Produit == false && !itsFragmentProduitFastSearchDialog).ifTrue {
                         B1CataloguesAffiche(
                             appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
                             showLabels = showLabels,
@@ -388,7 +389,45 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
                 }
 
-                activeDialogSearchM1Produit?.ifFalse {
+                itsFragmentProduitFastSearchDialog.ifTrue {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        FloatingActionButton(         //<--
+                            //TODO(1): fait que ca soit un toggle button qui afficeh et deafficeh le dialog
+                            modifier = Modifier
+                                .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
+                                .size(40.dp),
+                            onClick = {
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
+                                    focusedValuesGetter.active_Central_Values.copy(
+                                        affiche_Dialog_Fast_Affiche_Panie = true
+                                    )
+                                )
+                            },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Paid,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                text = "Dialog_Fast_Affiche_Panie",
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                (activeDialogSearchM1Produit == true || itsFragmentProduitFastSearchDialog).ifFalse {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
