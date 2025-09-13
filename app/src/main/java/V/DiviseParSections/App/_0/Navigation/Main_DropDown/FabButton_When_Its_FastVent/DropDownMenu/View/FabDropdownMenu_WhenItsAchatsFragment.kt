@@ -1,0 +1,33 @@
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View
+
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun FabDropdownMenu_WhenIts_FragFastVent (
+    onDismissDropdown: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .offset(y = (-90).dp)
+    ) {
+        DropdownMenu(
+            expanded = true,
+            onDismissRequest = onDismissDropdown,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        ) {
+            DropDownItem_WhenIts_FragFastVent(
+                nomFun = "affiche_CheckList_ChoisiseurActiveFilter",
+                onDismissDropdown = onDismissDropdown
+            )
+        }
+    }
+}

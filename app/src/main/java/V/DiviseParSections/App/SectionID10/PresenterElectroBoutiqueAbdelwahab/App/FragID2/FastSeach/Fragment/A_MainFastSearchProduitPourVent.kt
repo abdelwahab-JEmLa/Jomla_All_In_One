@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -67,7 +68,8 @@ fun get_New_Datas(
         creationTimestamp = System.currentTimeMillis(),
         nom = searchQuery,
         couleur1 = keyIDM3CouleurProduitInfos,
-        idParentCategorie = idParentCategorie
+        idParentCategorie = idParentCategorie,
+        disponibilityEtates = DisponibilityEtates.NON_DISPO
     )
 
 

@@ -71,6 +71,7 @@ data class ActiveCentralValues(
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val activeFilter: ActiveFilter = ActiveFilter.Standart,
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
+    val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,

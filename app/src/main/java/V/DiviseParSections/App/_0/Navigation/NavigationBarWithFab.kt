@@ -12,6 +12,8 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.FabDropdownMenu_WhenItsAchatsFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -136,6 +138,14 @@ fun NavigationBarWithFab(
                     }
                 )
             }
+
+            activeFragment == Screen.FragmentProduitFastSearchDialog  -> {     //<--
+            //TODO(1): pk ca s affiche et le button nom 
+                FabDropdownMenu_WhenIts_FragFastVent(
+                    onDismissDropdown = { showFabDropdown = false },
+                )
+            }
+
             else -> {
                 FabButton(
                     showWarningState = showWarningState,
@@ -207,6 +217,12 @@ fun NavigationBarWithFab(
 
         if (focusedValuesGetter.active_Central_Values.afficheFloatingOutlinedSearcher_of_Achat) {
             FragAchats_FloatingOutlinedSearcher_4(
+                aCentralFacade = aCentralFacade,
+                focusedValuesGetter = focusedValuesGetter
+            )
+        }
+        if (focusedValuesGetter.active_Central_Values.affiche_CheckList_ChoisiseurActiveFilter) {
+            CheckList_ChoisiseurActiveFilter(
                 aCentralFacade = aCentralFacade,
                 focusedValuesGetter = focusedValuesGetter
             )
