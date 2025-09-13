@@ -95,7 +95,7 @@ fun InfoButton(
                 activeCentralValues.copy(
                     held_Produit_Pour_Move_Au_Position_Store = null,
                     fastSearchProduitPourVent = productName,
-                    affiche_Dialog_Fast_Affiche_Panie = true
+                    affiche_Dialog_Fast_Affiche_Panie = false
                 )
             )
         },
