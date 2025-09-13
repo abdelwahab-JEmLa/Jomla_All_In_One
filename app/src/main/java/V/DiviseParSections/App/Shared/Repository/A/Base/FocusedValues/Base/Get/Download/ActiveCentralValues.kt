@@ -69,7 +69,8 @@ data class ActiveCentralValues(
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
-    val activeFilter: ActiveFilter = ActiveFilter.Standart,
+    // FIXED: Use one of the defined ActiveFilter objects instead of trying to instantiate the sealed class
+    val activeFilter: ActiveFilter = ActiveFilter.NonTrouve, // Default to NonTrouve filter
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
@@ -111,15 +112,8 @@ data class ActiveCentralValues(
             RoleDefinieParSourceACetteFragment()
     }
 
-    // FIXED: Properly defined sealed class with concrete implementations
     sealed class ActiveFilter {
-        data object Standart : ActiveFilter()
         data object NonTrouve : ActiveFilter()
         data object PrixAuGerant : ActiveFilter()
-
-        // Add utility methods if needed
-        fun isStandart(): Boolean = this is Standart
-        fun isNonTrouve(): Boolean = this is NonTrouve
-        fun isPrixAuGerant(): Boolean = this is PrixAuGerant
     }
 }
