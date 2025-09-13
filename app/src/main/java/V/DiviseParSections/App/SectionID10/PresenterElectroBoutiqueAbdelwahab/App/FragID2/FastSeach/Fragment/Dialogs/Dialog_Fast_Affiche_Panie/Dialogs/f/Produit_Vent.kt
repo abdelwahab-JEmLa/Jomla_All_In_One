@@ -24,7 +24,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -96,8 +95,6 @@ fun Produit_Vent(
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    Card_Deplace_Hold_Up_To_This_Vent(produit = nonNullProduit)
-
                     // ElevatedCardHeader now includes the up icon functionality
                     ElevatedCardHeader(
                         produit = nonNullProduit,
@@ -163,24 +160,37 @@ fun Produit_Vent(
                         else MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Add some bottom padding to accommodate the floating button
+                    // Add some bottom padding to accommodate the floating buttons
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            // Floating Toggle Button positioned at bottom-end of the card
-            ToggleButton_PremierCheckDonne(
-                ventList = ventList,
-                onToggle = { newState ->
-                    // Update all ventList items with the new premier_Check_Donne state
-                    ventList.forEach { vent ->
-                        repositorysMainSetter.upsert_M10OperationVentCouleur(
-                            vent.copy(premier_Check_Donne = newState)
-                        )
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
+            // Row of FABs at bottom-end of the card
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Toggle Check FAB
+                ToggleButton_PremierCheckDonne(
+                    ventList = ventList,
+                    onToggle = { newState ->
+                        // Update all ventList items with the new premier_Check_Donne state
+                        ventList.forEach { vent ->
+                            repositorysMainSetter.upsert_M10OperationVentCouleur(
+                                vent.copy(premier_Check_Donne = newState)
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                )
+
+                // Move Product FAB - only show when there's a held product
+                FAB_MoveProduct(
+                    modifier = Modifier
+                )
+            }
         }
     } ?: run {
         // Handle case where produit is null
@@ -213,8 +223,7 @@ fun Produit_Vent(
 }
 
 @Composable
-fun Card_Deplace_Hold_Up_To_This_Vent(
-    produit: V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable,
+fun FAB_MoveProduct(
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = koinInject()
@@ -223,61 +232,36 @@ fun Card_Deplace_Hold_Up_To_This_Vent(
     val shouldShow = activeCentralValues.held_Produit_Pour_Move_Au_Position_Store != null
 
     if (shouldShow) {
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF9C27B0) // Purple color
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Déplacer le produit sélectionné vers le haut",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                    modifier = Modifier.weight(1f)
-                )
+        FloatingActionButton(
+            onClick = {
+                activeCentralValues.held_Produit_Pour_Move_Au_Position_Store?.let { heldProduit ->
+                    val currentPosition = heldProduit.position_store_3jamale ?: 0
+                    val newPosition = if (currentPosition > 0) currentPosition - 1 else 0
 
-                IconButton(
-                    onClick = {
-                        activeCentralValues.held_Produit_Pour_Move_Au_Position_Store?.let { heldProduit ->
-                            val currentPosition = heldProduit.position_store_3jamale ?: 0
-                            val newPosition = if (currentPosition > 0) currentPosition - 1 else 0
+                    repositorysMainSetter.upsert_M1Produit(
+                        heldProduit.copy(
+                            position_store_3jamale = newPosition,
+                            dernier_timeTamps_position_store_3jamale = System.currentTimeMillis()
+                        )
+                    )
 
-                            repositorysMainSetter.upsert_M1Produit(
-                                heldProduit.copy(
-                                    position_store_3jamale = newPosition,
-                                    dernier_timeTamps_position_store_3jamale = System.currentTimeMillis()
-                                )
-                            )
-
-                            // Clear the held product after moving
-                            focusedValuesGetter.update_activeCentralValues(
-                                activeCentralValues.copy(
-                                    held_Produit_Pour_Move_Au_Position_Store = null
-                                )
-                            )
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Déplacer vers le haut",
-                        tint = Color.White
+                    // Clear the held product after moving
+                    focusedValuesGetter.update_activeCentralValues(
+                        activeCentralValues.copy(
+                            held_Produit_Pour_Move_Au_Position_Store = null
+                        )
                     )
                 }
-            }
+            },
+            modifier = modifier.size(48.dp),
+            containerColor = Color(0xFF9C27B0), // Purple color
+            contentColor = Color.White
+        ) {
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowUp,
+                contentDescription = "Déplacer vers le haut"
+            )
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
@@ -297,9 +281,7 @@ fun ToggleButton_PremierCheckDonne(
 
     FloatingActionButton(
         onClick = { onToggle(newStateWhenToggled) },
-        modifier = modifier
-            .padding(16.dp)
-            .size(48.dp),
+        modifier = modifier.size(48.dp),
         containerColor = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         contentColor = if (allChecked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
     ) {
