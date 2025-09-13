@@ -1,16 +1,14 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.f.z.Com
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,46 +39,13 @@ fun ToggleButton_MoveToStorePosition(
         modifier = modifier
     ) {
         Icon(
-            imageVector = if (isSelected) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
+            imageVector = if (isSelected) Icons.Filled.Cancel else Icons.Filled.Upload,
             contentDescription = if (isSelected) "Désélectionner" else "Sélectionner pour déplacer",
             tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
-@Composable
-fun MoveUpButton(
-    produit: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier,
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    repositorysMainSetter: RepositorysMainSetter = koinInject()
-) {
-    val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val shouldShow = activeCentralValues.held_Produit_Pour_Move_Au_Position_Store != null
-
-    if (shouldShow) {
-        IconButton(
-            onClick = {
-                activeCentralValues.held_Produit_Pour_Move_Au_Position_Store?.let { heldProduit ->
-                    val newPosition = (heldProduit.position_store_3jamale ?: 0) - 1
-                    repositorysMainSetter.upsert_M1Produit(
-                        heldProduit.copy(
-                            position_store_3jamale = newPosition,
-                            dernier_timeTamps_position_store_3jamale = System.currentTimeMillis()
-                        )
-                    )
-                }
-            },
-            modifier = modifier
-        ) {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowUp,
-                contentDescription = "Déplacer vers le haut",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
 
 @Composable
 fun InfoButton(
@@ -128,7 +93,7 @@ fun ToggleButton_PremierCheckDonne(
         modifier = modifier
     ) {
         Icon(
-            imageVector = if (allChecked) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+            imageVector = if (allChecked) Icons.Filled.RadioButtonUnchecked else Icons.Filled.Check,
             contentDescription = if (allChecked) "Masquer les vérifications" else "Afficher les vérifications",
             tint = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )

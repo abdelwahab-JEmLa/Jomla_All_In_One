@@ -80,12 +80,6 @@ fun ElevatedCardHeader(
                     )
                 }
                 item {
-                    MoveUpButton(
-                        produit = produit,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                item {
                     ToggleButton_MoveToStorePosition(
                         produit = produit,
                         modifier = Modifier.padding(end = 4.dp)

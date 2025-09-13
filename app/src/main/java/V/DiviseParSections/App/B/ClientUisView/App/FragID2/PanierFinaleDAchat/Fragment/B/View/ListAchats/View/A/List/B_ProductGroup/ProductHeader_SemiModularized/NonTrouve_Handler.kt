@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +47,7 @@ fun NonTrouve_Handler(
             )
     ) {
         Icon(
-            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.CheckCircle,
+            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.Print,
             contentDescription = if (hasNonTrouve) "Mark as found" else "Mark as not found",
             tint = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
             else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f),

@@ -256,6 +256,7 @@ fun ViewVentCouleur_T1(
             focusedValuesGetter.activeOnVent_M8BonVent,
             relative_M3CouleurInfos
         ).copy(
+            creationTimestamps = System.currentTimeMillis(),
             setIN_Vent_Its_Quantity_Represent = relative_produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_produit.quantite_Boit_Par_Carton,
             quantity = if (relative_produit.setIN_Vent_Its_Quantity_Represent ==
