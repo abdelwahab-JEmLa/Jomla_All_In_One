@@ -394,32 +394,51 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        FloatingActionButton(         //<--
-                            //TODO(1): fait que ca soit un toggle button qui afficeh et deafficeh le dialog
+                        FloatingActionButton(
                             modifier = Modifier
                                 .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
                                 .size(40.dp),
                             onClick = {
+                                // FIXED: Toggle the dialog state instead of always setting to true
+                                val currentState = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
-                                        affiche_Dialog_Fast_Affiche_Panie = true
+                                        affiche_Dialog_Fast_Affiche_Panie = !currentState
                                     )
                                 )
                             },
-                            containerColor = MaterialTheme.colorScheme.primary,
+                            containerColor = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
+                                MaterialTheme.colorScheme.secondary // Different color when active
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            },
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Paid,
-                                contentDescription = null,
+                                contentDescription = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
+                                    "Fermer Dialog Fast Affiche Panier"
+                                } else {
+                                    "Ouvrir Dialog Fast Affiche Panier"
+                                },
                                 tint = Color.White
                             )
                         }
 
                         if (showLabels) {
                             Text(
-                                text = "Dialog_Fast_Affiche_Panie",
+                                text = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
+                                    "Fermer Panier"
+                                } else {
+                                    "Ouvrir Panier"
+                                },
                                 modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.primary)
+                                    .background(
+                                        if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
+                                            MaterialTheme.colorScheme.secondary
+                                        } else {
+                                            MaterialTheme.colorScheme.primary
+                                        }
+                                    )
                                     .padding(4.dp),
                                 color = Color.White
                             )
