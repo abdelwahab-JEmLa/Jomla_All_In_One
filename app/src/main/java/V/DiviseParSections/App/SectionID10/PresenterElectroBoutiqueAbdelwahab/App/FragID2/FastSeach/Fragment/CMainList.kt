@@ -28,7 +28,6 @@ fun MainListT1(
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
 ) {
-
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
             item {

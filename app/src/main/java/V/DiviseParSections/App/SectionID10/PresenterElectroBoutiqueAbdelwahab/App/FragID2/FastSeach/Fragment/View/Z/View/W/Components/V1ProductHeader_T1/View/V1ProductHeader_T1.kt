@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
@@ -53,6 +54,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -83,10 +85,15 @@ fun ProductHeader_T1(
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
 
-    // State for editing product name
+    // State for editing product name (French)
     var isEditingName by remember { mutableStateOf(false) }
     var editingNameText by remember { mutableStateOf(relative_Produit.nom) }
     val focusRequester = remember { FocusRequester() }
+
+    // State for editing Arabic name
+    var isEditingArabicName by remember { mutableStateOf(false) }
+    var editingArabicNameText by remember { mutableStateOf(relative_Produit.nomArab) }
+    val focusRequesterArabic = remember { FocusRequester() }
 
     // Get category name from the categories map
     val categoriesMap = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
@@ -100,7 +107,7 @@ fun ProductHeader_T1(
         )
     }
 
-    // Function to save the edited name
+    // Function to save the edited French name
     fun saveEditedName() {
         if (editingNameText.isNotBlank() && editingNameText != relative_Produit.nom) {
             val updatedProduit = relative_Produit.copy(
@@ -112,10 +119,28 @@ fun ProductHeader_T1(
         isEditingName = false
     }
 
-    // Function to cancel editing
+    // Function to save the edited Arabic name
+    fun saveEditedArabicName() {
+        if (editingArabicNameText.isNotBlank() && editingArabicNameText != relative_Produit.nomArab) {
+            val updatedProduit = relative_Produit.copy(
+                nomArab = editingArabicNameText.trim(),
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+            viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(updatedProduit)
+        }
+        isEditingArabicName = false
+    }
+
+    // Function to cancel editing French name
     fun cancelEditingName() {
         editingNameText = relative_Produit.nom
         isEditingName = false
+    }
+
+    // Function to cancel editing Arabic name
+    fun cancelEditingArabicName() {
+        editingArabicNameText = relative_Produit.nomArab
+        isEditingArabicName = false
     }
 
     Box(
@@ -155,14 +180,14 @@ fun ProductHeader_T1(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Row 1: Product name and category
+            // Row 1: Product names and category
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    // Product name - now editable
+                    // French product name - now editable
                     if (isEditingName) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -178,7 +203,19 @@ fun ProductHeader_T1(
                                 singleLine = true,
                                 textStyle = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold
-                                )
+                                ),
+                                label = { Text("Nom français") },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = { editingNameText = "" }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "Effacer le texte",
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
                             )
 
                             // Save button
@@ -252,14 +289,149 @@ fun ProductHeader_T1(
                         }
                     }
 
-                    Text(
-                        text = "Catégorie: $categoryName",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        fontWeight = FontWeight.Medium,
+                    // Arabic product name - editable
+                    if (isEditingArabicName) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = editingArabicNameText,
+                                onValueChange = { editingArabicNameText = it },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequesterArabic),
+                                singleLine = true,
+                                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                label = { Text("الاسم العربي") },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = { editingArabicNameText = "" }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "مسح النص",
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            )
+
+                            // Save button
+                            IconButton(
+                                onClick = { saveEditedArabicName() },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "حفظ",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            // Cancel button
+                            IconButton(
+                                onClick = { cancelEditingArabicName() },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "إلغاء",
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+
+                        // Request focus when entering edit mode
+                        LaunchedEffect(isEditingArabicName) {
+                            if (isEditingArabicName) {
+                                focusRequesterArabic.requestFocus()
+                            }
+                        }
+                    } else {
+                        // Display Arabic name - clickable to edit
+                        if (relative_Produit.nomArab.isNotBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.padding(top = 2.dp)
+                            ) {
+                                Text(
+                                    text = relative_Produit.nomArab,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                    else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            editingArabicNameText = relative_Produit.nomArab
+                                            isEditingArabicName = true
+                                        }
+                                )
+
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "تعديل الاسم العربي",
+                                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                    else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
+                                    modifier = Modifier
+                                        .size(14.dp)
+                                        .clickable {
+                                            editingArabicNameText = relative_Produit.nomArab
+                                            isEditingArabicName = true
+                                        }
+                                )
+                            }
+                        } else {
+                            // Show placeholder for Arabic name if empty
+                            Text(
+                                text = "إضافة اسم عربي",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
+                                modifier = Modifier
+                                    .padding(top = 2.dp)
+                                    .clickable {
+                                        editingArabicNameText = ""
+                                        isEditingArabicName = true
+                                    }
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(top = 2.dp)
-                    )
+                    ) {
+                        Text(
+                            text = "Catégorie:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Text(
+                            text = categoryName,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            else MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.clickable {
+                                shouldShowCategoryDialog = true
+                            }
+                        )
+                    }
 
                     if (allNonTrouve) {
                         Text(

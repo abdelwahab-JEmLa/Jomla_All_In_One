@@ -31,17 +31,13 @@ fun MainList(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    // FIXED: Support pour plusieurs filtres simultanés
     val active_Central_Values by remember { focusedValuesGetter::active_Central_Values }
 
-    // FIXED: Utilisation de activeFilters (Set) au lieu de activeFilter (single)
     val groupedVents by remember(active_Central_Values.activeFilters) {
         derivedStateOf {
             val allVents = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             val activeFilters = active_Central_Values.activeFilters
 
-            // Get the sorting preference - assuming it's part of ActiveCentralValues
-            // If not available, you'll need to add this field to ActiveCentralValues
             val sortVentsParClassement = active_Central_Values.sortVentsParClassment
 
             val filteredData = when {
@@ -78,9 +74,7 @@ fun MainList(
                 }
                 .toList()
 
-            // FIXED TODO(1): Conditional sorting based on sortVentsParClassement flag
             val sortedData = if (sortVentsParClassement) {
-                // Sort by position_store_3jamale (existing logic for classification sorting)
                 groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
                     val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                     produit?.position_store_3jamale ?: Int.MAX_VALUE
@@ -89,7 +83,6 @@ fun MainList(
                     produit?.dernier_timeTamps_position_store_3jamale ?: 0L
                 })
             } else {
-                // Sort by creation time (newest first)
                 groupedData.sortedByDescending { (_, ventList) ->
                     ventList.maxOfOrNull { vent ->
                         if (vent.creationTimestamps > 0) {

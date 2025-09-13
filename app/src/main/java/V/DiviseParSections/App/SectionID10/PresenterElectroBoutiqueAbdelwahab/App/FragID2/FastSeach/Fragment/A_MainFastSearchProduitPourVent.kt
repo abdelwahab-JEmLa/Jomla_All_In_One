@@ -43,7 +43,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -61,33 +63,30 @@ fun get_New_Datas(
     val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
     val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
 
-
     val newProduit = idParentCategorie?.let {
         ArticlesBasesStatsTable.get_Default().copy(
-        keyID = keyID,
-        id = newOldId,
-        creationTimestamp = System.currentTimeMillis(),
-        nom = searchQuery,
-        couleur1 = keyIDM3CouleurProduitInfos,
-        idParentCategorie = it,
-        disponibilityEtates = DisponibilityEtates.NON_DISPO
-    )
+            keyID = keyID,
+            id = newOldId,
+            creationTimestamp = System.currentTimeMillis(),
+            nom = searchQuery,
+            couleur1 = keyIDM3CouleurProduitInfos,
+            idParentCategorie = it,
+            disponibilityEtates = DisponibilityEtates.NON_DISPO
+        )
     }
-
 
     val newCouleurP = newProduit?.let {
         M3CouleurProduitInfos.get_default().copy(
-        keyID = keyIDM3CouleurProduitInfos,
-        creationTimestamp = System.currentTimeMillis(),
-        parentBProduitInfosKeyID = it.keyID,
-        parentId1ProduitInfosDebugName = newProduit.nom,
-        parentBProduitOldID = newProduit.id,
-    )
+            keyID = keyIDM3CouleurProduitInfos,
+            creationTimestamp = System.currentTimeMillis(),
+            parentBProduitInfosKeyID = it.keyID,
+            parentId1ProduitInfosDebugName = newProduit.nom,
+            parentBProduitOldID = newProduit.id,
+        )
     }
 
     return Pair(newProduit, newCouleurP)
 }
-
 
 @Composable
 fun MainFastSearchProduitPourVent(
@@ -109,16 +108,13 @@ fun MainFastSearchProduitPourVent(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
-
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
-
         null -> ""
     }
-     fun update_activeCentralValues(
-        capitalizedText: String
-    ) {
+
+    fun update_activeCentralValues(capitalizedText: String) {
         focusedValuesGetter.update_activeCentralValues(
             active_Central_Values.copy(
                 fastSearchProduitPourVent = capitalizedText
@@ -131,16 +127,48 @@ fun MainFastSearchProduitPourVent(
 
     var isTextFieldReady by remember { mutableStateOf(false) }
 
+    // FIXED: Add debouncing state management
+    var searchJob by remember { mutableStateOf<Job?>(null) }
+    var lastSearchText by remember { mutableStateOf("") }
+
     // Only request focus if the OutlinedTextField will be shown
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
+    // FIXED: Optimized search with proper debouncing logic
     LaunchedEffect(fastSearchProduitPourVent) {
-        if (fastSearchProduitPourVent.isNotEmpty()) {
-            delay(500)
-            viewModel.onSearchTextChange(fastSearchProduitPourVent)
-        } else {
-            viewModel.onSearchTextChange("")
+        // Cancel previous search job
+        searchJob?.cancel()
+
+        when {
+            // Clear search immediately when text is empty
+            fastSearchProduitPourVent.isEmpty() -> {
+                lastSearchText = ""
+                viewModel.onSearchTextChange("")
+            }
+
+            // Start filtering immediately after 3 characters (no debounce)
+            fastSearchProduitPourVent.length == 3 -> {
+                lastSearchText = fastSearchProduitPourVent
+                viewModel.onSearchTextChange(fastSearchProduitPourVent)
+            }
+
+            // For 4+ characters, use debouncing for smooth rapid display
+            fastSearchProduitPourVent.length >= 4 -> {
+                searchJob = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
+                    delay(300) // 300ms debounce for rapid typing
+                    if (fastSearchProduitPourVent != lastSearchText) {
+                        lastSearchText = fastSearchProduitPourVent
+                        viewModel.onSearchTextChange(fastSearchProduitPourVent)
+                    }
+                }
+            }
+
+            // Less than 3 characters - clear results but keep the text
+            else -> {
+                lastSearchText = ""
+                viewModel.onSearchTextChange("")
+            }
         }
     }
 
@@ -160,6 +188,7 @@ fun MainFastSearchProduitPourVent(
             )
         }
     }
+
     Surface(
         modifier = modifier.fillMaxSize()
     ) {
@@ -173,7 +202,7 @@ fun MainFastSearchProduitPourVent(
                     OutlinedTextField(
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
-                            // Capitalize first letter of each word
+                            // FIXED: Optimized text processing with capitalization
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
                                 if (word.isNotEmpty()) {
                                     word.replaceFirstChar {
@@ -188,7 +217,9 @@ fun MainFastSearchProduitPourVent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
-                        placeholder = { Text("Rechercher un produit...") },
+                        placeholder = {
+                            Text("Rechercher un produit... (min. 3 caractères)")
+                        },
                         singleLine = true,
                         leadingIcon = {
                             val newDatas = get_New_Datas(
@@ -237,6 +268,8 @@ fun MainFastSearchProduitPourVent(
                             if (fastSearchProduitPourVent.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
+                                        // Cancel any pending search job when clearing
+                                        searchJob?.cancel()
                                         update_activeCentralValues("")
                                     }) {
                                     Icon(
@@ -274,4 +307,3 @@ fun MainFastSearchProduitPourVent(
         }
     }
 }
-
