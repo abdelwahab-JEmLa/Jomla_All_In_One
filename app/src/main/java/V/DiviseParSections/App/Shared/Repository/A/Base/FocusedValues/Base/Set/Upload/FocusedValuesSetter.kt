@@ -26,6 +26,9 @@ class FocusedValuesSetter(
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
+//--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
+    //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
+
     fun upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
         updatedDefaultId8BonVent: M8BonVent,
         newCurrentM9AppCompt: Z_AppCompt?
@@ -39,6 +42,16 @@ class FocusedValuesSetter(
 
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
     fun add_M8BonVent(defaultM8BonVent: M8BonVent) = repo8BonVent.add(defaultM8BonVent)
+
+    //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
+    fun update_List_M10OperationVentCouleur(datas: List<M10OperationVentCouleur>) {
+        datas.map {
+            repo10OperationVentCouleur
+                .addOrUpdateData(it)
+        }
+    }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 
     fun addNewM2ClientInfos(newClient: M2Client) = Repo2Client.addClient(newClient)
@@ -96,21 +109,12 @@ class FocusedValuesSetter(
     }
 
     fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID() {
-        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(getterFocusedValues, repo9AppCompt)
+        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+            getterFocusedValues,
+            repo9AppCompt
+        )
     }
     //--------------------activeFocuce_TariffPrixDifineur_M1ProduitKeyID--------------------------------------------------------
-
-
-    fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
-        getterFocusedValues.currentActive_M9AppCompt?.let {
-            repo9AppCompt.upsert(
-                it.copy(
-                    onVentM8BonVentKey = bonVent.keyID,
-                    onVentM8BonVentDebugInfos = bonVent.get_DebugInfos(),
-                )
-            )
-        }
-    }
 
 
     fun desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent(): Unit {
@@ -212,6 +216,7 @@ class FocusedValuesSetter(
             }
         }
     }
+
     fun desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits() {
         getterFocusedValues.currentActive_M9AppCompt.let {
             if (it != null) {

@@ -293,6 +293,8 @@ data class M10OperationVentCouleur(
     //Mutable
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
+    var premier_Check_Donne: Boolean = true,
+
     var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_Detaille,
 
     var parentClientInfosKeyID: String = "",

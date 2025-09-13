@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.f.Produit_Vent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -53,11 +54,15 @@ fun MainList(
                 .mapValues { (_, ventList) ->
                     ventList.sortedByDescending { it.creationTimestamps }
                 }
-                // Sort the groups themselves by the latest creation date in each group
+                // Sort groups by position_store_3jamale, then by dernier_timeTamps_position_store_3jamale for same positions
                 .toList()
-                .sortedByDescending { (_, ventList) ->
-                    ventList.maxOfOrNull { it.creationTimestamps } ?: 0L
-                }
+                .sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    produit?.position_store_3jamale ?: Int.MAX_VALUE
+                }.thenByDescending { (produitKeyId, _) ->
+                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    produit?.dernier_timeTamps_position_store_3jamale ?: 0L
+                })
                 .toMap()
         }
     }

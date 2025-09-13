@@ -197,9 +197,14 @@ data class ArticlesBasesStatsTable(
     var nombreProduitDonSonCarton: Int = 1,
     val its_Carton: Boolean = false,
 
-    // Section Etates Mutable
+//-----------------Section.Etates.Mutable-------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------
     val heldPrioriteDemandAuGrossist: Boolean = false,
+    //---------------------Positions---------------------------------------------------------------------------------------------------------------------
+    var position_store_3jamale: Int = 0,
+    var dernier_timeTamps_position_store_3jamale: Long = 0,
 
+//------------------------------------------------------------------------------------------------------------------------------------------
     // Section InfosCoutes
     var prixDefiniParGerant: Double = 0.0,
     var prixVent: Double = 0.0,

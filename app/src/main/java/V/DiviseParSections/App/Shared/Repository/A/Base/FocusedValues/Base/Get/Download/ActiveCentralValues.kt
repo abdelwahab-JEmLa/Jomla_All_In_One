@@ -59,7 +59,7 @@ data class ActiveCentralValues(
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
 
-    //-----------------Fragmets-------------------------------------------------------------------------------------------------------------------------
+//-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
@@ -68,9 +68,9 @@ data class ActiveCentralValues(
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
-
-    // FIXED: Properly instantiate ActiveFilter with default value
+    //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val activeFilter: ActiveFilter = ActiveFilter.Standart,
+    val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,

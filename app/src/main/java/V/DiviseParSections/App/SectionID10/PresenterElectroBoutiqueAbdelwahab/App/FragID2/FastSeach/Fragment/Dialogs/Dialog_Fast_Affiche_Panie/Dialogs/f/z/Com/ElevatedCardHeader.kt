@@ -1,0 +1,105 @@
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.f.z.Com
+
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized.NonTrouve_Handler
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun ElevatedCardHeader(
+    productName: String,
+    produit: ArticlesBasesStatsTable,
+    hasNonTrouve: Boolean,
+    allNonTrouve: Boolean,
+    ventList: List<M10OperationVentCouleur>,
+    aCentralFacade: ACentralFacade,
+    focusedValuesSetter: FocusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
+    modifier: Modifier = Modifier
+) {
+    fun update_List_M10OperationVentCouleur(newPremierCheckValue: Boolean) {
+        val updatedVentList = ventList.map { ventOperation ->
+            ventOperation.copy(premier_Check_Donne = newPremierCheckValue)
+        }
+        focusedValuesSetter.update_List_M10OperationVentCouleur(updatedVentList)
+    }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer
+            else MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Product name with proper weight allocation
+            Text(
+                text = productName,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+                color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer
+                else MaterialTheme.colorScheme.onSurface,
+                maxLines = 2 // Allow text to wrap if needed
+            )
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                item {
+                    ToggleButton_PremierCheckDonne(
+                        ventList = ventList,
+                        onToggle = ::update_List_M10OperationVentCouleur,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                item {
+                    InfoButton(
+                        productName = productName,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                item {
+                    MoveUpButton(
+                        produit = produit,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                item {
+                    ToggleButton_MoveToStorePosition(
+                        produit = produit,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                item {
+                    NonTrouve_Handler(
+                        aCentralFacade = aCentralFacade,
+                        allNonTrouve = allNonTrouve,
+                        hasNonTrouve = hasNonTrouve,
+                        relative_List_M10OperationVentCouleur = ventList
+                    )
+                }
+            }
+        }
+    }
+}
