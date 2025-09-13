@@ -69,8 +69,9 @@ data class ActiveCentralValues(
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
-    // FIXED: Use one of the defined ActiveFilter objects instead of trying to instantiate the sealed class
-    val activeFilter: ActiveFilter = ActiveFilter.NonTrouve, // Default to NonTrouve filter
+    val activeFilters: Set<ActiveFilter> = emptySet(), // <-- NOUVEAU: Set pour plusieurs filtres
+
+
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
@@ -110,6 +111,22 @@ data class ActiveCentralValues(
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: ArticlesBasesStatsTable) :
             RoleDefinieParSourceACetteFragment()
+    }
+
+    // Nouvelle fonction helper pour vérifier si un filtre est actif
+    fun hasActiveFilter(filter: ActiveFilter): Boolean {
+        return activeFilters.contains(filter)
+    }
+
+    // Nouvelle fonction pour ajouter/retirer un filtre
+    fun toggleFilter(filter: ActiveFilter): ActiveCentralValues {
+        return if (activeFilters.contains(filter)) {
+            // Retirer le filtre
+            this.copy(activeFilters = activeFilters - filter)
+        } else {
+            // Ajouter le filtre
+            this.copy(activeFilters = activeFilters + filter)
+        }
     }
 
     sealed class ActiveFilter {

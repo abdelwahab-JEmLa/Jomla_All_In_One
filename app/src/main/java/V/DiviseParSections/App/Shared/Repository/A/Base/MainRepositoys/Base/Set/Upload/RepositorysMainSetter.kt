@@ -40,7 +40,7 @@ class RepositorysMainSetter(
     private val repoM1Produit: RepoM1Produit,
     private val repo2Client: Repo2Client,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
-     val repo8BonVent: Repo8BonVent,
+    val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo11AchatOperation: Repo11AchatOperation,
     private val repo13TarificationInfos: Repo13TarificationInfos,
@@ -50,35 +50,8 @@ class RepositorysMainSetter(
     private val repo17MessageVocale: Repo17MessageVocale,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
-
-    fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
-        m13TarificationInfos_Pour_Produit: M13TarificationInfos?,
-        m10OperationVentCouleurs: List<M10OperationVentCouleur>
-    ) {
-        m13TarificationInfos_Pour_Produit?.let {
-            addOrUpdateGroAliTariff(it)
-
-            val listFocusedM10OpeVentCouleurParPrixDifineur =
-                m10OperationVentCouleurs.map { listVent ->
-                    listVent.copy(
-                        parentM13TarificationDebugInfos = m13TarificationInfos_Pour_Produit.getDebugInfos(),
-                        parentM13TarificationKeyID = m13TarificationInfos_Pour_Produit.keyID,
-                    )
-                }
-
-            updateListM10OperationVentCouleur(
-                listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
-            )
-        }
-    }
-
-    fun ouvreExistedDataEtNavigatePanie(keyID: String) =
-        clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
-
-    fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
-    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) =
-        produitOperations.deleteAddMultiDatas(list_M1Produit)
-
+//--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
+    //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
 
     fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: M10OperationVentCouleur? = null,
@@ -115,6 +88,41 @@ class RepositorysMainSetter(
             repo10OperationVentCouleur.addOrUpdateData(it)
         }
     }
+
+    fun upsert_M10OperationVentCouleur(data: M10OperationVentCouleur) {
+        repo10OperationVentCouleur
+            .addOrUpdateData(data)
+    }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
+        m13TarificationInfos_Pour_Produit: M13TarificationInfos?,
+        m10OperationVentCouleurs: List<M10OperationVentCouleur>
+    ) {
+        m13TarificationInfos_Pour_Produit?.let {
+            addOrUpdateGroAliTariff(it)
+
+            val listFocusedM10OpeVentCouleurParPrixDifineur =
+                m10OperationVentCouleurs.map { listVent ->
+                    listVent.copy(
+                        parentM13TarificationDebugInfos = m13TarificationInfos_Pour_Produit.getDebugInfos(),
+                        parentM13TarificationKeyID = m13TarificationInfos_Pour_Produit.keyID,
+                    )
+                }
+
+            updateListM10OperationVentCouleur(
+                listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
+            )
+        }
+    }
+
+    fun ouvreExistedDataEtNavigatePanie(keyID: String) =
+        clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
+
+    fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
+    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) =
+        produitOperations.deleteAddMultiDatas(list_M1Produit)
 
 
     fun toggleEtateDeliveryNonTrouveVentOuFacade(produitKey: String) =
@@ -157,10 +165,12 @@ class RepositorysMainSetter(
     fun delete_M8BonVent(data: M8BonVent) {
         repo8BonVent.delete(data)
     }
+
     fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
-    fun update_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+    fun update_M10OperationVentCouleur(data: M10OperationVentCouleur) =
+        repo10OperationVentCouleur.update_If_Exist(data)
 
     fun delete_ListM10OperationVentCouleur(datas: List<M10OperationVentCouleur>) {
         datas.map {
@@ -179,7 +189,9 @@ class RepositorysMainSetter(
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun add_M13TarificationInfos(data: M13TarificationInfos) = repo13TarificationInfos.upsert(data)
 
-    fun upsert_M13TarificationInfos(data: M13TarificationInfos) = repo13TarificationInfos.upsert(data)
+    fun upsert_M13TarificationInfos(data: M13TarificationInfos) =
+        repo13TarificationInfos.upsert(data)
+
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.update_If_Exist(data)
     fun delete(data: M14VentPeriode) = repo14VentPeriode.delete(data)
@@ -191,8 +203,11 @@ class RepositorysMainSetter(
         repo15Grossist.deleteMulti(datas)
 
     //------------R16 -------------------------------------------------------------------------------------------------------------------------------------
-    fun upsert_M16CategorieProduit(data: CategoriesTabelle) = repoM16CategorieProduit.addOrUpdateData(data)
-    fun addOrUpdateDatas_M16CategorieProduit(datas: List<CategoriesTabelle>) = repoM16CategorieProduit.addOrUpdateDatas(datas,true)
+    fun upsert_M16CategorieProduit(data: CategoriesTabelle) =
+        repoM16CategorieProduit.addOrUpdateData(data)
+
+    fun addOrUpdateDatas_M16CategorieProduit(datas: List<CategoriesTabelle>) =
+        repoM16CategorieProduit.addOrUpdateDatas(datas, true)
 
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)

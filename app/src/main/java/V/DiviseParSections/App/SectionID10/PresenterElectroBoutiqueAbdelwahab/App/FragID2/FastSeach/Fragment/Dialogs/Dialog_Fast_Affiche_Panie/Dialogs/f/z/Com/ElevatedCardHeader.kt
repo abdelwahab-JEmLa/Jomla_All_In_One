@@ -55,13 +55,7 @@ fun ElevatedCardHeader(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                item {
-                    ToggleButton_PremierCheckDonne(
-                        ventList = ventList,
-                        onToggle = ::update_List_M10OperationVentCouleur,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
+
                 item {
                     ToggleButton_MoveToStorePosition(
                         produit = produit,

@@ -50,16 +50,15 @@ fun CheckList_ChoisiseurActiveFilter(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val currentValues = focusedValuesGetter.active_Central_Values
-    val activeFilter = currentValues.activeFilter
+    // FIXED: Support pour plusieurs filtres simultanés
+    val currentValues by remember { focusedValuesGetter::active_Central_Values }
+    val activeFilters = currentValues.activeFilters // Set<ActiveFilter> au lieu de ActiveFilter?
 
-    // FIXED TODO(1): Removed Standart - only available filters
     val availableFilters = listOf(
         ActiveCentralValues.ActiveFilter.NonTrouve,
         ActiveCentralValues.ActiveFilter.PrixAuGerant
     )
 
-    // FIXED TODO(1): Make it draggable like FragAchats_FloatingOutlinedSearcher_4
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
@@ -67,9 +66,25 @@ fun CheckList_ChoisiseurActiveFilter(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 400f).coerceAtLeast(0f)) }
     var offsetY by remember { mutableFloatStateOf((screenHeightDp.value - 400f).coerceAtLeast(0f)) }
 
-    fun updateActiveFilter(newFilter: ActiveCentralValues.ActiveFilter) {
+    // FIXED: Nouvelle fonction pour toggler un filtre (ajouter/retirer)
+    fun toggleFilter(filter: ActiveCentralValues.ActiveFilter) {
+        val newFilters = if (activeFilters.contains(filter)) {
+            // Retirer le filtre
+            activeFilters - filter
+        } else {
+            // Ajouter le filtre
+            activeFilters + filter
+        }
+
         focusedValuesGetter.update_activeCentralValues(
-            currentValues.copy(activeFilter = newFilter)
+            currentValues.copy(activeFilters = newFilters)
+        )
+    }
+
+    // FIXED: Fonction pour effacer tous les filtres
+    fun clearAllFilters() {
+        focusedValuesGetter.update_activeCentralValues(
+            currentValues.copy(activeFilters = emptySet())
         )
     }
 
@@ -88,7 +103,6 @@ fun CheckList_ChoisiseurActiveFilter(
         }
     }
 
-    // FIXED TODO(1): Made the entire component draggable
     Box(modifier = Modifier.fillMaxSize()) {
         Card(
             modifier = modifier
@@ -103,7 +117,6 @@ fun CheckList_ChoisiseurActiveFilter(
                         change.consume()
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
-                        // Keep within screen bounds with some padding
                         offsetX = offsetX.coerceIn(0f, screenWidth.value - 350f)
                         offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 300f)
                     }
@@ -131,7 +144,7 @@ fun CheckList_ChoisiseurActiveFilter(
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Sélecteur de Filtres Actifs",
+                        text = "Sélecteur de Filtres Multiples",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -140,17 +153,9 @@ fun CheckList_ChoisiseurActiveFilter(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Filter options - Only allow selection, no deselection
+                // FIXED: Chaque filtre peut maintenant être sélectionné indépendamment
                 availableFilters.forEach { filter ->
-                    val isSelected = when {
-                        activeFilter is ActiveCentralValues.ActiveFilter.NonTrouve &&
-                                filter is ActiveCentralValues.ActiveFilter.NonTrouve -> true
-
-                        activeFilter is ActiveCentralValues.ActiveFilter.PrixAuGerant &&
-                                filter is ActiveCentralValues.ActiveFilter.PrixAuGerant -> true
-
-                        else -> false
-                    }
+                    val isSelected = activeFilters.contains(filter) // Simple vérification dans le Set
 
                     Card(
                         modifier = Modifier
@@ -187,11 +192,9 @@ fun CheckList_ChoisiseurActiveFilter(
 
                             Checkbox(
                                 checked = isSelected,
-                                onCheckedChange = { checked ->
-                                    // Only allow selection, not deselection - switch between available filters only
-                                    if (checked && !isSelected) {
-                                        updateActiveFilter(filter)
-                                    }
+                                onCheckedChange = {
+                                    // FIXED: Simple toggle - ajouter si pas présent, retirer si présent
+                                    toggleFilter(filter)
                                 },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = getFilterColor(filter),
@@ -204,32 +207,65 @@ fun CheckList_ChoisiseurActiveFilter(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Current status indicator
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = getFilterColor(activeFilter).copy(alpha = 0.2f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = getFilterColor(activeFilter),
-                            modifier = Modifier.size(16.dp)
+                // FIXED: Affichage des filtres actifs (peut être plusieurs maintenant)
+                if (activeFilters.isNotEmpty()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                         )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Filtres actifs (${activeFilters.size}):",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp
+                                )
+                            }
+
+                            // Liste des filtres actifs
+                            activeFilters.forEach { filter ->
+                                Text(
+                                    text = "• ${getFilterDisplayName(filter)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = getFilterColor(filter),
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 11.sp,
+                                    modifier = Modifier.padding(start = 24.dp, top = 2.dp)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                        )
+                    ) {
                         Text(
-                            text = "Filtre actuel: ${getFilterDisplayName(activeFilter)}",
+                            text = "Aucun filtre actif",
                             style = MaterialTheme.typography.bodySmall,
-                            color = getFilterColor(activeFilter),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(12.dp)
                         )
                     }
                 }

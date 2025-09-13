@@ -6,7 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Icon
@@ -46,56 +45,3 @@ fun ToggleButton_MoveToStorePosition(
     }
 }
 
-
-@Composable
-fun InfoButton(
-    productName: String,
-    modifier: Modifier = Modifier,
-    focusedValuesGetter: FocusedValuesGetter = koinInject()
-) {
-    IconButton(
-        onClick = {
-            val activeCentralValues = focusedValuesGetter.active_Central_Values
-            focusedValuesGetter.update_activeCentralValues(
-                activeCentralValues.copy(
-                    held_Produit_Pour_Move_Au_Position_Store = null,
-                    fastSearchProduitPourVent = productName,
-                    affiche_Dialog_Fast_Affiche_Panie = false
-                )
-            )
-        },
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Info,
-            contentDescription = "Informations du produit",
-            tint = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-fun ToggleButton_PremierCheckDonne(
-    ventList: List<M10OperationVentCouleur>,
-    onToggle: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Determine current state: true if ALL items have premier_Check_Donne = true
-    val allChecked = remember(ventList) {
-        ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
-    }
-
-    // Determine what the new state should be when toggled
-    val newStateWhenToggled = !allChecked
-
-    IconButton(
-        onClick = { onToggle(newStateWhenToggled) },
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = if (allChecked) Icons.Filled.RadioButtonUnchecked else Icons.Filled.Check,
-            contentDescription = if (allChecked) "Masquer les vérifications" else "Afficher les vérifications",
-            tint = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}

@@ -22,32 +22,61 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Dialog_Fast_Affiche_Panie(modifier: Modifier = Modifier) {
-    // Dialog implementation can be added here
     MainList(modifier = modifier)
 }
 
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade =  koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val active_Central_Values = focusedValuesGetter.active_Central_Values
+    // FIXED: Support pour plusieurs filtres simultanés
+    val active_Central_Values by remember { focusedValuesGetter::active_Central_Values }
 
-    val groupedVents by remember {
+    // FIXED: Utilisation de activeFilters (Set) au lieu de activeFilter (single)
+    val groupedVents by remember(active_Central_Values.activeFilters) {
         derivedStateOf {
             val allVents = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+            val activeFilters = active_Central_Values.activeFilters
 
-            val filteredData = when (active_Central_Values.activeFilter) {
-                is ActiveCentralValues.ActiveFilter.NonTrouve -> {
-                    allVents.filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+            // FIXED: Logique de filtrage pour plusieurs filtres simultanés
+            val filteredData = when {
+                // Aucun filtre actif - montrer tous les éléments
+                activeFilters.isEmpty() -> allVents
+
+                // Un ou plusieurs filtres actifs - appliquer la logique ET (tous les filtres doivent passer)
+                else -> {
+                    allVents.filter { vent ->
+                        var passesAllFilters = true
+
+                        // Vérifier chaque filtre actif
+                        activeFilters.forEach { filter ->
+                            val passesThisFilter = when (filter) {
+                                is ActiveCentralValues.ActiveFilter.NonTrouve -> {
+                                    vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
+                                }
+                                is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
+                                    // EXEMPLE: Ajoutez votre logique spécifique pour "Prix au Gérant"
+                                    // Par exemple: vent.prixType == PrixType.Gerant
+                                    // Pour l'instant, on considère que tous les éléments passent ce filtre
+                                    // REMPLACEZ cette condition par votre logique métier
+                                    true // TODO: Remplacer par la vraie condition métier
+                                }
+                            }
+
+                            // Si un filtre ne passe pas, l'élément est rejeté
+                            if (!passesThisFilter) {
+                                passesAllFilters = false
+                            }
+                        }
+
+                        passesAllFilters
+                    }
                 }
-                is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
-                    allVents
-                }
-                else -> allVents
             }
 
+            // Grouper les données filtrées par ID de produit et trier
             filteredData
                 .groupBy { it.parent_M1Produit_KeyId }
                 .mapValues { (_, ventList) ->
@@ -82,4 +111,3 @@ fun MainList(
         }
     }
 }
-
