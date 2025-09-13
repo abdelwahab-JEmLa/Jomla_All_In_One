@@ -63,6 +63,7 @@ fun NavigationBarWithFab(
     var showFabDropdown by remember { mutableStateOf(false) }
     var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
     var showFabDropdownAchats by remember { mutableStateOf(false) }
+    var showFabDropdownFastVent by remember { mutableStateOf(false) }
 
     // Get current focused values to check floating button visibility
     val currentValues = focusedValuesGetter.active_Central_Values
@@ -114,6 +115,7 @@ fun NavigationBarWithFab(
         val its_Targeted_Frag = activeFragment == Screen.A_Clients_LocationGps
         val its_EditDatabaseWithCreateNewArticles = activeFragment == Screen.EditDatabaseWithCreateNewArticles
         val its_Achats_Produits_Chez_Grossists = activeFragment == Screen.Achats_Produits_Chez_Grossists
+        val its_FragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
 
         when {
             its_EditDatabaseWithCreateNewArticles -> {
@@ -139,10 +141,14 @@ fun NavigationBarWithFab(
                 )
             }
 
-            activeFragment == Screen.FragmentProduitFastSearchDialog  -> {     //<--
-            //TODO(1): pk ca s affiche et le button nom 
-                FabDropdownMenu_WhenIts_FragFastVent(
-                    onDismissDropdown = { showFabDropdown = false },
+            its_FragmentProduitFastSearchDialog -> {
+                // Fixed: Show FAB button first, then dropdown when clicked
+                FabButton(
+                    showWarningState = showWarningState,
+                    isFabVisible = isFabVisible,
+                    its_Targeted_Frag = true,
+                    onToggleFabVisibility = onToggleFabVisibility,
+                    onShowDropdown = { showFabDropdownFastVent = true }
                 )
             }
 
@@ -176,7 +182,7 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists) {
+        if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists && !its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
@@ -197,6 +203,13 @@ fun NavigationBarWithFab(
                 onDismissDropdown = {
                     showFabDropdownAchats = false
                 }
+            )
+        }
+
+        // Fixed: Show dropdown only when button is clicked
+        if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
+            FabDropdownMenu_WhenIts_FragFastVent(
+                onDismissDropdown = { showFabDropdownFastVent = false }
             )
         }
 
@@ -253,4 +266,3 @@ data class Item_States(
         }
     }
 }
-
