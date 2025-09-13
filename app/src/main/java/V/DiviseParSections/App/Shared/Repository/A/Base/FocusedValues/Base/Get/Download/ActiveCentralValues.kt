@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.ui.graphics.Color
 import java.io.File
 
@@ -66,7 +67,7 @@ data class ActiveCentralValues(
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
-    val affiche_Dialog_Fast_Affiche_Panie: Boolean = false,
+    val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
 
     // FIXED: Properly instantiate ActiveFilter with default value
     val activeFilter: ActiveFilter = ActiveFilter.Standart,

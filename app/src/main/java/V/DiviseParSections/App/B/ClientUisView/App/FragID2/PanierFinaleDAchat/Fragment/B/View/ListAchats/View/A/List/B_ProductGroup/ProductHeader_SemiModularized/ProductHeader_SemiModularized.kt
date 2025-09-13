@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -9,7 +8,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,10 +16,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -44,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -374,12 +369,10 @@ private fun Card_Controls_Enhanced(
                 }
 
                 // Status toggle button
-                ToggleButton_SemiModularized_F_Panie(
-                    relative_List_M10OperationVentCouleur = relative_List_M10OperationVentCouleur,
+                NonTrouve_Handler(
                     allNonTrouve = allNonTrouve,
                     hasNonTrouve = hasNonTrouve,
-                    viewModel = viewModel,
-                    relative_M1Produit = relative_M1Produit
+                    relative_List_M10OperationVentCouleur = relative_List_M10OperationVentCouleur
                 )
             }
         }
@@ -497,125 +490,3 @@ private fun ActionsSection(
 }
 
 
-@Composable
-fun ToggleButton_SemiModularized_F_Panie(
-    aCentralFacade: ACentralFacade= koinInject(),
-    repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
-    allNonTrouve: Boolean,
-    hasNonTrouve: Boolean,
-    viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?,
-    relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>
-) {
-    IconButton(
-        onClick = {
-            relative_List_M10OperationVentCouleur.map {vent->
-                val newState =
-                    if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve)
-                        M10OperationVentCouleur.EtateDelivery.NonTrouve
-                    else M10OperationVentCouleur.EtateDelivery.Trouve
-
-                repo10OperationVentCouleur.addOrUpdateData(vent.copy(etateDelivery = newState))
-
-            }
-        },
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            )
-    ) {
-        Icon(
-            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.CheckCircle,
-            contentDescription = if (hasNonTrouve) "Mark as found" else "Mark as not found",
-            tint = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f),
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
-private fun Card_Produit_Nombre_Unites(
-    allNonTrouve: Boolean,
-    relative_Produit: ArticlesBasesStatsTable,
-    aCentralFacade: ACentralFacade = koinInject(),
-    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    onClick_PourOuvrireDialog: () -> Unit
-) {
-    var toggleState by remember { mutableStateOf(relative_Produit.afficheUniteAuPrint) }
-
-    fun clickHandel() {
-        toggleState = !toggleState
-
-        repositorysMainSetter.upsert_M1Produit(
-            relative_Produit.copy(
-                afficheUniteAuPrint = toggleState
-            )
-        )
-    }
-
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-            else MaterialTheme.colorScheme.surface
-        ),
-        modifier = Modifier.padding(start = petitePaddine)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(petitePaddine),
-            modifier = Modifier.padding(petitePaddine)
-        ) {
-            // Original quantity display button
-            IconButton(
-                onClick = {
-                    onClick_PourOuvrireDialog()
-                },
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(36.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Nbr.U ",
-                        fontSize = 8.sp,
-                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.6f
-                        )
-                        else MaterialTheme.colorScheme.tertiary,
-                    )
-                    Text(
-                        text = "${relative_Produit.nombreUniteInt}",
-                        fontSize = 15.sp,
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            // Toggle button for afficheUniteAuPrint
-            IconButton(
-                onClick = { clickHandel() },
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        if (toggleState) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.surfaceVariant
-                    )
-            ) {
-                Icon(
-                    imageVector = if (toggleState) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                    contentDescription = if (toggleState) "Print units enabled" else "Print units disabled",
-                    tint = if (toggleState) MaterialTheme.colorScheme.onPrimaryContainer
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-        }
-    }
-}
