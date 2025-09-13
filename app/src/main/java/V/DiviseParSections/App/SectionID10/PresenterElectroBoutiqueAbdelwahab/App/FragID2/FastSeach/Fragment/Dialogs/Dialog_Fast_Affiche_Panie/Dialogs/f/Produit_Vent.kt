@@ -80,6 +80,13 @@ fun Produit_Vent(
 
     val pdfFormatterUtils = remember { PdfFormatterUtils(repositorysMainGetter) }
 
+    fun upsert_M10OperationVentCouleur(newState: Boolean): Unit {
+        ventList.forEach { vent ->
+            repositorysMainSetter.upsert_M10OperationVentCouleur(
+                vent.copy(premier_Check_Donne = newState)
+            )
+        }
+    }
     produit?.let { nonNullProduit ->
         Box(modifier = modifier) {
             Card(
@@ -156,7 +163,9 @@ fun Produit_Vent(
                     Text(
                         text = "${ventList.size} couleur(s)",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                        color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
+                            alpha = 0.7f
+                        )
                         else MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
@@ -176,12 +185,7 @@ fun Produit_Vent(
                 ToggleButton_PremierCheckDonne(
                     ventList = ventList,
                     onToggle = { newState ->
-                        // Update all ventList items with the new premier_Check_Donne state
-                        ventList.forEach { vent ->
-                            repositorysMainSetter.upsert_M10OperationVentCouleur(
-                                vent.copy(premier_Check_Donne = newState)
-                            )
-                        }
+                        upsert_M10OperationVentCouleur(newState)
                     },
                     modifier = Modifier
                 )
@@ -189,7 +193,9 @@ fun Produit_Vent(
                 // Move Product FAB - only show when there's a held product
                 FAB_MoveProduct(
                     modifier = Modifier
-                )
+                ) {
+                    upsert_M10OperationVentCouleur(it)
+                }
             }
         }
     } ?: run {
@@ -226,7 +232,8 @@ fun Produit_Vent(
 fun FAB_MoveProduct(
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    repositorysMainSetter: RepositorysMainSetter = koinInject()
+    repositorysMainSetter: RepositorysMainSetter = koinInject(),
+    onToggle: (Boolean) -> Unit,
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val shouldShow = activeCentralValues.held_Produit_Pour_Move_Au_Position_Store != null
@@ -241,8 +248,9 @@ fun FAB_MoveProduct(
                     repositorysMainSetter.upsert_M1Produit(
                         heldProduit.copy(
                             position_store_3jamale = newPosition,
-                            dernier_timeTamps_position_store_3jamale = System.currentTimeMillis()
-                        )
+                            dernier_timeTamps_position_store_3jamale = System.currentTimeMillis(),
+
+                            )
                     )
 
                     // Clear the held product after moving
@@ -251,6 +259,7 @@ fun FAB_MoveProduct(
                             held_Produit_Pour_Move_Au_Position_Store = null
                         )
                     )
+                    onToggle(true)
                 }
             },
             modifier = modifier.size(48.dp),

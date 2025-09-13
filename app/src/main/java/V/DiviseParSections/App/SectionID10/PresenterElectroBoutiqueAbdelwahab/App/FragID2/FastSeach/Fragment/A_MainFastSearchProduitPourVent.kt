@@ -51,7 +51,7 @@ fun get_New_Datas(
     searchQuery: String,
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-): Pair<ArticlesBasesStatsTable, M3CouleurProduitInfos> {
+): Pair<ArticlesBasesStatsTable?, M3CouleurProduitInfos?> {
     val catalogues = B4CatalogueCategoriesRepository().sortedBy { it.position }
     val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
     val idParentCategorie = catalogues.find {
@@ -62,24 +62,28 @@ fun get_New_Datas(
     val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
 
 
-    val newProduit = ArticlesBasesStatsTable.get_Default().copy(
+    val newProduit = idParentCategorie?.let {
+        ArticlesBasesStatsTable.get_Default().copy(
         keyID = keyID,
         id = newOldId,
         creationTimestamp = System.currentTimeMillis(),
         nom = searchQuery,
         couleur1 = keyIDM3CouleurProduitInfos,
-        idParentCategorie = idParentCategorie,
+        idParentCategorie = it,
         disponibilityEtates = DisponibilityEtates.NON_DISPO
     )
+    }
 
 
-    val newCouleurP = M3CouleurProduitInfos.get_default().copy(
+    val newCouleurP = newProduit?.let {
+        M3CouleurProduitInfos.get_default().copy(
         keyID = keyIDM3CouleurProduitInfos,
         creationTimestamp = System.currentTimeMillis(),
-        parentBProduitInfosKeyID = newProduit.keyID,
+        parentBProduitInfosKeyID = it.keyID,
         parentId1ProduitInfosDebugName = newProduit.nom,
         parentBProduitOldID = newProduit.id,
     )
+    }
 
     return Pair(newProduit, newCouleurP)
 }
@@ -202,17 +206,21 @@ fun MainFastSearchProduitPourVent(
                                 onClick = {
                                     val newProduit = newDatas.first
 
-                                    aCentralFacade.repositorysMainSetter.upsert_M1Produit(newProduit)
+                                    if (newProduit != null) {
+                                        aCentralFacade.repositorysMainSetter.upsert_M1Produit(newProduit)
+                                    }
 
-                                    aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
-                                        newDatas.second
-                                    )
+                                    newDatas.second?.let {
+                                        aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                                            it
+                                        )
+                                    }
 
                                     val statusMessage =
                                         if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_EtateDispoNonDifinieAuAddNew) {
-                                            "Produit créé (état non défini): ${newProduit.nom}"
+                                            "Produit créé (état non défini): ${newProduit?.nom}"
                                         } else {
-                                            "Produit WebP créé: ${newProduit.nom}"
+                                            "Produit WebP créé: ${newProduit?.nom}"
                                         }
 
                                     Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT)

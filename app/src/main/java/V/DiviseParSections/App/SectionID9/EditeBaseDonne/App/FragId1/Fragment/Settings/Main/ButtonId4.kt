@@ -229,7 +229,7 @@ private suspend fun exportArticlesToCsv(
         csvContent.append("${article.minQuan},")
         csvContent.append("${article.monBenfice},")
         csvContent.append("\"${article.neaon2.replace("\"", "\"\"")}\",")
-        csvContent.append("${article.catalogeParentID},")
+        csvContent.append("${article.idParentCategorie},")
         csvContent.append("${article.funChangeImagsDimention},")
         csvContent.append("\"${article.nomCategorie.replace("\"", "\"\"")}\",")
         csvContent.append("${article.neaon1},")

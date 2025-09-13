@@ -40,32 +40,27 @@ fun MainList(
             val allVents = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             val activeFilters = active_Central_Values.activeFilters
 
-            // FIXED: Logique de filtrage pour plusieurs filtres simultanés
+            // Get the sorting preference - assuming it's part of ActiveCentralValues
+            // If not available, you'll need to add this field to ActiveCentralValues
+            val sortVentsParClassement = active_Central_Values.sortVentsParClassment
+
             val filteredData = when {
-                // Aucun filtre actif - montrer tous les éléments
                 activeFilters.isEmpty() -> allVents
 
-                // Un ou plusieurs filtres actifs - appliquer la logique ET (tous les filtres doivent passer)
                 else -> {
                     allVents.filter { vent ->
                         var passesAllFilters = true
 
-                        // Vérifier chaque filtre actif
                         activeFilters.forEach { filter ->
                             val passesThisFilter = when (filter) {
                                 is ActiveCentralValues.ActiveFilter.NonTrouve -> {
                                     vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
                                 }
                                 is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
-                                    // EXEMPLE: Ajoutez votre logique spécifique pour "Prix au Gérant"
-                                    // Par exemple: vent.prixType == PrixType.Gerant
-                                    // Pour l'instant, on considère que tous les éléments passent ce filtre
-                                    // REMPLACEZ cette condition par votre logique métier
-                                    true // TODO: Remplacer par la vraie condition métier
+                                    true
                                 }
                             }
 
-                            // Si un filtre ne passe pas, l'élément est rejeté
                             if (!passesThisFilter) {
                                 passesAllFilters = false
                             }
@@ -76,21 +71,37 @@ fun MainList(
                 }
             }
 
-            // Grouper les données filtrées par ID de produit et trier
-            filteredData
+            val groupedData = filteredData
                 .groupBy { it.parent_M1Produit_KeyId }
                 .mapValues { (_, ventList) ->
                     ventList.sortedByDescending { it.creationTimestamps }
                 }
                 .toList()
-                .sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+
+            // FIXED TODO(1): Conditional sorting based on sortVentsParClassement flag
+            val sortedData = if (sortVentsParClassement) {
+                // Sort by position_store_3jamale (existing logic for classification sorting)
+                groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
                     val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                     produit?.position_store_3jamale ?: Int.MAX_VALUE
                 }.thenByDescending { (produitKeyId, _) ->
                     val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                     produit?.dernier_timeTamps_position_store_3jamale ?: 0L
                 })
-                .toMap()
+            } else {
+                // Sort by creation time (newest first)
+                groupedData.sortedByDescending { (_, ventList) ->
+                    ventList.maxOfOrNull { vent ->
+                        if (vent.creationTimestamps > 0) {
+                            vent.creationTimestamps
+                        } else {
+                            vent.dernierTimeTampsSynchronisationAvecFireBase
+                        }
+                    } ?: 0L
+                }
+            }
+
+            sortedData.toMap()
         }
     }
 

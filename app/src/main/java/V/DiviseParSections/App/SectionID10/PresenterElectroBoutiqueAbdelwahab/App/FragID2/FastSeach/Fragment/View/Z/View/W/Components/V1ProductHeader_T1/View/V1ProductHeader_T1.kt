@@ -467,8 +467,10 @@ fun ProductHeader_T1(
             CategorySelectionDialog(
                 product = relative_Produit,
                 onCategorySelected = { newCategoryId ->
-                    relative_Produit.copy(idParentCategorie = newCategoryId).also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                    if (newCategoryId != null) {
+                        relative_Produit.copy(idParentCategorie = newCategoryId).also {
+                            viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                        }
                     }
                     shouldShowCategoryDialog = false
                 },

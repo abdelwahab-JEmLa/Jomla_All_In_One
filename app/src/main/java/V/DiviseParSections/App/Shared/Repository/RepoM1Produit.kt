@@ -172,17 +172,16 @@ data class ArticlesBasesStatsTable(
     var id: Long = 0L,
     var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
     var creationTimestamp: Long = System.currentTimeMillis(),
-
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
     // Garde les propriétés originales pour la compatibilité
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
 
     //S P Ids
-    var idParentCategorie: Long? = null,
+    var idParentCategorie: Long = 0,
     var positionDonSonCesFrereCategorieProduits: Int = 0,
 
     // Section InfosDeBase
@@ -194,8 +193,10 @@ data class ArticlesBasesStatsTable(
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
     var nombreUniteInt: Int = 1,
+    //-----------------Cartons-------------------------------------------------------------------------------------------------------------------------
     var nombreProduitDonSonCarton: Int = 1,
     val its_Carton: Boolean = false,
+    var cartonState: String = "",
 
 //-----------------Section.Etates.Mutable-------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------
@@ -262,12 +263,10 @@ data class ArticlesBasesStatsTable(
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
     var neaon2: String = "",
-    var catalogeParentID: Long = 0,
     var funChangeImagsDimention: Boolean = false,
     var nomCategorie: String = "",
     var neaon1: Double = 0.0,
     var lastUpdateState: String = "",
-    var cartonState: String = "",
     var dateCreationCategorie: String = "",
     var prixDeVentTotaleChezClient: Double = 0.0,
     var benficeTotaleEntreMoiEtClien: Double = 0.0,
@@ -331,7 +330,7 @@ data class ArticlesBasesStatsTable(
             "minQuan" to minQuan,
             "monBenfice" to monBenfice,
             "neaon2" to neaon2,
-            "catalogeParentID" to catalogeParentID,
+            "catalogeParentID" to idParentCategorie,
             "funChangeImagsDimention" to funChangeImagsDimention,
             "nomCategorie" to nomCategorie,
             "neaon1" to neaon1,

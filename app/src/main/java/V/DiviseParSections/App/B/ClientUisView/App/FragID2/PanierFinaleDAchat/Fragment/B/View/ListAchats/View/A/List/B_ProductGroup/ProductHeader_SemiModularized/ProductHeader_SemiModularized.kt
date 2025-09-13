@@ -176,8 +176,10 @@ fun ProductHeader_SemiModularized(
             CategorySelectionDialog(
                 product = relative_M1Produit,
                 onCategorySelected = { newCategoryId ->
-                    relative_M1Produit.copy(idParentCategorie = newCategoryId).also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                    if (newCategoryId != null) {
+                        relative_M1Produit.copy(idParentCategorie = newCategoryId).also {
+                            viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
+                        }
                     }
                     shouldShowCategoryDialog = false
                 },

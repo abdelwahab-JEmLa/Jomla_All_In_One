@@ -176,7 +176,8 @@ fun MainItemEditeCategories(
             products = selectedProducts.toList(),
             onCategorySelected = { newId ->
                 selectedProducts.forEach { product ->
-                    onCategoryChanged(product.copy(idParentCategorie = newId))
+                    newId?.let { product.copy(idParentCategorie = it) }
+                        ?.let { onCategoryChanged(it) }
                 }
                 onShowBulkMoveDialog(false)
             },
@@ -194,7 +195,7 @@ fun MainItemEditeCategories(
             viewModel = viewModel,
             product = produit,
             onCategorySelected = { newId ->
-                onCategoryChanged(produit.copy(idParentCategorie = newId))
+                newId?.let { produit.copy(idParentCategorie = it) }?.let { onCategoryChanged(it) }
                 showDialog = false
             },
             onDismiss = { showDialog = false },
