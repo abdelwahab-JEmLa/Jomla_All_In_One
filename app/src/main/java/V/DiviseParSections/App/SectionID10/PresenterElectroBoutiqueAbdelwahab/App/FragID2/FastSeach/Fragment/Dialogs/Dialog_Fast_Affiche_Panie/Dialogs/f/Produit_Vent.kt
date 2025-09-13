@@ -73,19 +73,9 @@ fun Produit_Vent(
         }
     }
 
-    // Initialize PdfFormatterUtils
     val pdfFormatterUtils = remember { PdfFormatterUtils(repositorysMainGetter) }
 
-    // FIXED: Product name display issue resolved
-    // The issue was likely due to null produit or empty nom field
-    // Added null safety checks and fallback display values
     produit?.let { nonNullProduit ->
-        val displayName = if (nonNullProduit.nom.isNullOrBlank()) {
-            "Produit #${nonNullProduit.keyID.take(8)}" // Fallback name using keyID
-        } else {
-            nonNullProduit.nom
-        }
-
         Card(
             modifier = modifier,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -103,7 +93,6 @@ fun Produit_Vent(
 
                 // ElevatedCardHeader now includes the up icon functionality
                 ElevatedCardHeader(
-                    productName = displayName, // Using displayName with fallback
                     produit = nonNullProduit,
                     hasNonTrouve = hasNonTrouve,
                     allNonTrouve = allNonTrouve,
@@ -119,6 +108,14 @@ fun Produit_Vent(
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
+
+                Text(
+                    text = nonNullProduit.position_store_3jamale.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+
                 Spacer(modifier = Modifier.height(4.dp))
 
                 // Show first vent creation time

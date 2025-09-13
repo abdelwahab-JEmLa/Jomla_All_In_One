@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ElevatedCardHeader(
-    productName: String,
     produit: ArticlesBasesStatsTable,
     hasNonTrouve: Boolean,
     allNonTrouve: Boolean,
@@ -52,15 +50,6 @@ fun ElevatedCardHeader(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Product name with proper weight allocation
-            Text(
-                text = productName,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f),
-                color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer
-                else MaterialTheme.colorScheme.onSurface,
-                maxLines = 2 // Allow text to wrap if needed
-            )
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -70,12 +59,6 @@ fun ElevatedCardHeader(
                     ToggleButton_PremierCheckDonne(
                         ventList = ventList,
                         onToggle = ::update_List_M10OperationVentCouleur,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                item {
-                    InfoButton(
-                        productName = productName,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }

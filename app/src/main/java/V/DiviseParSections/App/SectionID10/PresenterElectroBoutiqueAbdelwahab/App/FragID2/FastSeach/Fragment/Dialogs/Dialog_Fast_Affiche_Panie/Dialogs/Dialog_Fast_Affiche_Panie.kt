@@ -43,7 +43,6 @@ fun MainList(
                     allVents.filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
                 }
                 is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
-                    // Filter logic for PrixAuGerant can be implemented here
                     allVents
                 }
                 else -> allVents
@@ -54,7 +53,6 @@ fun MainList(
                 .mapValues { (_, ventList) ->
                     ventList.sortedByDescending { it.creationTimestamps }
                 }
-                // Sort groups by position_store_3jamale, then by dernier_timeTamps_position_store_3jamale for same positions
                 .toList()
                 .sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
                     val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
@@ -67,7 +65,6 @@ fun MainList(
         }
     }
 
-    // Fixed: Implemented LazyVerticalGrid with 2 columns containing Produit_Vent
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier.fillMaxSize(),
