@@ -56,7 +56,8 @@ fun MainFilter(
                 relative_M1Produit = relative_M1Produit,
                 viewModel = viewModel,
                 clientDefiniTariffs = clientDefiniTariffs,
-                itsLancedDepuitComposeParent = lancedDepuitAffiche
+                itsLancedDepuitComposeParent = lancedDepuitAffiche,
+                onClickAnulationButton = onClickAnulationButton
             )
 
             false ->
@@ -70,6 +71,5 @@ fun MainFilter(
                     onClickAnulationButton = onClickAnulationButton
                 )
         }
-
     }
 }

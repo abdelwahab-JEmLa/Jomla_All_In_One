@@ -42,6 +42,7 @@ fun ConnexionCard(
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
 
     val errorColor = MaterialTheme.colorScheme.error
+
     Card(
         modifier = Modifier
             .clickable { isCollapsed = !isCollapsed }

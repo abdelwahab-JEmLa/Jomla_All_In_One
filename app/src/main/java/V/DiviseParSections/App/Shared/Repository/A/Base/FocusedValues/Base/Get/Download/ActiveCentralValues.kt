@@ -45,6 +45,9 @@ data class ActiveCentralValues(
     // FIXED: Add flag to track if we're in temporary mode
     val isInTemporaryShowAllMode: Boolean = false,
 
+    //-----------------Outlined texts.Values-------------------------------------------------------------------------------------------------------------------------
+    val fastSearchProduitPourVent: String = "",
+
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,

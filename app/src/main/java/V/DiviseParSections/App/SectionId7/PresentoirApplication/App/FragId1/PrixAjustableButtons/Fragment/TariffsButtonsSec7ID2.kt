@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -26,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 sealed class ItsLancedDepuit {
     data class EditeBaseDonne(val relative_Produit: ArticlesBasesStatsTable? =null) : ItsLancedDepuit()
@@ -40,6 +42,7 @@ fun TariffsButtonsSec7ID2(
     onFermDialogeAvecAnllation: () -> Unit = {},
     its_ProduitVentsInfosDialog: Boolean = false,
     lancedDepuitAffiche: ItsLancedDepuit? = null,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
 ) {
     val context = LocalContext.current
     val relative_Produit =
@@ -91,6 +94,14 @@ fun TariffsButtonsSec7ID2(
         datasValueDeM1ProduitInfos.size,
         suspendFunction1(datasValueDeM1ProduitInfos, viewModel)
     )
+    fun update_activeCentralValues(): Unit {
+        focusedValuesGetter.update_activeCentralValues(
+            focusedValuesGetter.active_Central_Values.copy(
+                fastSearchProduitPourVent = ""
+            )
+        )
+
+    }
 
     val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, android.content.Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
@@ -102,7 +113,7 @@ fun TariffsButtonsSec7ID2(
                     newPrix = latestTariffLocalData.prixCurrency
                 )
             }
-
+            update_activeCentralValues()
             if (!itsLancedDepuitEditeBaseDonne) {
                 // Normal mode: full message with price details
                 val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
@@ -125,6 +136,7 @@ fun TariffsButtonsSec7ID2(
                 parentProduitOldId = filterProductId,
             )
         }
+        update_activeCentralValues()
 
         if (!itsLancedDepuitEditeBaseDonne) {
             // Normal mode: hide buttons and call dialog functions

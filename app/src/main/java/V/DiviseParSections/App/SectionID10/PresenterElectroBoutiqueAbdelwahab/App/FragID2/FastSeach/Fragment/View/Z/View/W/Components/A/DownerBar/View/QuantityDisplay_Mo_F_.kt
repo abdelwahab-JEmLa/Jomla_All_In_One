@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Genere_Tariffs_currentApp_ItsWorkChezGrossisst
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -40,6 +41,7 @@ fun QuantityDisplay_Mo_F_(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
     val repositorysMainSetter = aCentralFacade.repositorysMainSetter
+    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
     val getterFocusedVarsHandlerFacade =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -51,8 +53,14 @@ fun QuantityDisplay_Mo_F_(
             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
-            }   .sumOf { it.quantity }
+            }.sumOf { it.quantity }
     }
+
+    // Get the SuperGros tariff for the current product
+    val superGrosTariff = if (currentApp_ItsWorkChezGrossisst) {
+        Genere_Tariffs_currentApp_ItsWorkChezGrossisst()
+            .find_existing_Tariff_Grossist_SuperGros(aCentralFacade, produit)
+    } else null
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,7 +92,8 @@ fun QuantityDisplay_Mo_F_(
                 )
                 .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
                     1,
-                    "dialogChoisireQuantityM1ProduitInfosKeyID", focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
+                    "dialogChoisireQuantityM1ProduitInfosKeyID",
+                    focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
                 )
         ) {
             Row(
@@ -153,9 +162,16 @@ fun QuantityDisplay_Mo_F_(
                     "Depuis Mon Old BaseDonnée" to Icons.Default.History
                 }
 
-                val text = "$depuit_Qui - ${finale_Tariff.prixCurrency}"
+                val displayText = if (currentApp_ItsWorkChezGrossisst) {
+                    superGrosTariff?.let { tariff ->
+                        "${tariff.prixCurrency} DA"
+                    } ?: "غير متوفر"
+                } else {
+                    "اضغط لاظهار السعر"
+                }
+
                 Text(
-                    text = "اضغط لاظهار السعر",
+                    text = displayText,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)

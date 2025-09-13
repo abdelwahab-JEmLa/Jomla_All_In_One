@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -86,7 +87,9 @@ fun MainFastSearchProduitPourVent(
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
     aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
+    val active_Central_Values =focusedValuesGetter.active_Central_Values
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
@@ -105,19 +108,29 @@ fun MainFastSearchProduitPourVent(
 
         null -> ""
     }
+     fun update_activeCentralValues(
+        capitalizedText: String
+    ) {
+        focusedValuesGetter.update_activeCentralValues(
+            active_Central_Values.copy(
+                fastSearchProduitPourVent = capitalizedText
+            )
+        )
+    }
 
     val focusRequester = remember { FocusRequester() }
-    var localSearchText by remember { mutableStateOf(startTextSearchM1Produit) }
+    val fastSearchProduitPourVent = active_Central_Values.fastSearchProduitPourVent
+
     var isTextFieldReady by remember { mutableStateOf(false) }
 
     // Only request focus if the OutlinedTextField will be shown
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
-    LaunchedEffect(localSearchText) {
-        if (localSearchText.isNotEmpty()) {
+    LaunchedEffect(fastSearchProduitPourVent) {
+        if (fastSearchProduitPourVent.isNotEmpty()) {
             delay(500)
-            viewModel.onSearchTextChange(localSearchText)
+            viewModel.onSearchTextChange(fastSearchProduitPourVent)
         } else {
             viewModel.onSearchTextChange("")
         }
@@ -132,7 +145,7 @@ fun MainFastSearchProduitPourVent(
                 enabled = shouldPerformInitialSearch,
                 focusRequester = focusRequester,
                 { searchText ->
-                    localSearchText = searchText
+                    update_activeCentralValues(searchText)
                     shouldPerformInitialSearch = false
                 },
                 "liy"
@@ -150,7 +163,7 @@ fun MainFastSearchProduitPourVent(
             ) {
                 if (shouldShowTextField) {
                     OutlinedTextField(
-                        value = localSearchText,
+                        value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
                             // Capitalize first letter of each word
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
@@ -162,7 +175,7 @@ fun MainFastSearchProduitPourVent(
                                     word
                                 }
                             }
-                            localSearchText = capitalizedText
+                            update_activeCentralValues(capitalizedText)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -171,7 +184,7 @@ fun MainFastSearchProduitPourVent(
                         singleLine = true,
                         leadingIcon = {
                             val newDatas = get_New_Datas(
-                                searchQuery = localSearchText,
+                                searchQuery = fastSearchProduitPourVent,
                                 aCentralFacade = aCentralFacade,
                             )
                             IconButton(
@@ -209,10 +222,10 @@ fun MainFastSearchProduitPourVent(
                             }
                         },
                         trailingIcon = {
-                            if (localSearchText.isNotEmpty()) {
+                            if (fastSearchProduitPourVent.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
-                                        localSearchText = ""
+                                        update_activeCentralValues("")
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
@@ -246,3 +259,4 @@ fun MainFastSearchProduitPourVent(
         }
     }
 }
+

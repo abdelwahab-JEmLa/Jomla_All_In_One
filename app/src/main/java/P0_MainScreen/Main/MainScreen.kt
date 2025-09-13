@@ -178,7 +178,8 @@ fun MainScreen(
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
                         AnimatedVisibility(
-                            visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost)
+                            visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost
+                                    && !focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
                         ) {
                             ConnexionCard(
                                 headViewModel = headViewModel,
