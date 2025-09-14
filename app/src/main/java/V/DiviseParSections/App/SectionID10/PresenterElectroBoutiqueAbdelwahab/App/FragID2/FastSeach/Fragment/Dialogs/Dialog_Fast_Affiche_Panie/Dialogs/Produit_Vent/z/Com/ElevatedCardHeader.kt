@@ -26,7 +26,8 @@ fun ElevatedCardHeader(
     ventList: List<M10OperationVentCouleur>,
     aCentralFacade: ACentralFacade,
     focusedValuesSetter: FocusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    upsert_M10OperationVentCouleur: (Boolean) -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -43,14 +44,23 @@ fun ElevatedCardHeader(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             LazyRow(
+                reverseLayout = true,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 item {
+                    ToggleButton_PremierCheckDonne(
+                        ventList = ventList,
+                        onToggle = { newState ->
+                            upsert_M10OperationVentCouleur(newState)
+                        },
+                        modifier = Modifier
+                    )
+                }
+                item {
                     InfoButton(
-                        produit=produit,
+                        produit = produit,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }

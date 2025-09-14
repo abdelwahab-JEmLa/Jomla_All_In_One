@@ -2,15 +2,22 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
@@ -67,6 +74,33 @@ fun InfoButton(
             imageVector = Icons.Filled.Info,
             contentDescription = "Informations du produit",
             tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun ToggleButton_PremierCheckDonne(
+    ventList: List<M10OperationVentCouleur>,
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Determine current state: true if ALL items have premier_Check_Donne = true
+    val allChecked = remember(ventList) {
+        ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
+    }
+
+    // Determine what the new state should be when toggled
+    val newStateWhenToggled = !allChecked
+
+    FloatingActionButton(
+        onClick = { onToggle(newStateWhenToggled) },
+        modifier = modifier.size(48.dp),
+        containerColor = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = if (allChecked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    ) {
+        Icon(
+            imageVector = if (allChecked) Icons.Filled.RadioButtonUnchecked else Icons.Filled.Check,
+            contentDescription = if (allChecked) "Masquer les vérifications" else "Afficher les vérifications"
         )
     }
 }

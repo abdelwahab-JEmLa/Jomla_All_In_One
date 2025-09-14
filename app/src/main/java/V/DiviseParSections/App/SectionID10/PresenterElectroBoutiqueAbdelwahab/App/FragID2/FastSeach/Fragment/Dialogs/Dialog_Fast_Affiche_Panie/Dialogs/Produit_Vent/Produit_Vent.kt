@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ImageDisplayerGlide_FragFastVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com.ElevatedCardHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -20,9 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -42,9 +39,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun Produit_Vent(
@@ -71,25 +65,7 @@ fun Produit_Vent(
     val relative_M10OperationVentCouleur = ventList.first()
     val relative_M3CouleurProduit =
         repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
-    // Format first vent creation time
-    val firstVentCreationTime = remember(ventList) {
-        ventList.firstOrNull()?.let { firstVent ->
-            val timestamp = if (firstVent.creationTimestamps > 0) {
-                firstVent.creationTimestamps
-            } else {
-                firstVent.dernierTimeTampsSynchronisationAvecFireBase
-            }
 
-            if (timestamp > 0) {
-                val sdf = SimpleDateFormat("HH:mm:ss a", Locale.getDefault())
-                sdf.format(Date(timestamp))
-            } else {
-                null
-            }
-        }
-    }
-
-    val pdfFormatterUtils = remember { PdfFormatterUtils(repositorysMainGetter) }
 
     fun upsert_M10OperationVentCouleur(newState: Boolean): Unit {
         ventList.forEach { vent ->
@@ -123,7 +99,9 @@ fun Produit_Vent(
                         allNonTrouve = allNonTrouve,
                         ventList = ventList,
                         aCentralFacade = aCentralFacade
-                    )
+                    ) {
+                        upsert_M10OperationVentCouleur(it)
+                    }
 
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -202,16 +180,6 @@ fun Produit_Vent(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Toggle Check FAB
-                ToggleButton_PremierCheckDonne(
-                    ventList = ventList,
-                    onToggle = { newState ->
-                        upsert_M10OperationVentCouleur(newState)
-                    },
-                    modifier = Modifier
-                )
-
-                // Move Product FAB - only show when there's a held product
                 FAB_MoveProduct(
                     modifier = Modifier
                 ) {
@@ -220,7 +188,6 @@ fun Produit_Vent(
             }
         }
     } ?: run {
-        // Handle case where produit is null
         Card(
             modifier = modifier,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -290,32 +257,5 @@ fun FAB_MoveProduct(
                 contentDescription = "Déplacer vers le haut"
             )
         }
-    }
-}
-
-@Composable
-fun ToggleButton_PremierCheckDonne(
-    ventList: List<M10OperationVentCouleur>,
-    onToggle: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Determine current state: true if ALL items have premier_Check_Donne = true
-    val allChecked = remember(ventList) {
-        ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
-    }
-
-    // Determine what the new state should be when toggled
-    val newStateWhenToggled = !allChecked
-
-    FloatingActionButton(
-        onClick = { onToggle(newStateWhenToggled) },
-        modifier = modifier.size(48.dp),
-        containerColor = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = if (allChecked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    ) {
-        Icon(
-            imageVector = if (allChecked) Icons.Filled.RadioButtonUnchecked else Icons.Filled.Check,
-            contentDescription = if (allChecked) "Masquer les vérifications" else "Afficher les vérifications"
-        )
     }
 }
