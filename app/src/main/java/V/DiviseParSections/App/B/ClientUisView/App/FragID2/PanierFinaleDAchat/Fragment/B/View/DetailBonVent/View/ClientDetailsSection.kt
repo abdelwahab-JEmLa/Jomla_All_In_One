@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -50,35 +49,35 @@ fun ClientDetailsSection(
             // FIXED: Now that we're using the correct property, the semantic tag should work properly
             verticalArrangement = Arrangement.spacedBy(if (isMinimized) 2.dp else 4.dp)
         ) {
-            Text(
+            /*Text(
                 text = "Client On Vent",
                 style = if (isMinimized) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
-            )
+            )       */
 
             if (onVentClient != null) {
                 with(onVentClient) {
                     if (isMinimized) {
                         Text(
                             text = "Etate: $nom",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
                             text = "Etate: $nom",
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                         Text(
                             text = "keyID: $keyID",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                         Text(
                             text = "Téléphone: $numTelephone",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }

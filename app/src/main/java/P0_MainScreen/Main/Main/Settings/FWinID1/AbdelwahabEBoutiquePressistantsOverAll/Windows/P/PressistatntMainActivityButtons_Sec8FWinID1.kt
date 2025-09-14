@@ -17,6 +17,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
@@ -49,6 +50,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -73,13 +75,14 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
-// Fixed the missing variable declaration and added proper implementation
+// Fixed the roundToInt() error by using Float types for offset variables
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
+    focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     its_Affiche_InfoProduit_Dialog: Boolean = false,
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
@@ -95,7 +98,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
-    val startIntOffset = focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
+    // FIXED: Use Float types for offset variables to work with drag gestures and roundToInt()
+    var offsetX by remember {
+        mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.x.toFloat())
+    }
+    var offsetY by remember {
+        mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.y.toFloat())
+    }
 
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
@@ -125,12 +134,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val floatingImage = activeCentralValues.image_Flotant
 
-    // FIXED: Added the missing tariffication_ListGroupedVentsParProduit variable
+    // Fixed: Added the missing variable
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent =
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
-
-    // Rest of the DisposableEffect and other logic remains the same...
+    // DisposableEffect and other logic remains the same...
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -298,40 +306,23 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
             )
         }
-        var dragOffset by remember { mutableStateOf(IntOffset.Zero) }
-        var isDragging by remember { mutableStateOf(false) }
 
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (its_Affiche_InfoProduit_Dialog
                     || itsFragmentProduitFastSearchDialog
                     && viewModel.aCentralFacade
                 .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+
         Box(
             modifier = Modifier
+                // FIXED: Now roundToInt() works correctly with Float types
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                 .pointerInput(Unit) {
-
-                    detectDragGestures(
-                        onDragStart = { offset ->
-                            isDragging = true
-                            dragOffset = focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
-                        },
-                        onDragEnd = {
-                            isDragging = false
-                            val updatedActiveCentralValues = focusedValuesGetter.active_Central_Values.copy(
-                                startIntOffset_PresistantFABs = dragOffset
-                            )
-                            focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
-                        }
-                    ) { change, dragAmount ->
+                    detectDragGestures { change, dragAmount ->
                         change.consume()
-                        dragOffset = IntOffset(
-                            x = dragOffset.x + dragAmount.x.roundToInt(),
-                            y = dragOffset.y + dragAmount.y.roundToInt()
-                        )
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
                     }
-                }
-                .offset {
-                    if (isDragging) dragOffset else focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
                 }
                 .padding(16.dp)
         ) {
@@ -418,16 +409,18 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
                                 .size(40.dp),
                             onClick = {
-                                val currentState =
-                                    focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
+                                // Toggle the dialog state
+                                val currentState = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
                                         affiche_Dialog_Fast_Affiche_Panie = !currentState
                                     )
                                 )
+                                focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+
                             },
                             containerColor = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
-                                MaterialTheme.colorScheme.secondary
+                                MaterialTheme.colorScheme.secondary // Different color when active
                             } else {
                                 MaterialTheme.colorScheme.primary
                             },

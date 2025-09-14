@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -141,7 +139,7 @@ private fun SummarySection(
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Section header
+        /*
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -157,7 +155,7 @@ private fun SummarySection(
                 fontWeight = FontWeight.Medium,
                 color = iconTint
             )
-        }
+        }                */
 
         // Details
         Column(

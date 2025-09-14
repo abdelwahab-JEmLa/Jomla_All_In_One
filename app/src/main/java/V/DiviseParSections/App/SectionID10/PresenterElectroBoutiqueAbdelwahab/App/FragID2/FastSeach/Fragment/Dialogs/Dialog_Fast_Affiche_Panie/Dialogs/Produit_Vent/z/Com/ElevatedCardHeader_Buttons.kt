@@ -6,17 +6,18 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -49,8 +50,6 @@ fun ToggleButton_MoveToStorePosition(
     }
 }
 
-
-
 @Composable
 fun InfoButton(
     modifier: Modifier = Modifier,
@@ -82,6 +81,7 @@ fun InfoButton(
 fun ToggleButton_PremierCheckDonne(
     ventList: List<M10OperationVentCouleur>,
     onToggle: (Boolean) -> Unit,
+    positionIndex: Int, // Position du produit dans la grille (1-4)
     modifier: Modifier = Modifier
 ) {
     // Determine current state: true if ALL items have premier_Check_Donne = true
@@ -95,12 +95,14 @@ fun ToggleButton_PremierCheckDonne(
     FloatingActionButton(
         onClick = { onToggle(newStateWhenToggled) },
         modifier = modifier.size(48.dp),
-        containerColor = if (allChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = if (allChecked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+        containerColor = if (allChecked) Color(0xFFFFEB3B) else MaterialTheme.colorScheme.surfaceVariant, // Yellow when checked
+        contentColor = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
     ) {
-        Icon(
-            imageVector = if (allChecked) Icons.Filled.RadioButtonUnchecked else Icons.Filled.Check,
-            contentDescription = if (allChecked) "Masquer les vérifications" else "Afficher les vérifications"
+        Text(
+            text = positionIndex.toString(),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

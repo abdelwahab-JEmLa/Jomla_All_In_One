@@ -149,20 +149,35 @@ fun ID4ClientSearchButton(
                 val nomClient = getter.activeOnVent_M2Client?.nom ?: ""
                 val onVentId8BonVent = getter.activeOnVent_M8BonVent
 
+
                 Text(
                     text = if (isTextCollapsed) {
                         nomClient
                     } else {
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
-                            val totalProducts =
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                                    .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                                    .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
-                                    .groupBy { it.parent_M1Produit_KeyId }.size
+
+                            // Get the list of vents for this bon
+                            val onVentList = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+
+                            val ventsTrouve = onVentList.filter {
+                                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+                            }
+
+                            val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
+
+                            // Calculate total value (similar to CartSummarySection)
+                            val totalValue = ventsTrouve.sumOf { vent ->
+                                val provisoireMonPrix = viewModel.aCentralFacade.repositorysMainGetter
+                                    .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+                                    ?.prixCurrency ?: 0.0
+
+                                vent.quantity * provisoireMonPrix
+                            }
 
                             if (bon.parent_M2Client_DebugInfos.isNotEmpty() && bon.parent_M2Client_DebugInfos != "Non Defini") {
-                                "$nomClient - $timeElapsed - $totalProducts produits"
+                                "$nomClient - $timeElapsed - $totalProducts P - ${String.format("%.2f", totalValue)} DA"
                             } else "Rechercher Client"
                         } ?: run {
                             val count = clientsWithCommandBonVents.size
@@ -203,7 +218,19 @@ fun ID4ClientSearchButton(
                             .background(Color.White, RoundedCornerShape(4.dp))
                             .focusRequester(focusRequester),
                         value = searchQuery,
-                        onValueChange = { searchQuery = it },
+                        onValueChange = { newText ->
+                            // Auto-capitalize first letter of each word
+                            val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                                if (word.isNotEmpty()) {
+                                    word.replaceFirstChar {
+                                        if (it.isLowerCase()) it.titlecase() else it.toString()
+                                    }
+                                } else {
+                                    word
+                                }
+                            }
+                            searchQuery = capitalizedText
+                        },
                         placeholder = {
                             Text(
                                 if (isFournisseurMode) "Nom fournisseur ou téléphone..."
@@ -228,7 +255,7 @@ fun ID4ClientSearchButton(
                                     showDropdown = false
                                 },
                                 viewModel = viewModel,
-                                isFournisseurMode = isFournisseurMode // Pass the toggle state
+                                isFournisseurMode = isFournisseurMode
                             )
                         },
                         trailingIcon = {

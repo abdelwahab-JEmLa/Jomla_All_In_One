@@ -44,6 +44,7 @@ import org.koin.compose.koinInject
 fun Produit_Vent(
     produitKeyId: String,
     ventList: List<M10OperationVentCouleur>,
+    positionIndex: Int,
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
@@ -74,6 +75,7 @@ fun Produit_Vent(
             )
         }
     }
+
     produit?.let { nonNullProduit ->
         Box(modifier = modifier) {
             Card(
@@ -98,6 +100,7 @@ fun Produit_Vent(
                         hasNonTrouve = hasNonTrouve,
                         allNonTrouve = allNonTrouve,
                         ventList = ventList,
+                        positionIndex = positionIndex,
                         aCentralFacade = aCentralFacade
                     ) {
                         upsert_M10OperationVentCouleur(it)

@@ -25,6 +25,7 @@ fun ElevatedCardHeader(
     allNonTrouve: Boolean,
     ventList: List<M10OperationVentCouleur>,
     aCentralFacade: ACentralFacade,
+    positionIndex: Int, // <-- Ajoutez ce paramètre
     focusedValuesSetter: FocusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     modifier: Modifier = Modifier,
     upsert_M10OperationVentCouleur: (Boolean) -> Unit,
@@ -53,6 +54,7 @@ fun ElevatedCardHeader(
                 item {
                     ToggleButton_PremierCheckDonne(
                         ventList = ventList,
+                        positionIndex = positionIndex, // Passez la position du produit (1-4)
                         onToggle = { newState ->
                             upsert_M10OperationVentCouleur(newState)
                         },
