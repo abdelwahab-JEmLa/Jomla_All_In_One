@@ -15,12 +15,11 @@ import java.util.Date
  * Handles PDF content creation and layout
  */
 class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
-
     fun addHeader(
-        doc: Document, 
-        title: String, 
-        regularFont: PdfFont, 
-        boldFont: PdfFont, 
+        doc: Document,
+        title: String,
+        regularFont: PdfFont,
+        boldFont: PdfFont,
         bonVentKeyId: String? = null
     ) {
         bonVentKeyId?.let {
@@ -52,7 +51,7 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
                 .setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
             .setPadding(0f)
-        
+
         val dateCell = Cell()
             .add(Paragraph(date).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
@@ -64,10 +63,10 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
     }
 
     fun addCompactLabelValue(
-        doc: Document, 
-        label: String, 
-        value: String, 
-        labelFont: PdfFont, 
+        doc: Document,
+        label: String,
+        value: String,
+        labelFont: PdfFont,
         valueFont: PdfFont
     ) {
         val paragraph = Paragraph()
@@ -81,12 +80,12 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
     }
 
     fun addCreditSection(
-        doc: Document, 
-        client: M2Client?, 
-        bonVent: M8BonVent, 
-        versement: Double, 
-        regularFont: PdfFont, 
-        boldFont: PdfFont, 
+        doc: Document,
+        client: M2Client?,
+        bonVent: M8BonVent,
+        versement: Double,
+        regularFont: PdfFont,
+        boldFont: PdfFont,
         currentReceiptTotal: Double
     ) {
         val oldBalance = client?.currentCreditBalance ?: 0.0
@@ -100,9 +99,9 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
     }
 
     fun addCreditOnlySection(
-        doc: Document, 
-        creditData: CreditReceiptData, 
-        regularFont: PdfFont, 
+        doc: Document,
+        creditData: CreditReceiptData,
+        regularFont: PdfFont,
         boldFont: PdfFont
     ) {
         if (creditData.oldBalance != 0.0) {
@@ -116,10 +115,8 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
             addText(doc, "${formatter.round(creditData.currentBill)} Da", boldFont, 14f, TextAlignment.CENTER)
             doc.add(Paragraph("\n").setFontSize(0.3f))
         }
-
-      /*  addText(doc, "Versement :", boldFont, 12f, TextAlignment.LEFT)
         addText(doc, "${formatter.round(creditData.currentPayment)} Da", boldFont, 14f, TextAlignment.CENTER)
-        doc.add(Paragraph("\n").setFontSize(0.3f))     */
+        doc.add(Paragraph("\n").setFontSize(0.3f))
 
         val totalPaid = if (creditData.showPaymentHistory) {
             creditData.previousPayments.sum() + creditData.currentPayment

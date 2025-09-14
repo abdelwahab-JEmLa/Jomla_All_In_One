@@ -13,11 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
-/**
- * Refactored PrintReceiptHandler using composition pattern
- * Addresses TODO(2): Split class into smaller partitioned sub-classes
- * Addresses TODO(1): Added Windows app sharing functionality
- */
 class PrintReceiptHandler_Juil(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {

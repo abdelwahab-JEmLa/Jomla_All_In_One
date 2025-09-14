@@ -116,6 +116,11 @@ fun DetailsBonVent(
                     }
                 )
             },
+            ActionButtonData("reports") {
+                PrintReportsButton(
+                    showLabel = !isMinimized
+                )
+            },
             ActionButtonData("print_pdf") {
                 PdfPrintButton(
                     showLabel = !isMinimized,
@@ -159,11 +164,7 @@ fun DetailsBonVent(
                     }
                 )
             },
-            ActionButtonData("reports") {
-                PrintReportsButton(
-                    showLabel = !isMinimized
-                )
-            },
+
             ActionButtonData("confirmation") {
                 ConfirmationButton(
                     viewModel = viewModel,
@@ -240,7 +241,6 @@ fun DetailsBonVent(
     }
 }
 
-// New Windows App Share Button - Addresses TODO(1)
 @Composable
 fun WindowsAppShareButton(
     aCentralFacade: ACentralFacade = koinInject(),

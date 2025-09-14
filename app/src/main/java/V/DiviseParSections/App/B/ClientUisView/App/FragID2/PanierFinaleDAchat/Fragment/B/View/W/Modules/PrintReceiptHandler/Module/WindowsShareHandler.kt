@@ -8,32 +8,29 @@ import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
 
-/**
- * Handles sharing PDF files specifically with Windows-compatible applications
- * This addresses TODO(1) by providing direct sharing functionality with Windows apps
- */
+
 class WindowsShareHandler {
-    
+
     companion object {
-        private const val TAG = "WindowsShareHandler"
-        
-        // Known Windows-compatible apps that can handle PDFs
-        private val WINDOWS_COMPATIBLE_APPS = mapOf(
-            "com.microsoft.office.outlook" to "Microsoft Outlook",
-            "com.microsoft.teams" to "Microsoft Teams", 
-            "com.microsoft.skydrive" to "Microsoft OneDrive",
-            "com.dropbox.android" to "Dropbox",
-            "com.google.android.apps.docs" to "Google Drive",
-            "com.adobe.reader" to "Adobe Acrobat Reader",
-            "com.microsoft.office.word" to "Microsoft Word",
-            "com.google.android.gm" to "Gmail",
-            "com.whatsapp" to "WhatsApp",
-            "com.telegram.messenger" to "Telegram"
+        private const val TAG = "WindowsShareHandler_V2"
+
+        // Apps known to handle sharing properly (not just opening)
+        private val SHARING_APPS = listOf(
+            "com.microsoft.appmanager",    // Link to Windows
+            "com.microsoft.office.outlook", // Outlook
+            "com.google.android.gm",       // Gmail
+            "com.whatsapp",                // WhatsApp
+            "com.telegram.messenger",      // Telegram
+            "com.microsoft.teams",         // Teams
+            "com.dropbox.android",         // Dropbox
+            "com.microsoft.skydrive",      // OneDrive
+            "com.slack",                   // Slack
+            "com.discord"                  // Discord
         )
     }
 
     /**
-     * Share PDF file with Windows-compatible applications
+     * Share PDF with focus on actual sharing apps, not PDF viewers
      */
     fun shareWithWindowsApps(context: Context, pdfFile: File) {
         try {
@@ -48,20 +45,31 @@ class WindowsShareHandler {
                 return
             }
 
-            // Try to find the best available Windows-compatible app
-            val availableApp = findBestWindowsApp(context)
-            
-            if (availableApp != null) {
-                shareWithSpecificApp(context, uri, pdfFile, availableApp)
-            } else {
-                // Fallback to general sharing with preference for Office/productivity apps
-                shareWithPreferredApps(context, uri, pdfFile)
+            // Try multiple approaches in order
+            val approaches = listOf(
+                { shareAsAttachment(context, uri, pdfFile) },
+                { shareWithGenericType(context, uri, pdfFile) },
+                { shareWithTextFocus(context, uri, pdfFile) }
+            )
+
+            var success = false
+            for ((index, approach) in approaches.withIndex()) {
+                try {
+                    approach()
+                    Log.i(TAG, "Share approach ${index + 1} launched successfully")
+                    success = true
+                    break
+                } catch (e: Exception) {
+                    Log.w(TAG, "Share approach ${index + 1} failed: ${e.message}")
+                }
             }
-            
+
+            if (!success) {
+                Log.e(TAG, "All share approaches failed")
+            }
+
         } catch (e: Exception) {
-            Log.e(TAG, "Error sharing with Windows apps", e)
-            // Ultimate fallback - use system sharing
-            shareWithSystemChooser(context, pdfFile)
+            Log.e(TAG, "Error in shareWithWindowsApps", e)
         }
     }
 
@@ -82,35 +90,132 @@ class WindowsShareHandler {
     }
 
     /**
-     * Find the best available Windows-compatible app
+     * Approach 1: Share as email attachment style
      */
-    private fun findBestWindowsApp(context: Context): String? {
-        val packageManager = context.packageManager
-        
-        // Priority order: Office apps first, then cloud storage, then communication
-        val priorityOrder = listOf(
-            "com.microsoft.office.outlook",
-            "com.microsoft.teams",
-            "com.microsoft.skydrive",
-            "com.microsoft.office.word",
-            "com.google.android.apps.docs",
-            "com.dropbox.android",
-            "com.adobe.reader",
-            "com.google.android.gm"
-        )
-        
-        for (packageName in priorityOrder) {
-            if (isAppInstalled(packageManager, packageName)) {
-                Log.i(TAG, "Found Windows-compatible app: ${WINDOWS_COMPATIBLE_APPS[packageName]}")
-                return packageName
-            }
+    private fun shareAsAttachment(context: Context, uri: Uri, file: File) {
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "message/rfc822"  // Email MIME type forces sharing apps
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("")) // Empty email array
+            putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
+            putExtra(Intent.EXTRA_TEXT, "Veuillez trouver ci-joint le bon de vente.\n\nCordialement")
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        
-        return null
+
+        val chooser = Intent.createChooser(intent, "Envoyer le bon de vente")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
     }
 
     /**
-     * Check if an app is installed
+     * Approach 2: Share with generic type to avoid PDF viewers
+     */
+    private fun shareWithGenericType(context: Context, uri: Uri, file: File) {
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "*/*"  // Generic type avoids PDF viewers
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
+            putExtra(Intent.EXTRA_TEXT, "📄 Document: Bon de vente\n" +
+                    "📧 Prêt à être partagé\n\n" +
+                    "Fichier joint: ${file.name}")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        val chooser = Intent.createChooser(intent, "Partager via:")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
+    }
+
+    /**
+     * Approach 3: Focus on text sharing with attachment
+     */
+    private fun shareWithTextFocus(context: Context, uri: Uri, file: File) {
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"  // Text type with attachment
+
+            // Rich text content that emphasizes sharing
+            val shareText = """
+                📋 BON DE VENTE
+                ━━━━━━━━━━━━━━━━━━
+                
+                Document: ${file.nameWithoutExtension}
+                Généré le: ${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.FRENCH).format(java.util.Date())}
+                
+                📎 Fichier PDF en pièce jointe
+                
+                ━━━━━━━━━━━━━━━━━━
+                Merci pour votre confiance
+            """.trimIndent()
+
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        val chooser = Intent.createChooser(intent, "Partager le document")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
+    }
+
+    /**
+     * Alternative method: Force sharing apps only
+     */
+    fun shareOnlyWithSharingApps(context: Context, pdfFile: File) {
+        try {
+            val uri = createFileUri(context, pdfFile) ?: return
+
+            val baseIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${pdfFile.nameWithoutExtension}")
+                putExtra(Intent.EXTRA_TEXT, "Bon de vente en pièce jointe.")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            // Create intents only for known sharing apps
+            val sharingIntents = mutableListOf<Intent>()
+            val pm = context.packageManager
+
+            for (packageName in SHARING_APPS) {
+                if (isAppInstalled(pm, packageName)) {
+                    val targetIntent = Intent(baseIntent).apply {
+                        setPackage(packageName)
+                    }
+                    sharingIntents.add(targetIntent)
+                }
+            }
+
+            if (sharingIntents.isNotEmpty()) {
+                val chooser = Intent.createChooser(
+                    sharingIntents.removeAt(0),
+                    "Apps de partage"
+                )
+
+                if (sharingIntents.isNotEmpty()) {
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, sharingIntents.toTypedArray())
+                }
+
+                chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(chooser)
+                Log.i(TAG, "Launched sharing-only chooser")
+            } else {
+                // No sharing apps found, fall back to approach 1
+                shareAsAttachment(context, uri, pdfFile)
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in shareOnlyWithSharingApps", e)
+        }
+    }
+
+    /**
+     * Check if app is installed
      */
     private fun isAppInstalled(packageManager: PackageManager, packageName: String): Boolean {
         return try {
@@ -122,125 +227,12 @@ class WindowsShareHandler {
     }
 
     /**
-     * Share with a specific app
+     * Get available sharing apps
      */
-    private fun shareWithSpecificApp(context: Context, uri: Uri, file: File, packageName: String) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
-            putExtra(Intent.EXTRA_TEXT, "Veuillez trouver ci-joint le bon de vente en PDF.")
-            setPackage(packageName)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    fun getAvailableSharingApps(context: Context): List<String> {
+        val pm = context.packageManager
+        return SHARING_APPS.filter { packageName ->
+            isAppInstalled(pm, packageName)
         }
-
-        try {
-            context.startActivity(intent)
-            Log.i(TAG, "Successfully shared with ${WINDOWS_COMPATIBLE_APPS[packageName]}")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to share with $packageName", e)
-            // Fallback to system chooser
-            shareWithSystemChooser(context, file)
-        }
-    }
-
-    /**
-     * Share with preferred apps using chooser
-     */
-    private fun shareWithPreferredApps(context: Context, uri: Uri, file: File) {
-        val shareIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
-            putExtra(Intent.EXTRA_TEXT, "Bon de vente généré automatiquement.")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        // Create list of preferred apps that are installed
-        val preferredIntents = mutableListOf<Intent>()
-        val packageManager = context.packageManager
-
-        WINDOWS_COMPATIBLE_APPS.keys.forEach { packageName ->
-            if (isAppInstalled(packageManager, packageName)) {
-                val targetIntent = Intent(shareIntent).apply {
-                    setPackage(packageName)
-                }
-                preferredIntents.add(targetIntent)
-            }
-        }
-
-        if (preferredIntents.isNotEmpty()) {
-            val chooser = Intent.createChooser(
-                preferredIntents.removeAt(0),
-                "Partager avec application Windows"
-            )
-            
-            if (preferredIntents.isNotEmpty()) {
-                chooser.putExtra(
-                    Intent.EXTRA_INITIAL_INTENTS,
-                    preferredIntents.toTypedArray()
-                )
-            }
-            
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            
-            try {
-                context.startActivity(chooser)
-                Log.i(TAG, "Launched Windows-compatible app chooser")
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to launch preferred chooser", e)
-                shareWithSystemChooser(context, file)
-            }
-        } else {
-            shareWithSystemChooser(context, file)
-        }
-    }
-
-    /**
-     * Final fallback - use system sharing chooser
-     */
-    private fun shareWithSystemChooser(context: Context, file: File) {
-        try {
-            val uri = createFileUri(context, file)
-            if (uri == null) return
-
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
-                putExtra(Intent.EXTRA_TEXT, "Bon de vente en pièce jointe.")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            val chooser = Intent.createChooser(shareIntent, "Partager le bon de vente")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            
-            context.startActivity(chooser)
-            Log.i(TAG, "Launched system sharing chooser")
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to launch system chooser", e)
-        }
-    }
-
-    /**
-     * Get list of installed Windows-compatible apps for informational purposes
-     */
-    fun getInstalledWindowsApps(context: Context): List<String> {
-        val packageManager = context.packageManager
-        return WINDOWS_COMPATIBLE_APPS.filter { (packageName, _) ->
-            isAppInstalled(packageManager, packageName)
-        }.values.toList()
-    }
-
-    /**
-     * Check if any Windows-compatible apps are installed
-     */
-    fun hasWindowsAppsInstalled(context: Context): Boolean {
-        return getInstalledWindowsApps(context).isNotEmpty()
     }
 }

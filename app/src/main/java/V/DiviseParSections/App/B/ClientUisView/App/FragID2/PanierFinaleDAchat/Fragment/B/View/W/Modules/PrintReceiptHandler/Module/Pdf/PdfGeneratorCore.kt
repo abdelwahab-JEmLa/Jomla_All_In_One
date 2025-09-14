@@ -58,9 +58,9 @@ class PdfGeneratorCore(
     }
 
     private fun addHeaderBasedOnType(
-        doc: Document, 
-        params: PdfGenerationParams, 
-        regularFont: com.itextpdf.kernel.font.PdfFont, 
+        doc: Document,
+        params: PdfGenerationParams,
+        regularFont: com.itextpdf.kernel.font.PdfFont,
         boldFont: com.itextpdf.kernel.font.PdfFont
     ) {
         when (params.type) {
@@ -80,24 +80,29 @@ class PdfGeneratorCore(
     }
 
     private fun addProductTableIfNeeded(
-        doc: Document, 
-        params: PdfGenerationParams, 
-        regularFont: com.itextpdf.kernel.font.PdfFont, 
+        doc: Document,
+        params: PdfGenerationParams,
+        regularFont: com.itextpdf.kernel.font.PdfFont,
         boldFont: com.itextpdf.kernel.font.PdfFont
     ): Double {
         var currentReceiptTotal = 0.0
 
         params.tarificationRepo?.let { tarificationRepo ->
             params.produitRepo?.let { produitRepo ->
-                val showTotalSection = params.type != PdfType.RECEIPT_WITH_CREDIT
-                if (showTotalSection) {
+                // Fixed logic: Show total section only for RECEIPT_ONLY (no credit)
+                // For RECEIPT_WITH_CREDIT, don't show total section here as it will be handled in credit section
+                val shouldShowTotalSection = params.type == PdfType.RECEIPT_ONLY
+
+                if (shouldShowTotalSection) {
+                    // For receipt only - create table WITH total section displayed
                     tableBuilder.createProductTable(
-                        doc, params.operations, tarificationRepo, 
+                        doc, params.operations, tarificationRepo,
                         produitRepo, regularFont, boldFont
                     )
                 } else {
+                    // For receipt with credit - create table WITHOUT total section, just return the total
                     currentReceiptTotal = tableBuilder.createProductTableAndReturnTotal(
-                        doc, params.operations, tarificationRepo, 
+                        doc, params.operations, tarificationRepo,
                         produitRepo, regularFont, boldFont
                     )
                 }
@@ -108,8 +113,8 @@ class PdfGeneratorCore(
     }
 
     private fun addCreditDisplayForReceiptOnly(
-        doc: Document, 
-        params: PdfGenerationParams, 
+        doc: Document,
+        params: PdfGenerationParams,
         regularFont: com.itextpdf.kernel.font.PdfFont
     ) {
         params.client?.currentCreditBalance?.takeIf { it < 0 }?.let { credit ->
@@ -119,34 +124,41 @@ class PdfGeneratorCore(
     }
 
     private fun addCreditSectionsIfNeeded(
-        doc: Document, 
-        params: PdfGenerationParams, 
-        regularFont: com.itextpdf.kernel.font.PdfFont, 
-        boldFont: com.itextpdf.kernel.font.PdfFont, 
+        doc: Document,
+        params: PdfGenerationParams,
+        regularFont: com.itextpdf.kernel.font.PdfFont,
+        boldFont: com.itextpdf.kernel.font.PdfFont,
         currentReceiptTotal: Double
     ) {
         if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
-            if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
-                doc.add(Paragraph("\n").setFontSize(0.3f))
-                contentBuilder.addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
-                doc.add(Paragraph("\n").setFontSize(0.3f))
-            }
+            // Check if there's actual credit to display
+            val clientCreditBalance = params.client?.currentCreditBalance ?: 0.0
+            val hasActualCredit = clientCreditBalance != 0.0 || params.versement != 0.0
 
-            when (params.type) {
-                PdfType.RECEIPT_WITH_CREDIT -> {
-                    params.bonVent?.let { 
-                        contentBuilder.addCreditSection(
-                            doc, params.client, it, params.versement, 
-                            regularFont, boldFont, currentReceiptTotal
-                        ) 
-                    }
+            // Only show credit section if there's actual credit or payment
+            if (hasActualCredit) {
+                if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
+                    doc.add(Paragraph("\n").setFontSize(0.3f))
+                    contentBuilder.addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
+                    doc.add(Paragraph("\n").setFontSize(0.3f))
                 }
-                PdfType.CREDIT_ONLY -> {
-                    params.creditData?.let { 
-                        contentBuilder.addCreditOnlySection(doc, it, regularFont, boldFont) 
+
+                when (params.type) {
+                    PdfType.RECEIPT_WITH_CREDIT -> {
+                        params.bonVent?.let {
+                            contentBuilder.addCreditSection(
+                                doc, params.client, it, params.versement,
+                                regularFont, boldFont, currentReceiptTotal
+                            )
+                        }
                     }
+                    PdfType.CREDIT_ONLY -> {
+                        params.creditData?.let {
+                            contentBuilder.addCreditOnlySection(doc, it, regularFont, boldFont)
+                        }
+                    }
+                    else -> {}
                 }
-                else -> {}
             }
         }
     }
