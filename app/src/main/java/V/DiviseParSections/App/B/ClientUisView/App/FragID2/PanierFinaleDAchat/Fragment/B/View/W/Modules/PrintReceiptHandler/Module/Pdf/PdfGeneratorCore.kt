@@ -131,34 +131,27 @@ class PdfGeneratorCore(
         currentReceiptTotal: Double
     ) {
         if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
-            // Check if there's actual credit to display
-            val clientCreditBalance = params.client?.currentCreditBalance ?: 0.0
-            val hasActualCredit = clientCreditBalance != 0.0 || params.versement != 0.0
+            if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
+                doc.add(Paragraph("\n").setFontSize(0.3f))
+                contentBuilder.addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
+                doc.add(Paragraph("\n").setFontSize(0.3f))
+            }
 
-            // Only show credit section if there's actual credit or payment
-            if (hasActualCredit) {
-                if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
-                    doc.add(Paragraph("\n").setFontSize(0.3f))
-                    contentBuilder.addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
-                    doc.add(Paragraph("\n").setFontSize(0.3f))
-                }
-
-                when (params.type) {
-                    PdfType.RECEIPT_WITH_CREDIT -> {
-                        params.bonVent?.let {
-                            contentBuilder.addCreditSection(
-                                doc, params.client, it, params.versement,
-                                regularFont, boldFont, currentReceiptTotal
-                            )
-                        }
+            when (params.type) {
+                PdfType.RECEIPT_WITH_CREDIT -> {
+                    params.bonVent?.let {
+                        contentBuilder.addCreditSection(
+                            doc, params.client, it, params.versement,
+                            regularFont, boldFont, currentReceiptTotal
+                        )
                     }
-                    PdfType.CREDIT_ONLY -> {
-                        params.creditData?.let {
-                            contentBuilder.addCreditOnlySection(doc, it, regularFont, boldFont)
-                        }
-                    }
-                    else -> {}
                 }
+                PdfType.CREDIT_ONLY -> {
+                    params.creditData?.let {
+                        contentBuilder.addCreditOnlySection(doc, it, regularFont, boldFont)
+                    }
+                }
+                else -> {}
             }
         }
     }
