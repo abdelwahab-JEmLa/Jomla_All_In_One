@@ -69,7 +69,7 @@ data class ActiveCentralValues(
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
-    val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-300),
+    val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-200),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val activeFilters: Set<ActiveFilter> = emptySet(),
 
