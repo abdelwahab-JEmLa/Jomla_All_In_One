@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Preview
@@ -56,13 +58,12 @@ fun DetailsBonVentPrev() {
     DetailsBonVent()
 }
 
-val petitePaddine = 4.dp //rename
+val petitePaddine = 4.dp
 
 data class ActionButtonData(
     val key: String,
     val content: @Composable () -> Unit
 )
-// Updated DetailsBonVent.kt - Adding separate Bluetooth and PDF print buttons
 
 @Composable
 fun DetailsBonVent(
@@ -81,9 +82,59 @@ fun DetailsBonVent(
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
     val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
 
-    // Updated action buttons with separate Bluetooth and PDF buttons
+    // Updated action buttons with Windows app share button
     val actionButtons = remember(uiState, isMinimized) {
         listOf(
+            ActionButtonData("pdf_share_windows") {
+                WindowsAppShareButton(
+                    showLabel = !isMinimized,
+                    onShare = { operations ->
+                        scope.launch {
+                            try {
+                                val result = printHandler.printPdfOnly(
+                                    context = context,
+                                    repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+                                    repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
+                                    repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
+                                    client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
+                                    scope = scope,
+                                    relative_ListM10OperationVentCouleur = operations,
+                                    bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                                )
+
+                                result.onSuccess { message ->
+                                    val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
+                                    val pdfFile = java.io.File(filePath)
+                                    if (pdfFile.exists()) {
+                                        printHandler.sharePdfWithWindowsApps(context, pdfFile)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                )
+            },
+            ActionButtonData("print_pdf") {
+                PdfPrintButton(
+                    showLabel = !isMinimized,
+                    onPrint = { operations ->
+                        scope.launch {
+                            printHandler.printPdfOnly(
+                                context = context,
+                                repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+                                repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
+                                repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
+                                client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
+                                scope = scope,
+                                relative_ListM10OperationVentCouleur = operations,
+                                bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                            )
+                        }
+                    }
+                )
+            },
             ActionButtonData("filter") {
                 FilterButton(
                     uiState = uiState,
@@ -91,30 +142,11 @@ fun DetailsBonVent(
                     onToggleFilter = { viewModel.toggelePanierFilterNonTrouve() }
                 )
             },
-            // Bluetooth Print Button - Only prints via Bluetooth
             ActionButtonData("print_bluetooth") {
                 BluetoothPrintButton(
                     showLabel = !isMinimized,
                     onPrint = { operations ->
                         printHandler.printBluetoothOnly(
-                            context = context,
-                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
-                            repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
-                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
-                            client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                            scope = scope,
-                            relative_ListM10OperationVentCouleur = operations,
-                            bonVent = focusedValuesGetter.activeOnVent_M8BonVent
-                        )
-                    }
-                )
-            },
-            // PDF Print Button - Only creates PDF
-            ActionButtonData("print_pdf") {
-                PdfPrintButton(
-                    showLabel = !isMinimized,
-                    onPrint = { operations ->
-                        printHandler.printPdfOnly(
                             context = context,
                             repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                             repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
@@ -148,12 +180,11 @@ fun DetailsBonVent(
         )
     }
 
-    // Rest of the composable remains the same...
     if (comptAppActuelle != null) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .heightIn(min = 120.dp, max = if (isMinimized) 180.dp else 400.dp)
+                .heightIn(min = 120.dp, max = if (isMinimized) 120.dp else 400.dp)
         ) {
             Card(
                 modifier = Modifier
@@ -206,6 +237,53 @@ fun DetailsBonVent(
         }
     } else {
         ErrorCard(modifier = modifier)
+    }
+}
+
+// New Windows App Share Button - Addresses TODO(1)
+@Composable
+fun WindowsAppShareButton(
+    aCentralFacade: ACentralFacade = koinInject(),
+    showLabel: Boolean,
+    onShare: (List<M10OperationVentCouleur>) -> Unit
+) {
+    val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter { vent ->
+            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                    vent.quantity > 0
+        }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(48.dp),
+            onClick = { onShare(activeVents) },
+            containerColor = Color(0xFF4CAF50) // Green for sharing
+        ) {
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Partager avec Windows",
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "Partager",
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFF4CAF50),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 

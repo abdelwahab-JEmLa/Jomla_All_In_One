@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized.ProductHeader_SemiModularized
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.ViewVentCouleur_Module
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -96,7 +97,7 @@ fun View_Vent_M1Produit(
                     .semantics(mergeDescendants = true) {
                         set(value = relative_M1Produit, key = SemanticsPropertyKey(""))
                     }
-                    .padding(16.dp)
+                    .padding(petitePaddine)
                     .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
             ) {
                 //----------------------------Header---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -105,12 +106,12 @@ fun View_Vent_M1Produit(
                 }
                 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(petitePaddine))
 
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    contentPadding = PaddingValues(horizontal = petitePaddine),
+                    horizontalArrangement = Arrangement.spacedBy(petitePaddine)
                 ) {
                     items(relative_List_M10OperationVentCouleur) { vent ->
                         viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos.datasValue

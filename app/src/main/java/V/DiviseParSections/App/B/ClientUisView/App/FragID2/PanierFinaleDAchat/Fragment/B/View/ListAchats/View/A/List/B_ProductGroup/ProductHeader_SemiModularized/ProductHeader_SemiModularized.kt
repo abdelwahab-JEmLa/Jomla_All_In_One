@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -228,7 +229,7 @@ private fun Card_Produit_Nombre_Unites_Enhanced(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(petitePaddine),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Header
@@ -264,7 +265,7 @@ private fun Card_Produit_Nombre_Unites_Enhanced(
                 IconButton(
                     onClick = { clickHandel() },
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(20.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (toggleState) MaterialTheme.colorScheme.primaryContainer
@@ -307,7 +308,7 @@ private fun Card_Controls_Enhanced(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(petitePaddine),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Header
@@ -335,7 +336,7 @@ private fun Card_Controls_Enhanced(
                             repositorysMainGetter.repo1ProduitInfos.update(it)
                         }
                     },
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(20.dp)
                 ) {
                     val carton = relative_M1Produit.setIN_Vent_Its_Quantity_Represent ==
                             M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton

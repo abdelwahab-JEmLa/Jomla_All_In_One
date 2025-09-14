@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.View_Vent_M1Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -74,8 +75,8 @@ fun MainList_Frag_Panie(
         var filteredVents by remember { mutableStateOf(groupedVents) }
 
         Column(
-            modifier = modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = modifier.padding(petitePaddine),
+            verticalArrangement = Arrangement.spacedBy(petitePaddine)
         ) {
             Search_Prd(
                 groupedVents = groupedVents,
