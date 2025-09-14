@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ColorNameDisplayer_FragFastVent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ImageDisplayerGlide_FragFastVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com.ElevatedCardHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -8,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -32,9 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
@@ -48,7 +55,8 @@ fun Produit_Vent(
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier ,
+    size: Dp = 40.dp
 ) {
 
     val produit = remember(produitKeyId) {
@@ -62,7 +70,8 @@ fun Produit_Vent(
     val allNonTrouve = remember(ventList) {
         ventList.isNotEmpty() && ventList.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     }
-
+    val relative_M10OperationVentCouleur = ventList.first()
+    val relative_M3CouleurProduit=repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
     // Format first vent creation time
     val firstVentCreationTime = remember(ventList) {
         ventList.firstOrNull()?.let { firstVent ->
@@ -118,59 +127,73 @@ fun Produit_Vent(
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
+                    val ventListS = (ventList.size > 1).ifTrue {  ventList.size }
 
-                    Text(
-                        text = nonNullProduit.nom,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    if (nonNullProduit.nomArab.isNotEmpty()) {
-                        Text(
-                            text = nonNullProduit.nomArab,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                            fontWeight = FontWeight.Bold
+                    Card(
+                        modifier = modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer
+                            else MaterialTheme.colorScheme.surfaceVariant
                         )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 2.dp, vertical = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                item {
+                                    Column {
+                                        Text(
+                                            text = "${nonNullProduit.nom} [$ventListS C]",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.error,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        if (nonNullProduit.nomArab.isNotEmpty()) {
+                                            Text(
+                                                text = nonNullProduit.nomArab,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.error,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                                item {
+                                    if (relative_M3CouleurProduit != null) {
+                                        when (relative_M3CouleurProduit.aAffiche) {
+                                            M3CouleurProduitInfos.Type.Image -> {
+                                                ImageDisplayerGlide_FragFastVent(
+                                                    modifier = Modifier.size(size),
+                                                    relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                                                    relative_M3CouleurProduit = relative_M3CouleurProduit,
+                                                    colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
+                                                    contentScale = ContentScale.Crop,
+                                                    imageSize = DpSize(size, size),
+                                                )
+                                            }
+
+                                            M3CouleurProduitInfos.Type.Nom -> {
+                                                ColorNameDisplayer_FragFastVent(
+                                                    modifier = Modifier.size(size),
+                                                    colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                   /* Text(
-                        text = nonNullProduit.position_store_3jamale.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-                                                                   */
-                    // Show first vent creation time
-                    firstVentCreationTime?.let { timeString ->
-                        Text(
-                            text = "Temp: $timeString",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
-                                alpha = 0.8f
-                            )
-                            else MaterialTheme.colorScheme.secondary
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-
-                    (ventList.size>1).ifTrue{
-                        Text(
-                            text = "${ventList.size} C",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
-                                alpha = 0.7f
-                            )
-                            else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Use Display_Tariff instead of TariffDisplay
                     Display_Tariff(
                         relative_List_M10OperationVentCouleur = ventList,
                         relative_produit = nonNullProduit,
@@ -178,8 +201,6 @@ fun Produit_Vent(
                         aCentralFacade = aCentralFacade
                     )
 
-                    // Add some bottom padding to accommodate the floating buttons
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
@@ -257,7 +278,7 @@ fun FAB_MoveProduct(
                         heldProduit.copy(
                             position_store_3jamale = currentPosition,
                             dernier_timeTamps_position_store_3jamale = System.currentTimeMillis(),
-                            )
+                        )
                     )
 
                     // Clear the held product after moving
