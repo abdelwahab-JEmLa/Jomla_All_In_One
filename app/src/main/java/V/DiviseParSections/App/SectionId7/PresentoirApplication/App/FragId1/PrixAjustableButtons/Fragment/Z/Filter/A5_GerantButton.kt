@@ -5,6 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.animation.animateColorAsState
@@ -111,11 +113,31 @@ fun GerantButton(
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
+    val currentApp_ItsWorkChezGrossisst =
+        focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     // Now it's a horizontal row like other tariff buttons
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        currentApp_ItsWorkChezGrossisst.ifTrue {
+            FloatingActionButton(
+                modifier = Modifier.width(80.dp),
+                onClick = {
+                    onClickPrixButton()
+                    handelClick()
+                },
+                containerColor = animatedBackgroundColor
+            ) {
+                Text(
+                    text = "تقدير",
+                    color = animatedTextColor,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
+            }
+        }
+
         if (showLabels) {
             ElevatedCard(
                 Modifier.clickable {
@@ -123,12 +145,15 @@ fun GerantButton(
                     handelClick()
                 }
             ) {
+                val text = if (currentApp_ItsWorkChezGrossisst) "غ.م" else "لم يعطى سعر"
+                val width = if (currentApp_ItsWorkChezGrossisst) 30.dp else 100.dp
+
                 Text(
-                    text = "لم يعطى سعر",
+                    text = text,
                     maxLines = 2,
                     fontSize = 14.sp,
                     modifier = Modifier
-                        .width(100.dp)
+                        .width(width)
                         .background(animatedBackgroundColor)
                         .padding(4.dp),
                     color = animatedTextColor
@@ -136,21 +161,22 @@ fun GerantButton(
             }
         }
 
-        // Main action button (similar to FloatingActionButton in other handlers)
-        FloatingActionButton(
-            modifier = Modifier.width(80.dp),
-            onClick = {
-                onClickPrixButton()
-                handelClick()
-            },
-            containerColor = animatedBackgroundColor
-        ) {
-            Text(
-                text = "تقدير",
-                color = animatedTextColor,
-                fontSize = 10.sp,
-                maxLines = 1
-            )
+        currentApp_ItsWorkChezGrossisst.ifFalse {
+            FloatingActionButton(
+                modifier = Modifier.width(80.dp),
+                onClick = {
+                    onClickPrixButton()
+                    handelClick()
+                },
+                containerColor = animatedBackgroundColor
+            ) {
+                Text(
+                    text = "تقدير",
+                    color = animatedTextColor,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
+            }
         }
 
         // Cancellation button (smaller, positioned at the end)
@@ -159,7 +185,9 @@ fun GerantButton(
                 onClick = {
                     onClickAnulationButton()
                     focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
-                    focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit("")
+                    focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                        ""
+                    )
                     focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
                     focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
                     focusedValuesGetter.update_activeCentralValues(

@@ -47,11 +47,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     // Create instance of tariff generator for progressive updates
     val tariffGenerator = remember { Genere_Tariffs_currentApp_ItsWorkChezGrossisst() }
 
-    // Utilise seulement les types de tarifs spécifiés
     val isGrossistTariffType = typeTarification in setOf(
         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-        M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
     )
 
@@ -235,7 +233,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     onClick = ::executeClickLogic,
                     containerColor = couleurButton
                 ) {
-                    val text = typeTarification.nomArabe.takeLast(3)
+                    val text = typeTarification.abrgNom
                     Text(
                         text = text,
                         color = textColor,

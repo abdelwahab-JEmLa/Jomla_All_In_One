@@ -127,6 +127,7 @@ data class M13TarificationInfos(
         val nomArabe: String = "",
         val couleur_Text: Color = Color.White,
         val profitabilityScore: Int = 0,
+        val abrgNom: String = "",
     ) {
         //---------------------------------------currentApp_ItsWorkChezGrossisst  ------------------------------------------------------------------------------------------------
         Tariff_ItsWorkInGrossist_Achat(
@@ -134,7 +135,8 @@ data class M13TarificationInfos(
             Color(0xFFEEEEEE),
             "Tariff_ItsWorkInGrossist_Achat",
             Color(0xFF2196F3),
-            1
+            1,
+            "س.ش"
         ),
 
         Tariff_ItsWorkInGrossist_SuperGros(
@@ -142,7 +144,8 @@ data class M13TarificationInfos(
             Color(0xFF000000),
             "Tariff_ItsWorkInGrossist_SuperGros",
             Color(0xFFF44336),
-            1
+            1 ,
+            "كمية"
         ),
         Tariff_ItsWorkInGrossist_Progressive(
             Icons.Filled.History,
@@ -157,7 +160,8 @@ data class M13TarificationInfos(
             Color(0xFFCDDC39),
             "Tariff_ItsWorkInGrossist_Gro",
             Color(0xFF2196F3),
-            1
+            1,
+            "نصف"
         ),
 
         //--------------------------------------------------------------------------------------------------------------------------------
