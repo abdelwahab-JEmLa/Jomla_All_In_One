@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.f.Produit_Vent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Produit_Vent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -52,6 +52,7 @@ fun MainList(
                                 is ActiveCentralValues.ActiveFilter.NonTrouve -> {
                                     vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
                                 }
+
                                 is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
                                     true
                                 }
@@ -76,20 +77,18 @@ fun MainList(
 
             val sortedData = if (sortVentsParClassement) {
                 groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
-                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    val produit =
+                        aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                     produit?.position_store_3jamale ?: Int.MAX_VALUE
                 }.thenByDescending { (produitKeyId, _) ->
-                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    val produit =
+                        aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                     produit?.dernier_timeTamps_position_store_3jamale ?: 0L
                 })
             } else {
                 groupedData.sortedByDescending { (_, ventList) ->
                     ventList.maxOfOrNull { vent ->
-                        if (vent.creationTimestamps > 0) {
-                            vent.creationTimestamps
-                        } else {
-                            vent.dernierTimeTampsSynchronisationAvecFireBase
-                        }
+                        vent.creationTimestamps
                     } ?: 0L
                 }
             }

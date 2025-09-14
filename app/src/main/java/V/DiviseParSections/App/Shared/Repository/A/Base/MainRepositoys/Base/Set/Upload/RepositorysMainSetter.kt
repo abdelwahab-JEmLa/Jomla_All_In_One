@@ -147,6 +147,7 @@ class RepositorysMainSetter(
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.upsert(data)
+    fun update2_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
 
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M2Client(data: M2Client) = repo2Client.upsert(data)

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.f.z.Com
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized.NonTrouve_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -55,7 +55,12 @@ fun ElevatedCardHeader(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
+                item {
+                    InfoButton(
+                        produit=produit,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
                 item {
                     ToggleButton_MoveToStorePosition(
                         produit = produit,

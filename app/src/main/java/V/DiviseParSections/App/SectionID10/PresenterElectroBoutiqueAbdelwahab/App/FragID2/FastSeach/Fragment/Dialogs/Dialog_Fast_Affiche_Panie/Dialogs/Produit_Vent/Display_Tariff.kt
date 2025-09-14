@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun QuantityDisplay_Mo_F_Panie(
+fun Display_Tariff(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
     relative_produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
