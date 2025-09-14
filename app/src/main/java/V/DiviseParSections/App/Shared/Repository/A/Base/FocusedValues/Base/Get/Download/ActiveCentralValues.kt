@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Gr
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
 import java.io.File
 
 data class ActiveCentralValues(
@@ -68,6 +69,7 @@ data class ActiveCentralValues(
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
+    val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-300),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val activeFilters: Set<ActiveFilter> = emptySet(), // <-- NOUVEAU: Set pour plusieurs filtres
 

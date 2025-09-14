@@ -43,7 +43,8 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean,) -> Unit
+    onPriceChange: (Double, Boolean,) -> Unit ,
+    executeClickLogic: () -> Unit
 ) {
     val prixAchat = relative_Produit.prixAchat
     val prixVente = relative_Tariff.prixCurrency
@@ -121,6 +122,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
         val newTotalPrice = totalPriceText.toDoubleOrNull()
         if (newTotalPrice != null && newTotalPrice >= 0) {
             updateTotalPriceImmediately(newTotalPrice)
+            executeClickLogic()
         }
         isEditingTotalPrice = false
         focusManager.clearFocus()
@@ -164,8 +166,6 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                     )
                 }
 
-                // Total price display/edit
-// Total price display/edit
                 if (isEditingTotalPrice) {
                     OutlinedTextField(
                         value = totalPriceText,
@@ -181,6 +181,7 @@ fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 handleTotalPriceEditDone()
+
                             }
                         ),
                         singleLine = true

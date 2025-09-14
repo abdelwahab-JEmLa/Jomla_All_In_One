@@ -96,8 +96,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
-    val startIntOffset = IntOffset(100,0)
-
+    val startIntOffset = focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 

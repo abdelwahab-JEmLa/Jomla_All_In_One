@@ -124,6 +124,7 @@ fun Produit_Vent(
                         ) {
 
                             LazyRow(
+                                reverseLayout = true,
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {

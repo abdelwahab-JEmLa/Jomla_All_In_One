@@ -156,18 +156,15 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     tariff.creationTimestamps >= oneMinuteAgo
         }
 
-        // Update each related tariff by recalculating price = benefit + new purchase price
         relatedTariffs.forEach { tariff ->
-            // Get the current purchase price from the tariff to calculate existing benefit
             val oldPurchasePrice = relative_Produit.prixAchat
             val currentSellingPrice = tariff.prixCurrency
             val existingBenefit = currentSellingPrice - oldPurchasePrice
 
             val newSellingPrice = existingBenefit + newPurchasePrice
 
-            // Update the tariff with new price
             val updatedTariff = tariff.copy(
-                prixCurrency = newSellingPrice, // Ensure selling price >= purchase price
+                prixCurrency = newSellingPrice,
                 dernierTimeTampsSynchronisationAvecFireBase = currentTime
             )
 
@@ -175,11 +172,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         }
     }
 
-    /**
-     * Updates progressive tariff when SuperGros or Gro prices change
-     */
     fun updateProgressiveTariffIfNeeded() {
-        // Only update progressive if the current tariff being modified is SuperGros or Gro
         if (typeTarification in setOf(
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
@@ -197,11 +190,9 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         val currentTime = System.currentTimeMillis()
         updatePurchasePriceIfNeeded(newPrix)
 
-        // If this is a purchase price tariff being updated, also update related grossist tariffs
         if (typeTarification == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat) {
             updateRelatedGrossistTariffs(newPrix)
 
-            // Also update the product's base purchase price
             val updatedProduit = relative_Produit.copy(prixAchat = newPrix)
             repositorysMainSetter.upsert_M1Produit(updatedProduit)
         }
@@ -224,7 +215,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             )
         }
 
-        // Update progressive tariff if SuperGros or Gro was modified
         updateProgressiveTariffIfNeeded()
     }
 
@@ -241,12 +231,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                 FloatingActionButton(
-                    modifier = Modifier.width(80.dp),
+                    modifier = Modifier.width(30.dp),
                     onClick = ::executeClickLogic,
                     containerColor = couleurButton
                 ) {
+                    val text = typeTarification.nomArabe.takeLast(3)
                     Text(
-                        text = typeTarification.nomArabe,
+                        text = text,
                         color = textColor,
                         fontSize = 10.sp,
                         maxLines = 2
@@ -301,7 +292,8 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
                     onPriceChange = { newPrice, shouldCreateNew ->
                         handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
-                    }
+                    },
+                    executeClickLogic = { executeClickLogic() }
                 )
             }
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
