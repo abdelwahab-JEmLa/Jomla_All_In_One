@@ -34,13 +34,8 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
             productName
         }
 
-        val category = produit?.let { findRelativeCategorie(it) }
-        return if (category != null && category.nom.isNotBlank()) {
-            val cleanCategoryName = cleanAndCapitalizeProductName(category.nom)
-            "$productNameWithCopyright ($cleanCategoryName)"
-        } else {
-            productNameWithCopyright
-        }
+        return productNameWithCopyright
+
     }
 
     fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
@@ -72,25 +67,25 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
             .filter { it.isNotBlank() }
             .joinToString(" ") { word ->
                 word.lowercase(Locale.getDefault())
-                    .replaceFirstChar { 
-                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) 
-                        else it.toString() 
+                    .replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(Locale.getDefault())
+                        else it.toString()
                     }
             }
     }
 
     fun capitalizeFirstLetter(text: String): String {
         return if (text.isBlank()) text
-        else text.replaceFirstChar { 
-            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) 
-            else it.toString() 
+        else text.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault())
+            else it.toString()
         }
     }
 
     fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
 
     private fun findRelativeCategorie(rela_produit: ArticlesBasesStatsTable): CategoriesTabelle? =
-        rela_produit.idParentCategorie?.let { 
-            repositorysMainGetter.find_M16CategorieProduit_By_OldID(it) 
+        rela_produit.idParentCategorie?.let {
+            repositorysMainGetter.find_M16CategorieProduit_By_OldID(it)
         }
 }
