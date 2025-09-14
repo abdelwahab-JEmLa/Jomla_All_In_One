@@ -5,6 +5,8 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components.ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -97,13 +99,15 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         if (typeTarification !in setOf(
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
-            )) {
+            )
+        ) {
             return
         }
 
         // Get current purchase price tariff
-        val currentPurchaseTariff = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat]
-            ?.maxByOrNull { it.creationTimestamps }
+        val currentPurchaseTariff =
+            allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat]
+                ?.maxByOrNull { it.creationTimestamps }
 
         // Calculate new purchase price with current benefit margin - no checks, always update
         val currentBenefit = getCurrentBenefitForTariffType(typeTarification)
@@ -119,7 +123,8 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         } else {
             // Create new purchase price tariff if it doesn't exist
             val newPurchaseTariff = M13TarificationInfos(
-                parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: "",
+                parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+                    ?: "",
                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
                 prixCurrency = newPurchasePrice,
                 parent_M1Produit_KeyId = relative_Produit.keyID,
@@ -178,7 +183,8 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         if (typeTarification in setOf(
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
-            )) {
+            )
+        ) {
             tariffGenerator.updateProgressiveTariffOnRelatedChange(
                 aCentralFacade = aCentralFacade,
                 relative_M1Produit = relative_Produit,
@@ -233,6 +239,21 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             val couleurButton = typeTarification.couleur
             val textColor = typeTarification.couleur_Text
 
+            focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
+                FloatingActionButton(
+                    modifier = Modifier.width(80.dp),
+                    onClick = ::executeClickLogic,
+                    containerColor = couleurButton
+                ) {
+                    Text(
+                        text = typeTarification.nomArabe,
+                        color = textColor,
+                        fontSize = 10.sp,
+                        maxLines = 2
+                    )
+                }
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -252,32 +273,25 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                                 typeTarification = typeTarification,
                                 repositorysMainSetter = repositorysMainSetter,
                                 onPercentageChange = { newPercentage ->
-                                    val prixDetaille = allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Prix_Detaille]
-                                        ?.maxByOrNull { it.creationTimestamps }?.prixCurrency
-                                        ?: relative_Produit.prixVent
+                                    val prixDetaille =
+                                        allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Prix_Detaille]
+                                            ?.maxByOrNull { it.creationTimestamps }?.prixCurrency
+                                            ?: relative_Produit.prixVent
 
                                     val prixVent = relative_Produit.prixVent
                                     val priceDifference = prixDetaille - prixVent
-                                    val adjustedPercentage = if (newPercentage == 50) 60 else newPercentage
-                                    val progressiveAdjustment = priceDifference * (adjustedPercentage / 100.0)
+                                    val adjustedPercentage =
+                                        if (newPercentage == 50) 60 else newPercentage
+                                    val progressiveAdjustment =
+                                        priceDifference * (adjustedPercentage / 100.0)
                                     val newProgressivePrice = prixVent + progressiveAdjustment
 
                                     handel_Add_Diminue_Prix(newProgressivePrice, false)
                                 }
                             )
                         }
-                        /*  M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                          M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> {
-                              BenificeAdjustmentButtonsItsWorkChezGrossisst_Handler(
-                                  allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                                  relative_Produit = relative_Produit,
-                                  relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                                  onPriceChange = { newPrice, shouldCreateNew ->
-                                      handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
-                                  }
-                              )
-                          }    */
-                        else->{}
+
+                        else -> {}
                     }
                 }
 
@@ -290,18 +304,19 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     }
                 )
             }
-
-            FloatingActionButton(
-                modifier = Modifier.width(80.dp),
-                onClick = ::executeClickLogic,
-                containerColor = couleurButton
-            ) {
-                Text(
-                    text = typeTarification.nomArabe,
-                    color = textColor,
-                    fontSize = 10.sp,
-                    maxLines = 2
-                )
+            focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
+                FloatingActionButton(
+                    modifier = Modifier.width(80.dp),
+                    onClick = ::executeClickLogic,
+                    containerColor = couleurButton
+                ) {
+                    Text(
+                        text = typeTarification.nomArabe,
+                        color = textColor,
+                        fontSize = 10.sp,
+                        maxLines = 2
+                    )
+                }
             }
         }
     }

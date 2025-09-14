@@ -31,6 +31,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 
 class RepositorysMainSetter(
     private val getter: RepositorysMainGetter,
@@ -51,8 +52,18 @@ class RepositorysMainSetter(
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
 //--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
-    //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
+    //--------------------Repo9----------------------------------------------------------------------------------------------------------------------------
+    fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+        produit: ArticlesBasesStatsTable,
+        currentAppCompt: Z_AppCompt
+    ) {
+        val updatedAppCompt = currentAppCompt.copy(
+            activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produit.keyID,
+        )
+        repo9AppCompt.upsert(updatedAppCompt)
+    }
 
+    //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
     fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: M10OperationVentCouleur? = null,
         produit: ArticlesBasesStatsTable,

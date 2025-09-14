@@ -44,8 +44,9 @@ fun ElevatedCardHeader(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             LazyRow(
-                reverseLayout = true,
+                reverseLayout = true, // This makes it scroll from right to left
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

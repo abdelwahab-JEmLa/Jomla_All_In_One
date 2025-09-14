@@ -95,8 +95,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
+
+    val startIntOffset = IntOffset(100,0)
+
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
+
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -306,7 +310,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .offset {
+                    if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                        startIntOffset else
+                    IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
+                }
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()

@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -93,6 +94,7 @@ fun ViewVentCouleur_T1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     size: Dp = 200.dp,
     webPQuality: Int = 85
 ) {
@@ -147,7 +149,8 @@ fun ViewVentCouleur_T1(
         isProcessingImage = true
 
         try {
-            val fileName = "${relative_produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}.webp"
+            val fileName =
+                "${relative_produit.id}_${relative_M3CouleurInfos.indexCouleurDansAncienProto}.webp"
             val localDir = File(localPath).apply { if (!exists()) mkdirs() }
             val localFile = File(localDir, fileName)
 
@@ -178,7 +181,9 @@ fun ViewVentCouleur_T1(
                     extensionDisponible = "webp"
                 )
 
-                viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+                viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                    updatedCouleur
+                )
 
                 // Update product timestamps
                 val updatedProduit = relative_produit.copy(
@@ -245,7 +250,9 @@ fun ViewVentCouleur_T1(
                     M3CouleurProduitInfos.Type.Nom
             )
 
-            viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+            viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                updatedCouleur
+            )
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
         isEditingColorName = false
@@ -290,13 +297,23 @@ fun ViewVentCouleur_T1(
         derivedStateOf { showCartonDialogForVent != null }
     }
 
-    val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    val datasValue =
+        viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff = datasValue.find { tariff ->
-        tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
+        val type_A_Cherche =
+            if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+            else
+                TypeChoisi.Prix_Detaille
+
+        tariff.typeChoisi == type_A_Cherche &&
                 tariff.parent_M1Produit_KeyId == relative_produit.keyID
     }
 
-    val default_Tariff = M13TarificationInfos.get_default_P0(relative_produit, start_Prix_Depuit_Ancient = relative_produit.prixAchat)
+    val default_Tariff = M13TarificationInfos.get_default_P0(
+        relative_produit,
+        start_Prix_Depuit_Ancient = relative_produit.prixAchat
+    )
     val finale_Tariff = findTariff ?: default_Tariff.first
 
     Column(
@@ -334,7 +351,9 @@ fun ViewVentCouleur_T1(
                             M3CouleurProduitInfos.Type.Nom
                     )
 
-                    viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+                    viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                        updatedCouleur
+                    )
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
 
                     // Close editing mode after selection
@@ -392,6 +411,12 @@ fun ViewVentCouleur_T1(
                                 buildList { add(defaultVent) }
                             )
                         }
+                    }
+
+                    focusedValuesGetter.currentActive_M9AppCompt?.let {
+                        repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                            relative_produit, it
+                        )
                     }
                 }
 
@@ -635,7 +660,9 @@ fun ViewVentCouleur_T1(
                 }
 
                 if (updatedVent != null) {
-                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(updatedVent)
+                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                        updatedVent
+                    )
                 }
             }
 
@@ -658,7 +685,9 @@ fun ViewVentCouleur_T1(
                 }
 
                 if (updatedVent != null) {
-                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(updatedVent)
+                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                        updatedVent
+                    )
                 }
             }
 

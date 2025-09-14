@@ -55,7 +55,9 @@ fun ColorImageDisplayer(
             Box(
                 modifier = modifier
                     .size(size)
-                    .clickable { onClickToOpenWindow() },
+                    .clickable {
+                        onClickToOpenWindow()
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
