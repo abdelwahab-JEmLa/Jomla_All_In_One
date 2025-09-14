@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
@@ -108,7 +109,6 @@ fun Produit_Vent(
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    // ElevatedCardHeader now includes the up icon functionality
                     ElevatedCardHeader(
                         produit = nonNullProduit,
                         hasNonTrouve = hasNonTrouve,
@@ -135,7 +135,7 @@ fun Produit_Vent(
                         )
                     }
 
-                    Text(
+                   /* Text(
                         text = nonNullProduit.position_store_3jamale.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
@@ -143,11 +143,11 @@ fun Produit_Vent(
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
-
+                                                                   */
                     // Show first vent creation time
                     firstVentCreationTime?.let { timeString ->
                         Text(
-                            text = "Première commande: $timeString",
+                            text = "Temp: $timeString",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
                                 alpha = 0.8f
@@ -157,32 +157,16 @@ fun Produit_Vent(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
 
-                    // Show total quantity using PdfFormatterUtils.formatQuantity
-                    val totalQuantity = ventList.sumOf { it.quantity }
-                    val cartonSize = nonNullProduit.quantite_Boit_Par_Carton ?: 1
-                    val formattedQuantity = pdfFormatterUtils.formatQuantity(
-                        qty = totalQuantity,
-                        cartonSize = cartonSize,
-                        produit = nonNullProduit
-                    )
-                    Text(
-                        text = "Qyt: $formattedQuantity",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer
-                        else MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // Show number of operations
-                    Text(
-                        text = "${ventList.size} couleur(s)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
-                            alpha = 0.7f
+                    (ventList.size>1).ifTrue{
+                        Text(
+                            text = "${ventList.size} C",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(
+                                alpha = 0.7f
+                            )
+                            else MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 

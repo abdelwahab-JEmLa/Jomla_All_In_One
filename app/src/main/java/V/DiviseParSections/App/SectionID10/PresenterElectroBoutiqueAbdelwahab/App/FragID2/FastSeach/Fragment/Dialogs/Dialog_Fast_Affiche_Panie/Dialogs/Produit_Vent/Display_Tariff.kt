@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
@@ -101,8 +102,14 @@ fun Display_Tariff(
                     else MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(16.dp)
                 )
+                val cartonSize = relative_produit.quantite_Boit_Par_Carton ?: 1
+                val formattedQuantity = PdfFormatterUtils(repositorysMainGetter).formatQuantity(
+                    qty = totalQuantity,
+                    cartonSize = cartonSize,
+                    produit = relative_produit
+                )
                 Text(
-                    text = totalQuantity.toString(),
+                    text = formattedQuantity,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -161,7 +168,7 @@ fun Display_Tariff(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val tariffType = relative_Tariff?.typeChoisi ?: TypeChoisi.Historique
-                    val nom = tariffType.nomArabe
+                    val nom = tariffType.nomArabe.take(2)
                     val tariffIcon = tariffType.iconVector ?: Icons.Default.History
                     val textColor = if (allNonTrouve) {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)

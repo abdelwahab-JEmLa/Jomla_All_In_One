@@ -28,13 +28,6 @@ fun ElevatedCardHeader(
     focusedValuesSetter: FocusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     modifier: Modifier = Modifier
 ) {
-    fun update_List_M10OperationVentCouleur(newPremierCheckValue: Boolean) {
-        val updatedVentList = ventList.map { ventOperation ->
-            ventOperation.copy(premier_Check_Donne = newPremierCheckValue)
-        }
-        focusedValuesSetter.update_List_M10OperationVentCouleur(updatedVentList)
-    }
-
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -46,7 +39,7 @@ fun ElevatedCardHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 2.dp, vertical = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
