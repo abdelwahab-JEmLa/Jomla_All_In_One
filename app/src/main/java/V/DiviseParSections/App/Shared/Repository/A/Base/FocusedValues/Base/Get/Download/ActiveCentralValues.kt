@@ -71,8 +71,7 @@ data class ActiveCentralValues(
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-300),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
-    val activeFilters: Set<ActiveFilter> = emptySet(), // <-- NOUVEAU: Set pour plusieurs filtres
-
+    val activeFilters: Set<ActiveFilter> = emptySet(),
 
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,

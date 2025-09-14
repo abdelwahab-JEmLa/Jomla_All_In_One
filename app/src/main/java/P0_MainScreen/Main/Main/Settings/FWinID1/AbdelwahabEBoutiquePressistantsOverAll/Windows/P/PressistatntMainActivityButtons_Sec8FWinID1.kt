@@ -49,7 +49,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -97,8 +96,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
     val startIntOffset = focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
 
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
@@ -301,6 +298,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
             )
         }
+        var dragOffset by remember { mutableStateOf(IntOffset.Zero) }
+        var isDragging by remember { mutableStateOf(false) }
 
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (its_Affiche_InfoProduit_Dialog
@@ -309,17 +308,30 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 .focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
-                .offset {
-                    if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
-                        startIntOffset else
-                    IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
-                }
                 .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
+
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            isDragging = true
+                            dragOffset = focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
+                        },
+                        onDragEnd = {
+                            isDragging = false
+                            val updatedActiveCentralValues = focusedValuesGetter.active_Central_Values.copy(
+                                startIntOffset_PresistantFABs = dragOffset
+                            )
+                            focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
+                        }
+                    ) { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
+                        dragOffset = IntOffset(
+                            x = dragOffset.x + dragAmount.x.roundToInt(),
+                            y = dragOffset.y + dragAmount.y.roundToInt()
+                        )
                     }
+                }
+                .offset {
+                    if (isDragging) dragOffset else focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs
                 }
                 .padding(16.dp)
         ) {
@@ -406,8 +418,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
                                 .size(40.dp),
                             onClick = {
-                                // FIXED: Toggle the dialog state instead of always setting to true
-                                val currentState = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
+                                val currentState =
+                                    focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
                                         affiche_Dialog_Fast_Affiche_Panie = !currentState
@@ -415,7 +427,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 )
                             },
                             containerColor = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
-                                MaterialTheme.colorScheme.secondary // Different color when active
+                                MaterialTheme.colorScheme.secondary
                             } else {
                                 MaterialTheme.colorScheme.primary
                             },
