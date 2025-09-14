@@ -1,16 +1,14 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ColorNameDisplayer_FragFastVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ImageDisplayerGlide_FragFastVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com.ElevatedCardHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos.Type
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +53,7 @@ fun Produit_Vent(
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    modifier: Modifier = Modifier ,
+    modifier: Modifier = Modifier,
     size: Dp = 40.dp
 ) {
 
@@ -71,7 +69,8 @@ fun Produit_Vent(
         ventList.isNotEmpty() && ventList.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     }
     val relative_M10OperationVentCouleur = ventList.first()
-    val relative_M3CouleurProduit=repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
+    val relative_M3CouleurProduit =
+        repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
     // Format first vent creation time
     val firstVentCreationTime = remember(ventList) {
         ventList.firstOrNull()?.let { firstVent ->
@@ -127,7 +126,8 @@ fun Produit_Vent(
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
-                    val ventListS = (ventList.size > 1).ifTrue {  ventList.size }
+
+                    val ventListS = if (ventList.size > 1) "[${ventList.size} C]" else ""
 
                     Card(
                         modifier = modifier.fillMaxWidth(),
@@ -152,7 +152,7 @@ fun Produit_Vent(
                                 item {
                                     Column {
                                         Text(
-                                            text = "${nonNullProduit.nom} [$ventListS C]",
+                                            text = "${nonNullProduit.nom} $ventListS",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.error,
                                             fontWeight = FontWeight.Bold
@@ -168,26 +168,17 @@ fun Produit_Vent(
                                         }
                                     }
                                 }
-                                item {
-                                    if (relative_M3CouleurProduit != null) {
-                                        when (relative_M3CouleurProduit.aAffiche) {
-                                            M3CouleurProduitInfos.Type.Image -> {
-                                                ImageDisplayerGlide_FragFastVent(
-                                                    modifier = Modifier.size(size),
-                                                    relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                                                    relative_M3CouleurProduit = relative_M3CouleurProduit,
-                                                    colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
-                                                    contentScale = ContentScale.Crop,
-                                                    imageSize = DpSize(size, size),
-                                                )
-                                            }
 
-                                            M3CouleurProduitInfos.Type.Nom -> {
-                                                ColorNameDisplayer_FragFastVent(
-                                                    modifier = Modifier.size(size),
-                                                    colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,)
-                                            }
-                                        }
+                                if (relative_M3CouleurProduit != null && relative_M3CouleurProduit.aAffiche == Type.Image) {
+                                    item {
+                                        ImageDisplayerGlide_FragFastVent(
+                                            modifier = Modifier.size(size),
+                                            relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                                            relative_M3CouleurProduit = relative_M3CouleurProduit,
+                                            colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
+                                            contentScale = ContentScale.Crop,
+                                            imageSize = DpSize(size, size),
+                                        )
                                     }
                                 }
                             }
