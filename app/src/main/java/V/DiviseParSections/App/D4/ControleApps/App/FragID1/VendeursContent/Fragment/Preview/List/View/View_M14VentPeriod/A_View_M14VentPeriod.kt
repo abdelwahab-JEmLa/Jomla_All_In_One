@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.calculateClientSalesSummary
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun View_M14VentPeriod(
@@ -134,7 +136,9 @@ fun View_M14VentPeriod(
         else -> MaterialTheme.colorScheme.surface
     }
 
-    val heurDebutInString = "Now Test HH:mm"
+    val heurDebutInString = remember(relative_M14VentPeriode.creationTimestamp) {
+        DatesHandler.formatDateWithAmPm(Date(relative_M14VentPeriode.creationTimestamp))
+    }
 
     // Delete confirmation dialog
     if (showDeleteDialog) {
@@ -213,7 +217,7 @@ fun View_M14VentPeriod(
         )
 
         Text(
-            text = "Heure de début: $heurDebutInString",
+            text = "Date:$heurDebutInString",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )

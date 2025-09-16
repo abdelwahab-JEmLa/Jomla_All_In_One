@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
@@ -49,6 +50,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import org.koin.compose.koinInject
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
@@ -56,7 +58,8 @@ fun QuantityDisplay_Mo_F_Panie(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     allNonTrouve: Boolean,
-    onQuantityClickToHaptic: () -> Unit
+    onQuantityClickToHaptic: () -> Unit ,
+    aCentralFacade: ACentralFacade= koinInject()
 ) {
     val getter = viewModel.getterFocusedVarsHandlerFacade
 

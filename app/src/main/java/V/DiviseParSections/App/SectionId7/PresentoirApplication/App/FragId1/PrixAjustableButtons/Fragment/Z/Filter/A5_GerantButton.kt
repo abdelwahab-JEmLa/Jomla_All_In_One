@@ -48,7 +48,7 @@ fun GerantButton(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     showLabels: Boolean,
-    onClickPrixButton: () -> Unit,
+    onClickPrixButton: () -> Unit ={},
     onClickAnulationButton: (() -> Unit)? = null,
     focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,

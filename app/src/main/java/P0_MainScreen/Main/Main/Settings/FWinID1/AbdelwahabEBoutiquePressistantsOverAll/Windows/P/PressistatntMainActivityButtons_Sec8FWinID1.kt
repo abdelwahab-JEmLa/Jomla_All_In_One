@@ -344,23 +344,21 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    if (!cLenceDepuitFragmentsSepecialicteDeVents) {
-                        if (focusedValuesGetter.activeOnVent_M8BonVent == null) {
-                            ID3RecordingButton(
-                                viewModel,
-                                isRecording,
-                                showLabels,
-                                displayTime
-                            ) {
-                                showAlertDialog = true
-                            }
-                        } else {
-                            if (travailleChezGrossisst3Ali == false) {
-                                Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
-                                    aCentralFacade = aCentralFacade,
-                                    focusedValuesGetter = focusedValuesGetter
-                                )
-                            }
+                    if (focusedValuesGetter.activeOnVent_M8BonVent == null || focusedValuesGetter.currentApp_Est_Admin) {
+                        ID3RecordingButton(
+                            viewModel,
+                            isRecording,
+                            showLabels,
+                            displayTime
+                        ) {
+                            showAlertDialog = true
+                        }
+                    } else {
+                        if (travailleChezGrossisst3Ali == false && !cLenceDepuitFragmentsSepecialicteDeVents) {
+                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
+                                aCentralFacade = aCentralFacade,
+                                focusedValuesGetter = focusedValuesGetter
+                            )
                         }
                     }
 
@@ -410,7 +408,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 .size(40.dp),
                             onClick = {
                                 // Toggle the dialog state
-                                val currentState = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
+                                val currentState =
+                                    focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                                     focusedValuesGetter.active_Central_Values.copy(
                                         affiche_Dialog_Fast_Affiche_Panie = !currentState

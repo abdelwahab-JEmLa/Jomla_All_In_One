@@ -90,7 +90,11 @@ fun CatalogueSelectionDialog(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(catalogues) { catalogue ->
+                        items(
+                            catalogues.filter {
+                                it.keyID == "t1" ||  it.keyID =="t2"
+                            }
+                        ) { catalogue ->
                             CatalogueItem(
                                 catalogue = catalogue,
                                 isSelected = selectedCatalogueId == catalogue.keyID,

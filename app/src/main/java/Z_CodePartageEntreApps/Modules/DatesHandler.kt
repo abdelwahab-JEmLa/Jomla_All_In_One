@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -386,6 +387,19 @@ class DatesHandler {
 
             return Pair(dayName,"$hour12:$minuteStr:$secondStr $amPm")
         }
+        fun formatDateWithAmPm(date: Date): String {
+            val calendar = Calendar.getInstance().apply { time = date }
+            val frenchDays = arrayOf("Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam")
+            val frenchMonths = arrayOf("Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc")
+            val dayOfWeek = frenchDays[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+            val month = frenchMonths[calendar.get(Calendar.MONTH)]
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+            val year = calendar.get(Calendar.YEAR)
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
+            return "$dayOfWeek $dayOfMonth/$month/$year ${String.format("%02d:%02d", hour, minute)}"
+        }
+
     }
 }
 
