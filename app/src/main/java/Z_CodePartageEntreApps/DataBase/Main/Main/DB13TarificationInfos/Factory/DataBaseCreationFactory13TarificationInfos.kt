@@ -56,7 +56,7 @@ class DataBaseCreationFactory13TarificationInfos(
         updateRepoProgress(name, 1.0f)
     }
 
-    private suspend fun fetchDataFromFirebase(): List<M13TarificationInfos> {
+    suspend fun fetchDataFromFirebase(): List<M13TarificationInfos> {
         return suspendCancellableCoroutine { continuation ->
             repoRef.get()
                 .addOnSuccessListener { snapshot ->

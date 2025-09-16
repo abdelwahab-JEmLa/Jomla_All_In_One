@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.runtime_throw_Erreur_Pour_Regle_Le_Real_Bug
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -48,6 +49,28 @@ class Repo2Client(
             dataBaseCreationFactoryProtoJuil28.dao.getAllFlow().collect { _datas.value = it }
         }
     }
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                dataBaseCreationFactory.dao.deleteAll()
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                val freshDataFromFirebase = dataBaseCreationFactory.initializeDataReturn()
+
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+            } catch (e: Exception) {
+            }
+        }
+    }
+
 
     fun addNew(data: M2Client) {
         val dataUpdate =

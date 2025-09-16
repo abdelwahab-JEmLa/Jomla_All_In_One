@@ -177,10 +177,10 @@ fun DropDownItem_2(
 
     // Animation pour le progress du bouton
     val animatedProgress by animateFloatAsState(
-        targetValue = if (is_Button_Pressed) 1f else 0f,
+        targetValue = if (is_Button_Pressed) 0.5f else 0f,
         animationSpec = tween(durationMillis = item_States.time_pressing_millis),
         finishedListener = { progress ->
-            if (progress == 1f && is_Button_Pressed) {
+            if (progress == 0.5f && is_Button_Pressed) {
                 // Security check and execution
                 onExecute()
                 // Show Toast
@@ -249,7 +249,7 @@ private fun ExpressiveButtonIcon(
     onButtonYellow: (Boolean) -> Unit
 ) {
     val scale by animateFloatAsState(
-        targetValue = if (is_Button_Pressed || is_Button_Yellow) 1.2f else 1f,
+        targetValue = if (is_Button_Pressed || is_Button_Yellow) 0.5f else 0.5f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow

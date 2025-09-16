@@ -32,12 +32,12 @@ class Repo13TarificationInfos(
     val dataBaseCreationFactory: DataBaseCreationFactory13TarificationInfos,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M13TarificationInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     init {
-        composScope.launch {
+        repoScope.launch {
             dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
     }
@@ -47,7 +47,7 @@ class Repo13TarificationInfos(
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     if (existingIndex >= 0) {
@@ -61,11 +61,34 @@ class Repo13TarificationInfos(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                dataBaseCreationFactory.dao.deleteAll()
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                val freshDataFromFirebase = dataBaseCreationFactory.fetchDataFromFirebase()
+
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+
     fun add(data: M13TarificationInfos) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
-        composScope.launch {
+        repoScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
                     add(dataUpdate)
@@ -81,7 +104,7 @@ class Repo13TarificationInfos(
     }
 
     fun delete(data: M13TarificationInfos) {
-        composScope.launch {
+        repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
                 dataBaseCreationFactory.delete(data)

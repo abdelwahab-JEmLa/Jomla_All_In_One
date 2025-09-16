@@ -58,7 +58,9 @@ fun FabDropdownMenu(
                 onExecute = {
                     repo8BonVent.refresh_Datas()
                     repositorysMainGetter.repo10OperationVentCouleur.refresh_Datas()
+                    repositorysMainGetter.repo2Client.refresh_Datas()
                     repositorysMainGetter.repo1ProduitInfos.refresh_Datas()
+                    repositorysMainGetter.repo13TarificationInfos.refresh_Datas()
                 }
             )
 
