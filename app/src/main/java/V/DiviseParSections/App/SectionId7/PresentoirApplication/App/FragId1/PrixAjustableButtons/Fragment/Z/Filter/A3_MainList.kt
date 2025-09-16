@@ -269,13 +269,13 @@ fun MainList(
             )
 
             GerantButton(
-                relative_M1Produit = relative_M1Produit,
                 relative_Tariff = standardTariffs.find { it.typeChoisi == TypeChoisi.LeMaxPrixArrive },
+                relative_M1Produit = relative_M1Produit,
                 viewModel = viewModel,
                 showLabels = showLabels,
-                tariffsGroupedByType = allTariffsGroupedAndSorted,
                 onClickPrixButton = {
                     onClickPrixButton(typeToUse, tarificationInfo, context)
+
                 },
                 onClickAnulationButton = onClickAnulationButton
             )

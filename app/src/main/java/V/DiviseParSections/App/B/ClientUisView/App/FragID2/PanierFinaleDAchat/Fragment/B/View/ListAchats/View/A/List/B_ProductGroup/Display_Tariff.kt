@@ -71,7 +71,8 @@ fun Display_Tariff(
 
                     aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
-                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                        aCentralFacade = aCentralFacade
                     )
 
                     focusedValuesSetter.active_M1Produit_Pour_Choisire_TotalQuantity(

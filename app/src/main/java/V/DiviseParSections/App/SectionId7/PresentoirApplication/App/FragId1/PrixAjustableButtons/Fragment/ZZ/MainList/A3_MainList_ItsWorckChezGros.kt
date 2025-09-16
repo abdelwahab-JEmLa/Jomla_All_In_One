@@ -210,33 +210,13 @@ fun A3_MainList_ItsWorckChezGros(
                 standardTariffs.maxOfOrNull { it.prixCurrency } ?: relative_M1Produit.prixVent
             }
 
-            val typeToUse = if (max_Prix != 0.0) {
-                // Find which grossist type has the max price
-                standardTariffs.find { it.prixCurrency == max_Prix }?.typeChoisi
-                    ?: TypeChoisi.Tariff_ItsWorkInGrossist_Gro
-            } else {
-                TypeChoisi.Tariff_ItsWorkInGrossist_Gro // Default to Gro type
-            }
 
-            val tarificationInfo = M13TarificationInfos(
-                typeChoisi = typeToUse,
-                prixCurrency = priceToUse,
-            )
-
-            // Find the corresponding tariff from standardTariffs
-            val correspondingTariff = standardTariffs.find {
-                it.typeChoisi == typeToUse || it.prixCurrency == priceToUse
-            } ?: standardTariffs.lastOrNull()
 
             GerantButton(
+                relative_Tariff = standardTariffs.lastOrNull { it.typeChoisi ==  TypeChoisi.Tariff_ItsWorkInGrossist_Gro },
                 relative_M1Produit = relative_M1Produit,
-                relative_Tariff = correspondingTariff,
                 viewModel = viewModel,
                 showLabels = showLabels,
-                tariffsGroupedByType = allTariffsGroupedAndSorted,
-                onClickPrixButton = {
-                    onClickPrixButton(typeToUse, tarificationInfo, context)
-                },
                 onClickAnulationButton = onClickAnulationButton
             )
         }

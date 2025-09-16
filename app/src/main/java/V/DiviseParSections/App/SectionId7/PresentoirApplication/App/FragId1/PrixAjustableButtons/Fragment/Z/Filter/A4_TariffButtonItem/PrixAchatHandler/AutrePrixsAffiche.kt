@@ -130,7 +130,8 @@ fun AutrePrixsAffiche(
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = latestTariffLocalData,
-                m10OperationVentCouleurs = m10OperationVentCouleurs
+                m10OperationVentCouleurs = m10OperationVentCouleurs,
+                aCentralFacade = aCentralFacade
             )
 
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter

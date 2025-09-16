@@ -66,24 +66,18 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
-    fun executeClickLogic() {
+    fun save_Tariff_au_relative_vent_et_ferm_fabs_tariffs() {
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                m10OperationVentCouleurs = m10OperationVentCouleurs
+                m10OperationVentCouleurs = m10OperationVentCouleurs,
+                aCentralFacade = aCentralFacade
             )
 
         aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
             .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
-    fun handelClick() {
-        executeClickLogic()
-    }
-
-    /**
-     * Helper function to get current benefit margin for different tariff types
-     */
     fun getCurrentBenefitForTariffType(tariffType: M13TarificationInfos.TypeChoisi): Double {
         return when (tariffType) {
             M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros -> 5.0 // Minimum 5 unit benefit for SuperGros
@@ -230,7 +224,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                 FloatingActionButton(
                     modifier = Modifier.width(30.dp),
-                    onClick = ::executeClickLogic,
+                    onClick = ::save_Tariff_au_relative_vent_et_ferm_fabs_tariffs,
                     containerColor = couleurButton
                 ) {
                     val text = typeTarification.abrgNom
@@ -291,13 +285,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     onPriceChange = { newPrice, shouldCreateNew ->
                         handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
                     },
-                    executeClickLogic = { executeClickLogic() }
+                    executeClickLogic = { save_Tariff_au_relative_vent_et_ferm_fabs_tariffs() }
                 )
             }
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
                 FloatingActionButton(
                     modifier = Modifier.width(80.dp),
-                    onClick = ::executeClickLogic,
+                    onClick = ::save_Tariff_au_relative_vent_et_ferm_fabs_tariffs,
                     containerColor = couleurButton
                 ) {
                     Text(

@@ -18,7 +18,6 @@ import java.io.File
 class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
 ) {
-
     suspend fun generateAndOpenPdf(
         context: Context,
         client: M2Client?,

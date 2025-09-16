@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -31,7 +32,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 
 class RepositorysMainSetter(
     private val getter: RepositorysMainGetter,
@@ -109,7 +109,8 @@ class RepositorysMainSetter(
 
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
         m13TarificationInfos_Pour_Produit: M13TarificationInfos?,
-        m10OperationVentCouleurs: List<M10OperationVentCouleur>
+        m10OperationVentCouleurs: List<M10OperationVentCouleur>,
+        aCentralFacade: ACentralFacade
     ) {
         m13TarificationInfos_Pour_Produit?.let {
             addOrUpdateGroAliTariff(it)

@@ -70,7 +70,8 @@ fun PrixsVents_Handler(
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                m10OperationVentCouleurs = m10OperationVentCouleurs
+                m10OperationVentCouleurs = m10OperationVentCouleurs,
+                aCentralFacade = aCentralFacade
             )
 
         aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter

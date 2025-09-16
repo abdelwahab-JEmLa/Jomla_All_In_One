@@ -4,9 +4,9 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.animation.animateColorAsState
@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import java.util.SortedMap
 
 @Composable
 fun GerantButton(
@@ -47,14 +46,31 @@ fun GerantButton(
     relative_M1Produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     showLabels: Boolean,
-    tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     onClickPrixButton: () -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = focusedVarsHandlerFacade.focusedValuesGetter,
 ) {
+    fun save_Tariff_au_relative_vent_et_ferm_fabs_tariffs() {
+        if (relative_Tariff != null) {
+            repositorysMainSetter
+                .saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                    aCentralFacade = aCentralFacade,
+                    m13TarificationInfos_Pour_Produit = relative_Tariff.copy(
+                        laisse_Au_Gerant = true
+                    ),
+                    m10OperationVentCouleurs =
+                        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                            .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                )
+        }
+
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+            .dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+    }
+
     val color = Color(0xFF4CAF50)
     val cancelColor = Color(0xFFFF5722)
 
@@ -104,15 +120,6 @@ fun GerantButton(
             ?: "null",
     )
 
-    fun handelClick() {
-        viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-            m13TarificationInfos_Pour_Produit = edited_Tariff,
-            m10OperationVentCouleurs = m10OperationVentCouleurs
-        )
-
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
-    }
-
     val currentApp_ItsWorkChezGrossisst =
         focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     // Now it's a horizontal row like other tariff buttons
@@ -125,7 +132,7 @@ fun GerantButton(
                 modifier = Modifier.width(80.dp),
                 onClick = {
                     onClickPrixButton()
-                    handelClick()
+                    save_Tariff_au_relative_vent_et_ferm_fabs_tariffs()
                 },
                 containerColor = animatedBackgroundColor
             ) {
@@ -142,7 +149,7 @@ fun GerantButton(
             ElevatedCard(
                 Modifier.clickable {
                     onClickPrixButton()
-                    handelClick()
+                    save_Tariff_au_relative_vent_et_ferm_fabs_tariffs()
                 }
             ) {
                 val text = if (currentApp_ItsWorkChezGrossisst) "غ.م" else "لم يعطى سعر"
@@ -166,7 +173,7 @@ fun GerantButton(
                 modifier = Modifier.width(80.dp),
                 onClick = {
                     onClickPrixButton()
-                    handelClick()
+                    save_Tariff_au_relative_vent_et_ferm_fabs_tariffs()
                 },
                 containerColor = animatedBackgroundColor
             ) {

@@ -28,6 +28,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -78,7 +79,8 @@ fun QuantityDisplay_Mo_F_(
 
                     aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
-                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                        aCentralFacade = aCentralFacade
                     )
 
                     focusedValuesSetter.active_M1Produit_Pour_Choisire_TotalQuantity(
@@ -128,6 +130,9 @@ fun QuantityDisplay_Mo_F_(
         val default_Tariff = M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
         val finale_Tariff = findTariff ?: default_Tariff.first
 
+        // Check if manager allows price display - if true, use white background and black text
+        val shouldUseManagerColors = finale_Tariff.laisse_Au_Gerant
+
         Card(
             modifier = Modifier
                 .getSemanticsTag(nomVal = "repo13TarificationInfos", data = datasValue)
@@ -137,19 +142,22 @@ fun QuantityDisplay_Mo_F_(
 
                     repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         m13TarificationInfos_Pour_Produit = finale_Tariff,
-                        m10OperationVentCouleurs = focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                        m10OperationVentCouleurs = focusedValuesGetter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                        aCentralFacade = aCentralFacade
                     )
 
                     focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
                         produit
                     )
 
-
                 },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                else MaterialTheme.colorScheme.error
+                containerColor = when {
+                    allNonTrouve -> MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    shouldUseManagerColors -> Color.White // White background when manager controls prices
+                    else -> MaterialTheme.colorScheme.error
+                }
             )
         ) {
             Row(
@@ -175,15 +183,21 @@ fun QuantityDisplay_Mo_F_(
                     text = displayText,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
-                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSecondary
+                    color = when {
+                        allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        shouldUseManagerColors -> Color.Black // Black text when manager controls prices
+                        else -> MaterialTheme.colorScheme.onSecondary
+                    }
                 )
 
                 Icon(
                     imageVector = tariffIcon,
                     contentDescription = if (findTariff != null) "Defined by Ali" else "From old database",
-                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSecondary,
+                    tint = when {
+                        allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        shouldUseManagerColors -> Color.Black // Black icon when manager controls prices
+                        else -> MaterialTheme.colorScheme.onSecondary
+                    },
                     modifier = Modifier.size(16.dp)
                 )
             }

@@ -400,7 +400,8 @@ fun ViewVentCouleur_T1(
                     relative_M10OperationVentCouleur?.let { findVent ->
                         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                             finale_Tariff,
-                            buildList { add(findVent) }
+                            buildList { add(findVent) },
+                            aCentralFacade
                         )
                         setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                     } ?: run {
@@ -408,7 +409,8 @@ fun ViewVentCouleur_T1(
                             setter.ajoute_New_M10OperationVentCouleur(defaultVent)
                             viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                 finale_Tariff,
-                                buildList { add(defaultVent) }
+                                buildList { add(defaultVent) },
+                                aCentralFacade
                             )
                         }
                     }
@@ -482,7 +484,8 @@ fun ViewVentCouleur_T1(
                                         setter.ajoute_New_M10OperationVentCouleur(defaultVent)
                                         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                             finale_Tariff,
-                                            buildList { add(defaultVent) }
+                                            buildList { add(defaultVent) },
+                                            aCentralFacade
                                         )
                                     }
                                 }

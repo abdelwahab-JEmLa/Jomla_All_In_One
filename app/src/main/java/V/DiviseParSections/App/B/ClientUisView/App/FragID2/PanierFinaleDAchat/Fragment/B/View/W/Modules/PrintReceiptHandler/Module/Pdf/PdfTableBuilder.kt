@@ -86,12 +86,16 @@ class PdfTableBuilder(
             val tarification = tarificationRepo.datasValue.find {
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
+
+            // Check if manager allows price display
+            val shouldHidePrice = tarification?.laisse_Au_Gerant == true
+
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
-            val price = tarification?.prixCurrency ?: 0.0
+            val price = if (shouldHidePrice) 0.0 else (tarification?.prixCurrency ?: 0.0)
             val subtotal = price * qty
 
-            val shouldDisplayRow = price != 0.0 && subtotal != 0.0
+            val shouldDisplayRow = !shouldHidePrice && price != 0.0 && subtotal != 0.0
 
             if (shouldDisplayRow) {
                 val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
@@ -109,7 +113,8 @@ class PdfTableBuilder(
 
                 total += subtotal
             } else {
-                // When price is 0.0 or achat == vent, display row with product and quantity but empty price and subtotal
+                // When price is hidden by manager (laisse_Au_Gerant = true) or price is 0.0,
+                // display row with product and quantity but empty price and subtotal
                 val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
                 val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
 

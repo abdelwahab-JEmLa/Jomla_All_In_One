@@ -16,7 +16,6 @@ import java.io.File
 class PrintReceiptHandler_Juil(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
-    // Declare the partitioned handlers as class properties
     private val bluetoothPrintHandler = BluetoothPrintHandler()
     private val pdfPrintHandler = PdfPrintHandler(printInPdfHandler)
     private val windowsShareHandler = WindowsShareHandler()

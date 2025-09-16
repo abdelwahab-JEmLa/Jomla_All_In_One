@@ -103,6 +103,8 @@ data class M13TarificationInfos(
 
     var its_From_CalculeParNewBenifice: Boolean = true,
 
+    var laisse_Au_Gerant: Boolean = false,
+
     val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,
 
@@ -120,7 +122,6 @@ data class M13TarificationInfos(
     var parent_M2Client_KeyId: String = "null",
     val parent_M2Client_DebugInfos: String = "null",
 ) {
-
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
@@ -144,7 +145,7 @@ data class M13TarificationInfos(
             Color(0xFF000000),
             "Tariff_ItsWorkInGrossist_SuperGros",
             Color(0xFFF44336),
-            1 ,
+            1,
             "كمية"
         ),
         Tariff_ItsWorkInGrossist_Progressive(
@@ -225,7 +226,7 @@ data class M13TarificationInfos(
                 LeMaxPrixArrive -> null
                 DEFIN_OLd -> Historique
 
-                else  -> null
+                else -> null
             }
         }
 

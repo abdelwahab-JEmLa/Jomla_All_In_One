@@ -54,7 +54,10 @@ fun MainList(
                                 }
 
                                 is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {
-                                    true
+                                    val tariff = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+                                        .find { it.keyID == vent.parentM13TarificationKeyID }
+
+                                    tariff?.laisse_Au_Gerant == true
                                 }
                             }
 
