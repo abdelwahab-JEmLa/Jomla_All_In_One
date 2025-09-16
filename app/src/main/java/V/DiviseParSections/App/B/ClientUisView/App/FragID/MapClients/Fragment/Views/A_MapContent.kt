@@ -285,16 +285,23 @@ fun MapContent(
             )
         }
 
-        // Marker status dialog
+        // Fixed MarkerStatusDialog visibility condition
         val activeOnVentM2ClientInfos =
             viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
         val currentValues = focusedValuesGetter.active_Central_Values
         val its_ADD_Au_Ciblage_Clients =
             currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
-        if ((activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null)
-            && !its_ADD_Au_Ciblage_Clients
-        ) {
+        val shouldShowMarkerDialog = run {
+            val hasActiveClient = activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null
+            val isNotTargetingMode = !its_ADD_Au_Ciblage_Clients
+            val isWorkingForWholesaler = focusedValuesGetter.activeOnVent_M8BonVent?.its_working_for_wholesaler ?: false
+            val currentAppIsWholesaler = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+
+            hasActiveClient && isNotTargetingMode && (isWorkingForWholesaler || currentAppIsWholesaler)
+        }
+
+        if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
