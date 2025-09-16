@@ -45,10 +45,20 @@ fun CatalogueSelectionDialog(
     showDialog: Boolean,
     currentSelectedCatalogueId: String?,
     onDismiss: () -> Unit,
-    onCatalogueSelected: (String) -> Unit
+    onCatalogueSelected: (String) -> Unit,
+    aCentralFacade: ACentralFacade= koinInject()
 ) {
+    val currentApp_Est_Admin = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_Est_Admin
     if (showDialog) {
         val catalogues = B4CatalogueCategoriesRepository()
+            .filter { catalogue ->
+                if (currentApp_Est_Admin) {
+                    true // Show all catalogues for admin
+                } else {
+                    catalogue.keyID == "t1" || catalogue.keyID == "t2" // Filter for non-admin users
+                }
+            }
+
         var selectedCatalogueId by remember { mutableStateOf(currentSelectedCatalogueId) }
 
         Dialog(onDismissRequest = onDismiss) {
@@ -91,9 +101,7 @@ fun CatalogueSelectionDialog(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(
-                            catalogues.filter {
-                                it.keyID == "t1" ||  it.keyID =="t2"
-                            }
+                            catalogues
                         ) { catalogue ->
                             CatalogueItem(
                                 catalogue = catalogue,
