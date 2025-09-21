@@ -12,6 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -197,20 +199,14 @@ fun ID4ClientSearchButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Toggle Button for Client/Fournisseur
-                    FloatingActionButton(
-                        modifier = Modifier.size(32.dp),
-                        onClick = { isFournisseurMode = !isFournisseurMode },
-                        containerColor = if (isFournisseurMode) Color(0xFFFF9800) else Color(
-                            0xFF2196F3
-                        )
-                    ) {
-                        Text(
-                            text = if (isFournisseurMode) "F" else "C",
-                            color = Color.White,
-                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall
-                        )
-                    }
+                    // Separate Toast Button
+                    ToastCommandeButton()
+
+                    // Toggle Button for Client/Fournisseur (without toast)
+                    ClientFournisseurToggleButton(
+                        isFournisseurMode = isFournisseurMode,
+                        onToggle = { isFournisseurMode = !isFournisseurMode }
+                    )
 
                     OutlinedTextField(
                         modifier = Modifier
@@ -298,6 +294,49 @@ fun ID4ClientSearchButton(
     }
 }
 
+@Composable
+private fun ToastCommandeButton() {
+    val context = LocalContext.current
+
+    FloatingActionButton(
+        modifier = Modifier.size(32.dp),
+        onClick = {
+            //<--
+            //TODO(1): fait ici de cree un bon de vent son client = cherceher au lcient ou son nom ==  //"Jamel Bel" son etate on command
+            //cree des vents apre actelisatio depuit firebase vents pour chaque vent du actuelle vent period et du catalogeue confeserie  et leur .places_au_depot
+            // groupe par couleur key id la quant sum  et imprime au blototh avec afficheCouleurs et aller au fragment fast searche
+            Toast.makeText(context, "Bon Commande Actulle Maj Cree", Toast.LENGTH_SHORT).show()
+        },
+        containerColor = Color(0xFF4CAF50)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Créer Bon Commande",
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+private fun ClientFournisseurToggleButton(
+    isFournisseurMode: Boolean,
+    onToggle: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = Modifier.size(32.dp),
+        onClick = {
+            onToggle()
+        },
+        containerColor = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3)
+    ) {
+        Text(
+            text = if (isFournisseurMode) "F" else "C",
+            color = Color.White,
+            style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+        )
+    }
+}
+
 @SuppressLint("DefaultLocale")
 @Composable
 private fun CreateNewClientIcon(
@@ -371,6 +410,7 @@ private fun CreateNewClientIcon(
         )
     }
 }
+
 fun getTimeElapsedString(creationTimestamp: Long): String {
     val elapsed = System.currentTimeMillis() - creationTimestamp
     val days = TimeUnit.MILLISECONDS.toDays(elapsed)
