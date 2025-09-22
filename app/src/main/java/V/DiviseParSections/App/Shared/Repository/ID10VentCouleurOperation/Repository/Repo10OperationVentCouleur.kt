@@ -253,6 +253,7 @@ data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+    var its_created_in_working_for_wholesaler: Boolean = false,
 
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
@@ -294,6 +295,9 @@ data class M10OperationVentCouleur(
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
     var premier_Check_Donne: Boolean = true,
+
+    var non_places_au_depot: Boolean = false,
+    var pas_Dispo_Pour_Aujourduit: Boolean = false,
 
     var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.Prix_Detaille,
 

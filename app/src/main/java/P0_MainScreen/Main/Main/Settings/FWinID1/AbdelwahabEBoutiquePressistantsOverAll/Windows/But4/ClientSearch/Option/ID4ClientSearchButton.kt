@@ -5,14 +5,10 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
@@ -43,9 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -54,7 +46,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
-import org.koin.compose.koinInject
 import java.util.concurrent.TimeUnit
 
 @OptIn(FlowPreview::class)
@@ -295,33 +286,6 @@ fun ID4ClientSearchButton(
 }
 
 @Composable
-private fun ToastCommandeButton(
-    
-) {
-    val context = LocalContext.current
-
-    FloatingActionButton(
-        modifier = Modifier.size(32.dp),
-        onClick = {   //<--
-        //TODO(1): chaneg le ui du bonnt et text au functionement 
-            //<--
-            //TODO(1): fait ici de cree un bon de vent son client = cherceher au lcient ou son nom ==  //"Jamel Bel" son etate on command
-            //cree des vents apre actelisatio depuit firebase vents pour chaque vent du actuelle vent period et du catalogeue confeserie  et leur .places_au_depot
-            // groupe par couleur key id la quant sum  et imprime au blototh avec afficheCouleurs et aller au fragment fast searche    //<--
-            //TODO(1): avec aCentrale fait que soit ici pas de rturne function 
-            Toast.makeText(context, "Bon Commande Actulle Maj Cree", Toast.LENGTH_SHORT).show()
-        },
-        containerColor = Color(0xFF4CAF50)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = "Créer Bon Commande",
-            tint = Color.White
-        )
-    }
-}
-
-@Composable
 private fun ClientFournisseurToggleButton(
     isFournisseurMode: Boolean,
     onToggle: () -> Unit
@@ -337,80 +301,6 @@ private fun ClientFournisseurToggleButton(
             text = if (isFournisseurMode) "F" else "C",
             color = Color.White,
             style = androidx.compose.material3.MaterialTheme.typography.labelSmall
-        )
-    }
-}
-
-@SuppressLint("DefaultLocale")
-@Composable
-private fun CreateNewClientIcon(
-    searchQuery: String,
-    locationTracker: LocationTracker?,
-    defaultId8BonVent: M8BonVent,
-    onClientSelectedToToast: (M2Client) -> Unit,
-    onResetSearchMode: () -> Unit,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    isFournisseurMode: Boolean = false, // New parameter
-    repositorysMainSetter: RepositorysMainSetter = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
-) {
-    val currentLocation = locationTracker?.getCurrentPosition()
-
-    val newClient = M2Client(
-        keyID =M2Client.generePushKey(),
-        creationTimestamps = System.currentTimeMillis(),
-        nom = searchQuery.ifEmpty {" Person ${M2Client.generePushKey().takeLast(4)}"},
-        title = searchQuery.ifEmpty {
-            if (isFournisseurMode) "Nouveau Fournisseur" else "Nouveau Client"
-        },
-        latitude = 36.720027701275505,
-        longitude = 3.1436710147865483,
-        caMarqueGpsEstOuvert = currentLocation != null,
-        its_Fournisseur = isFournisseurMode, // Set based on toggle state
-        snippet = currentLocation?.let {
-            "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${
-                String.format(
-                    "%.6f",
-                    it.longitude
-                )
-            }"
-        } ?: "Position non disponible",
-        edite_Exact_Gps_est_fait = true,
-        parentComptCreateurKEyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: ""
-    )
-
-    val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
-        creationTimestamps = System.currentTimeMillis(),
-        parent_M2Client_KeyID = newClient.keyID,
-        parent_M2Client_DebugInfos = newClient.nom,
-        its_working_for_wholesaler = true
-    )
-
-    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentActive_M9AppCompt?.copy(
-        onVentM8BonVentKey = addedDefaultOnVentID8BonVentEtAdd.keyID,
-        onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.get_DebugInfos()
-    )
-
-    IconButton(
-        onClick = {
-            repositorysMainSetter.upsert_M2Client(newClient)
-            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
-                addedDefaultOnVentID8BonVentEtAdd,
-                updatedAppCompt
-            )
-            onClientSelectedToToast(newClient)
-            onResetSearchMode()
-        },
-        modifier = Modifier.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("Debug new M8BonVent"), addedDefaultOnVentID8BonVentEtAdd)
-            set(SemanticsPropertyKey("Debug currentM9AppCompt avec new M8BonVent"), updatedAppCompt)
-            set(SemanticsPropertyKey("Debug isFournisseurMode"), isFournisseurMode)
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = if (isFournisseurMode) "Créer nouveau fournisseur" else "Créer nouveau client",
-            tint = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3)
         )
     }
 }
