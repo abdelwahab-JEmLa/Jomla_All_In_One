@@ -23,6 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -37,6 +42,7 @@ fun DropDownItem_WhenItsAchatsFragment_4(
     val currentValues = focusedValuesGetter.active_Central_Values
     val isFloatingButtonVisible = currentValues.afficheFloatingOutlinedSearcher_of_Achat
     var clickCount by remember { mutableStateOf(0) }
+    val componentScope = remember { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
 
     Card(
         modifier = Modifier
@@ -64,7 +70,7 @@ fun DropDownItem_WhenItsAchatsFragment_4(
             },
             text = {
                 Text(
-                    text = nomFun,
+                    text = if (clickCount == 0) nomFun else "Êtes-vous sûr ?",
                     color = if (isFloatingButtonVisible) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -101,18 +107,50 @@ fun DropDownItem_WhenItsAchatsFragment_4(
                         operation.creationTimestamps in 1..<todayStartTime
                     }
 
-                    // Create toast message
-                    val message = buildString {
+                    // Create initial info message
+                    val initialMessage = buildString {
                         append("Données d'aujourd'hui: ${todayData.size}")
                         append("\nDonnées avant aujourd'hui: ${beforeTodayData.size}")
                         append("\nTotal: ${repositorysMainGetter.repo10OperationVentCouleur.datasValue.size}")
+                        if (beforeTodayData.isNotEmpty()) {
+                            append("\n\nSuppression des données avant aujourd'hui...")
+                        }
                     }
 
                     Toast.makeText(
                         context,
-                        message,
+                        initialMessage,
                         Toast.LENGTH_LONG
                     ).show()
+
+                    // Delete data before today using the existing delete function
+                    if (beforeTodayData.isNotEmpty()) {
+                        componentScope.launch {
+                            try {
+                                var deletedCount = 0
+                                beforeTodayData.forEach { operation ->
+                                    repositorysMainGetter.repo10OperationVentCouleur.delete(operation)
+                                    deletedCount++
+                                }
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Suppression terminée: $deletedCount éléments supprimés",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur lors de la suppression: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    }
 
                     // Reset click count and dismiss dropdown
                     clickCount = 0

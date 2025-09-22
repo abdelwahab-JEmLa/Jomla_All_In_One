@@ -85,8 +85,8 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false ,
-    val devStartUpScree: String = Screen.Screen1PanieVentsFinale.route,
+    val itsDevMode: Boolean = true ,
+    val devStartUpScree: String = Screen.Achats_Produits_Chez_Grossists.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
