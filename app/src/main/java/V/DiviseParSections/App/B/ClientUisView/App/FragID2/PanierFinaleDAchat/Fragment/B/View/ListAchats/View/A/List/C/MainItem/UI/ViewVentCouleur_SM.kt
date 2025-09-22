@@ -246,9 +246,10 @@ fun ViewVentCouleur_Module(
                                     containerColor = MaterialTheme.colorScheme.primary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
+                                    val text = relative_M10OperationVentCouleur?.quantity
+                                        .toString()
                                     Text(
-                                        text = relative_M10OperationVentCouleur?.quantity
-                                            .toString(),
+                                        text = "$text ${relative_M10OperationVentCouleur?.parent_M14VentPeriod_KeyId?.takeLast(3)}",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold
                                     )

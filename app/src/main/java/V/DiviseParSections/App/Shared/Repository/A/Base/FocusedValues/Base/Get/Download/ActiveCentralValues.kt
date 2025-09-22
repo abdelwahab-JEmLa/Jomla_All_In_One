@@ -64,7 +64,7 @@ data class ActiveCentralValues(
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
-    val afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
+    var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",

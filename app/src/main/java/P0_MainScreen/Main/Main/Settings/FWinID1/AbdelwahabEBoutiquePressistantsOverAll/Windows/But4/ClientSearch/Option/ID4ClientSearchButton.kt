@@ -295,16 +295,20 @@ fun ID4ClientSearchButton(
 }
 
 @Composable
-private fun ToastCommandeButton() {
+private fun ToastCommandeButton(
+    
+) {
     val context = LocalContext.current
 
     FloatingActionButton(
         modifier = Modifier.size(32.dp),
-        onClick = {
+        onClick = {   //<--
+        //TODO(1): chaneg le ui du bonnt et text au functionement 
             //<--
             //TODO(1): fait ici de cree un bon de vent son client = cherceher au lcient ou son nom ==  //"Jamel Bel" son etate on command
             //cree des vents apre actelisatio depuit firebase vents pour chaque vent du actuelle vent period et du catalogeue confeserie  et leur .places_au_depot
-            // groupe par couleur key id la quant sum  et imprime au blototh avec afficheCouleurs et aller au fragment fast searche
+            // groupe par couleur key id la quant sum  et imprime au blototh avec afficheCouleurs et aller au fragment fast searche    //<--
+            //TODO(1): avec aCentrale fait que soit ici pas de rturne function 
             Toast.makeText(context, "Bon Commande Actulle Maj Cree", Toast.LENGTH_SHORT).show()
         },
         containerColor = Color(0xFF4CAF50)

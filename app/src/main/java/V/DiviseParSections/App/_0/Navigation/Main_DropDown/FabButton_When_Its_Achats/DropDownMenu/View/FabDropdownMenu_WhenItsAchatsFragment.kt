@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_A
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_1
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_3
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_4
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -26,7 +27,10 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-
+            DropDownItem_WhenItsAchatsFragment_4(
+                nomFun = "supp vents",
+                onDismissDropdown = onDismissDropdown
+            )
             DropDownItem_WhenItsAchatsFragment_3(
                 nomFun = "afficheFloatingOutlinedSearcher_of_Achat",
                 onDismissDropdown = onDismissDropdown
