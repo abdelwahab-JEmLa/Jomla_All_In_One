@@ -232,7 +232,7 @@ fun ViewVentCouleur_Module(
                             Text(
                                 text = "REMOVED",
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onError,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             )
@@ -248,8 +248,13 @@ fun ViewVentCouleur_Module(
                                 ) {
                                     val text = relative_M10OperationVentCouleur?.quantity
                                         .toString()
+                                    val takeLast = if (true) "" else
+                                        relative_M10OperationVentCouleur?.parent_M14VentPeriod_KeyId?.takeLast(
+                                            3
+                                        )
+
                                     Text(
-                                        text = "$text ${relative_M10OperationVentCouleur?.parent_M14VentPeriod_KeyId?.takeLast(3)}",
+                                        text = "$text $takeLast",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold
                                     )

@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifNotNullOrEmpty
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos.Type
@@ -68,6 +67,15 @@ fun Produit_Vent(
     val relative_M3CouleurProduit =
         repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
 
+    // Get all unique comments from the vent list
+    val uniqueComments = remember(ventList) {
+        ventList.mapNotNull { vent ->
+            if (vent.commetaire.isNotEmpty()) {
+                val couleur = repositorysMainGetter.find_M3CouleurInfos_By_KeyID(vent.parent_M3CouleurProduit_KeyID)
+                Pair(vent.commetaire, couleur?.nomCouleurStrSiSonImageDispo ?: "Couleur inconnue")
+            } else null
+        }.distinctBy { it.first } // Remove duplicate comments
+    }
 
     fun upsert_M10OperationVentCouleur(newState: Boolean): Unit {
         ventList.forEach { vent ->
@@ -174,11 +182,36 @@ fun Produit_Vent(
                         allNonTrouve = allNonTrouve,
                         aCentralFacade = aCentralFacade
                     )
-                    val text = ventList.first().commetaire
-                    text.ifNotNullOrEmpty {     //<--
-                    //TODO(1): fait affiche le commentaire de chaqe couleur du produit 
-                        Card() {
-                            Text(text)
+
+                    if (uniqueComments.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            uniqueComments.forEach { (comment, colorName) ->
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp)
+                                    ) {
+                                        Text(
+                                            text = colorName,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = comment,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -49,8 +49,10 @@ fun MainList(
 
                         activeFilters.forEach { filter ->
                             val passesThisFilter = when (filter) {
+                                // FIXED: NonTrouve filter now EXCLUDES items that are NonTrouve
+                                // instead of including only NonTrouve items
                                 is ActiveCentralValues.ActiveFilter.NonTrouve -> {
-                                    vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
+                                    vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                                 }
 
                                 is ActiveCentralValues.ActiveFilter.PrixAuGerant -> {

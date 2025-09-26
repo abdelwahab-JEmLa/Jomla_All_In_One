@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-
 @Composable
 fun ToastCommandeButton(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -32,6 +31,7 @@ fun ToastCommandeButton(
     val repo10OperationVentCouleur = repositorysMainGetter.repo10OperationVentCouleur
     val repo2Client = repositorysMainGetter.repo2Client
     val repo3CouleurProduitInfos = repositorysMainGetter.repo03CouleurProduitInfos
+    val repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos
 
     val currentActiveFocuced_M14VentPeriode =
         focusedValuesGetter.currentActiveFocuced_M14VentPeriode
@@ -100,53 +100,101 @@ fun ToastCommandeButton(
                                 !(vent.non_places_au_depot || vent.pas_Dispo_Pour_Aujourduit)
                                 && !vent.its_created_in_working_for_wholesaler
                                 && vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
-
                     }
 
-                    // Group by couleur and create new vents for Jamel Bel
-                    val ventsByColor = allVentsInPeriod.groupBy { it.parent_M3CouleurProduit_KeyID }
+                    // FIXED: Group by product first, then generate comment for each product's colors
+                    val ventsByProduct = allVentsInPeriod.groupBy { it.parent_M1Produit_KeyId }
 
-                    ventsByColor.forEach { (couleurKeyId, ventsForColor) ->
-                        val totalQuantity = ventsForColor.sumOf { it.quantity }
-                        if (totalQuantity > 0 && couleurKeyId.isNotBlank() && couleurKeyId != "null") {
+                    ventsByProduct.forEach { (productKeyId, ventsForProduct) ->
+                        // Generate comment specific to this product's colors
+                        val productSpecificComment = generateCommentForProductColors(
+                            ventsForProduct = ventsForProduct,
+                            productKeyId = productKeyId,
+                            repositorysMainGetter = repositorysMainGetter
+                        )
 
-                            // Get couleur info
-                            val couleurInfo = repo3CouleurProduitInfos.datasValue.find {
-                                it.keyID == couleurKeyId
-                            }
+                        // Group this product's vents by color
+                        val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
 
-                            if (couleurInfo != null) {
-                                // Generate comment with client details
-                                val commentaire = generateCommentForCouleur(
-                                    ventsForColor = ventsForColor,
-                                    couleurInfo = couleurInfo,
-                                    totalQuantity = totalQuantity,
-                                    repositorysMainGetter = repositorysMainGetter
-                                )
+// Replace the problematic section (around lines 70-120) with this fixed version:
 
-                                // Create new vent operation for Jamel Bel
-                                val newVentOperation =
-                                    M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-                                        newBonVent,
-                                        couleurInfo
-                                    ).copy(
-                                        quantity = totalQuantity,
-                                        etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
-                                        etateDelivery = M10OperationVentCouleur.EtateDelivery.Trouve,
-                                        type = M10OperationVentCouleur.Type.CommandeDeLui,
-                                        typeTarificationEnumT2 = M13TarificationInfos.TypeChoisi.Prix_Detaille,
-                                        parentClientInfosKeyID = jamelBelClient.keyID,
-                                        parentClientName = jamelBelClient.nom,
-                                        parent_M9AppCompt_KeyID = currentAppCompt?.keyID ?: "null",
-                                        parent_M9AppCompt_DebugInfos = currentAppCompt?.get_DebugInfos()
-                                            ?: "null" ,
-                                        parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode.keyID,
-                                        its_created_in_working_for_wholesaler = true,
-                                        commetaire = commentaire
-                                    )
+                        ventsByProduct.forEach { (productKeyId, ventsForProduct) ->
+                            // Generate comment specific to this product's colors
+                            val productSpecificComment = generateCommentForProductColors(
+                                ventsForProduct = ventsForProduct,
+                                productKeyId = productKeyId,
+                                repositorysMainGetter = repositorysMainGetter
+                            )
 
-                                // Add to repository
-                                repo10OperationVentCouleur.add_New(newVentOperation)
+                            // Group this product's vents by color
+                            val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
+
+                            ventsByColor.forEach { (couleurKeyId, ventsForColor) ->
+                                val totalQuantity = ventsForColor.sumOf { it.quantity }
+                                if (totalQuantity > 0 && couleurKeyId.isNotBlank() && couleurKeyId != "null") {
+
+                                    // Get couleur info
+                                    val couleurInfo = repo3CouleurProduitInfos.datasValue.find {
+                                        it.keyID == couleurKeyId
+                                    }
+
+                                    if (couleurInfo != null) {
+                                        // Get the product info to find the SuperGros tariff
+                                        val productInfo = repositorysMainGetter.find_M1Produit_ByKeyID(productKeyId)
+
+                                        // Find existing SuperGros tariff for this product
+                                        var superGrosTariff = repo13TarificationInfos.datasValue
+                                            .filter { tariff ->
+                                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                                                        tariff.parent_M1Produit_KeyId == productKeyId
+                                            }
+                                            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+
+                                        // If SuperGros tariff doesn't exist, create it (but don't rely on async add)
+                                        if (superGrosTariff == null && productInfo != null) {
+                                            superGrosTariff = M13TarificationInfos(
+                                                parent_M14VentPeriod_KeyId = ventPeriode.keyID,
+                                                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                                prixCurrency = productInfo.prixAchat,
+                                                parent_M1Produit_KeyId = productInfo.keyID,
+                                                parent_M1Produit_DebugInfos = productInfo.nom,
+                                                creationTimestamps = System.currentTimeMillis()
+                                            )
+                                            // Add the new tariff to the repository (async operation)
+                                            repo13TarificationInfos.add(superGrosTariff)
+                                        }
+
+                                        // Determine the price to use - now superGrosTariff is guaranteed to be non-null
+                                        val priceToUse = superGrosTariff?.prixCurrency ?: productInfo?.prixAchat ?: 0.0
+
+                                        // Determine the tariff type to use - now we can safely access superGrosTariff.typeChoisi
+                                        val tariffTypeToUse = superGrosTariff?.typeChoisi
+                                            ?: M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+
+                                        // Create new vent operation for Jamel Bel with SuperGros pricing
+                                        val newVentOperation = M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
+                                            newBonVent,
+                                            couleurInfo
+                                        ).copy(
+                                            quantity = totalQuantity,
+                                            etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
+                                            etateDelivery = M10OperationVentCouleur.EtateDelivery.Trouve,
+                                            type = M10OperationVentCouleur.Type.CommandeDeLui,
+                                            typeTarificationEnumT2 = tariffTypeToUse, // Now guaranteed to be non-null
+                                            provisoireMonPrix = priceToUse, // Set the SuperGros price
+                                            parentClientInfosKeyID = jamelBelClient.keyID,
+                                            parentClientName = jamelBelClient.nom,
+                                            parent_M9AppCompt_KeyID = currentAppCompt?.keyID ?: "null",
+                                            parent_M9AppCompt_DebugInfos = currentAppCompt?.get_DebugInfos() ?: "null",
+                                            parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode.keyID,
+                                            its_created_in_working_for_wholesaler = true,
+                                            commetaire = productSpecificComment // Comment specific to this product only
+                                        )
+
+                                        // Add to repository
+                                        repo10OperationVentCouleur.add_New(newVentOperation)
+                                    }
+                                }
                             }
                         }
                     }
@@ -155,7 +203,7 @@ fun ToastCommandeButton(
                     launch(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            "Bon Commande créé pour Jamel Bel avec ${ventsByColor.size} produits",
+                            "Bon Commande créé pour Jamel Bel avec ${ventsByProduct.size} produits",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -181,41 +229,68 @@ fun ToastCommandeButton(
     }
 }
 
-private fun generateCommentForCouleur(
-    ventsForColor: List<M10OperationVentCouleur>,
-    couleurInfo: V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos,
-    totalQuantity: Int,
+// NEW FUNCTION: Generate comment for a specific product's colors only
+private fun generateCommentForProductColors(
+    ventsForProduct: List<M10OperationVentCouleur>,
+    productKeyId: String,
     repositorysMainGetter: RepositorysMainGetter
 ): String {
-    val couleurName = couleurInfo.nomCouleurStrSiSonImageDispo
+    val repo3CouleurProduitInfos = repositorysMainGetter.repo03CouleurProduitInfos
+    val repo8BonVent = repositorysMainGetter.repo8BonVent
+    val repo2Client = repositorysMainGetter.repo2Client
 
-    // Group vents by client to get client quantities
-    val clientQuantities = mutableMapOf<String, Int>()
+    // Get product name for context
+    val product = repositorysMainGetter.find_M1Produit_ByKeyID(productKeyId)
+    val productName = product?.nom ?: "Produit"
 
-    ventsForColor.forEach { vent ->
-        // Find the bon vent to get client info
-        val bonVent = repositorysMainGetter.repo8BonVent.datasValue.find {
-            it.keyID == vent.parent_M8BonVent_KeyId
-        }
+    // Group by color for this specific product
+    val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
 
-        if (bonVent != null) {    //<--
-//TODO(1): fait ici por chaque client commenad du couleur de saut la line
-            // Find the client
-            val client = repositorysMainGetter.repo2Client.datasValue.find {
-                it.keyID == bonVent.parent_M2Client_KeyID
+    val colorComments = mutableListOf<String>()
+
+    ventsByColor.forEach { (couleurKeyId, ventsForColor) ->
+        if (couleurKeyId.isNotBlank() && couleurKeyId != "null") {
+            // Get couleur info
+            val couleurInfo = repo3CouleurProduitInfos.datasValue.find {
+                it.keyID == couleurKeyId
             }
 
-            if (client != null) {
-                val clientName = client.nom
-                clientQuantities[clientName] = (clientQuantities[clientName] ?: 0) + vent.quantity
+            if (couleurInfo != null) {
+                val couleurName = couleurInfo.nomCouleurStrSiSonImageDispo
+                val totalQuantityForColor = ventsForColor.sumOf { it.quantity }
+
+                // Group by client for this color
+                val clientQuantities = mutableMapOf<String, Int>()
+
+                ventsForColor.forEach { vent ->
+                    // Find the bon vent to get client info
+                    val bonVent = repo8BonVent.datasValue.find {
+                        it.keyID == vent.parent_M8BonVent_KeyId
+                    }
+
+                    if (bonVent != null) {
+                        // Find the client
+                        val client = repo2Client.datasValue.find {
+                            it.keyID == bonVent.parent_M2Client_KeyID
+                        }
+
+                        if (client != null) {
+                            val clientName = client.nom
+                            clientQuantities[clientName] = (clientQuantities[clientName] ?: 0) + vent.quantity
+                        }
+                    }
+                }
+
+                // Build comment for this color
+                val clientDetails = clientQuantities.entries.joinToString(" ") { (clientName, quantity) ->
+                    "${clientName}($quantity)"
+                }
+
+                colorComments.add("$couleurName=$totalQuantityForColor[$clientDetails]")
             }
         }
     }
 
-    // Build the comment string
-    val clientDetails = clientQuantities.entries.joinToString(", ") { (clientName, quantity) ->
-        "-$clientName$quantity-"
-    }
-
-    return "TC$couleurName = $totalQuantity, Cli=$clientDetails"
+    // Return comment specific to this product only with line breaks between colors
+    return "$productName:\n${colorComments.joinToString("\n\n\n")}"
 }

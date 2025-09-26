@@ -16,15 +16,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -50,9 +56,15 @@ fun CheckList_ChoisiseurActiveFilter(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    // FIXED: Support pour plusieurs filtres simultanés
     val currentValues by remember { focusedValuesGetter::active_Central_Values }
-    val activeFilters = currentValues.activeFilters // Set<ActiveFilter> au lieu de ActiveFilter?
+    val activeFilters = currentValues.activeFilters
+    val isVisible = currentValues.affiche_CheckList_ChoisiseurActiveFilter
+
+    // Afficher le bouton flottant si le sélecteur n'est pas visible
+    if (!isVisible) {
+        FloatingButton_ToggleFilterSelector()
+        return
+    }
 
     val availableFilters = listOf(
         ActiveCentralValues.ActiveFilter.NonTrouve,
@@ -66,13 +78,10 @@ fun CheckList_ChoisiseurActiveFilter(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 400f).coerceAtLeast(0f)) }
     var offsetY by remember { mutableFloatStateOf((screenHeightDp.value - 400f).coerceAtLeast(0f)) }
 
-    // FIXED: Nouvelle fonction pour toggler un filtre (ajouter/retirer)
     fun toggleFilter(filter: ActiveCentralValues.ActiveFilter) {
         val newFilters = if (activeFilters.contains(filter)) {
-            // Retirer le filtre
             activeFilters - filter
         } else {
-            // Ajouter le filtre
             activeFilters + filter
         }
 
@@ -81,16 +90,21 @@ fun CheckList_ChoisiseurActiveFilter(
         )
     }
 
-    // FIXED: Fonction pour effacer tous les filtres
     fun clearAllFilters() {
         focusedValuesGetter.update_activeCentralValues(
             currentValues.copy(activeFilters = emptySet())
         )
     }
 
+    fun hideFilterSelector() {
+        focusedValuesGetter.update_activeCentralValues(
+            currentValues.copy(affiche_CheckList_ChoisiseurActiveFilter = false)
+        )
+    }
+
     fun getFilterDisplayName(filter: ActiveCentralValues.ActiveFilter): String {
         return when (filter) {
-            is ActiveCentralValues.ActiveFilter.NonTrouve -> "Non Trouvé"
+            is ActiveCentralValues.ActiveFilter.NonTrouve -> "Masquer Non Trouvé"
             is ActiveCentralValues.ActiveFilter.PrixAuGerant -> "Prix au Gérant"
         }
     }
@@ -132,30 +146,46 @@ fun CheckList_ChoisiseurActiveFilter(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Header
+                // Header avec bouton de fermeture
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.FilterList,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Sélecteur de Filtres Multiples",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterList,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Sélecteur de Filtres",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { hideFilterSelector() },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fermer",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // FIXED: Chaque filtre peut maintenant être sélectionné indépendamment
+                // Liste des filtres
                 availableFilters.forEach { filter ->
-                    val isSelected = activeFilters.contains(filter) // Simple vérification dans le Set
+                    val isSelected = activeFilters.contains(filter)
 
                     Card(
                         modifier = Modifier
@@ -192,10 +222,7 @@ fun CheckList_ChoisiseurActiveFilter(
 
                             Checkbox(
                                 checked = isSelected,
-                                onCheckedChange = {
-                                    // FIXED: Simple toggle - ajouter si pas présent, retirer si présent
-                                    toggleFilter(filter)
-                                },
+                                onCheckedChange = { toggleFilter(filter) },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = getFilterColor(filter),
                                     uncheckedColor = MaterialTheme.colorScheme.outline
@@ -207,7 +234,7 @@ fun CheckList_ChoisiseurActiveFilter(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // FIXED: Affichage des filtres actifs (peut être plusieurs maintenant)
+                // Affichage des filtres actifs
                 if (activeFilters.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -239,7 +266,6 @@ fun CheckList_ChoisiseurActiveFilter(
                                 )
                             }
 
-                            // Liste des filtres actifs
                             activeFilters.forEach { filter ->
                                 Text(
                                     text = "• ${getFilterDisplayName(filter)}",
@@ -270,6 +296,71 @@ fun CheckList_ChoisiseurActiveFilter(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun FloatingButton_ToggleFilterSelector(
+    modifier: Modifier = Modifier,
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+) {
+    val currentValues by remember { focusedValuesGetter::active_Central_Values }
+    val hasActiveFilters = currentValues.activeFilters.isNotEmpty()
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        // Badge pour indiquer le nombre de filtres actifs
+        if (hasActiveFilters) {
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .background(
+                        color = Color(0xFFFF5722),
+                        shape = CircleShape
+                    )
+                    .shadow(4.dp, CircleShape)
+                    .align(Alignment.TopEnd),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${currentValues.activeFilters.size}",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 10.sp
+                )
+            }
+        }
+
+        FloatingActionButton(
+            onClick = {
+                focusedValuesGetter.update_activeCentralValues(
+                    currentValues.copy(affiche_CheckList_ChoisiseurActiveFilter = true)
+                )
+            },
+            containerColor = if (hasActiveFilters) {
+                Color(0xFFFF9800) // Orange quand il y a des filtres actifs
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            },
+            contentColor = if (hasActiveFilters) {
+                Color.White
+            } else {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            },
+            elevation = FloatingActionButtonDefaults.elevation(
+                defaultElevation = if (hasActiveFilters) 8.dp else 6.dp
+            ),
+            modifier = Modifier.size(56.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = "Afficher le sélecteur de filtres",
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }

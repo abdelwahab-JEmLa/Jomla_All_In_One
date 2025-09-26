@@ -36,7 +36,7 @@ class BluetoothPrintHandler {
 
         return try {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
-            
+
             val (texteImprimable, _) = prepareTexteToPrint(
                 operations,
                 client?.nom?.takeIf { it.isNotBlank() } ?: "Client",
@@ -48,10 +48,10 @@ class BluetoothPrintHandler {
 
             val finalBluetoothText = if (showCreditSection && bonVent != null && false) {
                 addCreditSectionToBluetoothText(
-                    texteImprimable.toString(), 
-                    client, 
-                    bonVent, 
-                    versement, 
+                    texteImprimable.toString(),
+                    client,
+                    bonVent,
+                    versement,
                     transactionId
                 )
             } else {
@@ -111,6 +111,7 @@ class BluetoothPrintHandler {
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
+        // FIXED: TODO(1) - Now prints comment for each product if not empty
         val groupe_Produit = operations.groupBy { it.parent_M1Produit_KeyId }.toList()
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
@@ -146,6 +147,15 @@ class BluetoothPrintHandler {
                     append(" <MEDIUM1><LEFT>$quantityDisplay ")
                     append("<MEDIUM1><LEFT>${vent_prix}Da ")
                     append("<SMALL>$subtotal<BR>")
+
+                    // FIXED: Add product comment if it exists and is not empty
+                    val productComment = getProductComment(produit_vent.second)
+                    if (productComment.isNotBlank()) {
+                        // Format comment for better readability on thermal printer
+                        val formattedComment = formatCommentForPrinting(productComment)
+                        append("<SMALL><LEFT>$formattedComment<BR>")
+                    }
+
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
                 totaleBon += subtotal
@@ -172,6 +182,55 @@ class BluetoothPrintHandler {
         }
 
         return Pair(texteImprimable, totaleBon)
+    }
+
+    /**
+     * Extract comment from the product's operations
+     * Uses the first non-empty comment found in the operations for this product
+     */
+    private fun getProductComment(operations: List<M10OperationVentCouleur>): String {
+        return operations
+            .mapNotNull { it.commetaire }
+            .firstOrNull { it.isNotBlank() }
+            ?: ""
+    }
+
+    /**
+     * Format comment for thermal printer display
+     * Splits long comments into multiple lines and handles special formatting
+     */
+    private fun formatCommentForPrinting(comment: String): String {
+        if (comment.isBlank()) return ""
+
+        // Split by newlines first (if comment already has line breaks)
+        val lines = comment.split('\n')
+        val formattedLines = mutableListOf<String>()
+
+        lines.forEach { line ->
+            if (line.length <= 32) {
+                // Line fits in one thermal printer line
+                formattedLines.add("  $line") // Add indent for comment
+            } else {
+                // Split long lines
+                val words = line.split(' ')
+                var currentLine = "  " // Start with indent
+
+                words.forEach { word ->
+                    if ((currentLine + word).length <= 32) {
+                        currentLine += "$word "
+                    } else {
+                        formattedLines.add(currentLine.trimEnd())
+                        currentLine = "  $word " // Start new line with indent
+                    }
+                }
+
+                if (currentLine.trim().length > 2) { // More than just indent
+                    formattedLines.add(currentLine.trimEnd())
+                }
+            }
+        }
+
+        return formattedLines.joinToString("<BR>")
     }
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
