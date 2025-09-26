@@ -10,6 +10,7 @@ import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Build
 import android.view.Surface
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -30,6 +31,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FlashOff
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.FlipCameraAndroid
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -141,7 +145,7 @@ fun Bitmap.scale(newWidth: Int, newHeight: Int): Bitmap {
     return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
 }
 
-// Updated CameraXDialog with proper orientation handling for direct camera capture
+// Updated CameraXDialog with flash toggle functionality
 @Composable
 fun CameraXDialog(
     onImageCaptured: (Uri) -> Unit,
@@ -154,9 +158,13 @@ fun CameraXDialog(
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var preview: Preview? by remember { mutableStateOf(null) }
     var cameraProvider: ProcessCameraProvider? by remember { mutableStateOf(null) }
+    var camera: Camera? by remember { mutableStateOf(null) }
     var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
     var isCapturing by remember { mutableStateOf(false) }
     var isCameraReady by remember { mutableStateOf(false) }
+    var flashMode by remember { mutableStateOf(ImageCapture.FLASH_MODE_OFF) }
+    var hasFlash by remember { mutableStateOf(false) }
+    var isTorchOn by remember { mutableStateOf(false) }
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
 
     // Get current device rotation
@@ -223,6 +231,37 @@ fun CameraXDialog(
         }
     }
 
+    fun toggleFlash() {
+        if (hasFlash && camera != null) {
+            when (flashMode) {
+                ImageCapture.FLASH_MODE_OFF -> {
+                    // Passer en mode torch (lampe torche continue)
+                    flashMode = ImageCapture.FLASH_MODE_ON
+                    isTorchOn = true
+                    camera?.cameraControl?.enableTorch(true)
+                }
+                ImageCapture.FLASH_MODE_ON -> {
+                    // Passer en mode auto (flash seulement à la capture)
+                    flashMode = ImageCapture.FLASH_MODE_AUTO
+                    isTorchOn = false
+                    camera?.cameraControl?.enableTorch(false)
+                }
+                ImageCapture.FLASH_MODE_AUTO -> {
+                    // Passer en mode off
+                    flashMode = ImageCapture.FLASH_MODE_OFF
+                    isTorchOn = false
+                    camera?.cameraControl?.enableTorch(false)
+                }
+                else -> {
+                    flashMode = ImageCapture.FLASH_MODE_OFF
+                    isTorchOn = false
+                    camera?.cameraControl?.enableTorch(false)
+                }
+            }
+            imageCapture?.flashMode = flashMode
+        }
+    }
+
     LaunchedEffect(lensFacing, rotation) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         try {
@@ -234,21 +273,38 @@ fun CameraXDialog(
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setJpegQuality(95)
-                .setTargetRotation(rotation) // Set target rotation for proper orientation
+                .setTargetRotation(rotation)
+                .setFlashMode(flashMode)
                 .build()
 
             val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             cameraProvider?.let { provider ->
                 try {
                     provider.unbindAll()
-                    provider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
+                    camera = provider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
+
+                    // Check if camera has flash
+                    hasFlash = camera?.cameraInfo?.hasFlashUnit() ?: false
+
+                    // Reset flash states when switching cameras
+                    if (!hasFlash) {
+                        flashMode = ImageCapture.FLASH_MODE_OFF
+                        isTorchOn = false
+                    }
+
                     isCameraReady = true
                 } catch (exc: Exception) {
                     isCameraReady = false
+                    hasFlash = false
+                    flashMode = ImageCapture.FLASH_MODE_OFF
+                    isTorchOn = false
                 }
             }
         } catch (exc: Exception) {
             isCameraReady = false
+            hasFlash = false
+            flashMode = ImageCapture.FLASH_MODE_OFF
+            isTorchOn = false
         }
     }
 
@@ -285,6 +341,36 @@ fun CameraXDialog(
                     }
 
                     Row {
+                        // Flash toggle button - only show if camera has flash capability
+                        if (hasFlash) {
+                            IconButton(
+                                onClick = { toggleFlash() },
+                                modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = when (flashMode) {
+                                        ImageCapture.FLASH_MODE_OFF -> Icons.Default.FlashOff
+                                        ImageCapture.FLASH_MODE_ON -> Icons.Default.FlashOn
+                                        ImageCapture.FLASH_MODE_AUTO -> Icons.Default.FlashlightOn
+                                        else -> Icons.Default.FlashOff
+                                    },
+                                    contentDescription = when (flashMode) {
+                                        ImageCapture.FLASH_MODE_OFF -> "Flash désactivé"
+                                        ImageCapture.FLASH_MODE_ON -> "Lampe torche activée"
+                                        ImageCapture.FLASH_MODE_AUTO -> "Flash automatique"
+                                        else -> "Flash"
+                                    },
+                                    tint = when (flashMode) {
+                                        ImageCapture.FLASH_MODE_OFF -> Color.White.copy(alpha = 0.6f)
+                                        ImageCapture.FLASH_MODE_ON -> Color.Yellow // Mode torch
+                                        ImageCapture.FLASH_MODE_AUTO -> Color.Cyan // Mode auto
+                                        else -> Color.White
+                                    }
+                                )
+                            }
+                        }
+
+                        // Camera flip button
                         IconButton(
                             onClick = {
                                 if (!isCapturing && isCameraReady) {
@@ -340,6 +426,8 @@ fun CameraXDialog(
 
     DisposableEffect(Unit) {
         onDispose {
+            // Éteindre la lampe torche avant de fermer
+            camera?.cameraControl?.enableTorch(false)
             cameraProvider?.unbindAll()
             cameraExecutor.shutdown()
         }
