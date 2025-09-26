@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -15,6 +16,7 @@ import java.util.Locale
 
 class BluetoothPrintHandler {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
+    private val TAG = "BluetoothPrintHandler"
 
     fun printBluetoothReceipt(
         context: Context,
@@ -26,25 +28,40 @@ class BluetoothPrintHandler {
         showCreditSection: Boolean = false,
         versement: Double = 0.0
     ): Boolean {
+        Log.d(TAG, "=== DEBUT IMPRESSION BLUETOOTH ===")
+        Log.d(TAG, "Nombre total d'opérations reçues: ${operations.size}")
+
         if (!isBluetoothAvailable()) {
+            Log.e(TAG, "Bluetooth non disponible ou désactivé")
             return false
         }
 
         if (operations.isEmpty()) {
+            Log.e(TAG, "Aucune opération à imprimer")
             return false
         }
 
         return try {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
 
-            val (texteImprimable, _) = prepareTexteToPrint(
+            // Transliterate client name from Arabic to Latin
+            val clientName = client?.nom?.takeIf { it.isNotBlank() }?.let {
+                transliterateClientName(it)
+            } ?: "Client"
+
+            Log.d(TAG, "Nom client (après translittération): $clientName")
+
+            val (texteImprimable, totalCalcule) = prepareTexteToPrint(
                 operations,
-                client?.nom?.takeIf { it.isNotBlank() } ?: "Client",
+                clientName,
                 SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
                 client?.currentCreditBalance ?: 0.0,
                 repo13TarificationInfos,
                 repoM1Produit
             )
+
+            Log.d(TAG, "Total calculé: $totalCalcule Da")
+            Log.d(TAG, "Longueur du texte à imprimer: ${texteImprimable.length}")
 
             val finalBluetoothText = if (showCreditSection && bonVent != null && false) {
                 addCreditSectionToBluetoothText(
@@ -59,8 +76,10 @@ class BluetoothPrintHandler {
             }
 
             handleBluetoothPrint(context, finalBluetoothText)
+            Log.d(TAG, "=== IMPRESSION ENVOYÉE AVEC SUCCÈS ===")
             true
         } catch (e: Exception) {
+            Log.e(TAG, "Erreur lors de l'impression: ${e.message}", e)
             e.printStackTrace()
             false
         }
@@ -102,7 +121,45 @@ class BluetoothPrintHandler {
         }
         ContextCompat.startActivity(context, intent, null)
     }
-// Replace the prepareTexteToPrint method with this fixed version:
+
+    /**
+     * Transliterate Arabic text to Latin characters for thermal printer compatibility
+     */
+    private fun transliterateArabicToLatin(text: String): String {
+        val arabicToLatinMap = mapOf(
+            // Arabic letters
+            'ا' to "a", 'أ' to "a", 'إ' to "i", 'آ' to "aa",
+            'ب' to "b", 'ت' to "t", 'ث' to "th", 'ج' to "j",
+            'ح' to "h", 'خ' to "kh", 'د' to "d", 'ذ' to "dh",
+            'ر' to "r", 'ز' to "z", 'س' to "s", 'ش' to "sh",
+            'ص' to "s", 'ض' to "d", 'ط' to "t", 'ظ' to "z",
+            'ع' to "a", 'غ' to "gh", 'ف' to "f", 'ق' to "q",
+            'ك' to "k", 'ل' to "l", 'م' to "m", 'ن' to "n",
+            'ه' to "h", 'و' to "w", 'ي' to "y", 'ى' to "a",
+            'ة' to "a", 'ء' to "",
+
+            // Arabic diacritics (tashkeel) - remove them
+            'ً' to "", 'ٌ' to "", 'ٍ' to "", 'َ' to "", 'ُ' to "",
+            'ِ' to "", 'ّ' to "", 'ْ' to "", 'ـ' to ""
+        )
+
+        var result = text
+        arabicToLatinMap.forEach { (arabic, latin) ->
+            result = result.replace(arabic.toString(), latin)
+        }
+
+        return result
+    }
+
+    /**
+     * Transliterate client names from Arabic to Latin
+     */
+    private fun transliterateClientName(clientName: String): String {
+        return transliterateArabicToLatin(clientName)
+            .replace(Regex("\\s+"), " ") // Replace multiple spaces with single space
+            .trim()
+            .takeIf { it.isNotBlank() } ?: clientName // Fallback to original if empty after transliteration
+    }
 
     private fun prepareTexteToPrint(
         operations: List<M10OperationVentCouleur>,
@@ -112,10 +169,16 @@ class BluetoothPrintHandler {
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
+        Log.d(TAG, "=== DÉBUT PRÉPARATION TEXTE D'IMPRESSION ===")
+
         val groupe_Produit = operations.groupBy { it.parent_M1Produit_KeyId }.toList()
+        Log.d(TAG, "Nombre de groupes de produits: ${groupe_Produit.size}")
+
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
         var pageCounter = 0
+        var produitsImprimes = 0
+        var produitsIgnores = 0
 
         texteImprimable.apply {
             append("<BIG><CENTER>Abdelwahab<BR>")
@@ -131,36 +194,67 @@ class BluetoothPrintHandler {
         }
 
         groupe_Produit.forEachIndexed { index, produit_vent ->
+            val productKeyId = produit_vent.first
+            val operations_du_produit = produit_vent.second
+
+            Log.d(TAG, "--- PRODUIT ${index + 1}/${ groupe_Produit.size} ---")
+            Log.d(TAG, "ProductKeyId: $productKeyId")
+            Log.d(TAG, "Nombre d'opérations pour ce produit: ${operations_du_produit.size}")
+
             val datas_repo13TarificationInfos = repo13TarificationInfos.datasValue
-            val standart_Vent = produit_vent.second.first()
-            val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == produit_vent.first }
+            val standart_Vent = operations_du_produit.first()
+            val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == productKeyId }
+
+            Log.d(TAG, "Produit trouvé dans repo: ${relative_M1Produit?.nom ?: "INTROUVABLE"}")
+
             val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
-            val vent_quantity = produit_vent.second.sumOf { it.quantity }
+            val vent_quantity = operations_du_produit.sumOf { it.quantity }
+
+            Log.d(TAG, "Quantité totale: $vent_quantity")
+            Log.d(TAG, "Quantité par carton: $quantite_Boit_Par_Carton")
+
+            operations_du_produit.forEach { operation ->
+                Log.d(TAG, "  - Operation: quantity=${operation.quantity}, couleur=${operation.parent_M1Produit_KeyId}, commentaire='${operation.commetaire}'")
+            }
+
             val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
+            Log.d(TAG, "Affichage quantité: $quantityDisplay")
 
             // FIXED: Handle null tariff case - find SuperGros or use product purchase price
             val relative_Tariffication = datas_repo13TarificationInfos.find {
                 it.keyID == standart_Vent.parentM13TarificationKeyID
             }
 
+            Log.d(TAG, "Tarification trouvée: ${relative_Tariffication != null}")
+            Log.d(TAG, "parentM13TarificationKeyID: ${standart_Vent.parentM13TarificationKeyID}")
+
             val vent_prix = if (relative_Tariffication != null) {
+                Log.d(TAG, "Utilisation prix tarification: ${relative_Tariffication.prixCurrency}")
                 relative_Tariffication.prixCurrency
             } else {
                 // First try to find SuperGros tariff for this product
                 val superGrosTariff = datas_repo13TarificationInfos
                     .filter { tariff ->
                         tariff.typeChoisi == V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                                tariff.parent_M1Produit_KeyId == produit_vent.first
+                                tariff.parent_M1Produit_KeyId == productKeyId
                     }
                     .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
+                Log.d(TAG, "SuperGros tariff trouvé: ${superGrosTariff != null}")
+
                 // If SuperGros tariff exists, use it; otherwise use product purchase price
-                superGrosTariff?.prixCurrency ?: (relative_M1Produit?.prixAchat ?: 0.0)
+                val prix = superGrosTariff?.prixCurrency ?: (relative_M1Produit?.prixAchat ?: 0.0)
+                Log.d(TAG, "Prix final utilisé: $prix (SuperGros: ${superGrosTariff?.prixCurrency}, PrixAchat: ${relative_M1Produit?.prixAchat})")
+                prix
             }
 
             val subtotal = vent_prix * vent_quantity
+            Log.d(TAG, "Sous-total calculé: $subtotal (prix: $vent_prix × quantité: $vent_quantity)")
 
             if (subtotal != 0.0) {
+                Log.d(TAG, "✅ PRODUIT AJOUTÉ À L'IMPRESSION")
+                produitsImprimes++
+
                 texteImprimable.apply {
                     append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
                     append(" <MEDIUM1><LEFT>$quantityDisplay ")
@@ -168,11 +262,14 @@ class BluetoothPrintHandler {
                     append("<SMALL>$subtotal<BR>")
 
                     // Add product comment if it exists and is not empty
-                    val productComment = getProductComment(produit_vent.second)
+                    val productComment = getProductComment(operations_du_produit)
                     if (productComment.isNotBlank()) {
+                        Log.d(TAG, "Commentaire trouvé: '$productComment'")
                         // Format comment for better readability on thermal printer
                         val formattedComment = formatCommentForPrinting(productComment)
                         append("<SMALL><LEFT>$formattedComment<BR>")
+                    } else {
+                        Log.d(TAG, "Aucun commentaire pour ce produit")
                     }
 
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
@@ -182,8 +279,19 @@ class BluetoothPrintHandler {
                     pageCounter++
                     texteImprimable.append("<BR><CENTER>PAGE $pageCounter<BR><BR><BR>")
                 }
+            } else {
+                Log.w(TAG, "❌ PRODUIT IGNORÉ (subtotal = 0)")
+                Log.w(TAG, "Raisons possibles: prix=0, quantité=0, ou calcul incorrect")
+                produitsIgnores++
             }
+
+            Log.d(TAG, "--- FIN PRODUIT ${index + 1} ---")
         }
+
+        Log.d(TAG, "=== RÉSUMÉ TRAITEMENT ===")
+        Log.d(TAG, "Produits imprimés: $produitsImprimes")
+        Log.d(TAG, "Produits ignorés: $produitsIgnores")
+        Log.d(TAG, "Total bon: $totaleBon Da")
 
         texteImprimable.apply {
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
@@ -200,6 +308,7 @@ class BluetoothPrintHandler {
             append("<BR><BR><BR>>")
         }
 
+        Log.d(TAG, "=== FIN PRÉPARATION TEXTE D'IMPRESSION ===")
         return Pair(texteImprimable, totaleBon)
     }
 
@@ -208,71 +317,76 @@ class BluetoothPrintHandler {
      * Uses the first non-empty comment found in the operations for this product
      */
     private fun getProductComment(operations: List<M10OperationVentCouleur>): String {
-        return operations
-            .mapNotNull { it.commetaire }
-            .firstOrNull { it.isNotBlank() }
-            ?: ""
+        val comments = operations.mapNotNull { it.commetaire }.filter { it.isNotBlank() }
+        Log.d(TAG, "Commentaires trouvés pour ce produit: ${comments.size}")
+        comments.forEachIndexed { index, comment ->
+            Log.d(TAG, "  Commentaire $index: '$comment'")
+        }
+        return comments.firstOrNull() ?: ""
     }
 
     /**
      * Format comment for thermal printer display
-     * - Removes emojis and special characters
-     * - Uses smaller text size (SMALL)
-     * - Creates line breaks without spaces between colors
-     * - Minimizes text size for better thermal printer output
+     * Splits long comments into multiple lines, handles special formatting,
+     * minimizes text size, removes emojis, and transliterates Arabic text
      */
     private fun formatCommentForPrinting(comment: String): String {
         if (comment.isBlank()) return ""
 
-        // Remove emojis and special unicode characters
-        val cleanedComment = comment
-            .replace(Regex("[\uD83C-\uDBFF\uDC00-\uDFFF]+"), "") // Remove emojis
-            .replace(Regex("[^\u0000-\u007F]+"), "") // Remove non-ASCII characters
-            .replace(Regex("\\s+"), " ") // Replace multiple spaces with single space
+        Log.d(TAG, "Formatage commentaire original: '$comment'")
+
+        // First transliterate Arabic text to Latin
+        val transliteratedComment = transliterateArabicToLatin(comment)
+        Log.d(TAG, "Après translittération: '$transliteratedComment'")
+
+        // Remove emojis using regex - matches most Unicode emoji ranges
+        val cleanedComment = transliteratedComment
+            .replace(Regex("[\u2600-\u27BF]"), "") // Miscellaneous Symbols
+            .replace(Regex("[\uD83C\uDF00-\uD83C\uDFFF]"), "") // Symbols & Pictographs
+            .replace(Regex("[\uD83D\uDC00-\uD83D\uDEFF]"), "") // Emoticons & Transport
+            .replace(Regex("[\uD83E\uDD00-\uD83E\uDDFF]"), "") // Supplemental Symbols
+            .replace(Regex("[\u2700-\u27BF]"), "") // Dingbats
+            .replace(Regex("[\uFE0E\uFE0F]"), "") // Variation selectors
             .trim()
+
+        Log.d(TAG, "Après nettoyage emojis: '$cleanedComment'")
 
         if (cleanedComment.isBlank()) return ""
 
-        // Split by existing newlines first
+        // Split by newlines first (if comment already has line breaks)
         val lines = cleanedComment.split('\n')
         val formattedLines = mutableListOf<String>()
 
         lines.forEach { line ->
             val trimmedLine = line.trim()
             if (trimmedLine.isNotEmpty()) {
-                if (trimmedLine.length <= 28) { // Shorter line length for thermal printer
-                    // Line fits in one thermal printer line - no spaces, direct line break
-                    formattedLines.add(trimmedLine)
+                if (trimmedLine.length <= 32) {
+                    // Line fits in one thermal printer line - use SMALL tag to minimize text size
+                    formattedLines.add("<SMALL>  $trimmedLine") // Add indent for comment
                 } else {
-                    // Split long lines at word boundaries
+                    // Split long lines
                     val words = trimmedLine.split(' ')
-                    var currentLine = ""
+                    var currentLine = "<SMALL>  " // Start with SMALL tag and indent
 
                     words.forEach { word ->
-                        if ((currentLine + if (currentLine.isEmpty()) word else " $word").length <= 28) {
-                            currentLine += if (currentLine.isEmpty()) word else " $word"
+                        if ((currentLine + word).length <= 38) { // Account for <SMALL> tag length
+                            currentLine += "$word "
                         } else {
-                            if (currentLine.isNotEmpty()) {
-                                formattedLines.add(currentLine)
-                            }
-                            currentLine = word
+                            formattedLines.add(currentLine.trimEnd())
+                            currentLine = "<SMALL>  $word " // Start new line with SMALL tag and indent
                         }
                     }
 
-                    if (currentLine.isNotEmpty()) {
-                        formattedLines.add(currentLine)
+                    if (currentLine.trim().length > 8) { // More than just "<SMALL>  "
+                        formattedLines.add(currentLine.trimEnd())
                     }
                 }
             }
         }
 
-        // Join with thermal printer line breaks using SMALL text size
-        // Simple line break between each color without extra spacing
-        return if (formattedLines.isNotEmpty()) {
-            formattedLines.joinToString("<BR>") { "<SMALL>$it" }
-        } else {
-            ""
-        }
+        val result = formattedLines.joinToString("<BR>")
+        Log.d(TAG, "Commentaire formaté final: '$result'")
+        return result
     }
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
@@ -347,7 +461,12 @@ class BluetoothPrintHandler {
         transactionId: String
     ): String {
         val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-        val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
+
+        // Transliterate client name from Arabic to Latin
+        val clientName = client?.nom?.takeIf { it.isNotBlank() }?.let {
+            transliterateClientName(it)
+        } ?: "Client"
+
         val totalAmount = bonVent.sum_De_Totale_Vents
         val currentPayment = bonVent.versement
         val totalPaid = if (showPaymentHistory) previousPayments.sum() + currentPayment else currentPayment

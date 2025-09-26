@@ -211,7 +211,7 @@ fun ToastCommandeButton(
     }
 }
 
-// NEW FUNCTION: Generate comment for a specific product's colors only
+// FIXED: Generate comment for a specific product's colors only (without product name)
 private fun generateCommentForProductColors(
     ventsForProduct: List<M10OperationVentCouleur>,
     productKeyId: String,
@@ -220,10 +220,6 @@ private fun generateCommentForProductColors(
     val repo3CouleurProduitInfos = repositorysMainGetter.repo03CouleurProduitInfos
     val repo8BonVent = repositorysMainGetter.repo8BonVent
     val repo2Client = repositorysMainGetter.repo2Client
-
-    // Get product name for context
-    val product = repositorysMainGetter.find_M1Produit_ByKeyID(productKeyId)
-    val productName = product?.nom ?: "Produit"
 
     // Group by color for this specific product
     val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
@@ -273,6 +269,6 @@ private fun generateCommentForProductColors(
         }
     }
 
-    // Return comment specific to this product only with line breaks between colors
-    return "$productName:\n${colorComments.joinToString("\n\n\n")}"
+    // Return comment without product name - just the colors with line breaks
+    return colorComments.joinToString("\n\n\n")
 }
