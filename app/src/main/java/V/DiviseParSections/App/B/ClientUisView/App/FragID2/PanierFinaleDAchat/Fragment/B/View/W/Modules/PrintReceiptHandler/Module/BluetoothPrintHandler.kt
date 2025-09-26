@@ -278,7 +278,7 @@ class BluetoothPrintHandler {
                         Log.d(TAG, "Commentaire trouvé: '$productComment'")
                         // Format comment for better readability on thermal printer
                         val formattedComment = formatCommentForPrinting(productComment)
-                        append("<SMALL><LEFT>$formattedComment<BR>")
+                        append("$formattedComment<BR>")
                     } else {
                         Log.d(TAG, "Aucun commentaire pour ce produit")
                     }
@@ -338,63 +338,70 @@ class BluetoothPrintHandler {
 
     /**
      * Format comment for thermal printer display
-     * Splits long comments into multiple lines, handles special formatting,
-     * minimizes text size, removes emojis, and transliterates Arabic text
+     * RÈGLES D'AFFICHAGE:
+     * 1. GARDER LES EMOJIS pour identifier visuellement les couleurs/saveurs
+     * 2. Translittérer seulement l'arabe en latin
+     * 3. Format structuré: "🍓 Fraise 🍓=2[clients] -> Fraise: 2 (clients)"
+     * 4. Ligne par couleur/saveur pour la lisibilité
      */
     private fun formatCommentForPrinting(comment: String): String {
         if (comment.isBlank()) return ""
 
         Log.d(TAG, "Formatage commentaire original: '$comment'")
 
-        // First transliterate Arabic text to Latin
+        // Première étape: translittérer l'arabe mais GARDER les emojis
         val transliteratedComment = transliterateArabicToLatin(comment)
         Log.d(TAG, "Après translittération: '$transliteratedComment'")
 
-        // Enhanced emoji removal - covers more Unicode ranges
+        // Nettoyer les espaces multiples et les retours à la ligne
         val cleanedComment = transliteratedComment
-            .replace(Regex("[\u2600-\u27BF]"), "") // Miscellaneous Symbols
-            .replace(Regex("[\uD83C\uDF00-\uD83C\uDFFF]"), "") // Symbols & Pictographs
-            .replace(Regex("[\uD83D\uDC00-\uD83D\uDEFF]"), "") // Emoticons & Transport
-            .replace(Regex("[\uD83E\uDD00-\uD83E\uDDFF]"), "") // Supplemental Symbols
-            .replace(Regex("[\u2700-\u27BF]"), "") // Dingbats
-            .replace(Regex("[\uFE0E\uFE0F]"), "") // Variation selectors
-            .replace(Regex("🍓|🍋|🍌|🐛|🍬|🤏"), "") // Specific problematic emojis
-            .replace(Regex("[\u0080-\uFFFF]"), " ") // Remove other non-ASCII characters that could be emojis
-            .replace(Regex("\\s+"), " ") // Replace multiple spaces/newlines with single space
+            .replace(Regex("\\s+"), " ") // Multiple spaces -> single space
             .trim()
 
-        Log.d(TAG, "Après nettoyage emojis: '$cleanedComment'")
+        Log.d(TAG, "Après nettoyage: '$cleanedComment'")
 
         if (cleanedComment.isBlank()) return ""
 
-        // Parse structured comment format: "item=quantity[details]"
-        val structuredComment = parseStructuredComment(cleanedComment)
-        if (structuredComment.isNotEmpty()) {
-            Log.d(TAG, "Commentaire structuré détecté")
-            return formatStructuredComment(structuredComment)
+        // Essayer de parser le format structuré
+        val structuredItems = parseStructuredColorComment(cleanedComment)
+        if (structuredItems.isNotEmpty()) {
+            Log.d(TAG, "Format structuré détecté: ${structuredItems.size} couleurs")
+            return formatStructuredColorItems(structuredItems)
         }
 
-        // Fallback to regular formatting for non-structured comments
-        return formatRegularComment(cleanedComment)
+        // Fallback: formatage simple
+        return formatSimpleComment(cleanedComment)
     }
 
     /**
-     * Parse structured comments like "Menth=2[abdelhamid(1) kqssi(1)] Fraise=2[details] Citron=1[details]"
+     * Parse les commentaires au format: "🍓 Fraise 🍓=2[abdelhamid(1) kqssi(1)] 🍋 Citron 🍋=1[kqssi(1)]"
      */
-    private fun parseStructuredComment(comment: String): List<CommentItem> {
-        val items = mutableListOf<CommentItem>()
+    private fun parseStructuredColorComment(comment: String): List<ColorItem> {
+        val items = mutableListOf<ColorItem>()
 
-        // Pattern to match: "Name=Quantity[Details]"
-        val pattern = Regex("([^=\\[]+)=([0-9]+)\\[([^\\]]+)\\]")
+        // Pattern pour capturer: [emoji optionnel] Nom [emoji optionnel]=quantité[détails]
+        val pattern = Regex("([^=\\[]*?)=([0-9]+)\\[([^\\]]+)\\]")
         val matches = pattern.findAll(comment)
 
         matches.forEach { match ->
-            val name = match.groups[1]?.value?.trim() ?: ""
+            val nameWithEmoji = match.groups[1]?.value?.trim() ?: ""
             val quantity = match.groups[2]?.value?.toIntOrNull() ?: 0
             val details = match.groups[3]?.value?.trim() ?: ""
 
-            if (name.isNotEmpty() && quantity > 0) {
-                items.add(CommentItem(name, quantity, details))
+            if (nameWithEmoji.isNotEmpty() && quantity > 0) {
+                // Extraire le nom propre (enlever les emojis en double)
+                val cleanName = extractCleanName(nameWithEmoji)
+                val emoji = extractEmoji(nameWithEmoji)
+
+                items.add(ColorItem(
+                    displayName = nameWithEmoji.trim(),
+                    cleanName = cleanName,
+                    emoji = emoji,
+                    quantity = quantity,
+                    clients = parseClientList(details)
+                ))
+
+                Log.d(TAG, "Couleur parsée: '$cleanName' ($emoji) = $quantity [${details}]")
             }
         }
 
@@ -402,51 +409,106 @@ class BluetoothPrintHandler {
     }
 
     /**
-     * Format structured comment items for thermal printer
+     * Extraire le nom propre en supprimant les emojis redondants
      */
-    private fun formatStructuredComment(items: List<CommentItem>): String {
-        val lines = mutableListOf<String>()
-
-        items.forEach { item ->
-            // Format: "Name: Qty (details)"
-            val details = if (item.details.length > 15) {
-                item.details.take(12) + "..."
-            } else {
-                item.details
-            }
-
-            val line = "${item.name}: ${item.quantity} ($details)"
-            if (line.length <= 32) {
-                lines.add("<SMALL>  $line")
-            } else {
-                // Split if too long
-                lines.add("<SMALL>  ${item.name}: ${item.quantity}")
-                lines.add("<SMALL>    ($details)")
-            }
-        }
-
-        return lines.joinToString("<BR>")
+    private fun extractCleanName(nameWithEmoji: String): String {
+        return nameWithEmoji
+            .replace(Regex("([🍓🍋🍌🐛🍬🤏])\\s*(.+?)\\s*\\1"), "$2") // Remove duplicate emojis: 🍓 Fraise 🍓 -> Fraise
+            .replace(Regex("[🍓🍋🍌🐛🍬🤏]"), "") // Remove remaining emojis
+            .replace(Regex("\\?{2,}"), "") // Remove ??
+            .trim()
     }
 
     /**
-     * Format regular (non-structured) comments
+     * Extraire l'emoji principal pour l'affichage
      */
-    private fun formatRegularComment(comment: String): String {
+    private fun extractEmoji(nameWithEmoji: String): String {
+        val emojiPattern = Regex("[🍓🍋🍌🐛🍬🤏]")
+        return emojiPattern.find(nameWithEmoji)?.value ?: ""
+    }
+
+    /**
+     * Parser la liste des clients: "abdelhamid(1) kqssi(1)" -> ["abdelhamid(1)", "kqssi(1)"]
+     */
+    private fun parseClientList(details: String): List<String> {
+        val clients = mutableListOf<String>()
+        val pattern = Regex("([^\\(\\)\\s]+)\\(([0-9]+)\\)")
+        val matches = pattern.findAll(details)
+
+        matches.forEach { match ->
+            val clientName = match.groups[1]?.value?.trim() ?: ""
+            val clientQty = match.groups[2]?.value ?: ""
+
+            if (clientName.isNotBlank()) {
+                clients.add("$clientName($clientQty)")
+            }
+        }
+
+        return clients
+    }
+
+    /**
+     * Formater les items de couleur de manière structurée
+     */
+    private fun formatStructuredColorItems(items: List<ColorItem>): String {
         val lines = mutableListOf<String>()
+
+        items.forEach { item ->
+            // Ligne principale: "🍓 Fraise: 2"
+            val mainLine = if (item.emoji.isNotEmpty()) {
+                "${item.emoji} ${item.cleanName}: ${item.quantity}"
+            } else {
+                "${item.cleanName}: ${item.quantity}"
+            }
+
+            lines.add("<SMALL>  $mainLine")
+
+            // Ligne des clients si pas trop nombreux
+            if (item.clients.isNotEmpty()) {
+                val clientsText = item.clients.joinToString(" ")
+                if (clientsText.length <= 28) { // Fit on one line
+                    lines.add("<SMALL>    $clientsText")
+                } else {
+                    // Split clients sur plusieurs lignes
+                    var currentLine = "<SMALL>    "
+                    item.clients.forEach { client ->
+                        if ((currentLine + client + " ").length <= 32) {
+                            currentLine += "$client "
+                        } else {
+                            lines.add(currentLine.trimEnd())
+                            currentLine = "<SMALL>    $client "
+                        }
+                    }
+                    if (currentLine.trim().length > 8) {
+                        lines.add(currentLine.trimEnd())
+                    }
+                }
+            }
+        }
+
+        val result = lines.joinToString("<BR>")
+        Log.d(TAG, "Commentaire couleurs formaté: '$result'")
+        return result
+    }
+
+    /**
+     * Formatage simple pour les commentaires non-structurés
+     */
+    private fun formatSimpleComment(comment: String): String {
         val maxLineLength = 32
+        val lines = mutableListOf<String>()
 
         if (comment.length <= maxLineLength) {
             lines.add("<SMALL>  $comment")
         } else {
-            // Split long comments into multiple lines
             val words = comment.split(' ')
             var currentLine = "<SMALL>  "
 
             words.forEach { word ->
-                if ((currentLine + word).length <= maxLineLength + 8) { // Account for <SMALL> tag
+                if ((currentLine + word).length <= maxLineLength + 8) {
                     currentLine += "$word "
                 } else {
-                    if (currentLine.trim().length > 8) { // More than just "<SMALL>  "
+                    if (currentLine.trim().length > 8) {
                         lines.add(currentLine.trimEnd())
                     }
                     currentLine = "<SMALL>  $word "
@@ -458,18 +520,18 @@ class BluetoothPrintHandler {
             }
         }
 
-        val result = lines.joinToString("<BR>")
-        Log.d(TAG, "Commentaire formaté final: '$result'")
-        return result
+        return lines.joinToString("<BR>")
     }
 
     /**
-     * Data class for structured comment items
+     * Data class pour les items de couleur/saveur
      */
-    data class CommentItem(
-        val name: String,
-        val quantity: Int,
-        val details: String
+    data class ColorItem(
+        val displayName: String,    // Nom original avec emojis
+        val cleanName: String,      // Nom propre sans emojis
+        val emoji: String,          // Emoji principal
+        val quantity: Int,          // Quantité
+        val clients: List<String>   // Liste des clients
     )
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
