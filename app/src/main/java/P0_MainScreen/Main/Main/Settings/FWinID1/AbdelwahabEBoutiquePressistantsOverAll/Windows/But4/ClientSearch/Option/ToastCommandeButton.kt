@@ -116,84 +116,66 @@ fun ToastCommandeButton(
                         // Group this product's vents by color
                         val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
 
-// Replace the problematic section (around lines 70-120) with this fixed version:
+                        ventsByColor.forEach { (couleurKeyId, ventsForColor) ->
+                            val totalQuantity = ventsForColor.sumOf { it.quantity }
+                            if (totalQuantity > 0 && couleurKeyId.isNotBlank() && couleurKeyId != "null") {
 
-                        ventsByProduct.forEach { (productKeyId, ventsForProduct) ->
-                            // Generate comment specific to this product's colors
-                            val productSpecificComment = generateCommentForProductColors(
-                                ventsForProduct = ventsForProduct,
-                                productKeyId = productKeyId,
-                                repositorysMainGetter = repositorysMainGetter
-                            )
+                                // Get couleur info
+                                val couleurInfo = repo3CouleurProduitInfos.datasValue.find {
+                                    it.keyID == couleurKeyId
+                                }
 
-                            // Group this product's vents by color
-                            val ventsByColor = ventsForProduct.groupBy { it.parent_M3CouleurProduit_KeyID }
+                                if (couleurInfo != null) {
+                                    // Get the product info to find the SuperGros tariff
+                                    val productInfo = repositorysMainGetter.find_M1Produit_ByKeyID(productKeyId)
 
-                            ventsByColor.forEach { (couleurKeyId, ventsForColor) ->
-                                val totalQuantity = ventsForColor.sumOf { it.quantity }
-                                if (totalQuantity > 0 && couleurKeyId.isNotBlank() && couleurKeyId != "null") {
-
-                                    // Get couleur info
-                                    val couleurInfo = repo3CouleurProduitInfos.datasValue.find {
-                                        it.keyID == couleurKeyId
-                                    }
-
-                                    if (couleurInfo != null) {
-                                        // Get the product info to find the SuperGros tariff
-                                        val productInfo = repositorysMainGetter.find_M1Produit_ByKeyID(productKeyId)
-
-                                        // Find existing SuperGros tariff for this product
-                                        var superGrosTariff = repo13TarificationInfos.datasValue
-                                            .filter { tariff ->
-                                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                                                        tariff.parent_M1Produit_KeyId == productKeyId
-                                            }
-                                            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
-
-                                        // If SuperGros tariff doesn't exist, create it (but don't rely on async add)
-                                        if (superGrosTariff == null && productInfo != null) {
-                                            superGrosTariff = M13TarificationInfos(
-                                                parent_M14VentPeriod_KeyId = ventPeriode.keyID,
-                                                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                                                prixCurrency = productInfo.prixAchat,
-                                                parent_M1Produit_KeyId = productInfo.keyID,
-                                                parent_M1Produit_DebugInfos = productInfo.nom,
-                                                creationTimestamps = System.currentTimeMillis()
-                                            )
-                                            // Add the new tariff to the repository (async operation)
-                                            repo13TarificationInfos.add(superGrosTariff)
+                                    // Find existing SuperGros tariff for this product
+                                    var superGrosTariff = repo13TarificationInfos.datasValue
+                                        .filter { tariff ->
+                                            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                                                    tariff.parent_M1Produit_KeyId == productKeyId
                                         }
+                                        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
-                                        // Determine the price to use - now superGrosTariff is guaranteed to be non-null
-                                        val priceToUse = superGrosTariff?.prixCurrency ?: productInfo?.prixAchat ?: 0.0
-
-                                        // Determine the tariff type to use - now we can safely access superGrosTariff.typeChoisi
-                                        val tariffTypeToUse = superGrosTariff?.typeChoisi
-                                            ?: M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
-
-                                        // Create new vent operation for Jamel Bel with SuperGros pricing
-                                        val newVentOperation = M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-                                            newBonVent,
-                                            couleurInfo
-                                        ).copy(
-                                            quantity = totalQuantity,
-                                            etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
-                                            etateDelivery = M10OperationVentCouleur.EtateDelivery.Trouve,
-                                            type = M10OperationVentCouleur.Type.CommandeDeLui,
-                                            typeTarificationEnumT2 = tariffTypeToUse, // Now guaranteed to be non-null
-                                            provisoireMonPrix = priceToUse, // Set the SuperGros price
-                                            parentClientInfosKeyID = jamelBelClient.keyID,
-                                            parentClientName = jamelBelClient.nom,
-                                            parent_M9AppCompt_KeyID = currentAppCompt?.keyID ?: "null",
-                                            parent_M9AppCompt_DebugInfos = currentAppCompt?.get_DebugInfos() ?: "null",
-                                            parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode.keyID,
-                                            its_created_in_working_for_wholesaler = true,
-                                            commetaire = productSpecificComment // Comment specific to this product only
+                                    // If SuperGros tariff doesn't exist, create and add it
+                                    if (superGrosTariff == null && productInfo != null) {
+                                        superGrosTariff = M13TarificationInfos(
+                                            parent_M14VentPeriod_KeyId = ventPeriode.keyID,
+                                            typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                            prixCurrency = productInfo.prixAchat,
+                                            parent_M1Produit_KeyId = productInfo.keyID,
+                                            parent_M1Produit_DebugInfos = productInfo.nom,
+                                            creationTimestamps = System.currentTimeMillis()
                                         )
-
-                                        // Add to repository
-                                        repo10OperationVentCouleur.add_New(newVentOperation)
+                                        // Add the new tariff to the repository
+                                        repo13TarificationInfos.add(superGrosTariff)
                                     }
+
+                                    // Determine the price to use
+                                    val priceToUse = superGrosTariff?.prixCurrency ?: productInfo?.prixAchat ?: 0.0
+
+                                    // Create new vent operation for Jamel Bel with SuperGros pricing
+                                    val newVentOperation = M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
+                                        newBonVent,
+                                        couleurInfo
+                                    ).copy(
+                                        quantity = totalQuantity,
+                                        etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
+                                        etateDelivery = M10OperationVentCouleur.EtateDelivery.Trouve,
+                                        type = M10OperationVentCouleur.Type.CommandeDeLui,
+                                        typeTarificationEnumT2 = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros, // Using SuperGros tariff type
+                                        provisoireMonPrix = priceToUse, // Set the SuperGros price
+                                        parentClientInfosKeyID = jamelBelClient.keyID,
+                                        parentClientName = jamelBelClient.nom,
+                                        parent_M9AppCompt_KeyID = currentAppCompt?.keyID ?: "null",
+                                        parent_M9AppCompt_DebugInfos = currentAppCompt?.get_DebugInfos() ?: "null",
+                                        parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode.keyID,
+                                        its_created_in_working_for_wholesaler = true,
+                                        commetaire = productSpecificComment // Comment specific to this product only
+                                    )
+
+                                    // Add to repository
+                                    repo10OperationVentCouleur.add_New(newVentOperation)
                                 }
                             }
                         }

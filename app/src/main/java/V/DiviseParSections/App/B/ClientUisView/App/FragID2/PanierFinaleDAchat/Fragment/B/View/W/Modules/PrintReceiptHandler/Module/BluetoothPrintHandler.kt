@@ -102,6 +102,7 @@ class BluetoothPrintHandler {
         }
         ContextCompat.startActivity(context, intent, null)
     }
+// Replace the prepareTexteToPrint method with this fixed version:
 
     private fun prepareTexteToPrint(
         operations: List<M10OperationVentCouleur>,
@@ -111,7 +112,6 @@ class BluetoothPrintHandler {
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
-        // FIXED: TODO(1) - Now prints comment for each product if not empty
         val groupe_Produit = operations.groupBy { it.parent_M1Produit_KeyId }.toList()
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
@@ -133,12 +133,31 @@ class BluetoothPrintHandler {
         groupe_Produit.forEachIndexed { index, produit_vent ->
             val datas_repo13TarificationInfos = repo13TarificationInfos.datasValue
             val standart_Vent = produit_vent.second.first()
-            val relative_Tariffication = datas_repo13TarificationInfos.find { it.keyID == standart_Vent.parentM13TarificationKeyID }
             val relative_M1Produit = repoM1Produit.datasValue.find { it.keyID == produit_vent.first }
             val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
             val vent_quantity = produit_vent.second.sumOf { it.quantity }
             val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
-            val vent_prix = relative_Tariffication!!.prixCurrency
+
+            // FIXED: Handle null tariff case - find SuperGros or use product purchase price
+            val relative_Tariffication = datas_repo13TarificationInfos.find {
+                it.keyID == standart_Vent.parentM13TarificationKeyID
+            }
+
+            val vent_prix = if (relative_Tariffication != null) {
+                relative_Tariffication.prixCurrency
+            } else {
+                // First try to find SuperGros tariff for this product
+                val superGrosTariff = datas_repo13TarificationInfos
+                    .filter { tariff ->
+                        tariff.typeChoisi == V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                                tariff.parent_M1Produit_KeyId == produit_vent.first
+                    }
+                    .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+
+                // If SuperGros tariff exists, use it; otherwise use product purchase price
+                superGrosTariff?.prixCurrency ?: (relative_M1Produit?.prixAchat ?: 0.0)
+            }
+
             val subtotal = vent_prix * vent_quantity
 
             if (subtotal != 0.0) {
@@ -148,7 +167,7 @@ class BluetoothPrintHandler {
                     append("<MEDIUM1><LEFT>${vent_prix}Da ")
                     append("<SMALL>$subtotal<BR>")
 
-                    // FIXED: Add product comment if it exists and is not empty
+                    // Add product comment if it exists and is not empty
                     val productComment = getProductComment(produit_vent.second)
                     if (productComment.isNotBlank()) {
                         // Format comment for better readability on thermal printer
@@ -197,40 +216,63 @@ class BluetoothPrintHandler {
 
     /**
      * Format comment for thermal printer display
-     * Splits long comments into multiple lines and handles special formatting
+     * - Removes emojis and special characters
+     * - Uses smaller text size (SMALL)
+     * - Creates line breaks without spaces between colors
+     * - Minimizes text size for better thermal printer output
      */
     private fun formatCommentForPrinting(comment: String): String {
         if (comment.isBlank()) return ""
 
-        // Split by newlines first (if comment already has line breaks)
-        val lines = comment.split('\n')
+        // Remove emojis and special unicode characters
+        val cleanedComment = comment
+            .replace(Regex("[\uD83C-\uDBFF\uDC00-\uDFFF]+"), "") // Remove emojis
+            .replace(Regex("[^\u0000-\u007F]+"), "") // Remove non-ASCII characters
+            .replace(Regex("\\s+"), " ") // Replace multiple spaces with single space
+            .trim()
+
+        if (cleanedComment.isBlank()) return ""
+
+        // Split by existing newlines first
+        val lines = cleanedComment.split('\n')
         val formattedLines = mutableListOf<String>()
 
         lines.forEach { line ->
-            if (line.length <= 32) {
-                // Line fits in one thermal printer line
-                formattedLines.add("  $line") // Add indent for comment
-            } else {
-                // Split long lines
-                val words = line.split(' ')
-                var currentLine = "  " // Start with indent
+            val trimmedLine = line.trim()
+            if (trimmedLine.isNotEmpty()) {
+                if (trimmedLine.length <= 28) { // Shorter line length for thermal printer
+                    // Line fits in one thermal printer line - no spaces, direct line break
+                    formattedLines.add(trimmedLine)
+                } else {
+                    // Split long lines at word boundaries
+                    val words = trimmedLine.split(' ')
+                    var currentLine = ""
 
-                words.forEach { word ->
-                    if ((currentLine + word).length <= 32) {
-                        currentLine += "$word "
-                    } else {
-                        formattedLines.add(currentLine.trimEnd())
-                        currentLine = "  $word " // Start new line with indent
+                    words.forEach { word ->
+                        if ((currentLine + if (currentLine.isEmpty()) word else " $word").length <= 28) {
+                            currentLine += if (currentLine.isEmpty()) word else " $word"
+                        } else {
+                            if (currentLine.isNotEmpty()) {
+                                formattedLines.add(currentLine)
+                            }
+                            currentLine = word
+                        }
                     }
-                }
 
-                if (currentLine.trim().length > 2) { // More than just indent
-                    formattedLines.add(currentLine.trimEnd())
+                    if (currentLine.isNotEmpty()) {
+                        formattedLines.add(currentLine)
+                    }
                 }
             }
         }
 
-        return formattedLines.joinToString("<BR>")
+        // Join with thermal printer line breaks using SMALL text size
+        // Simple line break between each color without extra spacing
+        return if (formattedLines.isNotEmpty()) {
+            formattedLines.joinToString("<BR>") { "<SMALL>$it" }
+        } else {
+            ""
+        }
     }
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {

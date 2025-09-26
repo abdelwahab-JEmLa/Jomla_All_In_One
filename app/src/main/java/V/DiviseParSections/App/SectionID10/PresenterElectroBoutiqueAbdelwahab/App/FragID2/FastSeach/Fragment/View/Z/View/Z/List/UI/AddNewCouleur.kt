@@ -328,8 +328,7 @@ fun AddNewCouleur(
                     onColorSelected = { selectedColorName ->
                         // Automatically save the color when selected from dropdown
                         colorName = selectedColorName
-                        handleAddNewCouleur()       //<--
-                        //TODO(1): fait que si le outlinde n ai pas empty pour add le nom avec le key id
+                        handleAddNewCouleur()
                     }
                 )
 

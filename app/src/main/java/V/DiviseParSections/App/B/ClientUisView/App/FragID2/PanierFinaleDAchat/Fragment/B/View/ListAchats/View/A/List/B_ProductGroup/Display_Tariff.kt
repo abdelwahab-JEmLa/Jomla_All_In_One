@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -78,7 +79,6 @@ fun Display_Tariff(
                     focusedValuesSetter.active_M1Produit_Pour_Choisire_TotalQuantity(
                         relative_produit
                     )
-
                 }
                 .getSemanticsTag(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
@@ -124,6 +124,27 @@ fun Display_Tariff(
         val parentM13TarificationKeyID = relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         val relative_Tariff = repositorysMainGetter.find_M13Tarification_By_KeyID(parentM13TarificationKeyID)
 
+        // Handle null tariff case - try to find SuperGros tariff or use product purchase price
+        val displayTariff = if (relative_Tariff != null) {
+            relative_Tariff
+        } else {
+            // First try to find existing SuperGros tariff for this product
+            val superGrosTariff = datasValue
+                .filter { tariff ->
+                    tariff.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                            tariff.parent_M1Produit_KeyId == relative_produit.keyID
+                }
+                .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+
+            // If SuperGros tariff exists, use it; otherwise create a fallback with product purchase price
+            superGrosTariff ?: M13TarificationInfos(
+                typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                prixCurrency = relative_produit.prixAchat,
+                parent_M1Produit_KeyId = relative_produit.keyID,
+                parent_M1Produit_DebugInfos = relative_produit.nom
+            )
+        }
+
         Card(
             modifier = Modifier
                 .semantics(mergeDescendants = true) {
@@ -144,24 +165,24 @@ fun Display_Tariff(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                else relative_Tariff?.typeChoisi?.couleur ?: MaterialTheme.colorScheme.secondary
+                else displayTariff.typeChoisi.couleur // Now guaranteed to be non-null
             )
         ) {
             Column(
                 modifier = Modifier.semantics(mergeDescendants = true) {
-                    set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                    set(value = displayTariff, key = SemanticsPropertyKey("relative_Tariff"))
                 }
             ) {
                 Row(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
-                            set(value = relative_Tariff, key = SemanticsPropertyKey("relative_Tariff"))
+                            set(value = displayTariff, key = SemanticsPropertyKey("relative_Tariff"))
                         }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    val tariffType = relative_Tariff?.typeChoisi ?: TypeChoisi.Historique
+                    val tariffType = displayTariff.typeChoisi // No need for null check now
                     val nom = tariffType.nomArabe
                     val tariffIcon = tariffType.iconVector ?: Icons.Default.History
                     val textColor = if (allNonTrouve) {
@@ -171,7 +192,7 @@ fun Display_Tariff(
                     }
 
                     Text(
-                        text = "$nom - ${relative_Tariff?.prixCurrency}",
+                        text = "$nom - ${displayTariff.prixCurrency}", // No need for null check
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Medium,
                         color = textColor

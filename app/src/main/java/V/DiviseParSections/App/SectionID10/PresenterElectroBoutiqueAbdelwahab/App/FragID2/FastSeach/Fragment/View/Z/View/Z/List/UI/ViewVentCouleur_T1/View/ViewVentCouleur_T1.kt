@@ -197,7 +197,7 @@ fun ViewVentCouleur_T1(
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "Image mise à jour pour ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}",
+                        "Image mise Ã  jour pour ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}",
                         Toast.LENGTH_SHORT
                     ).show()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -207,7 +207,7 @@ fun ViewVentCouleur_T1(
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    "Erreur lors de la mise à jour de l'image: ${e.message}",
+                    "Erreur lors de la mise Ã  jour de l'image: ${e.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -229,7 +229,7 @@ fun ViewVentCouleur_T1(
         if (isGranted) {
             handleCameraCapture()
         } else {
-            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Permission camÃ©ra requise", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -327,7 +327,7 @@ fun ViewVentCouleur_T1(
             ColorNameDropdownTextField(
                 value = editingColorName,
                 onValueChange = { editingColorName = it },
-                placeholder = "Nom définiteur",
+                placeholder = "Nom dÃ©finiteur",
                 focusRequester = colorNameFocusRequester,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -457,7 +457,7 @@ fun ViewVentCouleur_T1(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Camera,
-                                contentDescription = "Mettre à jour avec photo",
+                                contentDescription = "Mettre Ã  jour avec photo",
                                 tint = if (isProcessingImage) {
                                     MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                                 } else {
@@ -514,6 +514,31 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .offset(x = 4.dp, y = (-4).dp)
+                            .zIndex(2f)
+                            .clickable {
+                                handleStartEditingColorName()
+                            }
+                    ) {
+                        SmallFloatingActionButton(
+                            onClick = {
+                                handleStartEditingColorName()
+                            },
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit color name",
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
                     // Camera dialog
                     if (showCameraDialog) {
                         CameraXDialog(
@@ -526,34 +551,6 @@ fun ViewVentCouleur_T1(
                             },
                             webPQuality = webPQuality
                         )
-                    }
-
-                    // Edit color name button - only visible when image file doesn't exist
-                    if (!isImageAvailable) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopStart)
-                                .offset(x = 32.dp, y = 4.dp)
-                                .zIndex(2f)
-                                .clickable {
-                                    handleStartEditingColorName()
-                                }
-                        ) {
-                            SmallFloatingActionButton(
-                                onClick = {
-                                    handleStartEditingColorName()
-                                },
-                                containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f),
-                                contentColor = MaterialTheme.colorScheme.onTertiary,
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Edit color name",
-                                    modifier = Modifier.size(12.dp)
-                                )
-                            }
-                        }
                     }
 
                     if (ventUIState.isRemoved) {
