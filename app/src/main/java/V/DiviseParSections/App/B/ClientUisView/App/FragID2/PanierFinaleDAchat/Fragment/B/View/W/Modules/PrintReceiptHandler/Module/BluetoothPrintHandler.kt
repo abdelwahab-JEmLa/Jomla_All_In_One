@@ -245,6 +245,17 @@ class BluetoothPrintHandler {
                 // If SuperGros tariff exists, use it; otherwise use product purchase price
                 val prix = superGrosTariff?.prixCurrency ?: (relative_M1Produit?.prixAchat ?: 0.0)
                 Log.d(TAG, "Prix final utilisé: $prix (SuperGros: ${superGrosTariff?.prixCurrency}, PrixAchat: ${relative_M1Produit?.prixAchat})")
+
+                // Additional check for zero price
+                if (prix == 0.0) {
+                    Log.w(TAG, "⚠️ ATTENTION: Prix = 0.0 détecté!")
+                    Log.w(TAG, "  - Tarification normale: ${relative_Tariffication != null}")
+                    Log.w(TAG, "  - SuperGros disponible: ${superGrosTariff != null}")
+                    Log.w(TAG, "  - Prix d'achat produit: ${relative_M1Produit?.prixAchat}")
+                    Log.w(TAG, "  - Nom produit: ${relative_M1Produit?.nom}")
+                    Log.w(TAG, "  --> Ce produit ne sera PAS imprimé car prix = 0")
+                }
+
                 prix
             }
 
@@ -339,7 +350,7 @@ class BluetoothPrintHandler {
         val transliteratedComment = transliterateArabicToLatin(comment)
         Log.d(TAG, "Après translittération: '$transliteratedComment'")
 
-        // Remove emojis using regex - matches most Unicode emoji ranges
+        // Enhanced emoji removal - covers more Unicode ranges
         val cleanedComment = transliteratedComment
             .replace(Regex("[\u2600-\u27BF]"), "") // Miscellaneous Symbols
             .replace(Regex("[\uD83C\uDF00-\uD83C\uDFFF]"), "") // Symbols & Pictographs
@@ -347,47 +358,119 @@ class BluetoothPrintHandler {
             .replace(Regex("[\uD83E\uDD00-\uD83E\uDDFF]"), "") // Supplemental Symbols
             .replace(Regex("[\u2700-\u27BF]"), "") // Dingbats
             .replace(Regex("[\uFE0E\uFE0F]"), "") // Variation selectors
+            .replace(Regex("🍓|🍋|🍌|🐛|🍬|🤏"), "") // Specific problematic emojis
+            .replace(Regex("[\u0080-\uFFFF]"), " ") // Remove other non-ASCII characters that could be emojis
+            .replace(Regex("\\s+"), " ") // Replace multiple spaces/newlines with single space
             .trim()
 
         Log.d(TAG, "Après nettoyage emojis: '$cleanedComment'")
 
         if (cleanedComment.isBlank()) return ""
 
-        // Split by newlines first (if comment already has line breaks)
-        val lines = cleanedComment.split('\n')
-        val formattedLines = mutableListOf<String>()
+        // Parse structured comment format: "item=quantity[details]"
+        val structuredComment = parseStructuredComment(cleanedComment)
+        if (structuredComment.isNotEmpty()) {
+            Log.d(TAG, "Commentaire structuré détecté")
+            return formatStructuredComment(structuredComment)
+        }
 
-        lines.forEach { line ->
-            val trimmedLine = line.trim()
-            if (trimmedLine.isNotEmpty()) {
-                if (trimmedLine.length <= 32) {
-                    // Line fits in one thermal printer line - use SMALL tag to minimize text size
-                    formattedLines.add("<SMALL>  $trimmedLine") // Add indent for comment
-                } else {
-                    // Split long lines
-                    val words = trimmedLine.split(' ')
-                    var currentLine = "<SMALL>  " // Start with SMALL tag and indent
+        // Fallback to regular formatting for non-structured comments
+        return formatRegularComment(cleanedComment)
+    }
 
-                    words.forEach { word ->
-                        if ((currentLine + word).length <= 38) { // Account for <SMALL> tag length
-                            currentLine += "$word "
-                        } else {
-                            formattedLines.add(currentLine.trimEnd())
-                            currentLine = "<SMALL>  $word " // Start new line with SMALL tag and indent
-                        }
-                    }
+    /**
+     * Parse structured comments like "Menth=2[abdelhamid(1) kqssi(1)] Fraise=2[details] Citron=1[details]"
+     */
+    private fun parseStructuredComment(comment: String): List<CommentItem> {
+        val items = mutableListOf<CommentItem>()
 
-                    if (currentLine.trim().length > 8) { // More than just "<SMALL>  "
-                        formattedLines.add(currentLine.trimEnd())
-                    }
-                }
+        // Pattern to match: "Name=Quantity[Details]"
+        val pattern = Regex("([^=\\[]+)=([0-9]+)\\[([^\\]]+)\\]")
+        val matches = pattern.findAll(comment)
+
+        matches.forEach { match ->
+            val name = match.groups[1]?.value?.trim() ?: ""
+            val quantity = match.groups[2]?.value?.toIntOrNull() ?: 0
+            val details = match.groups[3]?.value?.trim() ?: ""
+
+            if (name.isNotEmpty() && quantity > 0) {
+                items.add(CommentItem(name, quantity, details))
             }
         }
 
-        val result = formattedLines.joinToString("<BR>")
+        return items
+    }
+
+    /**
+     * Format structured comment items for thermal printer
+     */
+    private fun formatStructuredComment(items: List<CommentItem>): String {
+        val lines = mutableListOf<String>()
+
+        items.forEach { item ->
+            // Format: "Name: Qty (details)"
+            val details = if (item.details.length > 15) {
+                item.details.take(12) + "..."
+            } else {
+                item.details
+            }
+
+            val line = "${item.name}: ${item.quantity} ($details)"
+            if (line.length <= 32) {
+                lines.add("<SMALL>  $line")
+            } else {
+                // Split if too long
+                lines.add("<SMALL>  ${item.name}: ${item.quantity}")
+                lines.add("<SMALL>    ($details)")
+            }
+        }
+
+        return lines.joinToString("<BR>")
+    }
+
+    /**
+     * Format regular (non-structured) comments
+     */
+    private fun formatRegularComment(comment: String): String {
+        val lines = mutableListOf<String>()
+        val maxLineLength = 32
+
+        if (comment.length <= maxLineLength) {
+            lines.add("<SMALL>  $comment")
+        } else {
+            // Split long comments into multiple lines
+            val words = comment.split(' ')
+            var currentLine = "<SMALL>  "
+
+            words.forEach { word ->
+                if ((currentLine + word).length <= maxLineLength + 8) { // Account for <SMALL> tag
+                    currentLine += "$word "
+                } else {
+                    if (currentLine.trim().length > 8) { // More than just "<SMALL>  "
+                        lines.add(currentLine.trimEnd())
+                    }
+                    currentLine = "<SMALL>  $word "
+                }
+            }
+
+            if (currentLine.trim().length > 8) {
+                lines.add(currentLine.trimEnd())
+            }
+        }
+
+        val result = lines.joinToString("<BR>")
         Log.d(TAG, "Commentaire formaté final: '$result'")
         return result
     }
+
+    /**
+     * Data class for structured comment items
+     */
+    data class CommentItem(
+        val name: String,
+        val quantity: Int,
+        val details: String
+    )
 
     private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
         return if (quantiteBoitParCarton in 2..quantity && quantity % quantiteBoitParCarton == 0) {
