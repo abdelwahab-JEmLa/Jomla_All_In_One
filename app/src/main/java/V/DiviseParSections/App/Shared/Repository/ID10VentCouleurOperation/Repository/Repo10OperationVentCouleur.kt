@@ -253,7 +253,10 @@ data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+
     var its_created_in_working_for_wholesaler: Boolean = false,
+
+    var commetaire: String = "",
 
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,

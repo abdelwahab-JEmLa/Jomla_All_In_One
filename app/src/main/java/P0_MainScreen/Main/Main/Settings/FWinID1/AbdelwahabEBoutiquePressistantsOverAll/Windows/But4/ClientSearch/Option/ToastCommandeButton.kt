@@ -98,6 +98,9 @@ fun ToastCommandeButton(
                     val allVentsInPeriod = repo10OperationVentCouleur.datasValue.filter { vent ->
                         vent.parent_M14VentPeriod_KeyId == ventPeriode.keyID &&
                                 !(vent.non_places_au_depot || vent.pas_Dispo_Pour_Aujourduit)
+                                && !vent.its_created_in_working_for_wholesaler
+                                && vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
+
                     }
 
                     // Group by couleur and create new vents for Jamel Bel
@@ -113,6 +116,14 @@ fun ToastCommandeButton(
                             }
 
                             if (couleurInfo != null) {
+                                // Generate comment with client details
+                                val commentaire = generateCommentForCouleur(
+                                    ventsForColor = ventsForColor,
+                                    couleurInfo = couleurInfo,
+                                    totalQuantity = totalQuantity,
+                                    repositorysMainGetter = repositorysMainGetter
+                                )
+
                                 // Create new vent operation for Jamel Bel
                                 val newVentOperation =
                                     M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
@@ -129,8 +140,9 @@ fun ToastCommandeButton(
                                         parent_M9AppCompt_KeyID = currentAppCompt?.keyID ?: "null",
                                         parent_M9AppCompt_DebugInfos = currentAppCompt?.get_DebugInfos()
                                             ?: "null" ,
-                                        parent_M14VentPeriod_KeyId =currentActiveFocuced_M14VentPeriode.keyID ,
-                                        its_created_in_working_for_wholesaler=true
+                                        parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode.keyID,
+                                        its_created_in_working_for_wholesaler = true,
+                                        commetaire = commentaire
                                     )
 
                                 // Add to repository
@@ -167,4 +179,43 @@ fun ToastCommandeButton(
             tint = Color.White
         )
     }
+}
+
+private fun generateCommentForCouleur(
+    ventsForColor: List<M10OperationVentCouleur>,
+    couleurInfo: V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos,
+    totalQuantity: Int,
+    repositorysMainGetter: RepositorysMainGetter
+): String {
+    val couleurName = couleurInfo.nomCouleurStrSiSonImageDispo
+
+    // Group vents by client to get client quantities
+    val clientQuantities = mutableMapOf<String, Int>()
+
+    ventsForColor.forEach { vent ->
+        // Find the bon vent to get client info
+        val bonVent = repositorysMainGetter.repo8BonVent.datasValue.find {
+            it.keyID == vent.parent_M8BonVent_KeyId
+        }
+
+        if (bonVent != null) {    //<--
+//TODO(1): fait ici por chaque client commenad du couleur de saut la line
+            // Find the client
+            val client = repositorysMainGetter.repo2Client.datasValue.find {
+                it.keyID == bonVent.parent_M2Client_KeyID
+            }
+
+            if (client != null) {
+                val clientName = client.nom
+                clientQuantities[clientName] = (clientQuantities[clientName] ?: 0) + vent.quantity
+            }
+        }
+    }
+
+    // Build the comment string
+    val clientDetails = clientQuantities.entries.joinToString(", ") { (clientName, quantity) ->
+        "-$clientName$quantity-"
+    }
+
+    return "TC$couleurName = $totalQuantity, Cli=$clientDetails"
 }

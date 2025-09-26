@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifNotNullOrEmpty
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos.Type
@@ -173,7 +174,13 @@ fun Produit_Vent(
                         allNonTrouve = allNonTrouve,
                         aCentralFacade = aCentralFacade
                     )
-
+                    val text = ventList.first().commetaire
+                    text.ifNotNullOrEmpty {     //<--
+                    //TODO(1): fait affiche le commentaire de chaqe couleur du produit 
+                        Card() {
+                            Text(text)
+                        }
+                    }
                 }
             }
 

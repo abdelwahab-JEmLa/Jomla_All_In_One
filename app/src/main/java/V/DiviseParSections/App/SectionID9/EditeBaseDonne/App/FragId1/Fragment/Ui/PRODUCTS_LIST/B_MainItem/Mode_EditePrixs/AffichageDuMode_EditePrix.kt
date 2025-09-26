@@ -41,7 +41,8 @@ fun AffichageDuMode_EditePrix(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
     relative_produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
-    onShowDeleteDialogChange: (Boolean) -> Unit, // FIXED: Added delete dialog parameter
+    onShowDeleteDialogChange: (Boolean) -> Unit,
+    onShowNameEditorChange: (Boolean) -> Unit, // Added name editor parameter
     paddingDefaulte: Dp,
 ) {
     Surface(
@@ -95,8 +96,9 @@ fun AffichageDuMode_EditePrix(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    // Product Name (Primary) - Non-clickable in edit mode
+                    // Product Name (Primary) - Now clickable for editing
                     Surface(
+                        onClick = { onShowNameEditorChange(true) }, // FIXED: Made clickable
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
