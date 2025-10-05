@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -40,8 +42,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -96,12 +100,13 @@ fun MainFastSearchProduitPourVent(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val active_Central_Values =focusedValuesGetter.active_Central_Values
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
     val categories = viewModel.getter.repoM16CategorieProduit.datasValue
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     // Fixed: Properly handle the sealed class to extract the product name
     val startTextSearchM1Produit = when (sourceLenceurDeCetteFragment) {
@@ -221,6 +226,20 @@ fun MainFastSearchProduitPourVent(
                             Text("Rechercher un produit... (min. 3 caractères)")
                         },
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                // Cancel any pending search job
+                                searchJob?.cancel()
+                                // Clear the search text
+                                update_activeCentralValues("")
+                                // Keep focus, just hide the keyboard
+                                keyboardController?.hide()
+                                // Don't clear focus - field stays ready for next search
+                            }
+                        ),
                         leadingIcon = {
                             val newDatas = get_New_Datas(
                                 searchQuery = fastSearchProduitPourVent,
