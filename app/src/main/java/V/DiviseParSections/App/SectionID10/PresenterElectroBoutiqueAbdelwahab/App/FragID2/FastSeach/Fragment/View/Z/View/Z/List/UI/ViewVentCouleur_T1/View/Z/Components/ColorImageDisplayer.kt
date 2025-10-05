@@ -48,6 +48,7 @@ fun ColorImageDisplayer(
                 imageSize = DpSize(size, size),
                 colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
                 onClickToOpenWindow = onClickToOpenWindow,
+                hideImage=true
             )
         }
 

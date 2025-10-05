@@ -148,13 +148,13 @@ fun MainFastSearchProduitPourVent(
             }
 
             // Start filtering immediately after 3 characters (no debounce)
-            fastSearchProduitPourVent.length == 3 -> {
+            fastSearchProduitPourVent.length == 4 -> {
                 lastSearchText = fastSearchProduitPourVent
                 viewModel.onSearchTextChange(fastSearchProduitPourVent)
             }
 
             // For 4+ characters, use debouncing for smooth rapid display
-            fastSearchProduitPourVent.length >= 4 -> {
+            fastSearchProduitPourVent.length >= 5 -> {
                 searchJob = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
                     delay(300) // 300ms debounce for rapid typing
                     if (fastSearchProduitPourVent != lastSearchText) {

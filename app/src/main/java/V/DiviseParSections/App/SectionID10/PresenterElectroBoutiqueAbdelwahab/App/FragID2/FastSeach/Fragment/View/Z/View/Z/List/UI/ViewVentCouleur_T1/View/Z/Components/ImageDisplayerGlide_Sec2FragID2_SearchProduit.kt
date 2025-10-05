@@ -59,6 +59,7 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
     imageSize: DpSize,
     colorFilter: ColorFilter? = null,
     onClickToOpenWindow: () -> Unit = {},
+    hideImage: Boolean = false
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(
@@ -79,7 +80,14 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
             modifier = Modifier
                 .size(imageSize.width, imageSize.height)
         ) {
-            if (imageExists && imageFile != null) {
+            // If hideImage is true, always show ColorNameDisplayer regardless of image existence
+            if (hideImage) {
+                ColorNameDisplayer(
+                    modifier = Modifier.fillMaxSize(),
+                    colorName = colorName,
+                    onClickToOpenWindow = onClickToOpenWindow
+                )
+            } else if (imageExists && imageFile != null) {
                 GlideImage(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
@@ -100,7 +108,7 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                     model = imageFile,
                     contentDescription = "Color image for $colorName",
                     contentScale = contentScale,
-                    colorFilter = colorFilter // Apply the colorFilter here
+                    colorFilter = colorFilter
                 ) { request ->
                     request.apply {
                         thumbnail(0.1f)
@@ -136,8 +144,6 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                     onClickToOpenWindow = onClickToOpenWindow
                 )
             }
-
-
         }
     }
 }
