@@ -421,13 +421,14 @@ fun ViewVentCouleur_T1(
                         )
                     }
                 }
+                val currentApp_Est_Admin=focusedValuesGetter.currentApp_Est_Admin
 
                 Box(modifier = Modifier.fillMaxWidth()) {
                     ColorImageDisplayer(
                         colorInfo = relative_M3CouleurInfos,
                         imageFile = imageFile,
                         isImageAvailable = isImageAvailable,
-                        size = 300.dp,
+                        size = if (!currentApp_Est_Admin) 300.dp else size,
                         colorMatrix = ventUIState.colorMatrix,
                         onClickToOpenWindow = {
                             lenceVent()

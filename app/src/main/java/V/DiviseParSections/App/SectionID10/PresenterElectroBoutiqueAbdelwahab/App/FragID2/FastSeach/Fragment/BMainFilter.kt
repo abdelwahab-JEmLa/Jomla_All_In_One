@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,9 +41,11 @@ fun MainFilterT1(
                     emptyList() // Return empty list when no search text
                 } else {
                     products.filter {
-                        it.nom.contains(searchFilter, true) ||
-                                it.nomMutable.contains(searchFilter, true) ||
-                                it.nomArab.contains(searchFilter, true)
+                        // Filter out NON_DISPO products
+                        it.disponibilityEtates != DisponibilityEtates.NON_DISPO &&
+                                (it.nom.contains(searchFilter, true) ||
+                                        it.nomMutable.contains(searchFilter, true) ||
+                                        it.nomArab.contains(searchFilter, true))
                     }
                 }
             }
@@ -52,9 +55,11 @@ fun MainFilterT1(
                     emptyList() // Return empty list when no search text
                 } else {
                     products.filter {
-                        it.nom.contains(searchFilter, true) ||
-                                it.nomMutable.contains(searchFilter, true) ||
-                                it.nomArab.contains(searchFilter, true)
+                        // Filter out NON_DISPO products
+                        it.disponibilityEtates != DisponibilityEtates.NON_DISPO &&
+                                (it.nom.contains(searchFilter, true) ||
+                                        it.nomMutable.contains(searchFilter, true) ||
+                                        it.nomArab.contains(searchFilter, true))
                     }
                 }
             }
