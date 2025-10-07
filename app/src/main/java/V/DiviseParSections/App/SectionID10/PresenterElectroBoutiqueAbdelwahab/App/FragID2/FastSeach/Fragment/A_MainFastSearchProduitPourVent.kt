@@ -233,11 +233,9 @@ fun MainFastSearchProduitPourVent(
                             onDone = {
                                 // Cancel any pending search job
                                 searchJob?.cancel()
-                                // Clear the search text
+                                // Clear the search text only
                                 update_activeCentralValues("")
-                                // Keep focus, just hide the keyboard
-                                keyboardController?.hide()
-                                // Don't clear focus - field stays ready for next search
+                                // Don't hide keyboard - it stays open and focused
                             }
                         ),
                         leadingIcon = {

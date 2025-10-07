@@ -427,7 +427,7 @@ fun ViewVentCouleur_T1(
                         colorInfo = relative_M3CouleurInfos,
                         imageFile = imageFile,
                         isImageAvailable = isImageAvailable,
-                        size = size,
+                        size = 300.dp,
                         colorMatrix = ventUIState.colorMatrix,
                         onClickToOpenWindow = {
                             lenceVent()
