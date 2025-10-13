@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-// FIXED TODO(1): Added collapse mode with compact display
 @Composable
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
@@ -109,7 +108,6 @@ fun ViewProduit_T1(
                 isExpanded=isExpanded
             )
 
-            // FIXED TODO(2.C): Colors list only shown when expanded
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = expandVertically() + fadeIn(),
