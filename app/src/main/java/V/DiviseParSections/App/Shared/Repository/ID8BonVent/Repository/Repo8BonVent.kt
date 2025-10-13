@@ -350,13 +350,13 @@ data class M8BonVent(
 
         fun find_By_MainValuesKeys_Depuit_List(
             data_List: List<M8BonVent>,
-            parent_M14VentPeriod_DebugInfos: String,
+            parent_M14VentPeriod_KeyId: String,
             parent_M2Client_KeyID: String,
             relative_Etate: EtateActuellementEst? = null,
         ) = data_List
             .find { data ->
                 val match_MainValuesKeys =
-                    data.parent_M14VentPeriod_DebugInfos == parent_M14VentPeriod_DebugInfos
+                    data.parent_M14VentPeriod_KeyId == parent_M14VentPeriod_KeyId
                             && data.parent_M2Client_KeyID == parent_M2Client_KeyID
                             && data.etateActuellementEst == relative_Etate
 
