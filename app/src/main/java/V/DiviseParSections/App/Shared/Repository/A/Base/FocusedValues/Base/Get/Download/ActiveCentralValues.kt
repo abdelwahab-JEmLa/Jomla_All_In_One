@@ -68,7 +68,11 @@ data class ActiveCentralValues(
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
-    val affiche_Dialog_Fast_Affiche_Panie: Boolean = M18CentralParametresOfAllApps().itsDevMode,
+    val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
+        ==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
+         false else
+        M18CentralParametresOfAllApps().itsDevMode,
+
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val activeFilters: Set<ActiveFilter> = emptySet(),
