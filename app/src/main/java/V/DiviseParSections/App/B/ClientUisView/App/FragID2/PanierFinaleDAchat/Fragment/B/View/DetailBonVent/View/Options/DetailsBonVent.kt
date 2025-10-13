@@ -41,8 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -240,13 +242,15 @@ fun DetailsBonVent(
         ErrorCard(modifier = modifier)
     }
 }
-
 @Composable
 fun WindowsAppShareButton(
     aCentralFacade: ACentralFacade = koinInject(),
     showLabel: Boolean,
     onShare: (List<M10OperationVentCouleur>) -> Unit
 ) {
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { vent ->
@@ -260,20 +264,37 @@ fun WindowsAppShareButton(
     ) {
         FloatingActionButton(
             modifier = Modifier.size(48.dp),
-            onClick = { onShare(activeVents) },
-            containerColor = Color(0xFF4CAF50) // Green for sharing
+            onClick = {
+                if (!isLoading) {
+                    isLoading = true
+                    onShare(activeVents)
+                    scope.launch {
+                        kotlinx.coroutines.delay(2000)
+                        isLoading = false
+                    }
+                }
+            },
+            containerColor = Color(0xFF4CAF50)
         ) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Partager avec Windows",
-                modifier = Modifier.size(20.dp),
-                tint = Color.White
-            )
+            if (isLoading) {
+                androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Partager avec Windows",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.White
+                )
+            }
         }
 
         if (showLabel) {
             Text(
-                text = "Partager",
+                text = if (isLoading) "En cours..." else "Partager",
                 modifier = Modifier
                     .background(
                         color = Color(0xFF4CAF50),
