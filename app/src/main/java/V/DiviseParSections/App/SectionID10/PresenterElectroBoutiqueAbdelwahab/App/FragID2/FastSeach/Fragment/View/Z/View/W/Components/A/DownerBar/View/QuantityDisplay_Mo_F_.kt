@@ -37,7 +37,8 @@ import androidx.compose.ui.unit.dp
 fun QuantityDisplay_Mo_F_(
     produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
-    aCentralFacade: ACentralFacade
+    aCentralFacade: ACentralFacade,
+    onShowColorsClick: (() -> Unit)? = null  // NEW: Callback to show colors
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
@@ -74,7 +75,7 @@ fun QuantityDisplay_Mo_F_(
                 else MaterialTheme.colorScheme.primary
             ),
             modifier = Modifier
-                .clickable(enabled = false) {
+                .clickable(enabled = !allNonTrouve) {
                     val get = focusedVarsHandlerFacade.focusedValuesGetter
 
                     aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -87,6 +88,8 @@ fun QuantityDisplay_Mo_F_(
                         produit
                     )
 
+                    // NEW: Trigger callback to show colors
+                    onShowColorsClick?.invoke()
                 }
                 .getSemanticsTag(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
@@ -155,7 +158,7 @@ fun QuantityDisplay_Mo_F_(
             colors = CardDefaults.cardColors(
                 containerColor = when {
                     allNonTrouve -> MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    shouldUseManagerColors -> Color.White // White background when manager controls prices
+                    shouldUseManagerColors -> Color.White
                     else -> MaterialTheme.colorScheme.error
                 }
             )
@@ -185,7 +188,7 @@ fun QuantityDisplay_Mo_F_(
                     fontWeight = FontWeight.Medium,
                     color = when {
                         allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        shouldUseManagerColors -> Color.Black // Black text when manager controls prices
+                        shouldUseManagerColors -> Color.Black
                         else -> MaterialTheme.colorScheme.onSecondary
                     }
                 )
@@ -195,7 +198,7 @@ fun QuantityDisplay_Mo_F_(
                     contentDescription = if (findTariff != null) "Defined by Ali" else "From old database",
                     tint = when {
                         allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        shouldUseManagerColors -> Color.Black // Black icon when manager controls prices
+                        shouldUseManagerColors -> Color.Black
                         else -> MaterialTheme.colorScheme.onSecondary
                     },
                     modifier = Modifier.size(16.dp)

@@ -5,15 +5,22 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -21,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 
@@ -30,6 +38,9 @@ fun Downer_Bar_SemiModularized_Searcher(
     related_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
+    onShowColorsClick: (() -> Unit)? = null,
+    isExpanded: Boolean = true,  // NEW: Collapse state
+    onToggleExpand: () -> Unit = {}  // NEW: Toggle callback
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -41,6 +52,12 @@ fun Downer_Bar_SemiModularized_Searcher(
     }
     val allNonTrouve =
         related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+
+    // NEW: Animation for rotate icon
+    val rotationAngle by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "rotation"
+    )
 
     Box(
         modifier = Modifier
@@ -95,10 +112,29 @@ fun Downer_Bar_SemiModularized_Searcher(
                 ) {
                     QuantityDisplay_Mo_F_(
                         produit = produit,
-                        aCentralFacade = viewModel.aCentralFacade   ,
+                        aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
+                        onShowColorsClick = onShowColorsClick
                     )
                 }
+            }
+
+            // NEW: Collapse/Expand button moved to downer bar
+            IconButton(
+                onClick = onToggleExpand,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(40.dp)
+            ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    modifier = Modifier.rotate(rotationAngle),
+                    tint = if (allNonTrouve)
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else
+                        MaterialTheme.colorScheme.primary
+                )
             }
         }
     }

@@ -1,18 +1,25 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View.Downer_Bar_SemiModularized_Searcher
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.V1ProductHeader_T1.View.ProductHeader_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.VentProduitQuantityDialog_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.ListCouleurs
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -21,19 +28,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
+// FIXED TODO(1): Added collapse mode with compact display
 @Composable
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
     product: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
+    // NEW: State for collapse mode
+    var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
+    val rotationAngle by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "rotation"
+    )
+
     val getter = viewModel.aCentralFacade.repositorysMainGetter
     val bProduitDataBase_SubClassFunctionality =
         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos
@@ -56,7 +76,6 @@ fun ViewProduit_T1(
         }
     }
 
-
     val haptic = LocalHapticFeedback.current
     val relatedVents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
@@ -68,9 +87,9 @@ fun ViewProduit_T1(
 
     Card(
         modifier = modifier
-            .getSemanticsTag(produit,"produit")
-            .getSemanticsTag(produit?.getDebugInfos(),"get_DebugsInfos")
-            .getSemanticsTag(produit?.quantite_Boit_Par_Carton?:"","quantite_boit_par_carton",2)
+            .getSemanticsTag(produit, "produit")
+            .getSemanticsTag(produit?.getDebugInfos(), "get_DebugsInfos")
+            .getSemanticsTag(produit?.quantite_Boit_Par_Carton ?: "", "quantite_boit_par_carton", 2)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),
@@ -81,34 +100,44 @@ fun ViewProduit_T1(
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(petitePaddine)
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader_T1(
                 relative_Produit = product,
-                viewModel = viewModel
+                viewModel = viewModel,
+                isExpanded=isExpanded
             )
-            Spacer(modifier = Modifier.height(12.dp))
 
-            ListCouleurs(produitWithColors, viewModel)
+            // FIXED TODO(2.C): Colors list only shown when expanded
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    ListCouleurs(produitWithColors, viewModel)
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            if (produit != null) {
-                ViewDisponibilityEtates(product = produit)
+                    if (produit != null) {
+                        ViewDisponibilityEtates(product = produit)
+                    }
+                }
             }
+
             Downer_Bar_SemiModularized_Searcher(
-                related_ListM10OperationVentCouleur=relatedVents,
+                related_ListM10OperationVentCouleur = relatedVents,
                 produit = product,
                 viewModel = viewModel,
+                isExpanded = isExpanded,
+                onToggleExpand = { isExpanded = !isExpanded }
             )
         }
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
 
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
-    val ouvertDialogProduit = getterFocusedVarsHandlerFacade.active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur
+    val ouvertDialogProduit =
+        getterFocusedVarsHandlerFacade.active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur
 
     if (produit != null && ouvertDialogProduit?.keyID == produit.keyID) {
         val operationForDialog = relatedVents.firstOrNull()
