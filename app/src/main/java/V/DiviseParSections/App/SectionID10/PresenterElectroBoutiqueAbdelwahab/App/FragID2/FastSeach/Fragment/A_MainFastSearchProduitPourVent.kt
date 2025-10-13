@@ -91,7 +91,6 @@ fun get_New_Datas(
 
     return Pair(newProduit, newCouleurP)
 }
-
 @Composable
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
@@ -108,7 +107,6 @@ fun MainFastSearchProduitPourVent(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Fixed: Properly handle the sealed class to extract the product name
     val startTextSearchM1Produit = when (sourceLenceurDeCetteFragment) {
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
@@ -132,17 +130,16 @@ fun MainFastSearchProduitPourVent(
 
     var isTextFieldReady by remember { mutableStateOf(false) }
 
-    // FIXED: Add debouncing state management
+    // Debouncing implementation with proper state management
     var searchJob by remember { mutableStateOf<Job?>(null) }
     var lastSearchText by remember { mutableStateOf("") }
 
-    // Only request focus if the OutlinedTextField will be shown
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
-    // FIXED: Optimized search with proper debouncing logic
+    // DEBOUNCED SEARCH IMPLEMENTATION (300ms delay)
     LaunchedEffect(fastSearchProduitPourVent) {
-        // Cancel previous search job
+        // Cancel any pending search job
         searchJob?.cancel()
 
         when {
@@ -152,16 +149,16 @@ fun MainFastSearchProduitPourVent(
                 viewModel.onSearchTextChange("")
             }
 
-            // Start filtering immediately after 3 characters (no debounce)
-            fastSearchProduitPourVent.length == 4 -> {
+            // Start filtering immediately after reaching 3 characters
+            fastSearchProduitPourVent.length == 3 -> {
                 lastSearchText = fastSearchProduitPourVent
                 viewModel.onSearchTextChange(fastSearchProduitPourVent)
             }
 
-            // For 4+ characters, use debouncing for smooth rapid display
-            fastSearchProduitPourVent.length >= 5 -> {
-                searchJob = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                    delay(300) // 300ms debounce for rapid typing
+            // For 4+ characters, apply 300ms debounce for smooth rapid typing
+            fastSearchProduitPourVent.length >= 4 -> {
+                searchJob = launch {
+                    delay(200) // 300ms debounce delay
                     if (fastSearchProduitPourVent != lastSearchText) {
                         lastSearchText = fastSearchProduitPourVent
                         viewModel.onSearchTextChange(fastSearchProduitPourVent)
@@ -179,7 +176,6 @@ fun MainFastSearchProduitPourVent(
 
     var shouldPerformInitialSearch by remember { mutableStateOf(false) }
 
-    // FIXED: Only call DebugTestsPerformInitialSearch after TextField is ready
     LaunchedEffect(isTextFieldReady) {
         if (isTextFieldReady && shouldPerformInitialSearch) {
             DebugTestsPerformInitialSearch(
@@ -207,7 +203,7 @@ fun MainFastSearchProduitPourVent(
                     OutlinedTextField(
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
-                            // FIXED: Optimized text processing with capitalization
+                            // Capitalize each word
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
                                 if (word.isNotEmpty()) {
                                     word.replaceFirstChar {
@@ -231,11 +227,8 @@ fun MainFastSearchProduitPourVent(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                // Cancel any pending search job
                                 searchJob?.cancel()
-                                // Clear the search text only
                                 update_activeCentralValues("")
-                                // Don't hide keyboard - it stays open and focused
                             }
                         ),
                         leadingIcon = {
@@ -285,7 +278,6 @@ fun MainFastSearchProduitPourVent(
                             if (fastSearchProduitPourVent.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
-                                        // Cancel any pending search job when clearing
                                         searchJob?.cancel()
                                         update_activeCentralValues("")
                                     }) {
@@ -299,9 +291,8 @@ fun MainFastSearchProduitPourVent(
                     )
                     Spacer(Modifier.height(16.dp))
 
-                    // FIXED: Mark TextField as ready after it's composed
                     LaunchedEffect(Unit) {
-                        delay(100) // Small delay to ensure TextField is fully composed
+                        delay(100)
                         isTextFieldReady = true
                         if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
                             focusRequester.requestFocus()

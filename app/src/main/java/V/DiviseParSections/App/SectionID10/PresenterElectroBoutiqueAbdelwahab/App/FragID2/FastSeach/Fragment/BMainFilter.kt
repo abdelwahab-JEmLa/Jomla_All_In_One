@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ fun MainFilterT1(
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment?,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
 ) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
@@ -71,11 +73,36 @@ fun MainFilterT1(
         }
     }
 
-    val sortedProducts = remember(filteredProducts, categories) {
+    val repo10OperationVentCouleur_datasValue = repo10OperationVentCouleur.datasValue
+
+    val sortedProducts = remember(filteredProducts, categories, repo10OperationVentCouleur_datasValue, currentApp_Est_ItsWorkChezGrossisst) {
         if (filteredProducts.isEmpty()) {
             emptyList()
         } else {
-            val (regular, orphan) = filteredProducts.partition { product ->
+            val relevantOperations = if (currentApp_Est_ItsWorkChezGrossisst) {
+                repo10OperationVentCouleur_datasValue.filter { it.its_created_in_working_for_wholesaler }
+            } else {
+                repo10OperationVentCouleur_datasValue.filter { !it.its_created_in_working_for_wholesaler }
+            }
+
+            val productLastSaleMap = relevantOperations
+                .groupBy { it.parent_M1Produit_KeyId }
+                .mapValues { (_, operations) ->
+                    operations.maxOfOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } ?: 0L
+                }
+
+            // Separate products into those with sales and those without
+            val (productsWithSales, productsWithoutSales) = filteredProducts.partition { product ->
+                productLastSaleMap.containsKey(product.keyID)
+            }
+
+            // Sort products with sales by most recent sale timestamp (descending)
+            val sortedWithSales = productsWithSales.sortedByDescending { product ->
+                productLastSaleMap[product.keyID] ?: 0L
+            }
+
+            // Sort products without sales by existing logic
+            val (regular, orphan) = productsWithoutSales.partition { product ->
                 val category = categoryMap[product.idParentCategorie ?: 0L]
                 val catalogueId = category?.catalogueParentId ?: 4L
                 category != null && catalogueId != 4L && !category.nom.equals("NONE", true)
@@ -98,7 +125,8 @@ fun MainFilterT1(
                     .thenBy { it.nom.lowercase() }
             )
 
-            sortedRegular + sortedOrphan
+            // Return products with recent sales first, then the rest
+            sortedWithSales + sortedRegular + sortedOrphan
         }
     }
 
