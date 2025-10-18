@@ -182,7 +182,8 @@ fun QuantityDisplay_Mo_F_(
                     "اضغط لاظهار السعر"
                 }
 
-                Text(
+                Text(                 //<--
+                //TODO(1): affiche prix gros si 
                     text = displayText,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,

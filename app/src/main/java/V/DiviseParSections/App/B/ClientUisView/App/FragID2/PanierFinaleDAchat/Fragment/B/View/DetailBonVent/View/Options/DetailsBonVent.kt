@@ -262,7 +262,8 @@ fun WindowsAppShareButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FloatingActionButton(
+        FloatingActionButton(                 //<--
+        //TODO(1): ajoute case a coche au pdf 
             modifier = Modifier.size(48.dp),
             onClick = {
                 if (!isLoading) {

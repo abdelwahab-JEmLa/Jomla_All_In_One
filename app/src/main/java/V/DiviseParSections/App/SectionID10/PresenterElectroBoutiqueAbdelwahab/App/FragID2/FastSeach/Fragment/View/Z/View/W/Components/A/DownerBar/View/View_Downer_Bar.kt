@@ -110,7 +110,9 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    QuantityDisplay_Mo_F_(
+                    QuantityDisplay_Mo_F_(    //<--
+                    //TODO(1): fait que au click ici de choisire qantity pou 1 ere couleur si worke chez gros au 1 ere click 1 apre afficge le chois //<--
+                    //TODO(1): ajout eface outlined si choisi depuit ici
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
@@ -118,8 +120,12 @@ fun Downer_Bar_SemiModularized_Searcher(
                     )
                 }
             }
+                         //<--
+                         //TODO(1): ajout achat par catron au 1ere click 1 apre choisi quantity par carton     //<--
+                         //TODO(1): affiche nombre au carton au dialoge  
+            // <--
+            //                    //TODO(1): ajout eface outlined si choisi depuit ici
 
-            // NEW: Collapse/Expand button moved to downer bar
             IconButton(
                 onClick = onToggleExpand,
                 modifier = Modifier

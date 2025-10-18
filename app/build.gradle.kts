@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.6.4"
+        versionName = "1.6.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
