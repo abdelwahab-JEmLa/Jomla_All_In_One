@@ -63,7 +63,7 @@ fun CartonQuantityDisplay_Mo_F_(
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
-        
+
         // Convert units to cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits / produit.quantite_Boit_Par_Carton
@@ -78,7 +78,7 @@ fun CartonQuantityDisplay_Mo_F_(
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
-        
+
         // Calculate remaining units after cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits % produit.quantite_Boit_Par_Carton
@@ -94,9 +94,10 @@ fun CartonQuantityDisplay_Mo_F_(
     var cartonInput by remember(totalCartons) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
-    // Auto-focus when entering edit mode
+    // Auto-focus when entering edit mode - only request focus after composition
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
+            // Small delay to ensure the TextField is composed and ready
             focusRequester.requestFocus()
         }
     }
@@ -236,7 +237,7 @@ fun CartonQuantityDisplay_Mo_F_(
                         else MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.size(16.dp)
                     )
-                    
+
                     // Display cartons
                     Text(
                         text = "${totalCartons}C",
@@ -245,7 +246,7 @@ fun CartonQuantityDisplay_Mo_F_(
                         color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         else MaterialTheme.colorScheme.onSecondary
                     )
-                    
+
                     // Display remaining units if any
                     if (remainingUnits > 0) {
                         Text(
