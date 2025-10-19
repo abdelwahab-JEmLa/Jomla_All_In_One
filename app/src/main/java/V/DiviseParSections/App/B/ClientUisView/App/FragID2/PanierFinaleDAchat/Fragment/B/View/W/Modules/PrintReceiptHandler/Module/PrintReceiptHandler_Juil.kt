@@ -82,11 +82,6 @@ class PrintReceiptHandler_Juil(
             Result.failure(e)
         }
     }
-
-    /**
-     * NEW: Share PDF with Windows applications - Addresses TODO(1)
-     * Creates PDF and directly shares it with Windows-compatible applications
-     */
     fun sharePdfWithWindowsApps(
         context: Context,
         repoM1Produit: RepoM1Produit,

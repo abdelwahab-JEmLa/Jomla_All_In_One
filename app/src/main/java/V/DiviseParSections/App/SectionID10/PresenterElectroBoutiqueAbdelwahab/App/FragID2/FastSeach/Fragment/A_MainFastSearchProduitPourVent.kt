@@ -117,7 +117,7 @@ fun MainFastSearchProduitPourVent(
         null -> ""
     }
 
-    fun update_activeCentralValues(capitalizedText: String) {
+    fun update_activeCentralValuesfastSearchProduitPourVent(capitalizedText: String) {
         focusedValuesGetter.update_activeCentralValues(
             active_Central_Values.copy(
                 fastSearchProduitPourVent = capitalizedText
@@ -182,7 +182,7 @@ fun MainFastSearchProduitPourVent(
                 enabled = shouldPerformInitialSearch,
                 focusRequester = focusRequester,
                 { searchText ->
-                    update_activeCentralValues(searchText)
+                    update_activeCentralValuesfastSearchProduitPourVent(searchText)
                     shouldPerformInitialSearch = false
                 },
                 "liy"
@@ -213,7 +213,7 @@ fun MainFastSearchProduitPourVent(
                                     word
                                 }
                             }
-                            update_activeCentralValues(capitalizedText)
+                            update_activeCentralValuesfastSearchProduitPourVent(capitalizedText)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -228,7 +228,7 @@ fun MainFastSearchProduitPourVent(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 searchJob?.cancel()
-                                update_activeCentralValues("")
+                                update_activeCentralValuesfastSearchProduitPourVent("")
                             }
                         ),
                         leadingIcon = {
@@ -279,7 +279,7 @@ fun MainFastSearchProduitPourVent(
                                 IconButton(
                                     onClick = {
                                         searchJob?.cancel()
-                                        update_activeCentralValues("")
+                                        update_activeCentralValuesfastSearchProduitPourVent("")
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,

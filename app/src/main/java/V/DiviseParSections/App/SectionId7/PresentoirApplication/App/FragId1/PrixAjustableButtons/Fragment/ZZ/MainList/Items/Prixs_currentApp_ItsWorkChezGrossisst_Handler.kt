@@ -42,6 +42,8 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
 ) {
     val typeTarification = relative_Tariff.typeChoisi
+    fun focusedValuesGetter() = focusedValuesGetter
+
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
     // Create instance of tariff generator for progressive updates
@@ -67,6 +69,12 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
     fun save_Tariff_au_relative_vent_et_ferm_fabs_tariffs() {
+        focusedValuesGetter().update_activeCentralValues(
+            focusedValuesGetter.active_Central_Values.copy(
+                fastSearchProduitPourVent = ""
+            )
+        )              //<--
+        //TODO(1): fait ici returne focuse au otlined si frag est active
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = relative_Tariff.copy(prixCurrency = currentTariffPrice),

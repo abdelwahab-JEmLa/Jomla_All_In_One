@@ -24,7 +24,7 @@ fun View_List_DropDownButtons(
     onShowDropdownChanged: (Boolean) -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {                    //<--
-    //TODO(1): fait ici passe que les produit ou leur parent catalogue est confisserie
+    //(1): fait ici passe que les produit ou leur parent catalogue est confisserie
     Card(
         modifier = Modifier
             .width(200.dp)

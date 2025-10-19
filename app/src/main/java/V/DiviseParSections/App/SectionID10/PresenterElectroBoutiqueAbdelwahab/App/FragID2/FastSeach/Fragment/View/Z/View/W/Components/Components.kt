@@ -191,7 +191,6 @@ fun QuantityDisplay_Mo_F_Panie(
         }
     }
 }
-
 @Composable
 fun VentProduitQuantityDialog_T1(
     produit: ArticlesBasesStatsTable,
@@ -203,6 +202,23 @@ fun VentProduitQuantityDialog_T1(
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+
+    // Calculate carton quantity
+    val cartonQuantity by derivedStateOf {
+        if (produit.quantite_Boit_Par_Carton > 0) {
+            selectedQuantity / produit.quantite_Boit_Par_Carton
+        } else {
+            0
+        }
+    }
+
+    val remainingUnits by derivedStateOf {
+        if (produit.quantite_Boit_Par_Carton > 0) {
+            selectedQuantity % produit.quantite_Boit_Par_Carton
+        } else {
+            selectedQuantity
+        }
+    }
 
     fun closeDialogChoisireQuantity() {
         onDismiss()
@@ -229,7 +245,76 @@ fun VentProduitQuantityDialog_T1(
             }
         },
         text = {
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Carton Quantity Display Card
+                if (produit.quantite_Boit_Par_Carton > 0) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "Carton Breakdown",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "$cartonQuantity",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "carton(s)",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                    if (remainingUnits > 0) {
+                                        Text(
+                                            text = "+ $remainingUnits unit(s)",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "Units per carton:",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                                )
+                                Text(
+                                    text = "${produit.quantite_Boit_Par_Carton}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Quantity Grid
                 QuantityGridM1Produit_T1(
                     produit = produit,
                     currentQuantity = selectedQuantity,
@@ -262,7 +347,6 @@ fun VentProduitQuantityDialog_T1(
         }
     )
 }
-
 @Composable
 fun QuantityGridM1Produit_T1(
     produit: ArticlesBasesStatsTable,

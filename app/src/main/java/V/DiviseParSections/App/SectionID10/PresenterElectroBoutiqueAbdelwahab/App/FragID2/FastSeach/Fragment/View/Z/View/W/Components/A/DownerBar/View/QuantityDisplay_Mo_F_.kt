@@ -38,7 +38,7 @@ fun QuantityDisplay_Mo_F_(
     produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
-    onShowColorsClick: (() -> Unit)? = null  // NEW: Callback to show colors
+    onShowColorsClick: (() -> Unit)? = null
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
@@ -76,6 +76,8 @@ fun QuantityDisplay_Mo_F_(
             ),
             modifier = Modifier
                 .clickable(enabled = !allNonTrouve) {
+
+
                     val get = focusedVarsHandlerFacade.focusedValuesGetter
 
                     aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -182,8 +184,7 @@ fun QuantityDisplay_Mo_F_(
                     "اضغط لاظهار السعر"
                 }
 
-                Text(                 //<--
-                //TODO(1): affiche prix gros si 
+                Text(
                     text = displayText,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,

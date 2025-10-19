@@ -2,6 +2,8 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -30,6 +32,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun QuantityButtonM1Produit_T1(
@@ -38,13 +41,16 @@ fun QuantityButtonM1Produit_T1(
     viewModel: ViewModelsProduit_T1,
     newQuantity: Int,
     isSelected: Boolean,
-    onClick: (Int) -> Unit = {}
+    onClick: (Int) -> Unit = {},
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 ) {
     val repo10OperationVentCouleur = viewModel.getter.repo10OperationVentCouleur
     val repo3CouleurProduitInfos = viewModel.getter.repo03CouleurProduitInfos
 
-    val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { it.parent_M1Produit_KeyId == produit.keyID }
+    val ventsDuProduit =
+        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+            .filter { it.parent_M1Produit_KeyId == produit.keyID }
 
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -79,43 +85,42 @@ fun QuantityButtonM1Produit_T1(
                         )
                         repo10OperationVentCouleur.addOrUpdateData(updatedVent)
                     }
+
                 } else {
                     val productColors = repo3CouleurProduitInfos.datasValue.filter {
                         it.parentBProduitInfosKeyID == produit.keyID
                     }
 
                     if (productColors.isNotEmpty() && newQuantity > 0) {
-                        val defaultVent = viewModel.getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+                        val defaultVent =
+                            viewModel.getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                         if (defaultVent != null) {
-                            val quantityPerColor = newQuantity / productColors.size
-                            val remainder = newQuantity % productColors.size
+                            val firstColor = productColors.first()
 
-                            productColors.forEachIndexed { index, color ->
-                                val itemQuantity = quantityPerColor + if (index < remainder) 1 else 0
+                            val newVent = defaultVent.copy(
+                                keyID = getPushFireBase(ref),
+                                parent_M1Produit_KeyId = produit.keyID,
+                                parent_M1Produit_DebugInfos = produit.nom,
+                                parent_M3CouleurProduit_KeyID = firstColor.keyID,
+                                parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${firstColor.indexCouleurDansAncienProto}",
+                                quantity = newQuantity, // Toute la quantité sur la première couleur
+                                etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
 
-                                val newVent = defaultVent.copy(
-                                    keyID = getPushFireBase(ref),
-                                    parent_M1Produit_KeyId = produit.keyID,
-                                    parent_M1Produit_DebugInfos = produit.nom,
-                                    parent_M3CouleurProduit_KeyID = color.keyID,
-                                    parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${color.indexCouleurDansAncienProto}",
-                                    quantity = itemQuantity,
-                                    etateActuellementEst = if (itemQuantity > 0) {
-                                        M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
-                                    } else {
-                                        M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                                    },
-                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                )
-
-                                repo10OperationVentCouleur.addOrUpdateData(newVent)
-                            }
+                            repo10OperationVentCouleur.addOrUpdateData(newVent)
                         }
                     }
                 }
-
-                viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit)
+                viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
+                    produit
+                )
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        fastSearchProduitPourVent = ""
+                    )
+                )
             },
         shape = RoundedCornerShape(16.dp),
         color = animations.backgroundColor,
