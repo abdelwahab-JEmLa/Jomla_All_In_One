@@ -30,6 +30,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
@@ -47,10 +50,9 @@ fun CartonQuantityDisplay_Mo_F_(
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
     isEditMode: Boolean = false,
-    onRequestSearchFocus: () -> Unit = {} ,
-    onEditModeChange: (Boolean) -> Unit = {} ,
-    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester        //->
-    //TODO(FIXME):Fix erreur Parameter 'focusRequester' is never used
+    focusRequester: FocusRequester? = null,
+    onRequestSearchFocus: () -> Unit = {},
+    onEditModeChange: (Boolean) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
@@ -95,12 +97,13 @@ fun CartonQuantityDisplay_Mo_F_(
     val repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos
 
     var cartonInput by remember(totalCartons) { mutableStateOf("") }
-    val focusRequester = remember { FocusRequester() }
+    val localFocusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     // Auto-focus when entering edit mode
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
-            focusRequester.requestFocus()
+            localFocusRequester.requestFocus()
         }
     }
 
@@ -119,7 +122,7 @@ fun CartonQuantityDisplay_Mo_F_(
                 },
                 modifier = Modifier
                     .width(80.dp)
-                    .focusRequester(focusRequester),
+                    .focusRequester(localFocusRequester),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -143,11 +146,14 @@ fun CartonQuantityDisplay_Mo_F_(
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
-                        // Exit edit mode
+                        // Exit edit mode FIRST
                         onEditModeChange(false)
 
-                        // Request focus back to search field
-                        onRequestSearchFocus()
+                        // Use the callback to request focus instead of direct FocusRequester
+                        coroutineScope.launch {
+                            delay(100) // Give time for composition to update
+                            onRequestSearchFocus() // Always use callback for safety
+                        }
                     }
                 ),
                 singleLine = true,
@@ -179,23 +185,21 @@ fun CartonQuantityDisplay_Mo_F_(
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // FIXED: Enter edit mode immediately
+                                // Enter edit mode immediately
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units on first color
-                                val defaultVent =
-                                    getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+                                val defaultVent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
                                     val unitsForOneCarton = produit.quantite_Boit_Par_Carton
 
                                     // Check if tariff exists for this product
-                                    val existingTariff =
-                                        repo13TarificationInfos.datasValue.find { tariff ->
-                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
-                                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
-                                        }
+                                    val existingTariff = repo13TarificationInfos.datasValue.find { tariff ->
+                                        tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
+                                    }
 
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),

@@ -1,3 +1,4 @@
+// FICHIER 1: View_Downer_Bar.kt - FIXED
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
@@ -134,7 +135,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
                             isEditMode = isCartonEditMode,
-                            searchFocusRequester = focusRequester,  // NEW: Pass FocusRequester
+                            focusRequester = focusRequester,  // FIXED: Renamed parameter
                             onEditModeChange = { newMode ->
                                 // FIXED: Propagate the mode change upward
                                 on_PourEntre_EditeMode(newMode)
