@@ -1,7 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
@@ -34,10 +37,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun Downer_Bar_SemiModularized_Searcher(
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     related_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
@@ -56,8 +62,9 @@ fun Downer_Bar_SemiModularized_Searcher(
     val allNonTrouve =
         related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
-    // State for edit mode
+    // State for edit modes
     var isEditMode by remember { mutableStateOf(false) }
+    var isCartonEditMode by remember { mutableStateOf(false) }
 
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
@@ -116,6 +123,18 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
+                    focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
+                        // Carton quantity display
+                        CartonQuantityDisplay_Mo_F_(
+                            produit = produit,
+                            aCentralFacade = viewModel.aCentralFacade,
+                            allNonTrouve = allNonTrouve,
+                            isEditMode = isCartonEditMode,
+                            onEditModeChange = { isCartonEditMode = it }
+                        )
+                    }
+
+                    // Unit/Boit quantity display
                     QuantityDisplay_Mo_F_(
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
@@ -124,6 +143,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                         isEditMode = isEditMode,
                         onEditModeChange = { isEditMode = it }
                     )
+
                 }
             }
 
