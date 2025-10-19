@@ -54,9 +54,7 @@ fun QuantityDisplay_Mo_F_(
     aCentralFacade: ACentralFacade,
     onShowColorsClick: (() -> Unit)? = null,
     isEditMode: Boolean = false,
-    onRequestSearchFocus: () -> Unit = {}  // ADD THIS
-,
-            onEditModeChange: (Boolean) -> Unit = {}
+    onEditModeChange: (Boolean) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
@@ -121,6 +119,7 @@ fun QuantityDisplay_Mo_F_(
                     onDone = {
                         val newQuantity = quantityInput.toIntOrNull() ?: 0
 
+                        // Update existing vent with new quantity
                         val existingVent = focusedValuesGetter
                             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                             .find { it.parent_M1Produit_KeyId == produit.keyID }
@@ -132,14 +131,13 @@ fun QuantityDisplay_Mo_F_(
                             )
                             repo10OperationVentCouleur.addOrUpdateData(updatedVent)
                         } else if (newQuantity == 0 && existingVent != null) {
+                            // Delete vent if quantity is 0
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
                         // Exit edit mode
                         onEditModeChange(false)
 
-                        // Request focus back to search field - FIXED
-                        onRequestSearchFocus()
                     }
                 ),
                 singleLine = true,

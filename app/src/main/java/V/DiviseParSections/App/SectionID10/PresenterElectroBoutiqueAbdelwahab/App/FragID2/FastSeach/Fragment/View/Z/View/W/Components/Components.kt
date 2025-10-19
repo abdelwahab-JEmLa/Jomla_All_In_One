@@ -198,7 +198,6 @@ fun VentProduitQuantityDialog_T1(
     viewModel: ViewModelsProduit_T1,
     colorName: String,
     currentQuantity: Int,
-    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }

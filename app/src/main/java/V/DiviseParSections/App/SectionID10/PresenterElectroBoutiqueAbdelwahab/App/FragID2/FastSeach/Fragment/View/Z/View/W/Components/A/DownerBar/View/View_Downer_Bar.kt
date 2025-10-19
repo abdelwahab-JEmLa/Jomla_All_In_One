@@ -50,9 +50,7 @@ fun Downer_Bar_SemiModularized_Searcher(
     onShowColorsClick: (() -> Unit)? = null,
     isExpanded: Boolean = true,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    onToggleExpand: () -> Unit = {},
-    on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
-    isCartonEditMode: Boolean
+    onToggleExpand: () -> Unit = {}
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -67,6 +65,7 @@ fun Downer_Bar_SemiModularized_Searcher(
 
     // State for edit modes
     var isEditMode by remember { mutableStateOf(false) }
+    var isCartonEditMode by remember { mutableStateOf(false) }
 
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
@@ -132,11 +131,10 @@ fun Downer_Bar_SemiModularized_Searcher(
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
                             isEditMode = isCartonEditMode,
-                            onEditModeChange = { newMode ->
-                                // FIXED: Propagate the mode change upward
-                                on_PourEntre_EditeMode(newMode)
+                            onEditModeChange = {
+                                if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
+                                isCartonEditMode = it
                             },
-                            onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                         )
                     }
 
@@ -150,7 +148,6 @@ fun Downer_Bar_SemiModularized_Searcher(
                             if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
                             isEditMode = it
                         },
-                        onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
 
                 }
