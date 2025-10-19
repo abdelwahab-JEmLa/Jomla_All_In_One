@@ -46,6 +46,8 @@ fun ViewProduit_T1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
+    isCartonEditMode: Boolean,
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
 ) {
     // NEW: State for collapse mode
     var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
@@ -128,7 +130,9 @@ fun ViewProduit_T1(
                 produit = product,
                 viewModel = viewModel,
                 isExpanded = isExpanded,
-                onToggleExpand = { isExpanded = !isExpanded }
+                onToggleExpand = { isExpanded = !isExpanded },
+                isCartonEditMode = isCartonEditMode,
+                on_PourEntre_EditeMode = on_PourEntre_EditeMode  // FIXED: Pass through directly
             )
         }
     }

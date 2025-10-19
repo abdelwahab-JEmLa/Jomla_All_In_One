@@ -28,7 +28,8 @@ fun MainListT1(
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-
+    isCartonEditMode: Boolean,
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
     ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -51,7 +52,9 @@ fun MainListT1(
             items(sortedProducts) { product ->
                 ViewProduit_T1(
                     product = product,
-                    on_Pour_FocuceAfficheClavieSearcherProduit=on_Pour_FocuceAfficheClavieSearcherProduit
+                    on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
+                    isCartonEditMode = isCartonEditMode,
+                    on_PourEntre_EditeMode = on_PourEntre_EditeMode  // FIXED: Pass through directly
                 )
             }
         }

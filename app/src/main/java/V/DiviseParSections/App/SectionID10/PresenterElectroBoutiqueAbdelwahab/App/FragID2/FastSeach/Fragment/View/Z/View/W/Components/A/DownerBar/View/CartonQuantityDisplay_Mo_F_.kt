@@ -47,6 +47,7 @@ fun CartonQuantityDisplay_Mo_F_(
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
     isEditMode: Boolean = false,
+    onRequestSearchFocus: () -> Unit = {} ,
     onEditModeChange: (Boolean) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -63,7 +64,7 @@ fun CartonQuantityDisplay_Mo_F_(
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
-        
+
         // Convert units to cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits / produit.quantite_Boit_Par_Carton
@@ -78,7 +79,7 @@ fun CartonQuantityDisplay_Mo_F_(
             .filter { ventOperation ->
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
-        
+
         // Calculate remaining units after cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits % produit.quantite_Boit_Par_Carton
@@ -126,7 +127,6 @@ fun CartonQuantityDisplay_Mo_F_(
                         val newCartons = cartonInput.toIntOrNull() ?: 0
                         val newTotalUnits = newCartons * produit.quantite_Boit_Par_Carton
 
-                        // Update existing vent with new quantity (in units)
                         val existingVent = focusedValuesGetter
                             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                             .find { it.parent_M1Produit_KeyId == produit.keyID }
@@ -138,12 +138,14 @@ fun CartonQuantityDisplay_Mo_F_(
                             )
                             repo10OperationVentCouleur.addOrUpdateData(updatedVent)
                         } else if (newTotalUnits == 0 && existingVent != null) {
-                            // Delete vent if quantity is 0
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
                         // Exit edit mode
                         onEditModeChange(false)
+
+                        // Request focus back to search field
+                        onRequestSearchFocus()
                     }
                 ),
                 singleLine = true,
@@ -175,7 +177,7 @@ fun CartonQuantityDisplay_Mo_F_(
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // Second click: Enter edit mode for cartons
+                                // FIXED: Enter edit mode immediately
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units on first color
@@ -238,7 +240,7 @@ fun CartonQuantityDisplay_Mo_F_(
                         else MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.size(16.dp)
                     )
-                    
+
                     // Display cartons
                     Text(
                         text = "${totalCartons}C",
@@ -247,7 +249,7 @@ fun CartonQuantityDisplay_Mo_F_(
                         color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         else MaterialTheme.colorScheme.onSecondary
                     )
-                    
+
                     // Display remaining units if any
                     if (remainingUnits > 0) {
                         Text(

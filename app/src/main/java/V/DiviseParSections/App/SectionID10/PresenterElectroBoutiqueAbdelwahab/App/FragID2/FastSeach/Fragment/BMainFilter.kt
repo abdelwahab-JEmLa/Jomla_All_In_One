@@ -25,7 +25,10 @@ fun MainFilterT1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-) {
+    isCartonEditMode: Boolean,
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
+
+    ) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
@@ -131,5 +134,12 @@ fun MainFilterT1(
         }
     }
 
-    MainListT1(modifier=modifier, searchFilter=searchFilter, sortedProducts=sortedProducts, on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit)
+    MainListT1(
+        modifier = modifier,
+        searchFilter = searchFilter,
+        sortedProducts = sortedProducts,
+        on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
+        isCartonEditMode = isCartonEditMode,
+        on_PourEntre_EditeMode = on_PourEntre_EditeMode  // FIXED: Pass through directly
+    )
 }

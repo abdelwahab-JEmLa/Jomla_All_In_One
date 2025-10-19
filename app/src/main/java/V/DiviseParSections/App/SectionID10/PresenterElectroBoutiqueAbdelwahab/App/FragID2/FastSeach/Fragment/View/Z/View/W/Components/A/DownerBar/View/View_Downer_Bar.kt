@@ -49,7 +49,10 @@ fun Downer_Bar_SemiModularized_Searcher(
     viewModel: ViewModelsProduit_T1,
     onShowColorsClick: (() -> Unit)? = null,
     isExpanded: Boolean = true,
-    onToggleExpand: () -> Unit = {}
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
+    onToggleExpand: () -> Unit = {},
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
+    isCartonEditMode: Boolean
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -64,7 +67,6 @@ fun Downer_Bar_SemiModularized_Searcher(
 
     // State for edit modes
     var isEditMode by remember { mutableStateOf(false) }
-    var isCartonEditMode by remember { mutableStateOf(false) }
 
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
@@ -123,25 +125,32 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
+
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
-                        // Carton quantity display
                         CartonQuantityDisplay_Mo_F_(
                             produit = produit,
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
                             isEditMode = isCartonEditMode,
-                            onEditModeChange = { isCartonEditMode = it }
+                            onEditModeChange = { newMode ->
+                                // FIXED: Propagate the mode change upward
+                                on_PourEntre_EditeMode(newMode)
+                            },
+                            onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                         )
                     }
 
-                    // Unit/Boit quantity display
                     QuantityDisplay_Mo_F_(
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
                         onShowColorsClick = onShowColorsClick,
                         isEditMode = isEditMode,
-                        onEditModeChange = { isEditMode = it }
+                        onEditModeChange = {
+                            if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
+                            isEditMode = it
+                        },
+                        onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
 
                 }
