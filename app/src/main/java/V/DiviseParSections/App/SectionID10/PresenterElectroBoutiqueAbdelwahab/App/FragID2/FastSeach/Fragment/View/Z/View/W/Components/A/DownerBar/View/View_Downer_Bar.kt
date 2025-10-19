@@ -25,6 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,8 +42,8 @@ fun Downer_Bar_SemiModularized_Searcher(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     onShowColorsClick: (() -> Unit)? = null,
-    isExpanded: Boolean = true,  // NEW: Collapse state
-    onToggleExpand: () -> Unit = {}  // NEW: Toggle callback
+    isExpanded: Boolean = true,
+    onToggleExpand: () -> Unit = {}
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -53,7 +56,10 @@ fun Downer_Bar_SemiModularized_Searcher(
     val allNonTrouve =
         related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
-    // NEW: Animation for rotate icon
+    // State for edit mode
+    var isEditMode by remember { mutableStateOf(false) }
+
+    // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
         label = "rotation"
@@ -110,21 +116,16 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    QuantityDisplay_Mo_F_(    //<--
-                    //TODO(1): fait que au click ici de choisire qantity pou 1 ere couleur si worke chez gros au 1 ere click 1 apre afficge le chois //<--
-                    //TODO(1): ajout eface outlined si choisi depuit ici
+                    QuantityDisplay_Mo_F_(
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
-                        onShowColorsClick = onShowColorsClick
+                        onShowColorsClick = onShowColorsClick,
+                        isEditMode = isEditMode,
+                        onEditModeChange = { isEditMode = it }
                     )
                 }
             }
-                         //<--
-                         //TODO(1): ajout achat par catron au 1ere click 1 apre choisi quantity par carton     //<--
-                         //TODO(1): affiche nombre au carton au dialoge  
-            // <--
-            //                    //TODO(1): ajout eface outlined si choisi depuit ici
 
             IconButton(
                 onClick = onToggleExpand,
