@@ -30,7 +30,7 @@ data class ActiveCentralValues(
         nom = "Confiserie",
         premierCategorieId = 1755942577975,
         position = 2,
-        couleur = Color(0xFFFF9800)
+        couleur = Color(0xFFFF9800) // Orange for confectionery
     ),
     val active_EtateDispoNonDifinieAuAddNew: Boolean = false,
 
@@ -43,6 +43,8 @@ data class ActiveCentralValues(
     val gps_follow_mode_active: Boolean? = false,
 
     val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
+
+    // FIXED: Add flag to track if we're in temporary mode
     val isInTemporaryShowAllMode: Boolean = false,
 
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ data class ActiveCentralValues(
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
 
-    //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
+//-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
@@ -66,13 +68,9 @@ data class ActiveCentralValues(
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
-    // REMOVED: shouldFocusSearchTextField (replaced with clearAndFocusTrigger)
-    // FIXED: New trigger-based approach instead of boolean flag
-    val clearAndFocusTrigger: Long = 0L,
-
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
         ==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
-        false else
+         false else
         M18CentralParametresOfAllApps().itsDevMode,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
@@ -122,14 +120,18 @@ data class ActiveCentralValues(
             RoleDefinieParSourceACetteFragment()
     }
 
+    // Nouvelle fonction helper pour vérifier si un filtre est actif
     fun hasActiveFilter(filter: ActiveFilter): Boolean {
         return activeFilters.contains(filter)
     }
 
+    // Nouvelle fonction pour ajouter/retirer un filtre
     fun toggleFilter(filter: ActiveFilter): ActiveCentralValues {
         return if (activeFilters.contains(filter)) {
+            // Retirer le filtre
             this.copy(activeFilters = activeFilters - filter)
         } else {
+            // Ajouter le filtre
             this.copy(activeFilters = activeFilters + filter)
         }
     }

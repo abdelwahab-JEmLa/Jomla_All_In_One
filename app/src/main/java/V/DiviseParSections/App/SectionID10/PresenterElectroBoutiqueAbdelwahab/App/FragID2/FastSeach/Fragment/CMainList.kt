@@ -27,7 +27,9 @@ fun MainListT1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
-) {
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
+
+    ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
             item {
@@ -49,6 +51,7 @@ fun MainListT1(
             items(sortedProducts) { product ->
                 ViewProduit_T1(
                     product = product,
+                    on_Pour_FocuceAfficheClavieSearcherProduit=on_Pour_FocuceAfficheClavieSearcherProduit
                 )
             }
         }

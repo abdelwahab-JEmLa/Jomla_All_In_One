@@ -191,12 +191,14 @@ fun QuantityDisplay_Mo_F_Panie(
         }
     }
 }
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun VentProduitQuantityDialog_T1(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     colorName: String,
     currentQuantity: Int,
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }
@@ -331,7 +333,7 @@ fun VentProduitQuantityDialog_T1(
 
                         closeDialogChoisireQuantity()
                     },
-                    viewModel = viewModel
+                    viewModel = viewModel,
                 )
             }
         },
@@ -353,6 +355,7 @@ fun QuantityGridM1Produit_T1(
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
     viewModel: ViewModelsProduit_T1,
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
 ) {
     var showExtendedRange by remember { mutableStateOf(false) }
 
@@ -417,7 +420,7 @@ fun QuantityGridM1Produit_T1(
                     viewModel = viewModel,
                     newQuantity = quantityNumber,
                     isSelected = quantityNumber == currentQuantity,
-                    onClick = onQuantitySelected
+                    onClick = onQuantitySelected ,
                 )
             }
         }

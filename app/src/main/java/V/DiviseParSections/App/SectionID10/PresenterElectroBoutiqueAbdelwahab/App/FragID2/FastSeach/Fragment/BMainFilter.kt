@@ -24,6 +24,7 @@ fun MainFilterT1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
 ) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
@@ -130,5 +131,5 @@ fun MainFilterT1(
         }
     }
 
-    MainListT1(modifier=modifier, searchFilter=searchFilter, sortedProducts=sortedProducts)
+    MainListT1(modifier=modifier, searchFilter=searchFilter, sortedProducts=sortedProducts, on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit)
 }

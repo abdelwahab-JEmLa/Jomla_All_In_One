@@ -45,6 +45,7 @@ fun ViewProduit_T1(
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
 ) {
     // NEW: State for collapse mode
     var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
@@ -156,7 +157,8 @@ fun ViewProduit_T1(
                     viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
                         produit
                     )
-                }
+                    on_Pour_FocuceAfficheClavieSearcherProduit()
+                }   ,
             )
         }
     }

@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -133,63 +132,36 @@ fun MainFastSearchProduitPourVent(
     val fastSearchProduitPourVent = active_Central_Values.fastSearchProduitPourVent
 
     var isTextFieldReady by remember { mutableStateOf(false) }
-    var isTextFieldFocused by remember { mutableStateOf(false) }
 
+    // Debouncing implementation with proper state management
     var searchJob by remember { mutableStateOf<Job?>(null) }
     var lastSearchText by remember { mutableStateOf("") }
 
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
-    // Expose focus and keyboard control to FocusedValuesGetter
-    LaunchedEffect(Unit) {
-        focusedValuesGetter.setSearchFieldControls(
-            focusRequester = focusRequester,
-            keyboardController = keyboardController
-        )
-    }
-
-    // FIXED: Monitor clearAndFocusTrigger with proper keyboard showing logic
-    LaunchedEffect(active_Central_Values.clearAndFocusTrigger) {
-        val trigger = active_Central_Values.clearAndFocusTrigger
-        if (trigger > 0 && isTextFieldReady) {
-            // Clear the text first
-            update_activeCentralValuesfastSearchProduitPourVent("")
-
-            // Small delay for UI to update
-            delay(100)
-
-            // Request focus - this will trigger onFocusChanged
-            focusRequester.requestFocus()
-
-            // Wait for focus to be acquired
-            delay(150)
-
-            // Now show keyboard - only if field is focused
-            if (isTextFieldFocused) {
-                keyboardController?.show()
-            }
-        }
-    }
-
     // DEBOUNCED SEARCH IMPLEMENTATION (300ms delay)
     LaunchedEffect(fastSearchProduitPourVent) {
+        // Cancel any pending search job
         searchJob?.cancel()
 
         when {
+            // Clear search immediately when text is empty
             fastSearchProduitPourVent.isEmpty() -> {
                 lastSearchText = ""
                 viewModel.onSearchTextChange("")
             }
 
+            // Start filtering immediately after reaching 3 characters
             fastSearchProduitPourVent.length == 3 -> {
                 lastSearchText = fastSearchProduitPourVent
                 viewModel.onSearchTextChange(fastSearchProduitPourVent)
             }
 
+            // For 4+ characters, apply 300ms debounce for smooth rapid typing
             fastSearchProduitPourVent.length >= 4 -> {
                 searchJob = launch {
-                    delay(200)
+                    delay(200) // 300ms debounce delay
                     if (fastSearchProduitPourVent != lastSearchText) {
                         lastSearchText = fastSearchProduitPourVent
                         viewModel.onSearchTextChange(fastSearchProduitPourVent)
@@ -197,6 +169,7 @@ fun MainFastSearchProduitPourVent(
                 }
             }
 
+            // Less than 3 characters - clear results but keep the text
             else -> {
                 lastSearchText = ""
                 viewModel.onSearchTextChange("")
@@ -230,10 +203,10 @@ fun MainFastSearchProduitPourVent(
                     .padding(16.dp)
             ) {
                 if (shouldShowTextField) {
-                    OutlinedTextField(        //<--
-                    //TODO(1): pk le focuse ce fait mais le text ne s efface pas et le clavie ne s affiche apre qe la quantity est choisi
+                    OutlinedTextField(
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
+                            // Capitalize each word
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
                                 if (word.isNotEmpty()) {
                                     word.replaceFirstChar {
@@ -247,17 +220,7 @@ fun MainFastSearchProduitPourVent(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                            .onFocusChanged { focusState ->
-                                isTextFieldFocused = focusState.isFocused
-                                // Show keyboard when focused
-                                if (focusState.isFocused) {
-                                    coroutineScope.launch {
-                                        delay(100)
-                                        keyboardController?.show()
-                                    }
-                                }
-                            },
+                            .focusRequester(focusRequester),
                         placeholder = {
                             Text("Rechercher un produit... (min. 3 caractères)")
                         },
@@ -268,7 +231,7 @@ fun MainFastSearchProduitPourVent(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 searchJob?.cancel()
-                                keyboardController?.hide()
+                                update_activeCentralValuesfastSearchProduitPourVent("")
                             }
                         ),
                         leadingIcon = {
@@ -320,13 +283,6 @@ fun MainFastSearchProduitPourVent(
                                     onClick = {
                                         searchJob?.cancel()
                                         update_activeCentralValuesfastSearchProduitPourVent("")
-                                        // Refocus after clearing
-                                        coroutineScope.launch {
-                                            delay(100)
-                                            focusRequester.requestFocus()
-                                            delay(100)
-                                            keyboardController?.show()
-                                        }
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
@@ -343,8 +299,6 @@ fun MainFastSearchProduitPourVent(
                         isTextFieldReady = true
                         if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
                             focusRequester.requestFocus()
-                            delay(150)
-                            keyboardController?.show()
                         }
                     }
                 }
@@ -355,7 +309,14 @@ fun MainFastSearchProduitPourVent(
                     categories,
                     uiState.searchText,
                     Modifier.fillMaxSize(),
-                    sourceLenceurDeCetteFragment
+                    sourceLenceurDeCetteFragment,
+                    on_Pour_FocuceAfficheClavieSearcherProduit = {
+                        coroutineScope.launch {
+                            delay(100)
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+                    }
                 )
             }
             focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
