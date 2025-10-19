@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Reposito
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import org.koin.compose.koinInject
 
 @Composable
@@ -25,10 +26,10 @@ fun MainFilterT1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
+    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester
     isCartonEditMode: Boolean,
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
-
-    ) {
+) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
@@ -139,6 +140,7 @@ fun MainFilterT1(
         searchFilter = searchFilter,
         sortedProducts = sortedProducts,
         on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
+        focusRequester = focusRequester,  // NEW: Pass it down
         isCartonEditMode = isCartonEditMode,
         on_PourEntre_EditeMode = on_PourEntre_EditeMode  // FIXED: Pass through directly
     )

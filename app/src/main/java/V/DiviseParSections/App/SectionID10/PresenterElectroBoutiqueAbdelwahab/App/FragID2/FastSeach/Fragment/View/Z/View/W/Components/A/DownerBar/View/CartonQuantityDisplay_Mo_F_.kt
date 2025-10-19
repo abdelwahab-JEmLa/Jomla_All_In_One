@@ -48,7 +48,9 @@ fun CartonQuantityDisplay_Mo_F_(
     aCentralFacade: ACentralFacade,
     isEditMode: Boolean = false,
     onRequestSearchFocus: () -> Unit = {} ,
-    onEditModeChange: (Boolean) -> Unit = {}
+    onEditModeChange: (Boolean) -> Unit = {} ,
+    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester        //->
+    //TODO(FIXME):Fix erreur Parameter 'focusRequester' is never used
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
@@ -181,17 +183,19 @@ fun CartonQuantityDisplay_Mo_F_(
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units on first color
-                                val defaultVent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+                                val defaultVent =
+                                    getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
                                     val unitsForOneCarton = produit.quantite_Boit_Par_Carton
 
                                     // Check if tariff exists for this product
-                                    val existingTariff = repo13TarificationInfos.datasValue.find { tariff ->
-                                        tariff.parent_M1Produit_KeyId == produit.keyID &&
-                                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
-                                    }
+                                    val existingTariff =
+                                        repo13TarificationInfos.datasValue.find { tariff ->
+                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
+                                        }
 
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),
