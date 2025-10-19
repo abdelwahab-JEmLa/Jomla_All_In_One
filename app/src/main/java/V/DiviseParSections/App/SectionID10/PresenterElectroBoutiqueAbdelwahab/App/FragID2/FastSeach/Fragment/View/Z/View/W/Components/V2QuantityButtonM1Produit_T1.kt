@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,6 +33,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -54,6 +57,7 @@ fun QuantityButtonM1Produit_T1(
 
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
+    val coroutineScope = rememberCoroutineScope()
 
     val animations = rememberQuantityButtonAnimations(isSelected)
 
@@ -104,7 +108,7 @@ fun QuantityButtonM1Produit_T1(
                                 parent_M1Produit_DebugInfos = produit.nom,
                                 parent_M3CouleurProduit_KeyID = firstColor.keyID,
                                 parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${firstColor.indexCouleurDansAncienProto}",
-                                quantity = newQuantity, // Toute la quantité sur la première couleur
+                                quantity = newQuantity,
                                 etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
@@ -113,14 +117,35 @@ fun QuantityButtonM1Produit_T1(
                         }
                     }
                 }
-                viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
-                    produit
-                )
-                focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
-                        fastSearchProduitPourVent = ""
+
+                // FIXED: Improved sequence with proper delays and state management
+                coroutineScope.launch {
+                    // Step 1: Close the dialog immediately
+                    viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
+                        produit
                     )
-                )
+
+                    // Step 2: Wait for dialog to fully close
+                    delay(100)
+
+                    // Step 3: Clear the search text first (without triggering focus yet)
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            fastSearchProduitPourVent = "",
+                            shouldFocusSearchTextField = false
+                        )
+                    )
+
+                    // Step 4: Wait for text field to update
+                    delay(100)
+
+                    // Step 5: Now trigger the focus request
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            shouldFocusSearchTextField = true
+                        )
+                    )
+                }
             },
         shape = RoundedCornerShape(16.dp),
         color = animations.backgroundColor,

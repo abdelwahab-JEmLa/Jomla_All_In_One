@@ -91,6 +91,7 @@ fun get_New_Datas(
 
     return Pair(newProduit, newCouleurP)
 }
+
 @Composable
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
@@ -130,35 +131,69 @@ fun MainFastSearchProduitPourVent(
 
     var isTextFieldReady by remember { mutableStateOf(false) }
 
-    // Debouncing implementation with proper state management
     var searchJob by remember { mutableStateOf<Job?>(null) }
     var lastSearchText by remember { mutableStateOf("") }
 
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
+    // FIXED: Enhanced focus handling with proper state tracking
+    var lastFocusRequestTime by remember { mutableStateOf(0L) }
+
+    LaunchedEffect(active_Central_Values.shouldFocusSearchTextField) {
+        if (active_Central_Values.shouldFocusSearchTextField && isTextFieldReady) {
+            val currentTime = System.currentTimeMillis()
+
+            // Prevent rapid consecutive focus requests
+            if (currentTime - lastFocusRequestTime > 50) {
+                lastFocusRequestTime = currentTime
+
+                // Wait for any pending UI updates
+                delay(150)
+
+                // Request focus on the text field
+                focusRequester.requestFocus()
+
+                // Wait a bit before showing keyboard
+                delay(50)
+
+                // Show the keyboard
+                keyboardController?.show()
+
+                // Wait to ensure keyboard is visible
+                delay(50)
+
+                // Reset the flag after focusing
+                focusedValuesGetter.update_activeCentralValues(
+                    active_Central_Values.copy(shouldFocusSearchTextField = false)
+                )
+            } else {
+                // If too soon, just reset the flag
+                focusedValuesGetter.update_activeCentralValues(
+                    active_Central_Values.copy(shouldFocusSearchTextField = false)
+                )
+            }
+        }
+    }
+
     // DEBOUNCED SEARCH IMPLEMENTATION (300ms delay)
     LaunchedEffect(fastSearchProduitPourVent) {
-        // Cancel any pending search job
         searchJob?.cancel()
 
         when {
-            // Clear search immediately when text is empty
             fastSearchProduitPourVent.isEmpty() -> {
                 lastSearchText = ""
                 viewModel.onSearchTextChange("")
             }
 
-            // Start filtering immediately after reaching 3 characters
             fastSearchProduitPourVent.length == 3 -> {
                 lastSearchText = fastSearchProduitPourVent
                 viewModel.onSearchTextChange(fastSearchProduitPourVent)
             }
 
-            // For 4+ characters, apply 300ms debounce for smooth rapid typing
             fastSearchProduitPourVent.length >= 4 -> {
                 searchJob = launch {
-                    delay(200) // 300ms debounce delay
+                    delay(200)
                     if (fastSearchProduitPourVent != lastSearchText) {
                         lastSearchText = fastSearchProduitPourVent
                         viewModel.onSearchTextChange(fastSearchProduitPourVent)
@@ -166,7 +201,6 @@ fun MainFastSearchProduitPourVent(
                 }
             }
 
-            // Less than 3 characters - clear results but keep the text
             else -> {
                 lastSearchText = ""
                 viewModel.onSearchTextChange("")
@@ -203,7 +237,6 @@ fun MainFastSearchProduitPourVent(
                     OutlinedTextField(
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
-                            // Capitalize each word
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
                                 if (word.isNotEmpty()) {
                                     word.replaceFirstChar {
@@ -228,7 +261,7 @@ fun MainFastSearchProduitPourVent(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 searchJob?.cancel()
-                                update_activeCentralValuesfastSearchProduitPourVent("")
+                                keyboardController?.hide()
                             }
                         ),
                         leadingIcon = {

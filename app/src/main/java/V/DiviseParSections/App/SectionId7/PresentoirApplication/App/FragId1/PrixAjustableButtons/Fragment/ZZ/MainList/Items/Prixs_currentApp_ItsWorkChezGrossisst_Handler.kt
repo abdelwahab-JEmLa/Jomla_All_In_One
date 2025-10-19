@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 import java.util.SortedMap
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
@@ -41,12 +40,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
 ) {
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
+
     val typeTarification = relative_Tariff.typeChoisi
     fun focusedValuesGetter() = focusedValuesGetter
 
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
-    // Create instance of tariff generator for progressive updates
     val tariffGenerator = remember { Genere_Tariffs_currentApp_ItsWorkChezGrossisst() }
 
     val isGrossistTariffType = typeTarification in setOf(
@@ -55,7 +55,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
     )
 
-    // Don't render if not a grossist tariff type
     if (!isGrossistTariffType) {
         return
     }
@@ -71,10 +70,11 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     fun save_Tariff_au_relative_vent_et_ferm_fabs_tariffs() {
         focusedValuesGetter().update_activeCentralValues(
             focusedValuesGetter.active_Central_Values.copy(
-                fastSearchProduitPourVent = ""
+                fastSearchProduitPourVent = "",
+                shouldFocusSearchTextField = true  // Request focus on search field
             )
-        )              //<--
-        //TODO(1): fait ici returne focuse au otlined si frag est active
+        )
+
         repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 m13TarificationInfos_Pour_Produit = relative_Tariff.copy(prixCurrency = currentTariffPrice),
@@ -88,14 +88,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
     fun getCurrentBenefitForTariffType(tariffType: M13TarificationInfos.TypeChoisi): Double {
         return when (tariffType) {
-            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros -> 5.0 // Minimum 5 unit benefit for SuperGros
-            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> 10.0 // Minimum 10 unit benefit for Gro
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros -> 5.0
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro -> 10.0
             else -> 0.0
         }
     }
 
     fun updatePurchasePriceIfNeeded(newSellingPrice: Double) {
-        // Apply this logic for SuperGros and Gro tariff types
         if (typeTarification !in setOf(
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro
@@ -104,16 +103,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             return
         }
 
-        // Get current purchase price tariff
         val currentPurchaseTariff =
             allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat]
                 ?.maxByOrNull { it.creationTimestamps }
 
-        // Calculate new purchase price with current benefit margin - no checks, always update
         val currentBenefit = getCurrentBenefitForTariffType(typeTarification)
         val newPurchasePrice = newSellingPrice - currentBenefit
 
-        // Update purchase price tariff
         if (currentPurchaseTariff != null) {
             val updatedPurchaseTariff = currentPurchaseTariff.copy(
                 prixCurrency = newPurchasePrice,
@@ -121,7 +117,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             )
             repositorysMainSetter.upsert_M13TarificationInfos(updatedPurchaseTariff)
         } else {
-            // Create new purchase price tariff if it doesn't exist
             val newPurchaseTariff = M13TarificationInfos(
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
@@ -134,19 +129,14 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             repositorysMainSetter.upsert_M13TarificationInfos(newPurchaseTariff)
         }
 
-        // Also update the product's base purchase price
         val updatedProduit = relative_Produit.copy(prixAchat = newPurchasePrice)
         repositorysMainSetter.upsert_M1Produit(updatedProduit)
     }
 
-    /**
-     * Updates related grossist tariffs when the purchase price (Tariff_ItsWorkInGrossist_Achat) changes
-     */
     fun updateRelatedGrossistTariffs(newPurchasePrice: Double) {
         val currentTime = System.currentTimeMillis()
-        val oneMinuteAgo = currentTime - (60 * 1000) // 1 minute in milliseconds
+        val oneMinuteAgo = currentTime - (60 * 1000)
 
-        // Get all related grossist tariffs for this product that were created within the last minute
         val relatedTariffs = allTariffsGroupedAndSorted.values.flatten().filter { tariff ->
             tariff.parent_M1Produit_KeyId == relative_Produit.keyID &&
                     tariff.typeChoisi in setOf(
