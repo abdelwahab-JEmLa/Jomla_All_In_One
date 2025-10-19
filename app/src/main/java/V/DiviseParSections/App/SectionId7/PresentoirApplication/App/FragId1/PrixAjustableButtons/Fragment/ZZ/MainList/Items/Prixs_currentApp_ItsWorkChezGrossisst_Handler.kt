@@ -71,7 +71,6 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
         focusedValuesGetter().update_activeCentralValues(
             focusedValuesGetter.active_Central_Values.copy(
                 fastSearchProduitPourVent = "",
-                shouldFocusSearchTextField = true  // Request focus on search field
             )
         )
 

@@ -66,8 +66,10 @@ data class ActiveCentralValues(
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
-    // NEW: Control focus for search TextField
-    val shouldFocusSearchTextField: Boolean = false,
+    // REMOVED: shouldFocusSearchTextField (replaced with clearAndFocusTrigger)
+    // FIXED: New trigger-based approach instead of boolean flag
+    val clearAndFocusTrigger: Long = 0L,
+
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
         ==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
         false else

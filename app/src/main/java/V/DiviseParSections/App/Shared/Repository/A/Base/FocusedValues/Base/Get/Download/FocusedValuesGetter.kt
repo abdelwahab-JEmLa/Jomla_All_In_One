@@ -1,4 +1,4 @@
-// FocusedValuesGetter.kt - FIXED VERSION
+// FocusedValuesGetter.kt - FIXED VERSION with requestClearAndFocusSearch
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -26,6 +26,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,9 +46,37 @@ class FocusedValuesGetter(
     private val repo14VentPeriode: Repo14VentPeriode,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
-    // FIXED: Add coroutine scope and job for timing control
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var temporaryModeJob: Job? = null
+
+    // FIXED: Add references to UI controls for direct manipulation
+    private var searchFocusRequester: FocusRequester? = null
+    private var searchKeyboardController: SoftwareKeyboardController? = null
+
+    // FIXED: Method to set UI controls from Composable
+    fun setSearchFieldControls(
+        focusRequester: FocusRequester,
+        keyboardController: SoftwareKeyboardController?
+    ) {
+        searchFocusRequester = focusRequester
+        searchKeyboardController = keyboardController
+    }
+
+    // FIXED: New method to clear and refocus search field
+    fun requestClearAndFocusSearch() {
+        coroutineScope.launch {
+            val currentValues = active_Central_Values
+
+            // Increment trigger to cause recomposition
+            val newTrigger = currentValues.clearAndFocusTrigger + 1
+
+            update_activeCentralValues(
+                currentValues.copy(
+                    clearAndFocusTrigger = newTrigger
+                )
+            )
+        }
+    }
 
     val currentActiveFocuced_M14VentPeriode by derivedStateOf {
         val periods = repo14VentPeriode.datasValue
@@ -94,49 +124,38 @@ class FocusedValuesGetter(
         }
     }
 
-    // FIXED: Properly implemented computedVisibleClientsMode with timing control
     val computedVisibleClientsMode by derivedStateOf {
         val activeClientInfos = activeOnVentM2ClientInfos
         val currentValues = active_Central_Values
 
-        // If there's an explicit setting and we're not in temporary mode, use it
         if (currentValues.visibleClientsNow != null && !currentValues.isInTemporaryShowAllMode) {
             return@derivedStateOf currentValues.visibleClientsNow!!
         }
 
-        // If we're in temporary mode, always show all
         if (currentValues.isInTemporaryShowAllMode) {
             return@derivedStateOf MapClientsViewModel.VisibleClientsNow.showAll
         }
 
-        // Default logic based on admin status and special account handling
         val params = M18CentralParametresOfAllApps()
         when {
-            // Special handling for abdelmomen account - always show command/delivery filter
             params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-            // For admin users, show all
             currentApp_Est_Admin ->
                 MapClientsViewModel.VisibleClientsNow.showAll
-            // For non-admin users, show targeted clients
             else ->
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
         }
     }
 
-    // Method to get the current visible clients mode
     fun getCurrentVisibleClientsMode(): MapClientsViewModel.VisibleClientsNow {
         return computedVisibleClientsMode
     }
 
-    // FIXED: Enhanced temporary mode handling with proper timing control (2 seconds)
     fun handleTemporaryShowAllMode() {
-        // Cancel any existing timer
         temporaryModeJob?.cancel()
 
         val currentValues = active_Central_Values
 
-        // Set to temporary show all mode
         update_activeCentralValues(
             currentValues.copy(
                 visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll,
@@ -144,11 +163,9 @@ class FocusedValuesGetter(
             )
         )
 
-        // FIXED: Start new timer for exactly 2 seconds (was 7 seconds before)
         temporaryModeJob = coroutineScope.launch {
-            delay(2000) // 2 seconds instead of 7
+            delay(2000)
 
-            // Check if we're still in temporary mode (user might have changed it manually)
             if (_activeCentralValues.value.isInTemporaryShowAllMode) {
                 revertToStandardMode()
             }
@@ -156,20 +173,16 @@ class FocusedValuesGetter(
     }
 
     fun revertToStandardMode() {
-        // Cancel any running timer
         temporaryModeJob?.cancel()
 
         val currentValues = active_Central_Values
         val params = M18CentralParametresOfAllApps()
 
         val standardMode = when {
-            // Special handling for abdelmomen account
             params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-            // For admin users, show all
             currentApp_Est_Admin ->
                 MapClientsViewModel.VisibleClientsNow.showAll
-            // For non-admin users, show targeted clients
             else ->
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
         }
@@ -182,13 +195,10 @@ class FocusedValuesGetter(
         )
     }
 
-    // FIXED: Add method to handle activeOnVentM2ClientInfos changes automatically
     fun handleActiveClientChange(newActiveClient: M2Client?) {
         if (newActiveClient != null) {
-            // Start temporary show all mode when client becomes active
             handleTemporaryShowAllMode()
         } else {
-            // Immediately revert when no active client
             revertToStandardMode()
         }
     }
@@ -250,7 +260,7 @@ class FocusedValuesGetter(
         )
         update_activeCentralValues(updatedValues)
     }
-    //-----------------------------M9AppCompt-----------------------------------------------------------------------------------------------------------------------------------------------
+
     val currentActive_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull {
             it.keyID == repo18CentralParametresOfAllApps.dataValue?.au_Lence_Set_Compt_Ac_KeyId
@@ -265,8 +275,6 @@ class FocusedValuesGetter(
         currentActive_M9AppCompt?.travailleChezGrossisst3Ali == true
     }
 
-
-    //-----------------------------M8BonVent-----------------------------------------------------------------------------------------------------------------------------------------------
     val activeOnVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }
     }
@@ -321,14 +329,11 @@ class FocusedValuesGetter(
         repo10OperationVentCouleur.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM3CouleurProduitInfosKeyID }
     }
 
-    //-----------------------------M10OperationVentCouleur-----------------------------------------------------------------------------------------------------------------------------------------------
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
             it.parent_M8BonVent_KeyId == (currentActive_M9AppCompt?.onVentM8BonVentKey ?: "")
         }
     }
-
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find { it.keyID == currentActive_M9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }

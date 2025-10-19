@@ -118,33 +118,18 @@ fun QuantityButtonM1Produit_T1(
                     }
                 }
 
-                // FIXED: Improved sequence with proper delays and state management
+                // FIXED: Use requestClearAndFocusSearch instead of manual state management
                 coroutineScope.launch {
-                    // Step 1: Close the dialog immediately
+                    // Close the dialog first
                     viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
                         produit
                     )
 
-                    // Step 2: Wait for dialog to fully close
-                    delay(100)
+                    // Wait for dialog to close
+                    delay(200)
 
-                    // Step 3: Clear the search text first (without triggering focus yet)
-                    focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
-                            fastSearchProduitPourVent = "",
-                            shouldFocusSearchTextField = false
-                        )
-                    )
-
-                    // Step 4: Wait for text field to update
-                    delay(100)
-
-                    // Step 5: Now trigger the focus request
-                    focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
-                            shouldFocusSearchTextField = true
-                        )
-                    )
+                    // Use the dedicated method to clear and refocus
+                    focusedValuesGetter.requestClearAndFocusSearch()
                 }
             },
         shape = RoundedCornerShape(16.dp),
