@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -29,10 +28,9 @@ fun MainListT1(
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester
     isCartonEditMode: Boolean,
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
-) {
+    ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
             item {
@@ -55,7 +53,6 @@ fun MainListT1(
                 ViewProduit_T1(
                     product = product,
                     on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-                    focusRequester = focusRequester,  // NEW: Pass it down
                     isCartonEditMode = isCartonEditMode,
                     on_PourEntre_EditeMode = on_PourEntre_EditeMode  // FIXED: Pass through directly
                 )

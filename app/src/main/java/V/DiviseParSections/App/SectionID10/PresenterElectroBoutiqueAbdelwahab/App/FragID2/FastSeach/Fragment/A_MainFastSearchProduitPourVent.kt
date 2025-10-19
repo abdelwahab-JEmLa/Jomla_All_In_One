@@ -313,14 +313,12 @@ fun MainFastSearchProduitPourVent(
                     sourceLenceurDeCetteFragment,
                     on_Pour_FocuceAfficheClavieSearcherProduit = {
                         coroutineScope.launch {
-                            delay(50) // Reduced delay for smoother transition
+                            delay(100)
                             focusRequester.requestFocus()
-                            // DON'T call keyboardController?.show() here
-                            // The keyboard stays visible automatically when focus transfers
+                            keyboardController?.show()
                             update_activeCentralValuesfastSearchProduitPourVent("")
                         }
                     },
-                    focusRequester = focusRequester, // Pass focusRequester down
                     isCartonEditMode = isCartonEditMode,
                     on_PourEntre_EditeMode = { newMode ->  // FIXED: Receive and set the mode
                         isCartonEditMode = newMode

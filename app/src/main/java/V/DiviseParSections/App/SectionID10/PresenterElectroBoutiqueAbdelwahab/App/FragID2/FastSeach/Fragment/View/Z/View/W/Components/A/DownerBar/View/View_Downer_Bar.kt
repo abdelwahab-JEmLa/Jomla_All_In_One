@@ -1,4 +1,3 @@
-// FICHIER 1: View_Downer_Bar.kt - FIXED
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -53,7 +51,6 @@ fun Downer_Bar_SemiModularized_Searcher(
     isExpanded: Boolean = true,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onToggleExpand: () -> Unit = {},
-    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
     isCartonEditMode: Boolean
 ) {
@@ -135,7 +132,6 @@ fun Downer_Bar_SemiModularized_Searcher(
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
                             isEditMode = isCartonEditMode,
-                            focusRequester = focusRequester,  // FIXED: Renamed parameter
                             onEditModeChange = { newMode ->
                                 // FIXED: Propagate the mode change upward
                                 on_PourEntre_EditeMode(newMode)

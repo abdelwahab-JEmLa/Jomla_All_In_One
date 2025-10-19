@@ -32,12 +32,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+
 @Composable
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
@@ -46,7 +46,6 @@ fun ViewProduit_T1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    focusRequester: FocusRequester? = null,  // NEW: Pass FocusRequester
     isCartonEditMode: Boolean,
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},  // FIXED: Accept Boolean parameter
 ) {
@@ -125,6 +124,7 @@ fun ViewProduit_T1(
                     }
                 }
             }
+
             Downer_Bar_SemiModularized_Searcher(
                 related_ListM10OperationVentCouleur = relatedVents,
                 produit = product,
