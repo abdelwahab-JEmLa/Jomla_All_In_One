@@ -128,14 +128,13 @@ fun Downer_Bar_SemiModularized_Searcher(
                     modifier = Modifier.padding(8.dp)
                 ) {
 
-
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                         CartonQuantityDisplay_Mo_F_(
                             produit = produit,
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
-                            isEditMode = isCartonEditMode,
-                            focusRequester = searchFieldFocusRequester,  // PASS REAL FOCUS REQUESTER
+                            isEditMode = isCartonEditMode,  // Utilise le bon état
+                            focusRequester = searchFieldFocusRequester,
                             onEditModeChange = { newMode ->
                                 on_PourEntre_EditeMode(newMode)
                             },

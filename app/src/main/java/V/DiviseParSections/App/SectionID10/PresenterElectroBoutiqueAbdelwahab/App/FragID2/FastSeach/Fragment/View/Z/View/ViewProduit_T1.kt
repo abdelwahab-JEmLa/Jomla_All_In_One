@@ -46,9 +46,9 @@ fun ViewProduit_T1(
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
+    searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    isCartonEditMode: Boolean,
+    isCartonEditMode: Boolean,  // Reçoit maintenant le bon état
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},
 ) {
     // NEW: State for collapse mode
@@ -131,10 +131,10 @@ fun ViewProduit_T1(
                 related_ListM10OperationVentCouleur = relatedVents,
                 produit = product,
                 viewModel = viewModel,
-                searchFieldFocusRequester = searchFieldFocusRequester,  // ADD THIS
+                searchFieldFocusRequester = searchFieldFocusRequester,
                 isExpanded = isExpanded,
                 onToggleExpand = { isExpanded = !isExpanded },
-                isCartonEditMode = isCartonEditMode,
+                isCartonEditMode = isCartonEditMode,  // Utilise le bon état
                 on_PourEntre_EditeMode = on_PourEntre_EditeMode
             )
         }

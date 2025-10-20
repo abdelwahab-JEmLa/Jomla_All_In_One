@@ -30,15 +30,20 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun CartonQuantityDisplay_Mo_F_(
@@ -53,6 +58,10 @@ fun CartonQuantityDisplay_Mo_F_(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
     val repositorysMainSetter = aCentralFacade.repositorysMainSetter
+
+    // FIXED: Add keyboard controller and coroutine scope for proper focus handling
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val coroutineScope = rememberCoroutineScope()
 
     val getterFocusedVarsHandlerFacade =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -95,13 +104,59 @@ fun CartonQuantityDisplay_Mo_F_(
     var cartonInput by remember(totalCartons) { mutableStateOf("") }
     val localFocusRequester = remember { FocusRequester() }
 
-    // Auto-focus when entering edit mode - now safe to call requestFocus
+    // Auto-focus when entering edit mode
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
+            // Small delay to ensure the text field is fully composed
+            delay(50)
             try {
                 localFocusRequester.requestFocus()
             } catch (e: IllegalStateException) {
-                // FocusRequester not initialized yet, will be called in next frame
+                // FocusRequester not initialized yet
+            }
+        }
+    }
+
+    // FIXED: Helper function to handle carton update and focus return
+    fun handleCartonUpdate() {
+        coroutineScope.launch {
+            val newCartons = cartonInput.toIntOrNull() ?: 0
+            val newTotalUnits = newCartons * produit.quantite_Boit_Par_Carton
+
+            val existingVent = focusedValuesGetter
+                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                .find { it.parent_M1Produit_KeyId == produit.keyID }
+
+            if (existingVent != null && newTotalUnits > 0) {
+                val updatedVent = existingVent.copy(
+                    quantity = newTotalUnits,
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+                repo10OperationVentCouleur.addOrUpdateData(updatedVent)
+            } else if (newTotalUnits == 0 && existingVent != null) {
+                repo10OperationVentCouleur.delete(existingVent)
+            }
+
+            // FIXED: Proper sequence to prevent crashes
+            // Step 1: Hide keyboard first
+            keyboardController?.hide()
+
+            // Step 2: Small delay to let keyboard animation complete
+            delay(100)
+
+            // Step 3: Exit edit mode
+            onEditModeChange(false)
+
+            // Step 4: Another small delay before transferring focus
+            delay(100)
+
+            // Step 5: Transfer focus to search field
+            try {
+                focusRequester?.requestFocus()
+                onRequestSearchFocus()
+            } catch (e: Exception) {
+                // Fallback: just call the focus callback
+                onRequestSearchFocus()
             }
         }
     }
@@ -128,29 +183,8 @@ fun CartonQuantityDisplay_Mo_F_(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        val newCartons = cartonInput.toIntOrNull() ?: 0
-                        val newTotalUnits = newCartons * produit.quantite_Boit_Par_Carton
-
-                        val existingVent = focusedValuesGetter
-                            .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                            .find { it.parent_M1Produit_KeyId == produit.keyID }
-
-                        if (existingVent != null && newTotalUnits > 0) {
-                            val updatedVent = existingVent.copy(
-                                quantity = newTotalUnits,
-                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                            )
-                            repo10OperationVentCouleur.addOrUpdateData(updatedVent)
-                        } else if (newTotalUnits == 0 && existingVent != null) {
-                            repo10OperationVentCouleur.delete(existingVent)
-                        }
-
-                        // Exit edit mode FIRST
-                        onEditModeChange(false)
-
-                        // Transfer focus to search field
-                        focusRequester?.requestFocus()
-                        onRequestSearchFocus()
+                        // FIXED: Use the helper function for proper sequence
+                        handleCartonUpdate()
                     }
                 ),
                 singleLine = true,
@@ -182,7 +216,7 @@ fun CartonQuantityDisplay_Mo_F_(
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // FIXED: Enter edit mode immediately
+                                // Enter edit mode immediately
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units on first color

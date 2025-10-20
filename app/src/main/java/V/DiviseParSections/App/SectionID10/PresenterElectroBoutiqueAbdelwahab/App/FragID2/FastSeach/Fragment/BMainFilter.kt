@@ -25,10 +25,10 @@ fun MainFilterT1(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
-    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
+    searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    isCartonEditMode: Boolean,
-    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
+    cartonEditModeProductId: String? = null,  // CHANGEMENT
+    on_PourEntre_EditeMode: (String?) -> Unit = {},  // CHANGEMENT
 ) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
@@ -141,9 +141,9 @@ fun MainFilterT1(
         modifier = modifier,
         searchFilter = searchFilter,
         sortedProducts = sortedProducts,
-        searchFieldFocusRequester = searchFieldFocusRequester,  // ADD THIS
+        searchFieldFocusRequester = searchFieldFocusRequester,
         on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-        isCartonEditMode = isCartonEditMode,
+        cartonEditModeProductId = cartonEditModeProductId,  // CHANGEMENT
         on_PourEntre_EditeMode = on_PourEntre_EditeMode
     )
 }

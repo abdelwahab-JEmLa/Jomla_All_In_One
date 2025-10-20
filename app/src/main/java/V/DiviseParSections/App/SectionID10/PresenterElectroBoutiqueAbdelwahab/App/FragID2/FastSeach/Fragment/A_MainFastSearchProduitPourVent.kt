@@ -128,6 +128,7 @@ fun MainFastSearchProduitPourVent(
             )
         )
     }
+    var cartonEditModeProductId by remember { mutableStateOf<String?>(null) }
 
     val focusRequester = remember { FocusRequester() }
     val fastSearchProduitPourVent = active_Central_Values.fastSearchProduitPourVent
@@ -311,7 +312,7 @@ fun MainFastSearchProduitPourVent(
                     uiState.searchText,
                     Modifier.fillMaxSize(),
                     sourceLenceurDeCetteFragment,
-                    searchFieldFocusRequester = focusRequester,  // ADD THIS
+                    searchFieldFocusRequester = focusRequester,
                     on_Pour_FocuceAfficheClavieSearcherProduit = {
                         coroutineScope.launch {
                             update_activeCentralValuesfastSearchProduitPourVent("")
@@ -320,9 +321,9 @@ fun MainFastSearchProduitPourVent(
                             keyboardController?.show()
                         }
                     },
-                    isCartonEditMode = isCartonEditMode,
-                    on_PourEntre_EditeMode = { newMode ->
-                        isCartonEditMode = newMode
+                    cartonEditModeProductId = cartonEditModeProductId,  // CHANGEMENT
+                    on_PourEntre_EditeMode = { productId ->  // CHANGEMENT
+                        cartonEditModeProductId = productId
                     }
                 )
             }

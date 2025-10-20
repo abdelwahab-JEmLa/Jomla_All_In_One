@@ -28,10 +28,10 @@ fun MainListT1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
-    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
+    searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    isCartonEditMode: Boolean,
-    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
+    cartonEditModeProductId: String? = null,  // CHANGEMENT
+    on_PourEntre_EditeMode: (String?) -> Unit = {},  // CHANGEMENT
 ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -54,10 +54,12 @@ fun MainListT1(
             items(sortedProducts) { product ->
                 ViewProduit_T1(
                     product = product,
-                    searchFieldFocusRequester = searchFieldFocusRequester,  // ADD THIS
+                    searchFieldFocusRequester = searchFieldFocusRequester,
                     on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-                    isCartonEditMode = isCartonEditMode,
-                    on_PourEntre_EditeMode = on_PourEntre_EditeMode
+                    isCartonEditMode = cartonEditModeProductId == product.keyID,  // CHANGEMENT
+                    on_PourEntre_EditeMode = { isEditing ->  // CHANGEMENT
+                        on_PourEntre_EditeMode(if (isEditing) product.keyID else null)
+                    }
                 )
             }
         }
