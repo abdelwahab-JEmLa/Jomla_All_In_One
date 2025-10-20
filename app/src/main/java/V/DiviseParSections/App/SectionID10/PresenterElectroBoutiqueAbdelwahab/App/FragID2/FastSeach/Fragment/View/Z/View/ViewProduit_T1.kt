@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,10 @@ fun ViewProduit_T1(
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
+    on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
+    isCartonEditMode: Boolean,
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
 ) {
     // NEW: State for collapse mode
     var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
@@ -126,11 +131,14 @@ fun ViewProduit_T1(
                 related_ListM10OperationVentCouleur = relatedVents,
                 produit = product,
                 viewModel = viewModel,
+                searchFieldFocusRequester = searchFieldFocusRequester,  // ADD THIS
                 isExpanded = isExpanded,
-                onToggleExpand = { isExpanded = !isExpanded }
+                onToggleExpand = { isExpanded = !isExpanded },
+                isCartonEditMode = isCartonEditMode,
+                on_PourEntre_EditeMode = on_PourEntre_EditeMode
             )
         }
-    }
+        }
 
 
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
@@ -156,6 +164,7 @@ fun ViewProduit_T1(
                     viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
                         produit
                     )
+                    on_Pour_FocuceAfficheClavieSearcherProduit()
                 }   ,
             )
         }

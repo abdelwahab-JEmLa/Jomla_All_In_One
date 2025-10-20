@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -49,8 +50,11 @@ fun Downer_Bar_SemiModularized_Searcher(
     viewModel: ViewModelsProduit_T1,
     onShowColorsClick: (() -> Unit)? = null,
     isExpanded: Boolean = true,
+    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    onToggleExpand: () -> Unit = {}
+    onToggleExpand: () -> Unit = {},
+    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
+    isCartonEditMode: Boolean
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -65,7 +69,6 @@ fun Downer_Bar_SemiModularized_Searcher(
 
     // State for edit modes
     var isEditMode by remember { mutableStateOf(false) }
-    var isCartonEditMode by remember { mutableStateOf(false) }
 
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
@@ -125,16 +128,18 @@ fun Downer_Bar_SemiModularized_Searcher(
                     modifier = Modifier.padding(8.dp)
                 ) {
 
+
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                         CartonQuantityDisplay_Mo_F_(
                             produit = produit,
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
                             isEditMode = isCartonEditMode,
-                            onEditModeChange = {
-                                if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
-                                isCartonEditMode = it
+                            focusRequester = searchFieldFocusRequester,  // PASS REAL FOCUS REQUESTER
+                            onEditModeChange = { newMode ->
+                                on_PourEntre_EditeMode(newMode)
                             },
+                            onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                         )
                     }
 
@@ -148,6 +153,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                             if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
                             isEditMode = it
                         },
+                        onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
 
                 }

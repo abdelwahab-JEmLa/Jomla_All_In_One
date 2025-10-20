@@ -39,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun CartonQuantityDisplay_Mo_F_(
@@ -47,6 +46,8 @@ fun CartonQuantityDisplay_Mo_F_(
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
     isEditMode: Boolean = false,
+    focusRequester: FocusRequester? = null,
+    onRequestSearchFocus: () -> Unit = {},
     onEditModeChange: (Boolean) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -92,13 +93,16 @@ fun CartonQuantityDisplay_Mo_F_(
     val repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos
 
     var cartonInput by remember(totalCartons) { mutableStateOf("") }
-    val focusRequester = remember { FocusRequester() }
+    val localFocusRequester = remember { FocusRequester() }
 
-    // Auto-focus when entering edit mode - only request focus after composition
+    // Auto-focus when entering edit mode - now safe to call requestFocus
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
-            // Small delay to ensure the TextField is composed and ready
-            focusRequester.requestFocus()
+            try {
+                localFocusRequester.requestFocus()
+            } catch (e: IllegalStateException) {
+                // FocusRequester not initialized yet, will be called in next frame
+            }
         }
     }
 
@@ -117,7 +121,7 @@ fun CartonQuantityDisplay_Mo_F_(
                 },
                 modifier = Modifier
                     .width(80.dp)
-                    .focusRequester(focusRequester),
+                    .focusRequester(localFocusRequester),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -141,8 +145,12 @@ fun CartonQuantityDisplay_Mo_F_(
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
-                        // Exit edit mode
+                        // Exit edit mode FIRST
                         onEditModeChange(false)
+
+                        // Transfer focus to search field
+                        focusRequester?.requestFocus()
+                        onRequestSearchFocus()
                     }
                 ),
                 singleLine = true,
@@ -174,7 +182,7 @@ fun CartonQuantityDisplay_Mo_F_(
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // Second click: Enter edit mode for cartons
+                                // FIXED: Enter edit mode immediately
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units on first color

@@ -109,6 +109,7 @@ fun MainFastSearchProduitPourVent(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
+    var isCartonEditMode by remember { mutableStateOf(false) }
 
     val startTextSearchM1Produit = when (sourceLenceurDeCetteFragment) {
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
@@ -310,13 +311,18 @@ fun MainFastSearchProduitPourVent(
                     uiState.searchText,
                     Modifier.fillMaxSize(),
                     sourceLenceurDeCetteFragment,
+                    searchFieldFocusRequester = focusRequester,  // ADD THIS
                     on_Pour_FocuceAfficheClavieSearcherProduit = {
                         coroutineScope.launch {
-                            delay(100)
                             update_activeCentralValuesfastSearchProduitPourVent("")
+                            delay(200)
                             focusRequester.requestFocus()
                             keyboardController?.show()
                         }
+                    },
+                    isCartonEditMode = isCartonEditMode,
+                    on_PourEntre_EditeMode = { newMode ->
+                        isCartonEditMode = newMode
                     }
                 )
             }
