@@ -71,6 +71,8 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
     ): M13TarificationInfos {
         return find_existing_Tariff_Grossist_SuperGros(aCentralFacade, relative_M1Produit)
             ?: M13TarificationInfos(
+                laisse_Au_Gerant = false,
+
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
@@ -88,6 +90,7 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
     ): M13TarificationInfos {
         return find_existing_Tariff_Grossist_Progressive(aCentralFacade, relative_M1Produit)
             ?: M13TarificationInfos(
+                laisse_Au_Gerant = false,
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
@@ -105,6 +108,8 @@ class Genere_Tariffs_currentApp_ItsWorkChezGrossisst {
     ): M13TarificationInfos {
         return find_existing_Tariff_Grossist_Gro(aCentralFacade, relative_M1Produit)
             ?: M13TarificationInfos(
+                laisse_Au_Gerant = false,
+
                 parent_M14VentPeriod_KeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                     ?: "",
                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Gro,

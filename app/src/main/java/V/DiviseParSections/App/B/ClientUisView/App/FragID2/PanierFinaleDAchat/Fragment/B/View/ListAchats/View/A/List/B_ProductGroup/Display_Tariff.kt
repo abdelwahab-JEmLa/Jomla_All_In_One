@@ -80,6 +80,12 @@ fun Display_Tariff(
                         relative_produit
                     )
                 }
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = relative_List_M10OperationVentCouleur,
+                        key = SemanticsPropertyKey("relaV")
+                    )
+                }
                 .getSemanticsTag(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
                     data = focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
@@ -148,14 +154,18 @@ fun Display_Tariff(
         Card(
             modifier = Modifier
                 .semantics(mergeDescendants = true) {
-                    val datasValuefilter = datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
+                    val datasValuefilter =
+                        datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
                     set(value = datasValue, key = SemanticsPropertyKey("datasValue"))
                 }
                 .semantics(mergeDescendants = true) {
                     set(value = find_Tariff_Prix_Detaille, key = SemanticsPropertyKey("findTariff"))
                 }
                 .semantics(mergeDescendants = true) {
-                    set(value = relative_List_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur"))
+                    set(
+                        value = relative_List_M10OperationVentCouleur,
+                        key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur")
+                    )
                 }
                 .clickable(enabled = !allNonTrouve) {
                     focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
@@ -176,7 +186,10 @@ fun Display_Tariff(
                 Row(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
-                            set(value = displayTariff, key = SemanticsPropertyKey("relative_Tariff"))
+                            set(
+                                value = displayTariff,
+                                key = SemanticsPropertyKey("relative_Tariff")
+                            )
                         }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,

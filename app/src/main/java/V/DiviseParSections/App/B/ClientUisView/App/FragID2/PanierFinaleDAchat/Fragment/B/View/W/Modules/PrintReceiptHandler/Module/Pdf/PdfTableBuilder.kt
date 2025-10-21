@@ -1,7 +1,5 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfContentBuilder
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
@@ -16,6 +14,7 @@ import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
+ * FIXED: Properly handles null tariffs and laisse_Au_Gerant flag
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -39,8 +38,11 @@ class PdfTableBuilder(
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        contentBuilder.addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
-        contentBuilder.addText(doc, "${formatter.round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
+        // Only show total if greater than 0
+        if (total > 0.0) {
+            contentBuilder.addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
+            contentBuilder.addText(doc, "${formatter.round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
+        }
     }
 
     fun createProductTableAndReturnTotal(
@@ -87,19 +89,23 @@ class PdfTableBuilder(
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
 
-            // Check if manager allows price display
-            val shouldHidePrice = tarification?.laisse_Au_Gerant == true
-
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
-            val price = if (shouldHidePrice) 0.0 else (tarification?.prixCurrency ?: 0.0)
+
+
+            val rawPrice = tarification?.prixCurrency ?: (produit?.prixAchat ?: 0.0)
+            val price = rawPrice
+
             val subtotal = price * qty
 
-            val shouldDisplayRow = !shouldHidePrice && price != 0.0 && subtotal != 0.0
+            // Display logic: Show row with price/subtotal only if price should be displayed
+            val shouldDisplayPriceAndSubtotal = price > 0.0
 
-            if (shouldDisplayRow) {
-                val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
-                val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
+            val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+            val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
+
+            if (shouldDisplayPriceAndSubtotal) {
+                // Calculate unit price if needed
                 val unitPrice = if (produit?.afficheUniteAuPrint == true) {
                     val nombreUniteInt = produit.nombreUniteInt
                     if (nombreUniteInt > 0) price / nombreUniteInt else price
@@ -113,11 +119,7 @@ class PdfTableBuilder(
 
                 total += subtotal
             } else {
-                // When price is hidden by manager (laisse_Au_Gerant = true) or price is 0.0,
-                // display row with product and quantity but empty price and subtotal
-                val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
-                val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
-
+                // When tariff is null or laisse_Au_Gerant is true, show product and quantity but hide price
                 table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(createDataCell("", regularFont, 10f, TextAlignment.CENTER)) // Empty price

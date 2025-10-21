@@ -39,7 +39,8 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
-) {
+) {   //<--
+//TODO(1): fait que le choisi est Tariff_ItsWorkInGrossist_Progressive de update 
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
     val typeTarification = relative_Tariff.typeChoisi

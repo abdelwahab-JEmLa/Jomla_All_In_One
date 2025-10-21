@@ -59,7 +59,7 @@ fun GerantButton(
                 .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                     aCentralFacade = aCentralFacade,
                     m13TarificationInfos_Pour_Produit = relative_Tariff.copy(
-                        laisse_Au_Gerant = true
+                        laisse_Au_Gerant = false
                     ),
                     m10OperationVentCouleurs =
                         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter

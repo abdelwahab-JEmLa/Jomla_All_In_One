@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PdfTableBuilder
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -13,7 +12,8 @@ import android.content.Context
  * Refactored PDF handler using composition pattern
  * Each component has a single responsibility
  */
-class PrintInPdf_itextpdf_Handler(
+class PrintInPdf_itextpdf_Handler(      //<--
+//TODO(1): fait que si le tariff est null de choisi     val prixCurrency: Double = 0.0, du vent 
     val repositorysMainGetter: RepositorysMainGetter,
     val uploadHandler: UploadHandler,
 ) {
