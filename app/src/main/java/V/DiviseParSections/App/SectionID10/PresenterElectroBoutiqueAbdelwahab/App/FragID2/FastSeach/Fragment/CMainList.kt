@@ -30,8 +30,10 @@ fun MainListT1(
     sortedProducts: List<ArticlesBasesStatsTable>,
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    cartonEditModeProductId: String? = null,  // CHANGEMENT
-    on_PourEntre_EditeMode: (String?) -> Unit = {},  // CHANGEMENT
+    cartonEditModeProductId: String? = null,
+    boitEditModeProductId: String? = null,  // NEW PARAMETER
+    on_PourEntre_CartonEditeMode: (String?) -> Unit = {},
+    on_PourEntre_BoitEditeMode: (String?) -> Unit = {},  // NEW CALLBACK
 ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -56,9 +58,15 @@ fun MainListT1(
                     product = product,
                     searchFieldFocusRequester = searchFieldFocusRequester,
                     on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-                    isCartonEditMode = cartonEditModeProductId == product.keyID,  // CHANGEMENT
-                    on_PourEntre_EditeMode = { isEditing ->  // CHANGEMENT
-                        on_PourEntre_EditeMode(if (isEditing) product.keyID else null)
+                    isCartonEditMode = cartonEditModeProductId == product.keyID,
+                    isBoitEditMode = boitEditModeProductId == product.keyID,  // NEW
+                    on_PourEntre_EditeMode = { isEditing ->
+                        // Determine which mode based on current state
+                        if (cartonEditModeProductId == product.keyID) {
+                            on_PourEntre_CartonEditeMode(if (isEditing) product.keyID else null)
+                        } else {
+                            on_PourEntre_BoitEditeMode(if (isEditing) product.keyID else null)
+                        }
                     }
                 )
             }

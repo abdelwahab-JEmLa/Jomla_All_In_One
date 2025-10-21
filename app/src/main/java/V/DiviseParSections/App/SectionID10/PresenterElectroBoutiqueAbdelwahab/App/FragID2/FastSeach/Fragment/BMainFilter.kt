@@ -27,12 +27,15 @@ fun MainFilterT1(
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    cartonEditModeProductId: String? = null,  // CHANGEMENT
-    on_PourEntre_EditeMode: (String?) -> Unit = {},  // CHANGEMENT
+    cartonEditModeProductId: String? = null,
+    boitEditModeProductId: String? = null,  // NEW PARAMETER
+    on_PourEntre_CartonEditeMode: (String?) -> Unit = {},
+    on_PourEntre_BoitEditeMode: (String?) -> Unit = {},  // NEW CALLBACK
 ) {
     val currentApp_Est_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
+
 
     val filteredProducts = remember(products, searchFilter, sourceLenceurDeCetteFragment, currentApp_Est_ItsWorkChezGrossisst) {
         // First apply source-based filtering
@@ -79,9 +82,16 @@ fun MainFilterT1(
     }
 
     val repo10OperationVentCouleur_datasValue = repo10OperationVentCouleur.datasValue
+    val currentTimeMillis = remember { System.currentTimeMillis() }
+    val twoMinutesInMillis = 2 * 60 * 1000L  // 2 minutes
 
-    val sortedProducts = remember(filteredProducts, categories, repo10OperationVentCouleur_datasValue, currentApp_Est_ItsWorkChezGrossisst) {  //<--
-    //TODO(1): fait si le produit dernie update est moin de  2 mn de ne pas secont  sorte order
+    val sortedProducts = remember(
+        filteredProducts,
+        categories,
+        repo10OperationVentCouleur_datasValue,
+        currentApp_Est_ItsWorkChezGrossisst,
+        currentTimeMillis
+    ) {
         if (filteredProducts.isEmpty()) {
             emptyList()
         } else {
@@ -97,17 +107,29 @@ fun MainFilterT1(
                     operations.maxOfOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } ?: 0L
                 }
 
-            // Separate products into those with sales and those without
-            val (productsWithSales, productsWithoutSales) = filteredProducts.partition { product ->
+            val recentlyUpdatedProductIds = productLastSaleMap
+                .filter { (_, timestamp) ->
+                    (currentTimeMillis - timestamp) < twoMinutesInMillis
+                }
+                .keys
+
+            // Separate products: recently updated, with sales, and without sales
+            val (recentlyUpdated, otherProducts) = filteredProducts.partition { product ->
+                recentlyUpdatedProductIds.contains(product.keyID)
+            }
+
+            // Keep recently updated products in their current order (don't re-sort)
+            val sortedRecentlyUpdated = recentlyUpdated
+
+            // Sort other products as before
+            val (productsWithSales, productsWithoutSales) = otherProducts.partition { product ->
                 productLastSaleMap.containsKey(product.keyID)
             }
 
-            // Sort products with sales by most recent sale timestamp (descending)
             val sortedWithSales = productsWithSales.sortedByDescending { product ->
                 productLastSaleMap[product.keyID] ?: 0L
             }
 
-            // Sort products without sales by existing logic
             val (regular, orphan) = productsWithoutSales.partition { product ->
                 val category = categoryMap[product.idParentCategorie ?: 0L]
                 val catalogueId = category?.catalogueParentId ?: 4L
@@ -131,11 +153,10 @@ fun MainFilterT1(
                     .thenBy { it.nom.lowercase() }
             )
 
-            // Return products with recent sales first, then the rest
-            sortedWithSales + sortedRegular + sortedOrphan
+            // Return: recently updated first (maintain order), then sorted by sales, then rest
+            sortedRecentlyUpdated + sortedWithSales + sortedRegular + sortedOrphan
         }
     }
-
 
     MainListT1(
         modifier = modifier,
@@ -143,7 +164,9 @@ fun MainFilterT1(
         sortedProducts = sortedProducts,
         searchFieldFocusRequester = searchFieldFocusRequester,
         on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-        cartonEditModeProductId = cartonEditModeProductId,  // CHANGEMENT
-        on_PourEntre_EditeMode = on_PourEntre_EditeMode
+        cartonEditModeProductId = cartonEditModeProductId,
+        boitEditModeProductId = boitEditModeProductId,  // NEW
+        on_PourEntre_CartonEditeMode = on_PourEntre_CartonEditeMode,
+        on_PourEntre_BoitEditeMode = on_PourEntre_BoitEditeMode  // NEW
     )
 }

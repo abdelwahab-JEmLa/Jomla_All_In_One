@@ -48,7 +48,8 @@ fun ViewProduit_T1(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
-    isCartonEditMode: Boolean,  // Reçoit maintenant le bon état
+    isCartonEditMode: Boolean,
+    isBoitEditMode: Boolean,  // NEW PARAMETER
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},
 ) {
     // NEW: State for collapse mode
@@ -110,7 +111,7 @@ fun ViewProduit_T1(
             ProductHeader_T1(
                 relative_Produit = product,
                 viewModel = viewModel,
-                isExpanded=isExpanded
+                isExpanded = isExpanded
             )
 
             AnimatedVisibility(
@@ -120,7 +121,6 @@ fun ViewProduit_T1(
             ) {
                 Column {
                     ListCouleurs(produitWithColors, viewModel)
-
                     if (produit != null) {
                         ViewDisponibilityEtates(product = produit)
                     }
@@ -134,11 +134,13 @@ fun ViewProduit_T1(
                 searchFieldFocusRequester = searchFieldFocusRequester,
                 isExpanded = isExpanded,
                 onToggleExpand = { isExpanded = !isExpanded },
-                isCartonEditMode = isCartonEditMode,  // Utilise le bon état
-                on_PourEntre_EditeMode = on_PourEntre_EditeMode
+                isCartonEditMode = isCartonEditMode,
+                isBoitEditMode = isBoitEditMode,  // FIXED: Pass parameter
+                on_PourEntre_EditeMode = on_PourEntre_EditeMode,
+                on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit
             )
         }
-        }
+    }
 
 
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
@@ -165,7 +167,7 @@ fun ViewProduit_T1(
                         produit
                     )
                     on_Pour_FocuceAfficheClavieSearcherProduit()
-                }   ,
+                },
             )
         }
     }

@@ -128,6 +128,11 @@ fun MainFastSearchProduitPourVent(
             )
         )
     }
+    // State for edit modes
+    var isEditMode by remember { mutableStateOf(false) }
+    var boitEditModeProductId by remember { mutableStateOf<String?>(null) }  // NEW STATE
+
+
     var cartonEditModeProductId by remember { mutableStateOf<String?>(null) }
 
     val focusRequester = remember { FocusRequester() }
@@ -321,9 +326,13 @@ fun MainFastSearchProduitPourVent(
                             keyboardController?.show()
                         }
                     },
-                    cartonEditModeProductId = cartonEditModeProductId,  // CHANGEMENT
-                    on_PourEntre_EditeMode = { productId ->  // CHANGEMENT
+                    cartonEditModeProductId = cartonEditModeProductId,
+                    boitEditModeProductId = boitEditModeProductId,  // NEW PARAMETER
+                    on_PourEntre_CartonEditeMode = { productId ->
                         cartonEditModeProductId = productId
+                    },
+                    on_PourEntre_BoitEditeMode = { productId ->  // NEW CALLBACK
+                        boitEditModeProductId = productId
                     }
                 )
             }

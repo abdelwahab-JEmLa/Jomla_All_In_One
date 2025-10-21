@@ -87,8 +87,10 @@ fun Boit_Quantity_Handler(
     val repo10OperationVentCouleur = repositorysMainGetter.repo10OperationVentCouleur
     val repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos
 
+
     var quantityInput by remember(totalQuantity) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+
     // Auto-focus when entering edit mode
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
@@ -134,10 +136,10 @@ fun Boit_Quantity_Handler(
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
-                        // Exit edit mode
+                        // Exit edit mode - FIXED: Use callback instead of direct assignment
                         onEditModeChange(false)
 
-                        // Request focus back to search field - FIXED
+                        // Request focus back to search field
                         onRequestSearchFocus()
                     }
                 ),
@@ -157,19 +159,17 @@ fun Boit_Quantity_Handler(
                 ),
                 modifier = Modifier
                     .clickable(enabled = !allNonTrouve) {
-                        // Get product colors
                         val productColors = repo3CouleurProduitInfos.datasValue.filter {
                             it.parentBProduitInfosKeyID == produit.keyID
                         }
 
                         if (productColors.isNotEmpty()) {
-                            // Check if there's already a vent operation for this product
                             val existingVent = focusedValuesGetter
                                 .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // Second click: Enter edit mode instead of opening dialog
+                                // Second click: Enter edit mode - FIXED: Use callback
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with quantity 1 on first color

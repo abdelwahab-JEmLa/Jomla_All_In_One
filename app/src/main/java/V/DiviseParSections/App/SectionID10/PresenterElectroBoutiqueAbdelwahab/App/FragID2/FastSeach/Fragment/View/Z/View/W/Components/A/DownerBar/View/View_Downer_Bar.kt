@@ -28,9 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +51,8 @@ fun Downer_Bar_SemiModularized_Searcher(
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onToggleExpand: () -> Unit = {},
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},
-    isCartonEditMode: Boolean
+    isCartonEditMode: Boolean,
+    isBoitEditMode: Boolean  // NEW PARAMETER
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -67,8 +65,7 @@ fun Downer_Bar_SemiModularized_Searcher(
     val allNonTrouve =
         related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
-    // State for edit modes
-    var isEditMode by remember { mutableStateOf(false) }
+
 
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
@@ -133,7 +130,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                             produit = produit,
                             aCentralFacade = viewModel.aCentralFacade,
                             allNonTrouve = allNonTrouve,
-                            isEditMode = isCartonEditMode,  // Utilise le bon état
+                            isEditMode = isCartonEditMode,
                             focusRequester = searchFieldFocusRequester,
                             onEditModeChange = { newMode ->
                                 on_PourEntre_EditeMode(newMode)
@@ -147,10 +144,10 @@ fun Downer_Bar_SemiModularized_Searcher(
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
                         onShowColorsClick = onShowColorsClick,
-                        isEditMode = isEditMode,
-                        onEditModeChange = {
-                            if (!it) on_Pour_FocuceAfficheClavieSearcherProduit()
-                            isEditMode = it
+                        isEditMode = isBoitEditMode,  // FIXED: Use parameter
+                        onEditModeChange = { newMode ->  // FIXED: Proper callback
+                            if (!newMode) on_Pour_FocuceAfficheClavieSearcherProduit()
+                            on_PourEntre_EditeMode(newMode)
                         },
                         onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
