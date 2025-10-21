@@ -31,9 +31,9 @@ fun MainListT1(
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     cartonEditModeProductId: String? = null,
-    boitEditModeProductId: String? = null,  // NEW PARAMETER
-    on_PourEntre_CartonEditeMode: (String?) -> Unit = {},
-    on_PourEntre_BoitEditeMode: (String?) -> Unit = {},  // NEW CALLBACK
+    boitEditModeProductId: String? = null,
+    on_PourEntre_CartonEditeMode: (String?) -> Unit = {},  // SEPARATED CALLBACK
+    on_PourEntre_BoitEditeMode: (String?) -> Unit = {},    // SEPARATED CALLBACK
 ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -59,14 +59,14 @@ fun MainListT1(
                     searchFieldFocusRequester = searchFieldFocusRequester,
                     on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
                     isCartonEditMode = cartonEditModeProductId == product.keyID,
-                    isBoitEditMode = boitEditModeProductId == product.keyID,  // NEW
-                    on_PourEntre_EditeMode = { isEditing ->
-                        // Determine which mode based on current state
-                        if (cartonEditModeProductId == product.keyID) {
-                            on_PourEntre_CartonEditeMode(if (isEditing) product.keyID else null)
-                        } else {
-                            on_PourEntre_BoitEditeMode(if (isEditing) product.keyID else null)
-                        }
+                    isBoitEditMode = boitEditModeProductId == product.keyID,
+                    on_PourEntre_CartonEditeMode = { isEditing ->
+                        // FIXED: Direct callback for carton
+                        on_PourEntre_CartonEditeMode(if (isEditing) product.keyID else null)
+                    },
+                    on_PourEntre_BoitEditeMode = { isEditing ->
+                        // FIXED: Direct callback for boit
+                        on_PourEntre_BoitEditeMode(if (isEditing) product.keyID else null)
                     }
                 )
             }

@@ -49,8 +49,9 @@ fun ViewProduit_T1(
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     isCartonEditMode: Boolean,
-    isBoitEditMode: Boolean,  // NEW PARAMETER
-    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
+    isBoitEditMode: Boolean,
+    on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},  // SEPARATED CALLBACK
+    on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},    // SEPARATED CALLBACK
 ) {
     // NEW: State for collapse mode
     var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
@@ -135,8 +136,9 @@ fun ViewProduit_T1(
                 isExpanded = isExpanded,
                 onToggleExpand = { isExpanded = !isExpanded },
                 isCartonEditMode = isCartonEditMode,
-                isBoitEditMode = isBoitEditMode,  // FIXED: Pass parameter
-                on_PourEntre_EditeMode = on_PourEntre_EditeMode,
+                isBoitEditMode = isBoitEditMode,
+                on_PourEntre_CartonEditeMode = on_PourEntre_CartonEditeMode,  // FIXED
+                on_PourEntre_BoitEditeMode = on_PourEntre_BoitEditeMode,      // FIXED
                 on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit
             )
         }

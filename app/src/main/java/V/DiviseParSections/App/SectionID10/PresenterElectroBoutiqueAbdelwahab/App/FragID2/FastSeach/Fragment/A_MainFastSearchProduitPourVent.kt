@@ -92,7 +92,6 @@ fun get_New_Datas(
 
     return Pair(newProduit, newCouleurP)
 }
-
 @Composable
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
@@ -128,12 +127,11 @@ fun MainFastSearchProduitPourVent(
             )
         )
     }
-    // State for edit modes
     var isEditMode by remember { mutableStateOf(false) }
-    var boitEditModeProductId by remember { mutableStateOf<String?>(null) }  // NEW STATE
 
 
     var cartonEditModeProductId by remember { mutableStateOf<String?>(null) }
+    var boitEditModeProductId by remember { mutableStateOf<String?>(null) }  // NEW STATE
 
     val focusRequester = remember { FocusRequester() }
     val fastSearchProduitPourVent = active_Central_Values.fastSearchProduitPourVent

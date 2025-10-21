@@ -107,6 +107,7 @@ fun MainFilterT1(
                     operations.maxOfOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } ?: 0L
                 }
 
+            // FIXED TODO 3: Check if product was updated in last 2 minutes
             val recentlyUpdatedProductIds = productLastSaleMap
                 .filter { (_, timestamp) ->
                     (currentTimeMillis - timestamp) < twoMinutesInMillis

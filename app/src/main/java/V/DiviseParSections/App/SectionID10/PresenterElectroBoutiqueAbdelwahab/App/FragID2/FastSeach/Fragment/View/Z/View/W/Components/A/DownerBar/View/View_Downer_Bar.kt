@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun Downer_Bar_SemiModularized_Searcher(
@@ -50,9 +51,10 @@ fun Downer_Bar_SemiModularized_Searcher(
     searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onToggleExpand: () -> Unit = {},
-    on_PourEntre_EditeMode: (Boolean) -> Unit = {},
+    on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},  // SEPARATED CALLBACK
+    on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},    // SEPARATED CALLBACK
     isCartonEditMode: Boolean,
-    isBoitEditMode: Boolean  // NEW PARAMETER
+    isBoitEditMode: Boolean
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -133,7 +135,8 @@ fun Downer_Bar_SemiModularized_Searcher(
                             isEditMode = isCartonEditMode,
                             focusRequester = searchFieldFocusRequester,
                             onEditModeChange = { newMode ->
-                                on_PourEntre_EditeMode(newMode)
+                                // FIXED: Use dedicated carton callback
+                                on_PourEntre_CartonEditeMode(newMode)
                             },
                             onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                         )
@@ -144,10 +147,11 @@ fun Downer_Bar_SemiModularized_Searcher(
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
                         onShowColorsClick = onShowColorsClick,
-                        isEditMode = isBoitEditMode,  // FIXED: Use parameter
-                        onEditModeChange = { newMode ->  // FIXED: Proper callback
+                        isEditMode = isBoitEditMode,
+                        onEditModeChange = { newMode ->
+                            // FIXED: Use dedicated boit callback
                             if (!newMode) on_Pour_FocuceAfficheClavieSearcherProduit()
-                            on_PourEntre_EditeMode(newMode)
+                            on_PourEntre_BoitEditeMode(newMode)
                         },
                         onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
