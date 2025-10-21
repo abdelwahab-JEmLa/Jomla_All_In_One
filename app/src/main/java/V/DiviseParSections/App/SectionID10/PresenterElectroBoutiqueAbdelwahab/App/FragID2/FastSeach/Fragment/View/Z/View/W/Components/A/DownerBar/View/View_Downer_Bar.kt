@@ -142,7 +142,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                         )
                     }
 
-                    QuantityDisplay_Mo_F_(
+                    Boit_Quantity_Handler(
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,

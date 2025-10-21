@@ -48,15 +48,14 @@ import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun QuantityDisplay_Mo_F_(
+fun Boit_Quantity_Handler(
     produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
     onShowColorsClick: (() -> Unit)? = null,
     isEditMode: Boolean = false,
-    onRequestSearchFocus: () -> Unit = {}  // ADD THIS
-,
-            onEditModeChange: (Boolean) -> Unit = {}
+    onRequestSearchFocus: () -> Unit = {},
+    onEditModeChange: (Boolean) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
@@ -174,16 +173,18 @@ fun QuantityDisplay_Mo_F_(
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with quantity 1 on first color
-                                val defaultVent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+                                val defaultVent =
+                                    getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
 
                                     // Check if tariff exists for this product and current client
-                                    val existingTariff = repo13TarificationInfos.datasValue.find { tariff ->
-                                        tariff.parent_M1Produit_KeyId == produit.keyID &&
-                                                tariff.typeChoisi == TypeChoisi.Prix_Detaille
-                                    }
+                                    val existingTariff =
+                                        repo13TarificationInfos.datasValue.find { tariff ->
+                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                    tariff.typeChoisi == TypeChoisi.Prix_Detaille
+                                        }
 
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),
@@ -255,7 +256,10 @@ fun QuantityDisplay_Mo_F_(
                     tariff.parent_M1Produit_KeyId == produit.keyID
         }
 
-        val default_Tariff = M13TarificationInfos.get_default_P0(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
+        val default_Tariff = M13TarificationInfos.get_default_P0(
+            produit,
+            start_Prix_Depuit_Ancient = produit.prixAchat
+        )
         val finale_Tariff = findTariff ?: default_Tariff.first
 
         val shouldUseManagerColors = finale_Tariff.laisse_Au_Gerant
