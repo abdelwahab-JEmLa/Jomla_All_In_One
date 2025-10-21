@@ -50,7 +50,7 @@ fun Downer_Bar_SemiModularized_Searcher(
     viewModel: ViewModelsProduit_T1,
     onShowColorsClick: (() -> Unit)? = null,
     isExpanded: Boolean = true,
-    searchFieldFocusRequester: FocusRequester? = null,  // ADD THIS
+    searchFieldFocusRequester: FocusRequester? = null,
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     onToggleExpand: () -> Unit = {},
     on_PourEntre_EditeMode: (Boolean) -> Unit = {},
