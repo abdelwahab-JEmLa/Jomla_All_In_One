@@ -180,6 +180,33 @@ fun View_M14VentPeriod(
             .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
             .padding(8.dp)
     ) {
+        // Add yellow highlight card for "Ici" state
+        if (relative_M14VentPeriode.abdelmounen_Doit_Etre_Ici) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFF59D) // Light yellow
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "📍 Abdelmounen Doit etre au entre ici",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFF827717) // Dark yellow for contrast
+                    )
+                }
+            }
+        }
+
         if (active) {
             Text(
                 text = "Selected Periode",
