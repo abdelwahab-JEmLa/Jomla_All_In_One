@@ -93,12 +93,11 @@ class PdfTableBuilder(
             val qty = ops.sumOf { it.quantity }
 
 
-            val rawPrice = tarification?.prixCurrency ?: (produit?.prixAchat ?: 0.0)
+            val rawPrice = tarification?.prixCurrency ?: 0.0
             val price = rawPrice
 
             val subtotal = price * qty
 
-            // Display logic: Show row with price/subtotal only if price should be displayed
             val shouldDisplayPriceAndSubtotal = price > 0.0
 
             val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)

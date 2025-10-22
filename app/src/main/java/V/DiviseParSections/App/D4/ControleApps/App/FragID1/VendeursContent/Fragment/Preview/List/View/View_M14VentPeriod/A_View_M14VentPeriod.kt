@@ -203,13 +203,40 @@ fun View_M14VentPeriod(
                     tint = MaterialTheme.colorScheme.error
                 )
             }
-            val key =relative_M14VentPeriode.keyID.takeLast(3)
+            val key = relative_M14VentPeriode.keyID.takeLast(3)
             Text(
                 text = "m14VentPeriode: key =  ${key}- ${relative_M14VentPeriode.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
+
+            TextButton(
+                onClick = {
+                    repositorysMainGetter.repo14VentPeriode.datasValue.forEach {
+                        aCentralFacade. repositorysMainSetter.update_M14VentPeriode(
+                            it.copy(
+                                abdelmounen_Doit_Etre_Ici = relative_M14VentPeriode.keyID == it.keyID
+                            )
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                    containerColor = if (relative_M14VentPeriode.abdelmounen_Doit_Etre_Ici)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                    else
+                        MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Text(
+                    text = if (relative_M14VentPeriode.abdelmounen_Doit_Etre_Ici) "✓ Ici" else "Ici",
+                    fontSize = 14.sp,
+                    color = if (relative_M14VentPeriode.abdelmounen_Doit_Etre_Ici)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Coupe_Colle_Buttons(

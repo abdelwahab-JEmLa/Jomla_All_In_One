@@ -45,7 +45,7 @@ class RepositorysMainSetter(
     private val repo9AppCompt: Repo9AppCompt,
     private val repo11AchatOperation: Repo11AchatOperation,
     private val repo13TarificationInfos: Repo13TarificationInfos,
-    private val repo14VentPeriode: Repo14VentPeriode,
+    val repo14VentPeriode: Repo14VentPeriode,
     private val repo15Grossist: Repo15Grossist,
     private val repoM16CategorieProduit: RepoM16CategorieProduit,
     private val repo17MessageVocale: Repo17MessageVocale,
@@ -207,6 +207,8 @@ class RepositorysMainSetter(
 
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.update_If_Exist(data)
+    fun upsert_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.upsert(data)
+
     fun delete(data: M14VentPeriode) = repo14VentPeriode.delete(data)
 
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------

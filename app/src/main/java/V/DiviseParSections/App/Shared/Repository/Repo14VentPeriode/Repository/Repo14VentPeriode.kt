@@ -153,6 +153,9 @@ data class M14VentPeriode(
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+    val abdelmounen_Doit_Etre_Ici: Boolean = false,
+
+
     //---------------------------------Forging Keys.Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parent_M9AppCompt_KeyID: String = "",
     var parent_M9AppCompt_DebugInfos: String = "",

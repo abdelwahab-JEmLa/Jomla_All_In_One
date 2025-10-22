@@ -334,19 +334,6 @@ data class M8BonVent(
             )
         }
 
-        fun get_default_Par_VentPeriod_Et_Client(
-            m14VentPeriode: M14VentPeriode,
-            m2Client: M2Client,
-            etateActuellementEst: EtateActuellementEst? = null,
-        ): M8BonVent {
-            return M8BonVent(
-                parent_M9AppCompt_DebugInfos = m14VentPeriode.parent_M9AppCompt_KeyID,
-                parent_M14VentPeriod_DebugInfos = m14VentPeriode.keyID,
-                parent_M2Client_KeyID = m2Client.keyID,
-                etateActuellementEst = etateActuellementEst
-                    ?: EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            )
-        }
 
         fun find_By_MainValuesKeys_Depuit_List(
             data_List: List<M8BonVent>,

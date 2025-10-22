@@ -1,11 +1,15 @@
 package P0_MainScreen.Main
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
@@ -45,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -63,6 +69,9 @@ fun MainScreen(
     viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
+    repo14VentPeriode: Repo14VentPeriode = aCentralFacade.repositorysMainGetter.repo14VentPeriode,
+    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
@@ -121,6 +130,15 @@ fun MainScreen(
             }
         }
     }
+
+    val targted_Period_doitEtreDon = repo14VentPeriode.datasValue.find {
+        it.abdelmounen_Doit_Etre_Ici
+    }
+
+    val doit_warning_change_Period_Vent =
+        targted_Period_doitEtreDon != null && (focusedValuesGetter.currentActive_M9AppCompt?.keyID
+            ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -129,17 +147,58 @@ fun MainScreen(
             val currentAppCompt = viewModel.getter.repo9AppCompt.currentAppCompt
             val hideAppScreen = currentAppCompt?.hideAppScreen ?: false
 
-            if (!shouldShowContent) {
+            if (!shouldShowContent || doit_warning_change_Period_Vent) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(
-                        progress = { repositoryProgress },
-                        modifier = Modifier.size(64.dp),
-                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    if (doit_warning_change_Period_Vent) {
+                        Box(
+                            modifier = Modifier
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = focusedValuesGetter.currentActive_M9AppCompt,
+                                        key = SemanticsPropertyKey("currentActive_M9AppCompt")
+                                    )
+                                }
+                                .fillMaxSize()
+                                .clickable {
+                                    if (targted_Period_doitEtreDon != null) {
+                                        focusedValuesGetter.currentActive_M9AppCompt?.let {
+                                            aCentralFacade.repositorysMainSetter.update_M9AppCompt(
+                                                it.copy(
+                                                    current_OnVent_M14VentPeriode_KeyID = targted_Period_doitEtreDon.keyID,
+                                                )
+                                            )
+                                        }
+                                        repo14VentPeriode.datasValue.forEach {
+                                            repositorysMainSetter.update_M14VentPeriode(
+                                                it.copy(
+                                                    abdelmounen_Doit_Etre_Ici = false
+                                                )
+                                            )
+                                        }
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            BlinkingWarningCard(
+                                "التطبيق ليس في الفترة المحددة للبيع اضغط للتحديث ${
+                                    targted_Period_doitEtreDon?.keyID?.takeLast(
+                                        3
+                                    )
+                                }"
+                            )
+                        }
+                    } else {
+                        CircularProgressIndicator(
+                            progress = { repositoryProgress },
+                            modifier = Modifier.size(64.dp),
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
 
                 }
             } else {
@@ -315,7 +374,7 @@ fun MainScreen(
 
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
                     (!productDisplayController.isHostPhone && productDisplayController.isConnected).ifTrue {
-                            App_PresenterEcran_Au_Client()
+                        App_PresenterEcran_Au_Client()
                     }
                 }
 

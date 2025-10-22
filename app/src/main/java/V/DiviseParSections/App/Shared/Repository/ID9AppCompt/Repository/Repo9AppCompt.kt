@@ -141,6 +141,8 @@ data class Z_AppCompt(
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
 
+    var period_Qui_Doit_Etre_Au_Entre: String = "",
+
 
     // Section Options Personnel
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
