@@ -179,6 +179,7 @@ fun CartonQuantityDisplay_Mo_F_(
                 ),
                 label = { Text("Cartons") }
             )
+
         } else {
             if (currentApp_ItsWorkChezGrossisst && produit.quantite_Boit_Par_Carton == 1) {
                 var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
