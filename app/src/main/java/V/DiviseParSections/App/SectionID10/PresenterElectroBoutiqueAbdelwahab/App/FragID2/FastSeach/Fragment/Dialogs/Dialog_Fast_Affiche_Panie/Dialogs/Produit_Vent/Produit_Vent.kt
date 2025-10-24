@@ -181,10 +181,11 @@ fun Produit_Vent(
                             }
                         }
                     }
+
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Display category information
-                    if (!nonNullProduit.nom_type_categorie.isNullOrEmpty()) {
+                    if (nonNullProduit.nom_type_categorie.isNotEmpty()) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
