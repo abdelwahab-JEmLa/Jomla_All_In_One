@@ -48,6 +48,7 @@ fun Display_Tariff(
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
     val getterFocusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
     val totalQuantity by derivedStateOf {
         getterFocusedVarsHandlerFacade
@@ -128,14 +129,27 @@ fun Display_Tariff(
             }
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
+        // Search tariff by parentM13TarificationKeyID (same logic as PDF print)
         val parentM13TarificationKeyID = relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
-        val relative_Tariff = repositorysMainGetter.find_M13Tarification_By_KeyID(parentM13TarificationKeyID)
+        val relative_Tariff = datasValue.find { it.keyID == parentM13TarificationKeyID }
 
-        // FIXED: Handle null tariff case - try to find SuperGros tariff or use product purchase price
-        val displayTariff = if (relative_Tariff != null) {
+        val isNonTrouveForGrossist = if (currentApp_ItsWorkChezGrossisst) {
+            // In grossist mode, tariff must exist AND be SuperGros type
+            relative_Tariff == null ||
+                    relative_Tariff.typeChoisi != TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+        } else {
+            false
+        }
+
+        // Update allNonTrouve to include the grossist validation
+        val effectiveAllNonTrouve = allNonTrouve || isNonTrouveForGrossist
+
+        // Handle tariff display with fallback logic
+        val displayTariff = if (relative_Tariff != null && !isNonTrouveForGrossist) {
+            // Valid tariff exists and passes grossist validation
             relative_Tariff
         } else {
-            // First try to find existing SuperGros tariff for this product
+            // Try to find existing SuperGros tariff for this product
             val superGrosTariff = datasValue
                 .filter { tariff ->
                     tariff.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
@@ -143,7 +157,7 @@ fun Display_Tariff(
                 }
                 .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
-            // If SuperGros tariff exists, use it; otherwise create a fallback with product purchase price
+            // If SuperGros tariff exists, use it; otherwise create a fallback
             superGrosTariff ?: M13TarificationInfos(
                 typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                 prixCurrency = relative_produit.prixAchat,
@@ -171,8 +185,8 @@ fun Display_Tariff(
                 },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                else displayTariff.typeChoisi.couleur // Now guaranteed to be non-null
+                containerColor = if (effectiveAllNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                else displayTariff.typeChoisi.couleur
             )
         ) {
             Column(
@@ -189,17 +203,17 @@ fun Display_Tariff(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    val tariffType = displayTariff.typeChoisi // No need for null check now
+                    val tariffType = displayTariff.typeChoisi
                     val nom = tariffType.nomArabe.take(2)
                     val tariffIcon = tariffType.iconVector ?: Icons.Default.History
-                    val textColor = if (allNonTrouve) {
+                    val textColor = if (effectiveAllNonTrouve) {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     } else {
                         tariffType.couleur_Text
                     }
 
                     Text(
-                        text = "$nom - ${displayTariff.prixCurrency}", // No need for null check
+                        text = "$nom - ${displayTariff.prixCurrency}",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Medium,
                         color = textColor

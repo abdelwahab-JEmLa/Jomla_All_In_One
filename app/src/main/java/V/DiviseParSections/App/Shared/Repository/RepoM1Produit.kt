@@ -177,12 +177,16 @@ data class ArticlesBasesStatsTable(
     var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
+
+    var count_Don_Depot: Int = 0,
+
     // Garde les propriétés originales pour la compatibilité
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
 
     //S P Ids
     var idParentCategorie: Long = 0,
     var positionDonSonCesFrereCategorieProduits: Int = 0,
+
 
     // Section InfosDeBase
     var nom: String = "",

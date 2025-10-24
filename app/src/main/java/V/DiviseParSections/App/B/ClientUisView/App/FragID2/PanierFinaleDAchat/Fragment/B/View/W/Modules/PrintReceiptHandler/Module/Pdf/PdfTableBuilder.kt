@@ -9,13 +9,12 @@ import com.itextpdf.layout.borders.SolidBorder
 import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
-import com.itextpdf.layout.element.Text
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
- * FIXED: Properly handles null tariffs with strikethrough styling
+ * FIXED: Properly handles null tariffs and laisse_Au_Gerant flag
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -93,60 +92,94 @@ class PdfTableBuilder(
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
 
-            // Check if tariff is null or price is 0
-            val tariffPrice = tarification?.prixCurrency
-            val fallbackPrice = produit?.prixAchat ?: 0.0
-            val isFallbackUsed = tariffPrice == null || tariffPrice == 0.0
 
-            val rawPrice = tariffPrice ?: fallbackPrice
-            val price = rawPrice
+            val rawPrice = tarification?.prixCurrency ?: 0.0
 
-            val subtotal = price * qty
+            val subtotal = rawPrice * qty
 
-            // Display logic: Show row with price/subtotal only if price should be displayed
-            val shouldDisplayPriceAndSubtotal = price > 0.0
+            val shouldDisplayPriceAndSubtotal = rawPrice > 0.0
 
-            val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+            val qtyDisplay =
+                formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
             val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
 
             if (shouldDisplayPriceAndSubtotal) {
                 // Calculate unit price if needed
                 val unitPrice = if (produit?.afficheUniteAuPrint == true) {
                     val nombreUniteInt = produit.nombreUniteInt
-                    if (nombreUniteInt > 0) price / nombreUniteInt else price
-                } else price
+                    if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
+                } else rawPrice
 
-                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(
+                    createDataCell(
+                        rowNumber.toString(),
+                        regularFont,
+                        10f,
+                        TextAlignment.CENTER
+                    )
+                )
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
-
-                // Create price cell with strikethrough if using fallback
-                table.addCell(createPriceCell(
-                    "${formatter.round(unitPrice)}",
-                    regularFont,
-                    10f,
-                    TextAlignment.CENTER,
-                    isFallbackUsed
-                ))
-
-                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
-
-                // Create subtotal cell with strikethrough if using fallback
-                table.addCell(createPriceCell(
-                    "${formatter.round(subtotal)}",
-                    regularFont,
-                    10f,
-                    TextAlignment.RIGHT,
-                    isFallbackUsed
-                ))
+                table.addCell(
+                    createDataCell(
+                        "${formatter.round(unitPrice)}",
+                        regularFont,
+                        10f,
+                        TextAlignment.CENTER
+                    )
+                )
+                table.addCell(
+                    createDataCell(
+                        productNameWithCategory,
+                        regularFont,
+                        10f,
+                        TextAlignment.LEFT
+                    )
+                )
+                table.addCell(
+                    createDataCell(
+                        "${formatter.round(subtotal)}",
+                        regularFont,
+                        10f,
+                        TextAlignment.RIGHT
+                    )
+                )
 
                 total += subtotal
             } else {
                 // When tariff is null or laisse_Au_Gerant is true, show product and quantity but hide price
-                table.addCell(createDataCell(rowNumber.toString(), regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(
+                    createDataCell(
+                        rowNumber.toString(),
+                        regularFont,
+                        10f,
+                        TextAlignment.CENTER
+                    )
+                )
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
-                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.CENTER)) // Empty price
-                table.addCell(createDataCell(productNameWithCategory, regularFont, 10f, TextAlignment.LEFT))
-                table.addCell(createDataCell("", regularFont, 10f, TextAlignment.RIGHT)) // Empty subtotal
+                table.addCell(
+                    createDataCell(
+                        "",
+                        regularFont,
+                        10f,
+                        TextAlignment.CENTER
+                    )
+                ) // Empty price
+                table.addCell(
+                    createDataCell(
+                        productNameWithCategory,
+                        regularFont,
+                        10f,
+                        TextAlignment.LEFT
+                    )
+                )
+                table.addCell(
+                    createDataCell(
+                        "",
+                        regularFont,
+                        10f,
+                        TextAlignment.RIGHT
+                    )
+                ) // Empty subtotal
             }
 
             rowNumber++
@@ -176,35 +209,4 @@ class PdfTableBuilder(
             .setBorder(SolidBorder(0.1f))
             .setPadding(4f)
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
-
-    /**
-     * Creates a price cell with optional strikethrough styling
-     * Used to indicate when fallback price (prixAchat) is being used instead of tariff price
-     */
-    private fun createPriceCell(
-        content: String,
-        font: PdfFont,
-        size: Float,
-        align: TextAlignment,
-        useStrikethrough: Boolean
-    ): Cell {
-        val text = Text(content)
-            .setFont(font)
-            .setFontSize(size)
-
-        // Apply strikethrough if using fallback price
-        if (useStrikethrough) {
-            text.setLineThrough()
-        }
-
-        val paragraph = Paragraph()
-            .add(text)
-            .setTextAlignment(align)
-
-        return Cell()
-            .add(paragraph)
-            .setBorder(SolidBorder(0.1f))
-            .setPadding(4f)
-            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
-    }
 }
