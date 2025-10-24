@@ -67,12 +67,12 @@ fun ElevatedCardHeader(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-                item {
+               /* item {
                     ToggleButton_MoveToStorePosition(
                         produit = produit,
                         modifier = Modifier.padding(end = 4.dp)
                     )
-                }
+                }    */
                 item {
                     NonTrouve_Handler(
                         aCentralFacade = aCentralFacade,

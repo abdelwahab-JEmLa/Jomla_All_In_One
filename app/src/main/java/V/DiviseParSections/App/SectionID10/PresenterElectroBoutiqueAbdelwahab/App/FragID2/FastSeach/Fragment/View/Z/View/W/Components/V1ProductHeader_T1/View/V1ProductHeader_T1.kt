@@ -6,12 +6,15 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +26,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -30,6 +35,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Numbers
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -54,7 +61,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -66,6 +75,7 @@ fun ProductHeader_T1(
     relative_Produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     isExpanded: Boolean,
 ) {
@@ -258,8 +268,10 @@ fun ProductHeader_T1(
                         // Display mode - clickable to edit
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
+                            // Product name on the left
                             Text(
                                 text = relative_Produit.nom,
                                 style = MaterialTheme.typography.titleMedium,
@@ -278,23 +290,15 @@ fun ProductHeader_T1(
                                     }
                             )
 
-                            // Edit icon to indicate clickability
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Modifier le nom",
-                                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = 0.4f
-                                )
-                                else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clickable {
-                                        editingNameText = relative_Produit.nom
-                                        isEditingName = true
-                                    }
+                            // CategoryTypeDisplay on the right
+                            CategoryTypeDisplay(
+                                produit = relative_Produit,
+                                category = categoriesMap[relative_Produit.idParentCategorie],
+                                modifier = Modifier.weight(0.6f),
+                                repositorysMainSetter = repositorysMainSetter
                             )
                         }
-                    }
+                        }
 
                     // Arabic product name - editable
                     if (isEditingArabicName && isExpanded) {
@@ -422,7 +426,7 @@ fun ProductHeader_T1(
                             )     }
                         }
                     }
-
+                    focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -447,6 +451,7 @@ fun ProductHeader_T1(
                                 shouldShowCategoryDialog = true
                             }
                         )
+                    }
                     }
 
                     if (allNonTrouve) {
@@ -743,6 +748,146 @@ fun Card_StatueDuProduit(
                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
+        }
+    }
+}
+@Composable
+fun CategoryTypeDisplay(
+    produit: ArticlesBasesStatsTable,
+    category: CategoriesTabelle?,
+    modifier: Modifier = Modifier,
+    repositorysMainSetter: RepositorysMainSetter
+) {
+    // State management
+    var isEditing by remember { mutableStateOf(false) }
+    var textValue by remember(produit.nom_type_categorie) {
+        mutableStateOf(
+            produit.nom_type_categorie.ifEmpty { category?.nom ?: "" }
+        )
+    }
+    val focusRequester = remember { FocusRequester() }
+
+    // Get initial text for editing - empty if starts with specific values
+    val initialEditText = remember(produit.nom_type_categorie, category?.nom) {
+        val currentText = produit.nom_type_categorie.ifEmpty { category?.nom ?: "" }
+        if (currentText.startsWith("Confiserie_New_Arrivage")) {
+            ""
+        } else {
+            currentText
+        }
+    }
+
+    // Check if nom_type_categorie matches category name
+    val isMatching = produit.nom_type_categorie.isNotEmpty() &&
+            produit.nom_type_categorie == category?.nom
+
+    // Save function
+    fun saveText() {
+        if (textValue != produit.nom_type_categorie) {
+            repositorysMainSetter.upsert_M1Produit(
+                produit.copy(
+                    nom_type_categorie = textValue,
+                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                )
+            )
+        }
+        isEditing = false
+    }
+
+    // Cancel function
+    fun cancelEditing() {
+        textValue = initialEditText
+        isEditing = false
+    }
+
+    if (isEditing) {
+        // Edit mode - just the outlined text field
+        OutlinedTextField(
+            value = textValue,
+            onValueChange = { textValue = it },
+            modifier = modifier.focusRequester(focusRequester),
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                fontWeight = if (isMatching) FontWeight.Bold else FontWeight.Normal
+            ),
+            placeholder = { Text(category?.nom ?: "Type", style = MaterialTheme.typography.bodySmall) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = if (isMatching) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = if (isMatching) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = if (isMatching) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = if (isMatching) MaterialTheme.colorScheme.error.copy(alpha = 0.7f) else MaterialTheme.colorScheme.outline,
+                cursorColor = if (isMatching) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                focusedContainerColor = if (isMatching) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f) else Color.Transparent,
+                unfocusedContainerColor = if (isMatching) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f) else Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { saveText() })
+        )
+
+        // Request focus when entering edit mode
+        LaunchedEffect(isEditing) {
+            if (isEditing) {
+                focusRequester.requestFocus()
+            }
+        }
+    } else {
+        // Display mode - clickable to edit
+        Card(
+            modifier = modifier.clickable {
+                textValue = initialEditText
+                isEditing = true
+            },
+            colors = CardDefaults.cardColors(
+                containerColor = if (isMatching) {
+                    MaterialTheme.colorScheme.errorContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                }
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = textValue.ifEmpty { category?.nom ?: "Type" },
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = if (isMatching) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isMatching) {
+                        MaterialTheme.colorScheme.onErrorContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Quick action buttons (visible on hover or always visible based on your preference)
+                if (textValue != category?.nom && category?.nom != null) {
+                    IconButton(
+                        onClick = {
+                            textValue = category.nom
+                            repositorysMainSetter.upsert_M1Produit(
+                                produit.copy(
+                                    nom_type_categorie = category.nom,
+                                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                                )
+                            )
+                        },
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Réinitialiser",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }

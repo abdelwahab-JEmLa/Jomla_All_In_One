@@ -56,6 +56,12 @@ fun Produit_Vent(
         repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
     }
 
+    val categoriesMap =
+        aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
+    val category= produit?.idParentCategorie?.let { categoryId ->
+        categoriesMap[categoryId]
+    }
+
     val hasNonTrouve = remember(ventList) {
         ventList.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     }
@@ -175,6 +181,15 @@ fun Produit_Vent(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CategoryTypeDisplay(
+                        produit = nonNullProduit,
+                        category = category,
+                        modifier = Modifier,
+                        repositorysMainSetter = repositorysMainSetter
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Display_Tariff(
                         relative_List_M10OperationVentCouleur = ventList,
@@ -303,3 +318,5 @@ fun FAB_MoveProduct(
         }
     }
 }
+
+

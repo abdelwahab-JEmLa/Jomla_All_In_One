@@ -25,6 +25,9 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
         return "$dayOfWeek $dayOfMonth/$month/$year ${String.format("%02d:%02d", hour, minute)}"
     }
 
+    /**
+     * FIXED: Now includes category type name in parentheses if not empty
+     */
     fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
         val productName = cleanAndCapitalizeProductName(produit?.nom ?: "Produit")
 
@@ -34,8 +37,13 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
             productName
         }
 
-        return productNameWithCopyright
-
+        // Add category type name in parentheses if it exists and is not empty
+        val categoryType = produit?.nom_type_categorie?.trim()
+        return if (!categoryType.isNullOrEmpty()) {
+            "$productNameWithCopyright ($categoryType)"
+        } else {
+            productNameWithCopyright
+        }
     }
 
     fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {

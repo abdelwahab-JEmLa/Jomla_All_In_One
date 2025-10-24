@@ -174,10 +174,11 @@ data class ArticlesBasesStatsTable(
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+
     var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
-
+    var nom_type_categorie: String = "",
     var count_Don_Depot: Int = 0,
 
     // Garde les propriétés originales pour la compatibilité

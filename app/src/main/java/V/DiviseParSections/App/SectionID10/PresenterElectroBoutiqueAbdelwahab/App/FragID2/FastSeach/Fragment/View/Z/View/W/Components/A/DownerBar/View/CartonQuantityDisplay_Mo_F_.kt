@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.A.DownerBar.View
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
@@ -179,7 +180,60 @@ fun CartonQuantityDisplay_Mo_F_(
                 label = { Text("Cartons") }
             )
         } else {
-            // Normal mode: Show carton quantity card
+            if (currentApp_ItsWorkChezGrossisst && produit.quantite_Boit_Par_Carton == 1) {
+                var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
+
+                // Show button to change carton quantity directly
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    ),
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .clickable {
+                            shouldShowDialog_quantite_Boit_Par_Carton = true
+                        }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Inventory2,
+                            contentDescription = "Changer quantité carton",
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = "${produit.quantite_Boit_Par_Carton}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+
+                // Dialog to edit quantite_Boit_Par_Carton
+                if (shouldShowDialog_quantite_Boit_Par_Carton) {
+                    Dialog_Choisire_Quantity_Modularized(
+                        old_quantity = produit.quantite_Boit_Par_Carton,
+                        label = "quantite_Boit_Par_Carton",
+                    ) { new_Qyt ->
+                        if (new_Qyt != null) {
+                            val updatedProduit = produit.copy(
+                                quantite_Boit_Par_Carton = new_Qyt,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+                            repositorysMainGetter.repo1ProduitInfos.update(updatedProduit)
+                        }
+                        shouldShowDialog_quantite_Boit_Par_Carton = false
+                    }
+                }
+            }
+
+            // Main carton display card
             Card(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
@@ -209,26 +263,23 @@ fun CartonQuantityDisplay_Mo_F_(
                                     val firstColor = productColors.first()
                                     val unitsForOneCarton = produit.quantite_Boit_Par_Carton
 
-                                    // FIXED: Find existing tariff based on current mode
+                                    // Find existing tariff based on current mode
                                     val existingTariff = if (currentApp_ItsWorkChezGrossisst) {
-                                        // In grossist mode, search for SuperGros tariff
                                         repo13TarificationInfos.datasValue.find { tariff ->
                                             tariff.parent_M1Produit_KeyId == produit.keyID &&
                                                     tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
                                         }
                                     } else {
-                                        // In normal mode, search for Prix_Detaille tariff
                                         repo13TarificationInfos.datasValue.find { tariff ->
                                             tariff.parent_M1Produit_KeyId == produit.keyID &&
                                                     tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
                                         }
                                     }
 
-                                    // FIXED: Determine or create the tariff first
+                                    // Determine or create the tariff first
                                     val tariffToUse = if (existingTariff != null) {
                                         existingTariff
                                     } else {
-                                        // Create appropriate tariff based on mode
                                         val newTariff = if (currentApp_ItsWorkChezGrossisst) {
                                             M13TarificationInfos(
                                                 typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
@@ -243,12 +294,11 @@ fun CartonQuantityDisplay_Mo_F_(
                                             ).first
                                         }
 
-                                        // Add tariff to repository to get its keyID
                                         repo13TarificationInfos.add(newTariff)
                                         newTariff
                                     }
 
-                                    // FIXED: Now create vent with tariff reference
+                                    // Create vent with tariff reference
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),
                                         parent_M1Produit_KeyId = produit.keyID,
@@ -264,7 +314,7 @@ fun CartonQuantityDisplay_Mo_F_(
 
                                     repo10OperationVentCouleur.addOrUpdateData(newVent)
 
-                                    // FIXED: Link tariff to vent if it was newly created
+                                    // Link tariff to vent if it was newly created
                                     if (existingTariff == null) {
                                         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                             m13TarificationInfos_Pour_Produit = tariffToUse,

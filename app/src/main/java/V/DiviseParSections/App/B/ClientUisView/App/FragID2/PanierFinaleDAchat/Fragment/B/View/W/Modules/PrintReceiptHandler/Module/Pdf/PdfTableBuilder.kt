@@ -70,7 +70,8 @@ class PdfTableBuilder(
         // FIXED: Removed "N°" header
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))  //<--
+        //TODO(1): ajout au nom si produit . nom_type_categorie est non empty affiche le entre () sinon laisse le nom normale
         table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
     }
 
