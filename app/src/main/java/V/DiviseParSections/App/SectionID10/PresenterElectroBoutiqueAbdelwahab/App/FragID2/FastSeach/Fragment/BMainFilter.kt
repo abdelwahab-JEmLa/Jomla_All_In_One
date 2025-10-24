@@ -37,6 +37,8 @@ fun MainFilterT1(
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
 
 
+// Replace the filteredProducts remember block with this updated version:
+
     val filteredProducts = remember(products, searchFilter, sourceLenceurDeCetteFragment, currentApp_Est_ItsWorkChezGrossisst) {
         // First apply source-based filtering
         val sourceFilteredProducts = when (sourceLenceurDeCetteFragment) {
@@ -49,11 +51,20 @@ fun MainFilterT1(
                 if (searchFilter.isBlank()) {
                     emptyList() // Return empty list when no search text
                 } else {
-                    products.filter {
+                    // Separate primary matches from category name matches
+                    val primaryMatches = products.filter {
                         it.nom.contains(searchFilter, true) ||
                                 it.nomMutable.contains(searchFilter, true) ||
                                 it.nomArab.contains(searchFilter, true)
                     }
+
+                    val categoryMatches = products.filter {
+                        !primaryMatches.contains(it) && // Exclude products already in primary matches
+                                it.nom_type_categorie.contains(searchFilter, true)
+                    }
+
+                    // Return primary matches first, then category matches
+                    primaryMatches + categoryMatches
                 }
             }
             null -> {
@@ -61,11 +72,20 @@ fun MainFilterT1(
                 if (searchFilter.isBlank()) {
                     emptyList() // Return empty list when no search text
                 } else {
-                    products.filter {
+                    // Separate primary matches from category name matches
+                    val primaryMatches = products.filter {
                         it.nom.contains(searchFilter, true) ||
                                 it.nomMutable.contains(searchFilter, true) ||
                                 it.nomArab.contains(searchFilter, true)
                     }
+
+                    val categoryMatches = products.filter {
+                        !primaryMatches.contains(it) && // Exclude products already in primary matches
+                                it.nom_type_categorie.contains(searchFilter, true)
+                    }
+
+                    // Return primary matches first, then category matches
+                    primaryMatches + categoryMatches
                 }
             }
         }
