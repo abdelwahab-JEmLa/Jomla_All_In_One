@@ -14,7 +14,7 @@ import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
- * FIXED: Properly handles null tariffs and laisse_Au_Gerant flag
+ * FIXED: Removed N° column, added item count display with total aligned left
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -29,19 +29,19 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ) {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(10f, 15f, 20f, 35f, 20f)))
+        // FIXED: Changed from 5 columns to 4 columns (removed N° column)
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
         addTableHeaders(table, boldFont)
-        val total = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
+        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
 
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        // Only show total if greater than 0
-        if (total > 0.0) {
-            contentBuilder.addText(doc, "Total", boldFont, 14f, TextAlignment.CENTER)
-            contentBuilder.addText(doc, "${formatter.round(total)}Da", boldFont, 16f, TextAlignment.CENTER)
+        // FIXED: Show total with item count, aligned left
+        if (result.total > 0.0) {
+            contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
         }
     }
 
@@ -53,20 +53,21 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ): Double {
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(6f, 15f, 14f, 50f, 12f)))
+        // FIXED: Changed from 5 columns to 4 columns (removed N° column)
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 14f, 56f, 15f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
         addTableHeaders(table, boldFont)
-        val total = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
+        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
 
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        return total
+        return result.total
     }
 
     private fun addTableHeaders(table: Table, boldFont: PdfFont) {
-        table.addCell(createHeaderCell("N°", boldFont, 11f, TextAlignment.CENTER))
+        // FIXED: Removed "N°" header
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
@@ -79,9 +80,9 @@ class PdfTableBuilder(
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
         regularFont: PdfFont
-    ): Double {
+    ): TableResult {
         var total = 0.0
-        var rowNumber = 1
+        var itemCount = 0
         val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
 
         groupedOps.forEach { (produitId, ops) ->
@@ -92,11 +93,8 @@ class PdfTableBuilder(
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
 
-
             val rawPrice = tarification?.prixCurrency ?: 0.0
-
             val subtotal = rawPrice * qty
-
             val shouldDisplayPriceAndSubtotal = rawPrice > 0.0
 
             val qtyDisplay =
@@ -110,14 +108,7 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                table.addCell(
-                    createDataCell(
-                        rowNumber.toString(),
-                        regularFont,
-                        10f,
-                        TextAlignment.CENTER
-                    )
-                )
+                // FIXED: Removed row number cell
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
@@ -145,16 +136,10 @@ class PdfTableBuilder(
                 )
 
                 total += subtotal
+                itemCount++
             } else {
                 // When tariff is null or laisse_Au_Gerant is true, show product and quantity but hide price
-                table.addCell(
-                    createDataCell(
-                        rowNumber.toString(),
-                        regularFont,
-                        10f,
-                        TextAlignment.CENTER
-                    )
-                )
+                // FIXED: Removed row number cell
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
@@ -180,12 +165,12 @@ class PdfTableBuilder(
                         TextAlignment.RIGHT
                     )
                 ) // Empty subtotal
-            }
 
-            rowNumber++
+                itemCount++
+            }
         }
 
-        return total
+        return TableResult(total, itemCount)
     }
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
@@ -209,4 +194,6 @@ class PdfTableBuilder(
             .setBorder(SolidBorder(0.1f))
             .setPadding(4f)
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+
+    private data class TableResult(val total: Double, val itemCount: Int)
 }

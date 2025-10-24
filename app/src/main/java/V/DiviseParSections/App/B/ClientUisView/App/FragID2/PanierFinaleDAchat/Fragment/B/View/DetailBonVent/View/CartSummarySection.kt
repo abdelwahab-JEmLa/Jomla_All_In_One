@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View
 
+
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -69,6 +71,45 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Total price at the top
+        if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
+            val ventsTrouve = repo.onVentFilteredDatas.filter {
+                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+            }
+            val totalValue = ventsTrouve.sumOf {
+                val provisoireMonPrix =
+                    viewModel.aCentralFacade.repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)
+                        ?.prixCurrency
+                        ?: 0.0
+
+                it.quantity * provisoireMonPrix
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.getSemanticsTag(ventsTrouve, "ventsTrouve"),
+                    text = "${
+                        String.format(
+                            "%.2f",
+                            totalValue
+                        )
+                    } DA",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = "${summaryByDeliveryStatus.trouveSummary.totalProducts} produits",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
 
         if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
             SummarySection(
@@ -86,44 +127,6 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 icon = Icons.Default.Error,
                 iconTint = Color(0xFFFF5722) // Orange/Red
             )
-        }
-
-        if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Total à Payer:",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                val ventsTrouve = repo.onVentFilteredDatas.filter {
-                    it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-                }
-                val totalValue = ventsTrouve.sumOf {
-                    val provisoireMonPrix =
-                        viewModel.aCentralFacade.repositorysMainGetter.find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)
-                            ?.prixCurrency
-                            ?: 0.0
-
-                    it.quantity * provisoireMonPrix
-                }
-
-                Text(
-                    modifier = Modifier.getSemanticsTag(ventsTrouve, "ventsTrouve"),
-                    text = "${
-                        String.format(
-                            "%.2f",
-                            totalValue
-                        )
-                    } DA",
-                    style = MaterialTheme.typography.headlineSmall, // Increased from titleMedium
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
         }
     }
 }
@@ -186,4 +189,3 @@ data class DeliveryStatusSummary(
     val trouveSummary: CartSummary,
     val nonTrouveSummary: CartSummary
 )
-

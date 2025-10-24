@@ -15,6 +15,7 @@ import java.util.Date
  * Handles PDF content creation and layout
  */
 class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
+
     fun addHeader(
         doc: Document,
         title: String,
@@ -94,7 +95,6 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
 
         addCompactLabelValue(doc, "Ancien Solde :", "${formatter.round(oldBalance)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Bon actuel :", "${formatter.round(currentBill)} Da", regularFont, boldFont)
-     //   addCompactLabelValue(doc, "Versement :", "${formatter.round(versement)} Da", regularFont, boldFont)
         addCompactLabelValue(doc, "Nouv. Soldé :", "${formatter.round(newBalance)} Da", regularFont, boldFont)
     }
 
@@ -125,7 +125,7 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
         }
         val newBalance = creditData.oldBalance + creditData.currentBill - totalPaid
 
-        addText(doc, "────────────────────", regularFont, 10f, TextAlignment.CENTER)
+        addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         addText(doc, "Nouv. Sold :", boldFont, 12f, TextAlignment.LEFT)
@@ -134,7 +134,40 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
         doc.add(Paragraph("\n").setFontSize(0.3f))
         addText(doc, "Transaction: #${creditData.transactionId}", regularFont, 9f, TextAlignment.CENTER)
         doc.add(Paragraph("\n").setFontSize(0.3f))
-        addText(doc, "────────────────────────", regularFont, 8f, TextAlignment.CENTER)
+        addText(doc, "────────────────────────────", regularFont, 8f, TextAlignment.CENTER)
+    }
+
+    /**
+     * FIXED: Add total with item count displayed next to it, total aligned left
+     */
+    fun addTotalWithItemCount(
+        doc: Document,
+        total: Double,
+        itemCount: Int,
+        boldFont: PdfFont
+    ) {
+        // Create a table with two columns: left for total, right for item count
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(70f, 30f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        val totalCell = Cell()
+            .add(Paragraph("Total: ${formatter.round(total)} Da")
+                .setFont(boldFont)
+                .setFontSize(14f)
+                .setTextAlignment(TextAlignment.LEFT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+            .setPadding(0f)
+
+        val itemCountCell = Cell()
+            .add(Paragraph("($itemCount items)")
+                .setFont(boldFont)
+                .setFontSize(12f)
+                .setTextAlignment(TextAlignment.RIGHT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+            .setPadding(0f)
+
+        table.addCell(totalCell).addCell(itemCountCell)
+        doc.add(table)
     }
 
     fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =

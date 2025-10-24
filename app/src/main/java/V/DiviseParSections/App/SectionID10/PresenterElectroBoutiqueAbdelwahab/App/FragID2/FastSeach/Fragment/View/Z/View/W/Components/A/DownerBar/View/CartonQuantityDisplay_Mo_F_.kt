@@ -58,8 +58,8 @@ fun CartonQuantityDisplay_Mo_F_(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val repositorysMainGetter = aCentralFacade.repositorysMainGetter
     val repositorysMainSetter = aCentralFacade.repositorysMainSetter
+    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
-    // FIXED: Add keyboard controller and coroutine scope for proper focus handling
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -74,7 +74,6 @@ fun CartonQuantityDisplay_Mo_F_(
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
 
-        // Convert units to cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits / produit.quantite_Boit_Par_Carton
         } else {
@@ -89,7 +88,6 @@ fun CartonQuantityDisplay_Mo_F_(
                 ventOperation.parent_M1Produit_KeyId == produit.keyID
             }.sumOf { it.quantity }
 
-        // Calculate remaining units after cartons
         if (produit.quantite_Boit_Par_Carton > 0) {
             totalUnits % produit.quantite_Boit_Par_Carton
         } else {
@@ -107,7 +105,6 @@ fun CartonQuantityDisplay_Mo_F_(
     // Auto-focus when entering edit mode
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
-            // Small delay to ensure the text field is fully composed
             delay(50)
             try {
                 localFocusRequester.requestFocus()
@@ -117,7 +114,6 @@ fun CartonQuantityDisplay_Mo_F_(
         }
     }
 
-    // FIXED: Helper function to handle carton update and focus return
     fun handleCartonUpdate() {
         coroutineScope.launch {
             val newCartons = cartonInput.toIntOrNull() ?: 0
@@ -137,25 +133,15 @@ fun CartonQuantityDisplay_Mo_F_(
                 repo10OperationVentCouleur.delete(existingVent)
             }
 
-            // FIXED: Proper sequence to prevent crashes
-            // Step 1: Hide keyboard first
             keyboardController?.hide()
-
-            // Step 2: Small delay to let keyboard animation complete
             delay(100)
-
-            // Step 3: Exit edit mode
             onEditModeChange(false)
-
-            // Step 4: Another small delay before transferring focus
             delay(100)
 
-            // Step 5: Transfer focus to search field
             try {
                 focusRequester?.requestFocus()
                 onRequestSearchFocus()
             } catch (e: Exception) {
-                // Fallback: just call the focus callback
                 onRequestSearchFocus()
             }
         }
@@ -183,7 +169,6 @@ fun CartonQuantityDisplay_Mo_F_(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        // FIXED: Use the helper function for proper sequence
                         handleCartonUpdate()
                     }
                 ),
@@ -204,13 +189,11 @@ fun CartonQuantityDisplay_Mo_F_(
                 ),
                 modifier = Modifier
                     .clickable(enabled = !allNonTrouve) {
-                        // Get product colors
                         val productColors = repo3CouleurProduitInfos.datasValue.filter {
                             it.parentBProduitInfosKeyID == produit.keyID
                         }
 
                         if (productColors.isNotEmpty()) {
-                            // Check if there's already a vent operation for this product
                             val existingVent = focusedValuesGetter
                                 .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
@@ -219,25 +202,61 @@ fun CartonQuantityDisplay_Mo_F_(
                                 // Enter edit mode immediately
                                 onEditModeChange(true)
                             } else {
-                                // First click: Create new vent with 1 carton worth of units on first color
+                                // First click: Create new vent with 1 carton worth of units
                                 val defaultVent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
                                     val unitsForOneCarton = produit.quantite_Boit_Par_Carton
 
-                                    // Check if tariff exists for this product
-                                    val existingTariff = repo13TarificationInfos.datasValue.find { tariff ->
-                                        tariff.parent_M1Produit_KeyId == produit.keyID &&
-                                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
+                                    // FIXED: Find existing tariff based on current mode
+                                    val existingTariff = if (currentApp_ItsWorkChezGrossisst) {
+                                        // In grossist mode, search for SuperGros tariff
+                                        repo13TarificationInfos.datasValue.find { tariff ->
+                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                                        }
+                                    } else {
+                                        // In normal mode, search for Prix_Detaille tariff
+                                        repo13TarificationInfos.datasValue.find { tariff ->
+                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
+                                        }
                                     }
 
+                                    // FIXED: Determine or create the tariff first
+                                    val tariffToUse = if (existingTariff != null) {
+                                        existingTariff
+                                    } else {
+                                        // Create appropriate tariff based on mode
+                                        val newTariff = if (currentApp_ItsWorkChezGrossisst) {
+                                            M13TarificationInfos(
+                                                typeChoisi = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                                prixCurrency = produit.prixAchat,
+                                                parent_M1Produit_KeyId = produit.keyID,
+                                                parent_M1Produit_DebugInfos = produit.nom
+                                            )
+                                        } else {
+                                            M13TarificationInfos.get_default_P0(
+                                                produit,
+                                                start_Prix_Depuit_Ancient = produit.prixAchat
+                                            ).first
+                                        }
+
+                                        // Add tariff to repository to get its keyID
+                                        repo13TarificationInfos.add(newTariff)
+                                        newTariff
+                                    }
+
+                                    // FIXED: Now create vent with tariff reference
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),
                                         parent_M1Produit_KeyId = produit.keyID,
                                         parent_M1Produit_DebugInfos = produit.nom,
                                         parent_M3CouleurProduit_KeyID = firstColor.keyID,
                                         parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${firstColor.indexCouleurDansAncienProto}",
+                                        parentM13TarificationKeyID = tariffToUse.keyID,
+                                        parentM13TarificationDebugInfos = tariffToUse.getDebugInfos(),
                                         quantity = unitsForOneCarton,
                                         etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -245,15 +264,10 @@ fun CartonQuantityDisplay_Mo_F_(
 
                                     repo10OperationVentCouleur.addOrUpdateData(newVent)
 
-                                    // Create tariff if it doesn't exist
+                                    // FIXED: Link tariff to vent if it was newly created
                                     if (existingTariff == null) {
-                                        val defaultTariff = M13TarificationInfos.get_default_P0(
-                                            produit,
-                                            start_Prix_Depuit_Ancient = produit.prixAchat
-                                        ).first
-
                                         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                                            m13TarificationInfos_Pour_Produit = defaultTariff,
+                                            m13TarificationInfos_Pour_Produit = tariffToUse,
                                             m10OperationVentCouleurs = listOf(newVent),
                                             aCentralFacade = aCentralFacade
                                         )

@@ -136,7 +136,7 @@ fun Boit_Quantity_Handler(
                             repo10OperationVentCouleur.delete(existingVent)
                         }
 
-                        // Exit edit mode - FIXED: Use callback instead of direct assignment
+                        // Exit edit mode
                         onEditModeChange(false)
 
                         // Request focus back to search field
@@ -169,7 +169,7 @@ fun Boit_Quantity_Handler(
                                 .find { it.parent_M1Produit_KeyId == produit.keyID }
 
                             if (existingVent != null) {
-                                // Second click: Enter edit mode - FIXED: Use callback
+                                // Second click: Enter edit mode
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with quantity 1 on first color
@@ -179,19 +179,54 @@ fun Boit_Quantity_Handler(
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
 
-                                    // Check if tariff exists for this product and current client
-                                    val existingTariff =
+                                    // TODO(1) FIXED: Find existing tariff based on current mode
+                                    val existingTariff = if (currentApp_ItsWorkChezGrossisst) {
+                                        // In grossist mode, search for SuperGros tariff
+                                        repo13TarificationInfos.datasValue.find { tariff ->
+                                            tariff.parent_M1Produit_KeyId == produit.keyID &&
+                                                    tariff.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                                        }
+                                    } else {
+                                        // In normal mode, search for Prix_Detaille tariff
                                         repo13TarificationInfos.datasValue.find { tariff ->
                                             tariff.parent_M1Produit_KeyId == produit.keyID &&
                                                     tariff.typeChoisi == TypeChoisi.Prix_Detaille
                                         }
+                                    }
 
+                                    // Determine or create the tariff first
+                                    val tariffToUse = if (existingTariff != null) {
+                                        existingTariff
+                                    } else {
+                                        // Create appropriate tariff based on mode
+                                        val newTariff = if (currentApp_ItsWorkChezGrossisst) {
+                                            M13TarificationInfos(
+                                                typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                                prixCurrency = produit.prixAchat,
+                                                parent_M1Produit_KeyId = produit.keyID,
+                                                parent_M1Produit_DebugInfos = produit.nom
+                                            )
+                                        } else {
+                                            M13TarificationInfos.get_default_P0(
+                                                produit,
+                                                start_Prix_Depuit_Ancient = produit.prixAchat
+                                            ).first
+                                        }
+
+                                        // Add tariff to repository to get its keyID
+                                        repo13TarificationInfos.add(newTariff)
+                                        newTariff
+                                    }
+
+                                    // Now create vent with tariff reference
                                     val newVent = defaultVent.copy(
                                         keyID = getPushFireBase(M10OperationVentCouleur.ref),
                                         parent_M1Produit_KeyId = produit.keyID,
                                         parent_M1Produit_DebugInfos = produit.nom,
                                         parent_M3CouleurProduit_KeyID = firstColor.keyID,
                                         parent_M3CouleurProduit_DebugInfos = "${produit.nom}_${firstColor.indexCouleurDansAncienProto}",
+                                        parentM13TarificationKeyID = tariffToUse.keyID,
+                                        parentM13TarificationDebugInfos = tariffToUse.getDebugInfos(),
                                         quantity = 1,
                                         etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme,
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -199,15 +234,10 @@ fun Boit_Quantity_Handler(
 
                                     repo10OperationVentCouleur.addOrUpdateData(newVent)
 
-                                    // Create tariff if it doesn't exist
+                                    // Link tariff to vent if it was newly created
                                     if (existingTariff == null) {
-                                        val defaultTariff = M13TarificationInfos.get_default_P0(
-                                            produit,
-                                            start_Prix_Depuit_Ancient = produit.prixAchat
-                                        ).first
-
                                         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                                            m13TarificationInfos_Pour_Produit = defaultTariff,
+                                            m13TarificationInfos_Pour_Produit = tariffToUse,
                                             m10OperationVentCouleurs = listOf(newVent),
                                             aCentralFacade = aCentralFacade
                                         )

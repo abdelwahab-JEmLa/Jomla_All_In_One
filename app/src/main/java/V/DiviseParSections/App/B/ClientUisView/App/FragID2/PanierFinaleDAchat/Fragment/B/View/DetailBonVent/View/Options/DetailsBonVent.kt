@@ -269,8 +269,7 @@ fun WindowsAppShareButton(
                 .semantics(mergeDescendants = true) {
                     set(value = activeVents, key = SemanticsPropertyKey(""))
                 }.semantics(mergeDescendants = true) {
-                    set(value =aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue.find {   //<--
-                    //TODO(1): pk meme si ici ca affiche que le tariff de 1 erre vent prix est 490 comme au debug mais au pdf sortir P.U c vide non calcule
+                    set(value =aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue.find { 
                         it.keyID==activeVents.first().parentM13TarificationKeyID
                     } , key = SemanticsPropertyKey("parentM13TarificationKeyID"))
                 }
