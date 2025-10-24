@@ -183,13 +183,44 @@ fun Produit_Vent(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    CategoryTypeDisplay(
-                        produit = nonNullProduit,
-                        category = category,
-                        modifier = Modifier,
-                        repositorysMainSetter = repositorysMainSetter
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    if (!nonNullProduit.nom_type_categorie.isNullOrEmpty()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Catégorie:",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = nonNullProduit.nom_type_categorie,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                category?.let {
+                                    Text(
+                                        text = "(${it.nom})",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
 
                     Display_Tariff(
                         relative_List_M10OperationVentCouleur = ventList,
