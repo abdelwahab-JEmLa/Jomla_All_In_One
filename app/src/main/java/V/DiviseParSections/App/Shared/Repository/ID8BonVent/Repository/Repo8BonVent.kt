@@ -1,9 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
 import android.widget.Toast
@@ -212,6 +210,9 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
+    var credit_fait: Double = 0.0,
+    var versement_fait : Double = 0.0,
+
     var sum_De_Totale_Vents: Double = 0.0,
     var sum_De_Credit_Fait: Double = 0.0,
     var versement: Double = 0.0,
@@ -262,6 +263,9 @@ data class M8BonVent(
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
         Cette_Transaction_Type_Est_Credit(android.R.color.holo_red_dark, "تم اقراضه  "),
+
+        Credit(android.R.color.holo_red_dark, " "),
+        Versemment(R.color.c5, ""),
 
 
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),

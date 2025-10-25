@@ -74,7 +74,7 @@ private fun CustomStatusDropdownMenu(
     onDismissRequest: () -> Unit,
     relative_M2Client: M2Client?,
 ) {
-
+    val currentApp_ItsWorkChezGrossisst= focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -149,6 +149,8 @@ private fun CustomStatusDropdownMenu(
             )
         }
 
+
+
         StatusDropdownItem(
             status = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             text = "عندو سلعة"
@@ -171,6 +173,8 @@ private fun CustomStatusDropdownMenu(
         )
 
         focusedValuesGetter.currentApp_Est_Admin.ifTrue {
+
+
             val status = M8BonVent.EtateActuellementEst.PASSE
             StatusDropdownItem(
                 status = status,
@@ -182,6 +186,15 @@ private fun CustomStatusDropdownMenu(
                 text = M8BonVent.EtateActuellementEst.Ordre_Gerant.nomArabe
             )
 
+            StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.Credit,
+                text = M8BonVent.EtateActuellementEst.Credit.name
+            )
+
+            StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.Versemment,
+                text = M8BonVent.EtateActuellementEst.Versemment.name
+            )
 
         }
     }

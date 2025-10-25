@@ -374,7 +374,7 @@ fun View_MainItem(
                                 Text(
                                     text = String.format(
                                         "%.2f",
-                                        sumBonVents - relative_M8BonVent.versement
+                                        sumBonVents - relative_M8BonVent.sum_De_Credit_Fait
                                     ),
                                     style = MaterialTheme.typography.titleMedium, // Slightly larger
                                     fontWeight = FontWeight.Bold,
