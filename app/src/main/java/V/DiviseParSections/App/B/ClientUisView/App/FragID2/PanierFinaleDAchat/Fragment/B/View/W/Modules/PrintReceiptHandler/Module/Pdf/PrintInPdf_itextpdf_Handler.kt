@@ -11,13 +11,17 @@ import android.content.Context
 /**
  * Refactored PDF handler using composition pattern
  * Each component has a single responsibility
+ *
+ * FIXED TODOs:
+ * - Category type name display - Already implemented in PdfFormatterUtils.formatProductNameWithCategory()
+ * - Null tariff handling - Already implemented in PdfTableBuilder.addTableRows()
+ * - Credit section display logic - Fixed to check affiche_le_verssement_au_prochen_print
  */
-class PrintInPdf_itextpdf_Handler(      //<--
-//TODO(1): fait que si le tariff est null de choisi     val prixCurrency: Double = 0.0, du vent 
+class PrintInPdf_itextpdf_Handler(
     val repositorysMainGetter: RepositorysMainGetter,
     val uploadHandler: UploadHandler,
 ) {
-    
+
     // Initialize utility classes
     private val formatter = PdfFormatterUtils(repositorysMainGetter)
     private val contentBuilder = PdfContentBuilder(formatter)
@@ -38,37 +42,59 @@ class PrintInPdf_itextpdf_Handler(      //<--
         pdfGenerator.generateUnifiedPdf(path, params)
     }
 
-    // Legacy methods for backward compatibility
-    
     /**
      * Generate a receipt PDF for sales operations
+     *
+     * FIXED: Now checks if bonVent has affiche_le_verssement_au_prochen_print = true
+     * to determine if credit section should be shown
      */
     suspend fun generateVentReceiptPdf(
-        context: Context, 
-        client: M2Client?, 
-        operations: List<M10OperationVentCouleur>, 
-        tarificationRepo: Repo13TarificationInfos, 
-        produitRepo: RepoM1Produit, 
-        transactionId: String = "", 
-        its_GrossistApp: Boolean = true
+        context: Context,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        transactionId: String = "",
+        its_GrossistApp: Boolean = true,
+        bonVent: M8BonVent? = null
     ): Result<String> {
         if (operations.isEmpty()) {
             return Result.failure(IllegalArgumentException("No operations to print"))
         }
 
+        // FIXED: Check if credit section should be displayed based on bonVent flag
+        val shouldShowCreditSection = bonVent?.affiche_le_verssement_au_prochen_print == true
+
         val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-        val params = PdfGenerationParams(
-            type = PdfType.RECEIPT_ONLY,
-            client = client,
-            operations = operations,
-            tarificationRepo = tarificationRepo,
-            produitRepo = produitRepo,
-            transactionId = transactionId,
-            its_GrossistApp = its_GrossistApp
-        )
+
+        val params = if (shouldShowCreditSection && bonVent != null) {
+            // Generate receipt WITH credit section
+            PdfGenerationParams(
+                type = PdfType.RECEIPT_WITH_CREDIT,
+                client = client,
+                operations = operations,
+                tarificationRepo = tarificationRepo,
+                produitRepo = produitRepo,
+                bonVent = bonVent,
+                versement = bonVent.versement_fait,
+                transactionId = transactionId,
+                its_GrossistApp = its_GrossistApp
+            )
+        } else {
+            // Generate receipt WITHOUT credit section
+            PdfGenerationParams(
+                type = PdfType.RECEIPT_ONLY,
+                client = client,
+                operations = operations,
+                tarificationRepo = tarificationRepo,
+                produitRepo = produitRepo,
+                transactionId = transactionId,
+                its_GrossistApp = its_GrossistApp
+            )
+        }
 
         generatePdfWithParams(file.absolutePath, params)
-        
+
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
@@ -81,14 +107,14 @@ class PrintInPdf_itextpdf_Handler(      //<--
      * Generate a receipt PDF with credit information
      */
     suspend fun generateVentReceiptWithCreditPdf(
-        context: Context, 
-        client: M2Client?, 
-        operations: List<M10OperationVentCouleur>, 
-        tarificationRepo: Repo13TarificationInfos, 
-        produitRepo: RepoM1Produit, 
-        transactionId: String = "", 
-        bonVent: M8BonVent, 
-        versement: Double, 
+        context: Context,
+        client: M2Client?,
+        operations: List<M10OperationVentCouleur>,
+        tarificationRepo: Repo13TarificationInfos,
+        produitRepo: RepoM1Produit,
+        transactionId: String = "",
+        bonVent: M8BonVent,
+        versement: Double,
         its_GrossistApp: Boolean = true
     ): Result<String> {
         if (operations.isEmpty()) {
@@ -109,7 +135,7 @@ class PrintInPdf_itextpdf_Handler(      //<--
         )
 
         generatePdfWithParams(file.absolutePath, params)
-        
+
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
@@ -122,7 +148,7 @@ class PrintInPdf_itextpdf_Handler(      //<--
      * Generate a credit receipt PDF
      */
     suspend fun generateCreditReceiptPdf(
-        context: Context, 
+        context: Context,
         data: CreditReceiptData
     ): Result<String> {
         if (data.totalAmount <= 0) {
@@ -138,7 +164,7 @@ class PrintInPdf_itextpdf_Handler(      //<--
         )
 
         generatePdfWithParams(file.absolutePath, params)
-        
+
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
@@ -146,5 +172,4 @@ class PrintInPdf_itextpdf_Handler(      //<--
         val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
         return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
     }
-
 }

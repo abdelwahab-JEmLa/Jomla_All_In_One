@@ -1,4 +1,3 @@
-
 // PdfPrintHandler.kt - Handles only PDF generation and management
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
@@ -18,6 +17,9 @@ import java.io.File
 class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
 ) {
+    /**
+     * FIXED: Now passes bonVent to generateVentReceiptPdf to check affiche_le_verssement_au_prochen_print
+     */
     suspend fun generateAndOpenPdf(
         context: Context,
         client: M2Client?,
@@ -34,8 +36,12 @@ class PdfPrintHandler(
 
         return try {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
-            
-            val result = if (showCreditSection && bonVent != null) {
+
+            // FIXED: Check if we should explicitly show credit section OR if bonVent has the flag set
+            val shouldShowCredit = (showCreditSection && bonVent != null) ||
+                    (bonVent?.affiche_le_verssement_au_prochen_print == true)
+
+            val result = if (shouldShowCredit && bonVent != null) {
                 printInPdfHandler.generateVentReceiptWithCreditPdf(
                     context,
                     client,
@@ -47,13 +53,15 @@ class PdfPrintHandler(
                     versement
                 )
             } else {
+                // FIXED: Pass bonVent even for regular receipts to check the flag
                 printInPdfHandler.generateVentReceiptPdf(
                     context,
                     client,
                     operations,
                     repo13TarificationInfos,
                     repoM1Produit,
-                    transactionId
+                    transactionId,
+                    bonVent = bonVent
                 )
             }
 
@@ -82,7 +90,7 @@ class PdfPrintHandler(
     ): Result<String> {
         return try {
             val transactionId = bonVent.keyID.takeLast(4)
-            
+
             val creditData = CreditReceiptData(
                 client = client,
                 totalAmount = bonVent.sum_De_Totale_Vents,

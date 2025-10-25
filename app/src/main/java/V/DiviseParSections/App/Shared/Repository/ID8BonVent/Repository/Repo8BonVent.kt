@@ -211,7 +211,10 @@ data class M8BonVent(
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
     var credit_fait: Double = 0.0,
+
     var versement_fait : Double = 0.0,
+
+    var affiche_le_verssement_au_prochen_print: Boolean = false,
 
     var sum_De_Totale_Vents: Double = 0.0,
     var sum_De_Credit_Fait: Double = 0.0,
