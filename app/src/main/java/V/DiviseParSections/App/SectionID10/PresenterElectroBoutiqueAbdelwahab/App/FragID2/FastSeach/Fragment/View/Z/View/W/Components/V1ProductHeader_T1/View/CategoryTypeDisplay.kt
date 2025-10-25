@@ -141,7 +141,6 @@ fun CategoryTypeDisplay(
                 value = textValue,
                 onValueChange = {
                     textValue = it
-                    expanded = true
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,9 +173,28 @@ fun CategoryTypeDisplay(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        saveText()
+                        if (textValue.isNotEmpty()) {
+                            saveText()
+                        } else {
+                            cancelEditing()
+                        }
                     }
                 ),
+                leadingIcon = {
+                    IconButton(
+                        onClick = {
+                            expanded = !expanded
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Default.Close else Icons.Default.Refresh,
+                            contentDescription = if (expanded) "Fermer" else "Ouvrir suggestions",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                },
                 trailingIcon = {
                     if (textValue.isNotEmpty()) {
                         IconButton(
@@ -197,9 +215,9 @@ fun CategoryTypeDisplay(
                 }
             )
 
-            // Dropdown menu with filtered items - shows only after 3 characters
+            // Dropdown menu showing current matches
             DropdownMenu(
-                expanded = expanded && filteredDropdownNoms.isNotEmpty() && textValue.length >= 3,
+                expanded = expanded && filteredDropdownNoms.isNotEmpty(),
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
@@ -264,7 +282,6 @@ fun CategoryTypeDisplay(
         LaunchedEffect(isEditing) {
             if (isEditing) {
                 focusRequester.requestFocus()
-                expanded = true
             }
         }
     } else {
