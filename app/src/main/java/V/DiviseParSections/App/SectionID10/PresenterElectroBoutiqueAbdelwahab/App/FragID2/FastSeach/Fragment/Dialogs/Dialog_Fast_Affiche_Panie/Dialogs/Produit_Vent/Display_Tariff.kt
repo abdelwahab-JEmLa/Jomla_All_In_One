@@ -28,12 +28,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
@@ -49,6 +52,7 @@ fun Display_Tariff(
     val getterFocusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val coroutineScope = rememberCoroutineScope()
 
     val totalQuantity by derivedStateOf {
         getterFocusedVarsHandlerFacade
@@ -69,19 +73,6 @@ fun Display_Tariff(
                 else MaterialTheme.colorScheme.primary
             ),
             modifier = Modifier
-                .clickable(enabled = false) {
-                    val get = focusedVarsHandlerFacade.focusedValuesGetter
-
-                    aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                        m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
-                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
-                        aCentralFacade = aCentralFacade
-                    )
-
-                    focusedValuesSetter.active_M1Produit_Pour_Choisire_TotalQuantity(
-                        relative_produit
-                    )
-                }
                 .getSemanticsTag(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
                     data = focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
@@ -179,9 +170,23 @@ fun Display_Tariff(
                     set(value = relative_List_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur"))
                 }
                 .clickable(enabled = !allNonTrouve) {
-                    focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                        relative_produit
+                    val get = focusedVarsHandlerFacade.focusedValuesGetter
+
+                    aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                        m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
+                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                        aCentralFacade = aCentralFacade
                     )
+
+                    focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+
+                    // Launch coroutine to add delay before setting new focused tariff
+                    coroutineScope.launch {
+                        delay(100) // 100ms delay, adjust as needed
+                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                            relative_produit
+                        )
+                    }
                 },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(

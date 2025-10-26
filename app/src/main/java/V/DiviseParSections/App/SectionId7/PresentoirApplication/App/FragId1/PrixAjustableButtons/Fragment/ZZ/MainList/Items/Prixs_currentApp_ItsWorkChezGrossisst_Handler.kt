@@ -39,8 +39,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
-) {   //<--
-//TODO(1): fait que le choisi est Tariff_ItsWorkInGrossist_Progressive de update 
+) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
     val typeTarification = relative_Tariff.typeChoisi
@@ -221,11 +220,11 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
 
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                 FloatingActionButton(
-                    modifier = Modifier.width(30.dp),
+                    modifier = Modifier.width(50.dp),
                     onClick = ::save_Tariff_au_relative_vent_et_ferm_fabs_tariffs,
                     containerColor = couleurButton
                 ) {
-                    val text = typeTarification.abrgNom
+                    val text = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst) relative_Produit.nom.take(6) else  typeTarification.abrgNom
                     Text(
                         text = text,
                         color = textColor,

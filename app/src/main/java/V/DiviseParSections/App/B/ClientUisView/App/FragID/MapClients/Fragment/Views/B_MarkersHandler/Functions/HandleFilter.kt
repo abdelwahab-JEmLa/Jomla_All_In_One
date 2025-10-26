@@ -175,7 +175,6 @@ fun filterClientsBasedOnMode(
         }
     }
 
-    // FIXED: Merge filtered clients with always-visible clients, removing duplicates
     val finalClientsList = (filteredClients + alwaysVisibleClients).distinctBy { it.id }
 
     return finalClientsList
