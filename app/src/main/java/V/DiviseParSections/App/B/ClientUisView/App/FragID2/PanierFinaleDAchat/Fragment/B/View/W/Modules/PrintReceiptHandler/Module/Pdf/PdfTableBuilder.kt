@@ -14,7 +14,9 @@ import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
- * FIXED: Removed N° column, added item count display with total aligned left
+ * FIXED:
+ * - Removed N° column, added item count display with total aligned left
+ * - Added category type name display in parentheses when available
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -29,7 +31,6 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ) {
-        // FIXED: Changed from 5 columns to 4 columns (removed N° column)
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
@@ -39,7 +40,6 @@ class PdfTableBuilder(
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        // FIXED: Show total with item count, aligned left
         if (result.total > 0.0) {
             contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
         }
@@ -53,7 +53,6 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ): Double {
-        // FIXED: Changed from 5 columns to 4 columns (removed N° column)
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 14f, 56f, 15f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
@@ -67,11 +66,9 @@ class PdfTableBuilder(
     }
 
     private fun addTableHeaders(table: Table, boldFont: PdfFont) {
-        // FIXED: Removed "N°" header
         table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
         table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))  //<--
-        //TODO(1): ajout au nom si produit . nom_type_categorie est non empty affiche le entre () sinon laisse le nom normale
+        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
         table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
     }
 
@@ -100,6 +97,8 @@ class PdfTableBuilder(
 
             val qtyDisplay =
                 formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
+
+            // FIXED: Use formatProductNameWithCategory which includes category type name
             val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
 
             if (shouldDisplayPriceAndSubtotal) {
@@ -109,7 +108,6 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                // FIXED: Removed row number cell
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
@@ -140,7 +138,6 @@ class PdfTableBuilder(
                 itemCount++
             } else {
                 // When tariff is null or laisse_Au_Gerant is true, show product and quantity but hide price
-                // FIXED: Removed row number cell
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
@@ -149,7 +146,7 @@ class PdfTableBuilder(
                         10f,
                         TextAlignment.CENTER
                     )
-                ) // Empty price
+                )
                 table.addCell(
                     createDataCell(
                         productNameWithCategory,
@@ -165,7 +162,7 @@ class PdfTableBuilder(
                         10f,
                         TextAlignment.RIGHT
                     )
-                ) // Empty subtotal
+                )
 
                 itemCount++
             }
