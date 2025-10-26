@@ -67,25 +67,36 @@ fun DropDownItem_WindowsShare_WithCredit(
             return
         }
 
+        if (currentBonVent == null) {
+            Toast.makeText(
+                context,
+                "Bon de vente introuvable",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         isLoading = true
         scope.launch {
             try {
-                // Calculate credit
                 val credit = totalBon - versement
 
-                // Update bonVent with versement and credit info
-                currentBonVent?.let { bonVent ->
-                    val updatedBonVent = bonVent.copy(
-                        versement_fait = versement,
-                        credit_fait = credit,
-                        affiche_le_verssement_au_prochen_print = true,
-                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                    )
-                    
-                    // Update in repository
-                    aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
-                }
+                // Créer un bonVent mis à jour avec TOUTES les informations nécessaires
+                val updatedBonVent = currentBonVent.copy(
+                    versement_fait = versement,       // Le versement fait
+                    versement = versement,             // Alternative field
+                    credit_fait = credit,              // Le crédit calculé
+                    affiche_le_verssement_au_prochen_print = true,  // FLAG IMPORTANT
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
 
+                // Mettre à jour dans le repository AVANT de générer le PDF
+                aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
+
+                // Attendre que la mise à jour soit complète
+                kotlinx.coroutines.delay(500)
+
+                // Générer le PDF - Le système va maintenant détecter affiche_le_verssement_au_prochen_print = true
                 val result = printHandler.printPdfOnly(
                     context = context,
                     repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
@@ -94,23 +105,32 @@ fun DropDownItem_WindowsShare_WithCredit(
                     client = focusedValuesGetter.activeOnVentM2ClientInfos,
                     scope = scope,
                     relative_ListM10OperationVentCouleur = activeVents,
-                    bonVent = currentBonVent?.copy(
-                        versement_fait = versement,
-                        credit_fait = credit,
-                        affiche_le_verssement_au_prochen_print = true
-                    )
+                    bonVent = updatedBonVent  // Passer le bonVent mis à jour
                 )
 
                 result.onSuccess { message ->
                     val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
                     val pdfFile = java.io.File(filePath)
+
                     if (pdfFile.exists()) {
+                        // Partager le PDF avec les apps Windows
                         printHandler.sharePdfWithWindowsApps(context, pdfFile)
 
                         CoroutineScope(Dispatchers.Main).launch {
                             Toast.makeText(
                                 context,
-                                "PDF avec crédit partagé avec succès\nVersement: ${versement}Da\nCrédit: ${credit}Da",
+                                "PDF avec crédit partagé avec succès\n" +
+                                        "Total: ${String.format("%.1f", totalBon)}Da\n" +
+                                        "Versement: ${String.format("%.1f", versement)}Da\n" +
+                                        "Crédit: ${String.format("%.1f", credit)}Da",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Toast.makeText(
+                                context,
+                                "Erreur: Fichier PDF non trouvé",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -121,7 +141,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     CoroutineScope(Dispatchers.Main).launch {
                         Toast.makeText(
                             context,
-                            "Erreur: ${error.message}",
+                            "Erreur lors de la génération: ${error.message}",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -137,7 +157,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                 }
                 e.printStackTrace()
             } finally {
-                kotlinx.coroutines.delay(2000)
+                kotlinx.coroutines.delay(1000)
                 isLoading = false
                 showCreditInput = false
                 versementText = ""
@@ -159,24 +179,34 @@ fun DropDownItem_WindowsShare_WithCredit(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column {
+        Column(modifier = Modifier.padding(4.dp)) {
             if (showCreditInput) {
-                // Show input field for versement
+                // Afficher le champ de saisie pour le versement
                 OutlinedTextField(
                     value = versementText,
                     onValueChange = { versementText = it },
                     label = { Text("Versement (Da)") },
+                    placeholder = { Text("0.0") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.padding(8.dp),
                     enabled = !isLoading,
                     supportingText = {
                         val versement = versementText.toDoubleOrNull() ?: 0.0
                         val credit = totalBon - versement
-                        Text("Total: ${totalBon}Da | Crédit: ${credit}Da")
-                    }
+                        Text(
+                            text = "Total: ${String.format("%.1f", totalBon)}Da | " +
+                                    "Crédit: ${String.format("%.1f", credit)}Da",
+                            color = if (credit < 0) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    },
+                    isError = (versementText.toDoubleOrNull() ?: 0.0) > totalBon
                 )
 
-                // Confirm button
+                // Bouton de confirmation
                 DropdownMenuItem(
                     leadingIcon = {
                         if (isLoading) {
@@ -195,7 +225,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     },
                     text = {
                         Text(
-                            text = if (isLoading) "Partage en cours..." else "Confirmer",
+                            text = if (isLoading) "Génération en cours..." else "Confirmer et Partager",
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     },
@@ -207,16 +237,16 @@ fun DropDownItem_WindowsShare_WithCredit(
                             } else {
                                 Toast.makeText(
                                     context,
-                                    "Montant invalide",
+                                    "Veuillez entrer un montant valide",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
                     },
-                    enabled = !isLoading
+                    enabled = !isLoading && versementText.toDoubleOrNull() != null
                 )
             } else {
-                // Initial button to show input
+                // Bouton initial pour afficher le champ de saisie
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
