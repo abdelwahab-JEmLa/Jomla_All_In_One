@@ -240,13 +240,12 @@ fun CategoryTypeDisplay(
                         onClick = {
                             textValue = item
                             expanded = false
-                            // Auto-save when selecting from dropdown
-                            repositorysMainSetter.upsert_M1Produit(
-                                produit.copy(
-                                    nom_type_categorie = item,
-                                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
-                                )
-                            )
+
+                            aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(produit.copy(
+                                nom_type_categorie = item,
+                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                            ))
+
                             isEditing = false
                         },
                         trailingIcon = {
