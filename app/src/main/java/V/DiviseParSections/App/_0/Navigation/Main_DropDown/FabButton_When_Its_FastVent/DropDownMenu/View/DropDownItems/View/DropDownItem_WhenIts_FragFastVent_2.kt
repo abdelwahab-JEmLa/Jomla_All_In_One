@@ -177,9 +177,11 @@ fun DropDownItem_WindowsShare(
 
         isLoading = true
         scope.launch {
-            aCentralFacade.repositorysMainSetter.update_M8BonVent(focusedValuesGetter.activeOnVent_M8BonVent?.copy(affiche_le_verssement_au_prochen_print = false))
-
             try {
+                aCentralFacade.repositorysMainSetter.update_M8BonVent(focusedValuesGetter.activeOnVent_M8BonVent?.copy(affiche_le_verssement_au_prochen_print = false))
+
+                kotlinx.coroutines.delay(500)
+
                 val result = printHandler.printPdfOnly(
                     context = context,
                     repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,

@@ -25,7 +25,6 @@ class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
     private val contentBuilder: PdfContentBuilder
 ) {
-
     fun createProductTable(
         doc: Document,
         operations: List<M10OperationVentCouleur>,
