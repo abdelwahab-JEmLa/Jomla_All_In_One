@@ -231,7 +231,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     )
 
                     Text(
-                        text = "Crédit Apre Current Vent  : ${String.format("%.1f", ancienCredit)} Da",
+                        text = "Crédit Apre Current Vent  : ${String.format("%.1f", ancienCredit + totalBon)} Da",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
