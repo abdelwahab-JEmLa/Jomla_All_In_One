@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_F
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ fun DropDownItem_WindowsShare_WithCredit(
     onDismissDropdown: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repo8BonVent: Repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent,
     context: Context = LocalContext.current
 ) {
     var isLoading by remember { mutableStateOf(false) }
@@ -56,8 +58,31 @@ fun DropDownItem_WindowsShare_WithCredit(
                     vent.quantity > 0
         }
 
-    val relative_BonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val totalBon = relative_BonVent?.sum_De_Totale_Vents ?: 0.0
+    val activeOnVent_M8BonVent = focusedValuesGetter.activeOnVent_M8BonVent
+
+    val vent_avant_cette_vent = repo8BonVent.datasValue
+        .filter { it.parent_M2Client_KeyID == activeOnVent_M8BonVent?.parent_M2Client_KeyID }
+        .filter { it.keyID != activeOnVent_M8BonVent?.keyID }
+        .sortedByDescending { it.creationTimestamps }
+        .firstOrNull()
+
+    val totalBon = get_vents_datas(aCentralFacade).second
+    val versement = versementText.toDoubleOrNull()
+
+    val ancienCredit = vent_avant_cette_vent?.new_credit_apre_tout_fait ?: 0.0
+    val nouveauCredit = ancienCredit + totalBon - (versement ?: 0.0)
+    val credit = totalBon - (versement ?: 0.0)
+
+    val updatedBonVent = activeOnVent_M8BonVent?.copy(
+        totale_saved = totalBon,
+        versement_fait = versement ?: 0.0,
+        ancien_credit = ancienCredit,
+        new_credit_apre_tout_fait = nouveauCredit,
+        credit_fait = credit,
+        versement = versement ?: 0.0,
+        affiche_le_verssement_au_prochen_print = true,
+        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+    )
 
     fun shareWithCreditInfo(versement: Double) {
         if (activeVents.isEmpty()) {
@@ -69,7 +94,7 @@ fun DropDownItem_WindowsShare_WithCredit(
             return
         }
 
-        if (relative_BonVent == null) {
+        if (activeOnVent_M8BonVent == null) {
             Toast.makeText(
                 context,
                 "Bon de vente introuvable",
@@ -81,16 +106,7 @@ fun DropDownItem_WindowsShare_WithCredit(
         isLoading = true
         scope.launch {
             try {
-                val credit = totalBon - versement
-
-                val updatedBonVent = relative_BonVent.copy(
-                    versement_fait = versement,       // Le versement fait
-                    versement = versement,             // Alternativefield
-                    credit_fait = credit,              // Le crédit calculé
-                    affiche_le_verssement_au_prochen_print = true,  // FLAG IMPORTANT
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
-
+              
                 // Mettre à jour dans le repository AVANT de générer le PDF
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
 
@@ -170,7 +186,12 @@ fun DropDownItem_WindowsShare_WithCredit(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
-                set(value = relative_BonVent, key = SemanticsPropertyKey("relative_BonVent"))
+                set(value = activeOnVent_M8BonVent, key = SemanticsPropertyKey("relative_BonVent"))
+            }
+            .semantics(mergeDescendants = true) {
+                    if (updatedBonVent != null) {
+                        set(value = updatedBonVent, key = SemanticsPropertyKey("new"))
+                    }
             }
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
@@ -199,7 +220,9 @@ fun DropDownItem_WindowsShare_WithCredit(
                         val credit = totalBon - versement
                         Text(
                             text = "Total: ${String.format("%.1f", totalBon)}Da | " +
-                                    "Crédit: ${String.format("%.1f", credit)}Da",
+                                    "Versement: ${String.format("%.1f", versement)}Da\n" +
+                                    "Ancien Crédit: ${String.format("%.1f", ancienCredit)}Da | " +
+                                    "Nouveau Crédit: ${String.format("%.1f", nouveauCredit)}Da",
                             color = if (credit < 0) {
                                 MaterialTheme.colorScheme.error
                             } else {
@@ -235,7 +258,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     },
                     onClick = {
                         if (!isLoading) {
-                            val versement = versementText.toDoubleOrNull()
+                            
                             if (versement != null && versement >= 0) {
                                 shareWithCreditInfo(versement)
                             } else {
@@ -272,4 +295,26 @@ fun DropDownItem_WindowsShare_WithCredit(
             }
         }
     }
+}
+
+fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
+    // Get the list of vents for this bon
+    val onVentList = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+
+    val ventsTrouve = onVentList.filter {
+        it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+    }
+
+    val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
+
+    // Calculate total value (similar to CartSummarySection)
+    val totalValue = ventsTrouve.sumOf { vent ->
+        val provisoireMonPrix = aCentralFacade.repositorysMainGetter
+            .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            ?.prixCurrency ?: 0.0
+
+        vent.quantity * provisoireMonPrix
+    }
+    return Pair(totalProducts, totalValue)
 }

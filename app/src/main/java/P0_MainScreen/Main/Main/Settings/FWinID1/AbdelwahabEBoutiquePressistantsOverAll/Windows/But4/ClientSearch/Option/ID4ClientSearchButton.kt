@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -46,6 +47,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.util.concurrent.TimeUnit
 
 @OptIn(FlowPreview::class)
@@ -57,6 +59,7 @@ fun ID4ClientSearchButton(
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
     onClientSelectedToToast: (M2Client) -> Unit = {},
+    aCentralFacade: ACentralFacade= koinInject(),
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
@@ -150,24 +153,7 @@ fun ID4ClientSearchButton(
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
 
-                            // Get the list of vents for this bon
-                            val onVentList = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-
-                            val ventsTrouve = onVentList.filter {
-                                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-                            }
-
-                            val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
-
-                            // Calculate total value (similar to CartSummarySection)
-                            val totalValue = ventsTrouve.sumOf { vent ->
-                                val provisoireMonPrix = viewModel.aCentralFacade.repositorysMainGetter
-                                    .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
-                                    ?.prixCurrency ?: 0.0
-
-                                vent.quantity * provisoireMonPrix
-                            }
+                            val (totalProducts, totalValue) = get_vents_datas(aCentralFacade)
 
                             if (bon.parent_M2Client_DebugInfos.isNotEmpty() && bon.parent_M2Client_DebugInfos != "Non Defini") {
                                 "$nomClient - $timeElapsed - $totalProducts P - ${String.format("%.2f", totalValue)} DA"
@@ -283,6 +269,28 @@ fun ID4ClientSearchButton(
             }
         }
     }
+}
+
+fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
+    // Get the list of vents for this bon
+    val onVentList = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+
+    val ventsTrouve = onVentList.filter {
+        it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+    }
+
+    val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
+
+    // Calculate total value (similar to CartSummarySection)
+    val totalValue = ventsTrouve.sumOf { vent ->
+        val provisoireMonPrix = aCentralFacade.repositorysMainGetter
+            .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            ?.prixCurrency ?: 0.0
+
+        vent.quantity * provisoireMonPrix
+    }
+    return Pair(totalProducts, totalValue)
 }
 
 @Composable
