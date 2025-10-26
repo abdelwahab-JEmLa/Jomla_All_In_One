@@ -60,7 +60,7 @@ class PrintReceiptHandler_Juil(
         scope: CoroutineScope? = null,
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
         repo13TarificationInfos: Repo13TarificationInfos,
-        bonVent: M8BonVent? = null,
+        relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
         versement: Double = 0.0
     ): Result<String> {
@@ -73,7 +73,7 @@ class PrintReceiptHandler_Juil(
                 relative_ListM10OperationVentCouleur,
                 repo13TarificationInfos,
                 repoM1Produit,
-                bonVent,
+                relative_bonVent,
                 shouldShowCreditSection,
                 versement
             )

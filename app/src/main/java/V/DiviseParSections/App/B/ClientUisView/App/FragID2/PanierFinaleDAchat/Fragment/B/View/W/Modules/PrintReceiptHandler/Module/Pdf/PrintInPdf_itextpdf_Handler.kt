@@ -56,18 +56,18 @@ class PrintInPdf_itextpdf_Handler(
         produitRepo: RepoM1Produit,
         transactionId: String = "",
         its_GrossistApp: Boolean = true,
-        bonVent: M8BonVent? = null
+        relative_bonVent: M8BonVent? = null
     ): Result<String> {
         if (operations.isEmpty()) {
             return Result.failure(IllegalArgumentException("No operations to print"))
         }
 
         // FIXED: Check if credit section should be displayed based on bonVent flag
-        val shouldShowCreditSection = bonVent?.affiche_le_verssement_au_prochen_print == true
+        val shouldShowCreditSection = relative_bonVent?.affiche_le_verssement_au_prochen_print == true
 
         val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
 
-        val params = if (shouldShowCreditSection && bonVent != null) {
+        val params = if (shouldShowCreditSection && relative_bonVent != null) {
             // Generate receipt WITH credit section
             PdfGenerationParams(
                 type = PdfType.RECEIPT_WITH_CREDIT,
@@ -75,10 +75,11 @@ class PrintInPdf_itextpdf_Handler(
                 operations = operations,
                 tarificationRepo = tarificationRepo,
                 produitRepo = produitRepo,
-                bonVent = bonVent,
-                versement = bonVent.versement_fait,
+                bonVent = relative_bonVent,
+                versement = relative_bonVent.versement_fait,
                 transactionId = transactionId,
-                its_GrossistApp = its_GrossistApp
+                its_GrossistApp = its_GrossistApp,
+                relative_bonVent = relative_bonVent
             )
         } else {
             // Generate receipt WITHOUT credit section
@@ -89,7 +90,8 @@ class PrintInPdf_itextpdf_Handler(
                 tarificationRepo = tarificationRepo,
                 produitRepo = produitRepo,
                 transactionId = transactionId,
-                its_GrossistApp = its_GrossistApp
+                its_GrossistApp = its_GrossistApp ,
+                relative_bonVent=relative_bonVent,
             )
         }
 
@@ -115,7 +117,7 @@ class PrintInPdf_itextpdf_Handler(
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
         transactionId: String = "",
-        bonVent: M8BonVent,
+        relative_bonVent: M8BonVent,
         versement: Double,
         its_GrossistApp: Boolean = true
     ): Result<String> {
@@ -130,10 +132,11 @@ class PrintInPdf_itextpdf_Handler(
             operations = operations,
             tarificationRepo = tarificationRepo,
             produitRepo = produitRepo,
-            bonVent = bonVent,
+            bonVent = relative_bonVent,
             versement = versement,
             transactionId = transactionId,
-            its_GrossistApp = its_GrossistApp
+            its_GrossistApp = its_GrossistApp,
+            relative_bonVent = relative_bonVent
         )
 
         generatePdfWithParams(file.absolutePath, params)
@@ -158,14 +161,7 @@ class PrintInPdf_itextpdf_Handler(
         }
 
         val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-        val params = PdfGenerationParams(
-            type = PdfType.CREDIT_ONLY,
-            client = data.client,
-            transactionId = data.transactionId,
-            creditData = data
-        )
 
-        generatePdfWithParams(file.absolutePath, params)
 
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))

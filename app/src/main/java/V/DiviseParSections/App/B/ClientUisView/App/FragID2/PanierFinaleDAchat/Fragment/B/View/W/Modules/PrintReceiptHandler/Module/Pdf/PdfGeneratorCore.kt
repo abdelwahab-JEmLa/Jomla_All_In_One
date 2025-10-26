@@ -117,9 +117,6 @@ class PdfGeneratorCore(
                 val hasVersement = params.versement > 0.0
                 val hasActualCredit = clientCreditBalance != 0.0 || hasVersement
 
-                // Show total section when:
-                // 1. It's RECEIPT_ONLY (no credit expected), OR
-                // 2. It's RECEIPT_WITH_CREDIT but there's NO actual credit balance and NO payment
                 val shouldShowTotalSection = params.type == PdfType.RECEIPT_ONLY ||
                         (params.type == PdfType.RECEIPT_WITH_CREDIT && !hasActualCredit)
 
@@ -131,7 +128,8 @@ class PdfGeneratorCore(
                         tarificationRepo,
                         produitRepo,
                         regularFont,
-                        boldFont
+                        boldFont,
+                        params.relative_bonVent
                     )
                 } else {
                     // Show table WITHOUT total section, return total for credit calculations

@@ -40,7 +40,8 @@ data class PdfGenerationParams(
     val versement: Double = 0.0,
     val transactionId: String = "",
     val its_GrossistApp: Boolean = true,
-    val creditData: CreditReceiptData? = null
+    val creditData: CreditReceiptData? = null,
+    val relative_bonVent: M8BonVent?
 )
 
 /**

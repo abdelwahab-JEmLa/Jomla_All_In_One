@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import com.itextpdf.kernel.font.PdfFont
@@ -15,8 +16,10 @@ import com.itextpdf.layout.properties.UnitValue
 /**
  * Handles PDF table creation for products
  * FIXED:
- * - Removed N° column, added item count display with total aligned left
+ * - Removed NÂ° column, added item count display with total aligned left
  * - Added category type name display in parentheses when available
+ * - Added credit section display after table when affiche_le_verssement_au_prochen_print is true
+ * - NO separate "Total" display when credit section is shown
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -29,7 +32,8 @@ class PdfTableBuilder(
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
         regularFont: PdfFont,
-        boldFont: PdfFont
+        boldFont: PdfFont,
+        relativeBonvent: M8BonVent?
     ) {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 20f, 45f, 20f)))
             .setWidth(UnitValue.createPercentValue(100f))
@@ -41,14 +45,166 @@ class PdfTableBuilder(
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         if (result.total > 0.0) {
-            contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
-            //<--
-            //TODO(1): ajout ici si affiche credite_versement_section a Center
-        // Rest : == ancien_credit
-        // versement  : == versement
-        // Compt Actuelle  : Rest + current_bon - versement
+            // Check if we should show credit section
+            val shouldShowCreditSection = relativeBonvent?.affiche_le_verssement_au_prochen_print == true
 
+            if (shouldShowCreditSection && relativeBonvent != null) {
+                // Display credit information (includes total inside)
+                addCreditSectionLikeCompose(doc, relativeBonvent, result.total, result.itemCount, regularFont, boldFont)
+            } else {
+                // Display normal total with item count ONLY when NO credit section
+                contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
+            }
         }
+    }
+
+    private fun addCreditSectionLikeCompose(
+        doc: Document,
+        bonVent: M8BonVent,
+        totalBon: Double,
+        itemCount: Int,
+        regularFont: PdfFont,
+        boldFont: PdfFont
+    ) {
+        // Title
+        doc.add(Paragraph("Informations de Crédit")
+            .setFont(boldFont)
+            .setFontSize(12f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setMargin(0f))
+        doc.add(Paragraph("\n").setFontSize(0.5f))
+
+        // Total Bon Cette Fois with item count - LEFT aligned like in Compose
+        val totalTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        val totalLabelCell = Cell()
+            .add(Paragraph("Total Bon Cette Foit:")
+                .setFont(regularFont)
+                .setFontSize(11f)
+                .setTextAlignment(TextAlignment.LEFT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+            .setPadding(0f)
+
+        val totalValueCell = Cell()
+            .add(Paragraph("${formatter.round(totalBon)} Da ($itemCount items)")
+                .setFont(boldFont)
+                .setFontSize(11f)
+                .setTextAlignment(TextAlignment.RIGHT))
+            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+            .setPadding(0f)
+
+        totalTable.addCell(totalLabelCell).addCell(totalValueCell)
+        doc.add(totalTable)
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        // Ancien Crédit - LEFT aligned
+        val ancienCreditTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        ancienCreditTable.addCell(
+            Cell()
+                .add(Paragraph("Ancien Crédit:")
+                    .setFont(regularFont)
+                    .setFontSize(10f)
+                    .setTextAlignment(TextAlignment.LEFT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        ancienCreditTable.addCell(
+            Cell()
+                .add(Paragraph("${formatter.round(bonVent.ancien_credit)} Da")
+                    .setFont(regularFont)
+                    .setFontSize(10f)
+                    .setTextAlignment(TextAlignment.RIGHT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        doc.add(ancienCreditTable)
+        doc.add(Paragraph("\n").setFontSize(0.2f))
+
+        // Crédit Après Current Vent - LEFT aligned
+        val creditApresVent = bonVent.ancien_credit + totalBon
+        val creditApresTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        creditApresTable.addCell(
+            Cell()
+                .add(Paragraph("Crédit Après Current Vent:")
+                    .setFont(regularFont)
+                    .setFontSize(10f)
+                    .setTextAlignment(TextAlignment.LEFT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        creditApresTable.addCell(
+            Cell()
+                .add(Paragraph("${formatter.round(creditApresVent)} Da")
+                    .setFont(regularFont)
+                    .setFontSize(10f)
+                    .setTextAlignment(TextAlignment.RIGHT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        doc.add(creditApresTable)
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        // Versement - LEFT aligned and highlighted
+        val versementTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        versementTable.addCell(
+            Cell()
+                .add(Paragraph("Versement:")
+                    .setFont(regularFont)
+                    .setFontSize(11f)
+                    .setTextAlignment(TextAlignment.LEFT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        versementTable.addCell(
+            Cell()
+                .add(Paragraph("${formatter.round(bonVent.versement_fait)} Da")
+                    .setFont(boldFont)
+                    .setFontSize(11f)
+                    .setTextAlignment(TextAlignment.RIGHT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        doc.add(versementTable)
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        // Separator line
+        doc.add(Paragraph("────────────────────────")
+            .setFont(regularFont)
+            .setFontSize(10f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setMargin(0f))
+        doc.add(Paragraph("\n").setFontSize(0.3f))
+
+        // Nouveau Compte Calculé - LEFT aligned and highlighted
+        val nouveauCompteTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
+            .setWidth(UnitValue.createPercentValue(100f))
+
+        nouveauCompteTable.addCell(
+            Cell()
+                .add(Paragraph("Nouveau Compt Calcule:")
+                    .setFont(boldFont)
+                    .setFontSize(11f)
+                    .setTextAlignment(TextAlignment.LEFT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        nouveauCompteTable.addCell(
+            Cell()
+                .add(Paragraph("${formatter.round(bonVent.new_credit_apre_tout_fait)} Da")
+                    .setFont(boldFont)
+                    .setFontSize(11f)
+                    .setTextAlignment(TextAlignment.RIGHT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
+                .setPadding(0f)
+        )
+        doc.add(nouveauCompteTable)
     }
 
     fun createProductTableAndReturnTotal(
@@ -104,11 +260,9 @@ class PdfTableBuilder(
             val qtyDisplay =
                 formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
 
-            // FIXED: Use formatProductNameWithCategory which includes category type name
             val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
 
             if (shouldDisplayPriceAndSubtotal) {
-                // Calculate unit price if needed
                 val unitPrice = if (produit?.afficheUniteAuPrint == true) {
                     val nombreUniteInt = produit.nombreUniteInt
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
@@ -143,7 +297,6 @@ class PdfTableBuilder(
                 total += subtotal
                 itemCount++
             } else {
-                // When tariff is null or laisse_Au_Gerant is true, show product and quantity but hide price
                 table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(

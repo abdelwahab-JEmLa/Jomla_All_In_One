@@ -103,7 +103,7 @@ fun DetailsBonVent(
                                     client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                                     scope = scope,
                                     relative_ListM10OperationVentCouleur = operations,
-                                    bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                                    relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
                                 )
 
                                 result.onSuccess { message ->
@@ -138,7 +138,7 @@ fun DetailsBonVent(
                                 client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                                 scope = scope,
                                 relative_ListM10OperationVentCouleur = operations,
-                                bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                                relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
                             )
                         }
                     }

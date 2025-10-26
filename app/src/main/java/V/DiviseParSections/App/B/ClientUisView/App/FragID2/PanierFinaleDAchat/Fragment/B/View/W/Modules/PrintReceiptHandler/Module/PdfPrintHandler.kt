@@ -26,7 +26,7 @@ class PdfPrintHandler(
         operations: List<M10OperationVentCouleur>,
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit,
-        bonVent: M8BonVent? = null,
+        relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
         versement: Double = 0.0
     ): Result<String> {
@@ -38,10 +38,10 @@ class PdfPrintHandler(
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
 
             // FIXED: Check if we should explicitly show credit section OR if bonVent has the flag set
-            val shouldShowCredit = (showCreditSection && bonVent != null) ||
-                    (bonVent?.affiche_le_verssement_au_prochen_print == true)
+            val shouldShowCredit = (showCreditSection && relative_bonVent != null) ||
+                    (relative_bonVent?.affiche_le_verssement_au_prochen_print == true)
 
-            val result = if (shouldShowCredit && bonVent != null) {
+            val result = if (shouldShowCredit && relative_bonVent != null) {
                 printInPdfHandler.generateVentReceiptWithCreditPdf(
                     context,
                     client,
@@ -49,7 +49,7 @@ class PdfPrintHandler(
                     repo13TarificationInfos,
                     repoM1Produit,
                     transactionId,
-                    bonVent,
+                    relative_bonVent,
                     versement
                 )
             } else {
@@ -61,7 +61,7 @@ class PdfPrintHandler(
                     repo13TarificationInfos,
                     repoM1Produit,
                     transactionId,
-                    bonVent = bonVent
+                    relative_bonVent = relative_bonVent
                 )
             }
 

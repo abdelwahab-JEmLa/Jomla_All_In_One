@@ -177,6 +177,8 @@ fun DropDownItem_WindowsShare(
 
         isLoading = true
         scope.launch {
+            aCentralFacade.repositorysMainSetter.update_M8BonVent(focusedValuesGetter.activeOnVent_M8BonVent?.copy(affiche_le_verssement_au_prochen_print = false))
+
             try {
                 val result = printHandler.printPdfOnly(
                     context = context,
@@ -186,7 +188,7 @@ fun DropDownItem_WindowsShare(
                     client = focusedValuesGetter.activeOnVentM2ClientInfos,
                     scope = scope,
                     relative_ListM10OperationVentCouleur = activeVents,
-                    bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                    relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
                 )
 
                 result.onSuccess { message ->
