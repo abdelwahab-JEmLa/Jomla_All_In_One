@@ -58,6 +58,14 @@ class PdfTableBuilder(
         }
     }
 
+    enum class Titres(val text: String) {
+        A("Total:"),
+        B("Ancien Crédit:"),
+        C("Nouveau Crédit:"),
+        D("Versement:"),
+        E("Nouveau Compt Calculé:")
+    }
+
     private fun addCreditSectionLikeCompose(
         doc: Document,
         bonVent: M8BonVent,
@@ -66,20 +74,12 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ) {
-        // Title
-        doc.add(Paragraph("Informations de Crédit")
-            .setFont(boldFont)
-            .setFontSize(12f)
-            .setTextAlignment(TextAlignment.LEFT)
-            .setMargin(0f))
-        doc.add(Paragraph("\n").setFontSize(0.5f))
-
         // Total Bon Cette Fois with item count - LEFT aligned like in Compose
         val totalTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
         val totalLabelCell = Cell()
-            .add(Paragraph("Total Bon Cette Foit:")
+            .add(Paragraph(Titres.A.text)
                 .setFont(regularFont)
                 .setFontSize(11f)
                 .setTextAlignment(TextAlignment.LEFT))
@@ -104,7 +104,7 @@ class PdfTableBuilder(
 
         ancienCreditTable.addCell(
             Cell()
-                .add(Paragraph("Ancien Crédit:")
+                .add(Paragraph(Titres.B.text)
                     .setFont(regularFont)
                     .setFontSize(10f)
                     .setTextAlignment(TextAlignment.LEFT))
@@ -130,7 +130,7 @@ class PdfTableBuilder(
 
         creditApresTable.addCell(
             Cell()
-                .add(Paragraph("Crédit Après Current Vent:")
+                .add(Paragraph(Titres.C.text)
                     .setFont(regularFont)
                     .setFontSize(10f)
                     .setTextAlignment(TextAlignment.LEFT))
@@ -155,7 +155,7 @@ class PdfTableBuilder(
 
         versementTable.addCell(
             Cell()
-                .add(Paragraph("Versement:")
+                .add(Paragraph(Titres.D.text)
                     .setFont(regularFont)
                     .setFontSize(11f)
                     .setTextAlignment(TextAlignment.LEFT))
@@ -188,7 +188,7 @@ class PdfTableBuilder(
 
         nouveauCompteTable.addCell(
             Cell()
-                .add(Paragraph("Nouveau Compt Calcule:")
+                .add(Paragraph(Titres.E.text)
                     .setFont(boldFont)
                     .setFontSize(11f)
                     .setTextAlignment(TextAlignment.LEFT))
