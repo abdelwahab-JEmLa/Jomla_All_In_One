@@ -16,20 +16,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,15 +45,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-// Add this composable to handle the editable versement/credit display
+// Fixed editable amount field with proper click handling
 @Composable
 fun EditableAmountField(
     label: String,
@@ -55,33 +66,94 @@ fun EditableAmountField(
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var textValue by remember { mutableStateOf(String.format("%.2f", amount)) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    // Update textValue when amount changes externally
+    LaunchedEffect(amount) {
+        if (!isEditing) {
+            textValue = String.format("%.2f", amount)
+        }
+    }
 
     if (isEditing) {
-        OutlinedTextField(
-            value = textValue,
-            onValueChange = { newValue ->
-                textValue = newValue
-            },
-            label = { Text(label) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = textValue,
+                onValueChange = { newValue ->
+                    // Only allow valid decimal input
+                    if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                        textValue = newValue
+                    }
+                },
+                label = { Text(label) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        val newAmount = textValue.toDoubleOrNull()
+                        if (newAmount != null && newAmount >= 0) {
+                            onAmountChange(newAmount)
+                            isEditing = false
+                            focusManager.clearFocus()
+                        }
+                    }
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White.copy(alpha = 0.9f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.7f)
+                ),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            // Confirm button
+            IconButton(
+                onClick = {
                     val newAmount = textValue.toDoubleOrNull()
                     if (newAmount != null && newAmount >= 0) {
                         onAmountChange(newAmount)
                         isEditing = false
+                        focusManager.clearFocus()
                     }
                 }
-            ),
-            modifier = modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White.copy(alpha = 0.9f),
-                unfocusedContainerColor = Color.White.copy(alpha = 0.7f)
-            )
-        )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "تأكيد",
+                    tint = Color.Green
+                )
+            }
+
+            // Cancel button
+            IconButton(
+                onClick = {
+                    textValue = String.format("%.2f", amount)
+                    isEditing = false
+                    focusManager.clearFocus()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "إلغاء",
+                    tint = Color.Red
+                )
+            }
+        }
+
+        // Auto-focus when entering edit mode
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
     } else {
         Row(
             modifier = modifier
@@ -106,48 +178,6 @@ fun EditableAmountField(
     }
 }
 
-// Add this composable for the print toggle button
-@Composable
-fun PrintVersementToggle(
-    shouldPrint: Boolean,
-    onToggle: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = if (shouldPrint) {
-                Color.Green.copy(alpha = 0.3f)
-            } else {
-                Color.Gray.copy(alpha = 0.3f)
-            }
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .clickable { onToggle(!shouldPrint) }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Print,
-                contentDescription = if (shouldPrint) "إلغاء طباعة الدفع" else "طباعة الدفع",
-                tint = Color.White,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = if (shouldPrint) "طباعة الدفع ✓" else "طباعة الدفع",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White,
-                fontWeight = if (shouldPrint) FontWeight.Bold else FontWeight.Normal
-            )
-        }
-    }
-}
-
-// Enhanced version with both TODOs implemented
 @Composable
 fun View_MainItem_CreditOuVersemment_Enhanced(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
@@ -158,6 +188,9 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    // State for delete confirmation dialog
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     // Track local state for the editable fields
     var localVersementFait by remember { mutableStateOf(relative_M8BonVent.versement_fait) }
     var localCreditFait by remember { mutableStateOf(relative_M8BonVent.credit_fait) }
@@ -166,6 +199,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     val isVersement = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Versemment
     val isCredit = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Credit ||
             relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+
     val previousCommandeBon = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
         .filter { bon ->
             bon.parent_M2Client_KeyID == relative_M8BonVent.parent_M2Client_KeyID &&
@@ -174,10 +208,11 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                     bon.creationTimestamps < relative_M8BonVent.creationTimestamps
         }
         .maxByOrNull { it.creationTimestamps }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (isVersement) 140.dp else 130.dp),
+            .height(if (isVersement) 180.dp else 140.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = relative_M8BonVent.etateActuellementEst.color)
         ),
@@ -188,105 +223,80 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Header row
+            // Header row with delete button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = relative_M8BonVent.etateActuellementEst.nomArabe,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                // Delete button on the left
+                IconButton(
+                    onClick = { showDeleteDialog = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "حذف",
+                        tint = Color.White
+                    )
+                }
 
-                Text(
-                    text = relative_M8BonVent.keyID.takeLast(4),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.8f)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = relative_M8BonVent.etateActuellementEst.nomArabe,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = relative_M8BonVent.keyID.takeLast(4),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             if (isVersement) {
-                if (isVersement) {
-                    EditableAmountField(
-                        label = "مبلغ الدفع",
-                        amount = localVersementFait,
-                        onAmountChange = { newAmount ->
-                            localVersementFait = newAmount
+                EditableAmountField(
+                    label = "مبلغ الدفع",
+                    amount = localVersementFait,
+                    onAmountChange = { newAmount ->
+                        localVersementFait = newAmount
 
-                            val updatedBonVent = relative_M8BonVent.copy(
-                                versement_fait = newAmount,
-                                cUn_Versement_duBonVentKey = previousCommandeBon?.keyID ?: ""
-                            )
-                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
-
-                            Toast.makeText(
-                                context,
-                                if (previousCommandeBon != null) {
-                                    "تم تحديث مبلغ الدفع وربطه بالطلبية ${previousCommandeBon.keyID.takeLast(4)}"
-                                } else {
-                                    "تم تحديث مبلغ الدفع (لم يتم العثور على طلبية سابقة)"
-                                },
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    PrintVersementToggle(
-                        shouldPrint = localPrintToggle,
-                        onToggle = { shouldPrint ->
-                            localPrintToggle = shouldPrint
-                            // Update the database
-                            val updatedBonVent = relative_M8BonVent.copy(
-                                affiche_le_verssement_au_prochen_print = shouldPrint
-                            )
-                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
-                            Toast.makeText(
-                                context,
-                                if (shouldPrint) "سيتم طباعة الدفع" else "لن يتم طباعة الدفع",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Print toggle button for versement
-                PrintVersementToggle(
-                    shouldPrint = localPrintToggle,
-                    onToggle = { shouldPrint ->
-                        localPrintToggle = shouldPrint
-                        // Update the database
                         val updatedBonVent = relative_M8BonVent.copy(
-                            affiche_le_verssement_au_prochen_print = shouldPrint
+                            versement_fait = newAmount,
+                            cUn_Versement_duBonVentKey = previousCommandeBon?.keyID ?: ""
                         )
                         repositorysMainSetter.update_M8BonVent(updatedBonVent)
+
                         Toast.makeText(
                             context,
-                            if (shouldPrint) "سيتم طباعة الدفع" else "لن يتم طباعة الدفع",
+                            if (previousCommandeBon != null) {
+                                "تم تحديث مبلغ الدفع وربطه بالطلبية ${previousCommandeBon.keyID.takeLast(4)}"
+                            } else {
+                                "تم تحديث مبلغ الدفع (لم يتم العثور على طلبية سابقة)"
+                            },
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 )
+
             } else if (isCredit) {
                 EditableAmountField(
                     label = "مبلغ القرض",
                     amount = localCreditFait,
                     onAmountChange = { newAmount ->
                         localCreditFait = newAmount
-                        // Update the database
-                        val updatedBonVent = previousCommandeBon?.let {
-                            relative_M8BonVent.copy(
-                                credit_fait = newAmount,
-                                cUn_Credit_duBonVentKey= it.keyID
-                            )
-                        }
+                        val updatedBonVent = relative_M8BonVent.copy(
+                            credit_fait = newAmount,
+                            cUn_Credit_duBonVentKey = previousCommandeBon?.keyID ?: ""
+                        )
                         repositorysMainSetter.update_M8BonVent(updatedBonVent)
                         Toast.makeText(
                             context,
@@ -306,5 +316,77 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                 color = Color.White.copy(alpha = 0.8f)
             )
         }
+    }
+
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Warning",
+                    tint = Color.Red
+                )
+            },
+            title = {
+                Text(
+                    text = "تأكيد الحذف",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "هل أنت متأكد من حذف هذه المعاملة؟",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "رقم المعاملة: ${relative_M8BonVent.keyID.takeLast(6)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "النوع: ${relative_M8BonVent.etateActuellementEst.nomArabe}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "لا يمكن التراجع عن هذا الإجراء",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        repositorysMainSetter.delete_M8BonVent(relative_M8BonVent)
+                        Toast.makeText(
+                            context,
+                            "تم حذف المعاملة بنجاح",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("حذف نهائي", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("إلغاء", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        )
     }
 }
