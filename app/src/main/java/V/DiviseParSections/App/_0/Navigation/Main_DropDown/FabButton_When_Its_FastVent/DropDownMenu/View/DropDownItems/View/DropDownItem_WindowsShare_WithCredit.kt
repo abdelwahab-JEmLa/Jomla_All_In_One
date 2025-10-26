@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_F
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.content.Context
 import android.widget.Toast
@@ -58,28 +59,34 @@ fun DropDownItem_WindowsShare_WithCredit(
                     vent.quantity > 0
         }
 
+
     val activeOnVent_M8BonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
-    val vent_avant_cette_vent = repo8BonVent.datasValue
-        .filter { it.parent_M2Client_KeyID == activeOnVent_M8BonVent?.parent_M2Client_KeyID }
-        .filter { it.keyID != activeOnVent_M8BonVent?.keyID }
-        .sortedByDescending { it.creationTimestamps }
-        .firstOrNull()
-
     val totalBon = get_vents_datas(aCentralFacade).second
-    val versement = versementText.toDoubleOrNull()
 
-    val ancienCredit = vent_avant_cette_vent?.new_credit_apre_tout_fait ?: 0.0
-    val nouveauCredit = ancienCredit + totalBon - (versement ?: 0.0)
-    val credit = totalBon - (versement ?: 0.0)
+    val transaction_versement_relative = repo8BonVent.datasValue
+        .filter { it.cUn_Versement_duBonVentKey == activeOnVent_M8BonVent?.keyID }
+        .filter { it.etateActuellementEst == M8BonVent.EtateActuellementEst.Versemment }
+        .maxByOrNull { it.creationTimestamps }
+
+    val versementFromTransaction = transaction_versement_relative?.versement_fait ?: 0.0
+    val versement = (versementText.toDoubleOrNull() ?: 0.0) + versementFromTransaction
+
+    val transaction_credit_relative = repo8BonVent.datasValue
+        .filter { it.cUn_Credit_duBonVentKey == activeOnVent_M8BonVent?.keyID }
+        .filter {
+            it.etateActuellementEst == M8BonVent.EtateActuellementEst.Credit
+        }.maxByOrNull { it.creationTimestamps }
+
+    val ancienCredit = transaction_credit_relative?.credit_fait ?: 0.0
+    val nouveauCredit = ancienCredit + totalBon - versement
+    val credit = totalBon - versement
 
     val updatedBonVent = activeOnVent_M8BonVent?.copy(
         totale_saved = totalBon,
-        versement_fait = versement ?: 0.0,
+        versement_fait = versement,
         ancien_credit = ancienCredit,
         new_credit_apre_tout_fait = nouveauCredit,
-        credit_fait = credit,
-        versement = versement ?: 0.0,
         affiche_le_verssement_au_prochen_print = true,
         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
     )

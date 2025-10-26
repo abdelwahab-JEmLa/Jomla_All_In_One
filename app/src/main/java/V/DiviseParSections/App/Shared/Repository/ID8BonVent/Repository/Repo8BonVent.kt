@@ -211,12 +211,16 @@ data class M8BonVent(
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
     var totale_saved: Double = 0.0,
+    var cUn_Versement_duBonVentKey: String = "",
 
     var versement_fait : Double = 0.0,
     var ancien_credit : Double = 0.0,
+    var cUn_Credit_duBonVentKey: String = "",
+
     var new_credit_apre_tout_fait : Double = 0.0,
 
     var affiche_le_verssement_au_prochen_print: Boolean = false,
+
 
     var credit_fait: Double = 0.0,
 

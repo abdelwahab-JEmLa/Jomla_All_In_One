@@ -166,7 +166,14 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     val isVersement = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Versemment
     val isCredit = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Credit ||
             relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
-
+    val previousCommandeBon = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        .filter { bon ->
+            bon.parent_M2Client_KeyID == relative_M8BonVent.parent_M2Client_KeyID &&
+                    bon.parent_M14VentPeriod_KeyId == relative_M8BonVent.parent_M14VentPeriod_KeyId &&
+                    bon.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT &&
+                    bon.creationTimestamps < relative_M8BonVent.creationTimestamps
+        }
+        .maxByOrNull { it.creationTimestamps }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,26 +210,51 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Editable amount field - changes based on transaction type
             if (isVersement) {
-                EditableAmountField(
-                    label = "مبلغ الدفع",
-                    amount = localVersementFait,
-                    onAmountChange = { newAmount ->
-                        localVersementFait = newAmount
-                        // Update the database
-                        val updatedBonVent = relative_M8BonVent.copy(
-                            versement_fait = newAmount
-                        )
-                        repositorysMainSetter.update_M8BonVent(updatedBonVent)
-                        Toast.makeText(
-                            context,
-                            "تم تحديث مبلغ الدفع",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                )
+                if (isVersement) {
+                    EditableAmountField(
+                        label = "مبلغ الدفع",
+                        amount = localVersementFait,
+                        onAmountChange = { newAmount ->
+                            localVersementFait = newAmount
 
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                versement_fait = newAmount,
+                                cUn_Versement_duBonVentKey = previousCommandeBon?.keyID ?: ""
+                            )
+                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
+
+                            Toast.makeText(
+                                context,
+                                if (previousCommandeBon != null) {
+                                    "تم تحديث مبلغ الدفع وربطه بالطلبية ${previousCommandeBon.keyID.takeLast(4)}"
+                                } else {
+                                    "تم تحديث مبلغ الدفع (لم يتم العثور على طلبية سابقة)"
+                                },
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    PrintVersementToggle(
+                        shouldPrint = localPrintToggle,
+                        onToggle = { shouldPrint ->
+                            localPrintToggle = shouldPrint
+                            // Update the database
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                affiche_le_verssement_au_prochen_print = shouldPrint
+                            )
+                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
+                            Toast.makeText(
+                                context,
+                                if (shouldPrint) "سيتم طباعة الدفع" else "لن يتم طباعة الدفع",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Print toggle button for versement
@@ -249,9 +281,12 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                     onAmountChange = { newAmount ->
                         localCreditFait = newAmount
                         // Update the database
-                        val updatedBonVent = relative_M8BonVent.copy(
-                            credit_fait = newAmount
-                        )
+                        val updatedBonVent = previousCommandeBon?.let {
+                            relative_M8BonVent.copy(
+                                credit_fait = newAmount,
+                                cUn_Credit_duBonVentKey= it.keyID
+                            )
+                        }
                         repositorysMainSetter.update_M8BonVent(updatedBonVent)
                         Toast.makeText(
                             context,
