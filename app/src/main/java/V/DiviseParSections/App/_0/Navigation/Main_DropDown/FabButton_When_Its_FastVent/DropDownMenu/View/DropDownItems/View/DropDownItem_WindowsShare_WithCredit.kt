@@ -5,11 +5,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -18,7 +18,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,13 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun DropDownItem_WindowsShare_WithCredit(
     nomFun: String = "Partager PDF Crédit",
@@ -48,7 +47,6 @@ fun DropDownItem_WindowsShare_WithCredit(
 ) {
     var isLoading by remember { mutableStateOf(false) }
     var showCreditInput by remember { mutableStateOf(false) }
-    var versementText by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
 
@@ -58,7 +56,6 @@ fun DropDownItem_WindowsShare_WithCredit(
             vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
                     vent.quantity > 0
         }
-
 
     val activeOnVent_M8BonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
@@ -70,7 +67,7 @@ fun DropDownItem_WindowsShare_WithCredit(
         .maxByOrNull { it.creationTimestamps }
 
     val versementFromTransaction = transaction_versement_relative?.versement_fait ?: 0.0
-    val versement = (versementText.toDoubleOrNull() ?: 0.0) + versementFromTransaction
+    val versement = versementFromTransaction
 
     val transaction_credit_relative = repo8BonVent.datasValue
         .filter { it.cUn_Credit_duBonVentKey == activeOnVent_M8BonVent?.keyID }
@@ -80,7 +77,6 @@ fun DropDownItem_WindowsShare_WithCredit(
 
     val ancienCredit = transaction_credit_relative?.credit_fait ?: 0.0
     val nouveauCredit = ancienCredit + totalBon - versement
-    val credit = totalBon - versement
 
     val updatedBonVent = activeOnVent_M8BonVent?.copy(
         totale_saved = totalBon,
@@ -113,7 +109,6 @@ fun DropDownItem_WindowsShare_WithCredit(
         isLoading = true
         scope.launch {
             try {
-              
                 // Mettre à jour dans le repository AVANT de générer le PDF
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
 
@@ -129,7 +124,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     scope = scope,
                     showCreditSection = true,
                     relative_ListM10OperationVentCouleur = activeVents,
-                    bonVent = updatedBonVent  // Passer le bonVent mis à jour
+                    bonVent = updatedBonVent
                 )
 
                 result.onSuccess { message ->
@@ -145,8 +140,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                                 context,
                                 "PDF avec crédit partagé avec succès\n" +
                                         "Total: ${String.format("%.1f", totalBon)}Da\n" +
-                                        "Versement: ${String.format("%.1f", versement)}Da\n" +
-                                        "Crédit: ${String.format("%.1f", credit)}Da",
+                                        "Versement: ${String.format("%.1f", versement)}Da\n" ,
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -184,7 +178,6 @@ fun DropDownItem_WindowsShare_WithCredit(
                 kotlinx.coroutines.delay(1000)
                 isLoading = false
                 showCreditInput = false
-                versementText = ""
                 onDismissDropdown()
             }
         }
@@ -196,9 +189,9 @@ fun DropDownItem_WindowsShare_WithCredit(
                 set(value = activeOnVent_M8BonVent, key = SemanticsPropertyKey("relative_BonVent"))
             }
             .semantics(mergeDescendants = true) {
-                    if (updatedBonVent != null) {
-                        set(value = updatedBonVent, key = SemanticsPropertyKey("new"))
-                    }
+                if (updatedBonVent != null) {
+                    set(value = updatedBonVent, key = SemanticsPropertyKey("new"))
+                }
             }
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
@@ -214,33 +207,48 @@ fun DropDownItem_WindowsShare_WithCredit(
     ) {
         Column(modifier = Modifier.padding(4.dp)) {
             if (showCreditInput) {
-                OutlinedTextField(
-                    value = versementText,
-                    onValueChange = { versementText = it },
-                    label = { Text("Versement (Da)") },
-                    placeholder = { Text("0.0") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.padding(8.dp),
-                    enabled = !isLoading,
-                    supportingText = {
-                        val versement = versementText.toDoubleOrNull() ?: 0.0
-                        val credit = totalBon - versement
-                        Text(
-                            text = "Total: ${String.format("%.1f", totalBon)}Da | " +
-                                    "Versement: ${String.format("%.1f", versement)}Da\n" +
-                                    "Ancien Crédit: ${String.format("%.1f", ancienCredit)}Da | " +
-                                    "Nouveau Crédit: ${String.format("%.1f", nouveauCredit)}Da",
-                            color = if (credit < 0) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            }
-                        )
-                    },
-                    isError = (versementText.toDoubleOrNull() ?: 0.0) > totalBon
-                )
+                // Display credit info as text
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = "Informations de Crédit",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-                // Bouton de confirmation
+                    Text(
+                        text = "Total Bon Cette Foit: ${String.format("%.1f", totalBon)} Da",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Text(
+                        text = "Ancien Crédit: ${String.format("%.1f", ancienCredit)} Da",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = "Crédit Apre Current Vent  : ${String.format("%.1f", ancienCredit)} Da",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = "Versement: ${String.format("%.1f", versement)} Da",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Text(
+                        text = "Nouveau Compt Calcule : ${String.format("%.1f", nouveauCredit)} Da",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
                 DropdownMenuItem(
                     leadingIcon = {
                         if (isLoading) {
@@ -265,22 +273,13 @@ fun DropDownItem_WindowsShare_WithCredit(
                     },
                     onClick = {
                         if (!isLoading) {
-                            
-                            if (versement != null && versement >= 0) {
-                                shareWithCreditInfo(versement)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Veuillez entrer un montant valide",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            shareWithCreditInfo(versement)
                         }
                     },
-                    enabled = !isLoading && versementText.toDoubleOrNull() != null
+                    enabled = !isLoading
                 )
             } else {
-                // Bouton initial pour afficher le champ de saisie
+                // Initial button to show credit info
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
@@ -315,7 +314,7 @@ fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
 
     val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
 
-    // Calculate total value (similar to CartSummarySection)
+    // Calculate total value
     val totalValue = ventsTrouve.sumOf { vent ->
         val provisoireMonPrix = aCentralFacade.repositorysMainGetter
             .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)

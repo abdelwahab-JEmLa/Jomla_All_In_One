@@ -55,8 +55,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-
-// Fixed editable amount field with proper click handling
 @Composable
 fun EditableAmountField(
     label: String,
@@ -65,16 +63,9 @@ fun EditableAmountField(
     modifier: Modifier = Modifier
 ) {
     var isEditing by remember { mutableStateOf(false) }
-    var textValue by remember { mutableStateOf(String.format("%.2f", amount)) }
+    var textValue by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-
-    // Update textValue when amount changes externally
-    LaunchedEffect(amount) {
-        if (!isEditing) {
-            textValue = String.format("%.2f", amount)
-        }
-    }
 
     if (isEditing) {
         Row(
@@ -89,7 +80,8 @@ fun EditableAmountField(
                         textValue = newValue
                     }
                 },
-                label = { Text(label) },
+                label = { Text("${label}: ${String.format("%.2f", amount)} دج") },
+                placeholder = { Text("أدخل المبلغ الجديد") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal,
                     imeAction = ImeAction.Done
@@ -100,6 +92,7 @@ fun EditableAmountField(
                         if (newAmount != null && newAmount >= 0) {
                             onAmountChange(newAmount)
                             isEditing = false
+                            textValue = ""
                             focusManager.clearFocus()
                         }
                     }
