@@ -26,6 +26,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -54,8 +56,8 @@ fun DropDownItem_WindowsShare_WithCredit(
                     vent.quantity > 0
         }
 
-    val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val totalBon = currentBonVent?.sum_De_Totale_Vents ?: 0.0
+    val relative_BonVent = focusedValuesGetter.activeOnVent_M8BonVent
+    val totalBon = relative_BonVent?.sum_De_Totale_Vents ?: 0.0
 
     fun shareWithCreditInfo(versement: Double) {
         if (activeVents.isEmpty()) {
@@ -67,7 +69,7 @@ fun DropDownItem_WindowsShare_WithCredit(
             return
         }
 
-        if (currentBonVent == null) {
+        if (relative_BonVent == null) {
             Toast.makeText(
                 context,
                 "Bon de vente introuvable",
@@ -81,10 +83,9 @@ fun DropDownItem_WindowsShare_WithCredit(
             try {
                 val credit = totalBon - versement
 
-                // Créer un bonVent mis à jour avec TOUTES les informations nécessaires
-                val updatedBonVent = currentBonVent.copy(
+                val updatedBonVent = relative_BonVent.copy(
                     versement_fait = versement,       // Le versement fait
-                    versement = versement,             // Alternative field
+                    versement = versement,             // Alternativefield
                     credit_fait = credit,              // Le crédit calculé
                     affiche_le_verssement_au_prochen_print = true,  // FLAG IMPORTANT
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -96,7 +97,6 @@ fun DropDownItem_WindowsShare_WithCredit(
                 // Attendre que la mise à jour soit complète
                 kotlinx.coroutines.delay(500)
 
-                // Générer le PDF - Le système va maintenant détecter affiche_le_verssement_au_prochen_print = true
                 val result = printHandler.printPdfOnly(
                     context = context,
                     repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
@@ -104,6 +104,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                     repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
                     client = focusedValuesGetter.activeOnVentM2ClientInfos,
                     scope = scope,
+                    showCreditSection = true,
                     relative_ListM10OperationVentCouleur = activeVents,
                     bonVent = updatedBonVent  // Passer le bonVent mis à jour
                 )
@@ -167,7 +168,11 @@ fun DropDownItem_WindowsShare_WithCredit(
     }
 
     Card(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(value = relative_BonVent, key = SemanticsPropertyKey("relative_BonVent"))
+            }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isLoading) {
                 MaterialTheme.colorScheme.secondaryContainer
@@ -181,7 +186,6 @@ fun DropDownItem_WindowsShare_WithCredit(
     ) {
         Column(modifier = Modifier.padding(4.dp)) {
             if (showCreditInput) {
-                // Afficher le champ de saisie pour le versement
                 OutlinedTextField(
                     value = versementText,
                     onValueChange = { versementText = it },

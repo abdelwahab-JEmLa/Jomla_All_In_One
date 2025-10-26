@@ -36,22 +36,34 @@ class PdfGeneratorCore(
 
                     // Add transaction ID for credit with payment history
                     if (params.type == PdfType.CREDIT_ONLY && params.creditData?.showPaymentHistory == true) {
-                        contentBuilder.addText(doc, "Transaction: #${params.transactionId}", regularFont, 10f, TextAlignment.LEFT)
+                        contentBuilder.addText(
+                            doc,
+                            "Transaction: #${params.transactionId}",
+                            regularFont,
+                            10f,
+                            TextAlignment.LEFT
+                        )
                         doc.add(Paragraph("\n").setFontSize(0.3f))
                     }
 
                     // Add product table if needed
                     if (params.type != PdfType.CREDIT_ONLY) {
-                        currentReceiptTotal = addProductTableIfNeeded(doc, params, regularFont, boldFont)
+                        currentReceiptTotal =
+                            addProductTableIfNeeded(
+                                doc,
+                                params,
+                                regularFont,
+                                boldFont
+                            )
                     }
 
-                    // Add credit display for receipt only
-                    if (params.type == PdfType.RECEIPT_ONLY) {
-                        addCreditDisplayForReceiptOnly(doc, params, regularFont)
-                    }
-
-                    // Add credit sections only if there's actual credit
-                    addCreditSectionsIfNeeded(doc, params, regularFont, boldFont, currentReceiptTotal)
+                    addCreditSectionsIfNeeded(
+                        doc,
+                        params,
+                        regularFont,
+                        boldFont,
+                        currentReceiptTotal
+                    )
                 }
             }
         }
@@ -68,13 +80,20 @@ class PdfGeneratorCore(
                 val title = if (!params.its_GrossistApp) "Facture" else ""
                 contentBuilder.addHeader(doc, title, regularFont, boldFont, params.bonVent?.keyID)
             }
+
             PdfType.CREDIT_ONLY -> {
                 val receiptType = if (params.creditData?.showPaymentHistory == true) {
                     "Credit Payment Prix_Détaillé"
                 } else {
                     "Reçu de Paiement"
                 }
-                contentBuilder.addHeader(doc, receiptType, regularFont, boldFont, params.bonVent?.keyID)
+                contentBuilder.addHeader(
+                    doc,
+                    receiptType,
+                    regularFont,
+                    boldFont,
+                    params.bonVent?.keyID
+                )
             }
         }
     }
@@ -107,10 +126,13 @@ class PdfGeneratorCore(
                 if (shouldShowTotalSection) {
                     // Show table WITH "Total" section centered
                     tableBuilder.createProductTable(
-                        doc, params.operations, tarificationRepo,
-                        produitRepo, regularFont, boldFont
+                        doc,
+                        params.operations,
+                        tarificationRepo,
+                        produitRepo,
+                        regularFont,
+                        boldFont
                     )
-                    // currentReceiptTotal remains 0.0 since total is already displayed
                 } else {
                     // Show table WITHOUT total section, return total for credit calculations
                     currentReceiptTotal = tableBuilder.createProductTableAndReturnTotal(
@@ -131,8 +153,20 @@ class PdfGeneratorCore(
     ) {
         // Only show existing credit if negative (client owes money)
         params.client?.currentCreditBalance?.takeIf { it < 0 }?.let { credit ->
-            contentBuilder.addText(doc, "Credit Du Compte actuel", regularFont, 12f, TextAlignment.CENTER)
-            contentBuilder.addText(doc, "${formatter.round(credit)}Da", regularFont, 14f, TextAlignment.CENTER)
+            contentBuilder.addText(
+                doc,
+                "Credit Du Compte actuel",
+                regularFont,
+                12f,
+                TextAlignment.CENTER
+            )
+            contentBuilder.addText(
+                doc,
+                "${formatter.round(credit)}Da",
+                regularFont,
+                14f,
+                TextAlignment.CENTER
+            )
         }
     }
 
@@ -159,7 +193,13 @@ class PdfGeneratorCore(
                 if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
                     // Add separator before credit section
                     doc.add(Paragraph("\n").setFontSize(0.3f))
-                    contentBuilder.addText(doc, "────────────────────────", regularFont, 10f, TextAlignment.CENTER)
+                    contentBuilder.addText(
+                        doc,
+                        "────────────────────────",
+                        regularFont,
+                        10f,
+                        TextAlignment.CENTER
+                    )
                     doc.add(Paragraph("\n").setFontSize(0.3f))
                 }
 
@@ -172,11 +212,13 @@ class PdfGeneratorCore(
                             )
                         }
                     }
+
                     PdfType.CREDIT_ONLY -> {
                         params.creditData?.let {
                             contentBuilder.addCreditOnlySection(doc, it, regularFont, boldFont)
                         }
                     }
+
                     else -> {}
                 }
             }

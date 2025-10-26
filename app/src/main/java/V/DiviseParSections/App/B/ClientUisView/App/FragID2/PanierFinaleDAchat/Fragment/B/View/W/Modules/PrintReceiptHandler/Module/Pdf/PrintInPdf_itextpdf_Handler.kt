@@ -93,7 +93,9 @@ class PrintInPdf_itextpdf_Handler(
             )
         }
 
-        generatePdfWithParams(file.absolutePath, params)
+        generatePdfWithParams(file.absolutePath,
+            params
+        )
 
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))

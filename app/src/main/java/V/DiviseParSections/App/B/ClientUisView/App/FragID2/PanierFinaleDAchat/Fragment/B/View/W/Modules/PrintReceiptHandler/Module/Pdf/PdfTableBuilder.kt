@@ -42,6 +42,12 @@ class PdfTableBuilder(
 
         if (result.total > 0.0) {
             contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
+            //<--
+            //TODO(1): ajout ici si affiche credite_versement_section a Center
+        // Rest : == ancien_credit
+        // versement  : == versement
+        // Compt Actuelle  : Rest + current_bon - versement
+
         }
     }
 

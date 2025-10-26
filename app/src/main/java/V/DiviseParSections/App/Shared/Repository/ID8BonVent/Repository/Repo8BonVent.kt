@@ -210,6 +210,8 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
+    var totale_saved: Double = 0.0,
+
     var credit_fait: Double = 0.0,
 
     var versement_fait : Double = 0.0,

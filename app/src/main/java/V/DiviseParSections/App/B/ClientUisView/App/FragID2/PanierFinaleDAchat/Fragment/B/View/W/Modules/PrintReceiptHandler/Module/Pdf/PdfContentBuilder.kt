@@ -172,4 +172,6 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
 
     fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
+
+
 }

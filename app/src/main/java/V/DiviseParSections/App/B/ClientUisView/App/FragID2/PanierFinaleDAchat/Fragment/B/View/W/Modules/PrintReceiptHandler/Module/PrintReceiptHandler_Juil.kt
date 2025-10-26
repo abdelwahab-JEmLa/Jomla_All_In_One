@@ -65,7 +65,7 @@ class PrintReceiptHandler_Juil(
         versement: Double = 0.0
     ): Result<String> {
         return try {
-            val shouldShowCreditSection = showCreditSection && bonVent != null
+            val shouldShowCreditSection = showCreditSection
 
             pdfPrintHandler.generateAndOpenPdf(
                 context,
