@@ -179,9 +179,7 @@ fun Boit_Quantity_Handler(
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
 
-                                    // TODO(1) FIXED: Find existing tariff based on current mode
                                     val existingTariff = if (currentApp_ItsWorkChezGrossisst) {
-                                        // In grossist mode, search for SuperGros tariff
                                         repo13TarificationInfos.datasValue.find { tariff ->
                                             tariff.parent_M1Produit_KeyId == produit.keyID &&
                                                     tariff.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros

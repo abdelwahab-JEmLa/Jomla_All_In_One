@@ -126,6 +126,11 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
+                    // Display count_Don_Depot
+                    CountDonDepotDisplay(
+                        produit = produit,
+                        allNonTrouve = allNonTrouve
+                    )
 
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                         CartonQuantityDisplay_Mo_F_(
@@ -135,7 +140,6 @@ fun Downer_Bar_SemiModularized_Searcher(
                             isEditMode = isCartonEditMode,
                             focusRequester = searchFieldFocusRequester,
                             onEditModeChange = { newMode ->
-                                // FIXED: Use dedicated carton callback
                                 on_PourEntre_CartonEditeMode(newMode)
                             },
                             onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
@@ -149,13 +153,11 @@ fun Downer_Bar_SemiModularized_Searcher(
                         onShowColorsClick = onShowColorsClick,
                         isEditMode = isBoitEditMode,
                         onEditModeChange = { newMode ->
-                            // FIXED: Use dedicated boit callback
                             if (!newMode) on_Pour_FocuceAfficheClavieSearcherProduit()
                             on_PourEntre_BoitEditeMode(newMode)
                         },
                         onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
-
                 }
             }
 
