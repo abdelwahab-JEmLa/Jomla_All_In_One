@@ -57,13 +57,15 @@ fun CategoryTypeDisplay(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repo1ProduitInfos: RepoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
     repoM16CategorieProduit: RepoM16CategorieProduit = aCentralFacade.repositorysMainGetter.repoM16CategorieProduit,
-    repositorysMainSetter: RepositorysMainSetter
+    repositorysMainSetter: RepositorysMainSetter,
+
+    onUpdate: (String) -> Unit = {}
 ) {
     // State management
     var isEditing by remember { mutableStateOf(false) }
-    var textValue by remember(produit.nom_type_categorie) {
+    var textValue by remember(produit.nomMutable) {
         mutableStateOf(
-            produit.nom_type_categorie.ifEmpty { category?.nom ?: "" }
+            produit.nomMutable.ifEmpty { category?.nom ?: "" }
         )
     }
     val focusRequester = remember { FocusRequester() }
@@ -80,7 +82,7 @@ fun CategoryTypeDisplay(
             .distinct()
 
         val productCategoryNames = repo1ProduitInfos.datasValue
-            .map { it.nom_type_categorie }
+            .map { it.nomMutable }
             .filter { it.isNotBlank() }
             .distinct()
 
@@ -101,8 +103,8 @@ fun CategoryTypeDisplay(
     }
 
     // Get initial text for editing
-    val initialEditText = remember(produit.nom_type_categorie, category?.nom) {
-        val currentText = produit.nom_type_categorie.ifEmpty { category?.nom ?: "" }
+    val initialEditText = remember(produit.nomMutable, category?.nom) {
+        val currentText = produit.nomMutable.ifEmpty { category?.nom ?: "" }
         if (currentText.startsWith("Confiserie_New_Arrivage")) {
             ""
         } else {
@@ -110,20 +112,14 @@ fun CategoryTypeDisplay(
         }
     }
 
-    // Check if nom_type_categorie matches category name
-    val isMatching = produit.nom_type_categorie.isNotEmpty() &&
-            produit.nom_type_categorie == category?.nom
+    // Check if nomMutable matches category name
+    val isMatching = produit.nomMutable.isNotEmpty() &&
+            produit.nomMutable == category?.nom
 
     // Save function
     fun saveText() {
-        if (textValue != produit.nom_type_categorie) {
-            repositorysMainSetter.upsert_M1Produit(
-                produit.copy(
-                    nom_type_categorie = textValue,
-                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
-                )
-            )
-        }
+        onUpdate(textValue)
+
         isEditing = false
         expanded = false
     }
@@ -240,13 +236,6 @@ fun CategoryTypeDisplay(
                         onClick = {
                             textValue = item
                             expanded = false
-
-                            aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(produit.copy(
-                                nom_type_categorie = item,
-                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
-                            ))
-
-                            isEditing = false
                         },
                         trailingIcon = {
                             if (item == category?.nom) {
@@ -325,7 +314,7 @@ fun CategoryTypeDisplay(
                             textValue = category.nom
                             repositorysMainSetter.upsert_M1Produit(
                                 produit.copy(
-                                    nom_type_categorie = category.nom,
+                                    nomMutable = category.nom,
                                     dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
                                 )
                             )

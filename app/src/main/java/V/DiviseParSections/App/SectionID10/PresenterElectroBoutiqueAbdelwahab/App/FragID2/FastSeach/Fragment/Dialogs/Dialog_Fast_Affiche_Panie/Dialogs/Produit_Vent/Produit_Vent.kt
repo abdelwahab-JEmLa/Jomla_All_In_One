@@ -185,7 +185,7 @@ fun Produit_Vent(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Display category information
-                    if (nonNullProduit.nom_type_categorie.isNotEmpty()) {
+                    if (nonNullProduit.nomMutable.isNotEmpty()) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
@@ -194,7 +194,7 @@ fun Produit_Vent(
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Text(
-                                text = nonNullProduit.nom_type_categorie,
+                                text = nonNullProduit.nomMutable,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontWeight = FontWeight.Bold,

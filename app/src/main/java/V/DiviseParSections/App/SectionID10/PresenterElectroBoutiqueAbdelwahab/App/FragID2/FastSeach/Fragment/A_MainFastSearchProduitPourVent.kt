@@ -239,7 +239,7 @@ fun MainFastSearchProduitPourVent(
                                 update_activeCentralValuesfastSearchProduitPourVent("")
                             }
                         ),
-                        leadingIcon = {
+                        trailingIcon = {
                             val newDatas = get_New_Datas(
                                 searchQuery = fastSearchProduitPourVent,
                                 aCentralFacade = aCentralFacade,
@@ -282,7 +282,7 @@ fun MainFastSearchProduitPourVent(
                                 )
                             }
                         },
-                        trailingIcon = {
+                        leadingIcon = {
                             if (fastSearchProduitPourVent.isNotEmpty()) {
                                 IconButton(
                                     onClick = {

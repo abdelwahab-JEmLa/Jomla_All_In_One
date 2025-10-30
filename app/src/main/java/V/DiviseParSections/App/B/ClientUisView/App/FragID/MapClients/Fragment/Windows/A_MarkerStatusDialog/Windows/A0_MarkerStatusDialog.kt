@@ -182,6 +182,11 @@ private fun CustomStatusDropdownMenu(
             )
 
             StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                text = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT.nomArabe
+            )
+
+            StatusDropdownItem(
                 status = M8BonVent.EtateActuellementEst.Ordre_Gerant,
                 text = M8BonVent.EtateActuellementEst.Ordre_Gerant.nomArabe
             )

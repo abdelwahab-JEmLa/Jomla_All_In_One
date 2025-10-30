@@ -54,13 +54,12 @@ fun MainFilterT1(
                     // Separate primary matches from category name matches
                     val primaryMatches = products.filter {
                         it.nom.contains(searchFilter, true) ||
-                                it.nomMutable.contains(searchFilter, true) ||
                                 it.nomArab.contains(searchFilter, true)
                     }
 
                     val categoryMatches = products.filter {
                         !primaryMatches.contains(it) && // Exclude products already in primary matches
-                                it.nom_type_categorie.contains(searchFilter, true)
+                                it.nomMutable.contains(searchFilter, true)
                     }
 
                     // Return primary matches first, then category matches
@@ -75,13 +74,12 @@ fun MainFilterT1(
                     // Separate primary matches from category name matches
                     val primaryMatches = products.filter {
                         it.nom.contains(searchFilter, true) ||
-                                it.nomMutable.contains(searchFilter, true) ||
                                 it.nomArab.contains(searchFilter, true)
                     }
 
                     val categoryMatches = products.filter {
                         !primaryMatches.contains(it) && // Exclude products already in primary matches
-                                it.nom_type_categorie.contains(searchFilter, true)
+                                it.nomMutable.contains(searchFilter, true)
                     }
 
                     // Return primary matches first, then category matches
@@ -127,7 +125,6 @@ fun MainFilterT1(
                     operations.maxOfOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } ?: 0L
                 }
 
-            // FIXED TODO 3: Check if product was updated in last 2 minutes
             val recentlyUpdatedProductIds = productLastSaleMap
                 .filter { (_, timestamp) ->
                     (currentTimeMillis - timestamp) < twoMinutesInMillis

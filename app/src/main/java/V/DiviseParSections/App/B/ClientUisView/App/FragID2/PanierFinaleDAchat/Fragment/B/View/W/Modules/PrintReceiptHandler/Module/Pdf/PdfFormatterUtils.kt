@@ -38,7 +38,7 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
         }
 
         // Add category type name in parentheses if it exists and is not empty
-        val categoryType = produit?.nom_type_categorie?.trim()
+        val categoryType = produit?.nomMutable?.trim()
         return if (!categoryType.isNullOrEmpty()) {
             "$productNameWithCopyright ($categoryType)"
         } else {

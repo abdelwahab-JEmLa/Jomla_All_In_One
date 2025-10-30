@@ -193,6 +193,23 @@ fun ProductHeader_T1(
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
+                    // CategoryTypeDisplay at the top
+                    CategoryTypeDisplay(
+                        produit = relative_Produit,
+                        category = categoriesMap[relative_Produit.idParentCategorie],
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        repositorysMainSetter = repositorysMainSetter
+                    ) { textValue ->
+                        update_produit(
+                            relative_Produit.copy(
+                                nomMutable = textValue,
+                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                            )
+                        )
+                    }
+
                     // French product name - now editable
                     if (isEditingName) {
                         Row(
@@ -259,39 +276,24 @@ fun ProductHeader_T1(
                         }
                     } else {
                         // Display mode - clickable to edit
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            // Product name on the left
-                            Text(
-                                text = relative_Produit.nom,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = 0.6f
-                                )
-                                else MaterialTheme.colorScheme.onPrimaryContainer,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable {
-                                        editingNameText = relative_Produit.nom
-                                        isEditingName = true
-                                    }
+                        Text(
+                            text = relative_Produit.nom,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.6f
                             )
-
-                            // CategoryTypeDisplay on the right
-                            CategoryTypeDisplay(
-                                produit = relative_Produit,
-                                category = categoriesMap[relative_Produit.idParentCategorie],
-                                modifier = Modifier.weight(0.6f),
-                                repositorysMainSetter = repositorysMainSetter
-                            )
-                        }
-                        }
+                            else MaterialTheme.colorScheme.onPrimaryContainer,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    editingNameText = relative_Produit.nom
+                                    isEditingName = true
+                                }
+                        )
+                    }
 
                     // Arabic product name - editable
                     if (isEditingArabicName && isExpanded) {
@@ -403,48 +405,53 @@ fun ProductHeader_T1(
                         } else {
                             // Show placeholder for Arabic name if empty
                             isExpanded.ifTrue {
-                            Text(
-                                text = "إضافة اسم عربي",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = 0.3f
+                                Text(
+                                    text = "إضافة اسم عربي",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = 0.3f
+                                    )
+                                    else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
+                                    modifier = Modifier
+                                        .padding(top = 2.dp)
+                                        .clickable {
+                                            editingArabicNameText = ""
+                                            isEditingArabicName = true
+                                        }
                                 )
-                                else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
-                                modifier = Modifier
-                                    .padding(top = 2.dp)
-                                    .clickable {
-                                        editingArabicNameText = ""
-                                        isEditingArabicName = true
-                                    }
-                            )     }
+                            }
                         }
                     }
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.padding(top = 2.dp)
-                    ) {
-                        Text(
-                            text = "Catégorie:",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
+                            Text(
+                                text = "Catégorie:",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.5f
+                                )
+                                else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Medium
+                            )
 
-                        Text(
-                            text = categoryName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            else MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.clickable {
-                                shouldShowCategoryDialog = true
-                            }
-                        )
-                    }
+                            Text(
+                                text = categoryName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.6f
+                                )
+                                else MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.clickable {
+                                    shouldShowCategoryDialog = true
+                                }
+                            )
+                        }
                     }
 
                     if (allNonTrouve) {
@@ -492,32 +499,27 @@ fun ProductHeader_T1(
                             modifier = Modifier.padding(petitePaddine)
                         ) {
                             IconButton(
-                                // FIXED: Properly handle carton toggle with quantity recalculation
                                 onClick = {
                                     val currentMode =
                                         relative_Produit.setIN_Vent_Its_Quantity_Represent
                                     val newMode = currentMode.toggle()
 
-                                    // Store current total quantities before mode change
                                     val currentVentOperations =
                                         listFiltered_M10OperationVentCouleurs_By_M1Produit
                                     val totalQuantitiesByColor =
                                         currentVentOperations.groupBy { it.parent_M3CouleurProduit_KeyID }
                                             .mapValues { entry -> entry.value.sumOf { it.quantity } }
 
-                                    // Update product mode
                                     relative_Produit.apply {
                                         setIN_Vent_Its_Quantity_Represent = newMode
                                     }.also {
                                         repositorysMainGetter.repo1ProduitInfos.update(it)
                                     }
 
-                                    // Delete existing operations
                                     viewModel.aCentralFacade.repositorysMainSetter.delete_ListM10OperationVentCouleur(
                                         currentVentOperations
                                     )
 
-                                    // Recreate operations with converted quantities if there were any
                                     if (totalQuantitiesByColor.isNotEmpty()) {
                                         val repo3CouleurProduitInfos =
                                             viewModel.getter.repo03CouleurProduitInfos
@@ -531,12 +533,9 @@ fun ProductHeader_T1(
                                                 repo3CouleurProduitInfos.datasValue.find { it.keyID == colorKeyId }
 
                                             if (colorInfo != null && defaultVent != null && totalQuantity > 0) {
-                                                // Convert quantity based on new mode
                                                 val convertedQuantity = when (newMode) {
                                                     M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> {
-                                                        // Converting from units (boit) to cartons
                                                         if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit) {
-                                                            // Convert units to cartons
                                                             if (relative_Produit.quantite_Boit_Par_Carton > 0) {
                                                                 (totalQuantity / relative_Produit.quantite_Boit_Par_Carton).coerceAtLeast(
                                                                     1
@@ -546,9 +545,7 @@ fun ProductHeader_T1(
                                                     }
 
                                                     M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> {
-                                                        // Converting from cartons to units (boit)
                                                         if (currentMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton) {
-                                                            // Convert cartons to units
                                                             totalQuantity * relative_Produit.quantite_Boit_Par_Carton
                                                         } else totalQuantity
                                                     }
