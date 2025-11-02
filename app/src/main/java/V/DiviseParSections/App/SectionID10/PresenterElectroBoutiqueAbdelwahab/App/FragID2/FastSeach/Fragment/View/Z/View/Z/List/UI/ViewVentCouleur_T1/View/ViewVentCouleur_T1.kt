@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -83,6 +84,20 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+
+fun update_countDepot(
+    aCentralFacade: ACentralFacade,
+    relative_M3CouleurInfos: M3CouleurProduitInfos,
+    quantityAVendu: Int = 1
+) {
+    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
+        aCentralFacade.repositorysMainSetter.addOrUpdateData_M3CouleurProduitInfos(
+            relative_M3CouleurInfos.copy(
+                count_Don_Depot = relative_M3CouleurInfos.count_Don_Depot - quantityAVendu
+            )
+        )
+    }
+}
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -316,6 +331,7 @@ fun ViewVentCouleur_T1(
     )
     val finale_Tariff = findTariff ?: default_Tariff.first
 
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -420,8 +436,11 @@ fun ViewVentCouleur_T1(
                             relative_produit, it
                         )
                     }
+
+                    update_countDepot(aCentralFacade,relative_M3CouleurInfos,1)
                 }
-                val currentApp_Est_Admin=focusedValuesGetter.currentApp_Est_Admin
+
+                val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
                 Box(modifier = Modifier.fillMaxWidth()) {
                     ColorImageDisplayer(
@@ -538,8 +557,24 @@ fun ViewVentCouleur_T1(
                                 modifier = Modifier.size(14.dp)
                             )
                         }
-                    }
 
+                        // Add badge to show count_Don_Depot if > 0
+                        if (relative_M3CouleurInfos.count_Don_Depot > 0) {
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 4.dp, y = (-4).dp)
+                            ) {
+                                Text(
+                                    text = relative_M3CouleurInfos.count_Don_Depot.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                     // Camera dialog
                     if (showCameraDialog) {
                         CameraXDialog(
@@ -658,6 +693,13 @@ fun ViewVentCouleur_T1(
             relative_M10OperationVentCouleur?.let { existingVent ->
                 val updatedVent = new_Qyt?.let {
                     existingVent.copy(quantity = it)
+
+                }
+
+                if (new_Qyt != null && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                    update_countDepot(
+                        aCentralFacade,
+                        relative_M3CouleurInfos,new_Qyt)
                 }
 
                 if (updatedVent != null) {
@@ -670,6 +712,7 @@ fun ViewVentCouleur_T1(
             viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
                 relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
             )
+
         }
     }
 

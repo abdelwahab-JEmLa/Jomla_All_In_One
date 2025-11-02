@@ -124,6 +124,8 @@ data class M3CouleurProduitInfos(
     val aAffiche: Type = Type.Image,
     val nomImageFichieSansEtansion: String = "Non Dispo",
 
+    var count_Don_Depot: Int = 0,
+
     val nomCouleurStrSiSonImageDispo: String = "",
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------

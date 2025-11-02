@@ -13,7 +13,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -50,17 +49,11 @@ fun ViewProduit_T1(
     on_Pour_FocuceAfficheClavieSearcherProduit: () -> Unit = {},
     isCartonEditMode: Boolean,
     isBoitEditMode: Boolean,
-    on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},  // SEPARATED CALLBACK
-    on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},    // SEPARATED CALLBACK
+    on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},
+    on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},
 ) {
-    // NEW: State for collapse mode
-    var isExpanded by remember { mutableStateOf(!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
-    val rotationAngle by animateFloatAsState(
-        targetValue = if (isExpanded) 180f else 0f,
-        label = "rotation"
-    )
+    var isExpanded by remember { mutableStateOf(focusedValuesGetter.currentApp_Its_Vendeur || !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
 
-    val getter = viewModel.aCentralFacade.repositorysMainGetter
     val bProduitDataBase_SubClassFunctionality =
         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos
     val b1CouleurOuGoutProduitDataBaseRepository =
@@ -137,13 +130,12 @@ fun ViewProduit_T1(
                 onToggleExpand = { isExpanded = !isExpanded },
                 isCartonEditMode = isCartonEditMode,
                 isBoitEditMode = isBoitEditMode,
-                on_PourEntre_CartonEditeMode = on_PourEntre_CartonEditeMode,  // FIXED
-                on_PourEntre_BoitEditeMode = on_PourEntre_BoitEditeMode,      // FIXED
+                on_PourEntre_CartonEditeMode = on_PourEntre_CartonEditeMode,
+                on_PourEntre_BoitEditeMode = on_PourEntre_BoitEditeMode,
                 on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit
             )
         }
     }
-
 
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
     val ouvertDialogProduit =

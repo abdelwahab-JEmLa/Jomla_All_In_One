@@ -85,7 +85,7 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false ,
+    val itsDevMode: Boolean = true ,
     val devStartUpScree: String = Screen.FacadePresentoireProduits.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
@@ -95,6 +95,9 @@ data class M18CentralParametresOfAllApps(
 
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
+
+    val younes_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s5",
+    val jamale_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s6",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,

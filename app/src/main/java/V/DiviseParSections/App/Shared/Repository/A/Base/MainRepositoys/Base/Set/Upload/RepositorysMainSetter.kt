@@ -17,6 +17,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -40,6 +42,7 @@ class RepositorysMainSetter(
     private val clientOperations: ClientOperations,
     private val repoM1Produit: RepoM1Produit,
     private val repo2Client: Repo2Client,
+    private val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
@@ -164,7 +167,10 @@ class RepositorysMainSetter(
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M2Client(data: M2Client) = repo2Client.upsert(data)
 
-    //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
+    //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
+    fun addOrUpdateData_M3CouleurProduitInfos(data: M3CouleurProduitInfos) = repo03CouleurProduitInfos.addOrUpdateData(data)
+
+    //------------repo10 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) =
         repo10OperationVentCouleur.add_New(data)
 

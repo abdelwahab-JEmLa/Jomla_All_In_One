@@ -9,7 +9,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -30,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Warning
@@ -67,88 +67,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Composable
-fun Button_De_supprime_Avec_Securite(
-    bon_Vent: M8BonVent,
-    machina_li_t_supprime: Repo8BonVent,
-    onDeleteConfirmed: () -> Unit = {}
-) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    IconButton(
-        onClick = {
-            showDeleteDialog = true
-        },
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = "Supprimer avec sécurité",
-            tint = Color.White
-        )
-    }
-
-    // Security confirmation dialog for delete
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = "Warning",
-                    tint = Color.Red
-                )
-            },
-            title = {
-                Text(
-                    text = "تأكيد الحذف",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "هل أنت متأكد من حذف هذه المعاملة؟",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "رقم المعاملة: ${bon_Vent.keyID.takeLast(6)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "لا يمكن التراجع عن هذا الإجراء",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Red,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        machina_li_t_supprime.delete(bon_Vent)
-                        onDeleteConfirmed()
-                        showDeleteDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    )
-                ) {
-                    Text("حذف نهائي", color = Color.White)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
-                ) {
-                    Text("إلغاء")
-                }
-            }
-        )
-    }
-}
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -247,6 +165,25 @@ fun View_MainItem(
             while (true) {
                 blinkState.value = !blinkState.value
                 delay(500)
+            }
+        }
+    }
+    var showAddToStockDialog by remember { mutableStateOf(false) }
+
+    fun add_Bon_Au_Stock(): Unit {
+        //<--
+        //TODO(1): fait austart de                         count_Don_Depot = 0 apre lence l update
+        repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+            it.parent_M8BonVent_KeyId == (focusedValuesGetter.activeOnVent_M8BonVent?.keyID ?: "")
+        }.forEach { vent ->
+            repositorysMainGetter.repo03CouleurProduitInfos.datasValue.find {
+                vent.parent_M3CouleurProduit_KeyID == it.keyID
+            }?.let {
+                repositorysMainSetter.addOrUpdateData_M3CouleurProduitInfos(
+                    it.copy(
+                        count_Don_Depot = vent.quantity
+                    )
+                )
             }
         }
     }
@@ -355,97 +292,116 @@ fun View_MainItem(
                     }
                 }
 
-                // Sum display card with enhanced height
-                if (sumBonVents > 0.0) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White.copy(alpha = 0.15f)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
-                            // Enhanced compact version with better spacing
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), // Increased padding
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Remaining amount (primary)
-                                Text(
-                                    text = String.format(
-                                        "%.2f",
-                                        sumBonVents - relative_M8BonVent.sum_De_Credit_Fait
-                                    ),
-                                    style = MaterialTheme.typography.titleMedium, // Slightly larger
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (sumBonVents - relative_M8BonVent.versement > 0) {
-                                        Color.White.copy(alpha = 0.9f)
-                                    } else {
-                                        Color.Green.copy(alpha = 0.9f)
-                                    }
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "دج متبقي",
-                                    style = MaterialTheme.typography.bodyMedium, // Larger text
-                                    color = Color.White.copy(alpha = 0.8f)
-                                )
+                Row {
+                    if (sumBonVents > 0.0) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White.copy(alpha = 0.15f)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
+                                // Enhanced compact version with better spacing
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = 12.dp,
+                                        vertical = 8.dp
+                                    ), // Increased padding
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Remaining amount (primary)
+                                    Text(
+                                        text = String.format(
+                                            "%.2f",
+                                            sumBonVents - relative_M8BonVent.sum_De_Credit_Fait
+                                        ),
+                                        style = MaterialTheme.typography.titleMedium, // Slightly larger
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (sumBonVents - relative_M8BonVent.versement > 0) {
+                                            Color.White.copy(alpha = 0.9f)
+                                        } else {
+                                            Color.Green.copy(alpha = 0.9f)
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "دج متبقي",
+                                        style = MaterialTheme.typography.bodyMedium, // Larger text
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
 
-                                Spacer(modifier = Modifier.width(10.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
 
-                                // Separator
-                                Text(
-                                    text = "|",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.6f)
-                                )
+                                    // Separator
+                                    Text(
+                                        text = "|",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White.copy(alpha = 0.6f)
+                                    )
 
-                                Spacer(modifier = Modifier.width(10.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
 
-                                // Amount paid (compact)
-                                Text(
-                                    text = String.format("%.2f", relative_M8BonVent.versement),
-                                    style = MaterialTheme.typography.bodyMedium, // Larger text
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.White.copy(alpha = 0.9f)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "مدفوع",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), // Increased padding
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = String.format("%.2f", sumBonVents),
-                                    style = MaterialTheme.typography.titleMedium, // Larger text
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "دج",
-                                    style = MaterialTheme.typography.bodyMedium, // Larger text
-                                    color = Color.White.copy(alpha = 0.9f)
-                                )
+                                    // Amount paid (compact)
+                                    Text(
+                                        text = String.format("%.2f", relative_M8BonVent.versement),
+                                        style = MaterialTheme.typography.bodyMedium, // Larger text
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "مدفوع",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = 12.dp,
+                                        vertical = 8.dp
+                                    ), // Increased padding
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = String.format("%.2f", sumBonVents),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "دج",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                }
                             }
                         }
                     }
+                    IconButton(
+                        onClick = {
+                            showAddToStockDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Receipt,
+                            contentDescription = "Add to Stock",
+                            tint = Color.White
+                        )
+                    }
+
+
                 }
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp) // Enhanced padding
-                    .padding(top = 12.dp) // More top padding for better spacing
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(top = 12.dp)
             ) {
-                // Transaction info row with enhanced spacing
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -832,6 +788,71 @@ fun View_MainItem(
                 showCreditDialog = false
             },
             sumBonVents = sumBonVents
+        )
+    }
+    if (showAddToStockDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddToStockDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Receipt,
+                    contentDescription = "Stock",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "إضافة إلى المخزون",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "هل تريد إضافة هذه المنتجات إلى المخزون؟",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "رقم المعاملة: ${relative_M8BonVent.keyID.takeLast(6)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "سيتم إضافة الكميات إلى المخزون الحالي",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        add_Bon_Au_Stock()
+                        Toast.makeText(
+                            context,
+                            "تمت إضافة المنتجات إلى المخزون بنجاح",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showAddToStockDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showAddToStockDialog = false }
+                ) {
+                    Text("إلغاء", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         )
     }
 }

@@ -266,6 +266,12 @@ class FocusedValuesGetter(
     }
 
 
+    val currentApp_Its_Vendeur by derivedStateOf {
+        M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M18CentralParametresOfAllApps.get_Default().younes_Compt_KeyId
+                || M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M18CentralParametresOfAllApps.get_Default().abdelmomen_Compt_KeyId
+    }
+
+
     //-----------------------------M8BonVent-----------------------------------------------------------------------------------------------------------------------------------------------
     val activeOnVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentActive_M9AppCompt?.onVentM8BonVentKey }

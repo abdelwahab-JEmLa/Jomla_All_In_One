@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -68,7 +69,6 @@ fun Downer_Bar_SemiModularized_Searcher(
         related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
 
-
     // Animation for rotate icon
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
@@ -126,11 +126,7 @@ fun Downer_Bar_SemiModularized_Searcher(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    // Display count_Don_Depot
-                    CountDonDepotDisplay(
-                        produit = produit,
-                        allNonTrouve = allNonTrouve
-                    )
+
 
                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                         CartonQuantityDisplay_Mo_F_(

@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.Arrangement
@@ -46,15 +45,13 @@ fun ListCouleurs(
                 size = 120.dp
             )
         }
-        focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
-            item {
-                AddNewCouleur(
-                    modifier = Modifier.padding(4.dp),
-                    produit = produit,
-                    viewModel = viewModel,
-                    size = 120.dp
-                )
-            }
+        item {
+            AddNewCouleur(
+                modifier = Modifier.padding(4.dp),
+                produit = produit,
+                viewModel = viewModel,
+                size = 120.dp
+            )
         }
     }
 }
