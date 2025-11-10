@@ -4,6 +4,9 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Ac
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_3
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_4
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_AddAllPendingOrders
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_ResetCommandeGrossist
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_ResetCountDonDepot
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -27,14 +30,31 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            // NEW ITEM: Add all pending orders to current bon vent
+            DropDownItem_WhenItsAchatsFragment_AddAllPendingOrders(
+                onDismissDropdown = onDismissDropdown
+            )
+
+            // Reset items
+            DropDownItem_WhenItsAchatsFragment_ResetCountDonDepot(
+                onDismissDropdown = onDismissDropdown
+            )
+
+            DropDownItem_WhenItsAchatsFragment_ResetCommandeGrossist(
+                onDismissDropdown = onDismissDropdown
+            )
+
+            // Existing items
             DropDownItem_WhenItsAchatsFragment_4(
                 nomFun = "supp vents",
                 onDismissDropdown = onDismissDropdown
             )
+
             DropDownItem_WhenItsAchatsFragment_3(
                 nomFun = "afficheFloatingOutlinedSearcher_of_Achat",
                 onDismissDropdown = onDismissDropdown
             )
+
             DropDownItem_WhenItsAchatsFragment_2(
                 nomFun = "update_M8BonVent confirmeCommande_TimeTamp",
                 onDismissDropdown = onDismissDropdown
@@ -44,7 +64,6 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
                 nomFun = "",
                 onDismissDropdown = onDismissDropdown
             )
-
         }
     }
 }
