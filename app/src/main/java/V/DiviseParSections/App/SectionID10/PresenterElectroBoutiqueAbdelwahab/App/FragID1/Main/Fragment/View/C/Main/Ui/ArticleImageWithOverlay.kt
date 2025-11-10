@@ -47,11 +47,26 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-    val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
-    // Get the related color info to display depot count
+    // FIXED: Get the related color info with fallback search by image filename pattern
     val relative_M3CouleurInfos = remember(article, colorIndex) {
-        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+        // First try the standard method
+        val directMatch = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+
+        if (directMatch != null) {
+            directMatch
+        } else {
+            // If null, search by matching nomImageFichieSansEtansion pattern
+            // Pattern: {productId}_{colorIndex+1} (e.g., "3959_1", "3959_2")
+            val expectedImageName = "${article.id}_${colorIndex + 1}"
+
+            viewModel.getter.repo03CouleurProduitInfos.datasValue.find { couleur ->
+                couleur.nomImageFichieSansEtansion == expectedImageName ||
+                        // Also check if the parent product matches
+                        (couleur.parentBProduitOldID == article.id &&
+                                couleur.indexCouleurDansAncienProto == colorIndex)
+            }
+        }
     }
 
     @Composable

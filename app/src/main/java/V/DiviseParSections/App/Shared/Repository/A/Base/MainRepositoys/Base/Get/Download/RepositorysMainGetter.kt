@@ -170,13 +170,15 @@ class RepositorysMainGetter(
         return matchingOperation
     }
 
-    fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
-        repo03CouleurProduitInfos.datasValue.find {
-            it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
-        }
-
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
         repo1ProduitInfos.datasValue.filteredParCatalogueBsonId()
+    }
+
+    fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int=0): M3CouleurProduitInfos? {
+        return repo03CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == produit.keyID &&
+                    it.indexCouleurDansAncienProto == (colorIndex)
+        }
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
