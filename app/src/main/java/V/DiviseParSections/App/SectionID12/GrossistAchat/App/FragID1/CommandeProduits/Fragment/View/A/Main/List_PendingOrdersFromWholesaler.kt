@@ -253,7 +253,7 @@ private fun Dialog_Edit_Pending_Order(
     onDismiss: () -> Unit,
     onSave: (Int) -> Unit
 ) {
-    var textValue by remember { mutableStateOf(color.a_cammende_depuit_grossist.toString()) }
+    var textValue by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -304,7 +304,7 @@ private fun Dialog_Edit_Pending_Order(
                 OutlinedTextField(
                     value = textValue,
                     onValueChange = { textValue = it },
-                    label = { Text("Nouvelle quantité") },
+                    label = { Text(color.a_cammende_depuit_grossist.toString()) },
                     placeholder = { Text("Entrer un nombre") },
                     modifier = Modifier
                         .fillMaxWidth()
