@@ -4,12 +4,15 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,6 +49,52 @@ fun ArticleImageWithOverlay(
     }
     val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
+    // Get the related color info to display depot count
+    val relative_M3CouleurInfos = remember(article, colorIndex) {
+        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+    }
+
+    @Composable
+    fun ContAuDepot(relative_M3CouleurInfos: M3CouleurProduitInfos) {
+        val hasStock = relative_M3CouleurInfos.count_Don_Depot > 0
+
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = if (hasStock) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+                },
+                contentColor = if (hasStock) {
+                    MaterialTheme.colorScheme.onError
+                } else {
+                    MaterialTheme.colorScheme.onTertiary
+                }
+            ),
+            shape = RoundedCornerShape(if (hasStock) 6.dp else 4.dp)
+        ) {
+            Text(
+                text = if (hasStock) {
+                    relative_M3CouleurInfos.count_Don_Depot.toString()
+                } else {
+                    "احتمال كبير متوفر"
+                },
+                style = if (hasStock) {
+                    MaterialTheme.typography.labelLarge
+                } else {
+                    MaterialTheme.typography.labelSmall
+                },
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(
+                    horizontal = if (hasStock) 10.dp else 4.dp,
+                    vertical = if (hasStock) 6.dp else 2.dp
+                ),
+                textAlign = TextAlign.Center,
+                fontSize = if (hasStock) 16.sp else 9.sp
+            )
+        }
+    }
+
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -69,9 +118,21 @@ fun ArticleImageWithOverlay(
             )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
+
+            // Display depot count overlay - now always visible
+            relative_M3CouleurInfos?.let { couleurInfo ->
+                Box(
+                    modifier = Modifier
+                        .align(androidx.compose.ui.Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    ContAuDepot(couleurInfo)
+                }
+            }
         }
     }
 }
+
 @Composable
 private fun AfficheKeyCouleurAvecVent(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,

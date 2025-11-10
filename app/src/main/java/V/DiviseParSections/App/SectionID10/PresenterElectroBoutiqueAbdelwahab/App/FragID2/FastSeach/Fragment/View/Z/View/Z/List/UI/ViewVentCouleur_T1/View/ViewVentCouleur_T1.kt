@@ -604,22 +604,7 @@ fun ViewVentCouleur_T1(
                             )
                         }
 
-                        if (countDonDepot > 0) {
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.error,
-                                    contentColor = MaterialTheme.colorScheme.onError
-                                ),
-                                shape = RoundedCornerShape(4.dp)
-                            ) {
-                                Text(
-                                    text = count_Don_DepottoString,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
+                        ContAuDepot(relative_M3CouleurInfos)
                     }
 
                     // Camera dialog
@@ -800,6 +785,26 @@ fun ViewVentCouleur_T1(
 
             // Close the carton dialog using local state
             showCartonDialogForVent = null
+        }
+    }
+}
+
+@Composable
+private fun ContAuDepot(relative_M3CouleurInfos: M3CouleurProduitInfos) {
+    if (relative_M3CouleurInfos.count_Don_Depot > 0) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError
+            ),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Text(
+                text = relative_M3CouleurInfos.count_Don_Depot.toString(),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
         }
     }
 }
