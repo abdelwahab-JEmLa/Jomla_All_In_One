@@ -69,9 +69,9 @@ data class ActiveCentralValues(
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
-        ==M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
+        == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
          false else
-        M18CentralParametresOfAllApps().itsDevMode,
+        false,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------

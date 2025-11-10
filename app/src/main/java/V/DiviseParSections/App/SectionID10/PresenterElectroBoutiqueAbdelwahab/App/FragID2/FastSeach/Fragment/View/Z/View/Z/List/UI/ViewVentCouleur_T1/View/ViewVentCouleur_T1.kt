@@ -25,8 +25,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -40,8 +42,6 @@ import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -68,6 +68,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -85,15 +87,26 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
+
+// 1. Update the update_countDepot function to handle both addition and subtraction
 fun update_countDepot(
     aCentralFacade: ACentralFacade,
     relative_M3CouleurInfos: M3CouleurProduitInfos,
-    quantityAVendu: Int = 1
+    quantityChange: Int = 1, // Can be positive (add) or negative (subtract)
+    isAbsoluteValue: Boolean = false // If true, treat as absolute quantity difference
 ) {
     aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
+        val newCount = if (isAbsoluteValue) {
+            // Direct subtraction
+            relative_M3CouleurInfos.count_Don_Depot - quantityChange
+        } else {
+            // Relative change
+            relative_M3CouleurInfos.count_Don_Depot + quantityChange
+        }
+
         aCentralFacade.repositorysMainSetter.addOrUpdateData_M3CouleurProduitInfos(
             relative_M3CouleurInfos.copy(
-                count_Don_Depot = relative_M3CouleurInfos.count_Don_Depot - quantityAVendu
+                count_Don_Depot = maxOf(0, newCount) // Ensure never negative
             )
         )
     }
@@ -212,7 +225,7 @@ fun ViewVentCouleur_T1(
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "Image mise Ã  jour pour ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}",
+                        "Image mise à jour pour ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}",
                         Toast.LENGTH_SHORT
                     ).show()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -222,7 +235,7 @@ fun ViewVentCouleur_T1(
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    "Erreur lors de la mise Ã  jour de l'image: ${e.message}",
+                    "Erreur lors de la mise à jour de l'image: ${e.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -244,7 +257,7 @@ fun ViewVentCouleur_T1(
         if (isGranted) {
             handleCameraCapture()
         } else {
-            Toast.makeText(context, "Permission camÃ©ra requise", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -332,6 +345,7 @@ fun ViewVentCouleur_T1(
     val finale_Tariff = findTariff ?: default_Tariff.first
 
 
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -343,7 +357,7 @@ fun ViewVentCouleur_T1(
             ColorNameDropdownTextField(
                 value = editingColorName,
                 onValueChange = { editingColorName = it },
-                placeholder = "Nom dÃ©finiteur",
+                placeholder = "Nom définiteur",
                 focusRequester = colorNameFocusRequester,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -393,9 +407,20 @@ fun ViewVentCouleur_T1(
                 }
             }
         }
+        val count_Don_DepottoString = relative_M3CouleurInfos.count_Don_Depot.toString()
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = relative_M3CouleurInfos,
+                        key = SemanticsPropertyKey("relative_M3CouleurInfos")
+                    )
+                }
+                .semantics(mergeDescendants = true) {
+                    set(value = count_Don_DepottoString, key = SemanticsPropertyKey("count_Don_Depot"))
+                }
+                .fillMaxWidth(),
             colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
                 CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
@@ -428,6 +453,8 @@ fun ViewVentCouleur_T1(
                                 buildList { add(defaultVent) },
                                 aCentralFacade
                             )
+                            // FIXED: Update depot count when creating new vent
+                            update_countDepot(aCentralFacade, relative_M3CouleurInfos, -1)
                         }
                     }
 
@@ -436,8 +463,6 @@ fun ViewVentCouleur_T1(
                             relative_produit, it
                         )
                     }
-
-                    update_countDepot(aCentralFacade,relative_M3CouleurInfos,1)
                 }
 
                 val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
@@ -477,7 +502,7 @@ fun ViewVentCouleur_T1(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Camera,
-                                contentDescription = "Mettre Ã  jour avec photo",
+                                contentDescription = "Mettre à jour avec photo",
                                 tint = if (isProcessingImage) {
                                     MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                                 } else {
@@ -497,9 +522,8 @@ fun ViewVentCouleur_T1(
                     ) {
                         SmallFloatingActionButton(
                             onClick = {
-                                // FIXED: Set up the operation and show carton dialog
+                                // REMOVED: The premature update_countDepot call
                                 val ventToUse = relative_M10OperationVentCouleur ?: run {
-                                    // Create default vent if it doesn't exist
                                     defaultM10Vent?.also { defaultVent ->
                                         setter.ajoute_New_M10OperationVentCouleur(defaultVent)
                                         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -507,10 +531,17 @@ fun ViewVentCouleur_T1(
                                             buildList { add(defaultVent) },
                                             aCentralFacade
                                         )
+                                        // Update depot when creating new default vent
+                                        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                                            update_countDepot(
+                                                aCentralFacade,
+                                                relative_M3CouleurInfos,
+                                                -defaultVent.quantity
+                                            )
+                                        }
                                     }
                                 }
 
-                                // Show carton dialog with the specific operation
                                 showCartonDialogForVent = ventToUse
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
@@ -534,14 +565,13 @@ fun ViewVentCouleur_T1(
                         }
                     }
 
-                    Box(
+                    Row(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .offset(x = 4.dp, y = (-4).dp)
-                            .zIndex(2f)
-                            .clickable {
-                                handleStartEditingColorName()
-                            }
+                            .zIndex(2f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         SmallFloatingActionButton(
                             onClick = {
@@ -558,23 +588,25 @@ fun ViewVentCouleur_T1(
                             )
                         }
 
-                        // Add badge to show count_Don_Depot if > 0
+                        // Display count_Don_Depot as a card badge next to the edit button
                         if (relative_M3CouleurInfos.count_Don_Depot > 0) {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.tertiary,
-                                contentColor = MaterialTheme.colorScheme.onTertiary,
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 4.dp, y = (-4).dp)
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
+                                ),
+                                shape = RoundedCornerShape(4.dp)
                             ) {
                                 Text(
-                                    text = relative_M3CouleurInfos.count_Don_Depot.toString(),
+                                    text = count_Don_DepottoString,
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
                         }
                     }
+
                     // Camera dialog
                     if (showCameraDialog) {
                         CameraXDialog(
@@ -606,21 +638,22 @@ fun ViewVentCouleur_T1(
                     }
 
                     if (ventUIState.quantity > 0 && !ventUIState.isRemoved) {
-                        BadgedBox(
-                            badge = {
-                                Badge(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Text(
-                                        text = relative_M10OperationVentCouleur?.quantity.toString(),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }, modifier = Modifier.align(Alignment.BottomEnd)
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(x = (-4).dp, y = (-4).dp)
                         ) {
-                            Box(modifier = Modifier.size(16.dp))
+                            Text(
+                                text = relative_M10OperationVentCouleur?.quantity.toString(),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
                         }
                     }
 
@@ -691,15 +724,19 @@ fun ViewVentCouleur_T1(
             label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
             relative_M10OperationVentCouleur?.let { existingVent ->
+                val old_Qyt = existingVent.quantity
                 val updatedVent = new_Qyt?.let {
                     existingVent.copy(quantity = it)
-
                 }
 
+                // FIXED: Calculate the actual quantity difference and update depot
                 if (new_Qyt != null && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                    val quantityDifference = new_Qyt - old_Qyt
                     update_countDepot(
                         aCentralFacade,
-                        relative_M3CouleurInfos,new_Qyt)
+                        relative_M3CouleurInfos,
+                        -quantityDifference // Negative because we're subtracting from depot
+                    )
                 }
 
                 if (updatedVent != null) {
@@ -712,10 +749,8 @@ fun ViewVentCouleur_T1(
             viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
                 relative_M10OperationVentCouleur!!.parent_M1Produit_KeyId
             )
-
         }
     }
-
     // FIXED: Carton-specific dialog using local state
     if (shouldShowCartonDialog && showCartonDialogForVent != null) {
         Dialog_Choisire_Quantity_Carton(
@@ -724,8 +759,19 @@ fun ViewVentCouleur_T1(
             label = relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
             showCartonDialogForVent?.let { existingVent ->
+                val old_Qyt = existingVent.quantity
                 val updatedVent = new_Qyt?.let {
                     existingVent.copy(quantity = it)
+                }
+
+                // FIXED: Update depot count based on quantity difference
+                if (new_Qyt != null && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                    val quantityDifference = new_Qyt - old_Qyt
+                    update_countDepot(
+                        aCentralFacade,
+                        relative_M3CouleurInfos,
+                        -quantityDifference // Negative because we're subtracting from depot
+                    )
                 }
 
                 if (updatedVent != null) {
@@ -735,7 +781,7 @@ fun ViewVentCouleur_T1(
                 }
             }
 
-            // FIXED: Close the carton dialog using local state
+            // Close the carton dialog using local state
             showCartonDialogForVent = null
         }
     }

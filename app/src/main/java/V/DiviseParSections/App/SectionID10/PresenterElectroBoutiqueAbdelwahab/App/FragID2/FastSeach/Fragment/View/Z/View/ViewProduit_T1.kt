@@ -12,6 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -52,7 +53,7 @@ fun ViewProduit_T1(
     on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},
     on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},
 ) {
-    var isExpanded by remember { mutableStateOf(focusedValuesGetter.currentApp_Its_Vendeur || !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) }
+    var isExpanded by remember { mutableStateOf(focusedValuesGetter.currentApp_Its_Vendeur || !focusedValuesGetter.currentApp_ItsWorkChezGrossisst || M18CentralParametresOfAllApps.get_Default().itsDevMode) }
 
     val bProduitDataBase_SubClassFunctionality =
         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos

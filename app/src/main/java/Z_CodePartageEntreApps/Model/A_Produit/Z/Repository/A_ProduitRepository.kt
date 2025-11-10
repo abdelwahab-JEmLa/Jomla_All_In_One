@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface A_ProduitRepository {
     var modelDatas: SnapshotStateList<A_Produit>
     val progressRepo: MutableStateFlow<Float>
-        get() = MutableStateFlow(0f)
+        get() = MutableStateFlow(100f)
 
     fun addData(data: A_Produit)
     fun updateUnSeulData(data: A_Produit)
