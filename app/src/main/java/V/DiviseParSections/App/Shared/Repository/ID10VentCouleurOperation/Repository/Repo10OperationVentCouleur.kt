@@ -256,7 +256,6 @@ data class M10OperationVentCouleur(
 
     var its_created_in_working_for_wholesaler: Boolean = false,
 
-
     var commetaire: String = "",
 
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------

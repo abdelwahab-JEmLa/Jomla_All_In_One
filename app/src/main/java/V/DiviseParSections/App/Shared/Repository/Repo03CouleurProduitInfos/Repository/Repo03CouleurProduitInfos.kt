@@ -126,6 +126,8 @@ data class M3CouleurProduitInfos(
 
     var count_Don_Depot: Int = 0,
 
+    var a_cammende_depuit_grossist: Int = 0,
+
     val nomCouleurStrSiSonImageDispo: String = "",
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------

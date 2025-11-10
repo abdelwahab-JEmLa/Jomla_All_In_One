@@ -87,26 +87,33 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-
-// 1. Update the update_countDepot function to handle both addition and subtraction
 fun update_countDepot(
     aCentralFacade: ACentralFacade,
     relative_M3CouleurInfos: M3CouleurProduitInfos,
     quantityChange: Int = 1, // Can be positive (add) or negative (subtract)
-    isAbsoluteValue: Boolean = false // If true, treat as absolute quantity difference
+    isAbsoluteValue: Boolean = false, // If true, treat as absolute quantity difference
+    active: Boolean
 ) {
-    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
+    active.ifFalse {
         val newCount = if (isAbsoluteValue) {
-            // Direct subtraction
             relative_M3CouleurInfos.count_Don_Depot - quantityChange
         } else {
-            // Relative change
             relative_M3CouleurInfos.count_Don_Depot + quantityChange
+        }
+
+        val deficit = if (newCount < 0) -newCount else 0
+        val adjustedNewCount = maxOf(0, newCount)
+
+        val newOrderFromWholesaler = if (deficit > 0) {
+            relative_M3CouleurInfos.a_cammende_depuit_grossist + deficit
+        } else {
+            relative_M3CouleurInfos.a_cammende_depuit_grossist
         }
 
         aCentralFacade.repositorysMainSetter.addOrUpdateData_M3CouleurProduitInfos(
             relative_M3CouleurInfos.copy(
-                count_Don_Depot = maxOf(0, newCount) // Ensure never negative
+                a_cammende_depuit_grossist = newOrderFromWholesaler,
+                count_Don_Depot = adjustedNewCount // Ensure never negative
             )
         )
     }
@@ -291,6 +298,7 @@ fun ViewVentCouleur_T1(
             focusedValuesGetter.activeOnVent_M8BonVent,
             relative_M3CouleurInfos
         ).copy(
+
             creationTimestamps = System.currentTimeMillis(),
             setIN_Vent_Its_Quantity_Represent = relative_produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_produit.quantite_Boit_Par_Carton,
@@ -407,7 +415,9 @@ fun ViewVentCouleur_T1(
                 }
             }
         }
-        val count_Don_DepottoString = relative_M3CouleurInfos.count_Don_Depot.toString()
+        val countDonDepot = relative_M3CouleurInfos.count_Don_Depot
+
+        val count_Don_DepottoString = countDonDepot.toString()
 
         Card(
             modifier = Modifier
@@ -446,15 +456,20 @@ fun ViewVentCouleur_T1(
                         )
                         setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                     } ?: run {
-                        defaultM10Vent?.let { defaultVent ->
+                        defaultM10Vent.let { defaultVent ->
                             setter.ajoute_New_M10OperationVentCouleur(defaultVent)
                             viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                 finale_Tariff,
                                 buildList { add(defaultVent) },
                                 aCentralFacade
                             )
-                            // FIXED: Update depot count when creating new vent
-                            update_countDepot(aCentralFacade, relative_M3CouleurInfos, -1)
+                            
+                            update_countDepot(
+                                aCentralFacade,
+                                relative_M3CouleurInfos,
+                                -1,
+                                active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+                            )
                         }
                     }
 
@@ -536,7 +551,8 @@ fun ViewVentCouleur_T1(
                                             update_countDepot(
                                                 aCentralFacade,
                                                 relative_M3CouleurInfos,
-                                                -defaultVent.quantity
+                                                -defaultVent.quantity,
+                                                active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
                                             )
                                         }
                                     }
@@ -588,8 +604,7 @@ fun ViewVentCouleur_T1(
                             )
                         }
 
-                        // Display count_Don_Depot as a card badge next to the edit button
-                        if (relative_M3CouleurInfos.count_Don_Depot > 0) {
+                        if (countDonDepot > 0) {
                             Card(
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.error,
@@ -735,7 +750,8 @@ fun ViewVentCouleur_T1(
                     update_countDepot(
                         aCentralFacade,
                         relative_M3CouleurInfos,
-                        -quantityDifference // Negative because we're subtracting from depot
+                        -quantityDifference,
+                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst // Negative because we're subtracting from depot
                     )
                 }
 
@@ -770,7 +786,8 @@ fun ViewVentCouleur_T1(
                     update_countDepot(
                         aCentralFacade,
                         relative_M3CouleurInfos,
-                        -quantityDifference // Negative because we're subtracting from depot
+                        -quantityDifference,
+                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst // Negative because we're subtracting from depot
                     )
                 }
 
