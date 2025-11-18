@@ -1,5 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View
 
+import DropDownItem_WhenIts_FragFastVent_4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_3
@@ -28,6 +29,11 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItem_WhenIts_FragFastVent_4(
+                nomFun = "DropDownItem_WhenIts_FragFastVent_4",
+                onDismissDropdown = onDismissDropdown
+            )
+
             DropDownItem_WindowsShare_WithCredit(
                 nomFun = "Partager PDF Avec Versement Credit ",
                 onDismissDropdown = onDismissDropdown
