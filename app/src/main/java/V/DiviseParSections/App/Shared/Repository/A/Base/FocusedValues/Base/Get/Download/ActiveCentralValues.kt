@@ -67,10 +67,12 @@ data class ActiveCentralValues(
     var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     val outlined_filter_searcher_achat: String = "",
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
+    val image_detail_produit_s_affiche: Boolean = false,
+
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
         == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
-         false else
+        false else
         false,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
@@ -80,7 +82,7 @@ data class ActiveCentralValues(
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
-    val sortVentsParClassment: Boolean = false,
+    val sortVentsParClassment: Boolean = false, // <-- NEW: Added sortVentsParClassment field
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = true,
