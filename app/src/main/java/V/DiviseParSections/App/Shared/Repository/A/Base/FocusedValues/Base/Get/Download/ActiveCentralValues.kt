@@ -83,8 +83,8 @@ data class ActiveCentralValues(
     val sortVentsParClassment: Boolean = false,
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
-    val affiche_Floating_Button_TogleFilterMarquers: Boolean = false,
-    val affiche_Floating_Button_Cible_Client: Boolean = false,
+    val affiche_Floating_Button_TogleFilterMarquers: Boolean = true,
+    val affiche_Floating_Button_Cible_Client: Boolean = true,
 
     val affiche_Floating_Button_gps_follow_mode_active: Boolean = true,
     val affiche_Floating_Button_AddCLient: Boolean = false,

@@ -92,7 +92,7 @@ fun Floating_Separated_FragMap_Button_1(
                         text = when (currentValues.click_On_Marque) {
                             ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
                             ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Add Ciblage"
-                            ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Vent Period"
+                            ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Click affiche son delivery bon"
                         },
                         color = Color.White,
                         modifier = Modifier
