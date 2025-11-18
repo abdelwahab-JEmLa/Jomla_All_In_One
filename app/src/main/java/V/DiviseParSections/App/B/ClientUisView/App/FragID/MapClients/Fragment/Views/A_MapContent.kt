@@ -296,9 +296,6 @@ fun MapContent(
             val hasActiveClient = activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null
             val isNotTargetingMode = !its_ADD_Au_Ciblage_Clients
 
-            val activeBonisWorkingForWholesaler = focusedValuesGetter.activeOnVent_M8BonVent?.its_working_for_wholesaler ?: false
-            val currentAppIsWholesaler = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
-
             hasActiveClient && isNotTargetingMode
         }
 

@@ -47,8 +47,11 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
+        // FIXED: Remove everything after the first dot in clientName
+        val cleanedClientName = clientName.substringBefore(".")
+
         val clientCell = Cell()
-            .add(Paragraph("Client : ${formatter.capitalizeFirstLetter(clientName)}")
+            .add(Paragraph("Client : ${formatter.capitalizeFirstLetter(cleanedClientName)}")
                 .setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
             .setPadding(0f)
@@ -129,7 +132,7 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         addText(doc, "Nouv. Sold :", boldFont, 12f, TextAlignment.LEFT)
-        addText(doc, "${formatter.round(newBalance)} Da", boldFont, 14f, TextAlignment.CENTER)
+        addText(doc, "${formatter.round(newBalance)} Da}", boldFont, 14f, TextAlignment.CENTER)
 
         doc.add(Paragraph("\n").setFontSize(0.3f))
         addText(doc, "Transaction: #${creditData.transactionId}", regularFont, 9f, TextAlignment.CENTER)
@@ -172,6 +175,4 @@ class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
 
     fun addText(doc: Document, text: String, font: PdfFont, size: Float, align: TextAlignment) =
         doc.add(Paragraph(text).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
-
-
 }
