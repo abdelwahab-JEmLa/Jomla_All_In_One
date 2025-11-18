@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +54,26 @@ fun ViewProduit_T1(
     on_PourEntre_CartonEditeMode: (Boolean) -> Unit = {},
     on_PourEntre_BoitEditeMode: (Boolean) -> Unit = {},
 ) {
-    var isExpanded by remember { mutableStateOf(focusedValuesGetter.currentApp_Its_Vendeur || !focusedValuesGetter.currentApp_ItsWorkChezGrossisst || M18CentralParametresOfAllApps.get_Default().itsDevMode) }
+    val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
+    val image_detail_produit_s_affiche = currentActive_M9AppCompt?.image_detail_produit_s_affiche ?: false
+
+    // Initial expansion state based on user role and settings
+    var isExpanded by remember {
+        mutableStateOf(
+            focusedValuesGetter.currentApp_Its_Vendeur ||
+                    !focusedValuesGetter.currentApp_ItsWorkChezGrossisst ||
+                    M18CentralParametresOfAllApps.get_Default().itsDevMode
+        )
+    }
+
+    // Track changes to image_detail_produit_s_affiche and update isExpanded accordingly
+    LaunchedEffect(image_detail_produit_s_affiche) {
+        // When image detail is active, expand the view
+        // When image detail is inactive, keep current expansion state or collapse based on user preferences
+        if (image_detail_produit_s_affiche) {
+            isExpanded = true
+        }
+    }
 
     val bProduitDataBase_SubClassFunctionality =
         viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos

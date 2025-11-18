@@ -1,4 +1,4 @@
-// V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -8,8 +8,8 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -32,15 +32,15 @@ fun DropDownItem_WhenIts_FragFastVent_4(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     context: Context = LocalContext.current
 ) {
-    val currentValues = focusedValuesGetter.active_Central_Values
-
-    val isImageDetailActive = currentValues.image_detail_produit_s_affiche
+    // Get current state
+    val currentAppCompt = focusedValuesGetter.currentActive_M9AppCompt
+    val image_detail_produit_s_affiche = currentAppCompt?.image_detail_produit_s_affiche ?: false
 
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isImageDetailActive) {
+            containerColor = if (image_detail_produit_s_affiche) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -51,10 +51,9 @@ fun DropDownItem_WhenIts_FragFastVent_4(
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
-                    // J'utilise des icônes Photo pour représenter l'affichage des détails/images
-                    imageVector = if (isImageDetailActive) Icons.Default.PhotoLibrary else Icons.Default.Photo,
+                    imageVector = if (image_detail_produit_s_affiche) Icons.Default.SortByAlpha else Icons.Default.Sort,
                     contentDescription = null,
-                    tint = if (isImageDetailActive) {
+                    tint = if (image_detail_produit_s_affiche) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -63,11 +62,11 @@ fun DropDownItem_WhenIts_FragFastVent_4(
             },
             text = {
                 Text(
-                    text = if (isImageDetailActive)
-                        "Masquer les détails des images des produits"
+                    text = if (image_detail_produit_s_affiche)
+                        "إخفاء تفاصيل الصور" // Hide image details
                     else
-                        "Afficher les détails des images des produits",
-                    color = if (isImageDetailActive) {
+                        "عرض تفاصيل الصور", // Show image details
+                    color = if (image_detail_produit_s_affiche) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onSurface
@@ -75,17 +74,22 @@ fun DropDownItem_WhenIts_FragFastVent_4(
                 )
             },
             onClick = {
-                // Bascule la valeur de image_detail_produit_s_affiche
-                val updatedValues = currentValues.copy(
-                    image_detail_produit_s_affiche = !isImageDetailActive
-                )
-                focusedValuesGetter.update_activeCentralValues(updatedValues)
+                // Toggle the image_detail_produit_s_affiche state
+                currentAppCompt?.let { appCompt ->
+                    val updatedAppCompt = appCompt.copy(
+                        image_detail_produit_s_affiche = !image_detail_produit_s_affiche
+                    )
+                    repositorysMainSetter.update_M9AppCompt(updatedAppCompt)
 
-                Toast.makeText(
-                    context,
-                    "Affichage des détails des images des produits: ${if (!isImageDetailActive) "Activé" else "Désactivé"}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                    Toast.makeText(
+                        context,
+                        if (!image_detail_produit_s_affiche)
+                            "تم تفعيل عرض تفاصيل الصور" // Image details enabled
+                        else
+                            "تم إخفاء تفاصيل الصور", // Image details hidden
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
                 onDismissDropdown()
             }
