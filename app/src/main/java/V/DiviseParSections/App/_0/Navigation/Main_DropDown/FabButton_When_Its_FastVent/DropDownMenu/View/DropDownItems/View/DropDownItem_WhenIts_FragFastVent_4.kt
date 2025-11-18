@@ -4,7 +4,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -18,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -33,15 +31,16 @@ fun DropDownItem_WhenIts_FragFastVent_4(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     context: Context = LocalContext.current
-) {
-    val currentValues by focusedValuesGetter.active_Central_Values
-    val isSortByClassement = currentValues.sortVentsParClassment
+) {             //<--
+//TODO(1): regle pour que ca toggle image_detail_produit_s_affiche
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val image_detail_produit_s_affiche = currentValues.sortVentsParClassment
 
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSortByClassement) {
+            containerColor = if (image_detail_produit_s_affiche) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -63,7 +62,8 @@ fun DropDownItem_WhenIts_FragFastVent_4(
             },
             text = {
                 Text(
-                    text = if (isSortByClassement) "Trié par Classement" else "Trié par Ordre Alphabétique",
+                    text = if (isSortByClassement)
+                    else
                     color = if (isSortByClassement) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -73,13 +73,10 @@ fun DropDownItem_WhenIts_FragFastVent_4(
             },
             onClick = {
                 val updatedValues = currentValues.copy(
-                    sortVentsParClassment = !isSortByClassement
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
 
                 Toast.makeText(
-                    context,
-                    "Tri des Ventes : ${if (!isSortByClassement) "par Classement" else "par Ordre Alphabétique"} activé",
                     Toast.LENGTH_SHORT
                 ).show()
 
