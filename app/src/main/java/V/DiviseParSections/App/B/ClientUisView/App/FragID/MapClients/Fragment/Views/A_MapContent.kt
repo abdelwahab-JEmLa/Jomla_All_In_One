@@ -51,6 +51,7 @@ import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Composable
@@ -303,18 +304,31 @@ fun MapContent(
             MarkerStatusDialog(
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
-                mapView = mapView,
-                uiState = uiState,
+                markerStatusDialogActiveM2Client=markerStatusDialogActiveM2Client,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { client ->
                     viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(client)
                 },
-                onRemoveMark = { marker ->
-                    marker?.let {
+                onRemoveMark = { relative_M2Client ->
+                    val marqueClick = mapView.overlays
+                        .filterIsInstance<Marker>()
+                        .find { marker ->
+                            marker.id == relative_M2Client?.id.toString()
+                        } ?: return@MarkerStatusDialog
+
+                    marqueClick.let {
                         mapView.overlays.remove(it)
                         mapView.invalidate()
                     }
                 },
+                on_dissmiss_dialog_avec_enleve_focuse_bon={
+                    viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                    val currentValues = focusedValuesGetter.active_Central_Values
+                    focusedValuesGetter.update_activeCentralValues(
+                        currentValues.copy(markerStatusDialogActiveM2Client = null)
+                    )
+                }
             )
         }
 

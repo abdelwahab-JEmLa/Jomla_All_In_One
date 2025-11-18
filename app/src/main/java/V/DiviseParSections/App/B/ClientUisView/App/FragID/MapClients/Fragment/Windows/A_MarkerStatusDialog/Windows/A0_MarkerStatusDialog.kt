@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
@@ -48,6 +47,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,9 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 @Composable
 private fun CustomStatusDropdownMenu(
@@ -207,29 +206,22 @@ private fun CustomStatusDropdownMenu(
 
 @Composable
 fun MarkerStatusDialog(
-    viewModel: MapClientsViewModel,
+    viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .activeOnVent_M8BonVent,
     relative_M2Client: M2Client?,
-    mapView: MapView,
-    uiState: UiState,
     onUpdateLongAppSetting: () -> Unit = {},
-    onClickToEditeMarquerPosition: (M2Client) -> Unit,
-    onRemoveMark: (Marker?) -> Unit,
+    onClickToEditeMarquerPosition: (M2Client) -> Unit = {},
+    onRemoveMark: (M2Client?) -> Unit = {},
     onPourEdite_Gps_Client: (M2Client) -> Unit = {},
+    on_dissmiss_dialog_avec_enleve_focuse_bon: () -> Unit = {},
+    markerStatusDialogActiveM2Client: M2Client?,
 ) {
     var showCreditDialog by remember { mutableStateOf(false) }
     var currentCreditTransaction by remember { mutableStateOf<M8BonVent?>(null) }
-
-    val marqueClick = mapView.overlays
-        .filterIsInstance<Marker>()
-        .find { marker ->
-            marker.id == relative_M2Client?.id.toString()
-        } ?: return
-
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
@@ -259,7 +251,8 @@ fun MarkerStatusDialog(
             dismissOnClickOutside = false,
         )
     ) {
-        val markerStatusDialogActiveM2Client = uiState.markerStatusDialogActiveM2Client
+        val markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client
+        val uiState by viewModel.uiState.collectAsState()
 
         Box(
             modifier = Modifier
@@ -283,7 +276,6 @@ fun MarkerStatusDialog(
                     item {
                         ClientEdites(
                             viewModel = viewModel,
-                            marqueClick = marqueClick,
                             relative_Client = relative_M2Client,
                             onDismiss = { },
                             onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
@@ -437,8 +429,7 @@ fun MarkerStatusDialog(
                     if (relative_M8 != null) {
                         showExitConfirmationDialog = true
                     } else {
-                        viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                      on_dissmiss_dialog_avec_enleve_focuse_bon()
                     }
                 },
                 modifier = Modifier
@@ -465,8 +456,7 @@ fun MarkerStatusDialog(
                     TextButton(
                         onClick = {
                             showExitConfirmationDialog = false
-                            viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                            on_dissmiss_dialog_avec_enleve_focuse_bon()
                         }
                     ) {
                         Text("نعم")
@@ -531,9 +521,8 @@ fun MarkerStatusDialog(
         }
 
         if (showPhoneDialog) {
-            val client = uiState.b_ClientInfosProtoJuin3List.find {
-                it.id.toString() == marqueClick.id
-            }
+            val client = relative_M2Client
+
             AlertDialog(
                 onDismissRequest = { showPhoneDialog = false },
                 title = { Text("Numéro de téléphone") },
@@ -562,9 +551,7 @@ fun MarkerStatusDialog(
                     TextButton(
                         onClick = {
                             val clientToDelete =
-                                uiState.b_ClientInfosProtoJuin3List.find {
-                                    it.id.toString() == marqueClick.id
-                                }
+                                relative_M2Client
 
                             clientToDelete?.let { client ->
                                 val relatedClient = viewModel.bProto_ClientsDataBase.find {
@@ -575,7 +562,7 @@ fun MarkerStatusDialog(
                                     viewModel.deleteUnSeulData(it)
                                 }
 
-                                onRemoveMark(marqueClick)
+                                onRemoveMark(relative_M2Client)
                             }
                             showDeleteConfirmationDialog = false
                         }

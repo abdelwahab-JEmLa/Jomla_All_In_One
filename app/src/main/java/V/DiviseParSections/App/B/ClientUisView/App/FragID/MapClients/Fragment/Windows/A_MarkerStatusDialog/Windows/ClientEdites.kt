@@ -26,14 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun ClientEdites(
     viewModel: MapClientsViewModel,
     focusedValuesSetter: FocusedValuesSetter =viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     repo2Client: Repo2Client = viewModel.aCentralFacade.repositorysMainGetter.repo2Client,
-    marqueClick: Marker,
     relative_Client: M2Client?,
     onDismiss: () -> Unit,
     onClickToEditeMarquerPosition: (M2Client) -> Unit,
@@ -67,8 +65,7 @@ fun ClientEdites(
             modifier = Modifier
                 .padding(end = 8.dp)
                 .clickable {
-                    val m2Client = repo2Client.datasValue.find { it.id == marqueClick.id.toLong() }
-                    m2Client?.let { onClickToEditeMarquerPosition(m2Client) }
+                    relative_Client?.let { onClickToEditeMarquerPosition(relative_Client) }
                     onDismiss()
                     viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
                     focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()

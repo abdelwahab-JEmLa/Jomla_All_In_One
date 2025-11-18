@@ -76,6 +76,8 @@ data class ActiveCentralValues(
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
+    val markerStatusDialogActiveM2Client: M2Client? = null,
+
     val activeFilters: Set<ActiveFilter> = emptySet(),
 
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,

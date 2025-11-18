@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.L
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -60,6 +61,7 @@ fun ID4ClientSearchButton(
     locationTracker: LocationTracker? = null,
     onClientSelectedToToast: (M2Client) -> Unit = {},
     aCentralFacade: ACentralFacade= koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
@@ -176,76 +178,102 @@ fun ID4ClientSearchButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Separate Toast Button
-                    ToastCommandeButton()
-
-                    // Toggle Button for Client/Fournisseur (without toast)
-                    ClientFournisseurToggleButton(
-                        isFournisseurMode = isFournisseurMode,
-                        onToggle = { isFournisseurMode = !isFournisseurMode }
-                    )
-
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .background(Color.White, RoundedCornerShape(4.dp))
-                            .focusRequester(focusRequester),
-                        value = searchQuery,
-                        onValueChange = { newText ->
-                            // Auto-capitalize first letter of each word
-                            val capitalizedText = newText.split(" ").joinToString(" ") { word ->
-                                if (word.isNotEmpty()) {
-                                    word.replaceFirstChar {
-                                        if (it.isLowerCase()) it.titlecase() else it.toString()
-                                    }
-                                } else {
-                                    word
-                                }
-                            }
-                            searchQuery = capitalizedText
-                        },
-                        placeholder = {
-                            Text(
-                                if (isFournisseurMode) "Nom fournisseur ou téléphone..."
-                                else "Nom client ou téléphone..."
-                            )
-                        },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            disabledContainerColor = Color.White,
-                        ),
-                        leadingIcon = {
-                            CreateNewClientIcon(
-                                searchQuery = searchQuery,
-                                locationTracker = locationTracker,
-                                defaultId8BonVent = getter.getDefaultM8BonVent(),
-                                onClientSelectedToToast = onClientSelectedToToast,
-                                onResetSearchMode = {
-                                    isSearchMode = false
-                                    searchQuery = ""
-                                    showDropdown = false
-                                },
-                                viewModel = viewModel,
-                                isFournisseurMode = isFournisseurMode
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        // FAB to open marker status dialog for active client
+                        val activeClient = getter.activeOnVent_M2Client
+                        if (activeClient != null) {
+                            FloatingActionButton(
+                                modifier = Modifier.size(32.dp),
                                 onClick = {
-                                    isSearchMode = false
-                                    searchQuery = ""
-                                    showDropdown = false
-                                }) {
+                                    val currentValues = getter.active_Central_Values
+                                    focusedValuesGetter.update_activeCentralValues(
+                                        currentValues.copy(markerStatusDialogActiveM2Client = activeClient)
+                                    )
+                                },
+                                containerColor = Color(0xFF9C27B0) // Purple to match dialog theme
+                            ) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Fermer"
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Statut du client",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
-                    )
+
+                        // Toggle Button for Client/Fournisseur (without toast)
+                        ClientFournisseurToggleButton(
+                            isFournisseurMode = isFournisseurMode,
+                            onToggle = { isFournisseurMode = !isFournisseurMode }
+                        )
+
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .width(200.dp)
+                                .background(Color.White, RoundedCornerShape(4.dp))
+                                .focusRequester(focusRequester),
+                            value = searchQuery,
+                            onValueChange = { newText ->
+                                // Auto-capitalize first letter of each word
+                                val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                                    if (word.isNotEmpty()) {
+                                        word.replaceFirstChar {
+                                            if (it.isLowerCase()) it.titlecase() else it.toString()
+                                        }
+                                    } else {
+                                        word
+                                    }
+                                }
+                                searchQuery = capitalizedText
+                            },
+                            placeholder = {
+                                Text(
+                                    if (isFournisseurMode) "Nom fournisseur ou téléphone..."
+                                    else "Nom client ou téléphone..."
+                                )
+                            },
+
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                disabledContainerColor = Color.White,
+                            ),
+                            leadingIcon = {
+                                CreateNewClientIcon(
+                                    searchQuery = searchQuery,
+                                    locationTracker = locationTracker,
+                                    defaultId8BonVent = getter.getDefaultM8BonVent(),
+                                    onClientSelectedToToast = onClientSelectedToToast,
+                                    onResetSearchMode = {
+                                        isSearchMode = false
+                                        searchQuery = ""
+                                        showDropdown = false
+                                    },
+                                    viewModel = viewModel,
+                                    isFournisseurMode = isFournisseurMode
+                                )
+                            },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        isSearchMode = false
+                                        searchQuery = ""
+                                        showDropdown = false
+                                    }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Fermer"
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
+
 
                 // Display current mode
                 Text(

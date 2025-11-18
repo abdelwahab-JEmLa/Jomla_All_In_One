@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -336,6 +337,25 @@ fun MainFastSearchProduitPourVent(
             }
             focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
                 Dialog_Fast_Affiche_Panie()
+            }
+
+            val currentValues = focusedValuesGetter.active_Central_Values
+            val markerStatusDialogActiveM2Client = currentValues.markerStatusDialogActiveM2Client
+
+            val shouldShowMarkerDialog = run {
+               markerStatusDialogActiveM2Client != null
+            }
+
+            if (shouldShowMarkerDialog) {
+                MarkerStatusDialog(
+                    relative_M2Client = markerStatusDialogActiveM2Client,
+                    markerStatusDialogActiveM2Client= markerStatusDialogActiveM2Client,
+                    on_dissmiss_dialog_avec_enleve_focuse_bon={
+                        focusedValuesGetter.update_activeCentralValues(
+                            currentValues.copy(markerStatusDialogActiveM2Client = null)
+                        )
+                    }
+                )
             }
         }
     }
