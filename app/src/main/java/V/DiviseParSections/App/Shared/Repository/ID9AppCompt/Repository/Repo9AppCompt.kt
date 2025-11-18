@@ -145,7 +145,7 @@ data class Z_AppCompt(
 
 
     // Section Options Personnel
-    var image_detail_produit_s_affiche: Boolean = false,
+    var image_detail_produit_s_affiche: Boolean = true,
 
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
     var hideAppScreen: Boolean = false,

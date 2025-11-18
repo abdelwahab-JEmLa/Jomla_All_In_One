@@ -52,11 +52,7 @@ fun CatalogueSelectionDialog(
     if (showDialog) {
         val catalogues = B4CatalogueCategoriesRepository()
             .filter { catalogue ->
-                if (currentApp_Est_Admin) {
-                    true // Show all catalogues for admin
-                } else {
-                    catalogue.keyID == "t1" || catalogue.keyID == "t2" // Filter for non-admin users
-                }
+                    catalogue.keyID == "t1"
             }
 
         var selectedCatalogueId by remember { mutableStateOf(currentSelectedCatalogueId) }
