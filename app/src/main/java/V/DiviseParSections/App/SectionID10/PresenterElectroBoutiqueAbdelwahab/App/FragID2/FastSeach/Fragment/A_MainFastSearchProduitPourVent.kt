@@ -14,6 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -183,7 +184,7 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(M18CentralParametresOfAllApps().itsDevMode) }
 
     LaunchedEffect(isTextFieldReady) {
         if (isTextFieldReady && shouldPerformInitialSearch) {

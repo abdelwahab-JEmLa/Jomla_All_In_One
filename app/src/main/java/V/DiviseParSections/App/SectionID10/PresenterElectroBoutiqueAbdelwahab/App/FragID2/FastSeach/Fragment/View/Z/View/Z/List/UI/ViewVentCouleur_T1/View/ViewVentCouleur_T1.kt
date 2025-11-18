@@ -8,7 +8,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -29,7 +28,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,6 +43,7 @@ import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -50,6 +52,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -75,6 +78,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
@@ -86,38 +90,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-
-fun update_countDepot(
-    aCentralFacade: ACentralFacade,
-    relative_M3CouleurInfos: M3CouleurProduitInfos,
-    quantityChange: Int = 1, // Can be positive (add) or negative (subtract)
-    isAbsoluteValue: Boolean = false, // If true, treat as absolute quantity difference
-    active: Boolean
-) {
-    active.ifFalse {
-        val newCount = if (isAbsoluteValue) {
-            relative_M3CouleurInfos.count_Don_Depot - quantityChange
-        } else {
-            relative_M3CouleurInfos.count_Don_Depot + quantityChange
-        }
-
-        val deficit = if (newCount < 0) -newCount else 0
-        val adjustedNewCount = maxOf(0, newCount)
-
-        val newOrderFromWholesaler = if (deficit > 0) {
-            relative_M3CouleurInfos.a_cammende_depuit_grossist + deficit
-        } else {
-            relative_M3CouleurInfos.a_cammende_depuit_grossist
-        }
-
-        aCentralFacade.repositorysMainSetter.addOrUpdateData_M3CouleurProduitInfos(
-            relative_M3CouleurInfos.copy(
-                a_cammende_depuit_grossist = newOrderFromWholesaler,
-                count_Don_Depot = adjustedNewCount // Ensure never negative
-            )
-        )
-    }
-}
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -140,6 +112,9 @@ fun ViewVentCouleur_T1(
 
     // FIXED: Separate state for carton dialog specifically
     var showCartonDialogForVent by remember { mutableStateOf<M10OperationVentCouleur?>(null) }
+
+    // Depot alert state
+    var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
 
     // Camera dialog state
     var showCameraDialog by remember { mutableStateOf(false) }
@@ -377,9 +352,7 @@ fun ViewVentCouleur_T1(
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
                     .zIndex(10f),
-                // Add this new parameter for automatic update
                 onColorSelected = { selectedColorName ->
-                    // Immediately update the database when a color is selected from dropdown
                     editingColorName = selectedColorName
                     val updatedCouleur = relative_M3CouleurInfos.copy(
                         nomCouleurStrSiSonImageDispo = selectedColorName.trim(),
@@ -394,12 +367,10 @@ fun ViewVentCouleur_T1(
                     )
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
 
-                    // Close editing mode after selection
                     isEditingColorName = false
                 }
             )
 
-            // Keep the existing LaunchedEffect blocks
             LaunchedEffect(isEditingColorName) {
                 if (isEditingColorName) {
                     colorNameFocusRequester.requestFocus()
@@ -463,13 +434,16 @@ fun ViewVentCouleur_T1(
                                 buildList { add(defaultVent) },
                                 aCentralFacade
                             )
-                            
-                            update_countDepot(
+
+                            val result = update_countDepot(
                                 aCentralFacade,
                                 relative_M3CouleurInfos,
                                 -1,
                                 active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
                             )
+                            if (!result.success) {
+                                depotAlertInfo = result
+                            }
                         }
                     }
 
@@ -537,7 +511,6 @@ fun ViewVentCouleur_T1(
                     ) {
                         SmallFloatingActionButton(
                             onClick = {
-                                // REMOVED: The premature update_countDepot call
                                 val ventToUse = relative_M10OperationVentCouleur ?: run {
                                     defaultM10Vent?.also { defaultVent ->
                                         setter.ajoute_New_M10OperationVentCouleur(defaultVent)
@@ -546,14 +519,17 @@ fun ViewVentCouleur_T1(
                                             buildList { add(defaultVent) },
                                             aCentralFacade
                                         )
-                                        // Update depot when creating new default vent
+                                        // Update depot when creating new default vent with alert
                                         if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-                                            update_countDepot(
+                                            val result = update_countDepot(
                                                 aCentralFacade,
                                                 relative_M3CouleurInfos,
                                                 -defaultVent.quantity,
                                                 active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
                                             )
+                                            if (!result.success) {
+                                                depotAlertInfo = result
+                                            }
                                         }
                                     }
                                 }
@@ -732,12 +708,15 @@ fun ViewVentCouleur_T1(
                 // FIXED: Calculate the actual quantity difference and update depot
                 if (new_Qyt != null && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
                     val quantityDifference = new_Qyt - old_Qyt
-                    update_countDepot(
+                    val result = update_countDepot(
                         aCentralFacade,
                         relative_M3CouleurInfos,
                         -quantityDifference,
-                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst // Negative because we're subtracting from depot
+                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
                     )
+                    if (!result.success) {
+                        depotAlertInfo = result
+                    }
                 }
 
                 if (updatedVent != null) {
@@ -752,6 +731,7 @@ fun ViewVentCouleur_T1(
             )
         }
     }
+
     // FIXED: Carton-specific dialog using local state
     if (shouldShowCartonDialog && showCartonDialogForVent != null) {
         Dialog_Choisire_Quantity_Carton(
@@ -768,12 +748,15 @@ fun ViewVentCouleur_T1(
                 // FIXED: Update depot count based on quantity difference
                 if (new_Qyt != null && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
                     val quantityDifference = new_Qyt - old_Qyt
-                    update_countDepot(
+                    val result = update_countDepot(
                         aCentralFacade,
                         relative_M3CouleurInfos,
                         -quantityDifference,
-                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst // Negative because we're subtracting from depot
+                        active = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
                     )
+                    if (!result.success) {
+                        depotAlertInfo = result
+                    }
                 }
 
                 if (updatedVent != null) {
@@ -786,6 +769,53 @@ fun ViewVentCouleur_T1(
             // Close the carton dialog using local state
             showCartonDialogForVent = null
         }
+    }
+
+    // Depot Alert Dialog
+    depotAlertInfo?.let { alertInfo ->
+        AlertDialog(
+            onDismissRequest = { depotAlertInfo = null },
+            title = {
+                Text(
+                    text = if (alertInfo.deficit > 0) "⚠️ نقص في المخزن" else "تنبيه المخزن",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = alertInfo.message,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    if (alertInfo.deficit > 0) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "الكمية الناقصة: ${alertInfo.deficit}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "تم إضافة الطلب للجملة تلقائياً",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { depotAlertInfo = null }) {
+                    Text("حسناً")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            )
+        )
     }
 }
 

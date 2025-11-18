@@ -159,7 +159,7 @@ private fun SmallDisplayerMultiColor(
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
-            qualityImagePourcentage= 48,
+            qualityImagePourcentage = 48,
             viewModelInitApp = viewModelInitApp
         )
 

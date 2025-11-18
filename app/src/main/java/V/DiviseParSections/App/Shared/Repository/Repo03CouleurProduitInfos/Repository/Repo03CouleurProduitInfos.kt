@@ -113,6 +113,7 @@ class Repo03CouleurProduitInfos(
     }
 }
 
+
 @Entity
 data class M3CouleurProduitInfos(
     @PrimaryKey

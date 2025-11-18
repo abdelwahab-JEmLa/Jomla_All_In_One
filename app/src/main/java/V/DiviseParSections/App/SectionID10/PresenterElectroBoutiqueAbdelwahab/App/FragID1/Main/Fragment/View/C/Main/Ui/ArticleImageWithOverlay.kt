@@ -8,16 +8,23 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -71,42 +78,79 @@ fun ArticleImageWithOverlay(
 
     @Composable
     fun ContAuDepot(relative_M3CouleurInfos: M3CouleurProduitInfos) {
-        val hasStock = relative_M3CouleurInfos.count_Don_Depot > 0
+        // FIXED: Use remember with derivedStateOf to trigger recomposition when data changes
+        val currentCouleurInfo by remember(relative_M3CouleurInfos.keyID) {
+            derivedStateOf {
+                // Always get the latest data from repository
+                viewModel.getter.repo03CouleurProduitInfos.datasValue.find {
+                    it.keyID == relative_M3CouleurInfos.keyID
+                } ?: relative_M3CouleurInfos
+            }
+        }
+
+        // This will trigger recomposition when count_Don_Depot changes
+        val depotCount = currentCouleurInfo.count_Don_Depot
+        val hasPositiveStock = depotCount > 0
+        val hasNegativeStock = depotCount < 0
+        val isZero = depotCount == 0
+
+        // Determine colors and styles based on stock status
+        val containerColor = when {
+            hasPositiveStock -> MaterialTheme.colorScheme.error // Positive stock - red
+            hasNegativeStock -> MaterialTheme.colorScheme.errorContainer // Negative stock - darker red
+            else -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f) // Zero - tertiary
+        }
+
+        val contentColor = when {
+            hasPositiveStock -> MaterialTheme.colorScheme.onError
+            hasNegativeStock -> MaterialTheme.colorScheme.onErrorContainer
+            else -> MaterialTheme.colorScheme.onTertiary
+        }
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = if (hasStock) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
-                },
-                contentColor = if (hasStock) {
-                    MaterialTheme.colorScheme.onError
-                } else {
-                    MaterialTheme.colorScheme.onTertiary
-                }
+                containerColor = containerColor,
+                contentColor = contentColor
             ),
-            shape = RoundedCornerShape(if (hasStock) 6.dp else 4.dp)
+            shape = RoundedCornerShape(if (hasPositiveStock || hasNegativeStock) 6.dp else 4.dp)
         ) {
-            Text(
-                text = if (hasStock) {
-                    relative_M3CouleurInfos.count_Don_Depot.toString()
-                } else {
-                    "احتمال كبير متوفر"
-                },
-                style = if (hasStock) {
-                    MaterialTheme.typography.labelLarge
-                } else {
-                    MaterialTheme.typography.labelSmall
-                },
-                fontWeight = FontWeight.Bold,
+            Row(
                 modifier = Modifier.padding(
-                    horizontal = if (hasStock) 10.dp else 4.dp,
-                    vertical = if (hasStock) 6.dp else 2.dp
+                    horizontal = if (hasPositiveStock || hasNegativeStock) 10.dp else 4.dp,
+                    vertical = if (hasPositiveStock || hasNegativeStock) 6.dp else 2.dp
                 ),
-                textAlign = TextAlign.Center,
-                fontSize = if (hasStock) 16.sp else 9.sp
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Show icon for negative stock
+                if (hasNegativeStock) {
+                    Icon(
+                        imageVector = Icons.Default.TrendingDown,
+                        contentDescription = "Déficit",
+                        modifier = Modifier.padding(end = 4.dp),
+                        tint = contentColor
+                    )
+                }
+
+                Text(
+                    text = when {
+                        hasPositiveStock -> depotCount.toString()
+                        hasNegativeStock -> depotCount.toString() // Shows "-4", "-10", etc.
+                        else -> "0"
+                    },
+                    style = if (hasPositiveStock || hasNegativeStock) {
+                        MaterialTheme.typography.labelLarge
+                    } else {
+                        MaterialTheme.typography.labelSmall
+                    },
+                    fontWeight = if (hasNegativeStock) FontWeight.ExtraBold else FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = when {
+                        hasNegativeStock -> 17.sp // Slightly larger for emphasis
+                        hasPositiveStock -> 16.sp
+                        else -> 9.sp
+                    }
+                )
+            }
         }
     }
 
