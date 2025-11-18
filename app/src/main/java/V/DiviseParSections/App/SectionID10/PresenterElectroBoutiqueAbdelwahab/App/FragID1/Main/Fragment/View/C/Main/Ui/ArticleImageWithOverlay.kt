@@ -3,16 +3,24 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,10 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun ArticleImageWithOverlay(
     modifier: Modifier = Modifier,
+    aCentralFacade: ACentralFacade = koinInject(),
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel = koinViewModel(),
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
@@ -48,8 +58,9 @@ fun ArticleImageWithOverlay(
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
     qualityImagePourcentage: Int = 100,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
+    val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
     val id = article.id
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
@@ -188,7 +199,67 @@ fun ArticleImageWithOverlay(
                     ContAuDepot(couleurInfo)
                 }
             }
+
+            // FIXED: Display availability indicator when mode_edite_dispo is enabled
+            if (mode_edite_dispo == true) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(8.dp)
+                ) {
+                    DisponibilityIndicator(
+                        disponibilityState = article.disponibilityEtates,
+                        onToggle = {
+                            aCentralFacade.repositorysMainGetter.repo1ProduitInfos.upsert(article.toggleDisponibilityEtates())
+                        }
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun DisponibilityIndicator(
+    disponibilityState: DisponibilityEtates,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val (color, icon) = when (disponibilityState) {
+        DisponibilityEtates.DISPO -> Pair(
+            Color.Green,
+            Icons.Default.Check
+        )
+        DisponibilityEtates.NON_DISPO -> Pair(
+            Color.Red,
+            Icons.Default.Close
+        )
+        DisponibilityEtates.PETITE_PROBABILITY -> Pair(
+            Color.Blue,
+            Icons.Default.Help
+        )
+    }
+
+    Box(
+        modifier = modifier
+            .size(28.dp)
+            .background(
+                color.copy(alpha = 0.9f),
+                CircleShape
+            )
+            .clickable(onClick = onToggle),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = when (disponibilityState) {
+                DisponibilityEtates.DISPO -> "Disponible"
+                DisponibilityEtates.NON_DISPO -> "Non Disponible"
+                DisponibilityEtates.PETITE_PROBABILITY -> "Peut-être Disponible"
+            },
+            modifier = Modifier.size(18.dp),
+            tint = Color.White
+        )
     }
 }
 

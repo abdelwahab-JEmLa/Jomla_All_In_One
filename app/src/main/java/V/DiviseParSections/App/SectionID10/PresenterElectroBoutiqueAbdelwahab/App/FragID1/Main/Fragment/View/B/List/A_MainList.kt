@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
@@ -30,9 +31,12 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
 import kotlinx.coroutines.delay
+import org.koin.compose.koinInject
 
 @Composable
 fun MainList(
+    aCentralFacade: ACentralFacade= koinInject(),
+
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelInitApp: ViewModelInitApp,
     headViewModelViewModel: HeadViewModel,
@@ -49,7 +53,7 @@ fun MainList(
     onClickImageToShowControles: () -> Unit,
 ) {
     val categories = viewModel.getter.repoM16CategorieProduit.datasValue
-    val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
+    val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText,aCentralFacade) }
 
     val articlesByCategory = remember(filteredArticles, categories) {
         val sortedCategories = categories.sortedWith(
