@@ -107,6 +107,7 @@ fun ArticleImageWithOverlay(
             else -> MaterialTheme.colorScheme.onTertiary
         }
 
+
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = containerColor,
