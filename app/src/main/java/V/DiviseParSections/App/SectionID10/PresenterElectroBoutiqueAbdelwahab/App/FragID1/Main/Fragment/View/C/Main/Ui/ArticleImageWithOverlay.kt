@@ -107,7 +107,6 @@ fun ArticleImageWithOverlay(
             else -> MaterialTheme.colorScheme.onTertiary
         }
 
-
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = containerColor,
@@ -136,7 +135,7 @@ fun ArticleImageWithOverlay(
                     text = when {
                         hasPositiveStock -> depotCount.toString()
                         hasNegativeStock -> depotCount.toString() // Shows "-4", "-10", etc.
-                        else -> "0"
+                        else -> "احتمال كبير متوفر" // "Probablement disponible"
                     },
                     style = if (hasPositiveStock || hasNegativeStock) {
                         MaterialTheme.typography.labelLarge

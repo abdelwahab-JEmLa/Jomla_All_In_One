@@ -134,6 +134,8 @@ data class Z_AppCompt(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var appDesignedPourWorkingGrossisst3Ali: Boolean = true,
 
+    var its_mode_affiche_que_produits_au_depot: Boolean = true,
+
     // Section InfosDeBase
     var nom: String = "",
     var autres_Noms_SepareParComma: String = "",

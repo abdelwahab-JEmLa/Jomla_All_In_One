@@ -28,9 +28,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,7 +41,6 @@ import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -52,7 +49,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -78,7 +74,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
@@ -399,7 +394,10 @@ fun ViewVentCouleur_T1(
                     )
                 }
                 .semantics(mergeDescendants = true) {
-                    set(value = count_Don_DepottoString, key = SemanticsPropertyKey("count_Don_Depot"))
+                    set(
+                        value = count_Don_DepottoString,
+                        key = SemanticsPropertyKey("count_Don_Depot")
+                    )
                 }
                 .fillMaxWidth(),
             colors = if (!isImageAvailable && relative_M3CouleurInfos.aAffiche == M3CouleurProduitInfos.Type.Image) {
@@ -773,49 +771,9 @@ fun ViewVentCouleur_T1(
 
     // Depot Alert Dialog
     depotAlertInfo?.let { alertInfo ->
-        AlertDialog(
-            onDismissRequest = { depotAlertInfo = null },
-            title = {
-                Text(
-                    text = if (alertInfo.deficit > 0) "⚠️ نقص في المخزن" else "تنبيه المخزن",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = alertInfo.message,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    if (alertInfo.deficit > 0) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "الكمية الناقصة: ${alertInfo.deficit}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "تم إضافة الطلب للجملة تلقائياً",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { depotAlertInfo = null }) {
-                    Text("حسناً")
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
-        )
+        DepotAlertInfo(alertInfo) {
+            depotAlertInfo = null
+        }
     }
 }
 
