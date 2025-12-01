@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
@@ -110,7 +112,9 @@ class WDatabaseInitializationManager(
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
-                        factory.triggerUpdateFbParTimestampsListener()
+                        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                        factory.triggerUpdateFbParTimestampsListener()}
                     }
                 }
             } ,
@@ -132,7 +136,9 @@ class WDatabaseInitializationManager(
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
-                        factory.triggerUpdateFbParTimestampsListener()
+                        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                        factory.triggerUpdateFbParTimestampsListener()}
                     }
                 }
             } ,

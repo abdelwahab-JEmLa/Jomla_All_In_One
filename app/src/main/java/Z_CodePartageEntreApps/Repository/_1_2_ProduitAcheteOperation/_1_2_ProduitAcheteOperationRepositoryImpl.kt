@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationRepositoryLogOperationsExtention
 import android.util.Log
@@ -279,8 +281,8 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
                         Log.e(TAG, "Firebase listener cancelled: ${error.message}")
                     }
                 }
-
-                _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+                _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)}
                 isFlowListenerActive.set(true)
             }
         }

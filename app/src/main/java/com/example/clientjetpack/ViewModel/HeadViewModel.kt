@@ -1,9 +1,11 @@
 package com.example.clientjetpack.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
@@ -827,6 +829,8 @@ open class HeadViewModel(
     }
 
     private fun setupAppSettingsListener() {
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
         refAppSettingsSaverModel.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 viewModelScope.launch {
@@ -847,7 +851,7 @@ open class HeadViewModel(
                 // Handle any errors
                 _uiState.update { it.copy(error = error.message) }
             }
-        })
+        })}
     }
 
     private suspend fun clientsInitialize(fl: Float) {

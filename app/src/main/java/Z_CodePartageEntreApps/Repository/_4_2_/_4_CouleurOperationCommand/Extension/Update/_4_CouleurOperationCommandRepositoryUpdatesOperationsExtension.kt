@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.Update
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
@@ -159,18 +161,22 @@ class _4_CouleurOperationCommandRepositoryUpdatesOperationsExtension(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
                             _4_CouleurOperationCommand_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
-                            )
+                            )}
                             isListenerActive.set(true)
                         }
                     }
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
                             _4_CouleurOperationCommand_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
-                            )
+                            )}
                             isFlowListenerActive.set(true)
                         }
                     }

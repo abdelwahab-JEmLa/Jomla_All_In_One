@@ -2,9 +2,11 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
@@ -138,6 +140,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -180,7 +183,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
                 println("Firebase listener cancelled: ${error.message}")
                 isListenerRegistered = false
             }
-        })
+        })}
     }
 
     fun addOrUpdatedAncienRepo(

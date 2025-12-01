@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import android.util.Log
@@ -175,7 +177,9 @@ class I_CategorieProduitsRepositoryImpl(
 
                 // RepositorysMainSetter flag before adding listener
                 isListenerActive.set(true)
-                I_CategorieProduitsRepository.caReference.addValueEventListener(valueEventListener!!)
+                M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                I_CategorieProduitsRepository.caReference.addValueEventListener(valueEventListener!!) }
                 Log.d(TAG, "Firebase data change listener successfully registered")
             } else {
                 Log.w(TAG, "Data change listener already active, not creating add_New new one")
@@ -403,7 +407,9 @@ class I_CategorieProduitsRepositoryImpl(
                         // Only restore if not already upsert by another thread
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
-                            I_CategorieProduitsRepository.caReference.addValueEventListener(tempListener)
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                            I_CategorieProduitsRepository.caReference.addValueEventListener(tempListener)}
                             isListenerActive.set(true)
                         }
                     }

@@ -1,9 +1,11 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,7 +20,8 @@ inline fun <reified T : Any> triggerUpdateFbParTimestampsListener(
     ref: DatabaseReference,
     noinline upsertFunction: suspend (T) -> Unit,
     noinline callback: (() -> Unit)? = null
-) {
+) {                          M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
     ref.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             scope.launch {
@@ -36,7 +39,7 @@ inline fun <reified T : Any> triggerUpdateFbParTimestampsListener(
             Log.e("FirebaseListener", "Firebase listener cancelled: ${error.message}", error.toException())
             callback?.invoke()
         }
-    })
+    })}
 }
 
 suspend inline fun <reified T : Any> processSnapshot(
@@ -98,7 +101,11 @@ inline fun <reified T : Any> createFirebaseTimestampListener(
             Log.e("FirebaseListener", "Firebase listener cancelled: ${error.message}", error.toException())
             callback?.invoke()
         }
-    }.also { ref.addValueEventListener(it) }
+    }.also {
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+        ref.addValueEventListener(it) }
+    }
 }
 
 fun setupFirebaseListeners(

@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import android.util.Log
@@ -159,7 +161,9 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
 
         // Attach the listener to the Firebase reference
         listener?.let {
-            I_CategoriesRepository.caReference.addValueEventListener(it)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            I_CategoriesRepository.caReference.addValueEventListener(it)}
         }
     }
 
@@ -235,7 +239,9 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
             }
 
             // Attach the listener
-            I_CategoriesRepository.caReference.addValueEventListener(listener)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            I_CategoriesRepository.caReference.addValueEventListener(listener)}
 
             // Ensure listener is removed if coroutine is cancelled
             continuation.invokeOnCancellation {

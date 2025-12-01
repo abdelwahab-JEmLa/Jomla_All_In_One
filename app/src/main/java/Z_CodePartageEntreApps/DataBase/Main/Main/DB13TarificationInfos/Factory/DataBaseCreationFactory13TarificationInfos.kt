@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
@@ -131,6 +133,7 @@ class DataBaseCreationFactory13TarificationInfos(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -177,7 +180,7 @@ class DataBaseCreationFactory13TarificationInfos(
             override fun onCancelled(error: DatabaseError) {
                 isListenerRegistered = false
             }
-        })
+        })}
     }
 
     fun set(

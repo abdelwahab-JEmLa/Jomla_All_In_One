@@ -1,7 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -13,6 +15,7 @@ import kotlinx.coroutines.withContext
 fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
     if (isListenerRegistered) return
     isListenerRegistered = true
+    M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
     repoRef.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -82,5 +85,5 @@ fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
             isListenerRegistered = false
             println("$repoTAG: Firebase listener cancelled: ${error.message}")
         }
-    })
+    })}
 }

@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Modules.B_RecordingHandler
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import com.google.firebase.database.DataSnapshot
@@ -90,6 +92,8 @@ class RecordingHandler(
     }
 
     override fun setupRecordingStateListener() {
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
         K_TempTravailleRepository.caReference.child("_isRecording")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -119,7 +123,7 @@ class RecordingHandler(
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
-            })
+            })}
     }
 
     private fun updateRecordingState(isRecording: Boolean) {

@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -313,9 +315,10 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                         Log.e(TAG, "Firebase listener cancelled: ${error.message}")
                     }
                 }
+                M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
                 _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
-                isFlowListenerActive.set(true)
+                isFlowListenerActive.set(true)}
             }
         }
     }
@@ -505,19 +508,22 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
                             _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
-                            isListenerActive.set(true)
+                            isListenerActive.set(true) }
                         }
                     }
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
                             flowValueEventListener = tempFlowListener
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
                             _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
-                            )
+                            )}
                             isFlowListenerActive.set(true)
                         }
                     }

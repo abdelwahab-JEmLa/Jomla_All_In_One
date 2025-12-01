@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
@@ -184,7 +186,9 @@ class I_CategorieProduitsRepositoryImpl(
 
                 isFlowListenerActive.set(true)
                 try {
-                    I_CategorieProduitsRepository.iDsDatasFlowUpdateRef.addValueEventListener(flowValueEventListener!!)
+                    M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                    I_CategorieProduitsRepository.iDsDatasFlowUpdateRef.addValueEventListener(flowValueEventListener!!)}
                 } catch (e: Exception) {
                     isFlowListenerActive.set(false)
                     flowValueEventListener = null
@@ -372,7 +376,9 @@ class I_CategorieProduitsRepositoryImpl(
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
-                            I_CategorieProduitsRepository.sonDataBaseRef.addValueEventListener(tempListener)
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                            I_CategorieProduitsRepository.sonDataBaseRef.addValueEventListener(tempListener)}
                             isListenerActive.set(true)
                         }
                     }
@@ -380,7 +386,9 @@ class I_CategorieProduitsRepositoryImpl(
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
                             flowValueEventListener = tempFlowListener
-                            I_CategorieProduitsRepository.iDsDatasFlowUpdateRef.addValueEventListener(tempFlowListener)
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                            I_CategorieProduitsRepository.iDsDatasFlowUpdateRef.addValueEventListener(tempFlowListener)}
                             isFlowListenerActive.set(true)
                         }
                     }

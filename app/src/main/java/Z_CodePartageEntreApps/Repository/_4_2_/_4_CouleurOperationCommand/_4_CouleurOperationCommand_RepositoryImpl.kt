@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.Log._4_CouleurOperationCommandRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.Update._4_CouleurOperationCommandRepositoryUpdatesOperationsExtension
@@ -367,8 +369,9 @@ class _4_CouleurOperationCommand_RepositoryImpl(
                         Log.e(TAG, "Firebase listener cancelled: ${error.message}")
                     }
                 }
+                M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
-                _4_CouleurOperationCommand_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _4_CouleurOperationCommand_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!) }
                 isFlowListenerActive.set(true)
             }
         }

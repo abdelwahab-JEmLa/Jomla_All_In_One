@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import android.content.res.Resources
 import android.util.DisplayMetrics
@@ -205,7 +207,9 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
         // Attach the listener to the Firebase reference
         listener?.let {
-            J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(it)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(it)}
         }
     }
 
@@ -284,7 +288,9 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
             }
 
             // Attach the listener
-            J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(listener)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(listener)}
 
             // Ensure listener is removed if coroutine is cancelled
             continuation.invokeOnCancellation {

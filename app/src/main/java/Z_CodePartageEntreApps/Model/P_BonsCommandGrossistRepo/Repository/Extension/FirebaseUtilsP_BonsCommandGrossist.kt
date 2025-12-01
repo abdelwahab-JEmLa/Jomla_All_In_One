@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model.P_BonsCommandGrossistRepo.Repository.Extension
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.P_BonsCommandGrossist
 import Z_CodePartageEntreApps.Model.P_BonsCommandGrossistRepo.Repository.P_BonsCommandGrossistRepository
 import Z_CodePartageEntreApps.Model.P_BonsCommandGrossistRepo.Repository.P_BonsCommandGrossistRepositoryImpl
@@ -41,7 +43,9 @@ object FirebaseUtilsP_BonsCommandGrossist {
         onValueEventListenerCreated: (ValueEventListener) -> Unit
     ) {
         createValueEventListener(repository)?.let {
-            P_BonsCommandGrossistRepository.caReference.addValueEventListener(it)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            P_BonsCommandGrossistRepository.caReference.addValueEventListener(it)}
             onValueEventListenerCreated(it)
         }
     }

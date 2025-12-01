@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
@@ -151,7 +153,9 @@ class A_ProduitRepositoryImpl(
                 // RepositorysMainSetter flag before adding listener
                 isFlowListenerActive.set(true)
                 try {
-                    A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(flowValueEventListener!!)
+                    M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                    A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(flowValueEventListener!!)}
                 } catch (e: Exception) {
                     // If adding the listener fails, reset the flag
                     isFlowListenerActive.set(false)
@@ -360,7 +364,9 @@ class A_ProduitRepositoryImpl(
                         // Only restore if not already upsert by another thread
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
-                            A_ProduitRepository.sonDataBaseRef.addValueEventListener(tempListener)
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                            A_ProduitRepository.sonDataBaseRef.addValueEventListener(tempListener) }
                             isListenerActive.set(true)
                         }
                     }
@@ -369,7 +375,9 @@ class A_ProduitRepositoryImpl(
                         // Only restore if not already upsert by another thread
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
                             flowValueEventListener = tempFlowListener
-                            A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(tempFlowListener)
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+                            A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(tempFlowListener) }
                             isFlowListenerActive.set(true)
                         }
                     }

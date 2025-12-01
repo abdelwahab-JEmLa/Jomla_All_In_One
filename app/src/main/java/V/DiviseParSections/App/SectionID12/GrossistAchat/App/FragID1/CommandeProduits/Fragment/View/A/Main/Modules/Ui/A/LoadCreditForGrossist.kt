@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -41,13 +43,14 @@ import com.google.firebase.database.ValueEventListener
             checkComplete()
         }
     }
+    M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
     TransactionItem.ref
         .orderByChild("parent_GrossistKeyID")
         .equalTo(grossistKeyID)
         .addValueEventListener(transactionListener)
 
-    listeners.add(transactionListener)
+    listeners.add(transactionListener) }
 
     // Load VersementItems for this grossist
     try {
@@ -70,12 +73,13 @@ import com.google.firebase.database.ValueEventListener
                 checkComplete()
             }
         }
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         versementRef?.orderByChild("parent_GrossistKeyID")
             ?.equalTo(grossistKeyID)
             ?.addValueEventListener(versementListener)
 
-        listeners.add(versementListener)
+        listeners.add(versementListener)    }
 
     } catch (e: Exception) {
         // If VersementItem loading fails, just complete with transaction total

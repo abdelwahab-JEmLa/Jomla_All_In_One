@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
@@ -157,18 +159,22 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
                             DataBaseFactoryMVentPeriode.sonDataBaseRef.addValueEventListener(
                                 tempListener
-                            )
+                            )}
                             isListenerActive.set(true)
                         }
                     }
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
                             DataBaseFactoryMVentPeriode.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
-                            )
+                            )}
                             isFlowListenerActive.set(true)
                         }
                     }

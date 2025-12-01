@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.Extension
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
@@ -16,7 +18,9 @@ object FirebaseUtilsA_ProduitModelNewProto {
         onValueEventListenerCreated: (ValueEventListener) -> Unit = {}
     ) {
         createValueEventListener(repository)?.let { listener ->
-            A_ProduitModelRepository.caReference.addValueEventListener(listener)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+            A_ProduitModelRepository.caReference.addValueEventListener(listener)}
             onValueEventListenerCreated(listener)
         }
     }

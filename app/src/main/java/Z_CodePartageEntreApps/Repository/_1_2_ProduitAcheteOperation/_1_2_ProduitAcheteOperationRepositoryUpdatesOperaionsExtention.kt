@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -156,18 +158,20 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
                             _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
-                            )
+                            )}
                             isListenerActive.set(true)
                         }
                     }
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
+                            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
                             _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
-                            )
+                            )}
                             isFlowListenerActive.set(true)
                         }
                     }

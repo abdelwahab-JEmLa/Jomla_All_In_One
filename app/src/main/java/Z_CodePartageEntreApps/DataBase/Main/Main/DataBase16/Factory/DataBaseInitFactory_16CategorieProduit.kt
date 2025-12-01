@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import android.util.Log
@@ -134,6 +136,7 @@ class DataBaseInitFactory_16CategorieProduit(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -176,7 +179,7 @@ class DataBaseInitFactory_16CategorieProduit(
                 println("Firebase listener cancelled: ${error.message}")
                 isListenerRegistered = false
             }
-        })
+        })}
     }
 
 

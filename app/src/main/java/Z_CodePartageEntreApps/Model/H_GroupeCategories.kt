@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Model
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -93,8 +95,10 @@ class H_GroupesCategoriesRepositoryImpl : H_GroupesCategoriesRepository {
             }
 
             // Attach the listener to the reference
-            H_GroupesCategoriesRepository.caReference.addValueEventListener(listener)
+            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
+            H_GroupesCategoriesRepository.caReference.addValueEventListener(listener)
+        }
             // Ensure we remove the listener when the coroutine is cancelled
             continuation.invokeOnCancellation {
                 H_GroupesCategoriesRepository.caReference.removeEventListener(listener)

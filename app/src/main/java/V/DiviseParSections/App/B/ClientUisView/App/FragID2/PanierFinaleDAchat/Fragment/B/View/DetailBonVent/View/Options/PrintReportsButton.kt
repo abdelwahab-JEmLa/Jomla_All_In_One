@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -109,8 +111,9 @@ class PrintReportsRepository {
                 onResult(Result.failure(Exception(error.message)))
             }
         }
-        
-        printReportsRef.addValueEventListener(currentListener!!)
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+
+        printReportsRef.addValueEventListener(currentListener!!)}
     }
     
     fun removeListener() {
