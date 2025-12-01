@@ -125,6 +125,8 @@ data class M3CouleurProduitInfos(
     val aAffiche: Type = Type.Image,
     val nomImageFichieSansEtansion: String = "Non Dispo",
 
+    val telephone_Prise_depuit: String = "",
+
     var count_Don_Depot: Int = 0,
 
     var a_cammende_depuit_grossist: Int = 0,

@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.C_TypeTarificationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -20,15 +21,16 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllAppsDao
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DaoM2Client
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DaoM2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.Dao11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.Dao16CategorieProduit
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
@@ -106,6 +108,7 @@ import java.util.Date
 
         M17MessageVocale::class,
         M18CentralParametresOfAllApps::class,
+        M19Etudiant::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -157,6 +160,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun Dao11AchatOperation(): Dao11AchatOperation
     abstract fun M17MessageVocaleDao(): M17MessageVocaleDao
     abstract fun M18CentralParametresOfAllAppsDao(): M18CentralParametresOfAllAppsDao
+
+    abstract fun Dao19Etudiant(): Dao19Etudiant
 
     object DatabaseModule {
 

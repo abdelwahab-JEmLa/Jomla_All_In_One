@@ -1,0 +1,194 @@
+package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
+
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+@Stable
+class Repo19Etudiant(
+    private val context: Context,
+    val dataBaseCreationFactory: DataBaseInitFactory_19Etudiant,
+) {
+    private val repoScope = CoroutineScope(Dispatchers.IO)
+    private val _datas = mutableStateOf<List<M19Etudiant>>(emptyList())
+    val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
+
+    init {
+        repoScope.launch {
+            dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
+        }
+    }
+
+    fun refresh_Datas() {
+        repoScope.launch {
+            try {
+                dataBaseCreationFactory.dao.deleteAll()
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = emptyList()
+                }
+
+                val freshDataFromFirebase = dataBaseCreationFactory.onLoadFromFireBase()
+
+                dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
+
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = freshDataFromFirebase
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    fun upsert(data: M19Etudiant) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    if (existingIndex >= 0) {
+                        this[existingIndex] = dataUpdate
+                    } else {
+                        add(dataUpdate)
+                    }
+                }
+            }
+        }
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+    }
+
+    fun add(data: M19Etudiant) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+    }
+
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M19Etudiant) {
+        dataBaseCreationFactory.set(dataUpdate)
+    }
+
+    fun delete(data: M19Etudiant) {
+        repoScope.launch {
+            try {
+                _datas.value = datasValue.filter { it.keyID != data.keyID }
+                dataBaseCreationFactory.delete(data)
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------
+    fun addNew(data: M19Etudiant) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        dataBaseCreationFactory.set(dataUpdate)
+    }
+
+    fun updateIfExist(data: M19Etudiant) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            repoScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        dataBaseCreationFactory.set(updatedItem)
+    }
+}
+
+@Entity
+data class M19Etudiant(
+    @PrimaryKey
+    var keyID: String = generePushKey(),
+    var nom: String = "",
+
+    var creationTimestamps: Long = System.currentTimeMillis(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+) {
+
+    fun get_DebugInfos(): String {
+        return buildString {
+        }
+    }
+
+    companion object {
+        const val keyModel = "ID19"
+        val ref = Firebase.database.getReference(
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
+        ).child("Datas19Etudiant")
+
+        fun generePushKey() = genereUnPushKeyFireBase(ref)
+        fun get_default2(
+        ): M19Etudiant {
+            return M19Etudiant()
+        }
+
+        fun get_default(
+        ): M19Etudiant {
+            return M19Etudiant()
+        }
+
+
+    }
+}

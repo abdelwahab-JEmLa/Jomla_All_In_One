@@ -9,11 +9,13 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -30,6 +32,7 @@ class WDatabaseInitializationManager(
     val dataBaseInitFactory_8BonVent: DataBaseInitFactory_8BonVent,
     val dataBaseInitFactory_16CategorieProduit: DataBaseInitFactory_16CategorieProduit,
     val dataBaseInitFactory_2ClientProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
+    val dataBaseInitFactory_19Etudiant: DataBaseInitFactory_19Etudiant,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
@@ -47,6 +50,7 @@ class WDatabaseInitializationManager(
         Entity_8BonVent,
         Entity_16CategorieProduit,
         Entity_2Client,
+        Entity_19Etudiant,
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -165,9 +169,20 @@ class WDatabaseInitializationManager(
                     }
                 }
             } ,
+            scope.launch {
+               val factory =dataBaseInitFactory_19Etudiant
+                initRepo(Repository.Entity_19Etudiant.name, context) {
+                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        factory.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
         )
 
-        jobs.forEach { it.join() }
+        jobs.joinAll()
         updateProgress(1.0f)
     }
 

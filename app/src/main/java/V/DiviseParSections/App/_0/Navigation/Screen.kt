@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditRoad
@@ -54,6 +55,13 @@ sealed class Screen(
         icon = Icons.Default.Receipt,
         title = "Achats_Produits_Chez_Grossists",
         color = Color(0xFF009688)
+    )
+
+    data object Classe_Tahfid_quran : Screen(
+        route = "Classe_Tahfid_quran",
+        icon = Icons.Default.Class,
+        title = "Classe_Tahfid_quran",
+        color = Color(0xFFFFEB3B)
     )
 
     data object TravailleTempRecorder : Screen(

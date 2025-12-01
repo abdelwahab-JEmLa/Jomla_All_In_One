@@ -9,7 +9,7 @@ object NavigationItems {
         Screen.Achats_Produits_Chez_Grossists,
         Screen.ToggleFab,
         Screen.EditDatabaseWithCreateNewArticles,
-        Screen.DialogTests,
+        Screen.Classe_Tahfid_quran,
         Screen.FragmentProduitFastSearchDialog,
         Screen.Screen1PanieVentsFinale
     )

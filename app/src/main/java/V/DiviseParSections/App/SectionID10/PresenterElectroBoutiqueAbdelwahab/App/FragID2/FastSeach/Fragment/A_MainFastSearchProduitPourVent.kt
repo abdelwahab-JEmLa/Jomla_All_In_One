@@ -193,7 +193,6 @@ fun MainFastSearchProduitPourVent(
                 focusRequester = focusRequester,
                 { searchText ->
                     update_activeCentralValuesfastSearchProduitPourVent(searchText)
-                    shouldPerformInitialSearch = false
                 },
                 "liy"
             )

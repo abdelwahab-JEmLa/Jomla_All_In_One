@@ -265,6 +265,16 @@ fun AppNavHost(
                         }
                     }
 
+                    composable(
+                        route = Screen.Classe_Tahfid_quran.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                            }
+                        }
+                    }
+
                     // Database Init Factory screen - NEW
                     composable(
                         route = Screen.Main_DataBaseInitFactory_1Produit.route,
