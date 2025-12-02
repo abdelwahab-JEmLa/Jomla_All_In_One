@@ -391,6 +391,10 @@ data class M10OperationVentCouleur(
         val ref =
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas10OperationVentCouleur")
 
+        fun remove_ref(){
+            ref.removeValue()
+        }
+
         fun isSame(
             ancien: M10OperationVentCouleur,
             newData: M10OperationVentCouleur

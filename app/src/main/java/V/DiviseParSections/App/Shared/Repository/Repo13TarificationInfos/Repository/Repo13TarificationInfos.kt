@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -36,9 +37,54 @@ class Repo13TarificationInfos(
     private val _datas = mutableStateOf<List<M13TarificationInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
+    // Add this function to Repo13TarificationInfos class
+
+    private fun cleanupDuplicateTariffs(tariffs: List<M13TarificationInfos>) {
+        repoScope.launch {
+            try {
+                // Group by TypeChoisi and parent_M1Produit_KeyId
+                val grouped = tariffs.groupBy {
+                    Pair(it.typeChoisi, it.parent_M1Produit_KeyId)
+                }
+
+                val toDelete = mutableListOf<M13TarificationInfos>()
+
+                // For each group, keep only the one with the latest timestamp
+                grouped.forEach { (_, tariffGroup) ->
+                    if (tariffGroup.size > 1) {
+                        // Sort by timestamp descending to get the most recent first
+                        val sortedByTimestamp = tariffGroup.sortedByDescending {
+                            it.dernierTimeTampsSynchronisationAvecFireBase
+                        }
+
+                        // Add all except the first (most recent) to deletion list
+                        toDelete.addAll(sortedByTimestamp.drop(1))
+                    }
+                }
+
+                // Delete duplicates from local database and Firebase
+                if (toDelete.isNotEmpty()) {
+                    // Delete from Firebase only
+                    toDelete.forEach { tariff ->
+                        dataBaseCreationFactory.delete(tariff)
+                    }
+                }
+            } catch (e: Exception) {
+                // Log error if needed
+            }
+        }
+    }
+
+    // Update the init block to:
     init {
         repoScope.launch {
-            dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
+            dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
+                _datas.value = newData
+                // Clean up duplicates after data is loaded
+                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
+                    cleanupDuplicateTariffs(newData)
+                }
+            }
         }
     }
 

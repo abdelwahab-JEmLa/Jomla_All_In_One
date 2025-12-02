@@ -318,6 +318,9 @@ data class M8BonVent(
     companion object {
         const val keyModel = "ID8"
 
+        fun remove_ref(){
+            ref.removeValue()
+        }
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         ).child("Datas08BonVent")

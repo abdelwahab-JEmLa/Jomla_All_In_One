@@ -198,7 +198,9 @@ data class M11AchatOperation(
 
     companion object {
         val ref = centralRef.child("Datas_11AchatOperation")
-
+        fun remove_ref(){
+            ref.removeValue()
+        }
         fun generePushKey() =
             ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
 

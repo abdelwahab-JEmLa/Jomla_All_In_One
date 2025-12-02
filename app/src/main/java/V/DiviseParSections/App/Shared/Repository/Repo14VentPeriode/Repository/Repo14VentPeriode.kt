@@ -195,6 +195,9 @@ data class M14VentPeriode(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DatasM14VentPeriode"
         )
+        fun remove_ref(){
+            ref.removeValue()
+        }
 
         fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
 

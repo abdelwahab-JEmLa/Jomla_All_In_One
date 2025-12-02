@@ -27,6 +27,8 @@ class DataBaseInitFactory_15Grossist(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {
+
+
         if (!dao.isTableEmpty()) return
 
         updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.4f)
