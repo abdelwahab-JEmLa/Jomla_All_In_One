@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent.EtateActuellementEst
 import android.content.Context
-import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -33,8 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
 @Composable
 fun DropDownItem_3(
@@ -66,51 +64,39 @@ fun DropDownItem_3(
         }
 
     /**
-     * Save PDF to external storage with proper naming and automatic replacement
-     * FIXED: Now uses PdfFileNamingUtils for consistent naming
-     * FIXED: Automatically replaces existing files (deletes old file before saving new one)
+     * Save PDF using the utility class
+     * Automatically chooses the best method based on Android version
      */
-    fun savePdfToStorage(context: Context, pdfFile: File, clientName: String, productLineCount: Int) {
+    fun savePdfToDownloads(context: Context, pdfFile: File, clientName: String, productLineCount: Int) {
         try {
-            // Create custom path with current date
-            val currentDate = PdfFileNamingUtils.generateDateBasedFolderPath()
-            val customPath = File(
-                Environment.getExternalStorageDirectory(),
-                "Abdelwahab_jeMla.com/BonsDeVente/$currentDate"
+            // Generate filename
+            val fileName = PdfFileNamingUtils.generatePdfFileName(clientName, productLineCount)
+
+            // Use utility to save (handles all the complexity)
+            val result = PdfSaverUtility.savePdf(
+                context = context,
+                sourceFile = pdfFile,
+                fileName = fileName,
+                subFolder = "BonsDeVente"
             )
 
-            if (!customPath.exists()) {
-                customPath.mkdirs()
-            }
-
-            // Generate filename using utility (FIXED: TODO(1) - extracted to separate function)
-            val fileName = PdfFileNamingUtils.generatePdfFileName(clientName, productLineCount)
-            val destinationFile = File(customPath, fileName)
-
-            // Check if file exists and delete it to replace (FIXED: TODO(1) - file replacement)
-            val fileExisted = destinationFile.exists()
-            if (fileExisted) {
-                destinationFile.delete()
-            }
-
-            // Copy the file
-            FileInputStream(pdfFile).use { input ->
-                FileOutputStream(destinationFile).use { output ->
-                    input.copyTo(output)
+            result.onSuccess { savedPath ->
+                Log.d("SavePDF", "✅ PDF saved successfully: $savedPath")
+                CoroutineScope(Dispatchers.Main).launch {
+                    Toast.makeText(
+                        context,
+                        "PDF sauvegardé: $fileName",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
-            CoroutineScope(Dispatchers.Main).launch {
-                val message = if (fileExisted) {
-                    "PDF remplacé: ${destinationFile.absolutePath}"
-                } else {
-                    "PDF sauvegardé: ${destinationFile.absolutePath}"
-                }
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            result.onFailure { error ->
+                throw error
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("SavePDF", "❌ Error saving PDF: ${e.message}", e)
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(
                     context,
@@ -134,6 +120,9 @@ fun DropDownItem_3(
         isLoading = true
         scope.launch {
             try {
+                var successCount = 0
+                var errorCount = 0
+
                 bonVents_OnCommande_ou_Leurclients_avec_confirmed.forEach { bonVent ->
 
                     val relative_ListM10OperationVentCouleur =
@@ -170,50 +159,53 @@ fun DropDownItem_3(
 
                     result.onSuccess { message ->
                         val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
-                        val pdfFile = java.io.File(filePath)
+                        val pdfFile = File(filePath)
 
                         if (pdfFile.exists()) {
-                            // Save with automatic file replacement
-                            savePdfToStorage(
+                            // Save to Downloads folder
+                            savePdfToDownloads(
                                 context,
                                 pdfFile,
                                 client?.nom ?: "Client_${bonVent.keyID.takeLast(4)}",
                                 productLineCount
                             )
-
-                            CoroutineScope(Dispatchers.Main).launch {
-                                Toast.makeText(
-                                    context,
-                                    "PDF sauvegardé: ${client?.nom ?: "Client"}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            successCount++
+                        } else {
+                            Log.e("SavePDF", "❌ PDF file not found: $filePath")
+                            errorCount++
                         }
                     }
 
                     result.onFailure { error ->
+                        Log.e("SavePDF", "❌ Error generating PDF for ${client?.nom}: ${error.message}")
+                        errorCount++
                         CoroutineScope(Dispatchers.Main).launch {
                             Toast.makeText(
                                 context,
                                 "Erreur pour ${client?.nom ?: "client"}: ${error.message}",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
                 }
 
-                // Final success message
+                // Final summary message
                 CoroutineScope(Dispatchers.Main).launch {
-                    val savedCount = bonVents_OnCommande_ou_Leurclients_avec_confirmed.size
-                    val currentDate = PdfFileNamingUtils.generateDateBasedFolderPath()
-                    Toast.makeText(
-                        context,
-                        "$savedCount PDF(s) sauvegardé(s) dans Abdelwahab_jeMla.com/BonsDeVente/$currentDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    val locationDesc = PdfSaverUtility.getSaveLocationDescription(context)
+                    val message = when {
+                        successCount > 0 && errorCount == 0 ->
+                            "✅ $successCount PDF(s) sauvegardé(s)\n$locationDesc"
+                        successCount > 0 && errorCount > 0 ->
+                            "⚠️ $successCount réussis, $errorCount erreurs"
+                        else ->
+                            "❌ Erreur: Aucun PDF sauvegardé"
+                    }
+
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 }
 
             } catch (e: Exception) {
+                Log.e("SavePDF", "❌ Fatal error during sharing: ${e.message}", e)
                 CoroutineScope(Dispatchers.Main).launch {
                     Toast.makeText(
                         context,
@@ -221,7 +213,6 @@ fun DropDownItem_3(
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                e.printStackTrace()
             } finally {
                 kotlinx.coroutines.delay(2000)
                 isLoading = false

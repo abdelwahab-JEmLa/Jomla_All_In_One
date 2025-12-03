@@ -104,7 +104,7 @@ data class M18CentralParametresOfAllApps(
 
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
 
-    val au_Lence_DimininueDatasFB: Boolean =  false,
+    val au_Lence_DimininueDatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
 
     /*     if (itsDevMode) abdelmomen_Compt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")
