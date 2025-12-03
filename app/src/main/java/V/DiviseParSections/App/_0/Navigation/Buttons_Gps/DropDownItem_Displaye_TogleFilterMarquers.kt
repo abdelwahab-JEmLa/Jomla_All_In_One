@@ -67,20 +67,15 @@ fun DropDownItem_3(
                     clients_avec_confirmed.any { it.keyID == bonVent.parent_M2Client_KeyID }
         }
 
-    /**
-     * FIXED TODO(1): Sauvegarde dans /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/BonsDeVente/[date]
-     * FIXED TODO(2): Ajoute le nombre de pages au nom du fichier selon le nombre de lignes
-     */
     fun savePdfToStorage(context: Context, pdfFile: File, clientName: String, productLineCount: Int) {
         try {
             // Créer le chemin personnalisé avec la date du jour
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val currentDate = dateFormat.format(Date())
 
-            // Chemin : /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/BonsDeVente/[date]
             val customPath = File(
                 Environment.getExternalStorageDirectory(),
-                "Abdelwahab_jeMla.com/IMGs/BaseDonne/BonsDeVente/$currentDate"
+                "Abdelwahab_jeMla.com/BonsDeVente/$currentDate"
             )
 
             if (!customPath.exists()) {
@@ -91,7 +86,7 @@ fun DropDownItem_3(
             val pageSuffix = when {
                 productLineCount > 36 -> "_3صفحات"  // 3 pages
                 productLineCount > 18 -> "_2صفحات"  // 2 pages
-                else -> ""
+                else -> "صفحة_"
             }
 
             // Créer le nom de fichier avec le suffixe de pages
