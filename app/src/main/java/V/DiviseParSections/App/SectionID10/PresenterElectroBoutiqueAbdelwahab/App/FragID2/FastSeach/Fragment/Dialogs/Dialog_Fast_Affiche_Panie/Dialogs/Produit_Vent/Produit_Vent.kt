@@ -96,6 +96,9 @@ fun Produit_Vent(
             Card(
                 modifier = Modifier
                     .semantics(mergeDescendants = true) {
+                        set(value = ventList, key = SemanticsPropertyKey("ventList"))
+                    }
+                    .semantics(mergeDescendants = true) {
                         set(value = nonNullProduit, key = SemanticsPropertyKey("nonNullProduit"))
                     }
                     .fillMaxWidth(),

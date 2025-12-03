@@ -36,7 +36,6 @@ class PdfPrintHandler(
         return try {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
 
-            // FIXED: Check if we should explicitly show credit section OR if bonVent has the flag set
             val shouldShowCredit = (showCreditSection && relative_bonVent != null) ||
                     (relative_bonVent?.affiche_le_verssement_au_prochen_print == true)
 
@@ -51,8 +50,8 @@ class PdfPrintHandler(
                     relative_bonVent,
                     versement
                 )
+
             } else {
-                // FIXED: Pass bonVent even for regular receipts to check the flag
                 printInPdfHandler.generateVentReceiptPdf(
                     context,
                     client,

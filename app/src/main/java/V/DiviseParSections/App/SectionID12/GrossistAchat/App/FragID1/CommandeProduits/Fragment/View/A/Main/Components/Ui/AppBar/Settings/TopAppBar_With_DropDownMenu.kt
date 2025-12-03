@@ -63,7 +63,7 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 fun TopAppBar_With_DropDownMenu(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repo10OperationVentCouleur: Repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur,
     uiState: GrossistAchatSec12FragID1_ViewModel.UiState
@@ -102,8 +102,18 @@ fun TopAppBar_With_DropDownMenu(
                 )
             }
 
-            val filtered_ListM10Vent_BY_Curr_M14VentPeriod = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                .filtered_ListM10Vent_BY_Curr_M14VentPeriod
+            val filtered_ListM10Vent_BY_Curr_M14VentPeriod =
+                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                    .filtered_ListM10Vent_BY_Curr_M14VentPeriod
+
+
+            val filteredVents_parent_M2Client_KeyID =
+                filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
+                    val parentBonVent =
+                        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                            .find { it.keyID == vent.parent_M8BonVent_KeyId }
+                    parentBonVent?.parent_M2Client_KeyID == "-OfY2JJliWTxLVKQ44IY"
+                }
 
             val achats_Depuit_M11AchatOperation_List =
                 viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
@@ -132,7 +142,7 @@ fun TopAppBar_With_DropDownMenu(
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
-                DropDownItem_4(viewModel,"Dialog filter Vent Period")
+                DropDownItem_4(viewModel, "Dialog filter Vent Period")
                 DropDownItem_3(viewModel)
                 DropDownItem_2(viewModel)
 
@@ -141,10 +151,41 @@ fun TopAppBar_With_DropDownMenu(
                 Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel)
 
 
-                val datas_repo10OperationVentCouleur= repo10OperationVentCouleur.datasValue
-                val currentActiveFocuced_M14VentPeriode= focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+                val datas_repo10OperationVentCouleur = repo10OperationVentCouleur.datasValue
+                val currentActiveFocuced_M14VentPeriode =
+                    focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                 Card(
                     modifier = Modifier
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+                                    .find {
+                                        it.keyID == "-OfY2JJliWTxLVKQ44IY"
+                                    }, key = SemanticsPropertyKey("repo2Client")
+                            )
+                        }
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
+                                    vent.parent_M8BonVent_KeyId == "-OfY2JgUgAQEaABafMa4"
+                                },
+                                key = SemanticsPropertyKey("filtered_ListM10Vent_BY_Curr_M14VentPeriod")
+                            )
+                        }
+
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                                    .find { it.parent_M2Client_KeyID == "-OfY2JJliWTxLVKQ44IY" },
+                                key = SemanticsPropertyKey("OfY2JJliWTxLVKQ44IY")
+                            )
+                        }
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = filteredVents_parent_M2Client_KeyID,
+                                key = SemanticsPropertyKey("filteredVents_parent_M2Client_KeyID")
+                            )
+                        }
                         .getSemanticsTag(
                             datas_repo10OperationVentCouleur.map { it.parent_M14VentPeriod_KeyId },
                             "map_datas_repo10OperationVentCouleu"
@@ -161,6 +202,12 @@ fun TopAppBar_With_DropDownMenu(
                             filtered_ListM10Vent_BY_Curr_M14VentPeriod,
                             "filtered_ListM10Vent_BY_Curr_M14VentPeriod"
                         )
+                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = achats_Depuit_M11AchatOperation_List,
+                                key = SemanticsPropertyKey("achats_Depuit_M11AchatOperation_List")
+                            )
+                        }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -168,8 +215,7 @@ fun TopAppBar_With_DropDownMenu(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     DropdownMenuItem(
-                        modifier = Modifier
-                           ,
+                        modifier = Modifier,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -215,6 +261,7 @@ fun TopAppBar_With_DropDownMenu(
         }
     )
 }
+
 @Composable
 private fun ClearFilterButton(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
@@ -465,9 +512,9 @@ private fun DropDownItem_3(viewModel: GrossistAchatSec12FragID1_ViewModel) {
 private fun DropDownItem_4(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     text: String,
-    focusedValuesGetter: FocusedValuesGetter= koinInject()
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    
+
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {

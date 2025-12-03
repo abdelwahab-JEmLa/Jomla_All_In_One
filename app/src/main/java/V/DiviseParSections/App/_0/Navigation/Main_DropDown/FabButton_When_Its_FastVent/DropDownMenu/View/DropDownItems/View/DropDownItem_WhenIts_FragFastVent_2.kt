@@ -187,15 +187,22 @@ fun DropDownItem_WindowsShare(
                     repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                     repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
                     repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
-                    client = focusedValuesGetter.activeOnVentM2ClientInfos,
                     scope = scope,
-                    relative_ListM10OperationVentCouleur = activeVents,
-                    relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+                    relative_ListM10OperationVentCouleur = focusedValuesGetter
+                        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                        .filter { vent ->
+                            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                                    vent.quantity > 0
+                        }
+                    ,
+                    relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent,
+                    client = focusedValuesGetter.activeOnVentM2ClientInfos
                 )
 
                 result.onSuccess { message ->
                     val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
                     val pdfFile = java.io.File(filePath)
+
                     if (pdfFile.exists()) {
                         printHandler.sharePdfWithWindowsApps(context, pdfFile)
 

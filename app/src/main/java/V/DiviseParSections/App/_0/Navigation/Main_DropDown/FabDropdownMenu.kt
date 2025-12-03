@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_3
 import V.DiviseParSections.App._0.Navigation.DropDownItem_1
 import V.DiviseParSections.App._0.Navigation.DropDownItem_2
 import V.DiviseParSections.App._0.Navigation.DropDownItem_DisplayeGpsFlowFAB
@@ -42,7 +43,7 @@ fun FabDropdownMenu(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
             // DropDownItem_FABs_AddClient()
-
+            DropDownItem_3()
             DropDownItem_Displaye_TogleFilterMarquers()
 
             DropDownItem_DisplayeGpsFlowFAB()

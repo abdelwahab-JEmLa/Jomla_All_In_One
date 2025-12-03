@@ -65,8 +65,6 @@ class PrintReceiptHandler_Juil(
         versement: Double = 0.0
     ): Result<String> {
         return try {
-            val shouldShowCreditSection = showCreditSection
-
             pdfPrintHandler.generateAndOpenPdf(
                 context,
                 client,
@@ -74,51 +72,12 @@ class PrintReceiptHandler_Juil(
                 repo13TarificationInfos,
                 repoM1Produit,
                 relative_bonVent,
-                shouldShowCreditSection,
+                showCreditSection,
                 versement
             )
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)
-        }
-    }
-    fun sharePdfWithWindowsApps(
-        context: Context,
-        repoM1Produit: RepoM1Produit,
-        repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
-        client: M2Client?,
-        scope: CoroutineScope? = null,
-        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
-        repo13TarificationInfos: Repo13TarificationInfos,
-        bonVent: M8BonVent? = null,
-        showCreditSection: Boolean = true,
-        versement: Double = 0.0
-    ) {
-        scope?.launch {
-            try {
-                val shouldShowCreditSection = showCreditSection && bonVent != null
-
-                val result = pdfPrintHandler.generateAndOpenPdf(
-                    context,
-                    client,
-                    relative_ListM10OperationVentCouleur,
-                    repo13TarificationInfos,
-                    repoM1Produit,
-                    bonVent,
-                    shouldShowCreditSection,
-                    versement
-                )
-
-                result.onSuccess { message ->
-                    val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
-                    val pdfFile = File(filePath)
-                    if (pdfFile.exists()) {
-                        windowsShareHandler.shareWithWindowsApps(context, pdfFile)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
     }
 

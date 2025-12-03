@@ -46,10 +46,13 @@ class Repo11AchatOperation(
         produits: List<ArticlesBasesStatsTable>,
         bonVents: List<M8BonVent> = emptyList()
     ): List<M11AchatOperation> {
-        // Filter out vents where parent bon vent has its_working_for_wholesaler = true
+        // Filter out vents where:
+        // 1. Parent bon vent has its_working_for_wholesaler = true
+        // 2. Parent bon vent has parentClientInfosKeyID = "-OfYtzn5JtD6Ne7gCOLu"
         val filteredVents = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
             val parentBonVent = bonVents.find { it.keyID == vent.parent_M8BonVent_KeyId }
-            parentBonVent?.its_working_for_wholesaler != true
+            parentBonVent?.its_working_for_wholesaler != true &&
+                    parentBonVent?.parent_M2Client_KeyID != "-OfYtzn5JtD6Ne7gCOLu"
         }
 
         return filteredVents
