@@ -1,5 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Buttons_Gps
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -34,9 +35,6 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DropDownItem_3(
@@ -67,12 +65,15 @@ fun DropDownItem_3(
                     clients_avec_confirmed.any { it.keyID == bonVent.parent_M2Client_KeyID }
         }
 
+    /**
+     * Save PDF to external storage with proper naming and automatic replacement
+     * FIXED: Now uses PdfFileNamingUtils for consistent naming
+     * FIXED: Automatically replaces existing files (deletes old file before saving new one)
+     */
     fun savePdfToStorage(context: Context, pdfFile: File, clientName: String, productLineCount: Int) {
         try {
-            // Créer le chemin personnalisé avec la date du jour
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val currentDate = dateFormat.format(Date())
-
+            // Create custom path with current date
+            val currentDate = PdfFileNamingUtils.generateDateBasedFolderPath()
             val customPath = File(
                 Environment.getExternalStorageDirectory(),
                 "Abdelwahab_jeMla.com/BonsDeVente/$currentDate"
@@ -82,18 +83,17 @@ fun DropDownItem_3(
                 customPath.mkdirs()
             }
 
-            // Déterminer le suffixe selon le nombre de lignes de produits
-            val pageSuffix = when {
-                productLineCount > 36 -> "_3صفحات"  // 3 pages
-                productLineCount > 18 -> "_2صفحات"  // 2 pages
-                else -> "صفحة_"
-            }
-
-            // Créer le nom de fichier avec le suffixe de pages
-            val fileName = "${clientName.replace(" ", "_")}${pageSuffix}.pdf"
+            // Generate filename using utility (FIXED: TODO(1) - extracted to separate function)
+            val fileName = PdfFileNamingUtils.generatePdfFileName(clientName, productLineCount)
             val destinationFile = File(customPath, fileName)
 
-            // Copier le fichier
+            // Check if file exists and delete it to replace (FIXED: TODO(1) - file replacement)
+            val fileExisted = destinationFile.exists()
+            if (fileExisted) {
+                destinationFile.delete()
+            }
+
+            // Copy the file
             FileInputStream(pdfFile).use { input ->
                 FileOutputStream(destinationFile).use { output ->
                     input.copyTo(output)
@@ -101,11 +101,12 @@ fun DropDownItem_3(
             }
 
             CoroutineScope(Dispatchers.Main).launch {
-                Toast.makeText(
-                    context,
-                    "PDF sauvegardé: ${destinationFile.absolutePath}",
-                    Toast.LENGTH_LONG
-                ).show()
+                val message = if (fileExisted) {
+                    "PDF remplacé: ${destinationFile.absolutePath}"
+                } else {
+                    "PDF sauvegardé: ${destinationFile.absolutePath}"
+                }
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             }
 
         } catch (e: Exception) {
@@ -146,7 +147,7 @@ fun DropDownItem_3(
                         return@forEach
                     }
 
-                    // Compter le nombre de lignes de produits pour le suffixe
+                    // Count number of product lines for suffix
                     val productLineCount = relative_ListM10OperationVentCouleur
                         .groupBy { it.parent_M1Produit_KeyId }
                         .size
@@ -155,7 +156,7 @@ fun DropDownItem_3(
                         it.keyID == bonVent.parent_M2Client_KeyID
                     }
 
-                    // Générer le PDF
+                    // Generate PDF
                     val result = printHandler.printPdfOnly(
                         context = context,
                         repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos,
@@ -172,7 +173,7 @@ fun DropDownItem_3(
                         val pdfFile = java.io.File(filePath)
 
                         if (pdfFile.exists()) {
-                            // Sauvegarder avec le nombre de lignes pour déterminer le suffixe
+                            // Save with automatic file replacement
                             savePdfToStorage(
                                 context,
                                 pdfFile,
@@ -201,11 +202,10 @@ fun DropDownItem_3(
                     }
                 }
 
-                // Message final de succès
+                // Final success message
                 CoroutineScope(Dispatchers.Main).launch {
                     val savedCount = bonVents_OnCommande_ou_Leurclients_avec_confirmed.size
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    val currentDate = dateFormat.format(Date())
+                    val currentDate = PdfFileNamingUtils.generateDateBasedFolderPath()
                     Toast.makeText(
                         context,
                         "$savedCount PDF(s) sauvegardé(s) dans Abdelwahab_jeMla.com/BonsDeVente/$currentDate",
@@ -229,7 +229,7 @@ fun DropDownItem_3(
         }
     }
 
-    // Calculer le nombre total de ventes pour tous les bons confirmés
+    // Calculate total sales for all confirmed orders
     val totalVentes = bonVents_OnCommande_ou_Leurclients_avec_confirmed.sumOf { bonVent ->
         repositorysMainGetter.repo10OperationVentCouleur.datasValue.count { vent ->
             vent.parent_M8BonVent_KeyId == bonVent.keyID &&

@@ -10,9 +10,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class UploadHandler {
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
@@ -21,12 +18,17 @@ class UploadHandler {
         private const val TAG = "UploadHandler"
     }
 
+    /**
+     * Create local file for PDF generation
+     * FIXED: Now uses PdfFileNamingUtils for consistent naming across the application
+     */
     fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
         if (!dir.exists()) dir.mkdirs()
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val sanitizedClientName = clientName.replace("[^a-zA-Z0-9]".toRegex(), "_")
-        val fileName = "${type}_${sanitizedClientName}_${timestamp}_$id.pdf"
+
+        // Use the naming utility for consistency (FIXED: TODO(1))
+        val fileName = PdfFileNamingUtils.generateInternalPdfFileName(clientName, type, id)
+
         return File(dir, fileName)
     }
 
