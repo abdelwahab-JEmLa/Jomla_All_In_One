@@ -1,6 +1,5 @@
 package V.DiviseParSections.App._0.Navigation.Buttons_Gps
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -62,50 +61,6 @@ fun DropDownItem_3(
                     bonVent.parent_M14VentPeriod_KeyId == focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID &&
                     clients_avec_confirmed.any { it.keyID == bonVent.parent_M2Client_KeyID }
         }
-
-    /**
-     * Save PDF using the utility class
-     * Automatically chooses the best method based on Android version
-     */
-    fun savePdfToDownloads(context: Context, pdfFile: File, clientName: String, productLineCount: Int) {
-        try {
-            // Generate filename
-            val fileName = PdfFileNamingUtils.generatePdfFileName(clientName, productLineCount)
-
-            // Use utility to save (handles all the complexity)
-            val result = PdfSaverUtility.savePdf(
-                context = context,
-                sourceFile = pdfFile,
-                fileName = fileName,
-                subFolder = "BonsDeVente"
-            )
-
-            result.onSuccess { savedPath ->
-                Log.d("SavePDF", "✅ PDF saved successfully: $savedPath")
-                CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(
-                        context,
-                        "PDF sauvegardé: $fileName",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            result.onFailure { error ->
-                throw error
-            }
-
-        } catch (e: Exception) {
-            Log.e("SavePDF", "❌ Error saving PDF: ${e.message}", e)
-            CoroutineScope(Dispatchers.Main).launch {
-                Toast.makeText(
-                    context,
-                    "Erreur sauvegarde: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
 
     fun shareWithWindows() {
         if (bonVents_OnCommande_ou_Leurclients_avec_confirmed.isEmpty()) {

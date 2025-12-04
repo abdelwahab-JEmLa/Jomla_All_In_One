@@ -2,58 +2,62 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Hardware Features -->
+    <!-- ==================== HARDWARE FEATURES ==================== -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- ==================== BASIC PERMISSIONS ==================== -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- ==================== FOREGROUND SERVICE PERMISSIONS ==================== -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- ADD THIS NEW PERMISSION FOR SCREEN RECORDING -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
-    <!-- Storage Permissions -->
+    <!-- ==================== STORAGE PERMISSIONS ==================== -->
+    <!-- For Android 12 and below -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- For all Android versions (manage external storage) -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+
+    <!-- For Android 13+ (media permissions) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
-    <!-- Camera Permission -->
+    <!-- ==================== CAMERA PERMISSION ==================== -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- Network Permissions -->
+    <!-- ==================== NETWORK PERMISSIONS ==================== -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-    <!-- Conditional Permissions -->
+    <!-- Nearby WiFi devices (Android 12+) -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:usesPermissionFlags="neverForLocation"
         tools:targetApi="s" />
 
-    <!-- Location Permissions -->
+    <!-- ==================== LOCATION PERMISSIONS ==================== -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Bluetooth Permissions -->
+    <!-- ==================== BLUETOOTH PERMISSIONS ==================== -->
+    <!-- For Android 11 and below -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- For Android 12+ -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <!-- Internet permission for Firebase downloads -->
 
-    <!-- Network state permission for checking connectivity -->
-
-    <!-- Storage permissions for saving downloaded videos -->
-
-    <!-- Wake lock for background video processing (optional) -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- ==================== APPLICATION ==================== -->
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -66,6 +70,7 @@
         android:theme="@style/Theme.ClientJetPack"
         tools:targetApi="31">
 
+        <!-- ==================== MAIN ACTIVITY ==================== -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -77,14 +82,16 @@
             </intent-filter>
         </activity>
 
-        <!-- ADD THIS SERVICE FOR SCREEN RECORDING -->
+        <!-- ==================== SERVICES ==================== -->
+        <!-- Screen Recording Service -->
         <service
             android:name="V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.ScreenRecordingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
 
-        <!-- FileProvider for camera functionality -->
+        <!-- ==================== CONTENT PROVIDERS ==================== -->
+        <!-- FileProvider for sharing files (camera, PDFs, etc.) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
