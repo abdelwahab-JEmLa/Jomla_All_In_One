@@ -6,6 +6,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.EducationFragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -266,11 +267,12 @@ fun AppNavHost(
                     }
 
                     composable(
-                        route = Screen.Classe_Tahfid_quran.route,
+                        route = Screen.EducationFragment.route,
                     ) { backStackEntry ->
                         val screenKey = rememberScreenKey(backStackEntry)
                         Box(modifier = Modifier.fillMaxSize()) {
                             key(screenKey) {
+                                EducationFragment()
                             }
                         }
                     }

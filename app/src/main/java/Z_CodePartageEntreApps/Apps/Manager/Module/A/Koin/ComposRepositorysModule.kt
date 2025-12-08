@@ -79,9 +79,13 @@ val composRepositorysModule = module {
         get(),
         get(),
         get(),
+        get(),
         get(), ) }
 
-    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(),get(),get(), ) }
+    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(),get(),
+        get(),
+        get(),
+        ) }
     single { ModulesCentral(get(), get(), get(),get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

@@ -1,4 +1,3 @@
-// Fixed NavigationBarWithFab.kt
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -15,6 +14,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Ac
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -64,6 +64,7 @@ fun NavigationBarWithFab(
     var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
     var showFabDropdownAchats by remember { mutableStateOf(false) }
     var showFabDropdownFastVent by remember { mutableStateOf(false) }
+    var showFabDropdownEducation by remember { mutableStateOf(false) }
 
     // Get current focused values to check floating button visibility
     val currentValues = focusedValuesGetter.active_Central_Values
@@ -102,10 +103,15 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        if (screen.route == Screen.DialogTests.route) {
-                            showDialogTests = true
-                        } else {
-                            onNavigate(screen.route)
+                        // FIXED: Safe navigation with try-catch to prevent crashes
+                        try {
+                            if (screen.route == Screen.DialogTests.route) {
+                                showDialogTests = true
+                            } else {
+                                onNavigate(screen.route)
+                            }
+                        } catch (e: IllegalStateException) {
+                            // Navigation graph not ready yet, ignore
                         }
                     }
                 )
@@ -116,6 +122,7 @@ fun NavigationBarWithFab(
         val its_EditDatabaseWithCreateNewArticles = activeFragment == Screen.EditDatabaseWithCreateNewArticles
         val its_Achats_Produits_Chez_Grossists = activeFragment == Screen.Achats_Produits_Chez_Grossists
         val its_FragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
+        val its_EducationFragment = activeFragment == Screen.EducationFragment
 
         when {
             its_EditDatabaseWithCreateNewArticles -> {
@@ -142,13 +149,22 @@ fun NavigationBarWithFab(
             }
 
             its_FragmentProduitFastSearchDialog -> {
-                // Fixed: Show FAB button first, then dropdown when clicked
                 FabButton(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = { showFabDropdownFastVent = true }
+                )
+            }
+
+            its_EducationFragment -> {
+                FabButton(
+                    showWarningState = showWarningState,
+                    isFabVisible = isFabVisible,
+                    its_Targeted_Frag = true,
+                    onToggleFabVisibility = onToggleFabVisibility,
+                    onShowDropdown = { showFabDropdownEducation = true }
                 )
             }
 
@@ -182,7 +198,7 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists && !its_FragmentProduitFastSearchDialog) {
+        if (showFabDropdown && !its_EditDatabaseWithCreateNewArticles && !its_Achats_Produits_Chez_Grossists && !its_FragmentProduitFastSearchDialog && !its_EducationFragment) {
             FabDropdownMenu(
                 showFabDropdown = showFabDropdown,
                 onDismissDropdown = { showFabDropdown = false },
@@ -206,7 +222,12 @@ fun NavigationBarWithFab(
             )
         }
 
-        // Fixed: Show dropdown only when button is clicked
+        if (showFabDropdownEducation && its_EducationFragment) {
+            FabDropdownMenu_WhenIts_FragmentEducation(
+                onDismissDropdown = { showFabDropdownEducation = false }
+            )
+        }
+
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu_WhenIts_FragFastVent(
                 onDismissDropdown = { showFabDropdownFastVent = false }
@@ -242,6 +263,7 @@ fun NavigationBarWithFab(
         }
     }
 }
+
 data class Item_States(
     val function_noms_separatedStrings: String = ",",
     val avec_Premier_Click_Jane: Boolean = true,

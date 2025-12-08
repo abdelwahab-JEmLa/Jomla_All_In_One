@@ -57,10 +57,10 @@ sealed class Screen(
         color = Color(0xFF009688)
     )
 
-    data object Classe_Tahfid_quran : Screen(
-        route = "Classe_Tahfid_quran",
+    data object EducationFragment : Screen(
+        route = "EducationFragment",
         icon = Icons.Default.Class,
-        title = "Classe_Tahfid_quran",
+        title = "EducationFragment",
         color = Color(0xFFFFEB3B)
     )
 

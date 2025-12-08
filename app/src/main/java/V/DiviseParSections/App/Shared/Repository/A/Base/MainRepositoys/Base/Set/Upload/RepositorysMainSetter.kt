@@ -31,6 +31,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Reposito
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference
@@ -52,6 +54,7 @@ class RepositorysMainSetter(
     private val repo15Grossist: Repo15Grossist,
     private val repoM16CategorieProduit: RepoM16CategorieProduit,
     private val repo17MessageVocale: Repo17MessageVocale,
+    private val repo19Etudiant: Repo19Etudiant,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
 //--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
@@ -232,6 +235,9 @@ class RepositorysMainSetter(
 
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)
+
+    //------------R19 -------------------------------------------------------------------------------------------------------------------------------------
+    fun add_M19Etudiant(data: M19Etudiant) = repo19Etudiant.add(data)
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------
 
