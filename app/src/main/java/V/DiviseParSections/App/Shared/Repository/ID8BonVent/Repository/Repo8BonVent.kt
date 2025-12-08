@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
 import android.widget.Toast
@@ -36,7 +37,21 @@ class Repo8BonVent(
 
     init {
         repoScope.launch {
-            dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
+            dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
+                _datas.value = newData
+
+                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
+                    val bonVentsToRemove = newData.filter { bonVent ->
+                        bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit &&
+                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
+                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
+                    }
+
+                    bonVentsToRemove.forEach { bonVent ->
+                        delete(bonVent)
+                    }
+                }
+            }
         }
     }
 
@@ -58,12 +73,17 @@ class Repo8BonVent(
                 }
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Failed to refresh data: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Failed to refresh data: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -203,7 +223,7 @@ data class M8BonVent(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
-    var its_working_for_wholesaler : Boolean = false,
+    var its_working_for_wholesaler: Boolean = false,
 
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
     var vocaleKeyID: String = "",
@@ -213,11 +233,11 @@ data class M8BonVent(
     var totale_saved: Double = 0.0,
     var cUn_Versement_duBonVentKey: String = "",
 
-    var versement_fait : Double = 0.0,
-    var ancien_credit : Double = 0.0,
+    var versement_fait: Double = 0.0,
+    var ancien_credit: Double = 0.0,
     var cUn_Credit_duBonVentKey: String = "",
 
-    var new_credit_apre_tout_fait : Double = 0.0,
+    var new_credit_apre_tout_fait: Double = 0.0,
 
     var affiche_le_verssement_au_prochen_print: Boolean = false,
 
@@ -264,7 +284,10 @@ data class M8BonVent(
             " تنفيذ المطلوب في تحسين الوضع معه"
         ),
 
-        Rapport_Entre_On_Etate_De_Bloquage(android.R.color.holo_red_light, ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"),
+        Rapport_Entre_On_Etate_De_Bloquage(
+            android.R.color.holo_red_light,
+            ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"
+        ),
         Bloque_Probleme(R.color.c3, "حدث مشكل معه"),
         Ordre_Gerant(R.color.c4, "توجيه المسير"),
 
@@ -318,9 +341,10 @@ data class M8BonVent(
     companion object {
         const val keyModel = "ID8"
 
-        fun remove_ref(){
+        fun remove_ref() {
             ref.removeValue()
         }
+
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         ).child("Datas08BonVent")

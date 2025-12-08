@@ -220,17 +220,6 @@ class RepositorysMainGetter(
             try {
                 M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB.ifTrue {
                     M10OperationVentCouleur.remove_ref()
-
-                    val bonVentsToRemove = repo8BonVent.datasValue.filter { bonVent ->
-                        bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit &&
-                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
-                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
-                    }
-
-                    bonVentsToRemove.forEach { bonVent ->
-                        repo8BonVent.delete(bonVent)
-                    }
-
                     M11AchatOperation.remove_ref()
                 }
 
