@@ -14,6 +14,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Ac
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabButton_When_Its_EducationFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -159,12 +160,14 @@ fun NavigationBarWithFab(
             }
 
             its_EducationFragment -> {
-                FabButton(
+                FabButton_When_Its_EducationFragment(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
                     onToggleFabVisibility = onToggleFabVisibility,
-                    onShowDropdown = { showFabDropdownEducation = true }
+                    onShowDropdown = {
+                        showFabDropdownEducation = true
+                    }
                 )
             }
 

@@ -94,52 +94,52 @@ class DataBaseInitFactory_19Etudiant(
         isListenerRegistered = true
         M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
-        repoRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                factoryScope.launch {
-                    try {
-                        val localData = dao.getAll()
-                        val localDataMap = localData.associateBy { it.keyID }
-                        val firebaseKeyIds = mutableSetOf<String>()
+            repoRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    factoryScope.launch {
+                        try {
+                            val localData = dao.getAll()
+                            val localDataMap = localData.associateBy { it.keyID }
+                            val firebaseKeyIds = mutableSetOf<String>()
 
-                        for (child in snapshot.children) {
-                            try {
-                                child.getValue(M19Etudiant::class.java)?.let { fbEntity ->
-                                    val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
-                                    firebaseKeyIds.add(entityWithKey.keyID)
+                            for (child in snapshot.children) {
+                                try {
+                                    child.getValue(M19Etudiant::class.java)?.let { fbEntity ->
+                                        val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
+                                        firebaseKeyIds.add(entityWithKey.keyID)
 
-                                    val localEntity = localDataMap[entityWithKey.keyID]
+                                        val localEntity = localDataMap[entityWithKey.keyID]
 
-                                    when {
-                                        localEntity == null -> {
-                                            dao.upsert(entityWithKey)
-                                        }
-                                        else -> {
-                                            dao.deleteByKeyId(entityWithKey.keyID)
-                                            dao.insert(entityWithKey)
+                                        when {
+                                            localEntity == null -> {
+                                                dao.upsert(entityWithKey)
+                                            }
+                                            else -> {
+                                                dao.deleteByKeyId(entityWithKey.keyID)
+                                                dao.insert(entityWithKey)
+                                            }
                                         }
                                     }
+                                } catch (e: Exception) {
                                 }
-                            } catch (e: Exception) {
                             }
-                        }
 
-                        val itemsToDelete = localDataMap.keys - firebaseKeyIds
-                        for (keyToDelete in itemsToDelete) {
-                            try {
-                                dao.deleteByKeyId(keyToDelete)
-                            } catch (e: Exception) {
+                            val itemsToDelete = localDataMap.keys - firebaseKeyIds
+                            for (keyToDelete in itemsToDelete) {
+                                try {
+                                    dao.deleteByKeyId(keyToDelete)
+                                } catch (e: Exception) {
+                                }
                             }
+                        } catch (e: Exception) {
                         }
-                    } catch (e: Exception) {
                     }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                isListenerRegistered = false
-            }
-        })}
+                override fun onCancelled(error: DatabaseError) {
+                    isListenerRegistered = false
+                }
+            })}
     }
 
     fun set(dataAvecTigerUpdate: M19Etudiant) {
@@ -152,13 +152,19 @@ class DataBaseInitFactory_19Etudiant(
         }
     }
 
+    // SOLUTION 1: Utiliser setValue au lieu de updateChildren
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<M19Etudiant>) {
-        val updates = mutableMapOf<String, Any>()
-        datas.forEach { data ->
-            updates[data.keyID] = data
+        try {
+            // Pour chaque donnée, faire un setValue individuel
+            datas.forEach { data ->
+                repoRef.child(data.keyID).setValue(data).await()
+            }
+        } catch (e: Exception) {
+            // Log l'erreur
+            e.printStackTrace()
         }
-        repoRef.updateChildren(updates).await()
     }
+
 
     fun delete(data: M19Etudiant) {
         factoryScope.launch {

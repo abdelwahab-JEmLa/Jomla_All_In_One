@@ -16,7 +16,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
@@ -214,14 +213,25 @@ class RepositorysMainGetter(
         }
     }
 
+// In RepositorysMainGetter.kt, replace the init block with this:
+
     init {
         composScope.launch {
             try {
-                M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB.ifTrue{
+                M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB.ifTrue {
                     M10OperationVentCouleur.remove_ref()
-                    M8BonVent.remove_ref()
+
+                    val bonVentsToRemove = repo8BonVent.datasValue.filter { bonVent ->
+                        bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit &&
+                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
+                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
+                    }
+
+                    bonVentsToRemove.forEach { bonVent ->
+                        repo8BonVent.delete(bonVent)
+                    }
+
                     M11AchatOperation.remove_ref()
-                    M14VentPeriode.remove_ref()
                 }
 
                 databaseInitializationManager.initializeAllRepositories(context)

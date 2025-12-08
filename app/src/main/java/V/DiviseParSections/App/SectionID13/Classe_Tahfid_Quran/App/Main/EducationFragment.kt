@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -81,10 +81,12 @@ fun EducationFragment(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(
+                // SOLUTION DÉFINITIVE: Utiliser itemsIndexed avec l'index comme clé
+                // Cela garantit l'unicité même si les données ont des doublons
+                itemsIndexed(
                     items = etudiants,
-                    key = { etudiant -> etudiant.keyID }
-                ) { etudiant ->
+                    key = { index, _ -> index }
+                ) { index, etudiant ->
                     EtudiantCard(
                         nom = etudiant.nom,
                         creationDate = etudiant.creationTimestamps,

@@ -174,6 +174,7 @@ data class M19Etudiant(
 
     companion object {
         const val keyModel = "ID19"
+
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         ).child("Datas19Etudiant")
