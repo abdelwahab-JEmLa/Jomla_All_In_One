@@ -109,7 +109,6 @@ class Repo19Etudiant(
         }
     }
 
-    //---------------------------------------------------------------------------------------------------------------------------------------------------
     fun addNew(data: M19Etudiant) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
@@ -162,6 +161,16 @@ data class M19Etudiant(
     @PrimaryKey
     var keyID: String = generePushKey(),
     var nom: String = "",
+    var prenom: String = "",
+
+    var num_telephone_parent: String = "0213",
+    var age: Int = 7,
+
+    var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
+    var dernier_Soura_num_Ayaa: Int = 1,
+
+    var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
+    var mokarrare_hifde_num_Ayaa: Int = 1,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -169,6 +178,10 @@ data class M19Etudiant(
 
     fun get_DebugInfos(): String {
         return buildString {
+            append("Nom: $nom, ")
+            append("Age: $age, ")
+            append("Dernier Soura: ${dernier_Soura_Wassale_Laha.arabicName} (${dernier_Soura_num_Ayaa}), ")
+            append("Mokarrare: ${mokarrare_hifde.arabicName} (${mokarrare_hifde_num_Ayaa})")
         }
     }
 
@@ -180,16 +193,13 @@ data class M19Etudiant(
         ).child("Datas19Etudiant")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
-        fun get_default2(
-        ): M19Etudiant {
+
+        fun get_default2(): M19Etudiant {
             return M19Etudiant()
         }
 
-        fun get_default(
-        ): M19Etudiant {
+        fun get_default(): M19Etudiant {
             return M19Etudiant()
         }
-
-
     }
 }
