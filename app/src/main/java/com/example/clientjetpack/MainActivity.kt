@@ -1,7 +1,6 @@
 package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
 import android.os.Build
 import android.os.Bundle
@@ -24,11 +23,10 @@ import org.koin.core.annotation.KoinExperimentalAPI
 private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
-    private val database by lazy { AppDatabase.DatabaseModule.getDatabase(this) }
+    lateinit var content: () -> Unit
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private var permissionsChecked by mutableStateOf(false)
-    private var applicationAfficheProduitsPourCompt by mutableStateOf(false)
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,14 +40,12 @@ class MainActivity : ComponentActivity() {
         super.onResume()
 
         // Recheck permissions when app resumes (user might have granted storage permission)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val hasStorageAccess = Environment.isExternalStorageManager()
-            Log.d(TAG, "onResume: Storage access = $hasStorageAccess")
+        val hasStorageAccess = Environment.isExternalStorageManager()
+        Log.d(TAG, "onResume: Storage access = $hasStorageAccess")
 
-            // If permissions weren't checked before but now we have storage access, recheck
-            if (!permissionsChecked && hasStorageAccess) {
-                handlePermissions()
-            }
+        // If permissions weren't checked before but now we have storage access, recheck
+        if (!permissionsChecked && hasStorageAccess) {
+            handlePermissions()
         }
     }
 

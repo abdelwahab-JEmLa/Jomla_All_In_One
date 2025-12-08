@@ -28,6 +28,7 @@ class PermissionHandler(private val activity: MainActivity) {
     private var showDialog by mutableStateOf(false)
     var showStorageExplanationDialog by mutableStateOf(false)
     private var permissionCallback: PermissionCallback? = null
+    private var pendingStandardPermissions = false
 
     interface PermissionCallback {
         fun onPermissionsGranted()
@@ -42,21 +43,8 @@ class PermissionHandler(private val activity: MainActivity) {
         Log.d(TAG, "Permissions result: $permissions, all granted: $allGranted")
 
         if (allGranted) {
-            // Check if we also need MANAGE_EXTERNAL_STORAGE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    savePermissionsGranted()
-                    permissionCallback?.onPermissionsGranted()
-                    showDialog = false
-                } else {
-                    // Request MANAGE_EXTERNAL_STORAGE
-                    requestManageExternalStorage()
-                }
-            } else {
-                savePermissionsGranted()
-                permissionCallback?.onPermissionsGranted()
-                showDialog = false
-            }
+            savePermissionsGranted()
+            checkFinalPermissionState()
         } else {
             val denied = permissions.filter { !it.value }.keys.toTypedArray()
             Log.d(TAG, "Denied permissions: ${denied.joinToString()}")
@@ -78,8 +66,7 @@ class PermissionHandler(private val activity: MainActivity) {
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.NEARBY_WIFI_DEVICES,
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_MEDIA_VIDEO
+                Manifest.permission.READ_MEDIA_IMAGES
             )
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -88,8 +75,7 @@ class PermissionHandler(private val activity: MainActivity) {
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.BLUETOOTH_ADVERTISE,
                 Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.CHANGE_WIFI_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.CHANGE_WIFI_STATE
             )
             else -> arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -105,50 +91,93 @@ class PermissionHandler(private val activity: MainActivity) {
     }
 
     /**
-     * Check if all required permissions are granted INCLUDING storage access
+     * Check if standard runtime permissions are granted
      */
-    fun arePermissionsGranted(): Boolean {
+    private fun areStandardPermissionsGranted(): Boolean {
         val requiredPermissions = getRequiredPermissions()
-        val standardPermissionsGranted = requiredPermissions.all {
+        return requiredPermissions.all {
             ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED
         }
-
-        // For Android 11+, also check MANAGE_EXTERNAL_STORAGE
-        val storageGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            true // Not needed on older versions
-        }
-
-        // Log the status of each permission for debugging
-        if (!standardPermissionsGranted || !storageGranted) {
-            requiredPermissions.forEach {
-                val granted = ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED
-                Log.d(TAG, "🔐 Permission $it: ${if (granted) "ACCORDÉE" else "MANQUANTE"}")
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                Log.d(TAG, "🔐 MANAGE_EXTERNAL_STORAGE: ${if (storageGranted) "ACCORDÉE" else "MANQUANTE"}")
-            }
-        }
-
-        return standardPermissionsGranted && storageGranted
     }
 
     /**
-     * Save the permissions granted status in SharedPreferences
+     * Check if storage permission is granted (Android 11+)
+     */
+    private fun isStoragePermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            // On older versions, check if WRITE_EXTERNAL_STORAGE is granted
+            val permissions = getRequiredPermissions()
+            if (Manifest.permission.WRITE_EXTERNAL_STORAGE in permissions) {
+                ContextCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true
+            }
+        }
+    }
+
+    /**
+     * Check if ALL permissions (including storage) are granted
+     */
+    fun arePermissionsGranted(): Boolean {
+        val standardGranted = areStandardPermissionsGranted()
+        val storageGranted = isStoragePermissionGranted()
+
+        if (!standardGranted || !storageGranted) {
+            logPermissionStatus()
+        }
+
+        return standardGranted && storageGranted
+    }
+
+    /**
+     * Log detailed permission status for debugging
+     */
+    private fun logPermissionStatus() {
+        Log.d(TAG, "=== Permission Status ===")
+        getRequiredPermissions().forEach {
+            val granted = ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED
+            Log.d(TAG, "🔐 Permission $it: ${if (granted) "ACCORDÉE" else "MANQUANTE"}")
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Log.d(TAG, "🔐 MANAGE_EXTERNAL_STORAGE: ${if (isStoragePermissionGranted()) "ACCORDÉE" else "MANQUANTE"}")
+        }
+        Log.d(TAG, "=======================")
+    }
+
+    /**
+     * Save the permissions granted status
      */
     private fun savePermissionsGranted() {
         if (arePermissionsGranted()) {
             prefs.edit().putBoolean(PERMISSIONS_GRANTED_KEY, true).apply()
-            Log.d(TAG, "✅ Toutes les permissions sont accordées et sauvegardées")
+            Log.d(TAG, "✅ All permissions granted and saved")
+        }
+    }
+
+    /**
+     * Check final permission state and notify callback
+     */
+    private fun checkFinalPermissionState() {
+        if (arePermissionsGranted()) {
+            permissionCallback?.onPermissionsGranted()
+            showDialog = false
+            showStorageExplanationDialog = false
+        } else if (!isStoragePermissionGranted() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Standard permissions granted but storage not yet
+            Log.d(TAG, "Standard permissions OK, requesting storage management")
+            requestManageExternalStorage()
         } else {
-            Log.d(TAG, "❌ Certaines permissions manquent encore")
+            permissionCallback?.onPermissionsDenied()
         }
     }
 
     /**
      * Request MANAGE_EXTERNAL_STORAGE permission (Android 11+)
-     * Shows explanation dialog first
      */
     private fun requestManageExternalStorage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -157,7 +186,7 @@ class PermissionHandler(private val activity: MainActivity) {
     }
 
     /**
-     * Actually open the storage settings (called after user confirms dialog)
+     * Open storage settings for MANAGE_EXTERNAL_STORAGE
      */
     fun openStorageSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -166,63 +195,63 @@ class PermissionHandler(private val activity: MainActivity) {
                     data = Uri.parse("package:${activity.packageName}")
                 }
                 activity.startActivity(intent)
-
-                Log.d(TAG, "Opening storage settings")
-
-                // Note: We can't detect when user returns from settings
-                // App will need to recheck permissions when resumed
+                Log.d(TAG, "Opened storage settings")
             } catch (e: Exception) {
                 Log.e(TAG, "Error opening storage settings", e)
-                // Fallback to general settings
                 openAppSettings()
             }
         }
     }
 
     /**
-     * Check and request required permissions
+     * Main method to check and request all permissions
      */
     fun checkAndRequestPermissions(callback: PermissionCallback) {
         this.permissionCallback = callback
 
+        // Quick check if everything is already granted
         if (arePermissionsGranted()) {
-            Log.d(TAG, "Permissions already granted, proceeding")
+            Log.d(TAG, "✅ All permissions already granted")
             callback.onPermissionsGranted()
             return
         }
 
-        // Check if we need MANAGE_EXTERNAL_STORAGE first
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            Log.d(TAG, "Requesting MANAGE_EXTERNAL_STORAGE first")
-            requestManageExternalStorage()
-            // Don't return - let the user complete this, then check standard permissions
-        }
-
-        val permissionsToRequest = getRequiredPermissions().filter {
-            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
-        }.toTypedArray()
-
-        Log.d(TAG, "Requesting permissions: ${permissionsToRequest.joinToString()}")
-
-        when {
-            permissionsToRequest.isEmpty() -> {
-                // Standard permissions are granted, but check storage again
-                if (arePermissionsGranted()) {
-                    savePermissionsGranted()
-                    callback.onPermissionsGranted()
-                } else {
-                    // Must be waiting for MANAGE_EXTERNAL_STORAGE
-                    Log.d(TAG, "Waiting for storage management permission")
-                }
+        // Strategy for Android 11+:
+        // 1. Request standard runtime permissions first
+        // 2. Then request MANAGE_EXTERNAL_STORAGE if needed
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!areStandardPermissionsGranted()) {
+                // Request standard permissions first
+                requestStandardPermissions()
+            } else if (!isStoragePermissionGranted()) {
+                // Standard permissions OK, request storage
+                requestManageExternalStorage()
             }
-            else -> {
-                requestPermissionLauncher.launch(permissionsToRequest)
-            }
+        } else {
+            // For older Android versions, just request all at once
+            requestStandardPermissions()
         }
     }
 
     /**
-     * Open the app settings to allow the user to grant permissions manually
+     * Request standard runtime permissions
+     */
+    private fun requestStandardPermissions() {
+        val permissionsToRequest = getRequiredPermissions().filter {
+            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
+
+        if (permissionsToRequest.isEmpty()) {
+            Log.d(TAG, "No standard permissions to request")
+            checkFinalPermissionState()
+        } else {
+            Log.d(TAG, "Requesting ${permissionsToRequest.size} permissions: ${permissionsToRequest.joinToString()}")
+            requestPermissionLauncher.launch(permissionsToRequest)
+        }
+    }
+
+    /**
+     * Open app settings
      */
     fun openAppSettings() {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
