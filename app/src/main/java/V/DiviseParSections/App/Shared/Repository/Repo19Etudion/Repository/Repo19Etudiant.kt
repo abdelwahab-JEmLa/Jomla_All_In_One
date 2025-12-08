@@ -163,19 +163,21 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
-    var num_telephone_parent: String = "0",
+    var num_telephone_parent: String = "",
     var age: Int = 7,
 
     var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
-    var dernier_Soura_num_Ayaa: Int = 1,
+    var dernier_Soura_sater: Int = 1,
 
-    var dernier_takyim_ijtihad: Takiyim = Takiyim.Moumtaz,
+    var dernier_takyim_dabte: Takiyim = Takiyim.Moumtaz,
+    var tikrare: Int = 1,
+    var tikrare_3arde: Int = 1,
 
     var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
-    var mokarrare_hifde_num_Ayaa: Int = 1,
+    var mokarrare_hifde_sater: Int = 1,
 
     var moulahada_3ala_soulouk: Takiyim = Takiyim.Moumtaz,
-    var moulahada_makouba: String = "0",
+    var moulahada_makouba: String = "",
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -192,8 +194,8 @@ data class M19Etudiant(
         return buildString {
             append("Nom: $nom, ")
             append("Age: $age, ")
-            append("Dernier Soura: ${dernier_Soura_Wassale_Laha.arabicName} (${dernier_Soura_num_Ayaa}), ")
-            append("Mokarrare: ${mokarrare_hifde.arabicName} (${mokarrare_hifde_num_Ayaa})")
+            append("Dernier Soura: ${dernier_Soura_Wassale_Laha.arabicName} (${dernier_Soura_sater}), ")
+            append("Mokarrare: ${mokarrare_hifde.arabicName} (${mokarrare_hifde_sater})")
         }
     }
 
