@@ -163,18 +163,30 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
-    var num_telephone_parent: String = "0213",
+    var num_telephone_parent: String = "0",
     var age: Int = 7,
 
     var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var dernier_Soura_num_Ayaa: Int = 1,
 
+    var dernier_takyim_ijtihad: Takiyim = Takiyim.Moumtaz,
+
     var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
     var mokarrare_hifde_num_Ayaa: Int = 1,
+
+    var moulahada_3ala_soulouk: Takiyim = Takiyim.Moumtaz,
+    var moulahada_makouba: String = "0",
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
+    enum class Takiyim(val arabicName: String) {
+        Moumtaz("ممتاز"),
+        Jayid_Jiddan("جيد جداً"),
+        Jayid("جيد"),
+        Maqboul("مقبول"),
+        Daeef("ضعيف")
+    }
 
     fun get_DebugInfos(): String {
         return buildString {
