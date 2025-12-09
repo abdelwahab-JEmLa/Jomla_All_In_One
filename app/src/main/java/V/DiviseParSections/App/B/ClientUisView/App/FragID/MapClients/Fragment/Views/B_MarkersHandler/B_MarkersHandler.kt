@@ -218,9 +218,13 @@ private fun Marker.title(
             if (relative_M8Transaction != null) {
                 val text = " بالتقريب$sumBonVents"
                 val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
+                val demande_Versemet_si_Type = relative_M8Transaction.demande_Versemet_si_Type
+                    .takeIf { relative_M8Transaction.demande_Versemet_si_Type > 0.0 } ?: ""
+
                 "$distanceSemain.$dayName (${timeStr})" +
                         "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         texy_Safe +
+                        demande_Versemet_si_Type +
                         "\n${m2Client.nom}"
             } else {
                 m2Client.nom

@@ -240,6 +240,7 @@ data class M8BonVent(
     var new_credit_apre_tout_fait: Double = 0.0,
 
     var affiche_le_verssement_au_prochen_print: Boolean = false,
+    var demande_Versemet_si_Type: Double = 0.0,
 
 
     var credit_fait: Double = 0.0,

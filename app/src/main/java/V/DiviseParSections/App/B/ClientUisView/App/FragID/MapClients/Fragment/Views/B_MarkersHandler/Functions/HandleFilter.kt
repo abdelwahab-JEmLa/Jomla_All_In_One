@@ -156,6 +156,7 @@ fun filterClientsBasedOnMode(
                         (lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                                 || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
                                 || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Passed_Sans_Livre
+                                || lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Demande_Versemet
                                 )
                                 && (find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, lastTransaction)
                             ?.parent_M14VentPeriod_KeyId ?: "")
