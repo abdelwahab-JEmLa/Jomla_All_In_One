@@ -91,7 +91,7 @@ fun EducationFragment(
             ) {
                 itemsIndexed(
                     items = etudiants,
-                    key = { _, etudiant -> etudiant.id }
+                    key = { _, etudiant -> etudiant.keyID }
                 ) { index, etudiant ->
                     EtudiantCard(
                         etudiant = etudiant,

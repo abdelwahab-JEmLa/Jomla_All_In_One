@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,13 +19,19 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,9 +55,7 @@ fun EtudiantCard(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     modifier: Modifier = Modifier
-) {           //<--
-//TODO(1): ajout delete etudion buton avec double click confirme
-//ajout button au cllick change la positon_don_classe
+) {
     var showDetailsDialog by remember { mutableStateOf(false) }
     var showSouraDialog by remember { mutableStateOf(false) }
     var showMokarrareDialog by remember { mutableStateOf(false) }
@@ -175,7 +180,8 @@ private fun EtudiantDetailsDialog(
     onShowMokarrareDialog: () -> Unit,
     onShowTakiyimDialog: () -> Unit,
     onShowMoulahada3alaSouloukDialog: () -> Unit
-) {
+) {          //<--
+//TODO(1):  ajou nom prenom avec edites
     var isEditingAge by remember { mutableStateOf(false) }
     var isEditingPhone by remember { mutableStateOf(false) }
     var isEditingDernierAyaa by remember { mutableStateOf(false) }
@@ -183,6 +189,8 @@ private fun EtudiantDetailsDialog(
     var isEditingMoulahada by remember { mutableStateOf(false) }
     var isEditingTikrare by remember { mutableStateOf(false) }
     var isEditingTikrar3ard by remember { mutableStateOf(false) }
+    var isEditingPosition by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var ageInput by remember { mutableStateOf("") }
     var phoneInput by remember { mutableStateOf("") }
@@ -191,6 +199,7 @@ private fun EtudiantDetailsDialog(
     var moulahadaInput by remember { mutableStateOf("") }
     var tikrareInput by remember { mutableStateOf("") }
     var tikrar3ardInput by remember { mutableStateOf("") }
+    var positionInput by remember { mutableStateOf("") }
 
     val ageFocusRequester = remember { FocusRequester() }
     val phoneFocusRequester = remember { FocusRequester() }
@@ -199,6 +208,7 @@ private fun EtudiantDetailsDialog(
     val moulahadaFocusRequester = remember { FocusRequester() }
     val tikrareFocusRequester = remember { FocusRequester() }
     val tikrar3ardFocusRequester = remember { FocusRequester() }
+    val positionFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditingAge) {
         if (isEditingAge) {
@@ -242,6 +252,42 @@ private fun EtudiantDetailsDialog(
             tikrar3ardFocusRequester.requestFocus()
         }
     }
+    LaunchedEffect(isEditingPosition) {
+        if (isEditingPosition) {
+            positionInput = ""
+            positionFocusRequester.requestFocus()
+        }
+    }
+
+    // Delete confirmation dialog
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("تأكيد الحذف") },
+            text = {
+                Text("هل أنت متأكد من حذف الطالب ${etudiant.nom} ${etudiant.prenom}؟ لا يمكن التراجع عن هذا الإجراء.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        repo19Etudiant.delete(etudiant)
+                        showDeleteConfirmation = false
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("حذف")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -254,14 +300,73 @@ private fun EtudiantDetailsDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Header
-                Text(
-                    text = "${etudiant.nom} ${etudiant.prenom}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                // Header with delete button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${etudiant.nom} ${etudiant.prenom}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedButton(
+                        onClick = { showDeleteConfirmation = true },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "حذف",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("حذف")
+                    }
+                }
 
                 Divider()
+
+                // Position in class (editable)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "المركز في الصف:", style = MaterialTheme.typography.bodyMedium)
+                    if (isEditingPosition) {
+                        OutlinedTextField(
+                            value = positionInput,
+                            onValueChange = { newValue ->
+                                if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
+                                    positionInput = newValue
+                                }
+                            },
+                            modifier = Modifier.width(80.dp).focusRequester(positionFocusRequester),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    val newPosition = positionInput.toIntOrNull() ?: etudiant.positon_don_classe
+                                    repo19Etudiant.upsert(etudiant.copy(positon_don_classe = newPosition))
+                                    isEditingPosition = false
+                                }
+                            ),
+                            singleLine = true
+                        )
+                    } else {
+                        Text(
+                            text = "${etudiant.positon_don_classe}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.clickable { isEditingPosition = true }
+                        )
+                    }
+                }
 
                 // Age (editable)
                 Row(
@@ -567,7 +672,8 @@ private fun EtudiantDetailsDialog(
                 Divider()
 
                 // Moulahada 3ala Soulouk
-                Row(
+                Row(         //<--
+                //TODO(1): ajout btton change au rien etate
                     modifier = Modifier.fillMaxWidth().clickable { onShowMoulahada3alaSouloukDialog() },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically

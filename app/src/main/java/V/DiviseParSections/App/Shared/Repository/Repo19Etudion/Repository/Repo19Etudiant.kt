@@ -165,23 +165,27 @@ data class M19Etudiant(
 
     var num_telephone_parent: String = "",
     var age: Int = 7,
+    var positon_don_classe: Int = 1,
 
     var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var dernier_Soura_sater: Int = 1,
 
     var dernier_takyim_dabte: Takiyim = Takiyim.Moumtaz,
     var tikrare: Int = 1,
+
     var tikrare_3arde: Int = 1,
 
     var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
     var mokarrare_hifde_sater: Int = 1,
 
-    var moulahada_3ala_soulouk: Takiyim = Takiyim.Moumtaz,
+    var moulahada_3ala_soulouk: Takiyim = Takiyim.Moumtaz,         //<--
+    //TODO(1): cree enume et fait queil ya rien etate 
     var moulahada_makouba: String = "",
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
+    
     enum class Takiyim(val arabicName: String) {
         Moumtaz("ممتاز"),
         Jayid_Jiddan("جيد جداً"),
