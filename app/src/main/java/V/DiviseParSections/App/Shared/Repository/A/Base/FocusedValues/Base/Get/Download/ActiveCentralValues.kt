@@ -75,6 +75,9 @@ data class ActiveCentralValues(
         false,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
+    //-----------------Etudiont -------------------------------------------------------------------------------------------------------------------------
+    val filter_les_absents: Boolean = false,
+
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------
     val markerStatusDialogActiveM2Client: M2Client? = null,
 

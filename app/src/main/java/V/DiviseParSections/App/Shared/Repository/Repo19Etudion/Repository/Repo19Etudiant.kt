@@ -178,15 +178,27 @@ data class M19Etudiant(
     var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
     var mokarrare_hifde_sater: Int = 1,
 
-    var moulahada_3ala_soulouk: Takiyim = Takiyim.Moumtaz,         //<--
-    //TODO(1): cree enume et fait queil ya rien etate 
+    var absent: Boolean = false,
+
+    var mokarrare_hifde_mahssou_li_3idat_souer: Int = 1,
+
+    var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
     var moulahada_makouba: String = "",
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-    
+
     enum class Takiyim(val arabicName: String) {
+        Moumtaz("ممتاز"),
+        Jayid_Jiddan("جيد جداً"),
+        Jayid("جيد"),
+        Maqboul("مقبول"),
+        Daeef("ضعيف")
+    }
+
+    enum class MoulahadaSoulouk(val arabicName: String) {
+        Rien("---"),
         Moumtaz("ممتاز"),
         Jayid_Jiddan("جيد جداً"),
         Jayid("جيد"),

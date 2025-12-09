@@ -160,11 +160,11 @@ fun EtudiantCard(
     }
 
     if (showMoulahada3alaSouloukDialog) {
-        TakiyimSelectionDialog(
-            currentTakiyim = etudiant.moulahada_3ala_soulouk,
+        MoulahadaSouloukSelectionDialog(
+            currentMoulahada = etudiant.moulahada_3ala_soulouk,
             onDismiss = { showMoulahada3alaSouloukDialog = false },
-            onSelect = { selectedTakiyim ->
-                repo19Etudiant.upsert(etudiant.copy(moulahada_3ala_soulouk = selectedTakiyim))
+            onSelect = { selectedMoulahada ->
+                repo19Etudiant.upsert(etudiant.copy(moulahada_3ala_soulouk = selectedMoulahada))
                 showMoulahada3alaSouloukDialog = false
             }
         )
@@ -180,8 +180,11 @@ private fun EtudiantDetailsDialog(
     onShowMokarrareDialog: () -> Unit,
     onShowTakiyimDialog: () -> Unit,
     onShowMoulahada3alaSouloukDialog: () -> Unit
-) {          //<--
-//TODO(1):  ajou nom prenom avec edites
+) {       //<--
+//TODO(1):  //<--
+////TODO(1): ajout au minimale le toggle presence button de absent 
+    var isEditingNom by remember { mutableStateOf(false) }
+    var isEditingPrenom by remember { mutableStateOf(false) }
     var isEditingAge by remember { mutableStateOf(false) }
     var isEditingPhone by remember { mutableStateOf(false) }
     var isEditingDernierAyaa by remember { mutableStateOf(false) }
@@ -192,6 +195,8 @@ private fun EtudiantDetailsDialog(
     var isEditingPosition by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
+    var nomInput by remember { mutableStateOf("") }
+    var prenomInput by remember { mutableStateOf("") }
     var ageInput by remember { mutableStateOf("") }
     var phoneInput by remember { mutableStateOf("") }
     var dernierAyaaInput by remember { mutableStateOf("") }
@@ -201,6 +206,8 @@ private fun EtudiantDetailsDialog(
     var tikrar3ardInput by remember { mutableStateOf("") }
     var positionInput by remember { mutableStateOf("") }
 
+    val nomFocusRequester = remember { FocusRequester() }
+    val prenomFocusRequester = remember { FocusRequester() }
     val ageFocusRequester = remember { FocusRequester() }
     val phoneFocusRequester = remember { FocusRequester() }
     val dernierAyaaFocusRequester = remember { FocusRequester() }
@@ -210,6 +217,18 @@ private fun EtudiantDetailsDialog(
     val tikrar3ardFocusRequester = remember { FocusRequester() }
     val positionFocusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(isEditingNom) {
+        if (isEditingNom) {
+            nomInput = etudiant.nom
+            nomFocusRequester.requestFocus()
+        }
+    }
+    LaunchedEffect(isEditingPrenom) {
+        if (isEditingPrenom) {
+            prenomInput = etudiant.prenom
+            prenomFocusRequester.requestFocus()
+        }
+    }
     LaunchedEffect(isEditingAge) {
         if (isEditingAge) {
             ageInput = ""
@@ -329,6 +348,66 @@ private fun EtudiantDetailsDialog(
                 }
 
                 Divider()
+
+                // Nom (editable)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "الاسم:", style = MaterialTheme.typography.bodyMedium)
+                    if (isEditingNom) {
+                        OutlinedTextField(
+                            value = nomInput,
+                            onValueChange = { nomInput = it },
+                            modifier = Modifier.width(150.dp).focusRequester(nomFocusRequester),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    repo19Etudiant.upsert(etudiant.copy(nom = nomInput))
+                                    isEditingNom = false
+                                }
+                            ),
+                            singleLine = true
+                        )
+                    } else {
+                        Text(
+                            text = etudiant.nom.ifBlank { "---" },
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.clickable { isEditingNom = true }
+                        )
+                    }
+                }
+
+                // Prenom (editable)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "اللقب:", style = MaterialTheme.typography.bodyMedium)
+                    if (isEditingPrenom) {
+                        OutlinedTextField(
+                            value = prenomInput,
+                            onValueChange = { prenomInput = it },
+                            modifier = Modifier.width(150.dp).focusRequester(prenomFocusRequester),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    repo19Etudiant.upsert(etudiant.copy(prenom = prenomInput))
+                                    isEditingPrenom = false
+                                }
+                            ),
+                            singleLine = true
+                        )
+                    } else {
+                        Text(
+                            text = etudiant.prenom.ifBlank { "---" },
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.clickable { isEditingPrenom = true }
+                        )
+                    }
+                }
 
                 // Position in class (editable)
                 Row(
@@ -502,7 +581,9 @@ private fun EtudiantDetailsDialog(
                         )
                     }
                 }
-
+                    //<--
+                    //TODO(1): ajout affiche de     var dernier_Soura_sater: Int = 1,-     var mokarrare_hifde_sater: Int = 1, si dernier_takyim_dabte == mokarrare_hifde  si non afficge mokarrare_hifde_mahssou_li_3idat_souer 
+                    //avec edites otions
                 // Dernier Takiyim Ijtihad
                 Row(
                     modifier = Modifier.fillMaxWidth().clickable { onShowTakiyimDialog() },
@@ -672,8 +753,7 @@ private fun EtudiantDetailsDialog(
                 Divider()
 
                 // Moulahada 3ala Soulouk
-                Row(         //<--
-                //TODO(1): ajout btton change au rien etate
+                Row(
                     modifier = Modifier.fillMaxWidth().clickable { onShowMoulahada3alaSouloukDialog() },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
