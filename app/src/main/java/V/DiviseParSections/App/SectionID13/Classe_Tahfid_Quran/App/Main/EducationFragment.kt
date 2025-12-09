@@ -38,7 +38,9 @@ fun EducationFragment(
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     onNavigateBack: (() -> Unit)? = null
-) {           //<--
+) {
+
+    //<--
 //TODO(1): ajout si filter_les_absents de filter les absent 
     // Sort by positon_don_classe first, then by creationTimestamps for same positions
     val etudiants = repo19Etudiant.datasValue.sortedWith(

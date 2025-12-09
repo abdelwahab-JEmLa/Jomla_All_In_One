@@ -200,6 +200,10 @@ private fun CustomStatusDropdownMenu(
                 text = M8BonVent.EtateActuellementEst.Versemment.name
             )
 
+            StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.Demande_Versemet,
+                text = M8BonVent.EtateActuellementEst.Demande_Versemet.nomArabe
+            )
         }
     }
 }
