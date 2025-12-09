@@ -122,6 +122,7 @@ fun createAndAddMarker(
 
             val newPosition = actuelle_Ciblage_MaxPosition + 1
 
+
             when (current_ADD_Au_Ciblage_Clients) {
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
@@ -156,6 +157,7 @@ fun createAndAddMarker(
                     if (showMarkerDetails) clickedMarker.showInfoWindow()
                     true
                 }
+
 
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction ->{
                     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue

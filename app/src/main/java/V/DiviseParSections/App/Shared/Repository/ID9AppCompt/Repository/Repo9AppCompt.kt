@@ -147,6 +147,10 @@ data class Z_AppCompt(
 
     var period_Qui_Doit_Etre_Au_Entre: String = "",
 
+    var separeted_by_commas_keys_clients_a_cible_groupe_n1: String = ",",
+    var keys_clients_a_cible_groupe_n2: String = ",",
+    var keys_clients_a_cible_groupe_n3: String = ",",
+
 
     // Section Options Personnel
     var image_detail_produit_s_affiche: Boolean = true,

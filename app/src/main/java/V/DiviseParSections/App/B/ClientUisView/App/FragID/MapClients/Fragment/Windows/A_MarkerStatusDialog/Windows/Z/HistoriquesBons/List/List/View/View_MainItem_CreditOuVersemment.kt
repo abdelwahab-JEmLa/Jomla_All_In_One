@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun EditableAmountField(
     label: String,
@@ -187,11 +188,13 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     // Track local state for the editable fields
     var localVersementFait by remember { mutableStateOf(relative_M8BonVent.versement_fait) }
     var localCreditFait by remember { mutableStateOf(relative_M8BonVent.credit_fait) }
+    var localDemandeVersement by remember { mutableStateOf(relative_M8BonVent.demande_Versemet_si_Type) }
     var localPrintToggle by remember { mutableStateOf(relative_M8BonVent.affiche_le_verssement_au_prochen_print) }
 
     val isVersement = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Versemment
     val isCredit = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Credit ||
             relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+    val isDemandeVersement = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Demande_Versemet
 
     val previousCommandeBon = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
         .filter { bon ->
@@ -205,7 +208,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (isVersement) 180.dp else 140.dp),
+            .height(if (isVersement || isDemandeVersement) 180.dp else 140.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = relative_M8BonVent.etateActuellementEst.color)
         ),
@@ -255,49 +258,70 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (isVersement) {
-                EditableAmountField(
-                    label = "مبلغ الدفع",
-                    amount = localVersementFait,
-                    onAmountChange = { newAmount ->
-                        localVersementFait = newAmount
+            // Editable fields based on transaction type
+            when {
+                isVersement -> {
+                    EditableAmountField(
+                        label = "مبلغ الدفع",
+                        amount = localVersementFait,
+                        onAmountChange = { newAmount ->
+                            localVersementFait = newAmount
 
-                        val updatedBonVent = relative_M8BonVent.copy(
-                            versement_fait = newAmount,
-                            cUn_Versement_duBonVentKey = previousCommandeBon?.keyID ?: ""
-                        )
-                        repositorysMainSetter.update_M8BonVent(updatedBonVent)
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                versement_fait = newAmount,
+                                cUn_Versement_duBonVentKey = previousCommandeBon?.keyID ?: ""
+                            )
+                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
 
-                        Toast.makeText(
-                            context,
-                            if (previousCommandeBon != null) {
-                                "تم تحديث مبلغ الدفع وربطه بالطلبية ${previousCommandeBon.keyID.takeLast(4)}"
-                            } else {
-                                "تم تحديث مبلغ الدفع (لم يتم العثور على طلبية سابقة)"
-                            },
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                )
-
-            } else if (isCredit) {
-                EditableAmountField(
-                    label = "مبلغ القرض",
-                    amount = localCreditFait,
-                    onAmountChange = { newAmount ->
-                        localCreditFait = newAmount
-                        val updatedBonVent = relative_M8BonVent.copy(
-                            credit_fait = newAmount,
-                            cUn_Credit_duBonVentKey = previousCommandeBon?.keyID ?: ""
-                        )
-                        repositorysMainSetter.update_M8BonVent(updatedBonVent)
-                        Toast.makeText(
-                            context,
-                            "تم تحديث مبلغ القرض",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                )
+                            Toast.makeText(
+                                context,
+                                if (previousCommandeBon != null) {
+                                    "تم تحديث مبلغ الدفع وربطه بالطلبية ${previousCommandeBon.keyID.takeLast(4)}"
+                                } else {
+                                    "تم تحديث مبلغ الدفع (لم يتم العثور على طلبية سابقة)"
+                                },
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
+                isCredit -> {
+                    EditableAmountField(
+                        label = "مبلغ القرض",
+                        amount = localCreditFait,
+                        onAmountChange = { newAmount ->
+                            localCreditFait = newAmount
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                credit_fait = newAmount,
+                                cUn_Credit_duBonVentKey = previousCommandeBon?.keyID ?: ""
+                            )
+                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
+                            Toast.makeText(
+                                context,
+                                "تم تحديث مبلغ القرض",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
+                isDemandeVersement -> {
+                    EditableAmountField(
+                        label = "طلب الدفع",
+                        amount = localDemandeVersement,
+                        onAmountChange = { newAmount ->
+                            localDemandeVersement = newAmount
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                demande_Versemet_si_Type = newAmount
+                            )
+                            repositorysMainSetter.update_M8BonVent(updatedBonVent)
+                            Toast.makeText(
+                                context,
+                                "تم تحديث طلب الدفع",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))

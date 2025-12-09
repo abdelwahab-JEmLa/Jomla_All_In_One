@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_3
+import V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_Add_Au_Grp_Client
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_TestPdfArabe
 import V.DiviseParSections.App._0.Navigation.DropDownItem_1
 import V.DiviseParSections.App._0.Navigation.DropDownItem_2
@@ -43,6 +44,7 @@ fun FabDropdownMenu(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            DropDownItem_Add_Au_Grp_Client()
             DropDownItem_TestPdfArabe()
             DropDownItem_3()
             DropDownItem_Displaye_TogleFilterMarquers()

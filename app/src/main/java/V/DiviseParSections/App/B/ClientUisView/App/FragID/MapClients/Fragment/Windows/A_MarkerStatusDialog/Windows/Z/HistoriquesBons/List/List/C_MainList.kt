@@ -33,7 +33,8 @@ fun View_MainList(
                 when (transaction.etateActuellementEst) {
                     M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
                     M8BonVent.EtateActuellementEst.Credit,
-                    M8BonVent.EtateActuellementEst.Versemment -> {
+                    M8BonVent.EtateActuellementEst.Versemment,
+                    M8BonVent.EtateActuellementEst.Demande_Versemet -> {
                         View_MainItem_CreditOuVersemment_Enhanced(
                             viewModel = viewModel,
                             relative_M8BonVent = transaction,

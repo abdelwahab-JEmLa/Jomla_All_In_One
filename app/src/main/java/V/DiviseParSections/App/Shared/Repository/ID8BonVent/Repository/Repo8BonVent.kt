@@ -301,7 +301,7 @@ data class M8BonVent(
 
         Credit(android.R.color.holo_red_dark, " "),
         Versemment(R.color.c5, ""),
-        Demande_Versemet(R.color.c5, "طلب تحظير الدين القديم"),
+        Demande_Versemet(android.R.color.holo_red_dark, "طلب تحظير الدين القديم"),
 
 
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
