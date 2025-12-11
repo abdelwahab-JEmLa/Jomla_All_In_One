@@ -3,6 +3,7 @@ package com.example.clientjetpack
 import P0_MainScreen.Main.MainScreen
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
         setupActivityContent()
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onResume() {
         super.onResume()

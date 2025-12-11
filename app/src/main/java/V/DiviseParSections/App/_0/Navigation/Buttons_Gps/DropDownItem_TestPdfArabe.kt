@@ -35,6 +35,9 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun DropDownItem_TestPdfArabe(
@@ -54,25 +57,44 @@ fun DropDownItem_TestPdfArabe(
                     generateArabicPdfNative(context)
                 }
 
+                // Save to MediaStore using PdfSaverUtility
+                val saveResult = withContext(Dispatchers.IO) {
+                    if (pdfFile != null && pdfFile.exists()) {
+                        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                        val fileName = "test_arabic_${System.currentTimeMillis()}.pdf"
+
+                        PdfSaverUtility.savePdf(
+                            context = context,
+                            sourceFile = pdfFile,
+                            fileName = fileName,
+                            subFolder = "Tahfide_Quran"
+                        )
+                    } else {
+                        Result.failure(Exception("PDF file creation failed"))
+                    }
+                }
+
                 // Open PDF on main thread
                 withContext(Dispatchers.Main) {
-                    if (pdfFile != null && pdfFile.exists()) {
-                        // Save to Downloads first
-                        savePdfToDownloads(context, pdfFile)
-                        // Then open
-                        openPdfWithViewer(context, pdfFile)
-                        Toast.makeText(
-                            context,
-                            "✅ PDF créé et ouvert avec succès",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "❌ Erreur lors de la création du PDF",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    saveResult.fold(
+                        onSuccess = { savedPath ->
+                            if (pdfFile != null) {
+                                openPdfWithViewer(context, pdfFile)
+                            }
+                            Toast.makeText(
+                                context,
+                                "✅ PDF créé et sauvegardé: $savedPath",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        },
+                        onFailure = { error ->
+                            Toast.makeText(
+                                context,
+                                "❌ Erreur sauvegarde: ${error.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("TestPdfArabe", "❌ Erreur: ${e.message}", e)
@@ -138,9 +160,9 @@ fun DropDownItem_TestPdfArabe(
  */
 private fun generateArabicPdfNative(context: Context): File? {
     return try {
-        // Create output file
-        val outputDir = context.getExternalFilesDir(null) ?: context.filesDir
-        val pdfFile = File(outputDir, "test_arabic_${System.currentTimeMillis()}.pdf")
+        // Create output file in cache directory (temporary)
+        val outputDir = context.cacheDir
+        val pdfFile = File(outputDir, "temp_arabic_${System.currentTimeMillis()}.pdf")
 
         // Create PDF document (A4 size: 595 x 842 points)
         val pdfDocument = PdfDocument()
@@ -220,10 +242,10 @@ private fun generateArabicPdfNative(context: Context): File? {
         yPosition += 40f
 
         // Info (Date and time)
-        val dateTime = java.text.SimpleDateFormat(
+        val dateTime = SimpleDateFormat(
             "dd/MM/yyyy HH:mm:ss",
-            java.util.Locale.FRENCH
-        ).format(java.util.Date())
+            Locale.FRENCH
+        ).format(Date())
 
         canvas.drawText(
             "Généré le: $dateTime",
@@ -288,39 +310,11 @@ private fun openPdfWithViewer(context: Context, pdfFile: File) {
         } else {
             Toast.makeText(
                 context,
-                "⚠️ Aucun lecteur PDF installé\nPDF sauvegardé: ${pdfFile.name}",
+                "⚠️ Aucun lecteur PDF installé\nPDF sauvegardé dans Téléchargements",
                 Toast.LENGTH_LONG
             ).show()
         }
     } catch (e: Exception) {
         Log.e("TestPdfArabe", "❌ Erreur lors de l'ouverture du PDF", e)
-        Toast.makeText(
-            context,
-            "PDF créé à: ${pdfFile.absolutePath}",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-}
-
-/**
- * Save PDF to Downloads folder
- */
-private fun savePdfToDownloads(context: Context, sourceFile: File): File? {
-    return try {
-        val downloadsDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
-            ?: return null
-
-        if (!downloadsDir.exists()) {
-            downloadsDir.mkdirs()
-        }
-
-        val destFile = File(downloadsDir, "test_arabic_${System.currentTimeMillis()}.pdf")
-        sourceFile.copyTo(destFile, overwrite = true)
-
-        Log.i("TestPdfArabe", "✅ PDF sauvegardé: ${destFile.absolutePath}")
-        destFile
-    } catch (e: Exception) {
-        Log.e("TestPdfArabe", "❌ Erreur sauvegarde Downloads", e)
-        null
     }
 }
