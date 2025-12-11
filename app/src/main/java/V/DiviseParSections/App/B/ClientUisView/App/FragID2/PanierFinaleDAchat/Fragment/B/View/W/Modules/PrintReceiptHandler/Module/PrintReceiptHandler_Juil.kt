@@ -1,4 +1,3 @@
-// Updated PrintReceiptHandler_Juil.kt with Windows app sharing functionality
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
@@ -13,6 +12,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * FIXED TODO(1): Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+ *
+ * When bonVent.demande_Versemet_si_Type_est_regle == true, the receipt will display:
+ * - Total of current bon
+ * - Ancien credit
+ * - Nouveau credit (calculated)
+ * - Versement
+ * - Nouveau compte calculé
+ */
 class PrintReceiptHandler_Juil(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
@@ -22,6 +31,7 @@ class PrintReceiptHandler_Juil(
 
     /**
      * Print via Bluetooth only
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle
      */
     fun printBluetoothOnly(
         context: Context,
@@ -35,7 +45,9 @@ class PrintReceiptHandler_Juil(
         showCreditSection: Boolean = true,
         versement: Double = 0.0
     ) {
-        val shouldShowCreditSection = showCreditSection && bonVent != null
+        // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+        val shouldShowCreditSection = (showCreditSection && bonVent != null) ||
+                (bonVent?.demande_Versemet_si_Type_est_regle == true)
 
         bluetoothPrintHandler.printBluetoothReceipt(
             context,
@@ -51,6 +63,7 @@ class PrintReceiptHandler_Juil(
 
     /**
      * Generate PDF only - Returns Result for proper error handling
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle
      */
     suspend fun printPdfOnly(
         context: Context,
@@ -65,6 +78,8 @@ class PrintReceiptHandler_Juil(
         versement: Double = 0.0
     ): Result<String> {
         return try {
+            // FIXED: The pdfPrintHandler will now automatically check demande_Versemet_si_Type_est_regle
+            // No need to override showCreditSection here since the handler checks the bonVent property
             pdfPrintHandler.generateAndOpenPdf(
                 context,
                 client,

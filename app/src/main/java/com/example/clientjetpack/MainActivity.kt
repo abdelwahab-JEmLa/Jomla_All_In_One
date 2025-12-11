@@ -2,6 +2,8 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -16,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -39,9 +42,19 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        // Recheck permissions when app resumes (user might have granted storage permission)
-        val hasStorageAccess = Environment.isExternalStorageManager()
-        Log.d(TAG, "onResume: Storage access = $hasStorageAccess")
+        // Check storage access based on API level
+        val hasStorageAccess = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // API 30+ - Use MANAGE_EXTERNAL_STORAGE
+            Environment.isExternalStorageManager()
+        } else {
+            // API 29 and below - Check WRITE_EXTERNAL_STORAGE
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+
+        Log.d(TAG, "onResume: API ${Build.VERSION.SDK_INT}, Storage access = $hasStorageAccess")
 
         // If permissions weren't checked before but now we have storage access, recheck
         if (!permissionsChecked && hasStorageAccess) {
@@ -119,4 +132,5 @@ class MainActivity : ComponentActivity() {
 
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
+
 }

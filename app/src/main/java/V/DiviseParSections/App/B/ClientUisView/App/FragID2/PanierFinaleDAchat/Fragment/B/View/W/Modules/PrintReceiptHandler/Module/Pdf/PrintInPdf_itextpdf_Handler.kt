@@ -12,10 +12,7 @@ import android.content.Context
  * Refactored PDF handler using composition pattern
  * Each component has a single responsibility
  *
- * FIXED TODOs:
- * - Category type name display - Already implemented in PdfFormatterUtils.formatProductNameWithCategory()
- * - Null tariff handling - Already implemented in PdfTableBuilder.addTableRows()
- * - Credit section display logic - Fixed to check affiche_le_verssement_au_prochen_print
+ * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
  */
 class PrintInPdf_itextpdf_Handler(
     val repositorysMainGetter: RepositorysMainGetter,
@@ -45,7 +42,7 @@ class PrintInPdf_itextpdf_Handler(
     /**
      * Generate a receipt PDF for sales operations
      *
-     * FIXED: Now checks if bonVent has affiche_le_verssement_au_prochen_print = true
+     * FIXED: Now checks if bonVent has demande_Versemet_si_Type_est_regle = true
      * to determine if credit section should be shown
      */
     suspend fun generateVentReceiptPdf(
@@ -62,8 +59,8 @@ class PrintInPdf_itextpdf_Handler(
             return Result.failure(IllegalArgumentException("No operations to print"))
         }
 
-        // FIXED: Check if credit section should be displayed based on bonVent flag
-        val shouldShowCreditSection = relative_bonVent?.affiche_le_verssement_au_prochen_print == true
+        // FIXED: Check demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+        val shouldShowCreditSection = relative_bonVent?.demande_Versemet_si_Type_est_regle == true
 
         val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
 
@@ -90,14 +87,12 @@ class PrintInPdf_itextpdf_Handler(
                 tarificationRepo = tarificationRepo,
                 produitRepo = produitRepo,
                 transactionId = transactionId,
-                its_GrossistApp = its_GrossistApp ,
-                relative_bonVent=relative_bonVent,
+                its_GrossistApp = its_GrossistApp,
+                relative_bonVent = relative_bonVent,
             )
         }
 
-        generatePdfWithParams(file.absolutePath,
-            params
-        )
+        generatePdfWithParams(file.absolutePath, params)
 
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))
@@ -161,7 +156,6 @@ class PrintInPdf_itextpdf_Handler(
         }
 
         val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-
 
         if (!file.exists()) {
             return Result.failure(IllegalStateException("PDF file creation failed"))

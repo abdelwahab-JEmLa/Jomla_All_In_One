@@ -15,11 +15,7 @@ import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
- * FIXED:
- * - Removed NÂ° column, added item count display with total aligned left
- * - Added category type name display in parentheses when available
- * - Added credit section display after table when affiche_le_verssement_au_prochen_print is true
- * - NO separate "Total" display when credit section is shown
+ * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -44,14 +40,14 @@ class PdfTableBuilder(
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         if (result.total > 0.0) {
-            // Check if we should show credit section
-            val shouldShowCreditSection = relativeBonvent?.affiche_le_verssement_au_prochen_print == true
+            // FIXED: Check demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+            val shouldShowCreditSection = relativeBonvent?.demande_Versemet_si_Type_est_regle == true
 
             if (shouldShowCreditSection && relativeBonvent != null) {
                 // Display credit information (includes total inside)
                 addCreditSectionLikeCompose(doc, relativeBonvent, result.total, result.itemCount, regularFont, boldFont)
             } else {
-                // Display normal total with item count ONLY when NO credit section
+                // Display normal total with item count ONLY when demande_Versemet_si_Type_est_regle is false
                 contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
             }
         }
@@ -97,6 +93,14 @@ class PdfTableBuilder(
         doc.add(totalTable)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
+        // FIXED: Display demande_Versemet_si_Type when demande_Versemet_si_Type_est_regle is true
+        // Otherwise display ancien_credit
+        val creditValue = if (bonVent.demande_Versemet_si_Type_est_regle) {
+            bonVent.demande_Versemet_si_Type
+        } else {
+            bonVent.ancien_credit
+        }
+
         // Ancien Crédit - LEFT aligned
         val ancienCreditTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
@@ -112,7 +116,7 @@ class PdfTableBuilder(
         )
         ancienCreditTable.addCell(
             Cell()
-                .add(Paragraph("${formatter.round(bonVent.ancien_credit)} Da")
+                .add(Paragraph("${formatter.round(creditValue)} Da")
                     .setFont(regularFont)
                     .setFontSize(10f)
                     .setTextAlignment(TextAlignment.RIGHT))
@@ -123,7 +127,8 @@ class PdfTableBuilder(
         doc.add(Paragraph("\n").setFontSize(0.2f))
 
         // Crédit Après Current Vent - LEFT aligned
-        val creditApresVent = bonVent.ancien_credit + totalBon
+        // FIXED: Calculate using the correct credit value (demande_Versemet_si_Type or ancien_credit)
+        val creditApresVent = creditValue + totalBon
         val creditApresTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
 

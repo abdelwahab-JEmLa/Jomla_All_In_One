@@ -17,7 +17,7 @@ class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
 ) {
     /**
-     * FIXED: Now passes bonVent to generateVentReceiptPdf to check affiche_le_verssement_au_prochen_print
+     * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
      */
     suspend fun generateAndOpenPdf(
         context: Context,
@@ -36,8 +36,9 @@ class PdfPrintHandler(
         return try {
             val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
 
+            // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
             val shouldShowCredit = (showCreditSection && relative_bonVent != null) ||
-                    (relative_bonVent?.affiche_le_verssement_au_prochen_print == true)
+                    (relative_bonVent?.demande_Versemet_si_Type_est_regle == true)
 
             val result = if (shouldShowCredit && relative_bonVent != null) {
                 printInPdfHandler.generateVentReceiptWithCreditPdf(

@@ -11,7 +11,7 @@ import com.itextpdf.layout.properties.TextAlignment
 
 /**
  * Core PDF generation logic
- * FIXED: Now correctly handles cases where ancien solde = 0.0
+ * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
  */
 class PdfGeneratorCore(
     private val formatter: PdfFormatterUtils,
@@ -99,7 +99,7 @@ class PdfGeneratorCore(
     }
 
     /**
-     * FIXED: Now checks actual credit balance to determine if total should be shown
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle to determine if total should be shown
      */
     private fun addProductTableIfNeeded(
         doc: Document,
@@ -112,10 +112,10 @@ class PdfGeneratorCore(
         params.tarificationRepo?.let { tarificationRepo ->
             params.produitRepo?.let { produitRepo ->
 
-                // CORE FIX: Determine if there's actual credit to display
-                val clientCreditBalance = params.client?.currentCreditBalance ?: 0.0
+                // CORE FIX: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+                val shouldShowCreditSection = params.bonVent?.demande_Versemet_si_Type_est_regle == true
                 val hasVersement = params.versement > 0.0
-                val hasActualCredit = clientCreditBalance != 0.0 || hasVersement
+                val hasActualCredit = shouldShowCreditSection || hasVersement
 
                 val shouldShowTotalSection = params.type == PdfType.RECEIPT_ONLY ||
                         (params.type == PdfType.RECEIPT_WITH_CREDIT && !hasActualCredit)
@@ -169,7 +169,7 @@ class PdfGeneratorCore(
     }
 
     /**
-     * FIXED: Only shows credit section when there's actual credit to display
+     * FIXED: Uses demande_Versemet_si_Type_est_regle to show credit section
      */
     private fun addCreditSectionsIfNeeded(
         doc: Document,
@@ -180,12 +180,12 @@ class PdfGeneratorCore(
     ) {
         if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
 
-            // CORE FIX: Check if there's actual credit to display
-            val clientCreditBalance = params.client?.currentCreditBalance ?: 0.0
+            // CORE FIX: Check demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+            val shouldShowCreditSection = params.bonVent?.demande_Versemet_si_Type_est_regle == true
             val hasVersement = params.versement > 0.0
-            val hasActualCredit = clientCreditBalance != 0.0 || hasVersement
+            val hasActualCredit = shouldShowCreditSection || hasVersement
 
-            // Only show credit section if there's actual credit or payment
+            // Only show credit section if demande_Versemet_si_Type_est_regle is true or there's payment
             if (hasActualCredit || params.type == PdfType.CREDIT_ONLY) {
 
                 if (params.type == PdfType.RECEIPT_WITH_CREDIT) {
@@ -220,20 +220,21 @@ class PdfGeneratorCore(
                     else -> {}
                 }
             }
-            // If no actual credit, the total was already shown in the product table
+            // If demande_Versemet_si_Type_est_regle is false, the total was already shown in the product table
         }
     }
 
     /**
      * Helper method to determine if credit section should be shown
+     * FIXED: Uses demande_Versemet_si_Type_est_regle
      */
     private fun shouldShowCreditSection(params: PdfGenerationParams): Boolean {
         if (params.type == PdfType.CREDIT_ONLY) return true
         if (params.type != PdfType.RECEIPT_WITH_CREDIT) return false
 
-        val clientCreditBalance = params.client?.currentCreditBalance ?: 0.0
+        val shouldShowCreditSection = params.bonVent?.demande_Versemet_si_Type_est_regle == true
         val hasVersement = params.versement > 0.0
 
-        return clientCreditBalance != 0.0 || hasVersement
+        return shouldShowCreditSection || hasVersement
     }
 }

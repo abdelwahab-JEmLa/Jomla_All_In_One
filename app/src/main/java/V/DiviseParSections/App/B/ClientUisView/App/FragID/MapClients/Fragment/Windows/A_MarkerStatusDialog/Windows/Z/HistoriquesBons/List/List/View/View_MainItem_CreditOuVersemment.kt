@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -34,6 +35,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -76,7 +79,6 @@ fun EditableAmountField(
             OutlinedTextField(
                 value = textValue,
                 onValueChange = { newValue ->
-                    // Only allow valid decimal input
                     if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                         textValue = newValue
                     }
@@ -110,7 +112,6 @@ fun EditableAmountField(
 
             Spacer(modifier = Modifier.width(4.dp))
 
-            // Confirm button
             IconButton(
                 onClick = {
                     val newAmount = textValue.toDoubleOrNull()
@@ -128,7 +129,6 @@ fun EditableAmountField(
                 )
             }
 
-            // Cancel button
             IconButton(
                 onClick = {
                     textValue = String.format("%.2f", amount)
@@ -144,7 +144,6 @@ fun EditableAmountField(
             }
         }
 
-        // Auto-focus when entering edit mode
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
@@ -178,17 +177,17 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     relative_M8BonVent: M8BonVent,
-) {
+) {            //<--
+//TODO(1): pk le affiche si  demande_Versemet_si_Type_est_regle et comme c regle normalemen t quand demande_Versemet_si_Type_est_regle ca veut dire non regle
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Track local state for the editable fields
     var localVersementFait by remember { mutableStateOf(relative_M8BonVent.versement_fait) }
     var localCreditFait by remember { mutableStateOf(relative_M8BonVent.credit_fait) }
     var localDemandeVersement by remember { mutableStateOf(relative_M8BonVent.demande_Versemet_si_Type) }
+    var localDemandeVersementRegle by remember { mutableStateOf(relative_M8BonVent.demande_Versemet_si_Type_est_regle) }
     var localPrintToggle by remember { mutableStateOf(relative_M8BonVent.affiche_le_verssement_au_prochen_print) }
 
     val isVersement = relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.Versemment
@@ -208,7 +207,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (isVersement || isDemandeVersement) 180.dp else 140.dp),
+            .height(if (isVersement || isDemandeVersement) 220.dp else 140.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = relative_M8BonVent.etateActuellementEst.color)
         ),
@@ -219,13 +218,11 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Header row with delete button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Delete button on the left
                 IconButton(
                     onClick = { showDeleteDialog = true }
                 ) {
@@ -258,7 +255,6 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Editable fields based on transaction type
             when {
                 isVersement -> {
                     EditableAmountField(
@@ -312,6 +308,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                             localDemandeVersement = newAmount
                             val updatedBonVent = relative_M8BonVent.copy(
                                 demande_Versemet_si_Type = newAmount
+                                , demande_Versemet_si_Type_est_regle = true
                             )
                             repositorysMainSetter.update_M8BonVent(updatedBonVent)
                             Toast.makeText(
@@ -321,12 +318,62 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                             ).show()
                         }
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Toggle button for payment status
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = if (localDemandeVersementRegle) Color.White else Color.White.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (localDemandeVersementRegle) "تم التسديد" else "لم يتم التسديد",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                                fontWeight = if (localDemandeVersementRegle) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+
+                        Switch(
+                            checked = localDemandeVersementRegle,
+                            onCheckedChange = { isChecked ->
+                                localDemandeVersementRegle = isChecked
+                                val updatedBonVent = relative_M8BonVent.copy(
+                                    demande_Versemet_si_Type_est_regle = isChecked
+                                )
+                                repositorysMainSetter.update_M8BonVent(updatedBonVent)
+                                Toast.makeText(
+                                    context,
+                                    if (isChecked) "تم وضع علامة التسديد" else "تم إلغاء علامة التسديد",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = Color.Green,
+                                uncheckedThumbColor = Color.White.copy(alpha = 0.7f),
+                                uncheckedTrackColor = Color.Gray
+                            )
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Timestamp
             Text(
                 text = "الوقت: ${DatesHandler().getDateAndTimStringAvecSeconds(relative_M8BonVent.creationTimestamps).time}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -335,7 +382,6 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
         }
     }
 
-    // Delete confirmation dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
