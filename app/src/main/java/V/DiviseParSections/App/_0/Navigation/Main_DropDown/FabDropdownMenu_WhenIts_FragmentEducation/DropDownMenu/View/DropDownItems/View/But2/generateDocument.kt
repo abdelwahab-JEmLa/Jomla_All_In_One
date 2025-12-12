@@ -204,70 +204,60 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
             val cellHeight = 120f
             val cellWidth = contentWidth / 2f
 
-            // Row 1: الحفظ القديم | لتحضيره المقرر
+            // Row 1: الحفظ القديم (RIGHT) | لتحضيره المقرر (LEFT)
             val row1Y = yPosition
 
             // Draw borders for row 1
             canvas.drawRect(marginLeft, row1Y, marginLeft + cellWidth, row1Y + cellHeight, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, row1Y, pageWidth - marginRight, row1Y + cellHeight, paintBorder)
 
-            // Right cell: الحفظ القديم
+            // RIGHT cell (marginLeft + cellWidth to pageWidth - marginRight): الحفظ القديم
             val hifdText = """الحفظ القديم
 
 ${cardData.hifdProgress.currentSoura}
-من الآية ${cardData.hifdProgress.currentAya}
-من سورة إلى 10 من 15"""
+من الآية ${cardData.hifdProgress.currentAya}"""
 
             drawRTLText(canvas, hifdText,
-                marginLeft + cellWidth, row1Y + 10f, cellWidth.toInt(), paintArabic)
+                marginLeft + cellWidth + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
 
-            // Left cell: لتحضيره المقرر
+            // LEFT cell (marginLeft to marginLeft + cellWidth): لتحضيره المقرر
             val mokarrarText = """لتحضيره المقرر
 
 ${cardData.hifdProgress.mokarrarSoura}
 ${cardData.hifdProgress.mokarrarDetails}"""
 
             drawRTLText(canvas, mokarrarText,
-                marginLeft, row1Y + 10f, cellWidth.toInt(), paintArabic)
+                marginLeft + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
 
             yPosition += cellHeight
 
-            // Row 2: جيد تقييم تقريبي | empty
+            // Row 2: تقييم تقريبي (RIGHT) | empty (LEFT)
             val row2Y = yPosition
             val row2Height = 60f
 
             canvas.drawRect(marginLeft, row2Y, marginLeft + cellWidth, row2Y + row2Height, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, row2Y, pageWidth - marginRight, row2Y + row2Height, paintBorder)
 
-            // Right cell: Evaluation
+            // RIGHT cell: Evaluation
             val evalText = """${cardData.evaluation.dabteLevel}
 تقييم تقريبي"""
 
             drawRTLText(canvas, evalText,
-                marginLeft + cellWidth, row2Y + 15f, cellWidth.toInt(), paintArabic)
+                marginLeft + cellWidth + 5f, row2Y + 15f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
 
             yPosition += row2Height
 
-            // Row 3: التوقيع والتاريخ | يرجى الاطلاع على المقرر
+            // Row 3: التوقيع والتاريخ (RIGHT) | يرجى الاطلاع (LEFT)
             val row3Y = yPosition
             val row3Height = 100f
 
             canvas.drawRect(marginLeft, row3Y, marginLeft + cellWidth, row3Y + row3Height, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, row3Y, pageWidth - marginRight, row3Y + row3Height, paintBorder)
 
-            // Right cell: Signature and Date (Latin numerals)
-            val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-            val todayDate = dateFormatter.format(Date())
-
-            val signatureText = """التوقيع:
-
-
-التاريخ: $todayDate"""
-
-            drawRTLText(canvas, signatureText,
-                marginLeft + cellWidth, row3Y + 15f, cellWidth.toInt(), paintArabic)
-
-            // Left cell: يرجى الاطلاع على المقرر
+            // RIGHT cell: Notes (يرجى الاطلاع)
             val notesText = if (cardData.notes.specialAttention.isNotBlank()) {
                 """يرجى الاطلاع على المقرر
 و محاولة التعاون على تحقيقه
@@ -281,7 +271,29 @@ ${cardData.notes.specialAttention}"""
             }
 
             drawRTLText(canvas, notesText,
-                marginLeft, row3Y + 10f, cellWidth.toInt(), paintSmall)
+                marginLeft + cellWidth + 5f, row3Y + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            // LEFT cell: Signature and Date (التوقيع والتاريخ)
+            // Date au format arabe avec numéros français
+            val arabicDayFormatter = SimpleDateFormat("EEEE", Locale("ar"))
+            val dayName = arabicDayFormatter.format(Date())
+            val frenchDateFormatter = SimpleDateFormat("dd", Locale.FRENCH)
+            val dayNumber = frenchDateFormatter.format(Date())
+            val arabicMonthFormatter = SimpleDateFormat("MMMM", Locale("ar"))
+            val monthName = arabicMonthFormatter.format(Date())
+
+            val todayDate = "$dayName $dayNumber $monthName"
+
+            // Date en haut
+            drawRTLText(canvas, todayDate,
+                marginLeft + 5f, row3Y + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            // "التوقيع:" juste en dessous de la date
+            drawRTLText(canvas, "التوقيع:",
+                marginLeft + 5f, row3Y + 30f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
 
             pdfDocument.finishPage(page)
         }
