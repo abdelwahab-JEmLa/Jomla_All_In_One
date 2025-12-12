@@ -53,8 +53,6 @@ fun DropDownItem_Imprime_word_communication_ac_parent(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     context: Context = LocalContext.current
 ) {
-    //<--
-    //TODO(1): fait  imprime que de     val targted_etudion = repo19Etudiant.datasValue.find { it.nom.contains("مسلم") }
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -62,18 +60,24 @@ fun DropDownItem_Imprime_word_communication_ac_parent(
         isLoading = true
         scope.launch {
             try {
-                val etudiants = repo19Etudiant.datasValue.sortedWith(
+                val allEtudiants = repo19Etudiant.datasValue.sortedWith(
                     compareBy<M19Etudiant> { it.positon_don_classe }
                         .thenBy { it.creationTimestamps }
                 )
 
-                if (etudiants.isEmpty()) {
+                // Filter for the targeted student
+                val targetedEtudiant = allEtudiants.find { it.prenom.contains("مسلم") }
+
+                if (targetedEtudiant == null) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "لا يوجد طلاب لإنشاء البطاقة", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "لا يوجد طالب باسم 'مسلم'", Toast.LENGTH_LONG).show()
                     }
                     isLoading = false
                     return@launch
                 }
+
+                // Create list with only the targeted student
+                val etudiants = listOf(targetedEtudiant)
 
                 val wordFile = withContext(Dispatchers.IO) {
                     generateWordDocument(context, etudiants)
@@ -116,7 +120,6 @@ fun DropDownItem_Imprime_word_communication_ac_parent(
             }
         }
     }
-
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
