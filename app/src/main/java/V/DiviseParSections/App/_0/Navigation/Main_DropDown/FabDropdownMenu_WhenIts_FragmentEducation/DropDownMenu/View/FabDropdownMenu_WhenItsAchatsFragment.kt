@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_word_communication_ac_parent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-) {        
+) {
     var showTextField by remember { mutableStateOf(true) }
     var studentName by remember { mutableStateOf("") }
 
@@ -57,9 +58,11 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-                        //<--
-                        //TODO(1): ajout butto au click toggle filter_les_absents
-            
+            // Add the Word communication card item
+            DropDownItem_Imprime_word_communication_ac_parent()
+
+            Divider()
+
             // Show text field when toggled
             if (showTextField) {
                 Divider()

@@ -194,6 +194,8 @@ dependencies {
     // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
 }
 
 apply(plugin = "com.google.gms.google-services")
