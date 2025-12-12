@@ -1,4 +1,4 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But3
 
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import android.content.Context
@@ -17,7 +17,8 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+            //<--
+            //TODO(1): fait queca soit un simple document contien des case a coche comme aimage fait que au 15 coche case il a un num au a
 /**
  * Data class representing the organized card data structure
  */
@@ -209,8 +210,20 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
             canvas.drawRect(boxX, boxY, boxX + boxSize, boxY + boxSize, paintBox)
             canvas.drawRect(boxX, boxY, boxX + boxSize, boxY + boxSize, paintBorder)
 
+            // Draw "تواصل" centered in box
+            val paintBoxText = TextPaint().apply {
+                textSize = 20f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = android.graphics.Color.BLACK
+            }
+            drawRTLText(canvas, "تواصل",
+                boxX, boxY + 15f, boxSize.toInt(), paintBoxText, Layout.Alignment.ALIGN_CENTER)
+
+            yPosition += boxSize + 15f
+
             // Header text below box
-            drawRTLText(canvas, "هذه البطاقة هي أداة تواصل",
+            drawRTLText(canvas, "هذه البطاقة هي أداة اتصال",
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
             yPosition += 25f
 
