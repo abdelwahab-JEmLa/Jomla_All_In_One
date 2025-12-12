@@ -61,10 +61,16 @@ data class ParentCommunicationCardData(
         fun fromEtudiant(etudiant: M19Etudiant): ParentCommunicationCardData {
             val dateText = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(Date())
 
-            val mokarrarDetails = if (etudiant.dernier_Soura_Wassale_Laha == etudiant.mokarrare_hifde) {
-                "آية ${etudiant.mokarrare_hifde_sater}"
+            // Determine mokarrar details based on whether it's the same soura or different
+            val mokarrarText = if (etudiant.dernier_Soura_Wassale_Laha == etudiant.mokarrare_hifde) {
+                // Same soura: show range within the soura
+                """${etudiant.mokarrare_hifde.arabicName}
+من الآية ${etudiant.dernier_Soura_sater} إلى ${etudiant.mokarrare_hifde_sater}"""
             } else {
-                "محصى لإعادة ${etudiant.mokarrare_hifde_mahssou_li_3idat_souer} سور"
+                // Different souras: show range from current soura to mokarar soura
+                """${etudiant.mokarrare_hifde.arabicName}
+من الآية ${etudiant.dernier_Soura_sater} إلى
+${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrare_hifde_sater}"""
             }
 
             return ParentCommunicationCardData(
@@ -76,7 +82,7 @@ data class ParentCommunicationCardData(
                     currentSoura = etudiant.dernier_Soura_Wassale_Laha.arabicName,
                     currentAya = etudiant.dernier_Soura_sater,
                     mokarrarSoura = etudiant.mokarrare_hifde.arabicName,
-                    mokarrarDetails = mokarrarDetails
+                    mokarrarDetails = mokarrarText
                 ),
                 evaluation = Evaluation(
                     dabteLevel = etudiant.dernier_takyim_dabte.arabicName,
@@ -149,21 +155,28 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             // TextPaint for RTL rendering
             val paintArabic = TextPaint().apply {
-                textSize = 11f
+                textSize = 16f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintArabicBold = TextPaint().apply {
-                textSize = 14f
+                textSize = 20f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = android.graphics.Color.BLACK
+            }
+
+            val paintArabicMediumBold = TextPaint().apply {
+                textSize = 18f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintSmall = TextPaint().apply {
-                textSize = 9f
+                textSize = 14f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
@@ -212,45 +225,37 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
             canvas.drawRect(marginLeft + cellWidth, row1Y, pageWidth - marginRight, row1Y + cellHeight, paintBorder)
 
             // RIGHT cell (marginLeft + cellWidth to pageWidth - marginRight): الحفظ القديم
-            val hifdText = """الحفظ القديم
-
-${cardData.hifdProgress.currentSoura}
-من الآية ${cardData.hifdProgress.currentAya}"""
-
-            drawRTLText(canvas, hifdText,
-                marginLeft + cellWidth + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabic,
+            // Title in bold
+            drawRTLText(canvas, "الحفظ القديم",
+                marginLeft + cellWidth + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell (marginLeft to marginLeft + cellWidth): لتحضيره المقرر
-            val mokarrarText = """لتحضيره المقرر
+            // Content
+            val hifdText = """${cardData.hifdProgress.currentSoura}
+قبل الآية ${cardData.hifdProgress.currentAya}
 
-${cardData.hifdProgress.mokarrarSoura}
-${cardData.hifdProgress.mokarrarDetails}"""
+التقييم: ${cardData.evaluation.dabteLevel}"""
 
-            drawRTLText(canvas, mokarrarText,
-                marginLeft + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabic,
+            drawRTLText(canvas, hifdText,
+                marginLeft + cellWidth + 5f, row1Y + 35f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            // LEFT cell (marginLeft to marginLeft + cellWidth): المقرر لتحضيره
+            // Title in bold
+            drawRTLText(canvas, "المقرر لتحضيره",
+                marginLeft + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            // Content
+            drawRTLText(canvas, cardData.hifdProgress.mokarrarDetails,
+                marginLeft + 5f, row1Y + 35f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
             yPosition += cellHeight
 
-            // Row 2: تقييم تقريبي (RIGHT) | empty (LEFT)
-            val row2Y = yPosition
-            val row2Height = 60f
+            // Row 2: REMOVED (evaluation row deleted)
 
-            canvas.drawRect(marginLeft, row2Y, marginLeft + cellWidth, row2Y + row2Height, paintBorder)
-            canvas.drawRect(marginLeft + cellWidth, row2Y, pageWidth - marginRight, row2Y + row2Height, paintBorder)
-
-            // RIGHT cell: Evaluation
-            val evalText = """${cardData.evaluation.dabteLevel}
-تقييم تقريبي"""
-
-            drawRTLText(canvas, evalText,
-                marginLeft + cellWidth + 5f, row2Y + 15f, (cellWidth - 10f).toInt(), paintArabic,
-                Layout.Alignment.ALIGN_NORMAL)
-
-            yPosition += row2Height
-
-            // Row 3: التوقيع والتاريخ (RIGHT) | يرجى الاطلاع (LEFT)
+            // Row 3: التوقيع والتاريخ (LEFT) | يرجى الاطلاع (RIGHT)
             val row3Y = yPosition
             val row3Height = 100f
 
