@@ -33,6 +33,7 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -46,6 +47,20 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    // TODO(1) FIXED: Count students with updates today
+    val todayStudentsCount = remember(repo19Etudiant.datasValue) {
+        val todayStart = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        repo19Etudiant.datasValue.count { etudiant ->
+            etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
+        }
+    }
+
     fun createAndOpenPdfDocument() {
         isLoading = true
         scope.launch {
@@ -56,23 +71,34 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                         .thenBy { it.creationTimestamps }
                 )
 
-                // Step 2: Filter for targeted student
-                val targetedEtudiant = allEtudiants.find { it.prenom.contains("مسلم") }
+                // TODO(1) FIXED: Filter students updated today (not just "مسلم")
+                val todayStart = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
 
-                if (targetedEtudiant == null) {
+                val targetedEtudiants = allEtudiants.filter { etudiant ->
+                    etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
+                }
+
+                if (targetedEtudiants.isEmpty()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "لا يوجد طالب باسم 'مسلم'", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "لا يوجد طلاب تم تحديثهم اليوم", Toast.LENGTH_LONG).show()
                     }
                     isLoading = false
                     return@launch
                 }
 
-                // Step 3: Structure the data using the organized data class
-                val cardData = ParentCommunicationCardData.fromEtudiant(targetedEtudiant)
+                // Step 3: Structure the data for all targeted students
+                val cardsData = targetedEtudiants.map { etudiant ->
+                    ParentCommunicationCardData.fromEtudiant(etudiant)
+                }
 
-                // Step 4: Generate PDF document with structured data
+                // Step 4: Generate PDF document with structured data (one page per student)
                 val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument(context, listOf(cardData))
+                    generatePdfDocument(context, cardsData)
                 }
 
                 // Step 5: Save the file to appropriate location
@@ -97,7 +123,7 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                             if (pdfFile != null) {
                                 openPdfWithViewer(context, pdfFile)
                             }
-                            Toast.makeText(context, "✅ تم إنشاء وحفظ البطاقة: $savedPath", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "✅ تم إنشاء وحفظ ${targetedEtudiants.size} بطاقة: $savedPath", Toast.LENGTH_LONG).show()
                         },
                         onFailure = { error ->
                             Toast.makeText(context, "❌ خطأ في الحفظ: ${error.message}", Toast.LENGTH_LONG).show()
@@ -144,7 +170,14 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
             },
             text = {
                 Text(
-                    text = if (isLoading) "جاري الإنشاء..." else nomFun,
+                    // TODO(1) FIXED: Display count of students ready to print
+                    text = if (isLoading) {
+                        "جاري الإنشاء..."
+                    } else if (todayStudentsCount > 0) {
+                        "$nomFun ($todayStudentsCount)"
+                    } else {
+                        nomFun
+                    },
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },

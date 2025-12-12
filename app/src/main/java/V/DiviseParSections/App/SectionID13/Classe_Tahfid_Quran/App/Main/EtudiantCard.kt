@@ -47,6 +47,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import org.koin.compose.koinInject
+import java.util.Calendar
+
+/**
+ * Check if a timestamp is from today
+ */
+fun isToday(timestamp: Long): Boolean {
+    val today = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    val timestampCal = Calendar.getInstance().apply {
+        timeInMillis = timestamp
+    }
+    return timestampCal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+            timestampCal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
+}
 
 @Composable
 fun EtudiantCard(
@@ -170,7 +188,6 @@ fun EtudiantCard(
         )
     }
 }
-
 @Composable
 private fun EtudiantDetailsDialog(
     etudiant: M19Etudiant,
@@ -180,9 +197,9 @@ private fun EtudiantDetailsDialog(
     onShowMokarrareDialog: () -> Unit,
     onShowTakiyimDialog: () -> Unit,
     onShowMoulahada3alaSouloukDialog: () -> Unit
-) {       //<--
-//TODO(1):  //<--
-////TODO(1): ajout au minimale le toggle presence button de absent 
+) {
+    val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
+
     var isEditingNom by remember { mutableStateOf(false) }
     var isEditingPrenom by remember { mutableStateOf(false) }
     var isEditingAge by remember { mutableStateOf(false) }
@@ -310,7 +327,14 @@ private fun EtudiantDetailsDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = if (wasUpdatedToday) {
+                    androidx.compose.ui.graphics.Color(0xFFFFFDE7) // Light yellow
+                } else {
+                    MaterialTheme.colorScheme.surface
+                }
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -325,12 +349,21 @@ private fun EtudiantDetailsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "${etudiant.nom} ${etudiant.prenom}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "${etudiant.nom} ${etudiant.prenom}",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        // Show indicator if updated today
+                        if (wasUpdatedToday) {
+                            Text(
+                                text = "✅ محدث اليوم",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = androidx.compose.ui.graphics.Color(0xFF558B2F) // Dark green
+                            )
+                        }
+                    }
                     OutlinedButton(
                         onClick = { showDeleteConfirmation = true },
                         colors = ButtonDefaults.outlinedButtonColors(
@@ -347,6 +380,7 @@ private fun EtudiantDetailsDialog(
                     }
                 }
 
+                // Rest of the dialog content remains the same...
                 Divider()
 
                 // Nom (editable)
@@ -581,9 +615,6 @@ private fun EtudiantDetailsDialog(
                         )
                     }
                 }
-                    //<--
-                    //TODO(1): ajout affiche de     var dernier_Soura_sater: Int = 1,-     var mokarrare_hifde_sater: Int = 1, si dernier_takyim_dabte == mokarrare_hifde  si non afficge mokarrare_hifde_mahssou_li_3idat_souer 
-                    //avec edites otions
                 // Dernier Takiyim Ijtihad
                 Row(
                     modifier = Modifier.fillMaxWidth().clickable { onShowTakiyimDialog() },

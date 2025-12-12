@@ -196,20 +196,8 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 strokeWidth = 1f
             }
 
-            // Header message with box
-            val boxSize = 60f
-            val boxX = (pageWidth - boxSize) / 2f
-            val boxY = yPosition
-
-            // Draw box for "تواصل"
-            val paintBox = Paint().apply {
-                color = "#E8F4FF".toColorInt()
-                style = Paint.Style.FILL
-            }
-            canvas.drawRect(boxX, boxY, boxX + boxSize, boxY + boxSize, paintBox)
-            canvas.drawRect(boxX, boxY, boxX + boxSize, boxY + boxSize, paintBorder)
-
-            // Header text below box
+            // TODO(1) FIXED: Removed the "تواصل" header box
+            // Header text starts directly
             drawRTLText(canvas, "هذه البطاقة هي أداة تواصل",
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
             yPosition += 25f
