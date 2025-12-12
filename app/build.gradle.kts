@@ -196,6 +196,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("com.aminography:primecalendar:1.7.0")
 }
 
 apply(plugin = "com.google.gms.google-services")

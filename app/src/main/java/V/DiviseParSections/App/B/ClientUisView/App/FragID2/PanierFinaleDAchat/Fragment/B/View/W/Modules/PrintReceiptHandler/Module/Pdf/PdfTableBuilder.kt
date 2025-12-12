@@ -278,8 +278,8 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                // Regular font for quantity
-                table.addCell(createDataCell(qtyDisplay, regularFont, 11f, TextAlignment.CENTER))
+                // BOLD font for quantity
+                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER))
 
                 // Regular font for unit price - NOT bold
                 table.addCell(
@@ -291,12 +291,12 @@ class PdfTableBuilder(
                     )
                 )
 
-                // FIXED: MUCH LARGER designation - 14f instead of 12f
+                // FIXED: Designation size 13f and bold
                 table.addCell(
                     createDataCell(
                         productNameWithCategory,
                         boldFont,
-                        14f,  // Increased to 14f for much larger text
+                        13f,  // Changed to 13f
                         TextAlignment.LEFT
                     )
                 )
@@ -314,7 +314,7 @@ class PdfTableBuilder(
                 total += subtotal
                 itemCount++
             } else {
-                table.addCell(createDataCell(qtyDisplay, regularFont, 11f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
                         "",
@@ -327,7 +327,7 @@ class PdfTableBuilder(
                     createDataCell(
                         productNameWithCategory,
                         boldFont,
-                        14f,  // Increased to 14f for much larger text
+                        13f,  // Changed to 13f
                         TextAlignment.LEFT
                     )
                 )

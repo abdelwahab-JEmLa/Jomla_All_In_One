@@ -12,11 +12,17 @@ import android.text.TextPaint
 import android.util.Log
 import androidx.core.graphics.toColorInt
 import androidx.core.graphics.withTranslation
+import com.aminography.primecalendar.hijri.HijriCalendar
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+/**
+ * Dépendance à ajouter dans build.gradle:
+ * implementation 'com.aminography:primecalendar:1.7.0'
+ */
 
 /**
  * Data class representing the organized card data structure
@@ -123,6 +129,38 @@ fun drawRTLText(
             .build()
 
         layout.draw(this)
+    }
+}
+
+/**
+ * Get formatted Hijri date using PrimeCalendar library
+ */
+fun getHijriDate(): String {
+    return try {
+        val hijriCalendar = HijriCalendar()
+
+        // Get day name in Arabic
+        val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
+        val dayName = dayNames[hijriCalendar.dayOfWeek - 1]
+
+        // Get month name in Arabic
+        val monthNames = arrayOf(
+            "محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة",
+            "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
+        )
+        val monthName = monthNames[hijriCalendar.month]
+
+        val day = hijriCalendar.dayOfMonth
+        val year = hijriCalendar.year
+
+        "$dayName $day $monthName $year هـ"
+    } catch (e: Exception) {
+        Log.e("HijriDate", "Error formatting Hijri date", e)
+        // Fallback
+        val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date()).toInt()
+        val hijriYear = gregorianYear - 579
+        val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
+        "التاريخ الهجري: $dayNum $hijriYear هـ"
     }
 }
 
@@ -287,38 +325,16 @@ ${cardData.notes.specialAttention}"""
                 marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // ========== TODO 3 FIXED: Display proper Hijri date ==========     //<--
-            //TODO(1): 
-            // Get Arabic day name
-            val arabicDayFormatter = SimpleDateFormat("EEEE", Locale("ar"))
-            val dayName = arabicDayFormatter.format(Date())
-
-            // Get Hijri date using proper Islamic calendar
-            val hijriCalendar = java.util.Calendar.getInstance()
-            hijriCalendar.time = Date()
-
-            // Use Islamic Umalqura calendar for proper Hijri date
-            val hijriDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("ar", "SA", "islamic-umalqura"))
-            val hijriDate = try {
-                hijriDateFormat.format(hijriCalendar.time)
-            } catch (e: Exception) {
-                // Fallback: manual conversion or approximation
-                Log.w("ParentCommPdf", "Could not format Hijri date, using fallback")
-
-                // Simple approximation (Hijri year ≈ Gregorian year - 579)
-                val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date()).toInt()
-                val hijriYear = gregorianYear - 579
-                val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
-                val monthAr = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
-                "$dayNum $monthAr $hijriYear"
-            }
+            // ========== TODO 3 FIXED: Display proper Hijri date using PrimeCalendar ==========
+            // Get Hijri date
+            val hijriDate = getHijriDate()
 
             // Get Gregorian date
             val gregorianDay = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
             val gregorianMonth = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
             val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date())
 
-            val todayDate = "$dayName $hijriDate هـ\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
+            val todayDate = "$hijriDate\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
 
             drawRTLText(canvas, todayDate,
                 marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
