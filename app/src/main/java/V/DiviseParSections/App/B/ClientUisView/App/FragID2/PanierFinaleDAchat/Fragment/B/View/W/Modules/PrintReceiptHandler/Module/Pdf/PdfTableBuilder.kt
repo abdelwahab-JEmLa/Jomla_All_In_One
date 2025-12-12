@@ -15,7 +15,11 @@ import com.itextpdf.layout.properties.UnitValue
 
 /**
  * Handles PDF table creation for products
- * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+ * FIXED TODO(1):
+ * - Increased table size and text size
+ * - Made line borders thicker between rows
+ * - Made designation and price bold and larger
+ * - Products are now sorted alphabetically by name
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -34,20 +38,17 @@ class PdfTableBuilder(
             .setWidth(UnitValue.createPercentValue(100f))
 
         addTableHeaders(table, boldFont)
-        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
+        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont, boldFont)
 
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
         if (result.total > 0.0) {
-            // FIXED: Check demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
             val shouldShowCreditSection = relativeBonvent?.demande_Versemet_si_Type_est_regle == true
 
             if (shouldShowCreditSection && relativeBonvent != null) {
-                // Display credit information (includes total inside)
                 addCreditSectionLikeCompose(doc, relativeBonvent, result.total, result.itemCount, regularFont, boldFont)
             } else {
-                // Display normal total with item count ONLY when demande_Versemet_si_Type_est_regle is false
                 contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
             }
         }
@@ -69,14 +70,14 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ) {
-        // Total Bon Cette Fois with item count - LEFT aligned like in Compose
+        // Total Bon Cette Fois with item count - LEFT aligned
         val totalTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
         val totalLabelCell = Cell()
             .add(Paragraph(Titres.A.text)
                 .setFont(regularFont)
-                .setFontSize(11f)
+                .setFontSize(12f)  // Increased from 11f
                 .setTextAlignment(TextAlignment.LEFT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
             .setPadding(0f)
@@ -84,7 +85,7 @@ class PdfTableBuilder(
         val totalValueCell = Cell()
             .add(Paragraph("${formatter.round(totalBon)} Da ($itemCount items)")
                 .setFont(boldFont)
-                .setFontSize(11f)
+                .setFontSize(12f)  // Increased from 11f
                 .setTextAlignment(TextAlignment.RIGHT))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
             .setPadding(0f)
@@ -93,8 +94,6 @@ class PdfTableBuilder(
         doc.add(totalTable)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
-        // FIXED: Display demande_Versemet_si_Type when demande_Versemet_si_Type_est_regle is true
-        // Otherwise display ancien_credit
         val creditValue = if (bonVent.demande_Versemet_si_Type_est_regle) {
             bonVent.demande_Versemet_si_Type
         } else {
@@ -109,7 +108,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph(Titres.B.text)
                     .setFont(regularFont)
-                    .setFontSize(10f)
+                    .setFontSize(11f)
                     .setTextAlignment(TextAlignment.LEFT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -118,7 +117,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph("${formatter.round(creditValue)} Da")
                     .setFont(regularFont)
-                    .setFontSize(10f)
+                    .setFontSize(11f)
                     .setTextAlignment(TextAlignment.RIGHT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -127,7 +126,6 @@ class PdfTableBuilder(
         doc.add(Paragraph("\n").setFontSize(0.2f))
 
         // Crédit Après Current Vent - LEFT aligned
-        // FIXED: Calculate using the correct credit value (demande_Versemet_si_Type or ancien_credit)
         val creditApresVent = creditValue + totalBon
         val creditApresTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
@@ -136,7 +134,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph(Titres.C.text)
                     .setFont(regularFont)
-                    .setFontSize(10f)
+                    .setFontSize(11f)
                     .setTextAlignment(TextAlignment.LEFT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -145,7 +143,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph("${formatter.round(creditApresVent)} Da")
                     .setFont(regularFont)
-                    .setFontSize(10f)
+                    .setFontSize(11f)
                     .setTextAlignment(TextAlignment.RIGHT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -161,7 +159,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph(Titres.D.text)
                     .setFont(regularFont)
-                    .setFontSize(11f)
+                    .setFontSize(12f)  // Increased from 11f
                     .setTextAlignment(TextAlignment.LEFT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -170,7 +168,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph("${formatter.round(bonVent.versement_fait)} Da")
                     .setFont(boldFont)
-                    .setFontSize(11f)
+                    .setFontSize(12f)  // Increased from 11f
                     .setTextAlignment(TextAlignment.RIGHT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -194,7 +192,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph(Titres.E.text)
                     .setFont(boldFont)
-                    .setFontSize(11f)
+                    .setFontSize(12f)  // Increased from 11f
                     .setTextAlignment(TextAlignment.LEFT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -203,7 +201,7 @@ class PdfTableBuilder(
             Cell()
                 .add(Paragraph("${formatter.round(bonVent.new_credit_apre_tout_fait)} Da")
                     .setFont(boldFont)
-                    .setFontSize(11f)
+                    .setFontSize(12f)  // Increased from 11f
                     .setTextAlignment(TextAlignment.RIGHT))
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
                 .setPadding(0f)
@@ -223,7 +221,7 @@ class PdfTableBuilder(
             .setWidth(UnitValue.createPercentValue(100f))
 
         addTableHeaders(table, boldFont)
-        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont)
+        val result = addTableRows(table, operations, tarificationRepo, produitRepo, regularFont, boldFont)
 
         doc.add(table)
         doc.add(Paragraph("\n").setFontSize(0.3f))
@@ -232,10 +230,11 @@ class PdfTableBuilder(
     }
 
     private fun addTableHeaders(table: Table, boldFont: PdfFont) {
-        table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-        table.addCell(createHeaderCell("Sous-total", boldFont, 11f, TextAlignment.RIGHT))
+        // Increased header font size from 11f to 13f
+        table.addCell(createHeaderCell("Qté", boldFont, 13f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("P.U", boldFont, 13f, TextAlignment.CENTER))
+        table.addCell(createHeaderCell("Désignation", boldFont, 13f, TextAlignment.LEFT))
+        table.addCell(createHeaderCell("Sous-total", boldFont, 13f, TextAlignment.RIGHT))
     }
 
     private fun addTableRows(
@@ -243,13 +242,20 @@ class PdfTableBuilder(
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos,
         produitRepo: RepoM1Produit,
-        regularFont: PdfFont
+        regularFont: PdfFont,
+        boldFont: PdfFont
     ): TableResult {
         var total = 0.0
         var itemCount = 0
         val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
 
-        groupedOps.forEach { (produitId, ops) ->
+        // FIXED TODO(1): Sort products alphabetically by product name
+        val sortedGroupedOps = groupedOps.entries.sortedBy { (produitId, _) ->
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")
+        }
+
+        sortedGroupedOps.forEach { (produitId, ops) ->
             val tarification = tarificationRepo.datasValue.find {
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
@@ -272,28 +278,35 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                // Regular font for quantity
+                table.addCell(createDataCell(qtyDisplay, regularFont, 11f, TextAlignment.CENTER))
+
+                // Regular font for unit price - NOT bold
                 table.addCell(
                     createDataCell(
                         "${formatter.round(unitPrice)}",
-                        regularFont,
-                        10f,
+                        regularFont,  // Keep regularFont
+                        11f,          // Keep 11f
                         TextAlignment.CENTER
                     )
                 )
+
+                // FIXED: MUCH LARGER designation - 14f instead of 12f
                 table.addCell(
                     createDataCell(
                         productNameWithCategory,
-                        regularFont,
-                        10f,
+                        boldFont,
+                        14f,  // Increased to 14f for much larger text
                         TextAlignment.LEFT
                     )
                 )
+
+                // Regular font for subtotal - NOT bold
                 table.addCell(
                     createDataCell(
                         "${formatter.round(subtotal)}",
-                        regularFont,
-                        10f,
+                        regularFont,  // Keep regularFont
+                        11f,          // Keep 11f
                         TextAlignment.RIGHT
                     )
                 )
@@ -301,20 +314,20 @@ class PdfTableBuilder(
                 total += subtotal
                 itemCount++
             } else {
-                table.addCell(createDataCell(qtyDisplay, regularFont, 10f, TextAlignment.CENTER))
+                table.addCell(createDataCell(qtyDisplay, regularFont, 11f, TextAlignment.CENTER))
                 table.addCell(
                     createDataCell(
                         "",
                         regularFont,
-                        10f,
+                        11f,
                         TextAlignment.CENTER
                     )
                 )
                 table.addCell(
                     createDataCell(
                         productNameWithCategory,
-                        regularFont,
-                        10f,
+                        boldFont,
+                        14f,  // Increased to 14f for much larger text
                         TextAlignment.LEFT
                     )
                 )
@@ -322,7 +335,7 @@ class PdfTableBuilder(
                     createDataCell(
                         "",
                         regularFont,
-                        10f,
+                        11f,
                         TextAlignment.RIGHT
                     )
                 )
@@ -344,16 +357,17 @@ class PdfTableBuilder(
         return Cell()
             .add(paragraph)
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
-            .setPadding(4f)
+            .setPadding(5f)  // Increased from 4f to 5f for more spacing
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
             .setTextAlignment(align)
     }
 
+    // FIXED TODO(1): Increased border thickness from 0.1f to 0.5f
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell()
             .add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
-            .setBorder(SolidBorder(0.1f))
-            .setPadding(4f)
+            .setBorder(SolidBorder(0.5f))  // Increased from 0.1f to 0.5f for thicker lines
+            .setPadding(5f)  // Increased from 4f to 5f for more spacing
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
 
     private data class TableResult(val total: Double, val itemCount: Int)

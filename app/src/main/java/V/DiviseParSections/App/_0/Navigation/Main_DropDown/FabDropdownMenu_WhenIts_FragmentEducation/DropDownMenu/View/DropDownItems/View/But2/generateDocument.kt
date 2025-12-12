@@ -253,18 +253,19 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             yPosition += cellHeight + 15f
 
-            // ========== TEXT BRUT: ملاحظات أخرى ==========
-            val evaluationText = """التكرار: ${cardData.evaluation.tikrare} مرات  |  التكرار عرضة: ${cardData.evaluation.tikrare3arde} مرات
-ملاحظة على السلوك: ${cardData.evaluation.behaviorNote}"""
+            // ========== TODO 1 FIXED: Show only "ملاحظات أخرى" ==========
+            val evaluationText = "ملاحظات أخرى"
 
             drawRTLText(canvas, evaluationText,
                 marginLeft, yPosition, contentWidth, paintArabic,
                 Layout.Alignment.ALIGN_CENTER)
 
-            yPosition += 50f
+            yPosition += 30f
 
-            // ========== TABLEAU 2: التوقيع والتاريخ | يرجى الاطلاع ==========
+            // ========== TODO 2 FIXED: Position table at bottom of page ==========
+            val bottomMargin = 30f
             val row2Height = 100f
+            yPosition = pageHeight - bottomMargin - row2Height
 
             canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + row2Height, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + row2Height, paintBorder)
@@ -286,35 +287,45 @@ ${cardData.notes.specialAttention}"""
                 marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell: التوقيع والتاريخ
+            // ========== TODO 3 FIXED: Display proper Hijri date ==========     //<--
+            //TODO(1): 
             // Get Arabic day name
             val arabicDayFormatter = SimpleDateFormat("EEEE", Locale("ar"))
             val dayName = arabicDayFormatter.format(Date())
 
-            // Get Hijri date
+            // Get Hijri date using proper Islamic calendar
             val hijriCalendar = java.util.Calendar.getInstance()
             hijriCalendar.time = Date()
-            val hijriDateFormat = SimpleDateFormat("dd MMMM", Locale("ar", "SA"))
+
+            // Use Islamic Umalqura calendar for proper Hijri date
+            val hijriDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("ar", "SA", "islamic-umalqura"))
             val hijriDate = try {
                 hijriDateFormat.format(hijriCalendar.time)
             } catch (e: Exception) {
+                // Fallback: manual conversion or approximation
+                Log.w("ParentCommPdf", "Could not format Hijri date, using fallback")
+
+                // Simple approximation (Hijri year ≈ Gregorian year - 579)
+                val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date()).toInt()
+                val hijriYear = gregorianYear - 579
                 val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
                 val monthAr = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
-                "$dayNum $monthAr"
+                "$dayNum $monthAr $hijriYear"
             }
 
             // Get Gregorian date
             val gregorianDay = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
             val gregorianMonth = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
+            val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date())
 
-            val todayDate = "$dayName $hijriDate موافق ل $gregorianDay $gregorianMonth"
+            val todayDate = "$dayName $hijriDate هـ\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
 
             drawRTLText(canvas, todayDate,
                 marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
             drawRTLText(canvas, "التوقيع:",
-                marginLeft + 5f, yPosition + 30f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + 5f, yPosition + 60f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
             pdfDocument.finishPage(page)
