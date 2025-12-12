@@ -196,7 +196,6 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 strokeWidth = 1f
             }
 
-            // TODO(1) FIXED: Removed the "تواصل" header box
             // Header text starts directly
             drawRTLText(canvas, "هذه البطاقة هي أداة تواصل",
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
@@ -221,56 +220,56 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 marginLeft, yPosition + 10f, contentWidth, paintArabicBold)
             yPosition += headerHeight
 
-            // Main content table (2 columns)
+            // ========== TABLEAU 1: الحفظ القديم | المقرر لتحضيره ==========
             val cellHeight = 120f
             val cellWidth = contentWidth / 2f
 
-            // Row 1: الحفظ القديم (RIGHT) | لتحضيره المقرر (LEFT)
-            val row1Y = yPosition
+            // Draw borders for tableau 1
+            canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + cellHeight, paintBorder)
+            canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + cellHeight, paintBorder)
 
-            // Draw borders for row 1
-            canvas.drawRect(marginLeft, row1Y, marginLeft + cellWidth, row1Y + cellHeight, paintBorder)
-            canvas.drawRect(marginLeft + cellWidth, row1Y, pageWidth - marginRight, row1Y + cellHeight, paintBorder)
-
-            // RIGHT cell (marginLeft + cellWidth to pageWidth - marginRight): الحفظ القديم
-            // Title in bold
+            // RIGHT cell: الحفظ القديم
             drawRTLText(canvas, "الحفظ القديم",
-                marginLeft + cellWidth + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // Content
             val hifdText = """${cardData.hifdProgress.currentSoura}
 قبل الآية ${cardData.hifdProgress.currentAya}
 
 التقييم: ${cardData.evaluation.dabteLevel}"""
 
             drawRTLText(canvas, hifdText,
-                marginLeft + cellWidth + 5f, row1Y + 35f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + cellWidth + 5f, yPosition + 35f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell (marginLeft to marginLeft + cellWidth): المقرر لتحضيره
-            // Title in bold
+            // LEFT cell: المقرر لتحضيره
             drawRTLText(canvas, "المقرر لتحضيره",
-                marginLeft + 5f, row1Y + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // Content
             drawRTLText(canvas, cardData.hifdProgress.mokarrarDetails,
-                marginLeft + 5f, row1Y + 35f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + 5f, yPosition + 35f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            yPosition += cellHeight
+            yPosition += cellHeight + 15f
 
-            // Row 2: REMOVED (evaluation row deleted)
+            // ========== TEXT BRUT: ملاحظات أخرى ==========
+            val evaluationText = """التكرار: ${cardData.evaluation.tikrare} مرات  |  التكرار عرضة: ${cardData.evaluation.tikrare3arde} مرات
+ملاحظة على السلوك: ${cardData.evaluation.behaviorNote}"""
 
-            // Row 3: التوقيع والتاريخ (LEFT) | يرجى الاطلاع (RIGHT)
-            val row3Y = yPosition
-            val row3Height = 100f
+            drawRTLText(canvas, evaluationText,
+                marginLeft, yPosition, contentWidth, paintArabic,
+                Layout.Alignment.ALIGN_CENTER)
 
-            canvas.drawRect(marginLeft, row3Y, marginLeft + cellWidth, row3Y + row3Height, paintBorder)
-            canvas.drawRect(marginLeft + cellWidth, row3Y, pageWidth - marginRight, row3Y + row3Height, paintBorder)
+            yPosition += 50f
 
-            // RIGHT cell: Notes (يرجى الاطلاع)
+            // ========== TABLEAU 2: التوقيع والتاريخ | يرجى الاطلاع ==========
+            val row2Height = 100f
+
+            canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + row2Height, paintBorder)
+            canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + row2Height, paintBorder)
+
+            // RIGHT cell: يرجى الاطلاع
             val notesText = if (cardData.notes.specialAttention.isNotBlank()) {
                 """يرجى الاطلاع على المقرر
 و محاولة التعاون على تحقيقه
@@ -284,28 +283,38 @@ ${cardData.notes.specialAttention}"""
             }
 
             drawRTLText(canvas, notesText,
-                marginLeft + cellWidth + 5f, row3Y + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell: Signature and Date (التوقيع والتاريخ)
-            // Date au format arabe avec numéros français
+            // LEFT cell: التوقيع والتاريخ
+            // Get Arabic day name
             val arabicDayFormatter = SimpleDateFormat("EEEE", Locale("ar"))
             val dayName = arabicDayFormatter.format(Date())
-            val frenchDateFormatter = SimpleDateFormat("dd", Locale.FRENCH)
-            val dayNumber = frenchDateFormatter.format(Date())
-            val arabicMonthFormatter = SimpleDateFormat("MMMM", Locale("ar"))
-            val monthName = arabicMonthFormatter.format(Date())
 
-            val todayDate = "$dayName $dayNumber $monthName"
+            // Get Hijri date
+            val hijriCalendar = java.util.Calendar.getInstance()
+            hijriCalendar.time = Date()
+            val hijriDateFormat = SimpleDateFormat("dd MMMM", Locale("ar", "SA"))
+            val hijriDate = try {
+                hijriDateFormat.format(hijriCalendar.time)
+            } catch (e: Exception) {
+                val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
+                val monthAr = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
+                "$dayNum $monthAr"
+            }
 
-            // Date en haut
+            // Get Gregorian date
+            val gregorianDay = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
+            val gregorianMonth = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
+
+            val todayDate = "$dayName $hijriDate موافق ل $gregorianDay $gregorianMonth"
+
             drawRTLText(canvas, todayDate,
-                marginLeft + 5f, row3Y + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // "التوقيع:" juste en dessous de la date
             drawRTLText(canvas, "التوقيع:",
-                marginLeft + 5f, row3Y + 30f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + 5f, yPosition + 30f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
             pdfDocument.finishPage(page)

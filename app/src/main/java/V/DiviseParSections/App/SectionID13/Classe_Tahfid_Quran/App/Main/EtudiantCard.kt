@@ -80,12 +80,19 @@ fun EtudiantCard(
     var showTakiyimDialog by remember { mutableStateOf(false) }
     var showMoulahada3alaSouloukDialog by remember { mutableStateOf(false) }
 
-    // Compact card - Just shows basic info
+    // Check if updated today
+    val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
+
+    // Compact card - Just shows basic info with yellow background if updated today
     Card(
         modifier = modifier.clickable { showDetailsDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = if (wasUpdatedToday) {
+                androidx.compose.ui.graphics.Color(0xFFFFFDE7) // Light yellow
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
         )
     ) {
         Column(
@@ -188,6 +195,7 @@ fun EtudiantCard(
         )
     }
 }
+
 @Composable
 private fun EtudiantDetailsDialog(
     etudiant: M19Etudiant,

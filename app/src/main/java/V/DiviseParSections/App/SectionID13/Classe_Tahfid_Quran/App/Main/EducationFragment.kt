@@ -22,12 +22,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -39,12 +42,21 @@ fun EducationFragment(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     onNavigateBack: (() -> Unit)? = null
 ) {
-    // Sort by positon_don_classe first, then by creationTimestamps for same positions
+    // Sort by update timestamp (most recent first), then by position
     val etudiants = repo19Etudiant.datasValue.sortedWith(
-        compareBy<V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant>
-        { it.positon_don_classe }
-            .thenBy { it.creationTimestamps }
+        compareByDescending<V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant>
+        { it.dernierTimeTampsSynchronisationAvecFireBase ?: it.creationTimestamps }
+            .thenBy { it.positon_don_classe }
     )
+
+    // Check if any student was updated today
+    val hasUpdateToday = remember(etudiants) {
+        etudiants.any { etudiant ->
+            // Assuming there's an updateTimestamp field, adjust if different
+            val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase ?: etudiant.creationTimestamps
+            isSameDay(updateTimestamp, System.currentTimeMillis())
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -61,7 +73,12 @@ fun EducationFragment(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Retour"
+                                contentDescription = "Retour",
+                                tint = if (hasUpdateToday) {
+                                    Color(0xFFFFC107) // Yellow/Amber color
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                }
                             )
                         }
                     }
@@ -128,4 +145,12 @@ fun EmptyState(modifier: Modifier = Modifier) {
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
     return sdf.format(Date(timestamp))
+}
+
+fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
+    val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
+    val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
+
+    return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
 }

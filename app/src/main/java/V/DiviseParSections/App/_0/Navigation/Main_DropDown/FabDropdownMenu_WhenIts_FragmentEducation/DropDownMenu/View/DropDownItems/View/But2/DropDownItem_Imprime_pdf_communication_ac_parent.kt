@@ -47,7 +47,6 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    // TODO(1) FIXED: Count students with updates today
     val todayStudentsCount = remember(repo19Etudiant.datasValue) {
         val todayStart = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
@@ -71,7 +70,6 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                         .thenBy { it.creationTimestamps }
                 )
 
-                // TODO(1) FIXED: Filter students updated today (not just "مسلم")
                 val todayStart = Calendar.getInstance().apply {
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
@@ -170,7 +168,6 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
             },
             text = {
                 Text(
-                    // TODO(1) FIXED: Display count of students ready to print
                     text = if (isLoading) {
                         "جاري الإنشاء..."
                     } else if (todayStudentsCount > 0) {
