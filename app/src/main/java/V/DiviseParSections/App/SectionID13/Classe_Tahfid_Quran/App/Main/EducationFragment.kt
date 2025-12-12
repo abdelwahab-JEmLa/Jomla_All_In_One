@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -41,7 +41,7 @@ fun EducationFragment(
 ) {
 
     //<--
-//TODO(1): ajout si filter_les_absents de filter les absent 
+//TODO(1): ajout si filter_les_absents de filter les absent
     // Sort by positon_don_classe first, then by creationTimestamps for same positions
     val etudiants = repo19Etudiant.datasValue.sortedWith(
         compareBy<V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant>
@@ -92,10 +92,9 @@ fun EducationFragment(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                itemsIndexed(
-                    items = etudiants,
-                    key = { _, etudiant -> etudiant.keyID }
-                ) { index, etudiant ->
+                items(
+                    items = etudiants
+                ) { etudiant ->
                     EtudiantCard(
                         etudiant = etudiant,
                         modifier = Modifier.fillMaxWidth()
