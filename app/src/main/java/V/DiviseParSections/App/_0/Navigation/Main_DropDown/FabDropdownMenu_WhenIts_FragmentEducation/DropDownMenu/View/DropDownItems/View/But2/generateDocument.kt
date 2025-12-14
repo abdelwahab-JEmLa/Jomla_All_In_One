@@ -60,7 +60,8 @@ data class ParentCommunicationCardData(
     data class FooterInfo(
         val date: String,
         val attendanceStatus: String,
-        val parentPhone: String
+        val parentPhone: String,
+        val absenceCount: Int
     )
 
     companion object {
@@ -102,7 +103,8 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
                 footer = FooterInfo(
                     date = dateText,
                     attendanceStatus = if (etudiant.absent) "غائب ❌" else "حاضر ✅",
-                    parentPhone = etudiant.num_telephone_parent
+                    parentPhone = etudiant.num_telephone_parent,
+                    absenceCount = etudiant.nmbr_absence_sans_justification
                 )
             )
         }
@@ -227,6 +229,13 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 color = android.graphics.Color.BLACK
             }
 
+            val paintVerySmall = TextPaint().apply {
+                textSize = 11f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+                isAntiAlias = true
+                color = android.graphics.Color.BLACK
+            }
+
             // Paint for borders
             val paintBorder = Paint().apply {
                 color = android.graphics.Color.BLACK
@@ -239,8 +248,16 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
             yPosition += 25f
 
-            drawRTLText(canvas, "لمتابعة سير حفظ ابنكم بغية تلبسو حلة الكرامة بما اقرئتماه و صبرتما",
+            drawRTLText(canvas, "لمتابعة سير حفظ ابنكم ليليسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
                 marginLeft, yPosition, contentWidth, paintSmall, Layout.Alignment.ALIGN_CENTER)
+            yPosition += 25f
+
+            // Poetry verses
+            val poetryText = """وحلتان من الفردوس قد كسيت ... لوالديه لها الأكوان لم تقم
+قالا: بماذا كسيناها؟ فقيل: بما ... أقرأتما ابنكما فاشكر لذي النعم"""
+
+            drawRTLText(canvas, poetryText,
+                marginLeft, yPosition, contentWidth, paintVerySmall, Layout.Alignment.ALIGN_CENTER)
             yPosition += 30f
 
             // Student name and age header (with background)
@@ -291,16 +308,46 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             yPosition += cellHeight + 15f
 
-            // ========== TODO 1 FIXED: Show only "ملاحظات أخرى" ==========
-            val evaluationText = "ملاحظات أخرى"
+            // Table for parent observations
+            val parentObsHeight = 60f
+            canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + parentObsHeight, paintBorder)
 
-            drawRTLText(canvas, evaluationText,
-                marginLeft, yPosition, contentWidth, paintArabic,
+            drawRTLText(canvas, "هنا يمكنكم إعلامنا بملاحظاتكم",
+                marginLeft + 5f, yPosition + 20f, contentWidth - 10, paintArabic,
                 Layout.Alignment.ALIGN_CENTER)
 
-            yPosition += 30f
+            yPosition += parentObsHeight + 15f
 
-            // ========== TODO 2 FIXED: Position table at bottom of page ==========
+            // Table for absence notification and notes
+            val infoTableHeight = 80f
+
+            // Draw borders
+            canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + infoTableHeight, paintBorder)
+            canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + infoTableHeight, paintBorder)
+
+            // RIGHT cell: Absence notification with count
+            val absenceText = if (cardData.footer.attendanceStatus.contains("غائب")) {
+                "نعلمكم بغياب ابنكم لـ ${cardData.footer.absenceCount} حصة"
+            } else {
+                if (cardData.footer.absenceCount > 0) {
+                    "مجموع الغيابات: ${cardData.footer.absenceCount} حصة"
+                } else {
+                    "الحضور منتظم"
+                }
+            }
+
+            drawRTLText(canvas, absenceText,
+                marginLeft + cellWidth + 5f, yPosition + 25f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            // LEFT cell: Notes or information
+            drawRTLText(canvas, "ملاحظة أو معلومة و شكرا",
+                marginLeft + 5f, yPosition + 25f, (cellWidth - 10f).toInt(), paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
+
+            yPosition += infoTableHeight + 15f
+
+            // Bottom section with fixed position
             val bottomMargin = 30f
             val row2Height = 100f
             yPosition = pageHeight - bottomMargin - row2Height
@@ -325,7 +372,6 @@ ${cardData.notes.specialAttention}"""
                 marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // ========== TODO 3 FIXED: Display proper Hijri date using PrimeCalendar ==========
             // Get Hijri date
             val hijriDate = getHijriDate()
 

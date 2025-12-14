@@ -167,6 +167,8 @@ data class M19Etudiant(
     var age: Int = 7,
     var positon_don_classe: Int = 1,
 
+    var nmbr_absence_sans_justification : Int = 0,
+
     var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var dernier_Soura_sater: Int = 1,
 
@@ -182,6 +184,7 @@ data class M19Etudiant(
 
     var mokarrare_hifde_mahssou_li_3idat_souer: Int = 1,
 
+
     var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
     var moulahada_makouba: String = "",
 
@@ -192,9 +195,11 @@ data class M19Etudiant(
     enum class Takiyim(val arabicName: String) {
         Moumtaz("ممتاز"),
         Jayid_Jiddan("جيد جداً"),
+        Fawk_Jayid("فوق الجيد"),
         Jayid("جيد"),
+        Fawk_Makbol("فوق المقبول"),
         Maqboul("مقبول"),
-        Daeef("ضعيف")
+        Lam_Yahfed("لم يحفظ")
     }
 
     enum class MoulahadaSoulouk(val arabicName: String) {

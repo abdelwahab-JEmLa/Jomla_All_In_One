@@ -1,4 +1,4 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4
 
 import android.content.ContentValues
 import android.content.Context
@@ -17,7 +17,7 @@ import java.util.Locale
  * Utility class for saving PDFs and Word documents to accessible locations
  * Provides multiple strategies depending on Android version and permissions
  */
-object PdfSaverUtility {
+object PdfSaverUtility_Tahfid {
     private const val TAG = "FileSaverUtility"
 
     /**
@@ -28,7 +28,7 @@ object PdfSaverUtility {
         context: Context,
         sourceFile: File,
         fileName: String,
-        subFolder: String = "BonsDeVente"
+        subFolder: String = "Tahfide_Quran"
     ): Result<String> {
         return try {
             // Validate source file
@@ -194,9 +194,9 @@ object PdfSaverUtility {
      */
     fun getSaveLocationDescription(context: Context): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            "Fichiers sauvegardés dans le dossier Téléchargements (accessible via Gestionnaire de fichiers)"
+            "الملفات محفوظة في مجلد التنزيلات (يمكن الوصول إليها عبر مدير الملفات)"
         } else {
-            "Fichiers sauvegardés dans les documents de l'application"
+            "الملفات محفوظة في مستندات التطبيق"
         }
     }
 }

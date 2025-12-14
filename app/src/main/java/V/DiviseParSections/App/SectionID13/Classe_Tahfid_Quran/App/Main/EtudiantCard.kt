@@ -3,13 +3,24 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import android.text.format.DateUtils.isToday
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,27 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import java.util.Calendar
-
-/**
- * Check if a timestamp is from today
- */
-fun isToday(timestamp: Long): Boolean {
-    val today = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-    val timestampCal = Calendar.getInstance().apply {
-        timeInMillis = timestamp
-    }
-    return timestampCal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-            timestampCal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
-}
 
 @Composable
 fun EtudiantCard(
@@ -55,13 +51,13 @@ fun EtudiantCard(
     // Check if updated today
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
-    // Compact card - Just shows basic info with yellow background if updated today
+    // Compact card - Shows basic info with yellow background if updated today
     Card(
         modifier = modifier.clickable { showDetailsDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (wasUpdatedToday) {
-                androidx.compose.ui.graphics.Color(0xFFFFFDE7) // Light yellow
+                Color(0xFFFFFDE7)
             } else {
                 MaterialTheme.colorScheme.surface
             }
@@ -71,8 +67,41 @@ fun EtudiantCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+            // Chair icon with position badge at the top
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Chair icon
+                Icon(
+                    imageVector = Icons.Default.EventSeat,
+                    contentDescription = "Chaise",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+
+                // Position badge
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${etudiant.positon_don_classe}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            // Student name
             Text(
                 text = etudiant.nom.ifBlank { "---" },
                 style = MaterialTheme.typography.titleSmall,
@@ -83,11 +112,28 @@ fun EtudiantCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = "${etudiant.age} سنة",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+
+            // Age and absences row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${etudiant.age} سنة",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // Display absences with warning color if > 0
+                if (etudiant.nmbr_absence_sans_justification > 0) {
+                    Text(
+                        text = "غياب: ${etudiant.nmbr_absence_sans_justification}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
     }
 
@@ -167,4 +213,3 @@ fun EtudiantCard(
         )
     }
 }
-

@@ -1,16 +1,19 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.PdfSaverUtility_Tahfid
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -39,13 +43,16 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun DropDownItem_Imprime_pdf_communication_ac_parent(
-    nomFun: String = "بطاقة التواصل مع الولي (PDF)",
+fun DropDownItem_Imprime_pdf_List_Talaba(
+    nomFun: String = "بطاقة التواصل مع الولي (PDF)",          //<--
+    //TODO(1): change au قائمة الطلبة
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     context: Context = LocalContext.current
-) {
+) {         //<--
+//TODO(1): affiche tout les eleves
     var isLoading by remember { mutableStateOf(false) }
+    var generationStatus by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     val todayStudentsCount = remember(repo19Etudiant.datasValue) {
@@ -63,6 +70,7 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
 
     fun createAndOpenPdfDocument() {
         isLoading = true
+        generationStatus = "جاري التحضير..."
         scope.launch {
             try {
                 // Step 1: Fetch and sort all students
@@ -87,55 +95,73 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                         Toast.makeText(context, "لا يوجد طلاب تم تحديثهم اليوم", Toast.LENGTH_LONG).show()
                     }
                     isLoading = false
+                    generationStatus = ""
                     return@launch
                 }
 
-                // Step 3: Structure the data for all targeted students
+                generationStatus = "جاري معالجة ${targetedEtudiants.size} طالب..."
+
+                // Step 2: Structure the data for all targeted students
                 val cardsData = targetedEtudiants.map { etudiant ->
                     ParentCommunicationCardData.fromEtudiant(etudiant)
                 }
 
-                // Step 4: Generate PDF document with structured data (one page per student)
+                generationStatus = "جاري إنشاء الجدول..."
+
+                // Step 3: Generate PDF document with table format
                 val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument(context, cardsData)
+                    generatePdfDocument_list_talaba(context, cardsData, targetedEtudiants)
                 }
 
-                // Step 5: Save the file to appropriate location
+                if (pdfFile == null || !pdfFile.exists()) {
+                    throw Exception("فشل إنشاء ملف PDF")
+                }
+
+                generationStatus = "جاري الحفظ..."
+
+                // Step 4: Save the file to appropriate location
+                val fileName = "قائمة_الطلاب_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
                 val saveResult = withContext(Dispatchers.IO) {
-                    if (pdfFile != null && pdfFile.exists()) {
-                        val fileName = "بطاقة_التواصل_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
-                        PdfSaverUtility_Tahfid.savePdf(
-                            context = context,
-                            sourceFile = pdfFile,
-                            fileName = fileName,
-                            subFolder = "Tahfide_Quran"
-                        )
-                    } else {
-                        Result.failure(Exception("فشل إنشاء ملف PDF"))
-                    }
+                    PdfSaverUtility_Tahfid.savePdf(
+                        context = context,
+                        sourceFile = pdfFile,
+                        fileName = fileName,
+                        subFolder = "Tahfide_Quran"
+                    )
                 }
 
-                // Step 6: Handle result and open document
+                // Step 5: Handle result and open document
                 withContext(Dispatchers.Main) {
                     saveResult.fold(
                         onSuccess = { savedPath ->
-                            if (pdfFile != null) {
-                                openPdfWithViewer(context, pdfFile)
-                            }
-                            Toast.makeText(context, "✅ تم إنشاء وحفظ ${targetedEtudiants.size} بطاقة: $savedPath", Toast.LENGTH_LONG).show()
+                            openPdfWithViewer(context, pdfFile)
+                            Toast.makeText(
+                                context,
+                                "✅ تم إنشاء وحفظ قائمة ${targetedEtudiants.size} طالب\n$savedPath",
+                                Toast.LENGTH_LONG
+                            ).show()
                         },
                         onFailure = { error ->
-                            Toast.makeText(context, "❌ خطأ في الحفظ: ${error.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "❌ خطأ في الحفظ: ${error.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     )
                 }
             } catch (e: Exception) {
                 Log.e("ParentCommPdf", "❌ خطأ: ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "❌ خطأ: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "❌ خطأ: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } finally {
                 isLoading = false
+                generationStatus = ""
             }
         }
     }
@@ -143,40 +169,56 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isLoading) {
-                MaterialTheme.colorScheme.secondaryContainer
-            } else {
-                MaterialTheme.colorScheme.errorContainer
+            containerColor = when {
+                isLoading -> MaterialTheme.colorScheme.secondaryContainer
+                todayStudentsCount > 0 -> MaterialTheme.colorScheme.primaryContainer
+                else -> MaterialTheme.colorScheme.surfaceVariant
             }
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isLoading) 8.dp else 4.dp)
     ) {
         DropdownMenuItem(
             leadingIcon = {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.padding(4.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .width(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.TableChart,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         imageVector = Icons.Default.PictureAsPdf,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
+                        tint = if (todayStudentsCount > 0) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                 }
             },
             text = {
                 Text(
-                    text = if (isLoading) {
-                        "جاري الإنشاء..."
-                    } else if (todayStudentsCount > 0) {
-                        "$nomFun ($todayStudentsCount)"
-                    } else {
-                        nomFun
+                    text = when {
+                        isLoading && generationStatus.isNotEmpty() -> generationStatus
+                        isLoading -> "جاري الإنشاء..."
+                        todayStudentsCount > 0 -> "$nomFun ($todayStudentsCount طالب)"
+                        else -> nomFun
                     },
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             },
             onClick = {
@@ -213,5 +255,10 @@ fun openPdfWithViewer(context: Context, pdfFile: File) {
         }
     } catch (e: Exception) {
         Log.e("ParentCommPdf", "❌ خطأ في فتح PDF", e)
+        Toast.makeText(
+            context,
+            "❌ خطأ في فتح الملف: ${e.message}",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

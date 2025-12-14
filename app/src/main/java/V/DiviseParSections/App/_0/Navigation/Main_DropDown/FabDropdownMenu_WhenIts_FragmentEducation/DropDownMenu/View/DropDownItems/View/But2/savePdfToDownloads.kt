@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.PdfSaverUtility_Tahfid
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -19,7 +20,7 @@ fun savePdfToDownloads(context: Context, pdfFile: File, clientName: String, prod
         val fileName = PdfFileNamingUtils.generatePdfFileName(clientName, productLineCount)
 
         // Use utility to save (handles all the complexity)
-        val result = PdfSaverUtility.savePdf(
+        val result = PdfSaverUtility_Tahfid.savePdf(
             context = context,
             sourceFile = pdfFile,
             fileName = fileName,
