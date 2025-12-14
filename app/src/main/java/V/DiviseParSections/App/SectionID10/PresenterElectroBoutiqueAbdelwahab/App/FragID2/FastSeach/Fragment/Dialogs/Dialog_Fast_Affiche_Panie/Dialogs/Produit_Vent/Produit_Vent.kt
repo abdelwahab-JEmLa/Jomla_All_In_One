@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos.Type
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -49,16 +49,15 @@ fun Produit_Vent(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     modifier: Modifier = Modifier,
-    size: Dp = 40.dp
+    size: Dp = 80.dp
 ) {
-
     val produit = remember(produitKeyId) {
         repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
     }
 
     val categoriesMap =
         aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
-    val category= produit?.idParentCategorie?.let { categoryId ->
+    val category = produit?.idParentCategorie?.let { categoryId ->
         categoriesMap[categoryId]
     }
 
@@ -69,18 +68,23 @@ fun Produit_Vent(
     val allNonTrouve = remember(ventList) {
         ventList.isNotEmpty() && ventList.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     }
+
+    // Check if all items are checked
+    val allChecked = remember(ventList) {
+        ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
+    }
+
     val relative_M10OperationVentCouleur = ventList.first()
     val relative_M3CouleurProduit =
         repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
 
-    // Get all unique comments from the vent list
     val uniqueComments = remember(ventList) {
         ventList.mapNotNull { vent ->
             if (vent.commetaire.isNotEmpty()) {
                 val couleur = repositorysMainGetter.find_M3CouleurInfos_By_KeyID(vent.parent_M3CouleurProduit_KeyID)
                 Pair(vent.commetaire, couleur?.nomCouleurStrSiSonImageDispo ?: "Couleur inconnue")
             } else null
-        }.distinctBy { it.first } // Remove duplicate comments
+        }.distinctBy { it.first }
     }
 
     fun upsert_M10OperationVentCouleur(newState: Boolean): Unit {
@@ -93,6 +97,7 @@ fun Produit_Vent(
 
     produit?.let { nonNullProduit ->
         Box(modifier = modifier) {
+            // Main Card - Yellow background when checked
             Card(
                 modifier = Modifier
                     .semantics(mergeDescendants = true) {
@@ -101,11 +106,18 @@ fun Produit_Vent(
                     .semantics(mergeDescendants = true) {
                         set(value = nonNullProduit, key = SemanticsPropertyKey("nonNullProduit"))
                     }
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        // Toggle the check state when main card is clicked
+                        upsert_M10OperationVentCouleur(!allChecked)
+                    },
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer
-                    else MaterialTheme.colorScheme.surface
+                    containerColor = when {
+                        allChecked -> Color(0xFFFFEB3B) // Yellow when checked
+                        hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
+                        else -> MaterialTheme.colorScheme.surface
+                    }
                 )
             ) {
                 Column(
@@ -128,58 +140,77 @@ fun Produit_Vent(
 
                     val ventListS = if (ventList.size > 1) "[${ventList.size} C]" else ""
 
+                    // Inner Card - Also yellow when checked, clickable
                     Card(
-                        modifier = modifier.fillMaxWidth(),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                // Toggle the check state when inner card is clicked
+                                upsert_M10OperationVentCouleur(!allChecked)
+                            },
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer
-                            else MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = when {
+                                allChecked -> Color(0xFFFFD54F) // Lighter yellow for inner card
+                                hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
+                                else -> MaterialTheme.colorScheme.surfaceVariant
+                            }
                         )
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 2.dp, vertical = 2.dp),
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-
-                            LazyRow(
-                                reverseLayout = true,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            // Text on the left
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        // Text is also clickable
+                                        upsert_M10OperationVentCouleur(!allChecked)
+                                    }
                             ) {
-                                item {
-                                    Column {
-                                        Text(
-                                            text = "${nonNullProduit.nom} $ventListS",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.error,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                Text(
+                                    text = "${nonNullProduit.nom} $ventListS",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = if (allChecked) Color.Black else MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Bold
+                                )
 
-                                        if (nonNullProduit.nomArab.isNotEmpty()) {
-                                            Text(
-                                                text = nonNullProduit.nomArab,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.error,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                    }
+                                if (nonNullProduit.nomArab.isNotEmpty()) {
+                                    Text(
+                                        text = nonNullProduit.nomArab,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (allChecked) Color.Black else MaterialTheme.colorScheme.error,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
+                            }
 
-                                if (relative_M3CouleurProduit != null && relative_M3CouleurProduit.aAffiche == Type.Image) {
-                                    item {
-                                        ImageDisplayerGlide_FragFastVent(
-                                            modifier = Modifier.size(size),
-                                            relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                                            relative_M3CouleurProduit = relative_M3CouleurProduit,
-                                            colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
-                                            contentScale = ContentScale.Crop,
-                                            imageSize = DpSize(size, size),
-                                        )
-                                    }
+                            // Image on the right - Also clickable
+                            // Only display if image type AND has a color name
+                            if (relative_M3CouleurProduit != null &&
+                                relative_M3CouleurProduit.aAffiche == Type.Image &&
+                                relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo.isNotEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(size)
+                                        .clickable {
+                                            // Image is also clickable
+                                            upsert_M10OperationVentCouleur(!allChecked)
+                                        }
+                                ) {
+                                    ImageDisplayerGlide_FragFastVent(
+                                        modifier = Modifier.size(size),
+                                        relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                                        relative_M3CouleurProduit = relative_M3CouleurProduit,
+                                        colorName = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
+                                        contentScale = ContentScale.Crop,
+                                        imageSize = DpSize(size, size),
+                                    )
                                 }
                             }
                         }
@@ -187,19 +218,21 @@ fun Produit_Vent(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Display category information
                     if (nonNullProduit.nomMutable.isNotEmpty()) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                                containerColor = if (allChecked)
+                                    Color(0xFFFFE082) // Light yellow variant for nomMutable when checked
+                                else
+                                    MaterialTheme.colorScheme.primaryContainer
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Text(
                                 text = nonNullProduit.nomMutable,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(8.dp)
                             )
@@ -222,7 +255,10 @@ fun Produit_Vent(
                             uniqueComments.forEach { (comment, colorName) ->
                                 Card(
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                        containerColor = if (allChecked)
+                                            Color(0xFFFFF59D) // Very light yellow for comments when checked
+                                        else
+                                            MaterialTheme.colorScheme.secondaryContainer
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
@@ -232,13 +268,16 @@ fun Produit_Vent(
                                         Text(
                                             text = colorName,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                                            color = if (allChecked)
+                                                Color.Black.copy(alpha = 0.7f)
+                                            else
+                                                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                             fontWeight = FontWeight.Medium
                                         )
                                         Text(
                                             text = comment,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                            color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSecondaryContainer
                                         )
                                     }
                                 }
@@ -248,7 +287,6 @@ fun Produit_Vent(
                 }
             }
 
-            // Row of FABs at bottom-end of the card
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -314,7 +352,6 @@ fun FAB_MoveProduct(
                         )
                     )
 
-                    // Clear the held product after moving
                     focusedValuesGetter.update_activeCentralValues(
                         activeCentralValues.copy(
                             held_Produit_Pour_Move_Au_Position_Store = null
@@ -324,7 +361,7 @@ fun FAB_MoveProduct(
                 }
             },
             modifier = modifier.size(48.dp),
-            containerColor = Color(0xFF9C27B0), // Purple color
+            containerColor = Color(0xFF9C27B0),
             contentColor = Color.White
         ) {
             Icon(
@@ -334,5 +371,3 @@ fun FAB_MoveProduct(
         }
     }
 }
-
-

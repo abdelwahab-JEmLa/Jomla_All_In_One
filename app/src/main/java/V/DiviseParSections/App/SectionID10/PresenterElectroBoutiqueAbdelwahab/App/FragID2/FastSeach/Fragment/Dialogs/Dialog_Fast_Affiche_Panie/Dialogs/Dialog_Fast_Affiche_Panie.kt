@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,8 +49,6 @@ fun MainList(
 
                         activeFilters.forEach { filter ->
                             val passesThisFilter = when (filter) {
-                                // FIXED: NonTrouve filter now EXCLUDES items that are NonTrouve
-                                // instead of including only NonTrouve items
                                 is ActiveCentralValues.ActiveFilter.NonTrouve -> {
                                     vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                                 }
@@ -81,6 +79,7 @@ fun MainList(
                 .toList()
 
             val sortedData = if (sortVentsParClassement) {
+                // Sort by position_store_3jamale when sortVentsParClassement is true
                 groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
                     val produit =
                         aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
@@ -91,22 +90,32 @@ fun MainList(
                     produit?.dernier_timeTamps_position_store_3jamale ?: 0L
                 })
             } else {
-                groupedData.sortedByDescending { (_, ventList) ->
+                // Sort alphabetically by product name when sortVentsParClassement is false
+                groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    // Use nom for sorting, fallback to empty string if product not found
+                    produit?.nom?.lowercase() ?: ""
+                }.thenBy { (produitKeyId, _) ->
+                    // Secondary sort by nomArab if available
+                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                    produit?.nomArab?.lowercase() ?: ""
+                }.thenByDescending { (_, ventList) ->
+                    // Tertiary sort by creation timestamp (most recent first)
                     ventList.maxOfOrNull { vent ->
                         vent.creationTimestamps
                     } ?: 0L
-                }
+                })
             }
 
             sortedData.toMap()
         }
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalItemSpacing = 8.dp,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(groupedVents.toList()) { index, (produitKeyId, ventList) ->

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,6 +85,21 @@ fun DayHeader(
     } catch (e: Exception) {
         Date()
     }
+    // Map for Algerian Arabic month names (Maghrebi dialect)
+     val arabicMonths = mapOf(
+        "January" to "جانفي",
+        "February" to "فيفري",
+        "March" to "مارس",
+        "April" to "أفريل",
+        "May" to "ماي",
+        "June" to "جوان",
+        "July" to "جويلية",
+        "August" to "أوت",
+        "September" to "سبتمبر",
+        "October" to "أكتوبر",
+        "November" to "نوفمبر",
+        "December" to "ديسمبر"
+    )
 
     // Format for full date display with Arabic month
     val formattedDate = try {

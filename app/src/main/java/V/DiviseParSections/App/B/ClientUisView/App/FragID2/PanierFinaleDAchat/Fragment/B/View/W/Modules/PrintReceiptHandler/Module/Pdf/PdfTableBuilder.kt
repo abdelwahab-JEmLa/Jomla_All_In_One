@@ -249,7 +249,6 @@ class PdfTableBuilder(
         var itemCount = 0
         val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
 
-        // FIXED TODO(1): Sort products alphabetically by product name
         val sortedGroupedOps = groupedOps.entries.sortedBy { (produitId, _) ->
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")

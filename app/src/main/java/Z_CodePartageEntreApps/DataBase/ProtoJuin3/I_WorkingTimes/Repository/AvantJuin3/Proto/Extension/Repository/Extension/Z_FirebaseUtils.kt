@@ -54,7 +54,7 @@ object Z_FirebaseUtils {
 
         // RepositorysMainSetter the listener
         listener?.let {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            (M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation|| true).ifTrue {
 
             K_TempTravailleRepository.caReference.addValueEventListener(it)}
             onValueEventListenerCreated(it)
