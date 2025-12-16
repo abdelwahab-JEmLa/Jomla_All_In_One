@@ -38,34 +38,23 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun DropDownItem_Imprime_pdf_List_Talaba(
-    nomFun: String = "بطاقة التواصل مع الولي (PDF)",          //<--
-    //TODO(1): change au قائمة الطلبة
+    nomFun: String = "قائمة الطلبة (PDF)",  // Fixed: Changed to "قائمة الطلبة"
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     context: Context = LocalContext.current
-) {         //<--
-//TODO(1): affiche tout les eleves
+) {
     var isLoading by remember { mutableStateOf(false) }
     var generationStatus by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    val todayStudentsCount = remember(repo19Etudiant.datasValue) {
-        val todayStart = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
-
-        repo19Etudiant.datasValue.count { etudiant ->
-            etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
-        }
+    // Fixed: Now shows ALL students, not just today's updated ones
+    val allStudentsCount = remember(repo19Etudiant.datasValue) {
+        repo19Etudiant.datasValue.size
     }
 
     fun createAndOpenPdfDocument() {
@@ -73,36 +62,26 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
         generationStatus = "جاري التحضير..."
         scope.launch {
             try {
-                // Step 1: Fetch and sort all students
+                // Step 1: Fetch and sort ALL students (not just today's)
                 val allEtudiants = repo19Etudiant.datasValue.sortedWith(
                     compareBy<M19Etudiant> { it.positon_don_classe }
                         .thenBy { it.creationTimestamps }
                 )
 
-                val todayStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
-
-                val targetedEtudiants = allEtudiants.filter { etudiant ->
-                    etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
-                }
-
-                if (targetedEtudiants.isEmpty()) {
+                // Fixed: Remove the filter to include ALL students
+                if (allEtudiants.isEmpty()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "لا يوجد طلاب تم تحديثهم اليوم", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "لا يوجد طلاب في القائمة", Toast.LENGTH_LONG).show()
                     }
                     isLoading = false
                     generationStatus = ""
                     return@launch
                 }
 
-                generationStatus = "جاري معالجة ${targetedEtudiants.size} طالب..."
+                generationStatus = "جاري معالجة ${allEtudiants.size} طالب..."
 
-                // Step 2: Structure the data for all targeted students
-                val cardsData = targetedEtudiants.map { etudiant ->
+                // Step 2: Structure the data for ALL students
+                val cardsData = allEtudiants.map { etudiant ->
                     ParentCommunicationCardData.fromEtudiant(etudiant)
                 }
 
@@ -110,7 +89,7 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
 
                 // Step 3: Generate PDF document with table format
                 val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument_list_talaba(context, cardsData, targetedEtudiants)
+                    generatePdfDocument_list_talaba(context, cardsData, allEtudiants)
                 }
 
                 if (pdfFile == null || !pdfFile.exists()) {
@@ -137,7 +116,7 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
                             openPdfWithViewer(context, pdfFile)
                             Toast.makeText(
                                 context,
-                                "✅ تم إنشاء وحفظ قائمة ${targetedEtudiants.size} طالب\n$savedPath",
+                                "✅ تم إنشاء وحفظ قائمة ${allEtudiants.size} طالب\n$savedPath",
                                 Toast.LENGTH_LONG
                             ).show()
                         },
@@ -171,7 +150,7 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
         colors = CardDefaults.cardColors(
             containerColor = when {
                 isLoading -> MaterialTheme.colorScheme.secondaryContainer
-                todayStudentsCount > 0 -> MaterialTheme.colorScheme.primaryContainer
+                allStudentsCount > 0 -> MaterialTheme.colorScheme.primaryContainer
                 else -> MaterialTheme.colorScheme.surfaceVariant
             }
         ),
@@ -201,7 +180,7 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
                     Icon(
                         imageVector = Icons.Default.PictureAsPdf,
                         contentDescription = null,
-                        tint = if (todayStudentsCount > 0) {
+                        tint = if (allStudentsCount > 0) {
                             MaterialTheme.colorScheme.error
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -214,7 +193,7 @@ fun DropDownItem_Imprime_pdf_List_Talaba(
                     text = when {
                         isLoading && generationStatus.isNotEmpty() -> generationStatus
                         isLoading -> "جاري الإنشاء..."
-                        todayStudentsCount > 0 -> "$nomFun ($todayStudentsCount طالب)"
+                        allStudentsCount > 0 -> "$nomFun ($allStudentsCount طالب)"
                         else -> nomFun
                     },
                     color = MaterialTheme.colorScheme.onSurface,

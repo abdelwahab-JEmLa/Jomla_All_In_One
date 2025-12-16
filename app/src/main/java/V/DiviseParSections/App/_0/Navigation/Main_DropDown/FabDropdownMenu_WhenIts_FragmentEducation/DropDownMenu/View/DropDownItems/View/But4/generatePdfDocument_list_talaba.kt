@@ -153,16 +153,12 @@ fun getHijriDate(): String {
     }
 }
 
-/**
- * Generate PDF document with table format showing all students
- * Now includes actual absence data from M19Etudiant
- */
+
 fun generatePdfDocument_list_talaba(
     context: Context,
     cardsData: List<ParentCommunicationCardData>,
     etudiants: List<M19Etudiant> = emptyList()
-): File? {    //<--
-//TODO(1): affiche غير محدد si le num non dispot 
+): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "temp_parent_comm_${System.currentTimeMillis()}.pdf")
@@ -298,11 +294,18 @@ fun generatePdfDocument_list_talaba(
 
                 xPosition = marginLeft
 
+                // Fix: Display "غير محدد" if phone number is empty or blank
+                val phoneNumber = if (student.footer.parentPhone.isBlank()) {
+                    "غير محدد"
+                } else {
+                    student.footer.parentPhone
+                }
+
                 val cellData = arrayOf(
                     "${i + 1}",
                     student.studentInfo.fullName,
                     "${student.studentInfo.age}",
-                    student.footer.parentPhone,
+                    phoneNumber,  // Fixed: Now shows "غير محدد" if empty
                     "$absenceCount",
                     "${student.hifdProgress.currentSoura}\nآية ${student.hifdProgress.currentAya}",
                     "${student.hifdProgress.mokarrarSoura}\nآية ${student.hifdProgress.mokarrarDetails.split("\n").lastOrNull()?.filter { it.isDigit() } ?: ""}",
