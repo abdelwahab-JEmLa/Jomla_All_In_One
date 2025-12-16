@@ -171,8 +171,6 @@ fun View_MainItem(
     var showAddToStockDialog by remember { mutableStateOf(false) }
 
     fun add_Bon_Au_Stock(): Unit {
-        //<--
-        //TODO(1): fait austart de                         count_Don_Depot = 0 apre lence l update
         repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
             it.parent_M8BonVent_KeyId == (focusedValuesGetter.activeOnVent_M8BonVent?.keyID ?: "")
         }.forEach { vent ->
@@ -431,10 +429,27 @@ fun View_MainItem(
                     }
 
                     Text(
-                        text = " الوقت: ${
+                        text = "  ${relative_M8BonVent.parent_M14VentPeriod_KeyId.takeLast(3).uppercase()
+                        }",
+                        style = MaterialTheme.typography.bodyLarge, // Larger text
+                        color = Color.White
+                    )
+
+                    Text(
+                        text = "  ${
                             datesHandler.getDateAndTimStringAvecSeconds(
                                 relative_M8BonVent.creationTimestamps
                             ).time
+                        }",
+                        style = MaterialTheme.typography.bodyLarge, // Larger text
+                        color = Color.White
+                    )
+
+                    Text(
+                        text = "  ${
+                            datesHandler.getDateAndTimStringAvecSeconds(
+                                relative_M8BonVent.creationTimestamps
+                            ).date
                         }",
                         style = MaterialTheme.typography.bodyLarge, // Larger text
                         color = Color.White
