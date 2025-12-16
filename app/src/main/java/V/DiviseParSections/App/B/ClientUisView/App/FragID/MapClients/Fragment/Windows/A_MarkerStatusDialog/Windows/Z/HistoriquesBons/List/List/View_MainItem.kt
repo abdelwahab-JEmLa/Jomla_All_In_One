@@ -394,6 +394,7 @@ fun View_MainItem(
                 }
             }
 
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
