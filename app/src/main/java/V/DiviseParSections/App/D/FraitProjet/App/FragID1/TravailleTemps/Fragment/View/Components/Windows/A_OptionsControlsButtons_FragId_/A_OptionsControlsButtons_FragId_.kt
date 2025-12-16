@@ -61,9 +61,7 @@ fun A_OptionsControlsButtons_FragId_(
 
                     if (isAbdelwahabLeGerant) {
                         FragID_0_Butt_2(viewModel, showLabels, "Add Day")
-                        //<--
-                        //TODO(1): ajout un butoon au click il change on outlined text avec les meme option du autre editer 
-                        //fait que on entre 12.25-08.00-
+
                         FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
                     }
 

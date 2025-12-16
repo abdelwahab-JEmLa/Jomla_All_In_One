@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,6 +69,8 @@ private val arabicDays = mapOf(
 
 @Composable
 fun DayHeader(
+    aCentralFacade: ACentralFacade= koinInject (),
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     tempTravaille: K_TempTravaille,
     viewModel: RecordingViewModel
 ) {
@@ -138,13 +143,10 @@ fun DayHeader(
     val totalDuration =
         if (totalMinutes > 0) "${totalHours}h ${remainingMinutes}m" else "لا وقت مسجل"  // "No time recorded" in Arabic
 
-    // In DayHeader.kt, observe the editingInterval state
     val editingInterval by viewModel.editingInterval.collectAsState()
 
-    // Modify the showTimeDialog initialization
-    var showTimeDialog by remember { mutableStateOf(false) }
+    var showTimeDialog by remember { mutableStateOf(focusedValuesGetter.active_Central_Values.affiche_dialoge_add_temp_travaille) }
 
-    // RepositorysMainSetter up add_New side effect to show the dialog when editingInterval is not null
     LaunchedEffect(editingInterval) {
         if (editingInterval != null) {
             startTimeInput = editingInterval?.tempDepart?.replace(":", ".") ?: ""
@@ -153,9 +155,7 @@ fun DayHeader(
         }
     }
 
-    // Time Dialog
     if (showTimeDialog) {
-        // Add state for TypeTemp selection
         var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
         var showTypeSelector by remember { mutableStateOf(false) }
 

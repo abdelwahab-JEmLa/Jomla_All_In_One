@@ -238,15 +238,11 @@ class K_TempTravailleRepositoryImpl :
                 modelDatas.add(recordIndex, record)
 
                 try {
-                    // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase
                     checkConnectivityAndSync()
 
-                    // Call the Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 method with proper error handling
                     updateDataUnSeulDataInFirebase(record)
                 } catch (e: Exception) {
-                    // Log the error or handle it appropriately
                     println("Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 failed: ${e.message}")
-                    // You might want to queue this upsertLenceCommandeRepoGroupedProtoAvantJuin3 for retry later
                 }
             }
         }

@@ -61,6 +61,10 @@ data class ActiveCentralValues(
     val image_Flotant: File? = null,
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
+    //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
+    var affiche_dialoge_add_temp_travaille: Boolean = false,
+    var jour_traville_ouvert_pour_add: Boolean = false,
+
     //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------

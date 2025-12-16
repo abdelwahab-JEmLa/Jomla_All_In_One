@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -16,9 +17,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun FragID_0_Butt_2(
+    focusedValuesGetter: FocusedValuesGetter= koinInject (),
     viewModel: RecordingViewModel,
     showLabels: Boolean,
     labelText: String,
@@ -29,7 +32,10 @@ fun FragID_0_Butt_2(
     // Display the dialog when showDialog is true
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = {
+                showDialog = false
+
+                               },
             title = { Text("Add New Day") },
             text = {
                 OutlinedTextField(
@@ -46,6 +52,11 @@ fun FragID_0_Butt_2(
                         if (dateInput.isNotEmpty()) {
                             viewModel.ajoutJour(dateInput)
                             dateInput = ""
+                            focusedValuesGetter.update_activeCentralValues(
+                                focusedValuesGetter.active_Central_Values.copy(
+                                    affiche_dialoge_add_temp_travaille = true
+                                )
+                            )
                             showDialog = false
                         }
                     }
