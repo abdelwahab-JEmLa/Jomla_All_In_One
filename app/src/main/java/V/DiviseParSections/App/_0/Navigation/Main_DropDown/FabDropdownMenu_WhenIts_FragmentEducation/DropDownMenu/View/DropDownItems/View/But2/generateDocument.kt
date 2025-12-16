@@ -337,7 +337,6 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             yPosition += cellHeight + 15f
 
-            // ========== FIXED TODO 1: Parent observations with writable space ==========
             val parentObsHeight = 70f
             canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + parentObsHeight, paintBorder)
 
@@ -357,7 +356,6 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             yPosition += parentObsHeight + 15f
 
-            // ========== FIXED TODO 2 & 3: Conditional absence section ==========
             // Only show this section if there are absences
             if (cardData.footer.absenceCount > 0) {
                 val infoTableHeight = 80f
