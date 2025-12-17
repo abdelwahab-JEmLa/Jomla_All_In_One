@@ -43,22 +43,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Map for Arabic month names
-private val arabicMonths = mapOf(
-    "January" to "يناير",
-    "February" to "فبراير",
-    "March" to "مارس",
-    "April" to "أبريل",
-    "May" to "مايو",
-    "June" to "يونيو",
-    "July" to "يوليو",
-    "August" to "أغسطس",
-    "September" to "سبتمبر",
-    "October" to "أكتوبر",
-    "November" to "نوفمبر",
-    "December" to "ديسمبر"
-)
-
 // Map for Arabic days of the week
 private val arabicDays = mapOf(
     "Lundi" to "الاثنين",
@@ -72,7 +56,7 @@ private val arabicDays = mapOf(
 
 @Composable
 fun DayHeader(
-    aCentralFacade: ACentralFacade= koinInject (),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     tempTravaille: K_TempTravaille,
     viewModel: RecordingViewModel
@@ -94,14 +78,21 @@ fun DayHeader(
 
     val jour = tempTravaille.infosDeBase.dateInString
 
+    // FIXED: Parse the date from tempTravaille, not current date
     val parsedDate = try {
         val inputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
         inputFormat.parse(jour) ?: Date()
     } catch (e: Exception) {
-        Date()
+        // If parsing fails, try with underscore format (yyyy_MM_dd)
+        try {
+            val inputFormat = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault())
+            inputFormat.parse(jour) ?: Date()
+        } catch (e2: Exception) {
+            Date()
+        }
     }
 
-     val arabicMonths = mapOf(
+    val arabicMonths = mapOf(
         "January" to "جانفي",
         "February" to "فيفري",
         "March" to "مارس",
@@ -116,9 +107,9 @@ fun DayHeader(
         "December" to "ديسمبر"
     )
 
-    // Format for full date display with Arabic month
+    // Format for full date display with Arabic month - using parsedDate from tempTravaille
     val formattedDate = try {
-        val englishFormat = SimpleDateFormat("d MMMM ", Locale.ENGLISH)
+        val englishFormat = SimpleDateFormat("d MMMM", Locale.ENGLISH)
         val dateWithEnglishMonth = englishFormat.format(parsedDate)
         val parts = dateWithEnglishMonth.split(" ")
 
@@ -126,7 +117,7 @@ fun DayHeader(
             val day = parts[0]
             val englishMonth = parts[1].trim()
             val arabicMonth = arabicMonths[englishMonth] ?: englishMonth
-            "$day $arabicMonth"  // Arabic month name
+            "$day $arabicMonth"
         } else {
             dateWithEnglishMonth
         }
@@ -134,11 +125,11 @@ fun DayHeader(
         jour
     }
 
-    // RepositorysMainGetter day of week in Arabic
+    // Get day of week in Arabic from parsedDate (not current date)
     val dayOfWeek = try {
         val dayFormat = SimpleDateFormat("EEEE", Locale.FRENCH)
         val frenchDayName = dayFormat.format(parsedDate).capitalize()
-        arabicDays[frenchDayName] ?: frenchDayName  // Use Arabic day name
+        arabicDays[frenchDayName] ?: frenchDayName
     } catch (e: Exception) {
         "يوم"  // Default "Day" in Arabic
     }
@@ -176,12 +167,12 @@ fun DayHeader(
         typeTemp = selectedType
     }
 
-    val updated_relative_temp_travaille_walid= relative_temp_travaille_walid.apply {
+    val updated_relative_temp_travaille_walid = relative_temp_travaille_walid.apply {
         tempDepart =
-            startTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+            startTimeInput_walid.replace(".", ":").takeIf { it.isNotEmpty() }
                 ?: "08:30"
         temparrete =
-            endTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+            endTimeInput_walid.replace(".", ":").takeIf { it.isNotEmpty() }
                 ?: "10:30"
         typeTemp = selectedType
     }
@@ -194,7 +185,7 @@ fun DayHeader(
             title = { Text("إضافة وقت يدوي") },
             text = {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    // First card for Abdelmoumen start time
+                    // First card for start time
                     ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -202,7 +193,7 @@ fun DayHeader(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "وقت البدء - عبدالمؤمن",  // "Start Time - Abdelmoumen"
+                                text = "وقت البدء",  // "Start Time"
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -344,22 +335,20 @@ fun DayHeader(
                 Button(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
-
                             set(
                                 key = SemanticsPropertyKey("relative_temp_travaille_abdelmoumen"),
                                 value = updated_relative_temp_travaille_abdelmoumen
                             )
                         },
                     onClick = {
-                        val   list_itervaless = buildList {
+                        val list_itervaless = buildList {
                             add(updated_relative_temp_travaille_abdelmoumen)
                             add(updated_relative_temp_travaille_walid)
                         }
-                            viewModel.repository.addNewIntervals_au_TempTravaille(
-                                tempTravaille,
-                                list_itervaless
-                            )
-
+                        viewModel.repository.addNewIntervals_au_TempTravaille(
+                            tempTravaille,
+                            list_itervaless
+                        )
 
                         showTimeDialog = false
                     }
@@ -424,7 +413,7 @@ fun DayHeader(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Edit ButtonAutreEtates - only show if in admin mode
+                // Edit Button - only show if in admin mode
                 if (isAbdelwahabLeGerant) {
                     IconButton(
                         onClick = {
@@ -447,7 +436,7 @@ fun DayHeader(
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(
-                        text = "ٌTotale == $totalDuration",  // "Total:" in Arabic
+                        text = "المجموع: $totalDuration",  // "Total:" in Arabic
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -458,7 +447,7 @@ fun DayHeader(
     }
 }
 
-// Extension function to capitalize the first letter of add_New string
+// Extension function to capitalize the first letter of a string
 private fun String.capitalize(): String {
     return if (this.isNotEmpty()) {
         this[0].uppercase() + this.substring(1)

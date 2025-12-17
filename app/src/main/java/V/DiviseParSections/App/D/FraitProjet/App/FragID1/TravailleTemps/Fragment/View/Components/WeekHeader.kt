@@ -2,6 +2,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.WeekInfo
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -39,14 +40,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
-    viewModel: RecordingViewModel
+    viewModel: RecordingViewModel ,
+    focusedValuesGetter: FocusedValuesGetter= koinInject ()
 ) {
+    val active_filter_du_vendeur =focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
+
     // Get all records for this specific week and check if all are paid
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString

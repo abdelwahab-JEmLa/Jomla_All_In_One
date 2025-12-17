@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -8,6 +9,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.TimeFormatUtils
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -37,14 +39,16 @@ data class UiState(
 )
 
 class RecordingViewModel(
+    val aCentralFacade: ACentralFacade,
     val getter: RepositorysMainGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,
+
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList =getter.repo8BonVent
+    val reposBonAchatList = getter.repo8BonVent
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
@@ -54,8 +58,28 @@ class RecordingViewModel(
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
+    val active_filter_du_vendeur = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
 
-    val dateList get() = repository.modelDatas
+    // FIXED: Filter dateList by active vendor (handles null filter)
+    val dateList get() = repository.modelDatas.map { tempTravaille ->
+        // Create a new K_TempTravaille with filtered intervals
+        K_TempTravaille(tempTravaille.vid).apply {
+            this.infosDeBase = tempTravaille.infosDeBase
+            this.intervalesDeTravaille.clear()
+            // Only add intervals that match the active vendor filter
+            // If filter is null, show all intervals
+            this.intervalesDeTravaille.addAll(
+                if (active_filter_du_vendeur != null) {
+                    tempTravaille.intervalesDeTravaille.filter { interval ->
+                        interval.utilisateur == active_filter_du_vendeur
+                    }
+                } else {
+                    tempTravaille.intervalesDeTravaille
+                }
+            )
+        }
+    }
+
     val isRecording = recordingHandler.isRecording
     val displayTime = recordingHandler.displayTime
 
@@ -88,7 +112,6 @@ class RecordingViewModel(
         recordingHandler.updateTotalWorkedTime()
         recordingHandler.setupRecordingStateListener()
     }
-    // Add this method to RecordingViewModel
 
     fun updatePareMainForWalid(
         recordId: String,
@@ -140,7 +163,7 @@ class RecordingViewModel(
             val record = repository.modelDatas.find { it.vid == recordId }
             val activeInterval = record?.intervalesDeTravaille?.findLast {
                 it.enCoureDEnregestrement &&
-                        it.vendeur == K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+                        it.utilisateur == Utilisateur.Walid
             }
 
             if (activeInterval != null) {
@@ -169,12 +192,9 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                  //  it.parent_M14VentPeriod_Old_LongID == uiState.activePeriodeVent?.vid &&
-                            it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
-
-            //  recordingHandler.toggleRecording()
         }
     }
 
@@ -190,7 +210,6 @@ class RecordingViewModel(
         }
     }
 
-
     private suspend fun collectActiveVendeurId() {
         snapshotFlow { getter.repo9AppCompt.currentAppCompt }.collect { currentAppCompt ->
             val activePeriodeVent = get_PeriodVentActive()
@@ -200,8 +219,7 @@ class RecordingViewModel(
         }
     }
 
-    fun get_PeriodVentActive(
-    ): MVentPeriode? {
+    fun get_PeriodVentActive(): MVentPeriode? {
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
@@ -211,7 +229,6 @@ class RecordingViewModel(
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
         }
     }
-
 
     private fun updateUiState(update: (UiState) -> UiState) {
         _uiState.value = update(_uiState.value)

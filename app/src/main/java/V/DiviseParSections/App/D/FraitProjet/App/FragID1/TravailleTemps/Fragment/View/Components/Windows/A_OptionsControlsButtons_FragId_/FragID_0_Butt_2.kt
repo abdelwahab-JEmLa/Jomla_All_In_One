@@ -4,6 +4,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -125,6 +126,8 @@ fun FragID_0_Butt_2(
         }
     }
 
+// Replace the showDateDialog AlertDialog with this fixed version:
+
     if (showDateDialog) {
         val dateFieldFocusRequester = remember { FocusRequester() }
 
@@ -136,7 +139,7 @@ fun FragID_0_Butt_2(
         AlertDialog(
             onDismissRequest = {
                 showDateDialog = false
-                dateInput = todayFormatted
+                dateInput = ""  // Changed: Reset to empty instead of todayFormatted
             },
             title = { Text("Add New Day") },
             text = {
@@ -214,7 +217,7 @@ fun FragID_0_Butt_2(
             dismissButton = {
                 Button(onClick = {
                     showDateDialog = false
-                    dateInput = todayFormatted
+                    dateInput = ""  // Changed: Reset to empty instead of todayFormatted
                 }) {
                     Text("Cancel")
                 }
@@ -317,7 +320,7 @@ fun FragID_0_Butt_2(
                             if (standardTimes.its_working_abdelmoumen) {
                                 val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "abdelmoumen_interval"
-                                    vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
+                                    utilisateur = Utilisateur.Abdelmoumen
                                     tempDepart = startTimeAbdelmoumen.ifBlank { defaultStartAbdelmoumen }
                                     temparrete = endTimeAbdelmoumen.ifBlank { defaultEndAbdelmoumen }
                                 }
@@ -327,7 +330,7 @@ fun FragID_0_Butt_2(
                             if (standardTimes.walid_its_working) {
                                 val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "walid_interval"
-                                    vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+                                    utilisateur = Utilisateur.Walid
                                     tempDepart = startTimeWalid.ifBlank { defaultStartWalid }
                                     temparrete = endTimeWalid.ifBlank { defaultEndWalid }
                                 }

@@ -217,7 +217,7 @@ val viewModelModule = module {
     viewModel { GrossistAchatSec12FragID1_ViewModel(get()) }
     viewModel { ViewModelT2(get()) }
     viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
-    viewModel { RecordingViewModel(get(), get(), get(), get()) }
+    viewModel { RecordingViewModel(get(),get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
     viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }

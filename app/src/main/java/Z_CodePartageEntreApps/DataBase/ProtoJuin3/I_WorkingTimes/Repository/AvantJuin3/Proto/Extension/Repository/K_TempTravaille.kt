@@ -34,18 +34,10 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
 
     @IgnoreExtraProperties
     class IntervalesDeTravaille(var vid: String = "HH_mm") {
-        var vendeur by mutableStateOf(Vendeur.Abdelmoumen)
+        var utilisateur by mutableStateOf(Utilisateur.Abdelmoumen)
         var typeTemp by mutableStateOf(TypeTemp.ACHAT)
 
-        enum class Vendeur() {
-            Abdelmoumen,
-            Walid
-            ;
 
-            override fun toString(): String {
-                return name
-            }
-        }
         enum class TypeTemp(val color: Color, val icon: ImageVector, val nomArabe: String = "") {
             DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل و تحظيرات "),
             VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart, "بيع"),
@@ -107,3 +99,4 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
 
     }
 }
+

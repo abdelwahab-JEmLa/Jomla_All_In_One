@@ -88,7 +88,7 @@ fun MainItem_Windows(
                         ) {
                             // Display vendor name
                             Text(
-                                text = intervale.vendeur.name,
+                                text = intervale.utilisateur.name,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.secondary

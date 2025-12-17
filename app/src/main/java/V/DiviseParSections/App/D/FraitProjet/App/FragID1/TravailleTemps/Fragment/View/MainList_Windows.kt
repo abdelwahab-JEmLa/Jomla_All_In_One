@@ -4,6 +4,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.DayHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -34,7 +36,11 @@ import java.util.Locale
 fun MainList_Windows(
     modifier: Modifier = Modifier,
     viewModel: RecordingViewModel = koinViewModel(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject (
+),
 ) {
+
+
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->
             // Create new copy with filtered intervals

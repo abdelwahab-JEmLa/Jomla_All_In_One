@@ -102,14 +102,14 @@ class K_TempTravailleRepositoryImpl :
             recordId = recordId,
             intervalId = intervalId,
             startTime = startTime,
-            vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+            utilisateur = Utilisateur.Walid
         ) { updatedRecordId ->
             println(">>> Walid interval added, updating record: $updatedRecordId")
 
             // Verify the interval was added
             val record = modelDatas.find { it.vid == updatedRecordId }
             val walidIntervals = record?.intervalesDeTravaille?.filter {
-                it.vendeur == K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+                it.utilisateur == Utilisateur.Walid
             }
             println(">>> Walid intervals count: ${walidIntervals?.size}")
             walidIntervals?.forEach {
@@ -136,13 +136,13 @@ class K_TempTravailleRepositoryImpl :
             startTime = startTime,
             endTime = endTime,
             typeTemp = typeTemp,
-            vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+            utilisateur = Utilisateur.Walid
         ) { updatedRecord ->
             println(">>> Walid interval updated: ${updatedRecord?.vid}")
 
             if (updatedRecord != null) {
                 val interval = updatedRecord.intervalesDeTravaille.find { it.vid == intervalId }
-                println(">>>   Updated interval: ID=${interval?.vid}, Vendeur=${interval?.vendeur}, Start=${interval?.tempDepart}, End=${interval?.temparrete}")
+                println(">>>   Updated interval: ID=${interval?.vid}, Vendeur=${interval?.utilisateur}, Start=${interval?.tempDepart}, End=${interval?.temparrete}")
             }
 
             updateOnPasseData(updatedRecord)
@@ -170,9 +170,9 @@ class K_TempTravailleRepositoryImpl :
                 // Parse vendeur field
                 try {
                     val vendeurStr = intervalSnapshot.child("vendeur").getValue(String::class.java) ?: "Abdelmoumen"
-                    interval.vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.valueOf(vendeurStr)
+                    interval.utilisateur = Utilisateur.valueOf(vendeurStr)
                 } catch (e: Exception) {
-                    interval.vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
+                    interval.utilisateur = Utilisateur.Abdelmoumen
                 }
 
                 try {
@@ -205,7 +205,7 @@ class K_TempTravailleRepositoryImpl :
             val intervalesDeTravaille = mutableMapOf<String, Any>()
             tempTravaille.intervalesDeTravaille.forEach { interval ->
                 val intervalData = mapOf(
-                    "vendeur" to interval.vendeur.name,
+                    "vendeur" to interval.utilisateur.name,
                     "typeTemp" to interval.typeTemp.name,
                     "tempDepart" to interval.tempDepart,
                     "temparrete" to interval.temparrete,

@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Extension
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 /**
@@ -49,7 +50,7 @@ object IntervalesEtJoursHandler {
         recordId: String?,
         intervalId: String?,
         startTime: String?,
-        vendeur: K_TempTravaille.IntervalesDeTravaille.Vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen,
+        utilisateur: Utilisateur = Utilisateur.Abdelmoumen,
         onComplete: (String) -> Unit = {}
     ) {
         if (recordId == null) return
@@ -72,13 +73,13 @@ object IntervalesEtJoursHandler {
             if (startTime != null) {
                 existingInterval.tempDepart = startTime
             }
-            existingInterval.vendeur = vendeur
+            existingInterval.utilisateur = utilisateur
             existingInterval.enCoureDEnregestrement = true
         } else {
             // Create new interval
             val newInterval = K_TempTravaille.IntervalesDeTravaille(vid = newIntervalId)
             newInterval.tempDepart = startTime ?: currentTime
-            newInterval.vendeur = vendeur
+            newInterval.utilisateur = utilisateur
             newInterval.enCoureDEnregestrement = true
             newInterval.temparrete = "HH:mm"
 
@@ -95,7 +96,7 @@ object IntervalesEtJoursHandler {
         startTime: String?,
         endTime: String?,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?,
-        vendeur: K_TempTravaille.IntervalesDeTravaille.Vendeur? = null,
+        utilisateur: Utilisateur? = null,
         onComplete: (K_TempTravaille?) -> Unit = {}
     ) {
         if (recordId == null || intervalId == null) {
@@ -129,8 +130,8 @@ object IntervalesEtJoursHandler {
             interval.typeTemp = typeTemp
         }
 
-        if (vendeur != null) {
-            interval.vendeur = vendeur
+        if (utilisateur != null) {
+            interval.utilisateur = utilisateur
         }
 
         onComplete(record)

@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
@@ -62,6 +63,9 @@ data class ActiveCentralValues(
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
+    var active_filter_du_utilisateur: Utilisateur? = Utilisateur.Walid,
+
+
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
