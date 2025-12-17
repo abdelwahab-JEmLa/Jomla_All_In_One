@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.time.LocalDate
@@ -144,7 +145,10 @@ fun FragID_0_Butt_2(
                         modifier = Modifier
                             .padding(8.dp)
                             .focusRequester(dateFieldFocusRequester),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
                         keyboardActions = KeyboardActions(
                             onDone = { focusManager.clearFocus() }
                         )
@@ -210,7 +214,10 @@ fun FragID_0_Butt_2(
                                 label = { Text("Start: $defaultStartAbdelmoumen") },
                                 placeholder = { Text(defaultStartAbdelmoumen) },
                                 modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
                                 keyboardActions = KeyboardActions(onNext = { endAbdelmoumenFocusRequester.requestFocus() }),
                                 singleLine = true
                             )
@@ -220,7 +227,10 @@ fun FragID_0_Butt_2(
                                 label = { Text("End: $defaultEndAbdelmoumen") },
                                 placeholder = { Text(defaultEndAbdelmoumen) },
                                 modifier = Modifier.weight(1f).focusRequester(endAbdelmoumenFocusRequester),
-                                keyboardOptions = KeyboardOptions(imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done
+                                ),
                                 keyboardActions = KeyboardActions(
                                     onNext = { if (standardTimes.walid_its_working) startWalidFocusRequester.requestFocus() },
                                     onDone = { if (!standardTimes.walid_its_working) focusManager.clearFocus() }
@@ -243,7 +253,10 @@ fun FragID_0_Butt_2(
                                 label = { Text("Start: $defaultStartWalid") },
                                 placeholder = { Text(defaultStartWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(startWalidFocusRequester),
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
                                 keyboardActions = KeyboardActions(onNext = { endWalidFocusRequester.requestFocus() }),
                                 singleLine = true
                             )
@@ -253,7 +266,10 @@ fun FragID_0_Butt_2(
                                 label = { Text("End: $defaultEndWalid") },
                                 placeholder = { Text(defaultEndWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(endWalidFocusRequester),
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
                                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                                 singleLine = true
                             )
