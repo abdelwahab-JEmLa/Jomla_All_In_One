@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.time.ExperimentalTime
@@ -93,8 +92,8 @@ fun FragID_0_Butt_2(
     // Convert standard time (prayer name or HH:mm) to actual time
     fun resolveTime(timeString: String, prayerTimes: Pair<String, String>): String {
         return when (timeString.lowercase().trim()) {
-            "sobhe", "fajr", "subh" -> prayerTimes.first
-            "dohre", "dhuhr", "dhur", "dohr" -> prayerTimes.second
+            "sobhe", "fajr", "subh", "s" -> prayerTimes.first
+            "dohre", "dhuhr", "dhur", "dohr", "d" -> prayerTimes.second
             else -> timeString // Already in HH:mm format
         }
     }
