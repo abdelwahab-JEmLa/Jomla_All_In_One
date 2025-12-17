@@ -43,11 +43,5 @@ enum class Utilisateur(val comp: String) {
             return current?.toggle() ?: Abdelmoumen
         }
 
-        /**
-         * Find utilisateur by compte key ID
-         */
-        fun fromCompKey(compKey: String): Utilisateur? {
-            return values().firstOrNull { it.comp == compKey }
-        }
     }
 }
