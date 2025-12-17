@@ -23,6 +23,35 @@ class K_TempTravailleRepositoryImpl :
         startDatabaseListener()
         progressRepo.value = 1.0f
     }
+
+    override fun add_new_Temp(k_TempTravaille: K_TempTravaille) {
+        println(">>> add_new_Temp called: recordId=${k_TempTravaille.vid}")
+
+        try {
+            // Check if record already exists
+            val existingIndex = modelDatas.indexOfFirst { it.vid == k_TempTravaille.vid }
+
+            if (existingIndex != -1) {
+                // Update existing record
+                modelDatas[existingIndex] = k_TempTravaille
+                println(">>> Updated existing record: ${k_TempTravaille.vid}")
+            } else {
+                // Add new record
+                modelDatas.add(k_TempTravaille)
+                modelDatas.sortBy { it.infosDeBase.dateInString }
+                println(">>> Added new record: ${k_TempTravaille.vid}")
+            }
+
+            // Sync to Firebase
+            updateDataUnSeulDataInFirebase(k_TempTravaille)
+
+            println(">>> Successfully added/updated record with ${k_TempTravaille.intervalesDeTravaille.size} intervals")
+        } catch (e: Exception) {
+            println(">>> ERROR in add_new_Temp: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
     override fun addNewIntervals_au_TempTravaille(
         k_TempTravaille: K_TempTravaille,
         intervalesDeTravaille: List<K_TempTravaille.IntervalesDeTravaille>

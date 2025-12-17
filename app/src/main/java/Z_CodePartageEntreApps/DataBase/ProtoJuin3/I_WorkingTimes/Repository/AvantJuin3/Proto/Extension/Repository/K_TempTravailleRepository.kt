@@ -29,6 +29,7 @@ interface K_TempTravailleRepository {
     fun checkConnectivityAndSync()
     fun deleteIntevaleDeTemp(intervalId: String)
     fun ajoutJour(date: String)
+    fun add_new_Temp(k_TempTravaille: K_TempTravaille)
 
     fun updateUnSeulData(
         recordId: String? = null,
