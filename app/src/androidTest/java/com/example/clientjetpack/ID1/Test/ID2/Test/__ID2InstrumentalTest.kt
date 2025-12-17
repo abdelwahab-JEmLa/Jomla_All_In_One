@@ -50,6 +50,7 @@ class __ID2InstrumentalTest : KoinTest {
                             get(),
                             get(),
                             get(),
+                            get(),
                         )
                     }
                 }

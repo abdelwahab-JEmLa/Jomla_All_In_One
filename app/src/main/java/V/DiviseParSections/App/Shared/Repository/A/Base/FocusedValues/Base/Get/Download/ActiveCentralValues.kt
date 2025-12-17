@@ -66,7 +66,7 @@ data class ActiveCentralValues(
     var active_filter_du_utilisateur: Utilisateur? = when (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId) {
         Utilisateur.Abdelmoumen.comp -> Utilisateur.Abdelmoumen
         Utilisateur.Walid.comp -> Utilisateur.Walid
-        else -> Utilisateur.Abdelmoumen
+        else -> Utilisateur.Admin
     },
 
 

@@ -12,6 +12,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +38,8 @@ fun StandardTimesDialog(
     var startWalid by remember { mutableStateOf(currentTimes.start_walid) }
     var endWalid by remember { mutableStateOf(currentTimes.end_walid) }
 
+    var selectedType by remember { mutableStateOf(currentTimes.au_click_start_par) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edit Standard Times") },
@@ -47,6 +50,40 @@ fun StandardTimesDialog(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Default Date Behavior Section
+                Text(
+                    text = "Default Date Behavior",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Column(
+                    modifier = Modifier.padding(start = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedType == Standart_times.Type.TodayeDate,
+                            onClick = { selectedType = Standart_times.Type.TodayeDate }
+                        )
+                        Text("Start with Today's Date")
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedType == Standart_times.Type.NextLastDay,
+                            onClick = { selectedType = Standart_times.Type.NextLastDay }
+                        )
+                        Text("Start with Next Day (Last Date + 1)")
+                    }
+                }
+
+                HorizontalDivider()
+
                 // Abdelmoumen Section
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -150,7 +187,8 @@ fun StandardTimesDialog(
                             end_abdelmoumen = endAbdelmoumen,
                             walid_its_working = walidItsWorking,
                             start_walid = startWalid,
-                            end_walid = endWalid
+                            end_walid = endWalid,
+                            au_click_start_par = selectedType
                         )
                     )
                 }

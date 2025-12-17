@@ -41,18 +41,18 @@ import java.util.TimeZone
 import kotlin.time.ExperimentalTime
 
 data class Standart_times(
-    val its_working_abdelmoumen: Boolean=true,
+    val its_working_abdelmoumen: Boolean = true,
     val start_abdelmoumen: String = "s",
     val end_abdelmoumen: String = "d",
-    val walid_its_working: Boolean=true,
+    val walid_its_working: Boolean = true,
     val start_walid: String = "08:00",
     val end_walid: String = "d",
-    val au_click_start_par: Type = "d"
-)  {
-     enum classe Type {
-         NextLastDay,
+    val au_click_start_par: Type = Type.TodayeDate
+) {
+    enum class Type {
+        NextLastDay,
         TodayeDate
-     }
+    }
 }
 
 @OptIn(ExperimentalTime::class)
@@ -107,6 +107,54 @@ fun FragID_0_Butt_2(
         return input.replace(".", ":")
     }
 
+    fun getDefaultDateBasedOnType(): String {
+        return when (standardTimes.au_click_start_par) {
+            Standart_times.Type.TodayeDate -> {
+                todayFormatted
+            }
+            Standart_times.Type.NextLastDay -> {
+                try {
+                    val allRecords = viewModel.repository.modelDatas
+                    if (allRecords.isEmpty()) {
+                        todayFormatted
+                    } else {
+                        val lastRecord = allRecords.maxByOrNull { record ->
+                            try {
+                                val parts = record.vid.split("_")
+                                if (parts.size == 3) {
+                                    LocalDate.of(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
+                                } else {
+                                    LocalDate.MIN
+                                }
+                            } catch (e: Exception) {
+                                LocalDate.MIN
+                            }
+                        }
+
+                        if (lastRecord != null) {
+                            try {
+                                val parts = lastRecord.vid.split("_")
+                                if (parts.size == 3) {
+                                    val lastDate = LocalDate.of(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
+                                    val nextDate = lastDate.plusDays(1)
+                                    String.format("%02d.%02d", nextDate.monthValue, nextDate.dayOfMonth)
+                                } else {
+                                    todayFormatted
+                                }
+                            } catch (e: Exception) {
+                                todayFormatted
+                            }
+                        } else {
+                            todayFormatted
+                        }
+                    }
+                } catch (e: Exception) {
+                    todayFormatted
+                }
+            }
+        }
+    }
+
     var startTimeAbdelmoumen by remember { mutableStateOf("") }
     var endTimeAbdelmoumen by remember { mutableStateOf("") }
     var startTimeWalid by remember { mutableStateOf("") }
@@ -132,12 +180,12 @@ fun FragID_0_Butt_2(
         }
     }
 
-// Replace the showDateDialog AlertDialog with this fixed version:
-
     if (showDateDialog) {
         val dateFieldFocusRequester = remember { FocusRequester() }
+        val defaultDate = remember { getDefaultDateBasedOnType() }
 
         LaunchedEffect(Unit) {
+            dateInput = defaultDate
             kotlinx.coroutines.delay(100)
             dateFieldFocusRequester.requestFocus()
         }
@@ -145,17 +193,23 @@ fun FragID_0_Butt_2(
         AlertDialog(
             onDismissRequest = {
                 showDateDialog = false
-                dateInput = ""  // Changed: Reset to empty instead of todayFormatted
+                dateInput = ""
             },
-            title = { Text("Add New Day") },     //<--
-            //TODO(1): fait qe le start par au_click_start_par si next charceh au datas le last +1 sinon todaye
+            title = {
+                Text(
+                    if (standardTimes.au_click_start_par == Standart_times.Type.NextLastDay)
+                        "Add Next Day"
+                    else
+                        "Add New Day"
+                )
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = dateInput,
                         onValueChange = { dateInput = it },
                         label = { Text("Enter date (MM.DD)") },
-                        placeholder = { Text("Example: $todayFormatted") },
+                        placeholder = { Text("Example: $defaultDate") },
                         modifier = Modifier
                             .padding(8.dp)
                             .focusRequester(dateFieldFocusRequester),
@@ -168,7 +222,10 @@ fun FragID_0_Butt_2(
                         )
                     )
                     Text(
-                        text = "Leave empty to use today's date",
+                        text = when (standardTimes.au_click_start_par) {
+                            Standart_times.Type.NextLastDay -> "Default: next day after last entry ($defaultDate)"
+                            Standart_times.Type.TodayeDate -> "Leave empty to use today's date"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 8.dp)
@@ -178,7 +235,7 @@ fun FragID_0_Butt_2(
             confirmButton = {
                 Button(
                     onClick = {
-                        val finalDateInput = dateInput.ifBlank { todayFormatted }
+                        val finalDateInput = dateInput.ifBlank { defaultDate }
                         val currentYear = java.time.Year.now().value
 
                         println("DEBUG: dateInput = '$dateInput'")
@@ -224,7 +281,7 @@ fun FragID_0_Butt_2(
             dismissButton = {
                 Button(onClick = {
                     showDateDialog = false
-                    dateInput = ""  // Changed: Reset to empty instead of todayFormatted
+                    dateInput = ""
                 }) {
                     Text("Cancel")
                 }
@@ -236,7 +293,7 @@ fun FragID_0_Butt_2(
         AlertDialog(
             onDismissRequest = {
                 showIntervalDialog = false
-                dateInput = todayFormatted
+                dateInput = ""
                 createdRecordId = null
                 selectedDate = null
             },
@@ -353,7 +410,7 @@ fun FragID_0_Butt_2(
                             viewModel.repository.add_new_Temp(newWorkingDay)
 
                             showIntervalDialog = false
-                            dateInput = todayFormatted
+                            dateInput = ""
                             createdRecordId = null
                             selectedDate = null
                             startTimeAbdelmoumen = ""
@@ -370,7 +427,7 @@ fun FragID_0_Butt_2(
                 Button(
                     onClick = {
                         showIntervalDialog = false
-                        dateInput = todayFormatted
+                        dateInput = ""
                         createdRecordId = null
                         selectedDate = null
                         startTimeAbdelmoumen = ""
