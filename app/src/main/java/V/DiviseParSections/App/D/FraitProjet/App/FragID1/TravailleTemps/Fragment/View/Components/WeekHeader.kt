@@ -44,19 +44,21 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.util.Calendar
 import java.util.Locale
+
+// FIXED: WeekHeader.kt with separate calculations per vendor
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: RecordingViewModel,
-    weekRecords: List<K_TempTravaille>,
+    weekRecords: List<K_TempTravaille>,  // <- CHANGED: Accept filtered records as parameter
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    // Get current user and admin status
-    val currentUser by focusedValuesGetter.utilisateurFocused.collectAsState()
-    val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
+    // REMOVED: The filtering logic that was here, now we use the passed parameter
 
     // Calculate total work time PER VENDOR using the passed filtered records
-    val (totalMinutesAbdelmoumen, totalMinutesWalid) = calculateTotalWeekWorkTimePerVendor(weekRecords)
+    val (totalMinutesAbdelmoumen, totalMinutesWalid) = calculateTotalWeekWorkTimePerVendor(
+        weekRecords
+    )
 
     // Calculate total for BOTH vendors
     val totalWeekMinutes = totalMinutesAbdelmoumen + totalMinutesWalid
@@ -64,11 +66,14 @@ fun WeekHeader(
     // Debug logging
     println("=== WeekHeader Debug ===")
     println("Week ${weekInfo.weekNumber}, ${weekInfo.year}")
-    println("Current User: $currentUser, Is Admin: $isAbdelwahabLeGerant")
     println("Abdelmoumen: $totalMinutesAbdelmoumen min")
     println("Walid: $totalMinutesWalid min")
     println("Total: $totalWeekMinutes min")
     println("========================")
+
+    val totalHours = totalWeekMinutes / 60
+    val remainingMinutes = totalWeekMinutes % 60
+    val totalWeekTimeFormatted = "${totalHours}h ${remainingMinutes}m"
 
     // Calculate earnings per vendor
     val hourlyRate = 1200.0 / 8.0 / 60.0
@@ -76,21 +81,7 @@ fun WeekHeader(
     val earningsWalid = hourlyRate * totalMinutesWalid
     val totalWeekEarnings = earningsAbdelmoumen + earningsWalid
 
-    // Format time for each vendor
-    val hoursAbdelmoumen = totalMinutesAbdelmoumen / 60
-    val minutesAbdelmoumen = totalMinutesAbdelmoumen % 60
-    val timeAbdelmoumen = "${hoursAbdelmoumen}h ${minutesAbdelmoumen}m"
-
-    val hoursWalid = totalMinutesWalid / 60
-    val minutesWalid = totalMinutesWalid % 60
-    val timeWalid = "${hoursWalid}h ${minutesWalid}m"
-
-    val daysAbdelmoumen = totalMinutesAbdelmoumen / (8.0 * 60.0)
-    val daysWalid = totalMinutesWalid / (8.0 * 60.0)
-    val daysAbdelmoumenFormatted = translateWorkDurationToArabic(daysAbdelmoumen, totalMinutesAbdelmoumen)
-    val daysWalidFormatted = translateWorkDurationToArabic(daysWalid, totalMinutesWalid)
-
-    // Calculate total days worked
+    // Calculate days worked
     val daysWorked = totalWeekMinutes / (8.0 * 60.0)
     val daysWorkedFormatted = translateWorkDurationToArabic(daysWorked, totalWeekMinutes)
 
@@ -191,40 +182,18 @@ fun WeekHeader(
                 color = Color.White
             )
 
-            // Total work duration card
+            // Total work duration card - FIXED: Now uses filtered data
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.White.copy(alpha = 0.8f)
                 )
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    // Show based on user type
-                    when {
-                        // Admin sees everything
-                        isAbdelwahabLeGerant -> {
-                            Text(
-                                text = "مدة العمل الاجمالية: $daysWorkedFormatted",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.Blue
-                            )
-                        }
-                        // Abdelmoumen sees only his time
-                        currentUser == Utilisateur.Abdelmoumen -> {
-                            Text(
-                                text = "مدة عملك: $daysAbdelmoumenFormatted",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.Blue
-                            )
-                        }
-                        // Walid sees only his time
-                        currentUser == Utilisateur.Walid -> {
-                            Text(
-                                text = "مدة عملك: $daysWalidFormatted",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.Blue
-                            )
-                        }
-                    }
+                    Text(
+                        text = "مدة العمل الاجمالية: $daysWorkedFormatted",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.Blue
+                    )
                 }
             }
 
@@ -237,154 +206,74 @@ fun WeekHeader(
                 )
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    // Show based on user type
-                    when {
-                        // Admin sees both vendors
-                        isAbdelwahabLeGerant -> {
-                            // Abdelmoumen earnings
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "عبدالمؤمن:",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Blue,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = timeAbdelmoumen,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                    Text(
-                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Red
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.padding(2.dp))
-
-                            // Walid earnings
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "وليد:",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Blue,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = timeWalid,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                    Text(
-                                        text = "${String.format("%.2f", earningsWalid)} دينار",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Red
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.padding(4.dp))
-
-                            // Total earnings
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "المجموع الكلي:",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.Blue,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "${String.format("%.2f", totalWeekEarnings)} دينار",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.Red,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-
-                        // Abdelmoumen sees only his earnings
-                        currentUser == Utilisateur.Abdelmoumen -> {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "أرباحك:",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.Blue,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = timeAbdelmoumen,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                    Text(
-                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = Color.Red,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-
-                        // Walid sees only his earnings
-                        currentUser == Utilisateur.Walid -> {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "أرباحك:",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.Blue,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = timeWalid,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                    Text(
-                                        text = "${String.format("%.2f", earningsWalid)} دينار",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = Color.Red,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                                )
-                            }
-                        }
-
+                    // Abdelmoumen earnings
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
-                            text = "اليوم/1200 دينار",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
+                            text = "عبدالمؤمن:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Blue,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Red
                         )
                     }
+
+                    // Walid earnings
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "وليد:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Blue,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${String.format("%.2f", earningsWalid)} دينار",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Red
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(2.dp))
+
+                    // Total earnings
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "المجموع الكلي:",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.Blue,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${String.format("%.2f", totalWeekEarnings)} دينار",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.Red,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Text(
+                        text = "اليوم/1200 دينار",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
                 }
             }
         }
     }
+}
 
-// Keep all other helper functions unchanged
-// (calculateTotalWeekWorkTimePerVendor, markAllDaysAsPaid, etc.)
 // Keep all other helper functions unchanged
 // (calculateTotalWeekWorkTimePerVendor, markAllDaysAsPaid, etc.)
 
