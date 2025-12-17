@@ -66,23 +66,21 @@ fun FragID_0_Butt_2(
                 longitude = 3.1833
             )
 
-            // Create Calendar instance for the selected date
+            // Create Calendar instance for the selected date in Algeria timezone
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Algiers")).apply {
                 set(Calendar.YEAR, date.year)
                 set(Calendar.MONTH, date.monthValue - 1)
                 set(Calendar.DAY_OF_MONTH, date.dayOfMonth)
+                set(Calendar.HOUR_OF_DAY, 12)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
             }
 
-            // Get timezone offset for the specific date (accounts for DST)
-            val zoneId = ZoneId.of("Africa/Algiers")
-            val zonedDateTime = date.atStartOfDay(zoneId)
-            val offsetHours = zonedDateTime.offset.totalSeconds / 3600.0
-
-            // Get prayer times
+            // Algeria is UTC+1, no DST since 1981
             val prayerTimes = calculator.getPrayerTimes(
                 date = calendar,
                 coordinates = coordinates,
-                timeZoneOffset = offsetHours
+                timeZoneOffset = 1.0 // Fixed UTC+1 for Algeria
             )
 
             Pair(prayerTimes.fajr, prayerTimes.dhuhr)
@@ -95,8 +93,8 @@ fun FragID_0_Butt_2(
     // Convert standard time (prayer name or HH:mm) to actual time
     fun resolveTime(timeString: String, prayerTimes: Pair<String, String>): String {
         return when (timeString.lowercase().trim()) {
-            "sobhe", "fajr", "subh", "s" -> prayerTimes.first
-            "dohre", "dhuhr", "dhur", "dohr", "d" -> prayerTimes.second
+            "sobhe", "fajr", "subh" -> prayerTimes.first
+            "dohre", "dhuhr", "dhur", "dohr" -> prayerTimes.second
             else -> timeString // Already in HH:mm format
         }
     }

@@ -80,7 +80,8 @@ class PrayerTimesCalculator {
         val month = date.get(Calendar.MONTH) + 1
         val day = date.get(Calendar.DAY_OF_MONTH)
 
-        jDate = julianDate(year, month, day) - lng / (15.0 * 24.0)
+        // Calculate Julian date - timezone should NOT be subtracted here
+        jDate = julianDate(year, month, day)
 
         return computePrayerTimes()
     }
@@ -121,12 +122,15 @@ class PrayerTimesCalculator {
     }
 
     private fun computeMidDay(t: Double): Double {
-        val eqt = sunPosition(jDate + t).second
-        return fixHour(12 - eqt)
+        val jd = jDate + t / 24.0
+        val eqt = sunPosition(jd).second
+        val noon = 12 + timeZone - lng / 15.0 - eqt
+        return fixHour(noon)
     }
 
     private fun computeTime(angle: Double, time: Double): Double {
-        val decl = sunPosition(jDate + time).first
+        val jd = jDate + time / 24.0
+        val decl = sunPosition(jd).first
         val noon = computeMidDay(time)
         val t = 1.0 / 15.0 * arccos(
             (-sin(angle) - sin(decl) * sin(lat)) /
@@ -136,7 +140,8 @@ class PrayerTimesCalculator {
     }
 
     private fun computeAsr(factor: Double, time: Double): Double {
-        val decl = sunPosition(jDate + time).first
+        val jd = jDate + time / 24.0
+        val decl = sunPosition(jd).first
         val angle = -arccot(factor + tan(abs(lat - decl)))
         return computeTime(angle, time)
     }
@@ -157,7 +162,6 @@ class PrayerTimesCalculator {
 
     private fun formatTime(time: Double): String {
         var t = fixHour(time + 0.5 / 60.0) // add 0.5 minutes for rounding
-        t = fixHour(t + timeZone)
         val hours = floor(t).toInt()
         val minutes = floor((t - hours) * 60.0).toInt()
         return String.format("%02d:%02d", hours, minutes)
