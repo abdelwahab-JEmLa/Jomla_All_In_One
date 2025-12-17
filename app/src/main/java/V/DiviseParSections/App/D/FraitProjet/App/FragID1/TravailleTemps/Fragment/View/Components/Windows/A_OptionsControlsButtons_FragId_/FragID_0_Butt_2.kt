@@ -40,11 +40,11 @@ import kotlin.time.ExperimentalTime
 
 data class Standart_times(
     val its_working_abdelmoumen: Boolean=true,
-    val start_abdelmoumen: String = "s",//"Sobhe",
+    val start_abdelmoumen: String = "s",
     val end_abdelmoumen: String = "d",
     val walid_its_working: Boolean=true,
     val start_walid: String = "08:00",
-    val end_walid: String = "d"    ,//"Dohre"
+    val end_walid: String = "d"
 )
 
 @OptIn(ExperimentalTime::class)
@@ -63,24 +63,15 @@ fun FragID_0_Butt_2(
         val today = LocalDate.now()
         String.format("%02d.%02d", today.monthValue, today.dayOfMonth)
     }
-    var dateInput by remember { mutableStateOf(todayFormatted) }
+    var dateInput by remember { mutableStateOf("") }
     var createdRecordId by remember { mutableStateOf<String?>(null) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
-    // Calculate prayer times using PrayerTimesCalculator
     fun calculatePrayerTimes(date: LocalDate = LocalDate.now()): Pair<String, String> {
         return try {
             val calculator = PrayerTimesCalculator()
-            // Use ALGERIA method instead of MWL for accurate Algerian times
             calculator.setCalculationMethod(PrayerTimesCalculator.CalculationMethod.ALGERIA)
-
-            // Coordinates for Bab Ezzouar, Algiers, DZ
-            val coordinates = PrayerTimesCalculator.Coordinates(
-                latitude = 36.7167,
-                longitude = 3.1833
-            )
-
-            // Create Calendar instance for the selected date in Algeria timezone
+            val coordinates = PrayerTimesCalculator.Coordinates(latitude = 36.7167, longitude = 3.1833)
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Algiers")).apply {
                 set(Calendar.YEAR, date.year)
                 set(Calendar.MONTH, date.monthValue - 1)
@@ -89,27 +80,18 @@ fun FragID_0_Butt_2(
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
             }
-
-            // Algeria is UTC+1, no DST since 1981
-            val prayerTimes = calculator.getPrayerTimes(
-                date = calendar,
-                coordinates = coordinates,
-                timeZoneOffset = 1.0 // Fixed UTC+1 for Algeria
-            )
-
+            val prayerTimes = calculator.getPrayerTimes(date = calendar, coordinates = coordinates, timeZoneOffset = 1.0)
             Pair(prayerTimes.fajr, prayerTimes.dhuhr)
         } catch (e: Exception) {
-            // Fallback times in case of error
             Pair("05:30", "12:45")
         }
     }
 
-    // Convert standard time (prayer name or HH:mm) to actual time
     fun resolveTime(timeString: String, prayerTimes: Pair<String, String>): String {
         return when (timeString.lowercase().trim()) {
             "sobhe", "fajr", "subh", "s" -> prayerTimes.first
             "dohre", "dhuhr", "dhur", "dohr", "d" -> prayerTimes.second
-            else -> timeString // Already in HH:mm format
+            else -> timeString
         }
     }
 
@@ -118,13 +100,11 @@ fun FragID_0_Butt_2(
     var startTimeWalid by remember { mutableStateOf(standardTimes.start_walid) }
     var endTimeWalid by remember { mutableStateOf(standardTimes.end_walid) }
 
-    // Focus requesters for navigation between fields
     val focusManager = LocalFocusManager.current
     val endAbdelmoumenFocusRequester = remember { FocusRequester() }
     val startWalidFocusRequester = remember { FocusRequester() }
     val endWalidFocusRequester = remember { FocusRequester() }
 
-    // Update times when dialog opens
     LaunchedEffect(showIntervalDialog, selectedDate) {
         if (showIntervalDialog && selectedDate != null) {
             val prayerTimes = calculatePrayerTimes(selectedDate!!)
@@ -135,8 +115,14 @@ fun FragID_0_Butt_2(
         }
     }
 
-    // Date Dialog
     if (showDateDialog) {
+        val dateFieldFocusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            kotlinx.coroutines.delay(100)
+            dateFieldFocusRequester.requestFocus()
+        }
+
         AlertDialog(
             onDismissRequest = {
                 showDateDialog = false
@@ -144,20 +130,32 @@ fun FragID_0_Butt_2(
             },
             title = { Text("Add New Day") },
             text = {
-                OutlinedTextField(
-                    value = dateInput,
-                    onValueChange = { dateInput = it },
-                    label = { Text("Enter date (MM.DD)") },
-                    placeholder = { Text("Example: $todayFormatted") },
-                    modifier = Modifier.padding(8.dp)
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = dateInput,
+                        onValueChange = { dateInput = it },
+                        label = { Text("Enter date (MM.DD)") },
+                        placeholder = { Text("Example: $todayFormatted") },
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .focusRequester(dateFieldFocusRequester),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focusManager.clearFocus() }
+                        )
+                    )
+                    Text(
+                        text = "Leave empty to use today's date",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        // Use current date if input is empty or blank
-                        val finalDateInput = if (dateInput.isBlank()) todayFormatted else dateInput
-
+                        val finalDateInput = dateInput.ifBlank { todayFormatted }
                         val currentYear = java.time.Year.now().value
                         val parts = finalDateInput.split(".")
                         if (parts.size == 2) {
@@ -174,19 +172,16 @@ fun FragID_0_Butt_2(
                 }
             },
             dismissButton = {
-                Button(
-                    onClick = {
-                        showDateDialog = false
-                        dateInput = todayFormatted
-                    }
-                ) {
+                Button(onClick = {
+                    showDateDialog = false
+                    dateInput = todayFormatted
+                }) {
                     Text("Cancel")
                 }
             }
         )
     }
 
-    // Interval Dialog
     if (showIntervalDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -198,22 +193,12 @@ fun FragID_0_Butt_2(
             title = { Text("Add Intervals for Both Vendors") },
             text = {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Only show Abdelmoumen fields if he's working
                     if (standardTimes.its_working_abdelmoumen) {
-                        Text(
-                            text = "Abdelmoumen",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF2196F3)
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
+                        Text(text = "Abdelmoumen", style = MaterialTheme.typography.titleMedium, color = Color(0xFF2196F3))
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = startTimeAbdelmoumen,
                                 onValueChange = { startTimeAbdelmoumen = it },
@@ -221,11 +206,7 @@ fun FragID_0_Butt_2(
                                 placeholder = { Text("08:00") },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        endAbdelmoumenFocusRequester.requestFocus()
-                                    }
-                                ),
+                                keyboardActions = KeyboardActions(onNext = { endAbdelmoumenFocusRequester.requestFocus() }),
                                 singleLine = true
                             )
                             OutlinedTextField(
@@ -234,20 +215,10 @@ fun FragID_0_Butt_2(
                                 label = { Text("End") },
                                 placeholder = { Text("12:45") },
                                 modifier = Modifier.weight(1f).focusRequester(endAbdelmoumenFocusRequester),
-                                keyboardOptions = KeyboardOptions(
-                                    imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done
-                                ),
+                                keyboardOptions = KeyboardOptions(imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done),
                                 keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        if (standardTimes.walid_its_working) {
-                                            startWalidFocusRequester.requestFocus()
-                                        }
-                                    },
-                                    onDone = {
-                                        if (!standardTimes.walid_its_working) {
-                                            focusManager.clearFocus()
-                                        }
-                                    }
+                                    onNext = { if (standardTimes.walid_its_working) startWalidFocusRequester.requestFocus() },
+                                    onDone = { if (!standardTimes.walid_its_working) focusManager.clearFocus() }
                                 ),
                                 singleLine = true
                             )
@@ -258,17 +229,9 @@ fun FragID_0_Butt_2(
                         HorizontalDivider()
                     }
 
-                    // Only show Walid fields if he's working
                     if (standardTimes.walid_its_working) {
-                        Text(
-                            text = "Walid",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF4CAF50)
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
+                        Text(text = "Walid", style = MaterialTheme.typography.titleMedium, color = Color(0xFF4CAF50))
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = startTimeWalid,
                                 onValueChange = { startTimeWalid = it },
@@ -276,9 +239,7 @@ fun FragID_0_Butt_2(
                                 placeholder = { Text("08:00") },
                                 modifier = Modifier.weight(1f).focusRequester(startWalidFocusRequester),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                                keyboardActions = KeyboardActions(
-                                    onNext = { endWalidFocusRequester.requestFocus() }
-                                ),
+                                keyboardActions = KeyboardActions(onNext = { endWalidFocusRequester.requestFocus() }),
                                 singleLine = true
                             )
                             OutlinedTextField(
@@ -288,9 +249,7 @@ fun FragID_0_Butt_2(
                                 placeholder = { Text("12:45") },
                                 modifier = Modifier.weight(1f).focusRequester(endWalidFocusRequester),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                                keyboardActions = KeyboardActions(
-                                    onDone = { focusManager.clearFocus() }
-                                ),
+                                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                                 singleLine = true
                             )
                         }
@@ -303,7 +262,6 @@ fun FragID_0_Butt_2(
                         if (createdRecordId != null) {
                             val intervalesDeTravaille = mutableListOf<K_TempTravaille.IntervalesDeTravaille>()
 
-                            // Only add Abdelmoumen interval if he's working
                             if (standardTimes.its_working_abdelmoumen) {
                                 val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "abdelmoumen_interval"
@@ -314,7 +272,6 @@ fun FragID_0_Butt_2(
                                 intervalesDeTravaille.add(abdelmoumenInterval)
                             }
 
-                            // Only add Walid interval if he's working
                             if (standardTimes.walid_its_working) {
                                 val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "walid_interval"
@@ -325,18 +282,10 @@ fun FragID_0_Butt_2(
                                 intervalesDeTravaille.add(walidInterval)
                             }
 
-                            // Create working day with intervals
                             val newWorkingDay = K_TempTravaille(vid = createdRecordId!!).apply {
                                 this.infosDeBase.dateInString = createdRecordId!!
-                                // Clear any existing intervals and add our new ones
                                 this.intervalesDeTravaille.clear()
                                 this.intervalesDeTravaille.addAll(intervalesDeTravaille)
-                            }
-
-                            // Debug log to verify intervals are present
-                            println("DEBUG: Adding working day with ${newWorkingDay.intervalesDeTravaille.size} intervals")
-                            newWorkingDay.intervalesDeTravaille.forEach { interval ->
-                                println("  - ${interval.vendeur}: ${interval.tempDepart} to ${interval.temparrete}")
                             }
 
                             viewModel.repository.add_new_Temp(newWorkingDay)
