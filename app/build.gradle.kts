@@ -54,6 +54,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/*.kotlin_module"
         }
     }
     sourceSets {
@@ -146,9 +147,9 @@ dependencies {
     // MongoDB
     implementation("org.mongodb:bson:4.11.1")
 
-    // PDF Generation - iText7 (NEW DEPENDENCY)
+    // PDF Generation - iText7
     implementation("com.itextpdf:itext7-core:7.2.5")
-    implementation("com.itextpdf:html2pdf:4.0.5") // Optional: for HTML to PDF conversion
+    implementation("com.itextpdf:html2pdf:4.0.5")
 
     // For coroutines with Firebase
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
@@ -160,6 +161,19 @@ dependencies {
 
     // ExifInterface
     implementation("androidx.exifinterface:exifinterface:1.3.6")
+
+    // Prayer Times - Alternative compatible library
+    // REMOVED: implementation("com.batoulapps.adhan:adhan2:0.0.6")
+    // Use custom implementation instead (see PrayerTimesCalculator.kt)
+
+    // Desugaring for Java 8+ API support on older Android versions
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Apache POI for Excel
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+
+    // Persian/Hijri Calendar
+    implementation("com.aminography:primecalendar:1.7.0")
 
     // ================== TESTING DEPENDENCIES ==================
     // Unit Testing
@@ -194,9 +208,6 @@ dependencies {
     // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation("org.apache.poi:poi-ooxml:5.2.3")
-    implementation("com.aminography:primecalendar:1.7.0")
 }
 
 apply(plugin = "com.google.gms.google-services")
