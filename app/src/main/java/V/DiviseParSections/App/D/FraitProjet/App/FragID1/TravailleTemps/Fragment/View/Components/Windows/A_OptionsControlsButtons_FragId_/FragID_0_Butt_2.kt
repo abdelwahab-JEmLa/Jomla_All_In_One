@@ -170,14 +170,41 @@ fun FragID_0_Butt_2(
                     onClick = {
                         val finalDateInput = dateInput.ifBlank { todayFormatted }
                         val currentYear = java.time.Year.now().value
+
+                        println("DEBUG: dateInput = '$dateInput'")
+                        println("DEBUG: finalDateInput = '$finalDateInput'")
+
                         val parts = finalDateInput.split(".")
+                        println("DEBUG: parts = $parts, size = ${parts.size}")
+
                         if (parts.size == 2) {
-                            val month = parts[0].padStart(2, '0')
-                            val day = parts[1].padStart(2, '0')
-                            createdRecordId = "${currentYear}_${month}_${day}"
-                            selectedDate = LocalDate.of(currentYear, month.toInt(), day.toInt())
-                            showDateDialog = false
-                            showIntervalDialog = true
+                            try {
+                                val monthStr = parts[0].trim()
+                                val dayStr = parts[1].trim()
+
+                                println("DEBUG: monthStr = '$monthStr', dayStr = '$dayStr'")
+
+                                val month = monthStr.toInt()
+                                val day = dayStr.toInt()
+
+                                println("DEBUG: month = $month, day = $day")
+
+                                val monthPadded = month.toString().padStart(2, '0')
+                                val dayPadded = day.toString().padStart(2, '0')
+
+                                createdRecordId = "${currentYear}_${monthPadded}_${dayPadded}"
+                                selectedDate = LocalDate.of(currentYear, month, day)
+
+                                println("DEBUG: createdRecordId = $createdRecordId")
+                                println("DEBUG: selectedDate = $selectedDate")
+
+                                showDateDialog = false
+                                showIntervalDialog = true
+                            } catch (e: Exception) {
+                                println("DEBUG: Exception = ${e.message}")
+                            }
+                        } else {
+                            println("DEBUG: parts.size != 2")
                         }
                     }
                 ) {
