@@ -1,3 +1,4 @@
+// RecordingViewModel.kt - FIXED
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -25,9 +26,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
     val mainLoadingProgress: Float = 0f,
-
     val bonAchatList: List<M8BonVent> = emptyList(),
-
     val activePeriodeVent: MVentPeriode? = MVentPeriode(vid = 7L),
     val isRecording: Boolean = false,
     val displayTime: String = "00:00:00",
@@ -44,7 +43,6 @@ class RecordingViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,
-
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
@@ -58,23 +56,56 @@ class RecordingViewModel(
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
-    val active_filter_du_vendeur = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
 
-    // FIXED: Filter dateList by active vendor (handles null filter)
+    // Get active filter from central facade
+    val active_filter_du_vendeur
+        get() = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .active_Central_Values.active_filter_du_utilisateur
+
+    /**
+     * Toggle active centrale vendeur filter
+     * Cycles through: Admin (shows all) -> Abdelmoumen -> Walid -> Admin
+     */
+    fun toggleActiveCentraleVendeur() {
+        val currentFilter = active_filter_du_vendeur
+        val nextFilter = Utilisateur.toggleFrom(currentFilter)
+
+        // Update the central facade with new filter
+        val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        focusedValuesGetter.update_activeCentralValues(
+            focusedValuesGetter.active_Central_Values.copy(
+                active_filter_du_utilisateur = nextFilter  // FIXED: Changed from active_filter_du_vendeur
+            )
+        )
+
+        Log.i(TAG, "Toggled vendeur filter: $currentFilter -> $nextFilter")
+    }
+
+    /**
+     * Get display name for current active vendeur filter
+     */
+    fun getActiveVendeurDisplayName(): String {
+        return active_filter_du_vendeur?.getDisplayName() ?: "Tous"
+    }
+
+    /**
+     * Filter dateList by active vendor
+     * When Admin is active (or null), shows all intervals
+     * When specific user is active, filters to show only their intervals
+     */
     val dateList get() = repository.modelDatas.map { tempTravaille ->
-        // Create a new K_TempTravaille with filtered intervals
         K_TempTravaille(tempTravaille.vid).apply {
             this.infosDeBase = tempTravaille.infosDeBase
             this.intervalesDeTravaille.clear()
-            // Only add intervals that match the active vendor filter
-            // If filter is null, show all intervals
+
+            // If Admin or null, show all intervals
+            // Otherwise, filter by the active vendor
             this.intervalesDeTravaille.addAll(
-                if (active_filter_du_vendeur != null) {
-                    tempTravaille.intervalesDeTravaille.filter { interval ->
+                when (active_filter_du_vendeur) {
+                    Utilisateur.Admin, null -> tempTravaille.intervalesDeTravaille
+                    else -> tempTravaille.intervalesDeTravaille.filter { interval ->
                         interval.utilisateur == active_filter_du_vendeur
                     }
-                } else {
-                    tempTravaille.intervalesDeTravaille
                 }
             )
         }
@@ -120,11 +151,9 @@ class RecordingViewModel(
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
     ) {
         val currentTime = TimeFormatUtils.getCurrentTime()
-        // Add "_walid" suffix to differentiate from Abdelmoumen's interval
         val intervalId = "${currentTime.replace(":", "_")}_walid"
 
         if (startTime != null && endTime != null) {
-            // Both start and end times provided - create completed interval
             val formattedStartTime = startTime.replace(".", ":")
             val formattedEndTime = endTime.replace(".", ":")
 
@@ -134,7 +163,6 @@ class RecordingViewModel(
                 startTime = formattedStartTime
             )
 
-            // Then immediately update with end time and type
             repository.updateExistingIntervalForWalid(
                 recordId = recordId,
                 intervalId = intervalId,
@@ -143,14 +171,12 @@ class RecordingViewModel(
                 typeTemp = typeTemp
             )
         } else if (startTime != null) {
-            // Only start time provided - create active interval
             repository.addNewIntervalForWalid(
                 recordId = recordId,
                 intervalId = intervalId,
                 startTime = startTime.replace(".", ":")
             )
 
-            // Set the type
             repository.updateExistingIntervalForWalid(
                 recordId = recordId,
                 intervalId = intervalId,
@@ -159,7 +185,6 @@ class RecordingViewModel(
                 typeTemp = typeTemp
             )
         } else if (endTime != null) {
-            // Only end time provided - find active interval for Walid
             val record = repository.modelDatas.find { it.vid == recordId }
             val activeInterval = record?.intervalesDeTravaille?.findLast {
                 it.enCoureDEnregestrement &&

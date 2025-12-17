@@ -4,6 +4,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.StandardTimesDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -87,6 +89,21 @@ fun A_OptionsControlsButtons_FragId_(
                             standardTimes = standart_times
                         )
 
+                        // Button to toggle active centrale vendeur filter
+                        ControlButton(
+                            onClick = { viewModel.toggleActiveCentraleVendeur() },
+                            icon = Icons.Filled.Person,
+                            contentDescription = "Toggle vendeur filter",
+                            showLabels = showLabels,
+                            labelText = viewModel.getActiveVendeurDisplayName(),
+                            containerColor = when (viewModel.active_filter_du_vendeur) {
+                                Utilisateur.Admin -> Color(0xFF4CAF50) // Green for Admin
+                                Utilisateur.Abdelmoumen -> Color(0xFF2196F3) // Blue for Abdelmoumen
+                                Utilisateur.Walid -> Color(0xFF9C27B0) // Purple for Walid
+                                null -> Color.Gray
+                            }
+                        )
+
                         // Button to edit standard times
                         ControlButton(
                             onClick = { showStandardTimesDialog = true },
@@ -117,4 +134,3 @@ fun A_OptionsControlsButtons_FragId_(
         }
     }
 }
-

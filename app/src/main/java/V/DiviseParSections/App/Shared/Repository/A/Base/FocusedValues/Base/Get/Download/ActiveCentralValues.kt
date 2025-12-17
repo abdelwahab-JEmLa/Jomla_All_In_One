@@ -63,7 +63,11 @@ data class ActiveCentralValues(
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
-    var active_filter_du_utilisateur: Utilisateur? = Utilisateur.Walid,
+    var active_filter_du_utilisateur: Utilisateur? = when (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId) {
+        Utilisateur.Abdelmoumen.comp -> Utilisateur.Abdelmoumen
+        Utilisateur.Walid.comp -> Utilisateur.Walid
+        else -> Utilisateur.Admin
+    },
 
 
     var affiche_dialoge_add_temp_travaille: Boolean = false,
@@ -78,8 +82,8 @@ data class ActiveCentralValues(
 
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
-        == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId  )
-         false else
+        == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
+        false else
         false,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
