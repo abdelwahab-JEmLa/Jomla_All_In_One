@@ -80,7 +80,7 @@ fun FragID_0_Butt_2(
             // Return Fajr and Dhuhr times
             Pair(prayerTimes.fajr, prayerTimes.dhuhr)
         } catch (e: Exception) {
-            Pair("05:30", "12:45") // Fallback times
+            Pair("", "") // Fallback times
         }
     }
 
