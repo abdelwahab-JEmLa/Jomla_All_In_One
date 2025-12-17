@@ -96,6 +96,10 @@ fun FragID_0_Butt_2(
         }
     }
 
+    fun formatTimeInput(input: String): String {
+        return input.replace(".", ":")
+    }
+
     var startTimeAbdelmoumen by remember { mutableStateOf("") }
     var endTimeAbdelmoumen by remember { mutableStateOf("") }
     var startTimeWalid by remember { mutableStateOf("") }
@@ -210,7 +214,7 @@ fun FragID_0_Butt_2(
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = startTimeAbdelmoumen,
-                                onValueChange = { startTimeAbdelmoumen = it },
+                                onValueChange = { startTimeAbdelmoumen = formatTimeInput(it) },
                                 label = { Text("Start: $defaultStartAbdelmoumen") },
                                 placeholder = { Text(defaultStartAbdelmoumen) },
                                 modifier = Modifier.weight(1f),
@@ -223,7 +227,7 @@ fun FragID_0_Butt_2(
                             )
                             OutlinedTextField(
                                 value = endTimeAbdelmoumen,
-                                onValueChange = { endTimeAbdelmoumen = it },
+                                onValueChange = { endTimeAbdelmoumen = formatTimeInput(it) },
                                 label = { Text("End: $defaultEndAbdelmoumen") },
                                 placeholder = { Text(defaultEndAbdelmoumen) },
                                 modifier = Modifier.weight(1f).focusRequester(endAbdelmoumenFocusRequester),
@@ -249,7 +253,7 @@ fun FragID_0_Butt_2(
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = startTimeWalid,
-                                onValueChange = { startTimeWalid = it },
+                                onValueChange = { startTimeWalid = formatTimeInput(it) },
                                 label = { Text("Start: $defaultStartWalid") },
                                 placeholder = { Text(defaultStartWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(startWalidFocusRequester),
@@ -262,7 +266,7 @@ fun FragID_0_Butt_2(
                             )
                             OutlinedTextField(
                                 value = endTimeWalid,
-                                onValueChange = { endTimeWalid = it },
+                                onValueChange = { endTimeWalid = formatTimeInput(it) },
                                 label = { Text("End: $defaultEndWalid") },
                                 placeholder = { Text(defaultEndWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(endWalidFocusRequester),
@@ -345,7 +349,10 @@ fun FragID_0_Butt_2(
     }
 
     ControlButton(
-        onClick = { showDateDialog = true },
+        onClick = {
+            dateInput = ""
+            showDateDialog = true
+        },
         icon = Icons.Filled.Add,
         contentDescription = "Add new day",
         showLabels = showLabels,
