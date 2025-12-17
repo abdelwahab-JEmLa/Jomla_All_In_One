@@ -46,8 +46,14 @@ data class Standart_times(
     val end_abdelmoumen: String = "d",
     val walid_its_working: Boolean=true,
     val start_walid: String = "08:00",
-    val end_walid: String = "d"
-)
+    val end_walid: String = "d",
+    val au_click_start_par: Type = "d"
+)  {
+     enum classe Type {
+         NextLastDay,
+        TodayeDate
+     }
+}
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -141,7 +147,8 @@ fun FragID_0_Butt_2(
                 showDateDialog = false
                 dateInput = ""  // Changed: Reset to empty instead of todayFormatted
             },
-            title = { Text("Add New Day") },
+            title = { Text("Add New Day") },     //<--
+            //TODO(1): fait qe le start par au_click_start_par si next charceh au datas le last +1 sinon todaye
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(

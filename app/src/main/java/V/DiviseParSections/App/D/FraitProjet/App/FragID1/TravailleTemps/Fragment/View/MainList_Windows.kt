@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
-
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.DayHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
@@ -36,11 +35,8 @@ import java.util.Locale
 fun MainList_Windows(
     modifier: Modifier = Modifier,
     viewModel: RecordingViewModel = koinViewModel(),
-    focusedValuesGetter: FocusedValuesGetter = koinInject (
-),
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
 ) {
-
-
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->
             // Create new copy with filtered intervals
@@ -72,9 +68,13 @@ fun MainList_Windows(
 
             // Iterate through each week group
             groupedByWeek.forEach { (weekInfo, itemsInWeek) ->
-                // Add weekly header
+                // Add weekly header with filtered records for this week
                 stickyHeader {
-                    WeekHeader(viewModel=viewModel, weekInfo = weekInfo)
+                    WeekHeader(
+                        weekInfo = weekInfo,
+                        viewModel = viewModel,
+                        weekRecords = itemsInWeek  // Pass the filtered week records
+                    )
                 }
 
                 // Process items for each day in this week
@@ -98,7 +98,6 @@ fun MainList_Windows(
         }
     }
 }
-
 
 @Composable
 fun LoadingIndicator(progress: Float) {

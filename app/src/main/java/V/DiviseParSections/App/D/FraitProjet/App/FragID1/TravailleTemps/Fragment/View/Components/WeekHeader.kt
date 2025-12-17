@@ -4,6 +4,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -43,58 +44,62 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.util.Calendar
 import java.util.Locale
-
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
-    viewModel: RecordingViewModel ,
-    focusedValuesGetter: FocusedValuesGetter= koinInject ()
+    viewModel: RecordingViewModel,
+    weekRecords: List<K_TempTravaille>,
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    val active_filter_du_vendeur =focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
+    // Get current user and admin status
+    val currentUser by focusedValuesGetter.utilisateurFocused.collectAsState()
+    val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
-    // Get all records for this specific week and check if all are paid
-    val weekRecords = viewModel.dateList.filter { record ->
-        val dateString = record.infosDeBase.dateInString
-        val parts = dateString.split("/")
-        if (parts.size == 3) {
-            val year = parts[0].toInt()
-            val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
-            val day = parts[2].toInt()
+    // Calculate total work time PER VENDOR using the passed filtered records
+    val (totalMinutesAbdelmoumen, totalMinutesWalid) = calculateTotalWeekWorkTimePerVendor(weekRecords)
 
-            val calendar = Calendar.getInstance().apply {
-                // Set Saturday as first day of week for consistency
-                firstDayOfWeek = Calendar.SATURDAY
-                minimalDaysInFirstWeek = 1
-            }
-            calendar.set(year, month, day)
+    // Calculate total for BOTH vendors
+    val totalWeekMinutes = totalMinutesAbdelmoumen + totalMinutesWalid
 
-            // Check if this record falls within the specified week and year
-            calendar.get(Calendar.YEAR) == weekInfo.year && calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
-        } else {
-            false
-        }
-    }
+    // Debug logging
+    println("=== WeekHeader Debug ===")
+    println("Week ${weekInfo.weekNumber}, ${weekInfo.year}")
+    println("Current User: $currentUser, Is Admin: $isAbdelwahabLeGerant")
+    println("Abdelmoumen: $totalMinutesAbdelmoumen min")
+    println("Walid: $totalMinutesWalid min")
+    println("Total: $totalWeekMinutes min")
+    println("========================")
 
-    // Calculate if all days are paid - initialize from actual data
+    // Calculate earnings per vendor
+    val hourlyRate = 1200.0 / 8.0 / 60.0
+    val earningsAbdelmoumen = hourlyRate * totalMinutesAbdelmoumen
+    val earningsWalid = hourlyRate * totalMinutesWalid
+    val totalWeekEarnings = earningsAbdelmoumen + earningsWalid
+
+    // Format time for each vendor
+    val hoursAbdelmoumen = totalMinutesAbdelmoumen / 60
+    val minutesAbdelmoumen = totalMinutesAbdelmoumen % 60
+    val timeAbdelmoumen = "${hoursAbdelmoumen}h ${minutesAbdelmoumen}m"
+
+    val hoursWalid = totalMinutesWalid / 60
+    val minutesWalid = totalMinutesWalid % 60
+    val timeWalid = "${hoursWalid}h ${minutesWalid}m"
+
+    val daysAbdelmoumen = totalMinutesAbdelmoumen / (8.0 * 60.0)
+    val daysWalid = totalMinutesWalid / (8.0 * 60.0)
+    val daysAbdelmoumenFormatted = translateWorkDurationToArabic(daysAbdelmoumen, totalMinutesAbdelmoumen)
+    val daysWalidFormatted = translateWorkDurationToArabic(daysWalid, totalMinutesWalid)
+
+    // Calculate total days worked
+    val daysWorked = totalWeekMinutes / (8.0 * 60.0)
+    val daysWorkedFormatted = translateWorkDurationToArabic(daysWorked, totalWeekMinutes)
+
+    // Check if all days are paid
     val areAllDaysPaid = weekRecords.isNotEmpty() && weekRecords.all { it.infosDeBase.paye }
     val allDaysPaid = remember { mutableStateOf(areAllDaysPaid) }
 
     // Get admin privileges status
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
-
-    // Calculate total work time for the week
-    val totalWeekMinutes = calculateTotalWeekWorkTime(weekInfo, viewModel)
-    val totalHours = totalWeekMinutes / 60
-    val remainingMinutes = totalWeekMinutes % 60
-    val totalWeekTimeFormatted = "${totalHours}h ${remainingMinutes}m"
-
-    // Calculate daily rate based on total week minutes
-    val hourlyRate = 1200.0 / 8.0 / 60.0 // 1200 DA per day, 8 hours per day, 60 minutes per hour
-    val totalWeekEarnings = hourlyRate * totalWeekMinutes
-
-    // Calculate days worked (1 day = 8 hours)
-    val daysWorked = totalWeekMinutes / (8.0 * 60.0)
-    val daysWorkedFormatted = translateWorkDurationToArabic(daysWorked, totalWeekMinutes)
 
     // Animation de clignotement jaune
     val infiniteTransition = rememberInfiniteTransition(label = "card_animation")
@@ -108,24 +113,22 @@ fun WeekHeader(
         label = "border_blink_animation"
     )
 
-    val orangeColor = Color(0xFFFF9800) // Orange color
-    val yellowColor = Color(0xFFFFEB3B) // Yellow color for blinking border
-    val greenColor = Color(0xFF4CAF50) // Green color for paid status
+    val orangeColor = Color(0xFFFF9800)
+    val yellowColor = Color(0xFFFFEB3B)
+    val greenColor = Color(0xFF4CAF50)
 
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .border(
-                width = 4.dp, // Increased border thickness
+                width = 4.dp,
                 color = if (allDaysPaid.value) greenColor else yellowColor.copy(alpha = borderColorAlpha),
                 shape = RoundedCornerShape(12.dp)
             ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 4.dp
-        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = if (allDaysPaid.value) greenColor.copy(alpha = 0.7f) else orangeColor, // Changed color based on paid status
+            containerColor = if (allDaysPaid.value) greenColor.copy(alpha = 0.7f) else orangeColor,
         )
     ) {
         Column(
@@ -133,7 +136,6 @@ fun WeekHeader(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Display week relative to current week
             val weekText = translateWeekTextToArabic(weekInfo)
 
             Row(
@@ -148,106 +150,319 @@ fun WeekHeader(
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
+
                 if (allDaysPaid.value) {
                     Text(
-                        text = if (allDaysPaid.value) "تم" else "",
+                        text = "تم",
                         color = Color.White,
                         textAlign = TextAlign.End,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                     Icon(
-                        imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
-                        contentDescription = if (allDaysPaid.value) "تم " else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
-                        tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "تم",
+                        tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
 
-                // Add toggle button for marking week as paid (only visible in admin mode)
                 if (isAbdelwahabLeGerant) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    IconButton(
+                        onClick = {
+                            val newPaidState = !allDaysPaid.value
+                            allDaysPaid.value = newPaidState
+                            markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
+                        },
+                        modifier = Modifier.size(40.dp)
                     ) {
-
-                        IconButton(
-                            onClick = {
-                                // Toggle the paid state for all days in this week
-                                val newPaidState = !allDaysPaid.value
-                                allDaysPaid.value = newPaidState
-                                markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
-                                contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
-                                tint = if (allDaysPaid.value) Color.White else Color.White.copy(
-                                    alpha = 0.7f
-                                ),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-
+                        Icon(
+                            imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
+                            contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             }
 
             Text(
-                text = "الأسبوع ${weekInfo.weekNumber}, ${weekInfo.year}",  // "Week" in Arabic
+                text = "الأسبوع ${weekInfo.weekNumber}, ${weekInfo.year}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White
             )
 
+            // Total work duration card
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.White.copy(alpha = 0.8f)
                 )
             ) {
-                Text(
-                    text = "مدة العمل الاجمالية: $daysWorkedFormatted",  // "Total work duration" in Arabic
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Blue,
-                    modifier = Modifier.padding(4.dp)
-                )
+                Column(modifier = Modifier.padding(4.dp)) {
+                    // Show based on user type
+                    when {
+                        // Admin sees everything
+                        isAbdelwahabLeGerant -> {
+                            Text(
+                                text = "مدة العمل الاجمالية: $daysWorkedFormatted",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Blue
+                            )
+                        }
+                        // Abdelmoumen sees only his time
+                        currentUser == Utilisateur.Abdelmoumen -> {
+                            Text(
+                                text = "مدة عملك: $daysAbdelmoumenFormatted",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Blue
+                            )
+                        }
+                        // Walid sees only his time
+                        currentUser == Utilisateur.Walid -> {
+                            Text(
+                                text = "مدة عملك: $daysWalidFormatted",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Blue
+                            )
+                        }
+                    }
+                }
             }
 
+            Spacer(modifier = Modifier.padding(2.dp))
+
+            // Earnings breakdown per vendor
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.White.copy(alpha = 0.8f)
                 )
             ) {
-                // Show daily rate and total earnings
-                Text(
-                    text = "اليوم/1200 دينار == ${
-                        String.format(
-                            "%.2f",
-                            totalWeekEarnings
+                Column(modifier = Modifier.padding(4.dp)) {
+                    // Show based on user type
+                    when {
+                        // Admin sees both vendors
+                        isAbdelwahabLeGerant -> {
+                            // Abdelmoumen earnings
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "عبدالمؤمن:",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeAbdelmoumen,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Red
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            // Walid earnings
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "وليد:",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeWalid,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsWalid)} دينار",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Red
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            // Total earnings
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "المجموع الكلي:",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "${String.format("%.2f", totalWeekEarnings)} دينار",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        // Abdelmoumen sees only his earnings
+                        currentUser == Utilisateur.Abdelmoumen -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "أرباحك:",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeAbdelmoumen,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color.Red,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+
+                        // Walid sees only his earnings
+                        currentUser == Utilisateur.Walid -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "أرباحك:",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeWalid,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsWalid)} دينار",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color.Red,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = "اليوم/1200 دينار",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray
                         )
-                    } دينار",  // "Day/1200 DA" in Arabic
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Red,
-                    modifier = Modifier.padding(4.dp)
-                )
+                    }
+                }
             }
         }
     }
+
+// Keep all other helper functions unchanged
+// (calculateTotalWeekWorkTimePerVendor, markAllDaysAsPaid, etc.)
+// Keep all other helper functions unchanged
+// (calculateTotalWeekWorkTimePerVendor, markAllDaysAsPaid, etc.)
+
+// NEW FUNCTION: Calculate work time per vendor
+fun calculateTotalWeekWorkTimePerVendor(weekRecords: List<K_TempTravaille>): Pair<Int, Int> {
+    var totalMinutesAbdelmoumen = 0
+    var totalMinutesWalid = 0
+
+    println("=== DEBUG: calculateTotalWeekWorkTimePerVendor ===")
+    println("Total records in week: ${weekRecords.size}")
+
+    weekRecords.forEach { record ->
+        println("Record date: ${record.infosDeBase.dateInString}, intervals: ${record.intervalesDeTravaille.size}")
+
+        record.intervalesDeTravaille.forEach { interval ->
+            println("  Interval: ${interval.tempDepart} -> ${interval.temparrete}, User: ${interval.utilisateur}")
+
+            // Debug the calculation
+            val start = interval.tempDepart
+            val end = interval.temparrete
+
+            if (start != "HH:mm" && end != "HH:mm") {
+                try {
+                    val startParts = start.split(":")
+                    val endParts = end.split(":")
+
+                    val startMinutes = startParts[0].toInt() * 60 + startParts[1].toInt()
+                    val endMinutes = endParts[0].toInt() * 60 + endParts[1].toInt()
+                    val duration = endMinutes - startMinutes
+
+                    println("    Start: $start = $startMinutes min, End: $end = $endMinutes min, Duration: $duration min (${duration / 60}h ${duration % 60}m)")
+
+                    if (duration > 0) {
+                        when (interval.utilisateur) {
+                            Utilisateur.Abdelmoumen -> {
+                                totalMinutesAbdelmoumen += duration
+                                println("    Added to Abdelmoumen: $duration min")
+                            }
+
+                            Utilisateur.Walid -> {
+                                totalMinutesWalid += duration
+                                println("    Added to Walid: $duration min")
+                            }
+
+                            else -> {
+                                totalMinutesAbdelmoumen += duration
+                                println("    Added to Abdelmoumen (default): $duration min")
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    println("    ERROR parsing: ${e.message}")
+                }
+            } else {
+                println("    Skipped (invalid time)")
+            }
+        }
+    }
+
+    println("TOTAL Abdelmoumen: $totalMinutesAbdelmoumen min (${totalMinutesAbdelmoumen / 60}h ${totalMinutesAbdelmoumen % 60}m)")
+    println("TOTAL Walid: $totalMinutesWalid min (${totalMinutesWalid / 60}h ${totalMinutesWalid % 60}m)")
+    println("=== END DEBUG ===")
+
+    return Pair(totalMinutesAbdelmoumen, totalMinutesWalid)
 }
 
-// Function to mark all days in the week as paid
+// Keep existing helper functions
 fun markAllDaysAsPaid(
     weekInfo: WeekInfo,
     viewModel: RecordingViewModel,
     paidStatus: MutableState<Boolean>
 ) {
-    // Get all records for the specific week and year with Saturday as first day
-    val weekRecords = viewModel.dateList.filter { record ->
+    val weekRecords = viewModel.repository.modelDatas.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
         if (parts.size == 3) {
             val year = parts[0].toInt()
-            val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
+            val month = parts[1].toInt() - 1
             val day = parts[2].toInt()
 
             val calendar = Calendar.getInstance().apply {
@@ -256,51 +471,48 @@ fun markAllDaysAsPaid(
             }
             calendar.set(year, month, day)
 
-            // Check if this record falls within the specified week and year
-            calendar.get(Calendar.YEAR) == weekInfo.year && calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
+            calendar.get(Calendar.YEAR) == weekInfo.year &&
+                    calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
         } else {
             false
         }
     }
 
-    // Update each record's paid status based on the new state
     weekRecords.forEach { record ->
         record.infosDeBase.paye = paidStatus.value
-        // Update the record in the repository
         viewModel.repository.updateOnPasseData(record)
     }
 }
 
-// Function to translate week text to Arabic
 fun translateWeekTextToArabic(weekInfo: WeekInfo): String {
     return when {
-        weekInfo.isCurrentWeek -> "هذا الأسبوع"  // "This week" in Arabic
-        isLastWeek(weekInfo) -> "الأسبوع الماضي"  // "Last week" in Arabic
+        weekInfo.isCurrentWeek -> "هذا الأسبوع"
+        isLastWeek(weekInfo) -> "الأسبوع الماضي"
         else -> {
             val weekDifference = getWeekDifference(weekInfo)
             if (weekDifference > 0) {
-                "منذ $weekDifference أسابيع"  // "N weeks ago" in Arabic
+                "منذ $weekDifference أسابيع"
             } else {
-                "في غضون ${-weekDifference} أسابيع"  // "In N weeks" in Arabic
+                "في غضون ${-weekDifference} أسابيع"
             }
         }
     }
 }
 
-// Function to translate work duration to Arabic (CORRECTED)
 fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String {
     return when {
-        totalMinutes == 0 -> "0 يوم"  // "0 days" in Arabic
+        totalMinutes == 0 -> "0 يوم"
         daysWorked < 1.0 -> {
             val hours = totalMinutes / 60
             val minutes = totalMinutes % 60
             if (minutes > 0) {
-                "$hours ساعات و $minutes دقيقة"  // "N hours and M minutes" in Arabic
+                "$hours ساعات و $minutes دقيقة"
             } else {
-                "$hours ساعات"  // "N hours" in Arabic
+                "$hours ساعات"
             }
         }
-        daysWorked == 1.0 -> "1 يوم"  // "1 day" in Arabic
+
+        daysWorked == 1.0 -> "1 يوم"
         else -> {
             val fullDays = (totalMinutes / (8 * 60))
             val remainingMinutes = totalMinutes % (8 * 60)
@@ -311,60 +523,21 @@ fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String
                 remainingHours > 0 && remainingMins > 0 -> {
                     "$fullDays أيام و $remainingHours ساعات و $remainingMins دقيقة"
                 }
+
                 remainingHours > 0 -> {
                     "$fullDays أيام و $remainingHours ساعات"
                 }
+
                 remainingMins > 0 -> {
                     "$fullDays أيام و $remainingMins دقيقة"
                 }
+
                 else -> {
-                    "$fullDays أيام"  // "N days" in Arabic
+                    "$fullDays أيام"
                 }
             }
         }
     }
-}
-
-// Function to calculate total work time for the week
-fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel): Int {
-    var totalMinutes = 0
-
-    // Get all records for the specific week and year with Saturday as first day
-    val weekRecords = viewModel.dateList.filter { record ->
-        val dateString = record.infosDeBase.dateInString
-        val parts = dateString.split("/")
-        if (parts.size == 3) {
-            val year = parts[0].toInt()
-            val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
-            val day = parts[2].toInt()
-
-            val calendar = Calendar.getInstance().apply {
-                firstDayOfWeek = Calendar.SATURDAY
-                minimalDaysInFirstWeek = 1
-            }
-            calendar.set(year, month, day)
-
-            // Check if this record falls within the specified week and year
-            calendar.get(Calendar.YEAR) == weekInfo.year && calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
-        } else {
-            false
-        }
-    }
-
-    // Calculate total minutes from all intervals in all days of the week
-    weekRecords.forEach { record ->
-        record.intervalesDeTravaille.forEach { interval ->
-            val intervalMinutes = K_TempTravaille.calculateDurationMinutes(
-                interval.tempDepart,
-                interval.temparrete
-            )
-            if (intervalMinutes > 0) {
-                totalMinutes += intervalMinutes
-            }
-        }
-    }
-
-    return totalMinutes
 }
 
 fun isLastWeek(weekInfo: WeekInfo): Boolean {
