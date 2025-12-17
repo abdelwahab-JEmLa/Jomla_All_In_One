@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
@@ -24,13 +26,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.time.ExperimentalTime
+
+data class Standart_times(
+    val its_working_abdelmoumen: Boolean=true,
+    val start_abdelmoumen: String = "s",//"Sobhe",
+    val end_abdelmoumen: String = "d",
+    val walid_its_working: Boolean=true,
+    val start_walid: String = "08:00",
+    val end_walid: String = "d"    ,//"Dohre"
+)
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -98,10 +113,16 @@ fun FragID_0_Butt_2(
         }
     }
 
-    var startTimeAbdelmoumen by remember { mutableStateOf("") }
-    var endTimeAbdelmoumen by remember { mutableStateOf("") }
-    var startTimeWalid by remember { mutableStateOf("") }
-    var endTimeWalid by remember { mutableStateOf("") }
+    var startTimeAbdelmoumen by remember { mutableStateOf(standardTimes.start_abdelmoumen) }
+    var endTimeAbdelmoumen by remember { mutableStateOf(standardTimes.end_abdelmoumen) }
+    var startTimeWalid by remember { mutableStateOf(standardTimes.start_walid) }
+    var endTimeWalid by remember { mutableStateOf(standardTimes.end_walid) }
+
+    // Focus requesters for navigation between fields
+    val focusManager = LocalFocusManager.current
+    val endAbdelmoumenFocusRequester = remember { FocusRequester() }
+    val startWalidFocusRequester = remember { FocusRequester() }
+    val endWalidFocusRequester = remember { FocusRequester() }
 
     // Update times when dialog opens
     LaunchedEffect(showIntervalDialog, selectedDate) {
@@ -134,15 +155,16 @@ fun FragID_0_Butt_2(
             confirmButton = {
                 Button(
                     onClick = {
-                        if (dateInput.isNotEmpty()) {
-                            val currentYear = java.time.Year.now().value
-                            val parts = dateInput.split(".")
-                            if (parts.size == 2) {
-                                val month = parts[0].padStart(2, '0')
-                                val day = parts[1].padStart(2, '0')
-                                createdRecordId = "${currentYear}_${month}_${day}"
-                                selectedDate = LocalDate.of(currentYear, month.toInt(), day.toInt())
-                            }
+                        // Use current date if input is empty or blank
+                        val finalDateInput = if (dateInput.isBlank()) todayFormatted else dateInput
+
+                        val currentYear = java.time.Year.now().value
+                        val parts = finalDateInput.split(".")
+                        if (parts.size == 2) {
+                            val month = parts[0].padStart(2, '0')
+                            val day = parts[1].padStart(2, '0')
+                            createdRecordId = "${currentYear}_${month}_${day}"
+                            selectedDate = LocalDate.of(currentYear, month.toInt(), day.toInt())
                             showDateDialog = false
                             showIntervalDialog = true
                         }
@@ -181,56 +203,97 @@ fun FragID_0_Butt_2(
                         .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = "Abdelmoumen",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF2196F3)
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = startTimeAbdelmoumen,
-                            onValueChange = { startTimeAbdelmoumen = it },
-                            label = { Text("Start") },
-                            placeholder = { Text("08:00") },
-                            modifier = Modifier.weight(1f)
+                    // Only show Abdelmoumen fields if he's working
+                    if (standardTimes.its_working_abdelmoumen) {
+                        Text(
+                            text = "Abdelmoumen",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFF2196F3)
                         )
-                        OutlinedTextField(
-                            value = endTimeAbdelmoumen,
-                            onValueChange = { endTimeAbdelmoumen = it },
-                            label = { Text("End") },
-                            placeholder = { Text("12:45") },
-                            modifier = Modifier.weight(1f)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = startTimeAbdelmoumen,
+                                onValueChange = { startTimeAbdelmoumen = it },
+                                label = { Text("Start") },
+                                placeholder = { Text("08:00") },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        endAbdelmoumenFocusRequester.requestFocus()
+                                    }
+                                ),
+                                singleLine = true
+                            )
+                            OutlinedTextField(
+                                value = endTimeAbdelmoumen,
+                                onValueChange = { endTimeAbdelmoumen = it },
+                                label = { Text("End") },
+                                placeholder = { Text("12:45") },
+                                modifier = Modifier.weight(1f).focusRequester(endAbdelmoumenFocusRequester),
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        if (standardTimes.walid_its_working) {
+                                            startWalidFocusRequester.requestFocus()
+                                        }
+                                    },
+                                    onDone = {
+                                        if (!standardTimes.walid_its_working) {
+                                            focusManager.clearFocus()
+                                        }
+                                    }
+                                ),
+                                singleLine = true
+                            )
+                        }
                     }
 
-                    HorizontalDivider()
+                    if (standardTimes.its_working_abdelmoumen && standardTimes.walid_its_working) {
+                        HorizontalDivider()
+                    }
 
-                    Text(
-                        text = "Walid",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF4CAF50)
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = startTimeWalid,
-                            onValueChange = { startTimeWalid = it },
-                            label = { Text("Start") },
-                            placeholder = { Text("08:00") },
-                            modifier = Modifier.weight(1f)
+                    // Only show Walid fields if he's working
+                    if (standardTimes.walid_its_working) {
+                        Text(
+                            text = "Walid",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFF4CAF50)
                         )
-                        OutlinedTextField(
-                            value = endTimeWalid,
-                            onValueChange = { endTimeWalid = it },
-                            label = { Text("End") },
-                            placeholder = { Text("12:45") },
-                            modifier = Modifier.weight(1f)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = startTimeWalid,
+                                onValueChange = { startTimeWalid = it },
+                                label = { Text("Start") },
+                                placeholder = { Text("08:00") },
+                                modifier = Modifier.weight(1f).focusRequester(startWalidFocusRequester),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { endWalidFocusRequester.requestFocus() }
+                                ),
+                                singleLine = true
+                            )
+                            OutlinedTextField(
+                                value = endTimeWalid,
+                                onValueChange = { endTimeWalid = it },
+                                label = { Text("End") },
+                                placeholder = { Text("12:45") },
+                                modifier = Modifier.weight(1f).focusRequester(endWalidFocusRequester),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = { focusManager.clearFocus() }
+                                ),
+                                singleLine = true
+                            )
+                        }
                     }
                 }
             },
@@ -238,32 +301,36 @@ fun FragID_0_Butt_2(
                 Button(
                     onClick = {
                         if (createdRecordId != null) {
-                            val intervalesDeTravalle = mutableListOf<K_TempTravaille.IntervalesDeTravaille>()
+                            val intervalesDeTravaille = mutableListOf<K_TempTravaille.IntervalesDeTravaille>()
 
-                            // Add Abdelmoumen interval
-                            val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
-                                vid = "abdelmoumen_interval"
-                                vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
-                                tempDepart = startTimeAbdelmoumen
-                                temparrete = endTimeAbdelmoumen
+                            // Only add Abdelmoumen interval if he's working
+                            if (standardTimes.its_working_abdelmoumen) {
+                                val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
+                                    vid = "abdelmoumen_interval"
+                                    vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
+                                    tempDepart = startTimeAbdelmoumen
+                                    temparrete = endTimeAbdelmoumen
+                                }
+                                intervalesDeTravaille.add(abdelmoumenInterval)
                             }
-                            intervalesDeTravalle.add(abdelmoumenInterval)
 
-                            // Add Walid interval
-                            val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
-                                vid = "walid_interval"
-                                vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
-                                tempDepart = startTimeWalid
-                                temparrete = endTimeWalid
+                            // Only add Walid interval if he's working
+                            if (standardTimes.walid_its_working) {
+                                val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
+                                    vid = "walid_interval"
+                                    vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+                                    tempDepart = startTimeWalid
+                                    temparrete = endTimeWalid
+                                }
+                                intervalesDeTravaille.add(walidInterval)
                             }
-                            intervalesDeTravalle.add(walidInterval)
 
                             // Create working day with intervals
                             val newWorkingDay = K_TempTravaille(vid = createdRecordId!!).apply {
                                 this.infosDeBase.dateInString = createdRecordId!!
                                 // Clear any existing intervals and add our new ones
                                 this.intervalesDeTravaille.clear()
-                                this.intervalesDeTravaille.addAll(intervalesDeTravalle)
+                                this.intervalesDeTravaille.addAll(intervalesDeTravaille)
                             }
 
                             // Debug log to verify intervals are present
@@ -272,7 +339,7 @@ fun FragID_0_Butt_2(
                                 println("  - ${interval.vendeur}: ${interval.tempDepart} to ${interval.temparrete}")
                             }
 
-                            viewModel.repository.add_new_Temp(k_TempTravaille = newWorkingDay)
+                            viewModel.repository.add_new_Temp(newWorkingDay)
 
                             showIntervalDialog = false
                             dateInput = todayFormatted
