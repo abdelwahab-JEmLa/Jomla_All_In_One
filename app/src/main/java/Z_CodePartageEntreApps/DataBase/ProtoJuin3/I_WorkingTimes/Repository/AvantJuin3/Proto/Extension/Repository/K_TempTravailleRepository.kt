@@ -8,6 +8,7 @@ interface K_TempTravailleRepository {
     var modelDatas: SnapshotStateList<K_TempTravaille>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
+
     fun addNewIntervalForWalid(
         recordId: String?,
         intervalId: String?,
@@ -22,7 +23,6 @@ interface K_TempTravailleRepository {
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
     )
 
-
     suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<K_TempTravaille>, Flow<Float>>
     suspend fun updateDatas(datas: SnapshotStateList<K_TempTravaille>)
     fun stopDatabaseListener()
@@ -30,17 +30,25 @@ interface K_TempTravailleRepository {
     fun deleteIntevaleDeTemp(intervalId: String)
     fun ajoutJour(date: String)
 
-    // Updated method signature to match the implementation in MockTempTravailleRepository
     fun updateUnSeulData(
         recordId: String? = null,
     )
 
-
-    // Added methods that were previously in ViewModel
+    // Add new interval with default parameters
     fun addNewInterval(
         recordId: String? = null,
         intervalId: String? = null,
         startTime: String? = null
+    )
+
+    /**
+     * Add a new interval to an existing K_TempTravaille record
+     * @param k_TempTravaille The K_TempTravaille record to add the interval to
+     * @param intervalesDeTravaille The interval to add
+     */
+    fun addNewIntervals_au_TempTravaille(
+        k_TempTravaille: K_TempTravaille,
+        intervalesDeTravaille: List<K_TempTravaille.IntervalesDeTravaille>
     )
 
     fun updateExistingInterval(
@@ -50,7 +58,7 @@ interface K_TempTravailleRepository {
         endTime: String? = null,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null
     )
-    // Updated method signature to match the implementation in MockTempTravailleRepository
+
     fun updateOnPasseData(
         record: K_TempTravaille? = null,
     )
@@ -60,12 +68,7 @@ interface K_TempTravailleRepository {
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
     ): K_TempTravaille?
 
-
-
     companion object {
         val caReference = K_TempTravaille.caRef
     }
 }
-
-
-

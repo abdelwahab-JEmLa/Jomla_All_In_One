@@ -20,9 +20,47 @@ class K_TempTravailleRepositoryImpl :
     internal var lastUpdateTimestamp = 0L
 
     init {
-       startDatabaseListener()
+        startDatabaseListener()
         progressRepo.value = 1.0f
     }
+    override fun addNewIntervals_au_TempTravaille(
+        k_TempTravaille: K_TempTravaille,
+        intervalesDeTravaille: List<K_TempTravaille.IntervalesDeTravaille>
+    ) {
+        println(">>> addNewIntervals_au_TempTravaille called: recordId=${k_TempTravaille.vid}, intervals count=${intervalesDeTravaille.size}")
+
+        try {
+            // Find the record in modelDatas
+            val recordIndex = modelDatas.indexOfFirst { it.vid == k_TempTravaille.vid }
+
+            if (recordIndex != -1) {
+                val record = modelDatas[recordIndex]
+
+                // Delete all existing intervals first
+                println(">>> Deleting ${record.intervalesDeTravaille.size} existing intervals")
+                record.intervalesDeTravaille.clear()
+
+                // Add all new intervals
+                record.intervalesDeTravaille.addAll(intervalesDeTravaille)
+                println(">>> Added ${intervalesDeTravaille.size} new intervals")
+
+                // Update the record in modelDatas
+                modelDatas[recordIndex] = record
+
+                // Sync to Firebase
+                updateUnSeulData(k_TempTravaille.vid)
+
+                println(">>> Successfully replaced all intervals for record: ${k_TempTravaille.vid}")
+                println(">>> Total intervals in record: ${record.intervalesDeTravaille.size}")
+            } else {
+                println(">>> ERROR: Record not found with ID: ${k_TempTravaille.vid}")
+            }
+        } catch (e: Exception) {
+            println(">>> ERROR in addNewIntervals_au_TempTravaille: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
     override fun addNewIntervalForWalid(
         recordId: String?,
         intervalId: String?,
@@ -81,7 +119,6 @@ class K_TempTravailleRepositoryImpl :
             updateOnPasseData(updatedRecord)
         }
     }
-    // Update the syncData method in K_TempTravailleRepositoryImpl to handle vendeur field
 
     internal fun syncData(
         dataSnapshot: DataSnapshot? = null,
@@ -139,7 +176,7 @@ class K_TempTravailleRepositoryImpl :
             val intervalesDeTravaille = mutableMapOf<String, Any>()
             tempTravaille.intervalesDeTravaille.forEach { interval ->
                 val intervalData = mapOf(
-                    "vendeur" to interval.vendeur.name,  // Add vendeur field
+                    "vendeur" to interval.vendeur.name,
                     "typeTemp" to interval.typeTemp.name,
                     "tempDepart" to interval.tempDepart,
                     "temparrete" to interval.temparrete,
@@ -167,13 +204,10 @@ class K_TempTravailleRepositoryImpl :
         }
     }
 
-
     internal fun restartDatabaseListener() {
         startDatabaseListener()
     }
-    // In K_TempTravailleRepository.kt - Update the interface
 
-    // In K_TempTravailleRepositoryImpl.kt - Modify the implementation
     override fun ajouteRecodeAvecIntervaleDAchat(
         clientId: Long,
         typeTemp:  K_TempTravaille.IntervalesDeTravaille.TypeTemp
@@ -201,7 +235,7 @@ class K_TempTravailleRepositoryImpl :
                     it.vid == currentTimeFormatted && it.enCoureDEnregestrement
                 }
 
-                // RepositorysMainSetter client ID
+                // Set client ID
                 interval?.idClientSiAchat = clientId
                 interval?.typeTemp = typeTemp
 
@@ -213,7 +247,7 @@ class K_TempTravailleRepositoryImpl :
             // First create the day record
             IntervalesEtJoursHandler.ajoutJour(
                 modelDatas = modelDatas,
-                date = currentDate.split("/").let { "${it[1]}.${it[2]}" } // Convert from yyyy/MM/dd to MM.dd
+                date = currentDate.split("/").let { "${it[1]}.${it[2]}" }
             ) { recordId ->
                 // Now upsert the interval
                 val record = modelDatas.find { it.vid == recordId }
@@ -230,7 +264,7 @@ class K_TempTravailleRepositoryImpl :
                             it.vid == currentTimeFormatted && it.enCoureDEnregestrement
                         }
 
-                        // RepositorysMainSetter client ID and type
+                        // Set client ID and type
                         interval?.idClientSiAchat = clientId
                         interval?.typeTemp = typeTemp
 
@@ -244,59 +278,45 @@ class K_TempTravailleRepositoryImpl :
 
         return createdRecord
     }
-    // Check connectivity and sync if state has changed
+
     override fun checkConnectivityAndSync() {
         Z_FirebaseUtils.checkConnectivityAndSync(this)
     }
+
     override fun updateOnPasseData(record: K_TempTravaille?) {
         if (record != null) {
-            // Find the index of the record in the modelDatas list
             val recordIndex = modelDatas.indexOfFirst { it.vid == record.vid }
 
             if (recordIndex != -1) {
-                // Update the record in the modelDatas list
                 modelDatas.removeAt(recordIndex)
                 modelDatas.add(recordIndex, record)
 
-                // Update the Firebase database with the updated record
                 try {
-                    // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase
                     checkConnectivityAndSync()
-
-                    // Update Firebase database with the updated record
                     updateDataUnSeulDataInFirebase(record)
                 } catch (e: Exception) {
-                    // Log the error or handle it appropriately
-                    println("Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 failed in updateOnPasseData: ${e.message}")
+                    println("Firebase update failed in updateOnPasseData: ${e.message}")
                 }
             }
         }
     }
 
     override fun deleteIntevaleDeTemp(intervalId: String) {
-        // Use the BonAchatInfos_FragID3 handler to perform the deletion
         val recordToUpdate = IntervalesEtJoursHandler.deleteIntervaleDeTemp(
             modelDatas = modelDatas,
             intervalId = intervalId
         ) { recordId ->
-            // Update Firebase after local changes
             try {
-                // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase
                 checkConnectivityAndSync()
 
-                // Sanitize the record ID
                 val sanitizedRecordId = Z_FirebaseUtils.sanitizeFirebaseKey(recordId)
-
-                // Sanitize the interval ID
                 val sanitizedIntervalId = Z_FirebaseUtils.sanitizeFirebaseKey(intervalId)
 
-                // Create reference to the interval
                 val intervalRef = K_TempTravailleRepository.caReference
                     .child(sanitizedRecordId)
                     .child("intervalesDeTravaille")
                     .child(sanitizedIntervalId)
 
-                // Remove the interval from Firebase
                 intervalRef.removeValue()
                     .addOnSuccessListener {
                         println("Successfully deleted interval $intervalId from record $recordId")
@@ -305,7 +325,6 @@ class K_TempTravailleRepositoryImpl :
                         println("Failed to delete interval from Firebase: ${e.message}")
                     }
 
-                // Update local record
                 updateUnSeulData(recordId)
             } catch (e: Exception) {
                 println("Error deleting interval: ${e.message}")
@@ -313,13 +332,11 @@ class K_TempTravailleRepositoryImpl :
         }
     }
 
-    // Implemented from ViewModel
     override fun addNewInterval(
         recordId: String?,
         intervalId: String?,
         startTime: String?
     ) {
-        // Use the BonAchatInfos_FragID3 handler to upsert add_New new interval
         IntervalesEtJoursHandler.addNewInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -330,7 +347,6 @@ class K_TempTravailleRepositoryImpl :
         }
     }
 
-    // Implemented from ViewModel
     override fun updateExistingInterval(
         recordId: String?,
         intervalId: String?,
@@ -338,7 +354,6 @@ class K_TempTravailleRepositoryImpl :
         endTime: String?,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
     ) {
-        // Use the BonAchatInfos_FragID3 handler to upsertLenceCommandeRepoGroupedProtoAvantJuin3 an existing interval
         IntervalesEtJoursHandler.updateExistingInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -351,8 +366,6 @@ class K_TempTravailleRepositoryImpl :
         }
     }
 
-
-
     override fun updateUnSeulData(
         recordId: String?,
     ) {
@@ -362,21 +375,18 @@ class K_TempTravailleRepositoryImpl :
                 val record = modelDatas[recordIndex]
                 println("Updating record ${record.vid} with ${record.intervalesDeTravaille.size} intervals")
 
-                // Log intervals for debugging
                 record.intervalesDeTravaille.forEachIndexed { index, interval ->
                     println("Interval $index: ID=${interval.vid}, Start=${interval.tempDepart}, End=${interval.temparrete}, Recording=${interval.enCoureDEnregestrement}")
                 }
 
-                // Update local data
                 modelDatas.removeAt(recordIndex)
                 modelDatas.add(recordIndex, record)
 
                 try {
                     checkConnectivityAndSync()
-
                     updateDataUnSeulDataInFirebase(record)
                 } catch (e: Exception) {
-                    println("Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 failed: ${e.message}")
+                    println("Firebase update failed: ${e.message}")
                 }
             }
         }
@@ -384,20 +394,16 @@ class K_TempTravailleRepositoryImpl :
 
     private fun updateDataUnSeulDataInFirebase(tempTravaille: K_TempTravaille) {
         try {
-            // Use the unified function to convert the object to add_New Firebase-friendly format
             val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
-
-            // Sanitize the key before using it in Firebase
             val sanitizedKey = Z_FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
-            // Update the data in Firebase
             val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
             dateRef.updateChildren(firebaseData)
                 .addOnSuccessListener {
-                    println("Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 successful for record: ${tempTravaille.vid} with ${tempTravaille.intervalesDeTravaille.size} intervals")
+                    println("Firebase update successful for record: ${tempTravaille.vid} with ${tempTravaille.intervalesDeTravaille.size} intervals")
                 }
                 .addOnFailureListener { e ->
-                    println("Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 failed: ${e.message}")
+                    println("Firebase update failed: ${e.message}")
                 }
         } catch (e: Exception) {
             println("Failed to prepare data: ${e.message}")
@@ -419,18 +425,12 @@ class K_TempTravailleRepositoryImpl :
             var processedItems = 0
 
             stopDatabaseListener()
-
-            // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3
             checkConnectivityAndSync()
 
             datas.forEach { tempTravaille ->
-                // Use the unified function to convert the object to add_New Firebase-friendly format
                 val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
-
-                // Sanitize the key before using it in Firebase
                 val sanitizedKey = Z_FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
-                // Update the data in Firebase
                 val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
                 dateRef.updateChildren(firebaseData)
 
@@ -444,15 +444,14 @@ class K_TempTravailleRepositoryImpl :
             progressRepo.value = 1.0f
         } catch (e: Exception) {
             progressRepo.value = 0f
-            println("Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 data batch: ${e.message}")
+            println("Failed to update data batch: ${e.message}")
         } finally {
             isUpdating = false
-            startDatabaseListener() // Restart the database listener
+            startDatabaseListener()
         }
     }
 
     override fun ajoutJour(date: String) {
-        // Use the BonAchatInfos_FragID3 handler to upsert add_New new day
         IntervalesEtJoursHandler.ajoutJour(
             modelDatas = modelDatas,
             date = date
@@ -468,4 +467,3 @@ class K_TempTravailleRepositoryImpl :
         listener = null
     }
 }
-

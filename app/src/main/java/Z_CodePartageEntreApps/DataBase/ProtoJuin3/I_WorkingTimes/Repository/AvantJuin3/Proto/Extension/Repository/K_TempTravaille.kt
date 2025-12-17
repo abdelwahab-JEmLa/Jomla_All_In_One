@@ -19,6 +19,8 @@ import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 
 class K_TempTravaille(var vid: String = "2025_01_01") {
+    var keyID by mutableStateOf(caRef.push().key)
+
     var infosDeBase by mutableStateOf(InfosDeBase())
 
     @IgnoreExtraProperties
@@ -63,6 +65,9 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
         var temparrete by mutableStateOf("HH:mm")
 
         companion object {
+            fun get_default(): IntervalesDeTravaille {
+                return IntervalesDeTravaille()
+            }
             fun calculateDuration(start: String, end: String): String {
                 if (start == "HH:mm" || end == "HH:mm") return "N/A"
 
@@ -81,6 +86,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
     }
 
     companion object {
+
         fun calculateDurationMinutes(start: String, end: String): Int {
             if (start == "HH:mm" || end == "HH:mm") return 0
 

@@ -33,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -77,9 +79,16 @@ fun DayHeader(
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
+    var relative_temp_travaille_abdelmoumen by remember {
+        mutableStateOf(K_TempTravaille.IntervalesDeTravaille.get_default())
+    }
+    var relative_temp_travaille_walid by remember {
+        mutableStateOf(K_TempTravaille.IntervalesDeTravaille.get_default())
+    }
+
     var startTimeInput by remember { mutableStateOf("") }
     var endTimeInput by remember { mutableStateOf("") }
-    
+
     var startTimeInput_walid by remember { mutableStateOf("") }
     var endTimeInput_walid by remember { mutableStateOf("") }
 
@@ -91,7 +100,7 @@ fun DayHeader(
     } catch (e: Exception) {
         Date()
     }
-    
+
      val arabicMonths = mapOf(
         "January" to "جانفي",
         "February" to "فيفري",
@@ -155,9 +164,29 @@ fun DayHeader(
             showTimeDialog = true
         }
     }
+    var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
+
+    val updated_relative_temp_travaille_abdelmoumen = relative_temp_travaille_abdelmoumen.apply {
+        tempDepart =
+            startTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+                ?: "09:30"
+        temparrete =
+            endTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+                ?: "10:30"
+        typeTemp = selectedType
+    }
+
+    val updated_relative_temp_travaille_walid= relative_temp_travaille_walid.apply {
+        tempDepart =
+            startTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+                ?: "08:30"
+        temparrete =
+            endTimeInput.replace(".", ":").takeIf { it.isNotEmpty() }
+                ?: "10:30"
+        typeTemp = selectedType
+    }
 
     if (showTimeDialog) {
-        var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
         var showTypeSelector by remember { mutableStateOf(false) }
 
         AlertDialog(
@@ -313,47 +342,25 @@ fun DayHeader(
             },
             confirmButton = {
                 Button(
+                    modifier = Modifier
+                        .semantics(mergeDescendants = true) {
+
+                            set(
+                                key = SemanticsPropertyKey("relative_temp_travaille_abdelmoumen"),
+                                value = updated_relative_temp_travaille_abdelmoumen
+                            )
+                        },
                     onClick = {
-                        if (editingInterval != null) {
-                            // Update existing interval for Abdelmoumen
-                            viewModel.repository.updateExistingInterval(
-                                recordId = tempTravaille.vid,
-                                intervalId = editingInterval?.vid,
-                                startTime = startTimeInput.takeIf { it.isNotEmpty() },
-                                endTime = endTimeInput.takeIf { it.isNotEmpty() },
-                                typeTemp = selectedType
-                            )
-
-                            // Update or add interval for Walid if input is provided
-                            if (startTimeInput_walid.isNotEmpty() || endTimeInput_walid.isNotEmpty()) {
-                                viewModel.updatePareMainForWalid(
-                                    recordId = tempTravaille.vid,
-                                    startTime = startTimeInput_walid.takeIf { it.isNotEmpty() },
-                                    endTime = endTimeInput_walid.takeIf { it.isNotEmpty() },
-                                    typeTemp = selectedType
-                                )
-                            }
-
-                            viewModel.clearEditingInterval()
-                        } else {
-                            // Add new interval for Abdelmoumen
-                            viewModel.updatePareMain(
-                                recordId = tempTravaille.vid,
-                                startTime = startTimeInput.takeIf { it.isNotEmpty() },
-                                endTime = endTimeInput.takeIf { it.isNotEmpty() },
-                                typeTemp = selectedType
-                            )
-
-                            // Add new interval for Walid if input is provided
-                            if (startTimeInput_walid.isNotEmpty() || endTimeInput_walid.isNotEmpty()) {
-                                viewModel.updatePareMainForWalid(
-                                    recordId = tempTravaille.vid,
-                                    startTime = startTimeInput_walid.takeIf { it.isNotEmpty() },
-                                    endTime = endTimeInput_walid.takeIf { it.isNotEmpty() },
-                                    typeTemp = selectedType
-                                )
-                            }
+                        val   list_itervaless = buildList {
+                            add(updated_relative_temp_travaille_abdelmoumen)
+                            add(updated_relative_temp_travaille_walid)
                         }
+                            viewModel.repository.addNewIntervals_au_TempTravaille(
+                                tempTravaille,
+                                list_itervaless
+                            )
+
+
                         showTimeDialog = false
                     }
                 ) {
