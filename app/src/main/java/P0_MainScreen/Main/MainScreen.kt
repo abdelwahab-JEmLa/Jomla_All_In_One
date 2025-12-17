@@ -341,6 +341,7 @@ fun MainScreen(
                                     )
                                 }
                             } else {
+
                                 BlinkingWarningCard(
                                     "التطبيق ليس في الفترة المحددة للبيع اضغط للتحديث ${
                                         targetedPeriodDoitEtreDon?.keyID?.takeLast(3)

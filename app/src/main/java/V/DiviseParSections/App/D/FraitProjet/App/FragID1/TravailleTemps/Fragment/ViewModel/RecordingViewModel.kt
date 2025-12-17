@@ -88,6 +88,72 @@ class RecordingViewModel(
         recordingHandler.updateTotalWorkedTime()
         recordingHandler.setupRecordingStateListener()
     }
+    // Add this method to RecordingViewModel
+
+    fun updatePareMainForWalid(
+        recordId: String,
+        startTime: String?,
+        endTime: String?,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
+    ) {
+        val currentTime = TimeFormatUtils.getCurrentTime()
+        // Add "_walid" suffix to differentiate from Abdelmoumen's interval
+        val intervalId = "${currentTime.replace(":", "_")}_walid"
+
+        if (startTime != null && endTime != null) {
+            // Both start and end times provided - create completed interval
+            val formattedStartTime = startTime.replace(".", ":")
+            val formattedEndTime = endTime.replace(".", ":")
+
+            repository.addNewIntervalForWalid(
+                recordId = recordId,
+                intervalId = intervalId,
+                startTime = formattedStartTime
+            )
+
+            // Then immediately update with end time and type
+            repository.updateExistingIntervalForWalid(
+                recordId = recordId,
+                intervalId = intervalId,
+                startTime = formattedStartTime,
+                endTime = formattedEndTime,
+                typeTemp = typeTemp
+            )
+        } else if (startTime != null) {
+            // Only start time provided - create active interval
+            repository.addNewIntervalForWalid(
+                recordId = recordId,
+                intervalId = intervalId,
+                startTime = startTime.replace(".", ":")
+            )
+
+            // Set the type
+            repository.updateExistingIntervalForWalid(
+                recordId = recordId,
+                intervalId = intervalId,
+                startTime = null,
+                endTime = null,
+                typeTemp = typeTemp
+            )
+        } else if (endTime != null) {
+            // Only end time provided - find active interval for Walid
+            val record = repository.modelDatas.find { it.vid == recordId }
+            val activeInterval = record?.intervalesDeTravaille?.findLast {
+                it.enCoureDEnregestrement &&
+                        it.vendeur == K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+            }
+
+            if (activeInterval != null) {
+                repository.updateExistingIntervalForWalid(
+                    recordId = recordId,
+                    intervalId = activeInterval.vid,
+                    startTime = null,
+                    endTime = endTime.replace(".", ":"),
+                    typeTemp = typeTemp
+                )
+            }
+        }
+    }
 
     private fun log(list: List<M8BonVent>) {
         val map = list.map { bon ->

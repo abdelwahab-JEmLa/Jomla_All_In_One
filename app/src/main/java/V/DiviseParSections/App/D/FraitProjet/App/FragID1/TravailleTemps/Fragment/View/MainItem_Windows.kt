@@ -28,6 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -42,15 +44,17 @@ fun MainItem_Windows(
     val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {
         it.id == intervale.idClientSiAchat
     }
-    // Instead of reducing alpha, lighten the color
+
     val lightGreen = intervale.typeTemp.color.copy(alpha = 1f)
         .compositeOver(androidx.compose.ui.graphics.Color.White)
 
     ElevatedCard(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = intervale, key = SemanticsPropertyKey(""))
+            }
             .fillMaxWidth()
             .padding(8.dp),
-        // Use CardDefaults.elevatedCardColors() with containerColor parameter
         colors = CardDefaults.elevatedCardColors(
             containerColor = lightGreen )
     ) {
@@ -82,6 +86,23 @@ fun MainItem_Windows(
                             modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Display vendor name
+                            Text(
+                                text = intervale.vendeur.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Arrow to type",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+
                             Text(
                                 text = intervale.typeTemp.nomArabe,
                                 style = MaterialTheme.typography.titleMedium,
@@ -107,8 +128,7 @@ fun MainItem_Windows(
                         }
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))  // Push the following content to the right
-                    // Add delete button
+                    Spacer(modifier = Modifier.weight(1f))
                     Spacer(modifier = Modifier.width(8.dp))
 
                     val duration = K_TempTravaille.IntervalesDeTravaille.calculateDuration(
@@ -124,9 +144,7 @@ fun MainItem_Windows(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
             HorizontalDivider()
-
             Spacer(modifier = Modifier.height(8.dp))
 
             ElevatedCard(
@@ -138,14 +156,11 @@ fun MainItem_Windows(
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    // Move this code to the right side using Spacer with weight
                     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
                     if (isAbdelwahabLeGerant) {
-                        // Add edit button
                         IconButton(
                             onClick = {
-                                // Call your edit function here
                                 viewModel.editIntervaleTemp(intervale)
                             }
                         ) {
@@ -167,7 +182,7 @@ fun MainItem_Windows(
                         }
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))  // Push the following content to the right
+                    Spacer(modifier = Modifier.weight(1f))
 
                     Text(
                         text = "${intervale.tempDepart} - ${intervale.temparrete}",

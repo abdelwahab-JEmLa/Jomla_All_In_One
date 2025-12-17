@@ -19,11 +19,145 @@ class K_TempTravailleRepositoryImpl :
     internal var isUpdating = false
     internal var lastUpdateTimestamp = 0L
 
-
     init {
        startDatabaseListener()
         progressRepo.value = 1.0f
+    }
+    override fun addNewIntervalForWalid(
+        recordId: String?,
+        intervalId: String?,
+        startTime: String?
+    ) {
+        println(">>> addNewIntervalForWalid called: recordId=$recordId, intervalId=$intervalId, startTime=$startTime")
 
+        IntervalesEtJoursHandler.addNewInterval(
+            modelDatas = modelDatas,
+            recordId = recordId,
+            intervalId = intervalId,
+            startTime = startTime,
+            vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+        ) { updatedRecordId ->
+            println(">>> Walid interval added, updating record: $updatedRecordId")
+
+            // Verify the interval was added
+            val record = modelDatas.find { it.vid == updatedRecordId }
+            val walidIntervals = record?.intervalesDeTravaille?.filter {
+                it.vendeur == K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+            }
+            println(">>> Walid intervals count: ${walidIntervals?.size}")
+            walidIntervals?.forEach {
+                println(">>>   - ID: ${it.vid}, Start: ${it.tempDepart}, End: ${it.temparrete}, Recording: ${it.enCoureDEnregestrement}")
+            }
+
+            updateUnSeulData(updatedRecordId)
+        }
+    }
+
+    override fun updateExistingIntervalForWalid(
+        recordId: String?,
+        intervalId: String?,
+        startTime: String?,
+        endTime: String?,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
+    ) {
+        println(">>> updateExistingIntervalForWalid called: recordId=$recordId, intervalId=$intervalId, startTime=$startTime, endTime=$endTime, typeTemp=$typeTemp")
+
+        IntervalesEtJoursHandler.updateExistingInterval(
+            modelDatas = modelDatas,
+            recordId = recordId,
+            intervalId = intervalId,
+            startTime = startTime,
+            endTime = endTime,
+            typeTemp = typeTemp,
+            vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
+        ) { updatedRecord ->
+            println(">>> Walid interval updated: ${updatedRecord?.vid}")
+
+            if (updatedRecord != null) {
+                val interval = updatedRecord.intervalesDeTravaille.find { it.vid == intervalId }
+                println(">>>   Updated interval: ID=${interval?.vid}, Vendeur=${interval?.vendeur}, Start=${interval?.tempDepart}, End=${interval?.temparrete}")
+            }
+
+            updateOnPasseData(updatedRecord)
+        }
+    }
+    // Update the syncData method in K_TempTravailleRepositoryImpl to handle vendeur field
+
+    internal fun syncData(
+        dataSnapshot: DataSnapshot? = null,
+        tempTravaille: K_TempTravaille? = null
+    ): Any {
+        // Case 1: Parse from Firebase to K_TempTravaille
+        if (dataSnapshot != null && tempTravaille == null) {
+            val newTempTravaille = K_TempTravaille(vid = dataSnapshot.key ?: "unknown")
+
+            // Parse infosDeBase
+            val infosDeBaseSnapshot = dataSnapshot.child("infosDeBase")
+            newTempTravaille.infosDeBase.dateInString = infosDeBaseSnapshot.child("dateInString").getValue(String::class.java) ?: newTempTravaille.vid
+            newTempTravaille.infosDeBase.paye = infosDeBaseSnapshot.child("paye").getValue(Boolean::class.java) ?: false
+
+            // Parse intervals
+            val intervalsSnapshot = dataSnapshot.child("intervalesDeTravaille")
+            for (intervalSnapshot in intervalsSnapshot.children) {
+                val interval = K_TempTravaille.IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
+
+                // Parse vendeur field
+                try {
+                    val vendeurStr = intervalSnapshot.child("vendeur").getValue(String::class.java) ?: "Abdelmoumen"
+                    interval.vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.valueOf(vendeurStr)
+                } catch (e: Exception) {
+                    interval.vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
+                }
+
+                try {
+                    val typeStr = intervalSnapshot.child("typeTemp").getValue(String::class.java) ?: "DEPLACEMENT"
+                    interval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
+                } catch (e: Exception) {
+                    interval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
+                }
+
+                interval.tempDepart = intervalSnapshot.child("tempDepart").getValue(String::class.java) ?: "HH:mm"
+                interval.temparrete = intervalSnapshot.child("temparrete").getValue(String::class.java) ?: "HH:mm"
+                interval.idClientSiAchat = intervalSnapshot.child("idBonDeCetteIntervale").getValue(Long::class.java) ?: 0L
+                interval.enCoureDEnregestrement = intervalSnapshot.child("enCoureDEnregestrement").getValue(Boolean::class.java) ?: false
+
+                newTempTravaille.intervalesDeTravaille.add(interval)
+            }
+
+            return newTempTravaille
+        }
+        // Case 2: Convert K_TempTravaille to Firebase data
+        else if (tempTravaille != null && dataSnapshot == null) {
+            val result = mutableMapOf<String, Any>()
+
+            val infosDeBase = mutableMapOf<String, Any>()
+            infosDeBase["dateInString"] = tempTravaille.infosDeBase.dateInString
+            infosDeBase["paye"] = tempTravaille.infosDeBase.paye
+            result["infosDeBase"] = infosDeBase
+
+            // Add intervalesDeTravaille with vendeur field
+            val intervalesDeTravaille = mutableMapOf<String, Any>()
+            tempTravaille.intervalesDeTravaille.forEach { interval ->
+                val intervalData = mapOf(
+                    "vendeur" to interval.vendeur.name,  // Add vendeur field
+                    "typeTemp" to interval.typeTemp.name,
+                    "tempDepart" to interval.tempDepart,
+                    "temparrete" to interval.temparrete,
+                    "idBonDeCetteIntervale" to interval.idClientSiAchat,
+                    "enCoureDEnregestrement" to interval.enCoureDEnregestrement
+                )
+
+                val sanitizedIntervalId = Z_FirebaseUtils.sanitizeFirebaseKey(interval.vid)
+                intervalesDeTravaille[sanitizedIntervalId] = intervalData
+            }
+            result["intervalesDeTravaille"] = intervalesDeTravaille
+
+            return result
+        }
+        // Handle invalid input
+        else {
+            throw IllegalArgumentException("Invalid parameters for syncData: either dataSnapshot or tempTravaille must be provided")
+        }
     }
 
     private fun startDatabaseListener() {
@@ -267,80 +401,6 @@ class K_TempTravailleRepositoryImpl :
                 }
         } catch (e: Exception) {
             println("Failed to prepare data: ${e.message}")
-        }
-    }
-
-    internal fun syncData(
-    // extract au Z_FirebaseUtils
-        dataSnapshot: DataSnapshot? = null,
-        tempTravaille: K_TempTravaille? = null
-    ): Any {
-        // Case 1: Parse from Firebase to K_TempTravaille
-        if (dataSnapshot != null && tempTravaille == null) {
-            val newTempTravaille = K_TempTravaille(vid = dataSnapshot.key ?: "unknown")
-
-            // Parse infosDeBase
-            val infosDeBaseSnapshot = dataSnapshot.child("infosDeBase")
-            newTempTravaille.infosDeBase.dateInString = infosDeBaseSnapshot.child("dateInString").getValue(String::class.java) ?: newTempTravaille.vid
-            newTempTravaille.infosDeBase.paye = infosDeBaseSnapshot.child("paye").getValue(Boolean::class.java) ?: false
-
-            // Parse intervals
-            val intervalsSnapshot = dataSnapshot.child("intervalesDeTravaille")
-            for (intervalSnapshot in intervalsSnapshot.children) {
-                val interval =
-                     K_TempTravaille.IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
-
-                try {
-                    val typeStr = intervalSnapshot.child("typeTemp").getValue(String::class.java) ?: "DEPLACEMENT"
-                    interval.typeTemp =  K_TempTravaille.IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
-                } catch (e: Exception) {
-                    interval.typeTemp =  K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
-                }
-
-                interval.tempDepart = intervalSnapshot.child("tempDepart").getValue(String::class.java) ?: "HH:mm"
-                interval.temparrete = intervalSnapshot.child("temparrete").getValue(String::class.java) ?: "HH:mm"
-                interval.idClientSiAchat = intervalSnapshot.child("idBonDeCetteIntervale").getValue(Long::class.java) ?: 0L
-
-                // Make sure we properly read the recording state
-                interval.enCoureDEnregestrement = intervalSnapshot.child("enCoureDEnregestrement").getValue(Boolean::class.java) ?: false
-
-                newTempTravaille.intervalesDeTravaille.add(interval)
-            }
-
-            return newTempTravaille
-        }
-        // Case 2: Convert K_TempTravaille to Firebase data
-        else if (tempTravaille != null && dataSnapshot == null) {
-            val result = mutableMapOf<String, Any>()
-
-            val infosDeBase = mutableMapOf<String, Any>()
-            infosDeBase["dateInString"] = tempTravaille.infosDeBase.dateInString
-            result["infosDeBase"] = infosDeBase
-            infosDeBase["paye"] = tempTravaille.infosDeBase.paye
-            result["infosDeBase"] = infosDeBase
-
-            // Add intervalesDeTravaille
-            val intervalesDeTravaille = mutableMapOf<String, Any>()
-            tempTravaille.intervalesDeTravaille.forEach { interval ->
-                val intervalData = mapOf(
-                    "typeTemp" to interval.typeTemp.name,
-                    "tempDepart" to interval.tempDepart,
-                    "temparrete" to interval.temparrete,
-                    "idBonDeCetteIntervale" to interval.idClientSiAchat,
-                    "enCoureDEnregestrement" to interval.enCoureDEnregestrement
-                )
-
-                // Make sure the interval ID is also sanitized
-                val sanitizedIntervalId = Z_FirebaseUtils.sanitizeFirebaseKey(interval.vid)
-                intervalesDeTravaille[sanitizedIntervalId] = intervalData
-            }
-            result["intervalesDeTravaille"] = intervalesDeTravaille
-
-            return result
-        }
-        // Handle invalid input
-        else {
-            throw IllegalArgumentException("Invalid parameters for syncData: either dataSnapshot or tempTravaille must be provided")
         }
     }
 

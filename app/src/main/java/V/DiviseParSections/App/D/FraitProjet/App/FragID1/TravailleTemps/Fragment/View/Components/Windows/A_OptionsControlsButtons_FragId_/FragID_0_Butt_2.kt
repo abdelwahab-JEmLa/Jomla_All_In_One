@@ -21,21 +21,19 @@ import org.koin.compose.koinInject
 
 @Composable
 fun FragID_0_Butt_2(
-    focusedValuesGetter: FocusedValuesGetter= koinInject (),
     viewModel: RecordingViewModel,
     showLabels: Boolean,
     labelText: String,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var dateInput by remember { mutableStateOf("") }
 
-    // Display the dialog when showDialog is true
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
                 showDialog = false
-
-                               },
+            },
             title = { Text("Add New Day") },
             text = {
                 OutlinedTextField(
@@ -80,6 +78,6 @@ fun FragID_0_Butt_2(
         contentDescription = "Add new day",
         showLabels = showLabels,
         labelText = labelText,
-        containerColor = Color(0xFF4CAF50)  // Green color for upsert button
+        containerColor = Color(0xFF4CAF50)
     )
 }

@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,23 +75,23 @@ fun DayHeader(
     tempTravaille: K_TempTravaille,
     viewModel: RecordingViewModel
 ) {
-    // RepositorysMainGetter admin state
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
-    // States for time inputs
     var startTimeInput by remember { mutableStateOf("") }
     var endTimeInput by remember { mutableStateOf("") }
+    
+    var startTimeInput_walid by remember { mutableStateOf("") }
+    var endTimeInput_walid by remember { mutableStateOf("") }
 
     val jour = tempTravaille.infosDeBase.dateInString
 
-    // Parse the date for formatting
     val parsedDate = try {
         val inputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
         inputFormat.parse(jour) ?: Date()
     } catch (e: Exception) {
         Date()
     }
-    // Map for Algerian Arabic month names (Maghrebi dialect)
+    
      val arabicMonths = mapOf(
         "January" to "جانفي",
         "February" to "فيفري",
@@ -145,7 +146,7 @@ fun DayHeader(
 
     val editingInterval by viewModel.editingInterval.collectAsState()
 
-    var showTimeDialog by remember { mutableStateOf(focusedValuesGetter.active_Central_Values.affiche_dialoge_add_temp_travaille) }
+    var showTimeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(editingInterval) {
         if (editingInterval != null) {
@@ -161,10 +162,10 @@ fun DayHeader(
 
         AlertDialog(
             onDismissRequest = { showTimeDialog = false },
-            title = { Text("إضافة وقت يدوي") },  // "Add manual time" in Arabic
+            title = { Text("إضافة وقت يدوي") },
             text = {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    // First card for start time
+                    // First card for Abdelmoumen start time
                     ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -172,20 +173,35 @@ fun DayHeader(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "وقت البدء",  // "Start Time" in Arabic
+                                text = "وقت البدء - عبدالمؤمن",  // "Start Time - Abdelmoumen"
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
 
                             Spacer(modifier = Modifier.padding(4.dp))
 
-                            OutlinedTextField(
-                                value = startTimeInput,
-                                onValueChange = { startTimeInput = it },
-                                placeholder = { Text("00.00") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = startTimeInput,
+                                    onValueChange = { startTimeInput = it },
+                                    placeholder = { Text("00.00") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text("عبدالمؤمن") }
+                                )
+
+                                OutlinedTextField(
+                                    value = startTimeInput_walid,
+                                    onValueChange = { startTimeInput_walid = it },
+                                    placeholder = { Text("00.00") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text("وليد") }
+                                )
+                            }
                         }
                     }
 
@@ -197,20 +213,35 @@ fun DayHeader(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "وقت الانتهاء",  // "End Time" in Arabic
+                                text = "وقت الانتهاء",  // "End Time"
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
 
                             Spacer(modifier = Modifier.padding(4.dp))
 
-                            OutlinedTextField(
-                                value = endTimeInput,
-                                onValueChange = { endTimeInput = it },
-                                placeholder = { Text("00.00") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = endTimeInput,
+                                    onValueChange = { endTimeInput = it },
+                                    placeholder = { Text("00.00") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text("عبدالمؤمن") }
+                                )
+
+                                OutlinedTextField(
+                                    value = endTimeInput_walid,
+                                    onValueChange = { endTimeInput_walid = it },
+                                    placeholder = { Text("00.00") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text("وليد") }
+                                )
+                            }
                         }
                     }
 
@@ -231,7 +262,7 @@ fun DayHeader(
                                 tint = selectedType.color,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text("النوع: ${selectedType.nomArabe}")  // "Type:" in Arabic
+                            Text("النوع: ${selectedType.nomArabe}")
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -284,7 +315,7 @@ fun DayHeader(
                 Button(
                     onClick = {
                         if (editingInterval != null) {
-                            // Update the existing interval
+                            // Update existing interval for Abdelmoumen
                             viewModel.repository.updateExistingInterval(
                                 recordId = tempTravaille.vid,
                                 intervalId = editingInterval?.vid,
@@ -292,20 +323,41 @@ fun DayHeader(
                                 endTime = endTimeInput.takeIf { it.isNotEmpty() },
                                 typeTemp = selectedType
                             )
+
+                            // Update or add interval for Walid if input is provided
+                            if (startTimeInput_walid.isNotEmpty() || endTimeInput_walid.isNotEmpty()) {
+                                viewModel.updatePareMainForWalid(
+                                    recordId = tempTravaille.vid,
+                                    startTime = startTimeInput_walid.takeIf { it.isNotEmpty() },
+                                    endTime = endTimeInput_walid.takeIf { it.isNotEmpty() },
+                                    typeTemp = selectedType
+                                )
+                            }
+
                             viewModel.clearEditingInterval()
                         } else {
-                            // Create add_New new interval
+                            // Add new interval for Abdelmoumen
                             viewModel.updatePareMain(
                                 recordId = tempTravaille.vid,
                                 startTime = startTimeInput.takeIf { it.isNotEmpty() },
                                 endTime = endTimeInput.takeIf { it.isNotEmpty() },
                                 typeTemp = selectedType
                             )
+
+                            // Add new interval for Walid if input is provided
+                            if (startTimeInput_walid.isNotEmpty() || endTimeInput_walid.isNotEmpty()) {
+                                viewModel.updatePareMainForWalid(
+                                    recordId = tempTravaille.vid,
+                                    startTime = startTimeInput_walid.takeIf { it.isNotEmpty() },
+                                    endTime = endTimeInput_walid.takeIf { it.isNotEmpty() },
+                                    typeTemp = selectedType
+                                )
+                            }
                         }
                         showTimeDialog = false
                     }
                 ) {
-                    Text(if (editingInterval != null) "تحديث" else "تأكيد")  // "Update" or "Confirm" in Arabic
+                    Text(if (editingInterval != null) "تحديث" else "تأكيد")
                 }
             },
             dismissButton = {
@@ -315,7 +367,7 @@ fun DayHeader(
                         viewModel.clearEditingInterval()
                     }
                 ) {
-                    Text("إلغاء")  // "Cancel" in Arabic
+                    Text("إلغاء")
                 }
             }
         )
