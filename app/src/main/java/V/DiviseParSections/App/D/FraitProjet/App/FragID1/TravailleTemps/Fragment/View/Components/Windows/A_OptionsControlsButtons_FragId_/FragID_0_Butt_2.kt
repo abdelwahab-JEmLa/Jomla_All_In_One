@@ -95,10 +95,15 @@ fun FragID_0_Butt_2(
         }
     }
 
-    var startTimeAbdelmoumen by remember { mutableStateOf(standardTimes.start_abdelmoumen) }
-    var endTimeAbdelmoumen by remember { mutableStateOf(standardTimes.end_abdelmoumen) }
-    var startTimeWalid by remember { mutableStateOf(standardTimes.start_walid) }
-    var endTimeWalid by remember { mutableStateOf(standardTimes.end_walid) }
+    var startTimeAbdelmoumen by remember { mutableStateOf("") }
+    var endTimeAbdelmoumen by remember { mutableStateOf("") }
+    var startTimeWalid by remember { mutableStateOf("") }
+    var endTimeWalid by remember { mutableStateOf("") }
+
+    var defaultStartAbdelmoumen by remember { mutableStateOf(standardTimes.start_abdelmoumen) }
+    var defaultEndAbdelmoumen by remember { mutableStateOf(standardTimes.end_abdelmoumen) }
+    var defaultStartWalid by remember { mutableStateOf(standardTimes.start_walid) }
+    var defaultEndWalid by remember { mutableStateOf(standardTimes.end_walid) }
 
     val focusManager = LocalFocusManager.current
     val endAbdelmoumenFocusRequester = remember { FocusRequester() }
@@ -108,10 +113,10 @@ fun FragID_0_Butt_2(
     LaunchedEffect(showIntervalDialog, selectedDate) {
         if (showIntervalDialog && selectedDate != null) {
             val prayerTimes = calculatePrayerTimes(selectedDate!!)
-            startTimeAbdelmoumen = resolveTime(standardTimes.start_abdelmoumen, prayerTimes)
-            endTimeAbdelmoumen = resolveTime(standardTimes.end_abdelmoumen, prayerTimes)
-            startTimeWalid = resolveTime(standardTimes.start_walid, prayerTimes)
-            endTimeWalid = resolveTime(standardTimes.end_walid, prayerTimes)
+            defaultStartAbdelmoumen = resolveTime(standardTimes.start_abdelmoumen, prayerTimes)
+            defaultEndAbdelmoumen = resolveTime(standardTimes.end_abdelmoumen, prayerTimes)
+            defaultStartWalid = resolveTime(standardTimes.start_walid, prayerTimes)
+            defaultEndWalid = resolveTime(standardTimes.end_walid, prayerTimes)
         }
     }
 
@@ -202,8 +207,8 @@ fun FragID_0_Butt_2(
                             OutlinedTextField(
                                 value = startTimeAbdelmoumen,
                                 onValueChange = { startTimeAbdelmoumen = it },
-                                label = { Text("Start") },
-                                placeholder = { Text("08:00") },
+                                label = { Text("Start: $defaultStartAbdelmoumen") },
+                                placeholder = { Text(defaultStartAbdelmoumen) },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                                 keyboardActions = KeyboardActions(onNext = { endAbdelmoumenFocusRequester.requestFocus() }),
@@ -212,8 +217,8 @@ fun FragID_0_Butt_2(
                             OutlinedTextField(
                                 value = endTimeAbdelmoumen,
                                 onValueChange = { endTimeAbdelmoumen = it },
-                                label = { Text("End") },
-                                placeholder = { Text("12:45") },
+                                label = { Text("End: $defaultEndAbdelmoumen") },
+                                placeholder = { Text(defaultEndAbdelmoumen) },
                                 modifier = Modifier.weight(1f).focusRequester(endAbdelmoumenFocusRequester),
                                 keyboardOptions = KeyboardOptions(imeAction = if (standardTimes.walid_its_working) ImeAction.Next else ImeAction.Done),
                                 keyboardActions = KeyboardActions(
@@ -235,8 +240,8 @@ fun FragID_0_Butt_2(
                             OutlinedTextField(
                                 value = startTimeWalid,
                                 onValueChange = { startTimeWalid = it },
-                                label = { Text("Start") },
-                                placeholder = { Text("08:00") },
+                                label = { Text("Start: $defaultStartWalid") },
+                                placeholder = { Text(defaultStartWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(startWalidFocusRequester),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                                 keyboardActions = KeyboardActions(onNext = { endWalidFocusRequester.requestFocus() }),
@@ -245,8 +250,8 @@ fun FragID_0_Butt_2(
                             OutlinedTextField(
                                 value = endTimeWalid,
                                 onValueChange = { endTimeWalid = it },
-                                label = { Text("End") },
-                                placeholder = { Text("12:45") },
+                                label = { Text("End: $defaultEndWalid") },
+                                placeholder = { Text(defaultEndWalid) },
                                 modifier = Modifier.weight(1f).focusRequester(endWalidFocusRequester),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
@@ -266,8 +271,8 @@ fun FragID_0_Butt_2(
                                 val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "abdelmoumen_interval"
                                     vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
-                                    tempDepart = startTimeAbdelmoumen
-                                    temparrete = endTimeAbdelmoumen
+                                    tempDepart = startTimeAbdelmoumen.ifBlank { defaultStartAbdelmoumen }
+                                    temparrete = endTimeAbdelmoumen.ifBlank { defaultEndAbdelmoumen }
                                 }
                                 intervalesDeTravaille.add(abdelmoumenInterval)
                             }
@@ -276,8 +281,8 @@ fun FragID_0_Butt_2(
                                 val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                     vid = "walid_interval"
                                     vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
-                                    tempDepart = startTimeWalid
-                                    temparrete = endTimeWalid
+                                    tempDepart = startTimeWalid.ifBlank { defaultStartWalid }
+                                    temparrete = endTimeWalid.ifBlank { defaultEndWalid }
                                 }
                                 intervalesDeTravaille.add(walidInterval)
                             }
@@ -294,6 +299,10 @@ fun FragID_0_Butt_2(
                             dateInput = todayFormatted
                             createdRecordId = null
                             selectedDate = null
+                            startTimeAbdelmoumen = ""
+                            endTimeAbdelmoumen = ""
+                            startTimeWalid = ""
+                            endTimeWalid = ""
                         }
                     }
                 ) {
@@ -307,6 +316,10 @@ fun FragID_0_Butt_2(
                         dateInput = todayFormatted
                         createdRecordId = null
                         selectedDate = null
+                        startTimeAbdelmoumen = ""
+                        endTimeAbdelmoumen = ""
+                        startTimeWalid = ""
+                        endTimeWalid = ""
                     }
                 ) {
                     Text("Skip")
