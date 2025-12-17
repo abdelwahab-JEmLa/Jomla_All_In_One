@@ -229,12 +229,16 @@ fun FragID_0_Butt_2(
                     }
                 }
             },
+// Replace the confirmButton onClick block with this fixed version:
+
             confirmButton = {
                 Button(
                     onClick = {
                         if (createdRecordId != null) {
+                            // Create intervals list
                             val intervalesDeTravalle = mutableListOf<K_TempTravaille.IntervalesDeTravaille>()
 
+                            // Add Abdelmoumen interval
                             val abdelmoumenInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                 vid = "abdelmoumen_interval"
                                 vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Abdelmoumen
@@ -243,6 +247,7 @@ fun FragID_0_Butt_2(
                             }
                             intervalesDeTravalle.add(abdelmoumenInterval)
 
+                            // Add Walid interval
                             val walidInterval = K_TempTravaille.IntervalesDeTravaille.get_default().apply {
                                 vid = "walid_interval"
                                 vendeur = K_TempTravaille.IntervalesDeTravaille.Vendeur.Walid
@@ -251,9 +256,18 @@ fun FragID_0_Butt_2(
                             }
                             intervalesDeTravalle.add(walidInterval)
 
+                            // Create the working day object with intervals already populated
                             val newWorkingDay = K_TempTravaille(vid = createdRecordId!!).apply {
                                 this.infosDeBase.dateInString = createdRecordId!!
-                                this.intervalesDeTravaille.addAll(intervalesDeTravaille)
+                                // Clear any existing intervals and add our new ones
+                                this.intervalesDeTravaille.clear()
+                                this.intervalesDeTravaille.addAll(intervalesDeTravalle)
+                            }
+
+                            // Debug log to verify intervals are present
+                            println("DEBUG: Adding working day with ${newWorkingDay.intervalesDeTravaille.size} intervals")
+                            newWorkingDay.intervalesDeTravaille.forEach { interval ->
+                                println("  - ${interval.vendeur}: ${interval.tempDepart} to ${interval.temparrete}")
                             }
 
                             viewModel.repository.add_new_Temp(k_TempTravaille = newWorkingDay)
