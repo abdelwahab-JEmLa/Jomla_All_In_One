@@ -28,7 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Calendar
+import java.util.TimeZone
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -55,7 +57,8 @@ fun FragID_0_Butt_2(
     fun calculatePrayerTimes(date: LocalDate = LocalDate.now()): Pair<String, String> {
         return try {
             val calculator = PrayerTimesCalculator()
-            calculator.setCalculationMethod(PrayerTimesCalculator.CalculationMethod.MWL)
+            // Use ALGERIA method instead of MWL for accurate Algerian times
+            calculator.setCalculationMethod(PrayerTimesCalculator.CalculationMethod.ALGERIA)
 
             // Coordinates for Bab Ezzouar, Algiers, DZ
             val coordinates = PrayerTimesCalculator.Coordinates(
@@ -64,32 +67,37 @@ fun FragID_0_Butt_2(
             )
 
             // Create Calendar instance for the selected date
-            val calendar = Calendar.getInstance().apply {
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Algiers")).apply {
                 set(Calendar.YEAR, date.year)
-                set(Calendar.MONTH, date.monthValue - 1) // Calendar months are 0-based
+                set(Calendar.MONTH, date.monthValue - 1)
                 set(Calendar.DAY_OF_MONTH, date.dayOfMonth)
             }
 
-            // Get prayer times with timezone offset for Africa/Algiers (UTC+1)
+            // Get timezone offset for the specific date (accounts for DST)
+            val zoneId = ZoneId.of("Africa/Algiers")
+            val zonedDateTime = date.atStartOfDay(zoneId)
+            val offsetHours = zonedDateTime.offset.totalSeconds / 3600.0
+
+            // Get prayer times
             val prayerTimes = calculator.getPrayerTimes(
                 date = calendar,
                 coordinates = coordinates,
-                timeZoneOffset = 1.0 // Algeria is UTC+1
+                timeZoneOffset = offsetHours
             )
 
-            // Return Fajr and Dhuhr times
             Pair(prayerTimes.fajr, prayerTimes.dhuhr)
         } catch (e: Exception) {
-            Pair("", "") // Fallback times
+            // Fallback times in case of error
+            Pair("05:30", "12:45")
         }
     }
 
-    // Convert standard time (could be prayer name or HH:mm) to actual time
+    // Convert standard time (prayer name or HH:mm) to actual time
     fun resolveTime(timeString: String, prayerTimes: Pair<String, String>): String {
-        return when (timeString.lowercase()) {
-            "sobhe", "fajr" -> prayerTimes.first
-            "dohre", "dhuhr", "dhur" -> prayerTimes.second
-            else -> timeString // Assume it's already in HH:mm format
+        return when (timeString.lowercase().trim()) {
+            "sobhe", "fajr", "subh", "s" -> prayerTimes.first
+            "dohre", "dhuhr", "dhur", "dohr", "d" -> prayerTimes.second
+            else -> timeString // Already in HH:mm format
         }
     }
 
@@ -229,13 +237,10 @@ fun FragID_0_Butt_2(
                     }
                 }
             },
-// Replace the confirmButton onClick block with this fixed version:
-
             confirmButton = {
                 Button(
                     onClick = {
                         if (createdRecordId != null) {
-                            // Create intervals list
                             val intervalesDeTravalle = mutableListOf<K_TempTravaille.IntervalesDeTravaille>()
 
                             // Add Abdelmoumen interval
@@ -256,7 +261,7 @@ fun FragID_0_Butt_2(
                             }
                             intervalesDeTravalle.add(walidInterval)
 
-                            // Create the working day object with intervals already populated
+                            // Create working day with intervals
                             val newWorkingDay = K_TempTravaille(vid = createdRecordId!!).apply {
                                 this.infosDeBase.dateInString = createdRecordId!!
                                 // Clear any existing intervals and add our new ones

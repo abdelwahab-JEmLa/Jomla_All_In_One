@@ -162,10 +162,6 @@ dependencies {
     // ExifInterface
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
-    // Prayer Times - Alternative compatible library
-    // REMOVED: implementation("com.batoulapps.adhan:adhan2:0.0.6")
-    // Use custom implementation instead (see PrayerTimesCalculator.kt)
-
     // Desugaring for Java 8+ API support on older Android versions
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 

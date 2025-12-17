@@ -18,7 +18,8 @@ class PrayerTimesCalculator {
         MAKKAH,        // Umm al-Qura University, Makkah
         KARACHI,       // University of Islamic Sciences, Karachi
         TEHRAN,        // Institute of Geophysics, University of Tehran
-        JAFARI         // Shia Ithna Ashari, Leva Research Institute, Qum
+        JAFARI,        // Shia Ithna Ashari, Leva Research Institute, Qum
+        ALGERIA        // Algerian Ministry of Religious Affairs and Wakfs
     }
 
     data class PrayerTimes(
@@ -35,12 +36,13 @@ class PrayerTimesCalculator {
         val longitude: Double
     )
 
-    private var method = CalculationMethod.MWL
+    private var method = CalculationMethod.ALGERIA
     private var asrJuristic = 0 // 0 = Shafi, 1 = Hanafi
     private var adjustHighLats = 1 // 1 = middle of night
     private val timeFormat = 0 // 0 = 24h, 1 = 12h
 
     // Calculation parameters
+    // Format: [FajrAngle, IshaInterval, IshaAngle, MaghribInterval, MaghribAngle]
     private val methodParams = mapOf(
         CalculationMethod.MWL to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0),
         CalculationMethod.ISNA to doubleArrayOf(15.0, 1.0, 0.0, 0.0, 15.0),
@@ -48,7 +50,8 @@ class PrayerTimesCalculator {
         CalculationMethod.MAKKAH to doubleArrayOf(18.5, 1.0, 0.0, 1.0, 90.0),
         CalculationMethod.KARACHI to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 18.0),
         CalculationMethod.TEHRAN to doubleArrayOf(17.7, 0.0, 4.5, 0.0, 14.0),
-        CalculationMethod.JAFARI to doubleArrayOf(16.0, 0.0, 4.0, 0.0, 14.0)
+        CalculationMethod.JAFARI to doubleArrayOf(16.0, 0.0, 4.0, 0.0, 14.0),
+        CalculationMethod.ALGERIA to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0) // Same as MWL
     )
 
     private var lat = 0.0
@@ -86,7 +89,7 @@ class PrayerTimesCalculator {
         val times = doubleArrayOf(5.0, 6.0, 12.0, 13.0, 18.0, 19.0)
 
         for (i in 1..2) {
-            val params = methodParams[method] ?: methodParams[CalculationMethod.MWL]!!
+            val params = methodParams[method] ?: methodParams[CalculationMethod.ALGERIA]!!
             times[0] = computeTime(180.0 - params[0], times[0]) // Fajr
             times[1] = computeTime(180.0 - 0.833, times[1])     // Sunrise
             times[2] = computeMidDay(times[2])                   // Dhuhr
@@ -185,18 +188,18 @@ class PrayerTimesCalculator {
 
 // Exemple d'utilisation
 object PrayerTimesHelper {
-    
+
     fun getTodayPrayerTimes(
         latitude: Double,
         longitude: Double,
-        method: PrayerTimesCalculator.CalculationMethod = PrayerTimesCalculator.CalculationMethod.MWL
+        method: PrayerTimesCalculator.CalculationMethod = PrayerTimesCalculator.CalculationMethod.ALGERIA
     ): PrayerTimesCalculator.PrayerTimes {
         val calculator = PrayerTimesCalculator()
         calculator.setCalculationMethod(method)
-        
+
         val coordinates = PrayerTimesCalculator.Coordinates(latitude, longitude)
         val today = Calendar.getInstance()
-        
+
         return calculator.getPrayerTimes(today, coordinates)
     }
 }

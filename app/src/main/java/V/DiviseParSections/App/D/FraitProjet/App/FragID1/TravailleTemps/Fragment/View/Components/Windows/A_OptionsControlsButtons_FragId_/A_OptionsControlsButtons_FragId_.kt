@@ -40,7 +40,7 @@ data class Standart_times(
     val start_abdelmoumen: String = "06:00",//"Sobhe",
     val end_abdelmoumen: String = "12:45",
     val start_walid: String = "08:00",
-    val end_walid: String = "12:00"    ,//"Dohre"
+    val end_walid: String = "Dohre"    ,//"Dohre"
 )
 
 @Composable
