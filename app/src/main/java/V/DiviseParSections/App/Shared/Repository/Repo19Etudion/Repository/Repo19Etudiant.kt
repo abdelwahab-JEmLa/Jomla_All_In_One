@@ -168,11 +168,14 @@ data class M19Etudiant(
     var positon_don_classe: Int = 1,
 
     var nmbr_absence_sans_justification : Int = 0,
+    var imprime_justification : Boolean = false,
+
+    var question_par_non : String = "هل يعاني ابنكم من مرض معين جزاكم الله خيرا؟",
 
     var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var dernier_Soura_sater: Int = 1,
 
-    var dernier_takyim_dabte: Takiyim = Takiyim.Moumtaz,
+    var dernier_takyim_dabte: Takiyim = Takiyim.Jayid,
     var tikrare: Int = 1,
 
     var tikrare_3arde: Int = 1,
@@ -180,13 +183,15 @@ data class M19Etudiant(
     var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
     var mokarrare_hifde_sater: Int = 1,
 
-    var absent: Boolean = false,
-
-    var mokarrare_hifde_mahssou_li_3idat_souer: Int = 1,
-
-
     var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
     var moulahada_makouba: String = "",
+
+    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,   //مقرر
+    var istedrak_kadim_Moukarare: SOUAR = SOUAR.El_Nasse,   //مقرر
+    var istedrak_kadim_Takyim_hali: Takiyim = Takiyim.Maqboul,
+
+    var absent: Boolean = false,
+    var mokarrare_hifde_mahssou_li_3idat_souer: Int = 1,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),

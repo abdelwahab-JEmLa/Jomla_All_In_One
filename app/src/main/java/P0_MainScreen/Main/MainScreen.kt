@@ -359,6 +359,7 @@ fun MainScreen(
                         )
                     }
                 }
+
             } else {
                 // Main content - only display when repository is loaded and no warning
                 val isHostPhone = productDisplayController.isHostPhone

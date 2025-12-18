@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -55,7 +57,10 @@ fun EtudiantDetailsDialog(
     onShowSouraDialog: () -> Unit,
     onShowMokarrareDialog: () -> Unit,
     onShowTakiyimDialog: () -> Unit,
-    onShowMoulahada3alaSouloukDialog: () -> Unit
+    onShowMoulahada3alaSouloukDialog: () -> Unit,
+    onShowIstedrakSouraDialog: () -> Unit,
+    onShowIstedrakMokarrareDialog: () -> Unit,
+    onShowIstedrakTakiyimDialog: () -> Unit
 ) {
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
@@ -69,6 +74,8 @@ fun EtudiantDetailsDialog(
     var isEditingTikrare by remember { mutableStateOf(false) }
     var isEditingTikrar3ard by remember { mutableStateOf(false) }
     var isEditingPosition by remember { mutableStateOf(false) }
+    var isEditingQuestionOuiNon by remember { mutableStateOf(false) }
+    var isEditingAbsences by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var nomInput by remember { mutableStateOf("") }
@@ -81,6 +88,8 @@ fun EtudiantDetailsDialog(
     var tikrareInput by remember { mutableStateOf("") }
     var tikrar3ardInput by remember { mutableStateOf("") }
     var positionInput by remember { mutableStateOf("") }
+    var questionOuiNonInput by remember { mutableStateOf("") }
+    var absencesInput by remember { mutableStateOf("") }
 
     val nomFocusRequester = remember { FocusRequester() }
     val prenomFocusRequester = remember { FocusRequester() }
@@ -92,6 +101,8 @@ fun EtudiantDetailsDialog(
     val tikrareFocusRequester = remember { FocusRequester() }
     val tikrar3ardFocusRequester = remember { FocusRequester() }
     val positionFocusRequester = remember { FocusRequester() }
+    val questionOuiNonFocusRequester = remember { FocusRequester() }
+    val absencesFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditingNom) {
         if (isEditingNom) {
@@ -160,6 +171,20 @@ fun EtudiantDetailsDialog(
         if (isEditingPosition) {
             positionInput = ""
             positionFocusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(isEditingQuestionOuiNon) {
+        if (isEditingQuestionOuiNon) {
+            questionOuiNonInput = etudiant.question_par_non
+            questionOuiNonFocusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(isEditingAbsences) {
+        if (isEditingAbsences) {
+            absencesInput = ""
+            absencesFocusRequester.requestFocus()
         }
     }
 
@@ -248,6 +273,95 @@ fun EtudiantDetailsDialog(
                         Text("حذف")
                     }
                 }
+
+                Divider()
+
+                // Absences sans justification (editable with print toggle)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "الغياب بدون مبرر:", style = MaterialTheme.typography.bodyMedium)
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Number field
+                        if (isEditingAbsences) {
+                            OutlinedTextField(
+                                value = absencesInput,
+                                onValueChange = { newValue ->
+                                    if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
+                                        absencesInput = newValue
+                                    }
+                                },
+                                modifier = Modifier.width(80.dp).focusRequester(absencesFocusRequester),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    val newAbsences = absencesInput.toIntOrNull() ?: etudiant.nmbr_absence_sans_justification
+                                    repo19Etudiant.upsert(etudiant.copy(nmbr_absence_sans_justification = newAbsences))
+                                    isEditingAbsences = false
+                                }),
+                                singleLine = true
+                            )
+                        } else {
+                            Text(
+                                text = etudiant.nmbr_absence_sans_justification.toString(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (etudiant.nmbr_absence_sans_justification > 0) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                                modifier = Modifier.clickable { isEditingAbsences = true }
+                            )
+                        }
+
+                        // Print toggle button
+                        IconButton(
+                            onClick = {
+                                repo19Etudiant.upsert(
+                                    etudiant.copy(imprime_justification = !etudiant.imprime_justification)
+                                )
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Print,
+                                contentDescription = "طباعة المبرر",
+                                tint = if (etudiant.imprime_justification) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Divider()
+
+                // Question Oui/Non (editable)
+                EditableField(
+                    label = "سؤال نعم/لا:",
+                    value = etudiant.question_par_non,
+                    isEditing = isEditingQuestionOuiNon,
+                    inputValue = questionOuiNonInput,
+                    onInputChange = { questionOuiNonInput = it },
+                    onEditClick = { isEditingQuestionOuiNon = true },
+                    onSave = {
+                        repo19Etudiant.upsert(etudiant.copy(question_par_non = questionOuiNonInput))
+                        isEditingQuestionOuiNon = false
+                    },
+                    focusRequester = questionOuiNonFocusRequester,
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    width = 150.dp
+                )
 
                 Divider()
 
@@ -447,6 +561,40 @@ fun EtudiantDetailsDialog(
                         isEditingTikrar3ard = false
                     },
                     focusRequester = tikrar3ardFocusRequester
+                )
+
+                Divider()
+
+                // Section for Istedrak Kadim (Old Records)
+                Text(
+                    text = "استدراك قديم (Previous Records)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                // Istedrak Kadim - Akher Soura
+                ClickableFieldWithIcon(
+                    label = "آخر سورة (قديم):",
+                    value = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha.arabicName,
+                    onClick = onShowIstedrakSouraDialog,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // Istedrak Kadim - Moukarare
+                ClickableFieldWithIcon(
+                    label = "مكررة (قديم):",
+                    value = etudiant.istedrak_kadim_Moukarare.arabicName,
+                    onClick = onShowIstedrakMokarrareDialog,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+
+                // Istedrak Kadim - Takyim
+                ClickableFieldWithIcon(
+                    label = "تقييم (قديم):",
+                    value = etudiant.istedrak_kadim_Takyim_hali.arabicName,
+                    onClick = onShowIstedrakTakiyimDialog,
+                    color = MaterialTheme.colorScheme.tertiary
                 )
 
                 Divider()

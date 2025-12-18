@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventSeat
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +49,9 @@ fun EtudiantCard(
     var showMokarrareDialog by remember { mutableStateOf(false) }
     var showTakiyimDialog by remember { mutableStateOf(false) }
     var showMoulahada3alaSouloukDialog by remember { mutableStateOf(false) }
+    var showIstedrakSouraDialog by remember { mutableStateOf(false) }
+    var showIstedrakMokarrareDialog by remember { mutableStateOf(false) }
+    var showIstedrakTakiyimDialog by remember { mutableStateOf(false) }
 
     // Check if updated today
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
@@ -127,11 +132,37 @@ fun EtudiantCard(
 
                 // Display absences with warning color if > 0
                 if (etudiant.nmbr_absence_sans_justification > 0) {
-                    Text(
-                        text = "غياب: ${etudiant.nmbr_absence_sans_justification}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "غياب: ${etudiant.nmbr_absence_sans_justification}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+
+                        // Print icon toggle button
+                        IconButton(
+                            onClick = {
+                                repo19Etudiant.upsert(
+                                    etudiant.copy(imprime_justification = !etudiant.imprime_justification)
+                                )
+                            },
+                            modifier = Modifier.size(20.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Print,
+                                contentDescription = "Imprimer justification",
+                                tint = if (etudiant.imprime_justification) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                                },
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -146,7 +177,10 @@ fun EtudiantCard(
             onShowSouraDialog = { showSouraDialog = true },
             onShowMokarrareDialog = { showMokarrareDialog = true },
             onShowTakiyimDialog = { showTakiyimDialog = true },
-            onShowMoulahada3alaSouloukDialog = { showMoulahada3alaSouloukDialog = true }
+            onShowMoulahada3alaSouloukDialog = { showMoulahada3alaSouloukDialog = true },
+            onShowIstedrakSouraDialog = { showIstedrakSouraDialog = true },
+            onShowIstedrakMokarrareDialog = { showIstedrakMokarrareDialog = true },
+            onShowIstedrakTakiyimDialog = { showIstedrakTakiyimDialog = true }
         )
     }
 
@@ -209,6 +243,46 @@ fun EtudiantCard(
             onSelect = { selectedMoulahada ->
                 repo19Etudiant.upsert(etudiant.copy(moulahada_3ala_soulouk = selectedMoulahada))
                 showMoulahada3alaSouloukDialog = false
+            }
+        )
+    }
+
+    // Istedrak Dialogs
+    if (showIstedrakSouraDialog) {
+        SouraSelectionDialog(
+            currentSoura = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha,
+            onDismiss = { showIstedrakSouraDialog = false },
+            onSelect = { selectedSoura ->
+                repo19Etudiant.upsert(
+                    etudiant.copy(istedrak_kadim_Akher_Soura_Wassale_Laha = selectedSoura)
+                )
+                showIstedrakSouraDialog = false
+            }
+        )
+    }
+
+    if (showIstedrakMokarrareDialog) {
+        SouraSelectionDialog(
+            currentSoura = etudiant.istedrak_kadim_Moukarare,
+            onDismiss = { showIstedrakMokarrareDialog = false },
+            onSelect = { selectedSoura ->
+                repo19Etudiant.upsert(
+                    etudiant.copy(istedrak_kadim_Moukarare = selectedSoura)
+                )
+                showIstedrakMokarrareDialog = false
+            }
+        )
+    }
+
+    if (showIstedrakTakiyimDialog) {
+        TakiyimSelectionDialog(
+            currentTakiyim = etudiant.istedrak_kadim_Takyim_hali,
+            onDismiss = { showIstedrakTakiyimDialog = false },
+            onSelect = { selectedTakiyim ->
+                repo19Etudiant.upsert(
+                    etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
+                )
+                showIstedrakTakiyimDialog = false
             }
         )
     }

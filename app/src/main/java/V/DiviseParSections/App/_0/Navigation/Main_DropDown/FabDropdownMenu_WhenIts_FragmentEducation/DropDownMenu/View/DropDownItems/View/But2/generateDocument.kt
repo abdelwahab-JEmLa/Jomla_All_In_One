@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
 
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -21,16 +22,15 @@ import java.util.Locale
 
 /**
  * Clean PDF Generator for Parent Communication Cards
- * Handles all formatting, layout, and RTL text rendering
+ * OPTIMIZED: Reduced text sizes and spacing for better layout
  */
 
-/**
- * Data class representing the organized card data structure
- */
 data class ParentCommunicationCardData(
     val studentInfo: StudentInfo,
     val hifdProgress: HifdProgress,
+    val istedrakProgress: IstedrakProgress?,
     val evaluation: Evaluation,
+    val questionOuiNon: String,
     val notes: Notes,
     val footer: FooterInfo
 ) {
@@ -44,6 +44,12 @@ data class ParentCommunicationCardData(
         val currentAya: Int,
         val mokarrarSoura: String,
         val mokarrarDetails: String
+    )
+
+    data class IstedrakProgress(
+        val soura: String,
+        val mokarrare: String,
+        val takyim: String
     )
 
     data class Evaluation(
@@ -61,24 +67,33 @@ data class ParentCommunicationCardData(
         val date: String,
         val attendanceStatus: String,
         val parentPhone: String,
-        val absenceCount: Int
+        val absenceCount: Int,
+        val shouldPrintJustification: Boolean
     )
 
     companion object {
         fun fromEtudiant(etudiant: M19Etudiant): ParentCommunicationCardData {
             val dateText = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(Date())
 
-            // Determine mokarrar details based on whether it's the same soura or different
             val mokarrarText = if (etudiant.dernier_Soura_Wassale_Laha == etudiant.mokarrare_hifde) {
-                // Same soura: show range within the soura
                 """${etudiant.mokarrare_hifde.arabicName}
 من الآية ${etudiant.dernier_Soura_sater} إلى ${etudiant.mokarrare_hifde_sater}"""
             } else {
-                // Different souras: show range from current soura to mokarar soura
                 """${etudiant.mokarrare_hifde.arabicName}
 من الآية ${etudiant.dernier_Soura_sater} إلى
 ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrare_hifde_sater}"""
             }
+
+            val hasIstedrak = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha != SOUAR.El_Nasse ||
+                    etudiant.istedrak_kadim_Moukarare != SOUAR.El_Nasse
+
+            val istedrakData = if (hasIstedrak) {
+                IstedrakProgress(
+                    soura = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha.arabicName,
+                    mokarrare = etudiant.istedrak_kadim_Moukarare.arabicName,
+                    takyim = etudiant.istedrak_kadim_Takyim_hali.arabicName
+                )
+            } else null
 
             return ParentCommunicationCardData(
                 studentInfo = StudentInfo(
@@ -91,12 +106,14 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
                     mokarrarSoura = etudiant.mokarrare_hifde.arabicName,
                     mokarrarDetails = mokarrarText
                 ),
+                istedrakProgress = istedrakData,
                 evaluation = Evaluation(
                     dabteLevel = etudiant.dernier_takyim_dabte.arabicName,
                     tikrare = etudiant.tikrare,
                     tikrare3arde = etudiant.tikrare_3arde,
                     behaviorNote = etudiant.moulahada_3ala_soulouk.arabicName
                 ),
+                questionOuiNon = etudiant.question_par_non,
                 notes = Notes(
                     specialAttention = etudiant.moulahada_makouba.takeIf { it.isNotBlank() } ?: ""
                 ),
@@ -104,16 +121,14 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
                     date = dateText,
                     attendanceStatus = if (etudiant.absent) "غائب ❌" else "حاضر ✅",
                     parentPhone = etudiant.num_telephone_parent,
-                    absenceCount = etudiant.nmbr_absence_sans_justification
+                    absenceCount = etudiant.nmbr_absence_sans_justification,
+                    shouldPrintJustification = etudiant.imprime_justification
                 )
             )
         }
     }
 }
 
-/**
- * Helper function to draw RTL text correctly using StaticLayout
- */
 fun drawRTLText(
     canvas: android.graphics.Canvas,
     text: String,
@@ -134,9 +149,6 @@ fun drawRTLText(
     }
 }
 
-/**
- * Draw a writable space box for parent input
- */
 fun drawWritableSpace(
     canvas: android.graphics.Canvas,
     x: Float,
@@ -151,7 +163,6 @@ fun drawWritableSpace(
         strokeWidth = 0.5f
     }
 
-    // Draw horizontal lines for writing
     val lineSpacing = height / (lines + 1)
     for (i in 1..lines) {
         val lineY = y + (lineSpacing * i)
@@ -159,18 +170,13 @@ fun drawWritableSpace(
     }
 }
 
-/**
- * Get formatted Hijri date using PrimeCalendar library
- */
 fun getHijriDate(): String {
     return try {
         val hijriCalendar = HijriCalendar()
 
-        // Get day name in Arabic
         val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
         val dayName = dayNames[hijriCalendar.dayOfWeek - 1]
 
-        // Get month name in Arabic
         val monthNames = arrayOf(
             "محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة",
             "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
@@ -183,7 +189,6 @@ fun getHijriDate(): String {
         "$dayName $day $monthName $year هـ"
     } catch (e: Exception) {
         Log.e("HijriDate", "Error formatting Hijri date", e)
-        // Fallback
         val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date()).toInt()
         val hijriYear = gregorianYear - 579
         val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
@@ -192,18 +197,13 @@ fun getHijriDate(): String {
 }
 
 /**
- * Generate PDF document from structured card data with proper RTL support
- * FIXED TODOs:
- * - Added writable spaces for parent notes
- * - Made absence section conditional (only shows if absenceCount > 0)
- * - Improved layout and spacing
+ * OPTIMIZED PDF Generator - Reduced text sizes and spacing
  */
 fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCardData>): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "temp_parent_comm_${System.currentTimeMillis()}.pdf")
 
-        // A5 Portrait dimensions in points
         val pageWidth = 420
         val pageHeight = 595
 
@@ -214,83 +214,81 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
             val page = pdfDocument.startPage(pageInfo)
             val canvas = page.canvas
 
-            // Margins
             val marginLeft = 30f
             val marginRight = 30f
-            val marginTop = 40f
+            val marginTop = 35f
             val contentWidth = (pageWidth - marginLeft - marginRight).toInt()
 
             var yPosition = marginTop
 
-            // TextPaint configurations
+            // REDUCED TextPaint sizes
             val paintArabic = TextPaint().apply {
-                textSize = 16f
+                textSize = 13f  // Reduced from 16f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintArabicBold = TextPaint().apply {
-                textSize = 20f
+                textSize = 17f  // Reduced from 20f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintArabicMediumBold = TextPaint().apply {
-                textSize = 18f
+                textSize = 15f  // Reduced from 18f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintHeaderLarge = TextPaint().apply {
-                textSize = 16f
+                textSize = 14f  // Reduced from 16f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintSmall = TextPaint().apply {
-                textSize = 14f
+                textSize = 11f  // Reduced from 14f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintVerySmall = TextPaint().apply {
-                textSize = 11f
+                textSize = 9f  // Reduced from 11f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
-            // Paint for borders
             val paintBorder = Paint().apply {
                 color = android.graphics.Color.BLACK
                 style = Paint.Style.STROKE
                 strokeWidth = 1f
             }
 
-            // Header text
+            // Header - REDUCED spacing
             drawRTLText(canvas, "هذه البطاقة هي أداة تواصل",
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 25f
+            yPosition += 18f  // Reduced from 25f
 
             drawRTLText(canvas, "لمتابعة سير حفظ ابنكم ليليسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
                 marginLeft, yPosition, contentWidth, paintSmall, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 25f
+            yPosition += 18f  // Reduced from 25f
 
-            // Poetry verses
+            // Poetry - REDUCED spacing
             val poetryText = """وحلتان من الفردوس قد كسيت ... لوالديه لها الأكوان لم تقم
 قالا: بماذا كسيناها؟ فقيل: بما ... أقرأتما ابنكما فاشكر لذي النعم"""
 
             drawRTLText(canvas, poetryText,
                 marginLeft, yPosition, contentWidth, paintVerySmall, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 30f
+            yPosition += 22f  // Reduced from 30f
 
-            // Student name and age header
-            val headerHeight = 40f
+            // Student header - REDUCED height
+            val headerHeight = 32f  // Reduced from 40f
             val paintHeader = Paint().apply {
                 color = "#E8F4FF".toColorInt()
                 style = Paint.Style.FILL
@@ -301,20 +299,19 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 yPosition + headerHeight, paintBorder)
 
             drawRTLText(canvas, "${cardData.studentInfo.fullName} - ${cardData.studentInfo.age} سنة",
-                marginLeft, yPosition + 10f, contentWidth, paintArabicBold)
+                marginLeft, yPosition + 7f, contentWidth, paintArabicBold)
             yPosition += headerHeight
 
-            // ========== TABLEAU 1: الحفظ القديم | المقرر لتحضيره ==========
-            val cellHeight = 120f
+            // TABLEAU 1 - REDUCED height
+            val cellHeight = 95f  // Reduced from 120f
             val cellWidth = contentWidth / 2f
 
-            // Draw borders
             canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + cellHeight, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + cellHeight, paintBorder)
 
-            // RIGHT cell: الحفظ القديم
+            // RIGHT cell
             drawRTLText(canvas, "الحفظ القديم",
-                marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
 
             val hifdText = """${cardData.hifdProgress.currentSoura}
@@ -323,48 +320,108 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 التقييم: ${cardData.evaluation.dabteLevel}"""
 
             drawRTLText(canvas, hifdText,
-                marginLeft + cellWidth + 5f, yPosition + 35f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + cellWidth + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell: المقرر لتحضيره
+            // LEFT cell
             drawRTLText(canvas, "المقرر لتحضيره",
-                marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
 
             drawRTLText(canvas, cardData.hifdProgress.mokarrarDetails,
-                marginLeft + 5f, yPosition + 35f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            yPosition += cellHeight + 15f
+            yPosition += cellHeight + 10f  // Reduced spacing
 
-            val parentObsHeight = 70f
-            canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + parentObsHeight, paintBorder)
+            // TABLEAU ISTEDRAK
+            if (cardData.istedrakProgress != null) {
+                val istedrakHeight = 80f  // Reduced from 100f
 
-            drawRTLText(canvas, "ملاحظات الأولياء:",
-                marginLeft + 5f, yPosition + 5f, contentWidth - 10, paintArabicMediumBold,
-                Layout.Alignment.ALIGN_NORMAL)
+                canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + istedrakHeight, paintBorder)
+                canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + istedrakHeight, paintBorder)
 
-            // Add writable lines for parent notes
-            drawWritableSpace(
-                canvas,
-                marginLeft + 5f,
-                yPosition + 25f,
-                contentWidth - 10f,
-                parentObsHeight - 30f,
-                lines = 3
-            )
+                drawRTLText(canvas, "برناج المراجعة -ما وصل اليه",
+                    marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                    Layout.Alignment.ALIGN_NORMAL)
 
-            yPosition += parentObsHeight + 15f
+                val istedrakHifdText = """${cardData.istedrakProgress.soura}
 
-            // Only show this section if there are absences
-            if (cardData.footer.absenceCount > 0) {
-                val infoTableHeight = 80f
+التقييم: ${cardData.istedrakProgress.takyim}"""
 
-                // Draw borders
+                drawRTLText(canvas, istedrakHifdText,
+                    marginLeft + cellWidth + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                drawRTLText(canvas, "برناج المراجعة - المقرر",
+                    marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                drawRTLText(canvas, cardData.istedrakProgress.mokarrare,
+                    marginLeft + 5f, yPosition + 32f, (cellWidth - 10f).toInt(), paintArabic,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                yPosition += istedrakHeight + 10f
+            }
+
+            // TABLEAU QUESTION
+            if (cardData.questionOuiNon.isNotBlank()) {
+                val questionHeight = 65f  // Reduced from 80f
+
+                canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + questionHeight, paintBorder)
+
+                drawRTLText(canvas, "سؤال:",
+                    marginLeft + 5f, yPosition + 7f, contentWidth - 10, paintArabicMediumBold,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                drawRTLText(canvas, cardData.questionOuiNon,
+                    marginLeft + 5f, yPosition + 25f, contentWidth - 10, paintArabic,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                val checkboxY = yPosition + questionHeight - 20f
+                drawRTLText(canvas, "☐ نعم          ☐ لا",
+                    marginLeft + 5f, checkboxY, contentWidth - 10, paintArabic,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                yPosition += questionHeight + 10f
+            }
+
+            // TABLEAU JUSTIFICATION
+            if (cardData.footer.shouldPrintJustification && cardData.footer.absenceCount > 0) {
+                val justificationHeight = 85f  // Reduced from 100f
+
+                canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + justificationHeight, paintBorder)
+                canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + justificationHeight, paintBorder)
+
+                val absenceText = """نعلمكم بغياب ابنكم
+لـ ${cardData.footer.absenceCount} حصة
+
+يرجى توضيح السبب"""
+
+                drawRTLText(canvas, absenceText,
+                    marginLeft + cellWidth + 5f, yPosition + 8f, (cellWidth - 10f).toInt(), paintArabic,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                drawRTLText(canvas, "المبرر:",
+                    marginLeft + 5f, yPosition + 5f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
+                    Layout.Alignment.ALIGN_NORMAL)
+
+                drawWritableSpace(
+                    canvas,
+                    marginLeft + 5f,
+                    yPosition + 22f,
+                    cellWidth - 10f,
+                    justificationHeight - 25f,
+                    lines = 3
+                )
+
+                yPosition += justificationHeight + 10f
+            } else if (cardData.footer.absenceCount > 0) {
+                val infoTableHeight = 65f  // Reduced from 80f
+
                 canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + infoTableHeight, paintBorder)
                 canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + infoTableHeight, paintBorder)
 
-                // RIGHT cell: Absence notification with count
                 val absenceText = if (cardData.footer.attendanceStatus.contains("غائب")) {
                     "نعلمكم بغياب ابنكم لـ ${cardData.footer.absenceCount} حصة"
                 } else {
@@ -372,10 +429,9 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 }
 
                 drawRTLText(canvas, absenceText,
-                    marginLeft + cellWidth + 5f, yPosition + 25f, (cellWidth - 10f).toInt(), paintArabic,
+                    marginLeft + cellWidth + 5f, yPosition + 20f, (cellWidth - 10f).toInt(), paintArabic,
                     Layout.Alignment.ALIGN_NORMAL)
 
-                // LEFT cell: Notes with writable space
                 drawRTLText(canvas, "ملاحظة:",
                     marginLeft + 5f, yPosition + 5f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                     Layout.Alignment.ALIGN_NORMAL)
@@ -383,18 +439,18 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 drawWritableSpace(
                     canvas,
                     marginLeft + 5f,
-                    yPosition + 25f,
+                    yPosition + 22f,
                     cellWidth - 10f,
-                    infoTableHeight - 30f,
+                    infoTableHeight - 25f,
                     lines = 2
                 )
 
-                yPosition += infoTableHeight + 15f
+                yPosition += infoTableHeight + 10f
             }
 
-            // ========== Bottom section with fixed position ==========
-            val bottomMargin = 30f
-            val row2Height = 100f
+            // BOTTOM SECTION - GREATLY REDUCED height
+            val bottomMargin = 25f
+            val row2Height = 75f  // Reduced from 100f
             yPosition = pageHeight - bottomMargin - row2Height
 
             canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + row2Height, paintBorder)
@@ -414,10 +470,10 @@ ${cardData.notes.specialAttention}"""
             }
 
             drawRTLText(canvas, notesText,
-                marginLeft + cellWidth + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell: Date and signature
+            // LEFT cell: Date and signature - REDUCED text size
             val hijriDate = getHijriDate()
             val gregorianDay = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
             val gregorianMonth = SimpleDateFormat("MMMM", Locale("ar")).format(Date())
@@ -425,17 +481,16 @@ ${cardData.notes.specialAttention}"""
             val todayDate = "$hijriDate\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
 
             drawRTLText(canvas, todayDate,
-                marginLeft + 5f, yPosition + 10f, (cellWidth - 10f).toInt(), paintSmall,
+                marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintVerySmall,  // Using very small font
                 Layout.Alignment.ALIGN_NORMAL)
 
             drawRTLText(canvas, "التوقيع:",
-                marginLeft + 5f, yPosition + 60f, (cellWidth - 10f).toInt(), paintArabic,
+                marginLeft + 5f, yPosition + 50f, (cellWidth - 10f).toInt(), paintSmall,  // Reduced from paintArabic
                 Layout.Alignment.ALIGN_NORMAL)
 
             pdfDocument.finishPage(page)
         }
 
-        // Write to file
         FileOutputStream(pdfFile).use { out ->
             pdfDocument.writeTo(out)
         }
@@ -449,17 +504,11 @@ ${cardData.notes.specialAttention}"""
     }
 }
 
-/**
- * Convenience function to generate PDF for a single student
- */
 fun generateSingleStudentPdf(context: Context, etudiant: M19Etudiant): File? {
     val cardData = ParentCommunicationCardData.fromEtudiant(etudiant)
     return generatePdfDocument(context, listOf(cardData))
 }
 
-/**
- * Convenience function to generate PDF for multiple students
- */
 fun generateMultipleStudentsPdf(context: Context, etudiants: List<M19Etudiant>): File? {
     val cardsData = etudiants.map { ParentCommunicationCardData.fromEtudiant(it) }
     return generatePdfDocument(context, cardsData)
