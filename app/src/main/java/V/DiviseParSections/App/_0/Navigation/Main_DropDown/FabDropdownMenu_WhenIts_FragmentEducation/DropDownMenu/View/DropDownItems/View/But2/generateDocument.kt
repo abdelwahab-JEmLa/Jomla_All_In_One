@@ -22,9 +22,13 @@ import java.util.Locale
 
 /**
  * Clean PDF Generator for Parent Communication Cards
- * OPTIMIZED: Reduced text sizes and spacing for better layout
+ * OPTIMIZED VERSION - Reduced text sizes and spacing for better layout
+ * All TODOs resolved
  */
 
+/**
+ * Data class representing the organized card data structure
+ */
 data class ParentCommunicationCardData(
     val studentInfo: StudentInfo,
     val hifdProgress: HifdProgress,
@@ -71,10 +75,18 @@ data class ParentCommunicationCardData(
         val shouldPrintJustification: Boolean
     )
 
+    // Ensure question is never empty
+    fun getQuestionText(): String {
+        return questionOuiNon.ifBlank {
+            "هل يعاني ابنكم من مرض معين جزاكم الله خيرا؟"
+        }
+    }
+
     companion object {
         fun fromEtudiant(etudiant: M19Etudiant): ParentCommunicationCardData {
             val dateText = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(Date())
 
+            // Determine mokarrar details based on whether it's the same soura or different
             val mokarrarText = if (etudiant.dernier_Soura_Wassale_Laha == etudiant.mokarrare_hifde) {
                 """${etudiant.mokarrare_hifde.arabicName}
 من الآية ${etudiant.dernier_Soura_sater} إلى ${etudiant.mokarrare_hifde_sater}"""
@@ -84,6 +96,7 @@ data class ParentCommunicationCardData(
 ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrare_hifde_sater}"""
             }
 
+            // Check if istedrak data exists and is different from default
             val hasIstedrak = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha != SOUAR.El_Nasse ||
                     etudiant.istedrak_kadim_Moukarare != SOUAR.El_Nasse
 
@@ -113,7 +126,9 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
                     tikrare3arde = etudiant.tikrare_3arde,
                     behaviorNote = etudiant.moulahada_3ala_soulouk.arabicName
                 ),
-                questionOuiNon = etudiant.question_par_non,
+                questionOuiNon = etudiant.question_par_non.ifBlank {
+                    "هل يعاني ابنكم من مرض معين جزاكم الله خيرا؟"
+                },
                 notes = Notes(
                     specialAttention = etudiant.moulahada_makouba.takeIf { it.isNotBlank() } ?: ""
                 ),
@@ -129,6 +144,9 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
     }
 }
 
+/**
+ * Helper function to draw RTL text correctly using StaticLayout
+ */
 fun drawRTLText(
     canvas: android.graphics.Canvas,
     text: String,
@@ -149,6 +167,9 @@ fun drawRTLText(
     }
 }
 
+/**
+ * Draw a writable space box for parent input
+ */
 fun drawWritableSpace(
     canvas: android.graphics.Canvas,
     x: Float,
@@ -163,6 +184,7 @@ fun drawWritableSpace(
         strokeWidth = 0.5f
     }
 
+    // Draw horizontal lines for writing
     val lineSpacing = height / (lines + 1)
     for (i in 1..lines) {
         val lineY = y + (lineSpacing * i)
@@ -170,13 +192,18 @@ fun drawWritableSpace(
     }
 }
 
+/**
+ * Get formatted Hijri date using PrimeCalendar library
+ */
 fun getHijriDate(): String {
     return try {
         val hijriCalendar = HijriCalendar()
 
+        // Get day name in Arabic
         val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
         val dayName = dayNames[hijriCalendar.dayOfWeek - 1]
 
+        // Get month name in Arabic
         val monthNames = arrayOf(
             "محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة",
             "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
@@ -189,6 +216,7 @@ fun getHijriDate(): String {
         "$dayName $day $monthName $year هـ"
     } catch (e: Exception) {
         Log.e("HijriDate", "Error formatting Hijri date", e)
+        // Fallback
         val gregorianYear = SimpleDateFormat("yyyy", Locale.FRENCH).format(Date()).toInt()
         val hijriYear = gregorianYear - 579
         val dayNum = SimpleDateFormat("dd", Locale.FRENCH).format(Date())
@@ -197,13 +225,19 @@ fun getHijriDate(): String {
 }
 
 /**
- * OPTIMIZED PDF Generator - Reduced text sizes and spacing
+ * Generate PDF document from structured card data with proper RTL support
+ * OPTIMIZED VERSION - All TODOs resolved:
+ * ✅ Reduced text sizes and heights to fit all content
+ * ✅ Question table always displays with default question if empty
+ * ✅ Simple answer line instead of checkboxes
+ * ✅ Conditional istedrak and justification tables
  */
 fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCardData>): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "temp_parent_comm_${System.currentTimeMillis()}.pdf")
 
+        // A5 Portrait dimensions in points
         val pageWidth = 420
         val pageHeight = 595
 
@@ -214,6 +248,7 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
             val page = pdfDocument.startPage(pageInfo)
             val canvas = page.canvas
 
+            // Margins - optimized
             val marginLeft = 30f
             val marginRight = 30f
             val marginTop = 35f
@@ -221,74 +256,75 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
             var yPosition = marginTop
 
-            // REDUCED TextPaint sizes
+            // TextPaint configurations - REDUCED SIZES
             val paintArabic = TextPaint().apply {
-                textSize = 13f  // Reduced from 16f
+                textSize = 13f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintArabicBold = TextPaint().apply {
-                textSize = 17f  // Reduced from 20f
+                textSize = 17f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintArabicMediumBold = TextPaint().apply {
-                textSize = 15f  // Reduced from 18f
+                textSize = 15f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintHeaderLarge = TextPaint().apply {
-                textSize = 14f  // Reduced from 16f
+                textSize = 14f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintSmall = TextPaint().apply {
-                textSize = 11f  // Reduced from 14f
+                textSize = 11f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintVerySmall = TextPaint().apply {
-                textSize = 9f  // Reduced from 11f
+                textSize = 9f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
+            // Paint for borders
             val paintBorder = Paint().apply {
                 color = android.graphics.Color.BLACK
                 style = Paint.Style.STROKE
                 strokeWidth = 1f
             }
 
-            // Header - REDUCED spacing
+            // Header text - REDUCED spacing
             drawRTLText(canvas, "هذه البطاقة هي أداة تواصل",
                 marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 18f  // Reduced from 25f
+            yPosition += 18f
 
             drawRTLText(canvas, "لمتابعة سير حفظ ابنكم ليليسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
                 marginLeft, yPosition, contentWidth, paintSmall, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 18f  // Reduced from 25f
+            yPosition += 18f
 
-            // Poetry - REDUCED spacing
+            // Poetry verses - REDUCED spacing
             val poetryText = """وحلتان من الفردوس قد كسيت ... لوالديه لها الأكوان لم تقم
 قالا: بماذا كسيناها؟ فقيل: بما ... أقرأتما ابنكما فاشكر لذي النعم"""
 
             drawRTLText(canvas, poetryText,
                 marginLeft, yPosition, contentWidth, paintVerySmall, Layout.Alignment.ALIGN_CENTER)
-            yPosition += 22f  // Reduced from 30f
+            yPosition += 22f
 
-            // Student header - REDUCED height
-            val headerHeight = 32f  // Reduced from 40f
+            // Student name and age header - REDUCED height
+            val headerHeight = 32f
             val paintHeader = Paint().apply {
                 color = "#E8F4FF".toColorInt()
                 style = Paint.Style.FILL
@@ -302,14 +338,15 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 marginLeft, yPosition + 7f, contentWidth, paintArabicBold)
             yPosition += headerHeight
 
-            // TABLEAU 1 - REDUCED height
-            val cellHeight = 95f  // Reduced from 120f
+            // ========== TABLEAU 1: الحفظ القديم | المقرر لتحضيره ==========
+            val cellHeight = 95f
             val cellWidth = contentWidth / 2f
 
+            // Draw borders
             canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + cellHeight, paintBorder)
             canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + cellHeight, paintBorder)
 
-            // RIGHT cell
+            // RIGHT cell: الحفظ القديم
             drawRTLText(canvas, "الحفظ القديم",
                 marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
@@ -323,7 +360,7 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 marginLeft + cellWidth + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            // LEFT cell
+            // LEFT cell: المقرر لتحضيره
             drawRTLText(canvas, "المقرر لتحضيره",
                 marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                 Layout.Alignment.ALIGN_NORMAL)
@@ -332,15 +369,16 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 marginLeft + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
                 Layout.Alignment.ALIGN_NORMAL)
 
-            yPosition += cellHeight + 10f  // Reduced spacing
+            yPosition += cellHeight + 10f
 
-            // TABLEAU ISTEDRAK
+            // ========== TABLEAU ISTEDRAK (Conditional) ==========
             if (cardData.istedrakProgress != null) {
-                val istedrakHeight = 80f  // Reduced from 100f
+                val istedrakHeight = 80f
 
                 canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + istedrakHeight, paintBorder)
                 canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + istedrakHeight, paintBorder)
 
+                // RIGHT cell: الحفظ القديم (استدراك)
                 drawRTLText(canvas, "برناج المراجعة -ما وصل اليه",
                     marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                     Layout.Alignment.ALIGN_NORMAL)
@@ -353,6 +391,7 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                     marginLeft + cellWidth + 5f, yPosition + 28f, (cellWidth - 10f).toInt(), paintArabic,
                     Layout.Alignment.ALIGN_NORMAL)
 
+                // LEFT cell: المكررة (استدراك)
                 drawRTLText(canvas, "برناج المراجعة - المقرر",
                     marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintArabicMediumBold,
                     Layout.Alignment.ALIGN_NORMAL)
@@ -364,31 +403,39 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 yPosition += istedrakHeight + 10f
             }
 
-            // TABLEAU QUESTION
-            if (cardData.questionOuiNon.isNotBlank()) {
-                val questionHeight = 65f  // Reduced from 80f
+            // ========== TABLEAU QUESTION - ALWAYS DISPLAYED ==========
+            val questionHeight = 65f
 
-                canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + questionHeight, paintBorder)
+            canvas.drawRect(marginLeft, yPosition, pageWidth - marginRight, yPosition + questionHeight, paintBorder)
 
-                drawRTLText(canvas, "سؤال:",
-                    marginLeft + 5f, yPosition + 7f, contentWidth - 10, paintArabicMediumBold,
-                    Layout.Alignment.ALIGN_NORMAL)
+            drawRTLText(canvas, "سؤال:",
+                marginLeft + 5f, yPosition + 7f, contentWidth - 10, paintArabicMediumBold,
+                Layout.Alignment.ALIGN_NORMAL)
 
-                drawRTLText(canvas, cardData.questionOuiNon,
-                    marginLeft + 5f, yPosition + 25f, contentWidth - 10, paintArabic,
-                    Layout.Alignment.ALIGN_NORMAL)
+            drawRTLText(canvas, cardData.questionOuiNon,
+                marginLeft + 5f, yPosition + 25f, contentWidth - 10, paintArabic,
+                Layout.Alignment.ALIGN_NORMAL)
 
-                val checkboxY = yPosition + questionHeight - 20f
-                drawRTLText(canvas, "☐ نعم          ☐ لا",
-                    marginLeft + 5f, checkboxY, contentWidth - 10, paintArabic,
-                    Layout.Alignment.ALIGN_NORMAL)
-
-                yPosition += questionHeight + 10f
+            // Simple line for parent to write answer
+            val answerLineY = yPosition + questionHeight - 12f
+            val linePaint = Paint().apply {
+                color = android.graphics.Color.BLACK
+                style = Paint.Style.STROKE
+                strokeWidth = 0.8f
             }
+            canvas.drawLine(
+                marginLeft + 5f,
+                answerLineY,
+                pageWidth - marginRight - 5f,
+                answerLineY,
+                linePaint
+            )
 
-            // TABLEAU JUSTIFICATION
+            yPosition += questionHeight + 10f
+
+            // ========== TABLEAU JUSTIFICATION (Conditional) ==========
             if (cardData.footer.shouldPrintJustification && cardData.footer.absenceCount > 0) {
-                val justificationHeight = 85f  // Reduced from 100f
+                val justificationHeight = 85f
 
                 canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + justificationHeight, paintBorder)
                 canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + justificationHeight, paintBorder)
@@ -417,7 +464,7 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
 
                 yPosition += justificationHeight + 10f
             } else if (cardData.footer.absenceCount > 0) {
-                val infoTableHeight = 65f  // Reduced from 80f
+                val infoTableHeight = 65f
 
                 canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + infoTableHeight, paintBorder)
                 canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + infoTableHeight, paintBorder)
@@ -448,9 +495,9 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 yPosition += infoTableHeight + 10f
             }
 
-            // BOTTOM SECTION - GREATLY REDUCED height
+            // ========== BOTTOM SECTION - REDUCED height ==========
             val bottomMargin = 25f
-            val row2Height = 75f  // Reduced from 100f
+            val row2Height = 75f
             yPosition = pageHeight - bottomMargin - row2Height
 
             canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + row2Height, paintBorder)
@@ -481,16 +528,17 @@ ${cardData.notes.specialAttention}"""
             val todayDate = "$hijriDate\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
 
             drawRTLText(canvas, todayDate,
-                marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintVerySmall,  // Using very small font
+                marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintVerySmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
             drawRTLText(canvas, "التوقيع:",
-                marginLeft + 5f, yPosition + 50f, (cellWidth - 10f).toInt(), paintSmall,  // Reduced from paintArabic
+                marginLeft + 5f, yPosition + 50f, (cellWidth - 10f).toInt(), paintSmall,
                 Layout.Alignment.ALIGN_NORMAL)
 
             pdfDocument.finishPage(page)
         }
 
+        // Write to file
         FileOutputStream(pdfFile).use { out ->
             pdfDocument.writeTo(out)
         }
@@ -504,11 +552,17 @@ ${cardData.notes.specialAttention}"""
     }
 }
 
+/**
+ * Convenience function to generate PDF for a single student
+ */
 fun generateSingleStudentPdf(context: Context, etudiant: M19Etudiant): File? {
     val cardData = ParentCommunicationCardData.fromEtudiant(etudiant)
     return generatePdfDocument(context, listOf(cardData))
 }
 
+/**
+ * Convenience function to generate PDF for multiple students
+ */
 fun generateMultipleStudentsPdf(context: Context, etudiants: List<M19Etudiant>): File? {
     val cardsData = etudiants.map { ParentCommunicationCardData.fromEtudiant(it) }
     return generatePdfDocument(context, cardsData)
