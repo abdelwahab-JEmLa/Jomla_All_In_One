@@ -238,95 +238,75 @@ fun WeekHeader(
                 Column(modifier = Modifier.padding(4.dp)) {
                     // Show based on user type
                     when {
-                        // Admin sees both vendors
+                        // Admin sees both vendors always
                         isAbdelwahabLeGerant -> {
-                            // Only show Abdelmoumen if filtered for him or no filter
-                            if (currentUser == null || currentUser == Utilisateur.Abdelmoumen) {
-                                // Abdelmoumen earnings
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "عبدالمؤمن:",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Blue,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Column(horizontalAlignment = Alignment.End) {
-                                        Text(
-                                            text = timeAbdelmoumen,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Gray
-                                        )
-                                        Text(
-                                            text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.Red
-                                        )
-                                    }
-                                }
-
-                                if (currentUser == null) {
-                                    Spacer(modifier = Modifier.padding(2.dp))
-                                }
-                            }
-
-                            // Only show Walid if filtered for him or no filter
-                            if (currentUser == null || currentUser == Utilisateur.Walid) {
-                                // Walid earnings
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "وليد:",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Blue,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Column(horizontalAlignment = Alignment.End) {
-                                        Text(
-                                            text = timeWalid,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Gray
-                                        )
-                                        Text(
-                                            text = "${String.format("%.2f", earningsWalid)} دينار",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.Red
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.padding(4.dp))
-
-                            // Total earnings - show appropriate total based on filter
-                            val displayTotal = when (currentUser) {
-                                Utilisateur.Abdelmoumen -> earningsAbdelmoumen
-                                Utilisateur.Walid -> earningsWalid
-                                else -> totalWeekEarnings
-                            }
-
-                            val displayLabel = when (currentUser) {
-                                Utilisateur.Abdelmoumen -> "مجموع عبدالمؤمن:"
-                                Utilisateur.Walid -> "مجموع وليد:"
-                                else -> "المجموع الكلي:"
-                            }
-
+                            // Abdelmoumen earnings
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = displayLabel,
+                                    text = "عبدالمؤمن:",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeAbdelmoumen,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Red
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            // Walid earnings
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "وليد:",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = timeWalid,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${String.format("%.2f", earningsWalid)} دينار",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Red
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            // Total earnings
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "المجموع الكلي:",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color.Blue,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "${String.format("%.2f", displayTotal)} دينار",
+                                    text = "${String.format("%.2f", totalWeekEarnings)} دينار",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color.Red,
                                     fontWeight = FontWeight.Bold
