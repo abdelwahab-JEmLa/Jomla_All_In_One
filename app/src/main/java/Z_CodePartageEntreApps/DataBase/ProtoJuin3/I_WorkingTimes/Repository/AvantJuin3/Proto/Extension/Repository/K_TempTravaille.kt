@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,6 +28,8 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
     class InfosDeBase {
         var dateInString by mutableStateOf("2025_01_01")
         var paye by mutableStateOf(false)
+        var creationTimestamps by mutableLongStateOf(System.currentTimeMillis())
+        var dernierTimeTampsSynchronisationAvecFireBase by mutableStateOf(System.currentTimeMillis())
     }
 
     @get:Exclude

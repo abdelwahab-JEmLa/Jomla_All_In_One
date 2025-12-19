@@ -39,54 +39,53 @@ fun MainList_Windows(
 ) {
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->
-            // Create new copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
-
-            // Create new K_TempTravaille with the filtered intervals
             K_TempTravaille(tempTravaille.vid).apply {
                 this.infosDeBase = tempTravaille.infosDeBase
                 this.intervalesDeTravaille.clear()
                 this.intervalesDeTravaille.addAll(filteredIntervals)
             }
         }
-        // Sort by date, newest first
         .sortedByDescending { it.infosDeBase.dateInString }
 
     val progress by viewModel.repository.progressRepo.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            // Show loading indicator as first item when loading
             if (progress < 1.0f) {
                 item {
                     LoadingIndicator(progress = progress)
                 }
             }
 
-            // Group items by week
             val groupedByWeek = groupItemsByWeek(filteredDateList)
+            val sortedWeekGroups = groupedByWeek.entries
+                .sortedWith(compareByDescending<Map.Entry<WeekInfo, List<K_TempTravaille>>> { it.key.year }
+                    .thenByDescending { it.key.weekNumber })
 
-            // Iterate through each week group
-            groupedByWeek.forEach { (weekInfo, itemsInWeek) ->
-                // Add weekly header with filtered records for this week
-                stickyHeader {
+            sortedWeekGroups.forEach { (weekInfo, itemsInWeek) ->
+                stickyHeader(key = "week_${weekInfo.year}_${weekInfo.weekNumber}") {
                     WeekHeader(
                         weekInfo = weekInfo,
                         viewModel = viewModel,
-                        weekRecords = itemsInWeek  // Pass the filtered week records
+                        weekRecords = itemsInWeek
                     )
                 }
 
-                // Process items for each day in this week
                 itemsInWeek.forEach { tempTravaille ->
-                    stickyHeader {
+                    stickyHeader(key = "day_${tempTravaille.infosDeBase.dateInString}") {
                         DayHeader(
                             tempTravaille = tempTravaille,
                             viewModel = viewModel
                         )
                     }
 
-                    items(tempTravaille.intervalesDeTravaille.size) { index ->
+                    items(
+                        count = tempTravaille.intervalesDeTravaille.size,
+                        key = { index ->
+                            "${tempTravaille.infosDeBase.dateInString}_interval_$index"
+                        }
+                    ) { index ->
                         val intervale = tempTravaille.intervalesDeTravaille[index]
                         MainItem_Windows(
                             intervale = intervale,
@@ -134,19 +133,15 @@ fun LoadingIndicator(progress: Float) {
     }
 }
 
-// Data class to hold week information
 data class WeekInfo(
     val weekNumber: Int,
     val year: Int,
     val isCurrentWeek: Boolean
 )
 
-// Function to group K_TempTravaille objects by week with Saturday as first day
 private fun groupItemsByWeek(dateList: List<K_TempTravaille>): Map<WeekInfo, List<K_TempTravaille>> {
     val calendar = Calendar.getInstance().apply {
-        // Set Saturday as the first day of the week
         firstDayOfWeek = Calendar.SATURDAY
-        // Set minimal days in first week to 1 to ensure proper week calculation
         minimalDaysInFirstWeek = 1
     }
 
@@ -158,10 +153,16 @@ private fun groupItemsByWeek(dateList: List<K_TempTravaille>): Map<WeekInfo, Lis
     val currentWeek = currentCalendar.get(Calendar.WEEK_OF_YEAR)
     val currentYear = currentCalendar.get(Calendar.YEAR)
     val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+    val dateFormatUnderscore = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault())
 
     return dateList.groupBy { tempTravaille ->
         try {
-            val date = dateFormat.parse(tempTravaille.infosDeBase.dateInString) ?: Date()
+            val date = try {
+                dateFormat.parse(tempTravaille.infosDeBase.dateInString)
+            } catch (e: Exception) {
+                dateFormatUnderscore.parse(tempTravaille.infosDeBase.dateInString)
+            } ?: Date()
+
             calendar.time = date
             val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
             val year = calendar.get(Calendar.YEAR)
@@ -171,7 +172,6 @@ private fun groupItemsByWeek(dateList: List<K_TempTravaille>): Map<WeekInfo, Lis
                 isCurrentWeek = weekOfYear == currentWeek && year == currentYear
             )
         } catch (e: Exception) {
-            // Default to current week if parsing fails
             WeekInfo(
                 weekNumber = currentWeek,
                 year = currentYear,
