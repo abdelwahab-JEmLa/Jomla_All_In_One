@@ -11,50 +11,78 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun FastEdite_OutlinedTextField_V2(
     label: String,
-    value: String,
-    isEditing: Boolean,
-    inputValue: String,
-    onInputChange: (String) -> Unit,
-    onEditClick: () -> Unit,
-    onSave: () -> Unit,
-    focusRequester: FocusRequester
+    value: Double,
+    onSave: (Double) -> Unit,
+    suffix: String = "DA"
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var inputValue by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(isEditing) {
+        if (isEditing) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    fun startEditing() {
+        isEditing = true
+        inputValue = value.toString()
+    }
+
+    fun saveValue() {
+        val newValue = inputValue.toDoubleOrNull() ?: value
+        onSave(newValue)
+        isEditing = false
+        keyboardController?.hide()
+    }
+
     Row(
-        modifier = Modifier.Companion.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Companion.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = if (isEditing) "$label (Ancien: ${String.format("%.2f", value)} $suffix)" else label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
         if (isEditing) {
             OutlinedTextField(
                 value = inputValue,
-                onValueChange = onInputChange,
-                modifier = Modifier.Companion
+                onValueChange = { inputValue = it },
+                modifier = Modifier
                     .width(80.dp)
                     .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Companion.Number,
-                    imeAction = ImeAction.Companion.Done
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(onDone = { onSave() }),
+                keyboardActions = KeyboardActions(onDone = { saveValue() }),
                 singleLine = true
             )
         } else {
             Text(
-                text = value,
+                text = String.format("%.2f %s", value, suffix),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.Companion.clickable { onEditClick() }
+                modifier = Modifier.clickable { startEditing() }
             )
         }
     }

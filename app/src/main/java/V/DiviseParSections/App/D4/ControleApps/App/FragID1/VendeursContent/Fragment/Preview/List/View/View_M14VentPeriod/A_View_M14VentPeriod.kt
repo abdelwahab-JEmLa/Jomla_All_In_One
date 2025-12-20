@@ -85,6 +85,7 @@ fun View_M14VentPeriod(
     }
 
     // Function to save edited value
+    // Function to save edited value
     fun saveEditedValue() {
         val newValue = editingValue.toDoubleOrNull() ?: 0.0
         val updatedPeriode = when (editingField) {
@@ -95,6 +96,7 @@ fun View_M14VentPeriod(
             "credit_produits_depot" -> relative_M14VentPeriode.copy(credit_produitsAuDepot = newValue)
             "acheter_produits_depot" -> relative_M14VentPeriode.copy(acheter_produitsAuDepot = newValue)
             "ancien_produits" -> relative_M14VentPeriode.copy(valeur_Produits_depuit_Ancien_Vent_Period = newValue)
+            "pre_fraits" -> relative_M14VentPeriode.copy(pre_fraits_voiture_essance_marche_et_paprasse = newValue)  // ADD THIS LINE
             else -> relative_M14VentPeriode
         }
         updatedPeriode.handel_Clavie_Donne()
@@ -336,12 +338,9 @@ fun View_M14VentPeriod(
 
             Section_Edit_Fraitspre_fraits_voiture_essance_marche_et_paprasse(
                 relative_M14VentPeriode = relative_M14VentPeriode,
-                editingField = editingField,
-                editingValue = editingValue,
-                onStartEditing = ::startEditing,
-                onEditingValueChange = { editingValue = it },
-                onSaveEditedValue = ::saveEditedValue,
-                focusRequester = focusRequester
+                onUpdate = { updatedPeriode ->
+                    updatedPeriode.handel_Clavie_Donne()
+                }
             )
 
             /*  Produits_Ancien_Period(
