@@ -5,13 +5,6 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.Utilisateur
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Payment
@@ -39,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.util.Calendar
@@ -52,33 +43,17 @@ fun WeekHeader(
     weekRecords: List<K_TempTravaille>,
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    // FIXED: Get current user directly from focusedValuesGetter
     val currentUser = focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
-
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState(initial = false)
 
-    // Calculate total work time PER VENDOR using the passed filtered records
     val (totalMinutesAbdelmoumen, totalMinutesWalid) = calculateTotalWeekWorkTimePerVendor(weekRecords)
-
-    // Calculate total for BOTH vendors
     val totalWeekMinutes = totalMinutesAbdelmoumen + totalMinutesWalid
 
-    // Debug logging
-    println("=== WeekHeader Debug ===")
-    println("Week ${weekInfo.weekNumber}, ${weekInfo.year}")
-    println("Current User: $currentUser, Is Admin: $isAbdelwahabLeGerant")
-    println("Abdelmoumen: $totalMinutesAbdelmoumen min")
-    println("Walid: $totalMinutesWalid min")
-    println("Total: $totalWeekMinutes min")
-    println("========================")
-
-    // Calculate earnings per vendor
     val hourlyRate = 1200.0 / 8.0 / 60.0
     val earningsAbdelmoumen = hourlyRate * totalMinutesAbdelmoumen
     val earningsWalid = hourlyRate * totalMinutesWalid
     val totalWeekEarnings = earningsAbdelmoumen + earningsWalid
 
-    // Format time for each vendor
     val hoursAbdelmoumen = totalMinutesAbdelmoumen / 60
     val minutesAbdelmoumen = totalMinutesAbdelmoumen % 60
     val timeAbdelmoumen = "${hoursAbdelmoumen}h ${minutesAbdelmoumen}m"
@@ -92,42 +67,22 @@ fun WeekHeader(
     val daysAbdelmoumenFormatted = translateWorkDurationToArabic(daysAbdelmoumen, totalMinutesAbdelmoumen)
     val daysWalidFormatted = translateWorkDurationToArabic(daysWalid, totalMinutesWalid)
 
-    // Calculate total days worked
     val daysWorked = totalWeekMinutes / (8.0 * 60.0)
     val daysWorkedFormatted = translateWorkDurationToArabic(daysWorked, totalWeekMinutes)
 
-    // Check if all days are paid
     val areAllDaysPaid = weekRecords.isNotEmpty() && weekRecords.all { it.infosDeBase.paye }
     val allDaysPaid = remember { mutableStateOf(areAllDaysPaid) }
 
-    // Animation de clignotement jaune
-    val infiniteTransition = rememberInfiniteTransition(label = "card_animation")
-    val borderColorAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "border_blink_animation"
-    )
-
-    val orangeColor = Color(0xFFFF9800)
-    val yellowColor = Color(0xFFFFEB3B)
-    val greenColor = Color(0xFF4CAF50)
+    // Calculate week sales data
+    val weekSalesData = calculateWeekSalesData(weekInfo, focusedValuesGetter)
 
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .border(
-                width = 4.dp,
-                color = if (allDaysPaid.value) greenColor else yellowColor.copy(alpha = borderColorAlpha),
-                shape = RoundedCornerShape(12.dp)
-            ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = if (allDaysPaid.value) greenColor.copy(alpha = 0.7f) else orangeColor,
+            containerColor = Color.White
         )
     ) {
         Column(
@@ -143,27 +98,12 @@ fun WeekHeader(
             ) {
                 Text(
                     text = weekText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color(0xFF1976D2)
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
-
-                if (allDaysPaid.value) {
-                    Text(
-                        text = "تم",
-                        color = Color.White,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "تم",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
 
                 if (isAbdelwahabLeGerant) {
                     IconButton(
@@ -177,8 +117,8 @@ fun WeekHeader(
                         Icon(
                             imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
                             contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            tint = if (allDaysPaid.value) Color(0xFF4CAF50) else Color(0xFFFF9800),
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -187,7 +127,7 @@ fun WeekHeader(
             Text(
                 text = "الأسبوع ${weekInfo.weekNumber}, ${weekInfo.year}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
+                color = Color.Gray
             )
 
             // Total work duration card
@@ -197,9 +137,7 @@ fun WeekHeader(
                 )
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    // Show based on user type
                     when {
-                        // Admin sees everything
                         isAbdelwahabLeGerant -> {
                             Text(
                                 text = "مدة العمل الاجمالية: $daysWorkedFormatted",
@@ -207,7 +145,6 @@ fun WeekHeader(
                                 color = Color.Blue
                             )
                         }
-                        // Abdelmoumen sees only his time
                         currentUser == Utilisateur.Abdelmoumen -> {
                             Text(
                                 text = "مدة عملك: $daysAbdelmoumenFormatted",
@@ -215,7 +152,6 @@ fun WeekHeader(
                                 color = Color.Blue
                             )
                         }
-                        // Walid sees only his time
                         currentUser == Utilisateur.Walid -> {
                             Text(
                                 text = "مدة عملك: $daysWalidFormatted",
@@ -236,11 +172,8 @@ fun WeekHeader(
                 )
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    // Show based on user type
                     when {
-                        // Admin sees both vendors always
                         isAbdelwahabLeGerant -> {
-                            // Abdelmoumen earnings
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -267,7 +200,6 @@ fun WeekHeader(
 
                             Spacer(modifier = Modifier.padding(2.dp))
 
-                            // Walid earnings
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -294,7 +226,6 @@ fun WeekHeader(
 
                             Spacer(modifier = Modifier.padding(4.dp))
 
-                            // Total earnings
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -313,7 +244,6 @@ fun WeekHeader(
                                 )
                             }
 
-                            // Rate info for admin
                             Text(
                                 text = "اليوم/1200 دينار",
                                 style = MaterialTheme.typography.bodySmall,
@@ -321,7 +251,6 @@ fun WeekHeader(
                             )
                         }
 
-                        // Abdelmoumen sees only his earnings
                         currentUser == Utilisateur.Abdelmoumen -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -348,7 +277,6 @@ fun WeekHeader(
                                 }
                             }
 
-                            // FIXED: Rate info for Abdelmoumen
                             Text(
                                 text = "اليوم/1200 دينار",
                                 style = MaterialTheme.typography.bodySmall,
@@ -356,7 +284,6 @@ fun WeekHeader(
                             )
                         }
 
-                        // Walid sees only his earnings
                         currentUser == Utilisateur.Walid -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -383,7 +310,6 @@ fun WeekHeader(
                                 }
                             }
 
-                            // FIXED: Rate info for Walid
                             Text(
                                 text = "اليوم/1200 دينار",
                                 style = MaterialTheme.typography.bodySmall,
@@ -393,24 +319,252 @@ fun WeekHeader(
                     }
                 }
             }
+
+            // Sales & Financial Summary (Admin only)
+            if (isAbdelwahabLeGerant) {
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                // Financial Summary Grid
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Sales Card
+                    ElevatedCard(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color(0xFFE8F5E9)
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "💰 المبيعات",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFF2E7D32),
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            Text(
+                                text = "${String.format("%.0f", weekSalesData.totalSales)} دج",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1B5E20)
+                            )
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            Text(
+                                text = "نقدي: ${String.format("%.0f", weekSalesData.totalCashSales)} دج",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF388E3C)
+                            )
+                            Text(
+                                text = "آجل: ${String.format("%.0f", weekSalesData.totalCreditSales)} دج",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF388E3C)
+                            )
+
+                            if (weekSalesData.totalSales > 0) {
+                                Spacer(modifier = Modifier.padding(2.dp))
+                                Text(
+                                    text = "ربح ${String.format("%.1f", weekSalesData.profitPercentage)}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color(0xFF66BB6A)
+                                )
+                            }
+                        }
+                    }
+
+                    // Saved Balance Card
+                    ElevatedCard(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color(0xFFE3F2FD)
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "💵 الأرباح",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFF1565C0),
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            Text(
+                                text = "${String.format("%.0f", weekSalesData.totalSavedBalance)} دج",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0D47A1)
+                            )
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            Text(
+                                text = "المحفوظة",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF1976D2)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(2.dp))
+
+                // Expenses and Net Position Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Expenses Card
+                    ElevatedCard(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color(0xFFFFF3E0)
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "🚗 المصاريف",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFFE65100),
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            Text(
+                                text = "${String.format("%.0f", weekSalesData.totalExpenses)} دج",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFBF360C)
+                            )
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            Text(
+                                text = "سوق و سيارة",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFFE65100)
+                            )
+                        }
+                    }
+
+                    // Net Position Card
+                    ElevatedCard(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color(0xFFF3E5F5)
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "📊 الصافي",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFF6A1B9A),
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            val netPosition = weekSalesData.totalSavedBalance -
+                                    weekSalesData.totalExpenses -
+                                    totalWeekEarnings
+
+                            Text(
+                                text = "${String.format("%.0f", netPosition)} دج",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = if (netPosition >= 0) Color(0xFF388E3C) else Color(0xFFD32F2F)
+                            )
+
+                            Spacer(modifier = Modifier.padding(2.dp))
+
+                            Text(
+                                text = "للمشروع",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF7B1FA2)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-// NEW FUNCTION: Calculate work time per vendor
+data class WeekSalesData(
+    val totalCashSales: Double,
+    val totalCreditSales: Double,
+    val totalSales: Double,
+    val totalSavedBalance: Double,
+    val totalExpenses: Double,
+    val profitPercentage: Double
+)
+
+fun calculateWeekSalesData(
+    weekInfo: WeekInfo,
+    focusedValuesGetter: FocusedValuesGetter
+): WeekSalesData {
+    val repo14 = focusedValuesGetter.repo14VentPeriode
+
+    if (repo14 == null) {
+        return WeekSalesData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    }
+
+    val weekPeriods = repo14.datasValue.filter { period ->
+        val calendar = Calendar.getInstance().apply {
+            firstDayOfWeek = Calendar.SATURDAY
+            minimalDaysInFirstWeek = 1
+            timeInMillis = period.creationTimestamp
+        }
+
+        calendar.get(Calendar.YEAR) == weekInfo.year &&
+                calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
+    }
+
+    var totalCash = 0.0
+    var totalCredit = 0.0
+    var totalSavedBalance = 0.0
+    var totalExpenses = 0.0
+
+    weekPeriods.forEach { period ->
+        totalCash += period.cash_Vents_Totale
+        totalCredit += period.credit_Vents_Totale
+        totalSavedBalance += period.saved_balance
+        totalExpenses += period.pre_fraits_voiture_essance_marche_et_paprasse
+    }
+
+    val totalSales = totalCash + totalCredit
+    val profitPercentage = if (totalSales > 0) {
+        (totalSavedBalance / totalSales) * 100
+    } else {
+        0.0
+    }
+
+    return WeekSalesData(
+        totalCashSales = totalCash,
+        totalCreditSales = totalCredit,
+        totalSales = totalSales,
+        totalSavedBalance = totalSavedBalance,
+        totalExpenses = totalExpenses,
+        profitPercentage = profitPercentage
+    )
+}
+
 fun calculateTotalWeekWorkTimePerVendor(weekRecords: List<K_TempTravaille>): Pair<Int, Int> {
     var totalMinutesAbdelmoumen = 0
     var totalMinutesWalid = 0
 
-    println("=== DEBUG: calculateTotalWeekWorkTimePerVendor ===")
-    println("Total records in week: ${weekRecords.size}")
-
     weekRecords.forEach { record ->
-        println("Record date: ${record.infosDeBase.dateInString}, intervals: ${record.intervalesDeTravaille.size}")
-
         record.intervalesDeTravaille.forEach { interval ->
-            println("  Interval: ${interval.tempDepart} -> ${interval.temparrete}, User: ${interval.utilisateur}")
-
             val start = interval.tempDepart
             val end = interval.temparrete
 
@@ -423,36 +577,19 @@ fun calculateTotalWeekWorkTimePerVendor(weekRecords: List<K_TempTravaille>): Pai
                     val endMinutes = endParts[0].toInt() * 60 + endParts[1].toInt()
                     val duration = endMinutes - startMinutes
 
-                    println("    Start: $start = $startMinutes min, End: $end = $endMinutes min, Duration: $duration min (${duration / 60}h ${duration % 60}m)")
-
                     if (duration > 0) {
                         when (interval.utilisateur) {
-                            Utilisateur.Abdelmoumen -> {
-                                totalMinutesAbdelmoumen += duration
-                                println("    Added to Abdelmoumen: $duration min")
-                            }
-                            Utilisateur.Walid -> {
-                                totalMinutesWalid += duration
-                                println("    Added to Walid: $duration min")
-                            }
-                            else -> {
-                                totalMinutesAbdelmoumen += duration
-                                println("    Added to Abdelmoumen (default): $duration min")
-                            }
+                            Utilisateur.Abdelmoumen -> totalMinutesAbdelmoumen += duration
+                            Utilisateur.Walid -> totalMinutesWalid += duration
+                            else -> totalMinutesAbdelmoumen += duration
                         }
                     }
                 } catch (e: Exception) {
-                    println("    ERROR parsing: ${e.message}")
+                    // Skip invalid entries
                 }
-            } else {
-                println("    Skipped (invalid time)")
             }
         }
     }
-
-    println("TOTAL Abdelmoumen: $totalMinutesAbdelmoumen min (${totalMinutesAbdelmoumen / 60}h ${totalMinutesAbdelmoumen % 60}m)")
-    println("TOTAL Walid: $totalMinutesWalid min (${totalMinutesWalid / 60}h ${totalMinutesWalid % 60}m)")
-    println("=== END DEBUG ===")
 
     return Pair(totalMinutesAbdelmoumen, totalMinutesWalid)
 }

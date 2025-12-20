@@ -41,7 +41,7 @@ class FocusedValuesGetter(
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo13TarificationInfos: Repo13TarificationInfos,
-    private val repo14VentPeriode: Repo14VentPeriode,
+     val repo14VentPeriode: Repo14VentPeriode,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
     // FIXED: Add coroutine scope and job for timing control

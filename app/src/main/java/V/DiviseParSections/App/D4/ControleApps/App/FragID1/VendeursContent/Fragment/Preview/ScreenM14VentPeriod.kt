@@ -7,20 +7,13 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import org.koin.compose.koinInject
@@ -68,51 +60,25 @@ fun ScreenM14VentPeriod(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(4.dp)
             ) {
                 Column {
                     Text(
                         text = "Périodes de Vente de ${relative_M9AppCompt?.get_DebugInfos()}",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                        style = MaterialTheme.typography.bodySmall  ,
+                        modifier = Modifier.clickable{
+                            relative_M9AppCompt?.let { currentM9AppCompt ->
+                                val generatedDefaultM14 = M14VentPeriode(
+                                    parent_M9AppCompt_KeyID = currentM9AppCompt.keyID,
+                                    parent_M9AppCompt_DebugInfos = currentM9AppCompt.get_DebugInfos(),
+                                )
 
-                    Text(
-                        text = "Count: ${sortedList_M14VentPeriod.size}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
-
-                        Button(
-                            onClick = {
-                                relative_M9AppCompt?.let { currentM9AppCompt ->
-                                    val generatedDefaultM14 = M14VentPeriode(
-                                        parent_M9AppCompt_KeyID = currentM9AppCompt.keyID,
-                                        parent_M9AppCompt_DebugInfos = currentM9AppCompt.get_DebugInfos(),
-                                    )
-
-                                    aCentralFacade.repositorysMainSetter.upsert_M14VentPeriode(
-                                        generatedDefaultM14
-                                    )
-                                }
-                            },
-                            enabled = relative_M9AppCompt != null
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Ajouter période"
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Nouvelle Période")
+                                aCentralFacade.repositorysMainSetter.upsert_M14VentPeriode(
+                                    generatedDefaultM14
+                                )
+                            }
                         }
-                    }
+                    )
 
                     ViewList_M14VentPeriod(
                         viewModel,

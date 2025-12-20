@@ -2,7 +2,6 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_DefaultAddItem_M14VentPeriode
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod.View_M14VentPeriod
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.SectionDivider
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -46,11 +45,6 @@ fun ViewList_M14VentPeriod(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        item {
-            SectionDivider()
-        }
-
-        // Show periods if they exist
         if (list_M14VentPeriode.isNotEmpty()) {
             list_M14VentPeriode.forEachIndexed { index, periode ->
                 // Sticky Header for each period
@@ -133,7 +127,7 @@ fun StickyPeriodHeader(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(4.dp)
             ) {
                 // Header Row with Period Info
                 Row(

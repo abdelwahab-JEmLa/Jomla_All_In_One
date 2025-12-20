@@ -173,16 +173,18 @@ data class M14VentPeriode(
     val valeur_Produits_depuit_Ancien_Vent_Period: Double = 0.0,
     val acheter_produitsAuDepot: Double = 0.0,
 
+    val pre_fraits_voiture_essance_marche_et_paprasse: Double = 0.0,
+
+    val pre_fraits_paprasse: Double = 0.0,
+
+    val saved_balance: Double = 0.0,
+
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.SoquetteNonDefinie,
 ) {
     fun get_DebugInfos(): String {
         return buildString {
-            append("(M14=")
-            append(parent_M9AppCompt_DebugInfos)
-            append("[")
             append(keyID.takeLast(3))
-            append("])")
         }
     }
 

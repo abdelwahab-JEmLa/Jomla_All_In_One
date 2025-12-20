@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
- fun VentesSection(
+fun VentesSection(
     relative_M14VentPeriode: M14VentPeriode,
     editingField: String?,
     editingValue: String,
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.sp
     onEditingValueChange: (String) -> Unit,
     onSaveEditedValue: () -> Unit,
     onCalculatedClick: () -> Unit,
+    onSyncCalculatedToManual: () -> Unit = {},
     focusRequester: FocusRequester
 ) {
     Row(
@@ -55,12 +60,28 @@ import androidx.compose.ui.unit.sp
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
-                Text(
-                    text = "💰 VENTES (Manual)",
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "💰 VENTES (Manual)",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    // Sync button to copy calculated to manual
+                    IconButton(
+                        onClick = onSyncCalculatedToManual
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Sync,
+                            contentDescription = "Synchroniser avec calcul",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(

@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.TransactionItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -29,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,19 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
@@ -67,6 +54,7 @@ fun View_M14VentPeriod(
     relative_M9AppCompt: Z_AppCompt?,
     onCalculatedAchatClick: () -> Unit = {}
 ) {
+
     // State for showing delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -97,7 +85,6 @@ fun View_M14VentPeriod(
     }
 
     // Function to save edited value
-// Function to save edited value (Updated)
     fun saveEditedValue() {
         val newValue = editingValue.toDoubleOrNull() ?: 0.0
         val updatedPeriode = when (editingField) {
@@ -107,7 +94,7 @@ fun View_M14VentPeriod(
             "cash_achats" -> relative_M14VentPeriode.copy(cash_achats_Totale = newValue)
             "credit_produits_depot" -> relative_M14VentPeriode.copy(credit_produitsAuDepot = newValue)
             "acheter_produits_depot" -> relative_M14VentPeriode.copy(acheter_produitsAuDepot = newValue)
-            "ancien_produits" -> relative_M14VentPeriode.copy(valeur_Produits_depuit_Ancien_Vent_Period = newValue) // Fixed to use correct field
+            "ancien_produits" -> relative_M14VentPeriode.copy(valeur_Produits_depuit_Ancien_Vent_Period = newValue)
             else -> relative_M14VentPeriode
         }
         updatedPeriode.handel_Clavie_Donne()
@@ -187,7 +174,7 @@ fun View_M14VentPeriod(
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF59D) // Light yellow
+                    containerColor = Color(0xFFFFF59D)
                 )
             ) {
                 Row(
@@ -198,10 +185,10 @@ fun View_M14VentPeriod(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "📍 Abdelmounen Doit etre au entre ici",
+                        text = "🏠 Abdelmounen Doit etre au entre ici",
                         fontSize = 16.sp,
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF827717) // Dark yellow for contrast
+                        color = Color(0xFF827717)
                     )
                 }
             }
@@ -241,7 +228,7 @@ fun View_M14VentPeriod(
             TextButton(
                 onClick = {
                     repositorysMainGetter.repo14VentPeriode.datasValue.forEach {
-                        aCentralFacade. repositorysMainSetter.update_M14VentPeriode(
+                        aCentralFacade.repositorysMainSetter.update_M14VentPeriode(
                             it.copy(
                                 abdelmounen_Doit_Etre_Ici = relative_M14VentPeriode.keyID == it.keyID
                             )
@@ -286,7 +273,6 @@ fun View_M14VentPeriod(
         val totalProduitsDepot_stagne_Cette_Period =
             relative_M14VentPeriode.credit_produitsAuDepot + relative_M14VentPeriode.acheter_produitsAuDepot
 
-        // FIXED: Complete the total_supplies calculation by adding products from depot
         val total_supplies = totalAchats + totalProduitsDepot_stagne_Cette_Period
         val balance = totalVentes - total_supplies + relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period
 
@@ -323,6 +309,14 @@ fun View_M14VentPeriod(
                         )
                     )
                 },
+                onSyncCalculatedToManual = {
+                    // Sync calculated ventes to manual ventes
+                    val updatedPeriode = relative_M14VentPeriode.copy(
+                        credit_Vents_Totale = sum_Bon_Vents,
+                        cash_Vents_Totale = 0.0
+                    )
+                    updatedPeriode.handel_Clavie_Donne()
+                },
                 focusRequester = focusRequester
             )
 
@@ -340,7 +334,7 @@ fun View_M14VentPeriod(
                 focusRequester = focusRequester,
             )
 
-            Produits_Ancien_Period(
+          /*  Produits_Ancien_Period(
                 relative_M14VentPeriode = relative_M14VentPeriode,
                 editingField = editingField,
                 editingValue = editingValue,
@@ -348,7 +342,7 @@ fun View_M14VentPeriod(
                 onEditingValueChange = { editingValue = it },
                 onSaveEditedValue = ::saveEditedValue,
                 focusRequester = focusRequester
-            )
+            )          */
 
             // Produits au Dépôt Section
             ProduitsDepotSection(
@@ -362,7 +356,7 @@ fun View_M14VentPeriod(
                 focusRequester = focusRequester
             )
 
-            // Balance Section (Updated call)
+            // Balance Section with sync button
             BalanceSection(
                 balance = balance,
                 totalVentes = totalVentes,
@@ -371,299 +365,15 @@ fun View_M14VentPeriod(
                 sum_Bon_Vents = sum_Bon_Vents,
                 calculatedAchatTotal = calculatedAchatTotal,
                 isLoadingCalculatedAchat = isLoadingCalculatedAchat,
-                relative_M14VentPeriode = relative_M14VentPeriode // Pass the period object
-            )
-        }
-    }
-
-}
-
-// Helper function to check if a grossist has operations in a specific period
-fun isGrossistActiveInPeriod(
-    grossistKeyID: String,
-    ventPeriodKeyID: String,
-    repositorysMainGetter: RepositorysMainGetter
-): Boolean {
-    return repositorysMainGetter.repo11AchatOperation.datasValue.any { achatOperation ->
-        achatOperation.parent_M15Grossist_KeyID == grossistKeyID &&
-                achatOperation.parent_M14VentPeriod_KeyID == ventPeriodKeyID
-    }
-}
-@Composable
-fun Produits_Ancien_Period(
-    relative_M14VentPeriode: M14VentPeriode,
-    editingField: String?,
-    editingValue: String,
-    onStartEditing: (String, Double) -> Unit,
-    onEditingValueChange: (String) -> Unit,
-    onSaveEditedValue: () -> Unit,
-    focusRequester: FocusRequester,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Text(
-                text = "📦 Produits Ancien Période",
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-
-            Text(
-                text = "Produits restants des périodes précédentes",
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Use the correct field for ancient products
-            if (editingField == "ancien_produits") {
-                OutlinedTextField(
-                    value = editingValue,
-                    onValueChange = onEditingValueChange,
-                    label = { Text("Valeur des produits anciens") },
-                    placeholder = { Text("0.0") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onSaveEditedValue() }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    singleLine = true,
-                    suffix = { Text("DA") }
-                )
-            } else {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onStartEditing(
-                                "ancien_produits",
-                                relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period // Use the correct field
-                            )
-                        },
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                relative_M14VentPeriode = relative_M14VentPeriode,
+                onSyncManualBalanceToSaved = {
+                    // Sync manual balance to saved_balance
+                    val updatedPeriode = relative_M14VentPeriode.copy(
+                        saved_balance = balance
                     )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "💼 Valeur totale",
-                                fontSize = 14.sp,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                            Text(
-                                text = "Cliquez pour modifier",
-                                fontSize = 11.sp,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        }
-                        Text(
-                            text = "${relative_M14VentPeriode.valeur_Produits_depuit_Ancien_Vent_Period} DA", // Use the correct field
-                            fontSize = 16.sp,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
+                    updatedPeriode.handel_Clavie_Donne()
                 }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Cette valeur sera ajoutée aux calculs automatiquement",
-                fontSize = 10.sp,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
             )
         }
     }
-}
-
-// Updated loadCalculatedAchatTotals function with timestamp filtering
-fun loadCalculatedAchatTotals(
-    ventPeriodKeyID: String,
-    repositorysMainGetter: RepositorysMainGetter,
-    onTotalLoaded: (Double) -> Unit
-) {
-    var totalCredits = 0.0
-    var totalVersements = 0.0
-    var completedQueries = 0
-    val totalQueries = 2
-
-    // Find the current and next vent periods to determine timestamp range
-    val currentPeriod = repositorysMainGetter.repo14VentPeriode.datasValue
-        .firstOrNull { it.keyID == ventPeriodKeyID }
-
-    if (currentPeriod == null) {
-        onTotalLoaded(0.0)
-        return
-    }
-
-    // Get all periods for the same parent, sorted by creation timestamp
-    val allPeriodsForSameParent = repositorysMainGetter.repo14VentPeriode.datasValue
-        .filter { it.parent_M9AppCompt_KeyID == currentPeriod.parent_M9AppCompt_KeyID }
-        .sortedBy { it.creationTimestamp }
-
-    // Find the timestamp range for this period
-    val currentPeriodIndex = allPeriodsForSameParent.indexOfFirst { it.keyID == ventPeriodKeyID }
-    val periodStartTimestamp = currentPeriod.creationTimestamp
-    val periodEndTimestamp = if (currentPeriodIndex < allPeriodsForSameParent.size - 1) {
-        // Not the last period, use next period's start timestamp
-        allPeriodsForSameParent[currentPeriodIndex + 1].creationTimestamp
-    } else {
-        // Last period, use current timestamp
-        System.currentTimeMillis()
-    }
-
-    fun checkComplete() {
-        completedQueries++
-        if (completedQueries == totalQueries) {
-            onTotalLoaded(totalCredits - totalVersements)
-        }
-    }
-
-    // Helper function to check if a timestamp is within the period range
-    fun isTimestampInPeriod(timestamp: Long): Boolean {
-        return timestamp >= periodStartTimestamp && timestamp < periodEndTimestamp
-    }
-
-    // Load TransactionItems filtered by timestamp and active grossists
-    val transactionListener = object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            totalCredits = 0.0
-            for (child in snapshot.children) {
-                try {
-                    val transaction = child.getValue(TransactionItem::class.java)
-                    transaction?.let {
-                        // Filter by timestamp first, then check if grossist is active in this period
-                        if (isTimestampInPeriod(it.timestamp) &&
-                            isGrossistActiveInPeriod(
-                                it.parent_GrossistKeyID,
-                                ventPeriodKeyID,
-                                repositorysMainGetter
-                            )
-                        ) {
-                            totalCredits += it.credit
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Handle parsing error silently
-                }
-            }
-            checkComplete()
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            checkComplete()
-        }
-    }
-
-    TransactionItem.ref.addListenerForSingleValueEvent(transactionListener)
-
-    // Load VersementItems filtered by timestamp and active grossists
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val versementRef = TransactionItem.ref.parent?.child("VersementItem")
-            val versementListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    totalVersements = 0.0
-                    for (child in snapshot.children) {
-                        try {
-                            val versement = child.child("versement").getValue(Double::class.java)
-                            val grossistKeyID =
-                                child.child("parent_GrossistKeyID").getValue(String::class.java)
-                            val timestamp =
-                                child.child("timestamp").getValue(Long::class.java) ?: 0L
-
-                            if (versement != null && grossistKeyID != null) {
-                                // Filter by timestamp first, then check if grossist is active in this period
-                                if (isTimestampInPeriod(timestamp) &&
-                                    isGrossistActiveInPeriod(
-                                        grossistKeyID,
-                                        ventPeriodKeyID,
-                                        repositorysMainGetter
-                                    )
-                                ) {
-                                    totalVersements += versement
-                                }
-                            }
-                        } catch (e: Exception) {
-                            // Handle parsing error silently
-                        }
-                    }
-                    checkComplete()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    checkComplete()
-                }
-            }
-
-            versementRef?.addListenerForSingleValueEvent(versementListener)
-        } catch (e: Exception) {
-            // If VersementItem loading fails, just complete with transaction total
-            checkComplete()
-        }
-    }
-}
-
-// Alternative approach: If you want to create a more robust timestamp filtering system
-// You can add this helper function to get precise period boundaries:
-fun getPeriodTimestampRange(
-    ventPeriodKeyID: String,
-    repositorysMainGetter: RepositorysMainGetter
-): Pair<Long, Long>? {
-    val currentPeriod = repositorysMainGetter.repo14VentPeriode.datasValue
-        .firstOrNull { it.keyID == ventPeriodKeyID } ?: return null
-
-    // Get all periods for the same parent, sorted by creation timestamp
-    val allPeriodsForSameParent = repositorysMainGetter.repo14VentPeriode.datasValue
-        .filter { it.parent_M9AppCompt_KeyID == currentPeriod.parent_M9AppCompt_KeyID }
-        .sortedBy { it.creationTimestamp }
-
-    val currentPeriodIndex = allPeriodsForSameParent.indexOfFirst { it.keyID == ventPeriodKeyID }
-    if (currentPeriodIndex == -1) return null
-
-    val startTimestamp = currentPeriod.creationTimestamp
-    val endTimestamp = if (currentPeriodIndex < allPeriodsForSameParent.size - 1) {
-        allPeriodsForSameParent[currentPeriodIndex + 1].creationTimestamp
-    } else {
-        System.currentTimeMillis()
-    }
-
-    return Pair(startTimestamp, endTimestamp)
-}
-
-@Composable
-fun Coupe_Colle_Buttons(
-    relative_Period: M14VentPeriode
-) {
-    Text(
-        text = "Copy/Paste buttons placeholder",
-        fontSize = 12.sp,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-    )
 }

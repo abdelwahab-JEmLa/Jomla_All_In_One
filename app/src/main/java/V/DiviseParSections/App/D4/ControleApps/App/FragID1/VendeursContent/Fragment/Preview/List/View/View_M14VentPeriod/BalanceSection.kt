@@ -4,12 +4,16 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +31,14 @@ fun BalanceSection(
     sum_Bon_Vents: Double,
     calculatedAchatTotal: Double,
     isLoadingCalculatedAchat: Boolean,
-    relative_M14VentPeriode: M14VentPeriode // Add this parameter to access the ancient products value
+    relative_M14VentPeriode: M14VentPeriode,
+    onSyncManualBalanceToSaved: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Manual Balance Card
+        // Manual Balance Card with Sync Button
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.elevatedCardColors(
@@ -67,20 +72,35 @@ fun BalanceSection(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
-                    Text(
-                        text = String.format("%.2f", balance),
-                        fontSize = 22.sp,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = when {
-                            balance > 0 -> MaterialTheme.colorScheme.primary
-                            balance < 0 -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurface
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = String.format("%.2f", balance),
+                            fontSize = 22.sp,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = when {
+                                balance > 0 -> MaterialTheme.colorScheme.primary
+                                balance < 0 -> MaterialTheme.colorScheme.error
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                        // Sync button to copy manual balance to saved_balance
+                        IconButton(
+                            onClick = onSyncManualBalanceToSaved
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Sync,
+                                contentDescription = "Synchroniser vers saved balance",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
-                    )
+                    }
                 }
 
                 Text(
-                    text = "Ventes ($totalVentes) - Achats ($totalAchats) + Dépôt ($totalProduitsDepot)",
+                    text = "Ventes ($totalVentes) - Achats ($totalAchats) - Dépôt ($totalProduitsDepot)",
                     fontSize = 11.sp,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
@@ -90,7 +110,7 @@ fun BalanceSection(
         }
 
         // Calculated Balance Card
-        ElevatedCard(
+        /*ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.elevatedCardColors(
                 containerColor = when {
@@ -101,11 +121,9 @@ fun BalanceSection(
                             calculatedBalance < 0 -> MaterialTheme.colorScheme.errorContainer.copy(
                                 alpha = 0.8f
                             )
-
                             else -> MaterialTheme.colorScheme.surfaceContainer
                         }
                     }
-
                     else -> MaterialTheme.colorScheme.surfaceContainer
                 }
             )
@@ -185,6 +203,56 @@ fun BalanceSection(
                         modifier = Modifier.align(Alignment.End)
                     )
                 }
+            }
+        }       */
+
+        // Saved Balance Card
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "💾 SAVED BALANCE",
+                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "(Sauvegardé)",
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text(
+                        text = String.format("%.2f", relative_M14VentPeriode.saved_balance),
+                        fontSize = 22.sp,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Cliquez sur l'icône de synchronisation dans Balance Manual pour mettre à jour",
+                    fontSize = 10.sp,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             }
         }
     }
