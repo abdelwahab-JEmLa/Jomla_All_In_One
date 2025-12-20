@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.FastEdite_OutlinedTextField
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import android.text.format.DateUtils.isToday
@@ -396,7 +397,7 @@ fun EtudiantDetailsDialog(
                 )
 
                 // Position in class (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "المركز في الصف:",
                     value = etudiant.positon_don_classe.toString(),
                     isEditing = isEditingPosition,
@@ -416,7 +417,7 @@ fun EtudiantDetailsDialog(
                 )
 
                 // Age (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "العمر:",
                     value = etudiant.age.toString(),
                     isEditing = isEditingAge,
@@ -464,7 +465,7 @@ fun EtudiantDetailsDialog(
                 )
 
                 // Dernier Ayaa (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "رقم الآية:",
                     value = etudiant.dernier_Soura_sater.toString(),
                     isEditing = isEditingDernierAyaa,
@@ -502,7 +503,7 @@ fun EtudiantDetailsDialog(
                 )
 
                 // Mokarrare Ayaa (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "رقم الآية:",
                     value = etudiant.mokarrare_hifde_sater.toString(),
                     isEditing = isEditingMokarrareAyaa,
@@ -514,7 +515,8 @@ fun EtudiantDetailsDialog(
                     },
                     onEditClick = { isEditingMokarrareAyaa = true },
                     onSave = {
-                        val newAyaa = mokarrareAyaaInput.toIntOrNull() ?: etudiant.mokarrare_hifde_sater
+                        val newAyaa =
+                            mokarrareAyaaInput.toIntOrNull() ?: etudiant.mokarrare_hifde_sater
                         repo19Etudiant.upsert(etudiant.copy(mokarrare_hifde_sater = newAyaa))
                         isEditingMokarrareAyaa = false
                     },
@@ -524,7 +526,7 @@ fun EtudiantDetailsDialog(
                 Divider()
 
                 // Tikrare (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "تكرار:",
                     value = etudiant.tikrare.toString(),
                     isEditing = isEditingTikrare,
@@ -544,7 +546,7 @@ fun EtudiantDetailsDialog(
                 )
 
                 // Tikrar 3ard (editable)
-                EditableNumberField(
+                FastEdite_OutlinedTextField(
                     label = "تكرار عرض:",
                     value = etudiant.tikrare_3arde.toString(),
                     isEditing = isEditingTikrar3ard,
@@ -671,45 +673,6 @@ private fun EditableField(
             Text(
                 text = value.ifBlank { "---" },
                 style = textStyle,
-                modifier = Modifier.clickable { onEditClick() }
-            )
-        }
-    }
-}
-
-@Composable
-private fun EditableNumberField(
-    label: String,
-    value: String,
-    isEditing: Boolean,
-    inputValue: String,
-    onInputChange: (String) -> Unit,
-    onEditClick: () -> Unit,
-    onSave: () -> Unit,
-    focusRequester: FocusRequester
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        if (isEditing) {
-            OutlinedTextField(
-                value = inputValue,
-                onValueChange = onInputChange,
-                modifier = Modifier.width(80.dp).focusRequester(focusRequester),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { onSave() }),
-                singleLine = true
-            )
-        } else {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable { onEditClick() }
             )
         }

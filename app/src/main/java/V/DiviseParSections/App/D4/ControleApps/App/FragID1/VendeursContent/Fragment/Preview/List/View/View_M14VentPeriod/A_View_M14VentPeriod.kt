@@ -334,7 +334,17 @@ fun View_M14VentPeriod(
                 focusRequester = focusRequester,
             )
 
-          /*  Produits_Ancien_Period(
+            Section_Edit_Fraitspre_fraits_voiture_essance_marche_et_paprasse(
+                relative_M14VentPeriode = relative_M14VentPeriode,
+                editingField = editingField,
+                editingValue = editingValue,
+                onStartEditing = ::startEditing,
+                onEditingValueChange = { editingValue = it },
+                onSaveEditedValue = ::saveEditedValue,
+                focusRequester = focusRequester
+            )
+
+            /*  Produits_Ancien_Period(
                 relative_M14VentPeriode = relative_M14VentPeriode,
                 editingField = editingField,
                 editingValue = editingValue,
@@ -377,3 +387,4 @@ fun View_M14VentPeriod(
         }
     }
 }
+

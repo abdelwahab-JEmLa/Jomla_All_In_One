@@ -175,8 +175,6 @@ data class M14VentPeriode(
 
     val pre_fraits_voiture_essance_marche_et_paprasse: Double = 0.0,
 
-    val pre_fraits_paprasse: Double = 0.0,
-
     val saved_balance: Double = 0.0,
 
     var etateActuellementEst: EtateActuellementEst =
