@@ -27,6 +27,7 @@ import java.util.Locale
  * ✅ Client name displayed at top
  * ✅ Respects maximum page limit
  * ✅ Products that don't fit are excluded with warning
+ * ✅ Total displayed at bottom of last page (no blank page)
  */
 class AndroidNativeTaxInvoiceGenerator(
     private val formatter: PdfFormatterUtils_2,
@@ -123,7 +124,6 @@ class AndroidNativeTaxInvoiceGenerator(
             val pdfDocument = PdfDocument()
 
             var currentPage = 1
-            var rowsInCurrentPage = 0
             var currentRowIndex = 0
             var total = 0.0
 
@@ -144,6 +144,8 @@ class AndroidNativeTaxInvoiceGenerator(
                     currentRowIndex + rowsForThisPage
                 )
 
+                val isLastPage = (currentRowIndex + rowsForThisPage >= productsToInclude.size)
+
                 if (currentPage == 1) {
                     // First page: full header
                     val pageTotal = drawFirstPage(
@@ -155,7 +157,10 @@ class AndroidNativeTaxInvoiceGenerator(
                         invoiceNumber,
                         companyLogoResId,
                         currentPage,
-                        actualPages
+                        actualPages,
+                        isLastPage,
+                        total + rowsToDisplay.sumOf { it.total },
+                        excludedCount
                     )
                     total += pageTotal
                 } else {
@@ -165,7 +170,10 @@ class AndroidNativeTaxInvoiceGenerator(
                         rowsToDisplay,
                         currentRowIndex + 1,
                         currentPage,
-                        actualPages
+                        actualPages,
+                        isLastPage,
+                        total + rowsToDisplay.sumOf { it.total },
+                        excludedCount
                     )
                     total += pageTotal
                 }
@@ -174,14 +182,6 @@ class AndroidNativeTaxInvoiceGenerator(
 
                 currentRowIndex += rowsForThisPage
                 currentPage++
-            }
-
-            // Add total on last page
-            if (actualPages > 0) {
-                val lastPageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, actualPages + 1).create()
-                val lastPage = pdfDocument.startPage(lastPageInfo)
-                drawTotalAndFooter(lastPage.canvas, total, excludedCount)
-                pdfDocument.finishPage(lastPage)
             }
 
             // Write to file
@@ -273,13 +273,17 @@ class AndroidNativeTaxInvoiceGenerator(
         invoiceNumber: String,
         companyLogoResId: Int?,
         pageNum: Int,
-        totalPages: Int
+        totalPages: Int,
+        isLastPage: Boolean,
+        grandTotal: Double,
+        excludedCount: Int
     ): Double {
         var yPos = MARGIN_TOP
 
         // 1. Company Logo
         yPos = drawCompanyLogo(canvas, context, companyLogoResId, yPos)
 
+        // 2. Client name at top
         yPos = drawClientNameAtTop(canvas, client, yPos)
 
         // 3. Business Type
@@ -307,6 +311,11 @@ class AndroidNativeTaxInvoiceGenerator(
         // 9. Products Table
         val total = drawProductsTable(canvas, products, yPos, 1, pageNum, totalPages)
 
+        // 10. If last page, draw total at bottom
+        if (isLastPage) {
+            drawTotalAndFooter(canvas, grandTotal, excludedCount)
+        }
+
         return total
     }
 
@@ -318,7 +327,10 @@ class AndroidNativeTaxInvoiceGenerator(
         products: List<ProductRow>,
         startRowNum: Int,
         pageNum: Int,
-        totalPages: Int
+        totalPages: Int,
+        isLastPage: Boolean,
+        grandTotal: Double,
+        excludedCount: Int
     ): Double {
         var yPos = MARGIN_TOP
 
@@ -331,7 +343,14 @@ class AndroidNativeTaxInvoiceGenerator(
         canvas.drawText("Page $pageNum/$totalPages", PAGE_WIDTH - MARGIN_RIGHT, yPos, pagePaint)
         yPos += 20f
 
-        return drawProductsTable(canvas, products, yPos, startRowNum, pageNum, totalPages)
+        val total = drawProductsTable(canvas, products, yPos, startRowNum, pageNum, totalPages)
+
+        // If last page, draw total at bottom
+        if (isLastPage) {
+            drawTotalAndFooter(canvas, grandTotal, excludedCount)
+        }
+
+        return total
     }
 
     /**
@@ -568,7 +587,7 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * Draw total and footer
+     * Draw total and footer at bottom of canvas
      */
     private fun drawTotalAndFooter(canvas: Canvas, total: Double, excludedCount: Int) {
         var yPos = PAGE_HEIGHT - 150f

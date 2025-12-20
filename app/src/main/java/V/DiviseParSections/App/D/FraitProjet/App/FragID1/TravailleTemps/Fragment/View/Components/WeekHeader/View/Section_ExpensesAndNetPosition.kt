@@ -35,29 +35,21 @@ fun Section_ExpensesAndNetPosition(
     weekSalesData: WeekSalesData,
     totalWeekEarnings: Double
 ) {
-    // Administrative paperwork expenses
+    // Paperwork expenses
     var impots by remember { mutableStateOf(30000.0) }
     var impotsPenalities by remember { mutableStateOf(10000.0) }
     var casnos by remember { mutableStateOf(35000.0) }
 
-    // Truck operation expenses (new)
-    var truckFuel by remember { mutableStateOf(0.0) }  // Fuel per week
-    var truckRepairs by remember { mutableStateOf(30000000.0) }  // Annual repairs
 
     var showExpensesDialog by remember { mutableStateOf(false) }
 
-    // Calculate annual and weekly paperwork expenses
+    // Calculations
     val totalePaprasseFraitParAnne = impots + impotsPenalities + casnos
     val totalePaprasseFraitParSemain = totalePaprasseFraitParAnne / 52.0
 
-    // Calculate weekly truck expenses
-    val truckRepairsPerWeek = truckRepairs / 52.0
-    val totalTruckExpensesPerWeek = truckFuel + truckRepairsPerWeek
 
-    // Total all expenses
-    val totalExpensesWithAll = weekSalesData.totalExpenses +
-            totalePaprasseFraitParSemain +
-            totalTruckExpensesPerWeek
+    val totalExpensesWithAll = weekSalesData.pre_fraits_voiture_essance_marche_et_paprasse +
+            totalePaprasseFraitParSemain
 
     // Expenses Dialog
     if (showExpensesDialog) {
@@ -65,19 +57,19 @@ fun Section_ExpensesAndNetPosition(
             onDismissRequest = { showExpensesDialog = false },
             title = {
                 Text(
-                    text = "تعديل المصاريف التقريبية",
+                    text = "تعديل المصاريف",
                     style = MaterialTheme.typography.titleLarge
                 )
             },
             text = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    // Paperwork section
+                    // Paperwork Section
                     Text(
-                        text = "الأوراق الإدارية (سنوياً)",
+                        text = "📋 مصاريف الأوراق الإدارية",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1976D2),
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
 
                     OutlinedTextField(
@@ -103,59 +95,49 @@ fun Section_ExpensesAndNetPosition(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.padding(12.dp))
-
-                    // Truck expenses section
                     Text(
-                        text = "مصاريف سير الشاحنة",
+                        text = "المجموع: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج/أسبوع",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    // Vehicle Section
+                    Text(
+                        text = "🚗 مصاريف سير الشاحنة",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    OutlinedTextField(
-                        value = truckFuel.toString(),
-                        onValueChange = { truckFuel = it.toDoubleOrNull() ?: truckFuel },
-                        label = { Text("البنزين أسبوعياً (دج)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.padding(4.dp))
-
-                    OutlinedTextField(
-                        value = truckRepairs.toString(),
-                        onValueChange = { truckRepairs = it.toDoubleOrNull() ?: truckRepairs },
-                        label = { Text("الإصلاحات سنوياً (دج)") },
-                        modifier = Modifier.fillMaxWidth()
+                        color = Color(0xFFE65100),
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
 
                     Spacer(modifier = Modifier.padding(12.dp))
 
-                    // Summary
+                    // Total Summary
                     Text(
-                        text = "المجموع الأسبوعي:",
+                        text = "📊 الملخص الإجمالي",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2)
+                        color = Color(0xFF6A1B9A),
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+
                     Text(
-                        text = "• أوراق: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        text = "الأوراق الأسبوعية: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج",
+                        style = MaterialTheme.typography.bodyMedium
                     )
+
                     Text(
-                        text = "• شاحنة: ${String.format("%.0f", totalTruckExpensesPerWeek)} دج",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        text = "الشاحنة الأسبوعية: ${String.format("%.0f", weekSalesData.pre_fraits_voiture_essance_marche_et_paprasse )} دج",
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    Text(
-                        text = "• سوق: ${String.format("%.0f", weekSalesData.totalExpenses)} دج",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
+
                     Spacer(modifier = Modifier.padding(4.dp))
+
                     Text(
-                        text = "الإجمالي: ${String.format("%.0f", totalExpensesWithAll)} دج",
+                        text = "المجموع الكلي: ${String.format("%.0f", totalExpensesWithAll)} دج/أسبوع",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFBF360C)
@@ -180,7 +162,7 @@ fun Section_ExpensesAndNetPosition(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Expenses Card - with edit functionality
+        // Expenses Card
         ElevatedCard(
             modifier = Modifier
                 .weight(1f)
@@ -197,7 +179,7 @@ fun Section_ExpensesAndNetPosition(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "🚗 المصاريف التقريبية",
+                        text = "💰 المصاريف",
                         style = MaterialTheme.typography.labelMedium,
                         color = Color(0xFFE65100),
                         fontWeight = FontWeight.Bold
@@ -220,17 +202,6 @@ fun Section_ExpensesAndNetPosition(
                 )
 
                 Spacer(modifier = Modifier.padding(2.dp))
-
-                Text(
-                    text = "سوق: ${String.format("%.0f", weekSalesData.totalExpenses)} دج",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFE65100)
-                )
-                Text(
-                    text = "شاحنة: ${String.format("%.0f", totalTruckExpensesPerWeek)} دج",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFE65100)
-                )
                 Text(
                     text = "أوراق: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج",
                     style = MaterialTheme.typography.labelSmall,
@@ -239,7 +210,7 @@ fun Section_ExpensesAndNetPosition(
             }
         }
 
-        // Net Position Card - updated calculation
+        // Net Position Card
         ElevatedCard(
             modifier = Modifier.weight(1f),
             colors = CardDefaults.elevatedCardColors(

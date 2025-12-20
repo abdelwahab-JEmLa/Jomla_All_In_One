@@ -29,13 +29,14 @@ fun calculateWeekSalesData(
     var totalCash = 0.0
     var totalCredit = 0.0
     var totalSavedBalance = 0.0
-    var totalExpenses = 0.0
+    var pre_fraits_voiture_essance_marche_et_paprasse = 0.0
+
 
     weekPeriods.forEach { period ->
         totalCash += period.cash_Vents_Totale
         totalCredit += period.credit_Vents_Totale
         totalSavedBalance += period.saved_balance
-        totalExpenses += period.pre_fraits_voiture_essance_marche_et_paprasse
+        pre_fraits_voiture_essance_marche_et_paprasse += period.pre_fraits_voiture_essance_marche_et_paprasse
     }
 
     val totalSales = totalCash + totalCredit
@@ -50,7 +51,7 @@ fun calculateWeekSalesData(
         totalCreditSales = totalCredit,
         totalSales = totalSales,
         totalSavedBalance = totalSavedBalance,
-        totalExpenses = totalExpenses,
+        pre_fraits_voiture_essance_marche_et_paprasse = pre_fraits_voiture_essance_marche_et_paprasse,
         profitPercentage = profitPercentage
     )
 }

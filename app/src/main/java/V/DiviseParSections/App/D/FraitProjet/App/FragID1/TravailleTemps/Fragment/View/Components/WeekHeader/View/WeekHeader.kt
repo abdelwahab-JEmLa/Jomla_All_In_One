@@ -433,6 +433,6 @@ data class WeekSalesData(
     val totalCreditSales: Double,
     val totalSales: Double,
     val totalSavedBalance: Double,
-    val totalExpenses: Double,
+    val pre_fraits_voiture_essance_marche_et_paprasse: Double,
     val profitPercentage: Double
 )
