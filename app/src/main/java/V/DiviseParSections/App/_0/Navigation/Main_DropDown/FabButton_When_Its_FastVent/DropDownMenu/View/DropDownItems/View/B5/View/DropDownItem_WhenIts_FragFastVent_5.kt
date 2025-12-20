@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B5.View.AndroidNativeTaxInvoiceGenerator
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B5.View.PdfFormatterUtils_2
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -54,6 +56,39 @@ fun DropDownItem_WindowsShare_Facture_Impots(
                     vent.quantity > 0
         }
 
+    // Function to open PDF file
+    fun openPdfFile(file: File) {
+        try {
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
+
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                Toast.makeText(
+                    context,
+                    "Aucune application pour ouvrir le PDF",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(
+                context,
+                "Erreur lors de l'ouverture du PDF: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+            e.printStackTrace()
+        }
+    }
+
     fun shareWithWindows() {
         if (activeVents.isEmpty()) {
             Toast.makeText(
@@ -75,7 +110,7 @@ fun DropDownItem_WindowsShare_Facture_Impots(
 
                 delay(500)
 
-                val formatter = PdfFormatterUtils_2()  
+                val formatter = PdfFormatterUtils_2()
                 val uploadHandler = UploadHandler()
                 val taxInvoiceGenerator = AndroidNativeTaxInvoiceGenerator(
                     formatter = formatter,
@@ -103,7 +138,12 @@ fun DropDownItem_WindowsShare_Facture_Impots(
                     val pdfFile = File(filePath)
 
                     if (pdfFile.exists()) {
+                        // Share with Windows apps
                         printHandler.sharePdfWithWindowsApps(context, pdfFile)
+
+                        // Open the PDF file automatically
+                        delay(300) // Small delay to ensure sharing dialog appears first
+                        openPdfFile(pdfFile)
 
                         CoroutineScope(Dispatchers.Main).launch {
                             Toast.makeText(

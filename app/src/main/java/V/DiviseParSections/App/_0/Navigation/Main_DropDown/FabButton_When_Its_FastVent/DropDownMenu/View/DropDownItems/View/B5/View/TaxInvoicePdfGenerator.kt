@@ -23,16 +23,15 @@ import java.util.Locale
 
 /**
  * Tax Invoice PDF Generator using Android Native PdfDocument API
- * ✅ Uses android.graphics.pdf.PdfDocument (NO external libraries like iTextPDF)
- * ✅ Official tax invoice format
- * ✅ Company logo support
- * ✅ RC number and Arabic business description
- * ✅ Professional table layout with orange headers
- * ✅ Matches the required invoice format
+ * ✅ Multi-page support with proper pagination
+ * ✅ Client name displayed at top
+ * ✅ Respects maximum page limit
+ * ✅ Products that don't fit are excluded with warning
  */
 class AndroidNativeTaxInvoiceGenerator(
     private val formatter: PdfFormatterUtils_2,
-    private val uploadHandler: UploadHandler
+    private val uploadHandler: UploadHandler,
+    val nombre_Page_max: Int = 10
 ) {
 
     companion object {
@@ -44,22 +43,25 @@ class AndroidNativeTaxInvoiceGenerator(
         private const val MARGIN_LEFT = 40f
         private const val MARGIN_RIGHT = 40f
         private const val MARGIN_TOP = 40f
+        private const val MARGIN_BOTTOM = 150f // Space for total and footer
+
+        // Row height
+        private const val ROW_HEIGHT = 25f
+        private const val HEADER_HEIGHT = 30f
 
         // Colors
         private val COLOR_ORANGE = Color.rgb(255, 192, 128)
         private val COLOR_LIGHT_ORANGE = Color.rgb(255, 228, 196)
-        private val COLOR_BLACK = Color.BLACK
+        private const val COLOR_BLACK = Color.BLACK
         private val COLOR_GRAY = Color.rgb(128, 128, 128)
 
-        // Company details - EXTRACTED FROM IMAGE
-        private const val COMPANY_NAME_AR = "عبد الوهاب حمليش"
+        // Company details
         private const val BUSINESS_TYPE_AR = "تجارة المرطبات بالتجزئة"
-        private const val RC_NUMBER = "RC : 16/00 – 5138424 D20"
         private const val INVOICE_PREFIX = "Facture N°"
     }
 
     /**
-     * Generate tax invoice PDF
+     * Generate tax invoice PDF with multi-page support
      */
     suspend fun generateTaxInvoicePdf(
         context: Context,
@@ -85,26 +87,102 @@ class AndroidNativeTaxInvoiceGenerator(
                 bonVent?.keyID?.takeLast(4) ?: ""
             )
 
+            // Prepare product data
+            val productRows = prepareProductData(operations, tarificationRepo, produitRepo)
+
+            // Calculate how many products fit per page
+            val headerHeight = calculateHeaderHeight(companyLogoResId != null)
+            val availableHeightFirstPage = PAGE_HEIGHT - headerHeight - MARGIN_BOTTOM
+            val availableHeightOtherPages = PAGE_HEIGHT - MARGIN_TOP - HEADER_HEIGHT - MARGIN_BOTTOM
+
+            val rowsPerFirstPage = (availableHeightFirstPage / ROW_HEIGHT).toInt()
+            val rowsPerOtherPage = (availableHeightOtherPages / ROW_HEIGHT).toInt()
+
+            // Calculate total pages needed
+            val totalRowsNeeded = productRows.size
+            var pagesNeeded = 1
+            var remainingRows = totalRowsNeeded - rowsPerFirstPage
+
+            if (remainingRows > 0) {
+                pagesNeeded += (remainingRows + rowsPerOtherPage - 1) / rowsPerOtherPage
+            }
+
+            // Check if we exceed max pages
+            val actualPages = minOf(pagesNeeded, nombre_Page_max)
+            val productsToInclude = if (pagesNeeded > nombre_Page_max) {
+                // Calculate how many products we can fit
+                val maxRows = rowsPerFirstPage + (rowsPerOtherPage * (nombre_Page_max - 1))
+                productRows.take(maxRows)
+            } else {
+                productRows
+            }
+
+            val excludedCount = totalRowsNeeded - productsToInclude.size
+
             // Create PDF document
             val pdfDocument = PdfDocument()
-            val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
-            val page = pdfDocument.startPage(pageInfo)
-            val canvas = page.canvas
 
-            // Draw content
-            drawInvoiceContent(
-                canvas,
-                context,
-                client,
-                operations,
-                tarificationRepo,
-                produitRepo,
-                bonVent,
-                invoiceNumber,
-                companyLogoResId
-            )
+            var currentPage = 1
+            var rowsInCurrentPage = 0
+            var currentRowIndex = 0
+            var total = 0.0
 
-            pdfDocument.finishPage(page)
+            // Generate pages
+            while (currentPage <= actualPages && currentRowIndex < productsToInclude.size) {
+                val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, currentPage).create()
+                val page = pdfDocument.startPage(pageInfo)
+                val canvas = page.canvas
+
+                val rowsForThisPage = if (currentPage == 1) {
+                    minOf(rowsPerFirstPage, productsToInclude.size - currentRowIndex)
+                } else {
+                    minOf(rowsPerOtherPage, productsToInclude.size - currentRowIndex)
+                }
+
+                val rowsToDisplay = productsToInclude.subList(
+                    currentRowIndex,
+                    currentRowIndex + rowsForThisPage
+                )
+
+                if (currentPage == 1) {
+                    // First page: full header
+                    val pageTotal = drawFirstPage(
+                        canvas,
+                        context,
+                        client,
+                        rowsToDisplay,
+                        bonVent,
+                        invoiceNumber,
+                        companyLogoResId,
+                        currentPage,
+                        actualPages
+                    )
+                    total += pageTotal
+                } else {
+                    // Continuation pages: minimal header
+                    val pageTotal = drawContinuationPage(
+                        canvas,
+                        rowsToDisplay,
+                        currentRowIndex + 1,
+                        currentPage,
+                        actualPages
+                    )
+                    total += pageTotal
+                }
+
+                pdfDocument.finishPage(page)
+
+                currentRowIndex += rowsForThisPage
+                currentPage++
+            }
+
+            // Add total on last page
+            if (actualPages > 0) {
+                val lastPageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, actualPages + 1).create()
+                val lastPage = pdfDocument.startPage(lastPageInfo)
+                drawTotalAndFooter(lastPage.canvas, total, excludedCount)
+                pdfDocument.finishPage(lastPage)
+            }
 
             // Write to file
             FileOutputStream(file).use { outputStream ->
@@ -117,7 +195,10 @@ class AndroidNativeTaxInvoiceGenerator(
             }
 
             val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+            val warningMsg = if (excludedCount > 0) {
+                "\n⚠️ ATTENTION: $excludedCount produits non inclus (dépassement limite de $nombre_Page_max pages)"
+            } else ""
+            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url$warningMsg")
 
         } catch (e: Exception) {
             Result.failure(e)
@@ -125,69 +206,152 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * Draw all invoice content on canvas
+     * Prepare product data sorted and formatted
      */
-    private fun drawInvoiceContent(
-        canvas: Canvas,
-        context: Context,
-        client: M2Client?,
+    private fun prepareProductData(
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos,
-        produitRepo: RepoM1Produit,
-        bonVent: M8BonVent?,
-        invoiceNumber: String,
-        companyLogoResId: Int?
-    ) {
-        var yPos = MARGIN_TOP
+        produitRepo: RepoM1Produit
+    ): List<ProductRow> {
+        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
+        val sortedGroupedOps = groupedOps.entries.sortedBy { (produitId, _) ->
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")
+        }
 
-        // 1. Company Logo (if provided)
-        yPos = drawCompanyLogo(canvas, context, companyLogoResId, yPos)
+        return sortedGroupedOps.mapNotNull { (produitId, ops) ->
+            val tarification = tarificationRepo.datasValue.find {
+                it.keyID == ops.first().parentM13TarificationKeyID
+            }
 
-        // 2. Company Name (Arabic) - عبد الوهاب حمليش
-        yPos = drawCompanyName(canvas, yPos)
+            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val qty = ops.sumOf { it.quantity }
+            val rawPrice = tarification?.prixCurrency ?: 0.0
+            val subtotal = rawPrice * qty
 
-        // 3. Business Type (Arabic) - تجارة المرطبات بالتجزئة
-        yPos = drawBusinessType(canvas, yPos)
-
-        // 4. RC Number - RC : 16/00 – 5138424 D20
-        yPos = drawRCNumber(canvas, yPos)
-
-        yPos += 20f // Space
-
-        // 5. Invoice Title and Number
-        yPos = drawInvoiceTitle(canvas, invoiceNumber, yPos)
-
-        yPos += 15f // Space
-
-        // 6. Date (right aligned)
-        yPos = drawDate(canvas, yPos)
-
-        yPos += 10f // Space
-
-        // 7. "Doit : clients" header
-        yPos = drawClientHeader(canvas, yPos)
-
-        // 8. Client Info
-        yPos = drawClientInfo(canvas, client, yPos)
-
-        yPos += 15f // Space
-
-        // 9. Products Table
-        val total = drawProductsTable(
-            canvas,
-            operations,
-            tarificationRepo,
-            produitRepo,
-            yPos
-        )
-
-        // 10. Total and Footer (at bottom of page)
-        drawTotalAndFooter(canvas, total)
+            if (rawPrice > 0.0) {
+                ProductRow(
+                    name = formatter.cleanAndCapitalizeProductName(produit?.nom ?: "Produit"),
+                    quantity = qty,
+                    unitPrice = rawPrice,
+                    total = subtotal
+                )
+            } else null
+        }
     }
 
     /**
-     * Draw company logo
+     * Calculate header height for first page
      */
+    private fun calculateHeaderHeight(hasLogo: Boolean): Float {
+        var height = MARGIN_TOP
+        if (hasLogo) height += 90f // Logo + spacing
+        height += 25f // Company name
+        height += 20f // Business type
+        height += 25f // RC number
+        height += 20f // Spacing
+        height += 25f // Invoice title
+        height += 15f // Spacing
+        height += 20f // Date
+        height += 10f // Spacing
+        height += 20f // Client header
+        height += 36f // Client info (2 lines)
+        height += 15f // Spacing
+        height += HEADER_HEIGHT // Table header
+        return height
+    }
+
+    /**
+     * Draw first page with full header
+     */
+    private fun drawFirstPage(
+        canvas: Canvas,
+        context: Context,
+        client: M2Client?,
+        products: List<ProductRow>,
+        bonVent: M8BonVent?,
+        invoiceNumber: String,
+        companyLogoResId: Int?,
+        pageNum: Int,
+        totalPages: Int
+    ): Double {
+        var yPos = MARGIN_TOP
+
+        // 1. Company Logo
+        yPos = drawCompanyLogo(canvas, context, companyLogoResId, yPos)
+
+        yPos = drawClientNameAtTop(canvas, client, yPos)
+
+        // 3. Business Type
+        yPos = drawBusinessType(canvas, yPos)
+
+        // 4. RC Number
+        yPos = drawRCNumber(canvas, yPos, client)
+        yPos += 20f
+
+        // 5. Invoice Title
+        yPos = drawInvoiceTitle(canvas, invoiceNumber, yPos)
+        yPos += 15f
+
+        // 6. Date
+        yPos = drawDate(canvas, yPos)
+        yPos += 10f
+
+        // 7. "Doit : clients"
+        yPos = drawClientHeader(canvas, yPos)
+
+        // 8. Client Info (RC only)
+        yPos = drawClientInfo(canvas, client, yPos)
+        yPos += 15f
+
+        // 9. Products Table
+        val total = drawProductsTable(canvas, products, yPos, 1, pageNum, totalPages)
+
+        return total
+    }
+
+    /**
+     * Draw continuation page
+     */
+    private fun drawContinuationPage(
+        canvas: Canvas,
+        products: List<ProductRow>,
+        startRowNum: Int,
+        pageNum: Int,
+        totalPages: Int
+    ): Double {
+        var yPos = MARGIN_TOP
+
+        // Page indicator
+        val pagePaint = TextPaint().apply {
+            color = COLOR_GRAY
+            textSize = 10f
+            textAlign = Paint.Align.RIGHT
+        }
+        canvas.drawText("Page $pageNum/$totalPages", PAGE_WIDTH - MARGIN_RIGHT, yPos, pagePaint)
+        yPos += 20f
+
+        return drawProductsTable(canvas, products, yPos, startRowNum, pageNum, totalPages)
+    }
+
+    /**
+     * Draw client name at top (replaces company name)
+     */
+    private fun drawClientNameAtTop(canvas: Canvas, client: M2Client?, yPos: Float): Float {
+        val clientName = client?.nomPrenomArabe?.ifBlank {
+            client.nom.substringBefore(".")
+        } ?: ""
+
+        val paint = TextPaint().apply {
+            color = COLOR_BLACK
+            textSize = 18f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(clientName, PAGE_WIDTH / 2f, yPos, paint)
+        return yPos + 25f
+    }
+
     private fun drawCompanyLogo(
         canvas: Canvas,
         context: Context,
@@ -203,29 +367,12 @@ class AndroidNativeTaxInvoiceGenerator(
                 canvas.drawBitmap(bitmap, null, destRect, null)
                 return yPos + logoSize + 10f
             } catch (e: Exception) {
-                // If logo fails, continue without it
+                // Continue without logo
             }
         }
         return yPos
     }
 
-    /**
-     * Draw company name - عبد الوهاب حمليش
-     */
-    private fun drawCompanyName(canvas: Canvas, yPos: Float): Float {
-        val paint = TextPaint().apply {
-            color = COLOR_BLACK
-            textSize = 18f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            textAlign = Paint.Align.CENTER
-        }
-        canvas.drawText(COMPANY_NAME_AR, PAGE_WIDTH / 2f, yPos, paint)
-        return yPos + 25f
-    }
-
-    /**
-     * Draw business type in Arabic - تجارة المرطبات بالتجزئة
-     */
     private fun drawBusinessType(canvas: Canvas, yPos: Float): Float {
         val paint = TextPaint().apply {
             color = COLOR_BLACK
@@ -236,22 +383,16 @@ class AndroidNativeTaxInvoiceGenerator(
         return yPos + 20f
     }
 
-    /**
-     * Draw RC number - RC : 16/00 – 5138424 D20
-     */
-    private fun drawRCNumber(canvas: Canvas, yPos: Float): Float {
+    private fun drawRCNumber(canvas: Canvas, yPos: Float, client: M2Client?): Float {
         val paint = TextPaint().apply {
             color = COLOR_BLACK
             textSize = 10f
             textAlign = Paint.Align.CENTER
         }
-        canvas.drawText(RC_NUMBER, PAGE_WIDTH / 2f, yPos, paint)
+        canvas.drawText(client?.register_Commerce_Nm ?: "", PAGE_WIDTH / 2f, yPos, paint)
         return yPos + 25f
     }
 
-    /**
-     * Draw invoice title and number
-     */
     private fun drawInvoiceTitle(canvas: Canvas, invoiceNumber: String, yPos: Float): Float {
         val paint = TextPaint().apply {
             color = COLOR_BLACK
@@ -263,9 +404,6 @@ class AndroidNativeTaxInvoiceGenerator(
         return yPos + 25f
     }
 
-    /**
-     * Draw date (right aligned) - format: 14/12/2025
-     */
     private fun drawDate(canvas: Canvas, yPos: Float): Float {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = dateFormat.format(Date())
@@ -279,9 +417,6 @@ class AndroidNativeTaxInvoiceGenerator(
         return yPos + 20f
     }
 
-    /**
-     * Draw "Doit : clients" header
-     */
     private fun drawClientHeader(canvas: Canvas, yPos: Float): Float {
         val paint = TextPaint().apply {
             color = COLOR_BLACK
@@ -293,10 +428,6 @@ class AndroidNativeTaxInvoiceGenerator(
         return yPos + 20f
     }
 
-    /**
-     * Draw client information
-     * Uses M2Client data including Arabic name and RC number
-     */
     private fun drawClientInfo(canvas: Canvas, client: M2Client?, yPos: Float): Float {
         var currentY = yPos
         val paint = TextPaint().apply {
@@ -305,42 +436,24 @@ class AndroidNativeTaxInvoiceGenerator(
             textAlign = Paint.Align.LEFT
         }
 
-        val clientName = client?.nomPrenomArabe?.ifBlank {
-            client.nom.substringBefore(".")
-        } ?: "Client"
-
-        canvas.drawText(
-            "Client: $clientName",
-            MARGIN_LEFT,
-            currentY,
-            paint
-        )
-        currentY += 18f
-
-        // RC Number - use client's RC (matching image: "16/00 – 5138424 D20")
+        // Only show RC number (name is already at top)
         val rcNumber = client?.register_Commerce_Nm ?: "N/A"
-        if (rcNumber != "N/A") {
-            canvas.drawText(
-                "RC: $rcNumber",
-                MARGIN_LEFT,
-                currentY,
-                paint
-            )
-            currentY += 18f
-        }
+        canvas.drawText("RC: $rcNumber", MARGIN_LEFT, currentY, paint)
+        currentY += 18f
 
         return currentY
     }
 
     /**
-     * Draw products table with orange headers (matching the image format)
+     * Draw products table
      */
     private fun drawProductsTable(
         canvas: Canvas,
-        operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
-        produitRepo: RepoM1Produit,
-        startY: Float
+        products: List<ProductRow>,
+        startY: Float,
+        startRowNum: Int,
+        pageNum: Int,
+        totalPages: Int
     ): Double {
         val tableWidth = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
         val colWidths = floatArrayOf(
@@ -353,12 +466,12 @@ class AndroidNativeTaxInvoiceGenerator(
 
         var yPos = startY
 
-        // Draw header with orange background
+        // Draw header
         val headerPaint = Paint().apply {
             color = COLOR_ORANGE
             style = Paint.Style.FILL
         }
-        canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + 30f, headerPaint)
+        canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + HEADER_HEIGHT, headerPaint)
 
         val headerTextPaint = TextPaint().apply {
             color = COLOR_BLACK
@@ -387,9 +500,8 @@ class AndroidNativeTaxInvoiceGenerator(
             xPos += colWidths[index]
         }
 
-        yPos += 30f
+        yPos += HEADER_HEIGHT
 
-        // Draw border around header
         val borderPaint = Paint().apply {
             color = COLOR_BLACK
             style = Paint.Style.STROKE
@@ -399,77 +511,56 @@ class AndroidNativeTaxInvoiceGenerator(
 
         // Draw rows
         var total = 0.0
-        var rowNumber = 1
+        var rowNumber = startRowNum
 
-        val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
-        val sortedGroupedOps = groupedOps.entries.sortedBy { (produitId, _) ->
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
-            formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")
-        }
-
-        sortedGroupedOps.forEach { (produitId, ops) ->
-            val tarification = tarificationRepo.datasValue.find {
-                it.keyID == ops.first().parentM13TarificationKeyID
+        products.forEach { product ->
+            // Alternating colors
+            if (rowNumber % 2 == 0) {
+                val rowBgPaint = Paint().apply {
+                    color = COLOR_LIGHT_ORANGE
+                    style = Paint.Style.FILL
+                }
+                canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + ROW_HEIGHT, rowBgPaint)
             }
 
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
-            val qty = ops.sumOf { it.quantity }
-            val rawPrice = tarification?.prixCurrency ?: 0.0
-            val subtotal = rawPrice * qty
-
-            if (rawPrice > 0.0) {
-                val productName = formatter.cleanAndCapitalizeProductName(produit?.nom ?: "Produit")
-
-                // Alternating row colors (light orange for even rows)
-                if (rowNumber % 2 == 0) {
-                    val rowBgPaint = Paint().apply {
-                        color = COLOR_LIGHT_ORANGE
-                        style = Paint.Style.FILL
-                    }
-                    canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + 25f, rowBgPaint)
-                }
-
-                val rowTextPaint = TextPaint().apply {
-                    color = COLOR_BLACK
-                    textSize = 10f
-                }
-
-                xPos = MARGIN_LEFT
-
-                // N (row number)
-                rowTextPaint.textAlign = Paint.Align.CENTER
-                canvas.drawText(rowNumber.toString(), xPos + colWidths[0] / 2, yPos + 17f, rowTextPaint)
-                xPos += colWidths[0]
-
-                // Désignation (product name)
-                rowTextPaint.textAlign = Paint.Align.LEFT
-                canvas.drawText(productName, xPos + 5f, yPos + 17f, rowTextPaint)
-                xPos += colWidths[1]
-
-                // Qté (quantity)
-                rowTextPaint.textAlign = Paint.Align.CENTER
-                canvas.drawText(qty.toString(), xPos + colWidths[2] / 2, yPos + 17f, rowTextPaint)
-                xPos += colWidths[2]
-
-                // P.U (unit price)
-                rowTextPaint.textAlign = Paint.Align.CENTER
-                canvas.drawText(formatter.round(rawPrice).toString(), xPos + colWidths[3] / 2, yPos + 17f, rowTextPaint)
-                xPos += colWidths[3]
-
-                // Montant (total amount)
-                rowTextPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(formatter.round(subtotal).toString(), xPos + colWidths[4] - 5f, yPos + 17f, rowTextPaint)
-
-                // Draw row border
-                canvas.drawLine(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
-
-                yPos += 25f
-                total += subtotal
-                rowNumber++
+            val rowTextPaint = TextPaint().apply {
+                color = COLOR_BLACK
+                textSize = 10f
             }
+
+            xPos = MARGIN_LEFT
+
+            // N
+            rowTextPaint.textAlign = Paint.Align.CENTER
+            canvas.drawText(rowNumber.toString(), xPos + colWidths[0] / 2, yPos + 17f, rowTextPaint)
+            xPos += colWidths[0]
+
+            // Désignation
+            rowTextPaint.textAlign = Paint.Align.LEFT
+            canvas.drawText(product.name, xPos + 5f, yPos + 17f, rowTextPaint)
+            xPos += colWidths[1]
+
+            // Qté
+            rowTextPaint.textAlign = Paint.Align.CENTER
+            canvas.drawText(product.quantity.toString(), xPos + colWidths[2] / 2, yPos + 17f, rowTextPaint)
+            xPos += colWidths[2]
+
+            // P.U
+            rowTextPaint.textAlign = Paint.Align.CENTER
+            canvas.drawText(formatter.round(product.unitPrice).toString(), xPos + colWidths[3] / 2, yPos + 17f, rowTextPaint)
+            xPos += colWidths[3]
+
+            // Montant
+            rowTextPaint.textAlign = Paint.Align.RIGHT
+            canvas.drawText(formatter.round(product.total).toString(), xPos + colWidths[4] - 5f, yPos + 17f, rowTextPaint)
+
+            canvas.drawLine(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
+
+            yPos += ROW_HEIGHT
+            total += product.total
+            rowNumber++
         }
 
-        // Draw bottom border
         canvas.drawLine(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
         canvas.drawRect(MARGIN_LEFT, startY, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
 
@@ -477,12 +568,28 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * Draw total section and footer at bottom of page
+     * Draw total and footer
      */
-    private fun drawTotalAndFooter(canvas: Canvas, total: Double) {
+    private fun drawTotalAndFooter(canvas: Canvas, total: Double, excludedCount: Int) {
         var yPos = PAGE_HEIGHT - 150f
 
-        // Total line
+        // Warning if products excluded
+        if (excludedCount > 0) {
+            val warningPaint = TextPaint().apply {
+                color = Color.RED
+                textSize = 10f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.CENTER
+            }
+            canvas.drawText(
+                "⚠️ $excludedCount produits non affichés (limite de pages atteinte)",
+                PAGE_WIDTH / 2f,
+                yPos - 20f,
+                warningPaint
+            )
+        }
+
+        // Total
         val totalPaint = TextPaint().apply {
             color = COLOR_BLACK
             textSize = 12f
@@ -497,7 +604,7 @@ class AndroidNativeTaxInvoiceGenerator(
 
         yPos += 25f
 
-        // Certification text
+        // Certification
         val certPaint = TextPaint().apply {
             color = COLOR_BLACK
             textSize = 9f
@@ -532,26 +639,16 @@ class AndroidNativeTaxInvoiceGenerator(
         canvas.drawText("Signature et cachet", PAGE_WIDTH - MARGIN_RIGHT, yPos, sigPaint)
     }
 
-    /**
-     * Generate invoice number in format: 03/2025
-     */
     private fun generateInvoiceNumber(bonVent: M8BonVent?): String {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
-
         val sequenceNumber = bonVent?.keyID?.takeLast(2) ?:
         String.format("%02d", (System.currentTimeMillis() % 100).toInt())
-
         return "$sequenceNumber/$year"
     }
 
-    /**
-     * Convert amount to words in French
-     * Example: 47000.0 -> "Quarante-sept mille Dinars."
-     */
     private fun convertAmountToWords(amount: Double): String {
         val roundedAmount = formatter.round(amount).toInt()
-
         val thousands = roundedAmount / 1000
         val remainder = roundedAmount % 1000
 
@@ -566,4 +663,14 @@ class AndroidNativeTaxInvoiceGenerator(
             else -> "$roundedAmount Dinars."
         }
     }
+
+    /**
+     * Data class for product row
+     */
+    private data class ProductRow(
+        val name: String,
+        val quantity: Int,
+        val unitPrice: Double,
+        val total: Double
+    )
 }

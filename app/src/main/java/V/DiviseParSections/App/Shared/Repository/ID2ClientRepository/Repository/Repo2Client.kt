@@ -226,8 +226,7 @@ data class M2Client(
 
     val nomPrenomArabe: String = "حمنيش عبد الوهاب",
     val register_Commerce_Nm: String = "16/00 – 5138424 D20",
-    val nif_Num: String = "16/00 – 5138424 D20"
-
+    val nif_Num: String = "16291403036"
 ) {
     /**
      * Get Arabic name with fallback to French name
