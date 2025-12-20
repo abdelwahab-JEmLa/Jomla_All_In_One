@@ -221,7 +221,7 @@ fun View_M14VentPeriod(
             }
             val key = relative_M14VentPeriode.keyID.takeLast(3)
             Text(
-                text = "m14VentPeriode: key =  ${key}- ${relative_M14VentPeriode.get_DebugInfos()}",
+                text = "${key}}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)

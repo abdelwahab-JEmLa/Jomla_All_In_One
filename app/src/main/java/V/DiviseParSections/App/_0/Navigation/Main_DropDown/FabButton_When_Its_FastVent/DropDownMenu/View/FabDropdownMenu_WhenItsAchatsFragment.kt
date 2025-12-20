@@ -5,6 +5,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_3
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_Facture_Impots
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_WithCredit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,10 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             )
             DropDownItem_WindowsShare(
                 nomFun = "Partager PDF",
+                onDismissDropdown = onDismissDropdown
+            )
+            DropDownItem_WindowsShare_Facture_Impots(
+                nomFun = "Partager PDF Facture_Impots ",
                 onDismissDropdown = onDismissDropdown
             )
 

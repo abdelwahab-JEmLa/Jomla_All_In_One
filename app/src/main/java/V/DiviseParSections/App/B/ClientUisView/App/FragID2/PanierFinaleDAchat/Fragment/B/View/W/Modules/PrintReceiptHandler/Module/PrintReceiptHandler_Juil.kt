@@ -60,7 +60,6 @@ class PrintReceiptHandler_Juil(
             versement
         )
     }
-
     /**
      * Generate PDF only - Returns Result for proper error handling
      * FIXED: Now checks demande_Versemet_si_Type_est_regle

@@ -113,7 +113,10 @@ fun Section_ExpensesAndNetPosition(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // Expenses Card - with edit functionality
-        ElevatedCard(
+        ElevatedCard(                //<--
+        //TODO(1): fait que ca contien اوراق السير بالسلعة مصاريف
+                //<--
+                //TODO(1): مصاريف تقريبية سير الشاحنة  بنزين و ( اصلاحات وصلت في عام 30 مليون بالاخص اثناء الاعتياد)
             modifier = Modifier
                 .weight(1f)
                 .clickable { showExpensesDialog = true },
@@ -129,7 +132,8 @@ fun Section_ExpensesAndNetPosition(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "🚗 المصاريف",
+                        text = "🚗 المصاريف",     //<--
+                        //TODO(1): تقريبية 
                         style = MaterialTheme.typography.labelMedium,
                         color = Color(0xFFE65100),
                         fontWeight = FontWeight.Bold

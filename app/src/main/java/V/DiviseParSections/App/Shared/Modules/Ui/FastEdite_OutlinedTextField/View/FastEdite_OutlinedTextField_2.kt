@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun FastEdite_OutlinedTextField_V2(
     label: String,
@@ -44,11 +45,11 @@ fun FastEdite_OutlinedTextField_V2(
 
     fun startEditing() {
         isEditing = true
-        inputValue = value.toString()
+        inputValue = ""  // Commence vide pour saisie rapide
     }
 
     fun saveValue() {
-        val newValue = inputValue.toDoubleOrNull() ?: value
+        val newValue = inputValue.toDoubleOrNull() ?: value  // Si vide, garde l'ancienne valeur
         onSave(newValue)
         isEditing = false
         keyboardController?.hide()
@@ -60,7 +61,11 @@ fun FastEdite_OutlinedTextField_V2(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = if (isEditing) "$label (Ancien: ${String.format("%.2f", value)} $suffix)" else label,
+            text = if (isEditing) {
+                "$label (Ancien: ${String.format("%.2f", value)} $suffix)"
+            } else {
+                label
+            },
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -71,6 +76,7 @@ fun FastEdite_OutlinedTextField_V2(
                 modifier = Modifier
                     .width(80.dp)
                     .focusRequester(focusRequester),
+                placeholder = { Text(String.format("%.2f", value)) },  // Placeholder avec ancienne valeur
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done

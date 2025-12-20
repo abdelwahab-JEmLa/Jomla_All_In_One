@@ -187,21 +187,18 @@ class Repo2Client(
     }
     val datasState: State<List<M2Client>> = _datas
 }
-
 @Entity
 data class M2Client(
     @PrimaryKey
     var keyID: String = generePushKey(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
     var creationTimestamps: Long = System.currentTimeMillis(),
-
     //Infos De Base
     var nom: String = "Non Defini",
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
     var its_Fournisseur: Boolean = false,
     var parentComptCreateurKEyID: String = "",
-
     // Section Etates Mutable
     var numTelephone: String = "",
     var couleur: String = "#FFFFFF",
@@ -212,25 +209,44 @@ data class M2Client(
     var auFilterFAB: Boolean = false,
     var typeDeSonMagasine: TypeDeSonMagasine = TypeDeSonMagasine.ATAYAT_MOUKASSARAT,
     var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,
-
     var caMarqueGpsEstOuvert: Boolean = false,
     var latitude: Double = getCurrentDefaultLatitude(),
     var longitude: Double = getCurrentDefaultLongitude(),
     var title: String = "",
     var snippet: String = "",
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
-
     //Etates Mutable
     var edite_Exact_Gps_est_fait: Boolean = false,
-
     // Section Centralization Valeurs Pour Injection add_New TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",
-
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var id: Long = 0L,
     var keyByParent: String = "",
     var bsonObjectId: String = BsonObjectId().toHexString(),
+
+    val nomPrenomArabe: String = "حمنيش عبد الوهاب",
+    val register_Commerce_Nm: String = "16/00 – 5138424 D20",
+    val nif_Num: String = "16/00 – 5138424 D20"
+
 ) {
+    /**
+     * Get Arabic name with fallback to French name
+     */
+    fun getNomAffichage(): String {
+        return nomPrenomArabe.takeIf { it.isNotBlank() } ?: nom
+    }
+
+    /**
+     * Get full display name with both French and Arabic if available
+     */
+    fun getNomComplet(): String {
+        return if (nomPrenomArabe.isBlank()) {
+            nom
+        } else {
+            "$nom ($nomPrenomArabe)"
+        }
+    }
+
 
     fun get_DebugInfos(): String {
         return buildString {
@@ -292,7 +308,6 @@ data class M2Client(
 
     companion object {
         fun generePushKey() = genereUnPushKeyFireBase(ref)
-
         const val keyModel = "ID2"
 
         fun getCurrentDefaultLatitude(): Double {
@@ -308,10 +323,11 @@ data class M2Client(
                     "/_1_developingRef" +
                     "/C_InfosSqlDataBases"
         )
-
         val ref = parent.child("B_ClientInfosProtoJuin3")
 
-        fun safe_Remove_MainDatas_Ref(onDone: () -> Unit={}) { ref.removeValue().addOnSuccessListener { onDone() } }
+        fun safe_Remove_MainDatas_Ref(onDone: () -> Unit = {}) {
+            ref.removeValue().addOnSuccessListener { onDone() }
+        }
 
         fun removeRef(preparedData: M2Client) {
             ref.child(preparedData.keyID).removeValue()
