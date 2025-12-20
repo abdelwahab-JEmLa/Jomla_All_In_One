@@ -289,10 +289,6 @@ class AndroidNativeTaxInvoiceGenerator(
         // 3. Business Type
         yPos = drawBusinessType(canvas, yPos)
 
-        // 4. RC Number
-        yPos = drawRCNumber(canvas, yPos, client)
-        yPos += 20f
-
         // 5. Invoice Title
         yPos = drawInvoiceTitle(canvas, invoiceNumber, yPos)
         yPos += 15f
@@ -400,16 +396,6 @@ class AndroidNativeTaxInvoiceGenerator(
         }
         canvas.drawText(BUSINESS_TYPE_AR, PAGE_WIDTH / 2f, yPos, paint)
         return yPos + 20f
-    }
-
-    private fun drawRCNumber(canvas: Canvas, yPos: Float, client: M2Client?): Float {
-        val paint = TextPaint().apply {
-            color = COLOR_BLACK
-            textSize = 10f
-            textAlign = Paint.Align.CENTER
-        }
-        canvas.drawText(client?.register_Commerce_Nm ?: "", PAGE_WIDTH / 2f, yPos, paint)
-        return yPos + 25f
     }
 
     private fun drawInvoiceTitle(canvas: Canvas, invoiceNumber: String, yPos: Float): Float {
