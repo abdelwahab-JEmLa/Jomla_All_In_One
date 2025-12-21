@@ -12,14 +12,14 @@ import java.io.FileOutputStream
  * Generate PDF with 20 pages of checkbox grids (10x12 = 120 checkboxes per page)
  * Each checkbox represents a student attendance/tracking slot
  */
-fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
+fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 5): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "checkbox_grid_${System.currentTimeMillis()}.pdf")
 
-        // A4 Portrait dimensions in points (standard)
-        val pageWidth = 595
-        val pageHeight = 842
+        // A5 Portrait dimensions in points
+        val pageWidth = 420
+        val pageHeight = 595
 
         val pdfDocument = PdfDocument()
 
@@ -29,11 +29,11 @@ fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
             val page = pdfDocument.startPage(pageInfo)
             val canvas = page.canvas
 
-            // Page margins
-            val marginLeft = 40f
-            val marginRight = 40f
-            val marginTop = 50f
-            val marginBottom = 50f
+            // Page margins - reduced for better space usage
+            val marginLeft = 20f
+            val marginRight = 20f
+            val marginTop = 40f
+            val marginBottom = 40f
 
             // Calculate available space
             val availableWidth = pageWidth - marginLeft - marginRight
@@ -43,15 +43,18 @@ fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
             val columns = 15
             val rows = 8
 
-            // Calculate checkbox size
+            // Calculate checkbox size to fill the page better
+            val horizontalSpacing = 4f
+            val verticalSpacing = 6f
+
             val checkboxSize = minOf(
-                availableWidth / columns,
-                availableHeight / rows
-            ) - 5f // 5f spacing between checkboxes
+                (availableWidth - (horizontalSpacing * (columns - 1))) / columns,
+                (availableHeight - (verticalSpacing * (rows - 1))) / rows
+            )
 
             // Center the grid
-            val gridWidth = (checkboxSize + 5f) * columns
-            val gridHeight = (checkboxSize + 5f) * rows
+            val gridWidth = (checkboxSize * columns) + (horizontalSpacing * (columns - 1))
+            val gridHeight = (checkboxSize * rows) + (verticalSpacing * (rows - 1))
             val startX = marginLeft + (availableWidth - gridWidth) / 2
             val startY = marginTop + (availableHeight - gridHeight) / 2
 
@@ -73,8 +76,8 @@ fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
             // Draw the grid of checkboxes
             for (row in 0 until rows) {
                 for (col in 0 until columns) {
-                    val x = startX + col * (checkboxSize + 5f)
-                    val y = startY + row * (checkboxSize + 5f)
+                    val x = startX + col * (checkboxSize + horizontalSpacing)
+                    val y = startY + row * (checkboxSize + verticalSpacing)
 
                     // Draw circle checkbox
                     val centerX = x + checkboxSize / 2
