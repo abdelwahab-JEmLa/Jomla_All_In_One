@@ -1,0 +1,112 @@
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But5.generatePdfDocument
+
+import android.content.Context
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.text.TextPaint
+import android.util.Log
+import java.io.File
+import java.io.FileOutputStream
+
+/**
+ * Generate PDF with 20 pages of checkbox grids (10x12 = 120 checkboxes per page)
+ * Each checkbox represents a student attendance/tracking slot
+ */
+fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
+    return try {
+        val outputDir = context.cacheDir
+        val pdfFile = File(outputDir, "checkbox_grid_${System.currentTimeMillis()}.pdf")
+
+        // A4 Portrait dimensions in points (standard)
+        val pageWidth = 595
+        val pageHeight = 842
+
+        val pdfDocument = PdfDocument()
+
+        // Generate 20 pages
+        for (pageIndex in 0 until numberOfPages) {
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageIndex + 1).create()
+            val page = pdfDocument.startPage(pageInfo)
+            val canvas = page.canvas
+
+            // Page margins
+            val marginLeft = 40f
+            val marginRight = 40f
+            val marginTop = 50f
+            val marginBottom = 50f
+
+            // Calculate available space
+            val availableWidth = pageWidth - marginLeft - marginRight
+            val availableHeight = pageHeight - marginTop - marginBottom
+
+            // Grid configuration: 15 columns x 8 rows = 120 checkboxes
+            val columns = 15
+            val rows = 8
+
+            // Calculate checkbox size
+            val checkboxSize = minOf(
+                availableWidth / columns,
+                availableHeight / rows
+            ) - 5f // 5f spacing between checkboxes
+
+            // Center the grid
+            val gridWidth = (checkboxSize + 5f) * columns
+            val gridHeight = (checkboxSize + 5f) * rows
+            val startX = marginLeft + (availableWidth - gridWidth) / 2
+            val startY = marginTop + (availableHeight - gridHeight) / 2
+
+            // Paint for checkbox borders
+            val paintCheckbox = Paint().apply {
+                color = android.graphics.Color.BLACK
+                style = Paint.Style.STROKE
+                strokeWidth = 2f
+                isAntiAlias = true
+            }
+
+            // Paint for page number
+            val paintPageNumber = TextPaint().apply {
+                textSize = 12f
+                color = android.graphics.Color.GRAY
+                isAntiAlias = true
+            }
+
+            // Draw the grid of checkboxes
+            for (row in 0 until rows) {
+                for (col in 0 until columns) {
+                    val x = startX + col * (checkboxSize + 5f)
+                    val y = startY + row * (checkboxSize + 5f)
+
+                    // Draw circle checkbox
+                    val centerX = x + checkboxSize / 2
+                    val centerY = y + checkboxSize / 2
+                    val radius = checkboxSize / 2
+                    canvas.drawCircle(centerX, centerY, radius, paintCheckbox)
+                }
+            }
+
+            // Draw page number at bottom
+            val pageText = "Page ${pageIndex + 1} / $numberOfPages"
+            val textWidth = paintPageNumber.measureText(pageText)
+            canvas.drawText(
+                pageText,
+                (pageWidth - textWidth) / 2,
+                pageHeight - 20f,
+                paintPageNumber
+            )
+
+            pdfDocument.finishPage(page)
+        }
+
+        // Write to file
+        FileOutputStream(pdfFile).use { out ->
+            pdfDocument.writeTo(out)
+        }
+        pdfDocument.close()
+
+        Log.i("CheckboxGridPdf", "✅ PDF created with $numberOfPages pages: ${pdfFile.absolutePath}")
+        pdfFile
+    } catch (e: Exception) {
+        Log.e("CheckboxGridPdf", "❌ Error creating PDF", e)
+        null
+    }
+}
