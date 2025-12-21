@@ -25,7 +25,7 @@ fun drawQuestionTable(
     paintBorder: Paint
 ): Float {
     var currentY = yPosition
-    val questionHeight = 75f
+    val questionHeight = 85f
 
     canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + questionHeight, paintBorder)
 
@@ -39,23 +39,30 @@ fun drawQuestionTable(
 
     // Espace pour la réponse des parents avec texte indicatif
     drawRTLText(canvas, "الجواب:",
-        marginLeft + 5f, currentY + questionHeight - 28f, contentWidth - 10, paintSmall,
+        marginLeft + 5f, currentY + questionHeight - 38f, contentWidth - 10, paintSmall,
         Layout.Alignment.ALIGN_NORMAL)
 
-    // Simple line for parent to write answer
-    val answerLineY = currentY + questionHeight - 12f
+    // Lignes pour écrire la réponse (3 lignes)
     val linePaint = Paint().apply {
-        color = Color.BLACK
+        color = Color.LTGRAY
         style = Paint.Style.STROKE
         strokeWidth = 0.8f
     }
-    canvas.drawLine(
-        marginLeft + 5f,
-        answerLineY,
-        pageWidth - marginRight - 5f,
-        answerLineY,
-        linePaint
-    )
+
+    val startLineY = currentY + questionHeight - 30f
+    val lineSpacing = 10f
+
+    // Dessiner 3 lignes horizontales pour écrire
+    for (i in 0..2) {
+        val lineY = startLineY + (i * lineSpacing)
+        canvas.drawLine(
+            marginLeft + 5f,
+            lineY,
+            pageWidth - marginRight - 5f,
+            lineY,
+            linePaint
+        )
+    }
 
     currentY += questionHeight + 10f
     return currentY
