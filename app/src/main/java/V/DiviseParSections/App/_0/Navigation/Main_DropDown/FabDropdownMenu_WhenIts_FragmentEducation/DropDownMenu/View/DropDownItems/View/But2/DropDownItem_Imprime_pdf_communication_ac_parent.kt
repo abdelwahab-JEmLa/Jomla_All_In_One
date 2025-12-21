@@ -3,6 +3,8 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.ParentCommunicationCardData_2
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.PdfSaverUtility_Tahfid
 import android.content.Context
 import android.content.Intent
@@ -92,7 +94,7 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
 
                 // Step 3: Structure the data for all targeted students
                 val cardsData = targetedEtudiants.map { etudiant ->
-                    ParentCommunicationCardData.fromEtudiant(etudiant)
+                    ParentCommunicationCardData_2.fromEtudiant(etudiant)
                 }
 
                 // Step 4: Generate PDF document with structured data (one page per student)

@@ -62,6 +62,7 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
             // Add the Word communication card item
             DropDownItem_Imprime_pdf_List_Talaba()
             DropDownItem_Imprime_pdf_communication_ac_parent()
+            DropDownItem_Imprime_pdf_Case_A_Cochet()
 
             Divider()
 
