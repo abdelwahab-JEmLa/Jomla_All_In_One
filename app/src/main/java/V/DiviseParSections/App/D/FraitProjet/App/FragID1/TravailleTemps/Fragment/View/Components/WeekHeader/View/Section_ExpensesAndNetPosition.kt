@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,17 +31,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun Section_ExpensesAndNetPosition(
     weekSalesData: WeekSalesData,
-    totalWeekEarnings: Double
+    totalWeekEarnings: Double,
+    focusedValuesGetter: FocusedValuesGetter= koinInject ()
 ) {
     // Paperwork expenses
     var impots by remember { mutableStateOf(30000.0) }
     var impotsPenalities by remember { mutableStateOf(10000.0) }
     var casnos by remember { mutableStateOf(35000.0) }
-
 
     var showExpensesDialog by remember { mutableStateOf(false) }
 
@@ -47,9 +50,10 @@ fun Section_ExpensesAndNetPosition(
     val totalePaprasseFraitParAnne = impots + impotsPenalities + casnos
     val totalePaprasseFraitParSemain = totalePaprasseFraitParAnne / 52.0
 
+    // Vehicle expenses are now calculated from weekSalesData (per period)
+    val vehicleExpenses = weekSalesData.pre_fraits_voiture_essance_marche_et_paprasse
 
-    val totalExpensesWithAll = weekSalesData.pre_fraits_voiture_essance_marche_et_paprasse +
-            totalePaprasseFraitParSemain
+    val totalExpensesWithAll = vehicleExpenses + totalePaprasseFraitParSemain
 
     // Expenses Dialog
     if (showExpensesDialog) {
@@ -104,13 +108,35 @@ fun Section_ExpensesAndNetPosition(
 
                     Spacer(modifier = Modifier.padding(8.dp))
 
-                    // Vehicle Section
+                    // Vehicle Section - NOW DISPLAYS CALCULATED VALUES
                     Text(
                         text = "🚗 مصاريف سير الشاحنة",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFE65100),
                         modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Text(
+                        text = "المصاريف المسجلة لهذا الأسبوع:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF5D4037),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    Text(
+                        text = "${String.format("%.0f", vehicleExpenses)} دج",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFE65100),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+
+                    Text(
+                        text = "يتم حسابها من فترات البيع المسجلة",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
 
                     Spacer(modifier = Modifier.padding(12.dp))
@@ -130,7 +156,7 @@ fun Section_ExpensesAndNetPosition(
                     )
 
                     Text(
-                        text = "الشاحنة الأسبوعية: ${String.format("%.0f", weekSalesData.pre_fraits_voiture_essance_marche_et_paprasse )} دج",
+                        text = "السيارة هذا الأسبوع: ${String.format("%.0f", vehicleExpenses)} دج",
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -184,12 +210,17 @@ fun Section_ExpensesAndNetPosition(
                         color = Color(0xFFE65100),
                         fontWeight = FontWeight.Bold
                     )
+// Dans votre composable
+                    val currentUser = M18CentralParametresOfAllApps.get_utilisateur(focusedValuesGetter.currentActive_M9AppCompt?.keyID?:"")
+                    val canEdit = M18CentralParametresOfAllApps.canEdit(currentUser)
+                    if (canEdit) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "تعديل",
                         tint = Color(0xFFE65100),
                         modifier = Modifier.size(16.dp)
                     )
+                }
                 }
 
                 Spacer(modifier = Modifier.padding(4.dp))
@@ -204,6 +235,11 @@ fun Section_ExpensesAndNetPosition(
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
                     text = "أوراق: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color(0xFFE65100)
+                )
+                Text(
+                    text = "سيارة: ${String.format("%.0f", vehicleExpenses)} دج",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color(0xFFE65100)
                 )

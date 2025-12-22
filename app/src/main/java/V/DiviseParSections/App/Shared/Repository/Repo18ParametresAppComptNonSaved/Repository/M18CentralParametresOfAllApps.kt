@@ -134,6 +134,23 @@ data class M18CentralParametresOfAllApps(
         fun get_Default(): M18CentralParametresOfAllApps {
             return M18CentralParametresOfAllApps()
         }
+
+        fun get_utilisateur(currentComptKeyId: String): Utilisateur {
+            val params = M18CentralParametresOfAllApps()
+            return when (currentComptKeyId) {
+                params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
+                params.walid_Compt_KeyId -> Utilisateur.Walid
+                else -> Utilisateur.Admin
+            }
+        }
+
+        /**
+         * Check if edit/modification features should be visible
+         * Only Admin can edit, regular users cannot
+         */
+        fun canEdit(utilisateur: Utilisateur): Boolean {
+            return utilisateur == Utilisateur.Admin
+        }
     }
 }
 

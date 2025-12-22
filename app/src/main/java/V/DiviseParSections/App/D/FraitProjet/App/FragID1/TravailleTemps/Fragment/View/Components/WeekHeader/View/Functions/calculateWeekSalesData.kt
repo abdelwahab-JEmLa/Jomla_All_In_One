@@ -4,7 +4,6 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.WeekInfo
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import java.util.Calendar
-
 fun calculateWeekSalesData(
     weekInfo: WeekInfo,
     focusedValuesGetter: FocusedValuesGetter
@@ -15,6 +14,7 @@ fun calculateWeekSalesData(
         return WeekSalesData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     }
 
+    // 1. FILTRE les périodes de vente pour cette semaine spécifique
     val weekPeriods = repo14.datasValue.filter { period ->
         val calendar = Calendar.getInstance().apply {
             firstDayOfWeek = Calendar.SATURDAY
@@ -31,7 +31,7 @@ fun calculateWeekSalesData(
     var totalSavedBalance = 0.0
     var pre_fraits_voiture_essance_marche_et_paprasse = 0.0
 
-
+    // 2. SOMME toutes les valeurs pour cette semaine
     weekPeriods.forEach { period ->
         totalCash += period.cash_Vents_Totale
         totalCredit += period.credit_Vents_Totale

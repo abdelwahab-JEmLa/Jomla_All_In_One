@@ -1,6 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository
-
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository
 
 enum class Utilisateur(val comp: String) {
     Admin(""),
