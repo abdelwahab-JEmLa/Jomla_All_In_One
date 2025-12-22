@@ -37,7 +37,7 @@ import org.koin.compose.koinInject
 fun Section_ExpensesAndNetPosition(
     weekSalesData: WeekSalesData,
     totalWeekEarnings: Double,
-    focusedValuesGetter: FocusedValuesGetter= koinInject ()
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
     // Paperwork expenses
     var impots by remember { mutableStateOf(30000.0) }
@@ -86,7 +86,9 @@ fun Section_ExpensesAndNetPosition(
 
                     OutlinedTextField(
                         value = impotsPenalities.toString(),
-                        onValueChange = { impotsPenalities = it.toDoubleOrNull() ?: impotsPenalities },
+                        onValueChange = {
+                            impotsPenalities = it.toDoubleOrNull() ?: impotsPenalities
+                        },
                         label = { Text("غرامات الضرائب (دج)") },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -100,7 +102,12 @@ fun Section_ExpensesAndNetPosition(
                     )
 
                     Text(
-                        text = "المجموع: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج/أسبوع",
+                        text = "المجموع: ${
+                            String.format(
+                                "%.0f",
+                                totalePaprasseFraitParSemain
+                            )
+                        } دج/أسبوع",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp)
@@ -151,7 +158,12 @@ fun Section_ExpensesAndNetPosition(
                     )
 
                     Text(
-                        text = "الأوراق الأسبوعية: ${String.format("%.0f", totalePaprasseFraitParSemain)} دج",
+                        text = "الأوراق الأسبوعية: ${
+                            String.format(
+                                "%.0f",
+                                totalePaprasseFraitParSemain
+                            )
+                        } دج",
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -163,7 +175,12 @@ fun Section_ExpensesAndNetPosition(
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     Text(
-                        text = "المجموع الكلي: ${String.format("%.0f", totalExpensesWithAll)} دج/أسبوع",
+                        text = "المجموع الكلي: ${
+                            String.format(
+                                "%.0f",
+                                totalExpensesWithAll
+                            )
+                        } دج/أسبوع",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFBF360C)
@@ -210,17 +227,19 @@ fun Section_ExpensesAndNetPosition(
                         color = Color(0xFFE65100),
                         fontWeight = FontWeight.Bold
                     )
-// Dans votre composable
-                    val currentUser = M18CentralParametresOfAllApps.get_utilisateur(focusedValuesGetter.currentActive_M9AppCompt?.keyID?:"")
+
+                    val currentUser = M18CentralParametresOfAllApps.get_utilisateur(
+                        focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: ""
+                    )
                     val canEdit = M18CentralParametresOfAllApps.canEdit(currentUser)
                     if (canEdit) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "تعديل",
-                        tint = Color(0xFFE65100),
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "تعديل",
+                            tint = Color(0xFFE65100),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.padding(4.dp))

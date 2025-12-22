@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -77,7 +79,7 @@ fun View_M9AppCompt(
         if (relative_Compt_its_The_Active_One) {
             Text(
                 text = "Selected Data",
-                color = Color.White,  // White text for better contrast on red background
+                color = Color.White,
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -89,7 +91,7 @@ fun View_M9AppCompt(
                 text = "data: ${relative_M9AppCompt.get_DebugInfos()}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (relative_Compt_its_The_Active_One) Color.White else MaterialTheme.colorScheme.onSurface,  // Adjust text color for contrast
+                color = if (relative_Compt_its_The_Active_One) Color.White else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -138,6 +140,9 @@ private fun SettingsDialog(
     var itsAdmin by remember { mutableStateOf(relative_M9AppCompt.its_Admin) }
     var showPeriodSelector by remember { mutableStateOf(false) }
 
+    // State for credit_fait
+    var creditFait by remember { mutableStateOf(relative_M9AppCompt.credit_fait.toString()) }
+
     var showWarningMessage by remember {
         mutableStateOf(relative_M9AppCompt.text_Message_Warning.isNotEmpty())
     }
@@ -155,7 +160,39 @@ private fun SettingsDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Hide App Screen Setting
+                // Credit Fait TextField
+                Text(
+                    text = "💳 الائتمان المقدم",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1976D2),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                OutlinedTextField(
+                    value = creditFait,
+                    onValueChange = { newValue ->
+                        // Allow only numeric input with optional decimal point
+                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            creditFait = newValue
+                        }
+                    },
+                    label = { Text("الرصيد (دج)") },
+                    placeholder = { Text("0.0") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = creditFait.toDoubleOrNull() == null && creditFait.isNotEmpty()
+                )
+
+                if (creditFait.isNotEmpty() && creditFait.toDoubleOrNull() == null) {
+                    Text(
+                        text = "يرجى إدخال رقم صحيح",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -271,14 +308,17 @@ private fun SettingsDialog(
         confirmButton = {
             TextButton(
                 onClick = {
+                    val creditFaitValue = creditFait.toDoubleOrNull() ?: relative_M9AppCompt.credit_fait
                     val updatedAppCompt = relative_M9AppCompt.copy(
                         hideAppScreen = hideAppScreen,
                         travailleChezGrossisst3Ali = travailleChezGrossisst3Ali,
                         its_Admin = itsAdmin,
-                        text_Message_Warning = if (showWarningMessage) "لا تنسى اغلاق الوقت" else ""
+                        text_Message_Warning = if (showWarningMessage) "لا تنسى اغلاق الوقت" else "",
+                        credit_fait = creditFaitValue
                     )
                     onUpdateAppCompt(updatedAppCompt)
-                }
+                },
+                enabled = creditFait.isEmpty() || creditFait.toDoubleOrNull() != null
             ) {
                 Text("Save")
             }

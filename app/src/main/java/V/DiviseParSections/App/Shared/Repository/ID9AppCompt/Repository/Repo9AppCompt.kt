@@ -137,6 +137,7 @@ data class Z_AppCompt(
     var its_mode_affiche_que_produits_au_depot: Boolean = true,
 
     var mode_edite_dispo: Boolean = false,
+    var credit_fait: Double = 0.0,
 
     // Section InfosDeBase
     var nom: String = "",
