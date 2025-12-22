@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.ChangeDispoDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.SaveDispoForCamionDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -8,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
@@ -30,8 +34,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -66,7 +72,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -169,6 +174,49 @@ fun View_MainItem(
         }
     }
     var showAddToStockDialog by remember { mutableStateOf(false) }
+    var showChangeDispoDialog by remember { mutableStateOf(false) }
+    var showSaveDispoDialog by remember { mutableStateOf(false) }
+
+    fun save_Current_Dispo_To_Camion_Presentation(): Unit {
+        // Obtenir toutes les opérations de vente liées à ce bon
+        val ventOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+        }
+
+        var successCount = 0
+        var totalProducts = 0
+        val savedStates = mutableMapOf<String, DisponibilityEtates>()
+
+        ventOperations.forEach { vent ->
+            // Trouver le M1Produit parent correspondant
+            val produit = repositorysMainGetter.repo1ProduitInfos.datasValue.find {
+                it.keyID == vent.parent_M1Produit_KeyId
+            }
+
+            // Sauvegarder l'état actuel dans disponibilityEtates_Pour_presentaion_par_Camion
+            produit?.let { prod ->
+                totalProducts++
+                val currentState = prod.disponibilityEtates
+
+                repositorysMainSetter.upsert_M1Produit(
+                    prod.copy(
+                        disponibilityEtates_Pour_presentaion_par_Camion = currentState,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                )
+
+                savedStates[prod.nom] = currentState
+                successCount++
+            }
+        }
+
+        // Message de confirmation
+        Toast.makeText(
+            context,
+            "تم حفظ حالة $successCount منتج لعرض الشاحنة",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     fun add_Bon_Au_Stock(): Unit {
         repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
@@ -184,6 +232,40 @@ fun View_MainItem(
                 )
             }
         }
+    }
+
+    fun change_Dispo_Produits(newDisponibilityEtate: DisponibilityEtates): Unit {
+        val ventOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+        }
+
+        var successCount = 0
+        var totalProducts = 0
+
+        ventOperations.forEach { vent ->
+            val produit = repositorysMainGetter.repo1ProduitInfos.datasValue.find {
+                it.keyID == vent.parent_M1Produit_KeyId
+            }
+
+            produit?.let { prod ->
+                totalProducts++
+                repositorysMainSetter.upsert_M1Produit(
+                    prod.copy(
+                        disponibilityEtates = newDisponibilityEtate,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                )
+                successCount++
+            }
+        }
+
+        val message = when (newDisponibilityEtate) {
+            DisponibilityEtates.DISPO -> "تم تغيير $successCount منتج إلى 'متوفر'"
+            DisponibilityEtates.NON_DISPO -> "تم تغيير $successCount منتج إلى 'غير متوفر'"
+            DisponibilityEtates.PETITE_PROBABILITY -> "تم تغيير $successCount منتج إلى 'احتمال كبير'"
+        }
+
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     Card(
@@ -378,6 +460,31 @@ fun View_MainItem(
                             }
                         }
                     }
+
+                    IconButton(
+                        onClick = {
+                            showChangeDispoDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SwapHoriz, // Icône pour changer l'état
+                            contentDescription = "Change Availability",
+                            tint = Color.White
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            showSaveDispoDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "Save Availability State for Camion",
+                            tint = Color.White
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             showAddToStockDialog = true
@@ -687,6 +794,38 @@ fun View_MainItem(
         )
     }
 
+    if (showAddToStockDialog) {
+        AddToStockDialog(
+            onDismiss = { showAddToStockDialog = false },
+            onConfirm = { showAddToStockDialog = false },
+            context = context,
+            repositorysMainGetter = repositorysMainGetter,
+            repositorysMainSetter = repositorysMainSetter,
+            relative_M8BonVent = relative_M8BonVent
+        )
+    }
+
+    if (showChangeDispoDialog) {
+        ChangeDispoDialog(
+            onDismiss = { showChangeDispoDialog = false },
+            context = context,
+            repositorysMainGetter = repositorysMainGetter,
+            repositorysMainSetter = repositorysMainSetter,
+            relative_M8BonVent = relative_M8BonVent
+        )
+    }
+
+    if (showSaveDispoDialog) {
+        SaveDispoForCamionDialog(
+            onDismiss = { showSaveDispoDialog = false },
+            onConfirm = { showSaveDispoDialog = false },
+            context = context,
+            repositorysMainGetter = repositorysMainGetter,
+            repositorysMainSetter = repositorysMainSetter,
+            relative_M8BonVent = relative_M8BonVent
+        )
+    }
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -804,71 +943,6 @@ fun View_MainItem(
                 showCreditDialog = false
             },
             sumBonVents = sumBonVents
-        )
-    }
-    if (showAddToStockDialog) {
-        AlertDialog(
-            onDismissRequest = { showAddToStockDialog = false },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Receipt,
-                    contentDescription = "Stock",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            title = {
-                Text(
-                    text = "إضافة إلى المخزون",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "هل تريد إضافة هذه المنتجات إلى المخزون؟",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "رقم المعاملة: ${relative_M8BonVent.keyID.takeLast(6)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "سيتم إضافة الكميات إلى المخزون الحالي",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        add_Bon_Au_Stock()
-                        Toast.makeText(
-                            context,
-                            "تمت إضافة المنتجات إلى المخزون بنجاح",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        showAddToStockDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showAddToStockDialog = false }
-                ) {
-                    Text("إلغاء", style = MaterialTheme.typography.bodyMedium)
-                }
-            }
         )
     }
 }

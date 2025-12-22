@@ -234,6 +234,8 @@ data class ArticlesBasesStatsTable(
     // Garde la propriété originale pour la compatibilité
     var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.NON_DISPO,
 
+    var disponibilityEtates_Pour_presentaion_par_Camion: DisponibilityEtates = DisponibilityEtates.NON_DISPO,
+
     // Section keyFireBase
     var keyFireBase: String = "",
 
