@@ -12,7 +12,7 @@ import java.io.FileOutputStream
  * Generate PDF with 20 pages of checkbox grids (10x12 = 120 checkboxes per page)
  * Each checkbox represents a student attendance/tracking slot
  */
-fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 5): File? {
+fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 20): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "checkbox_grid_${System.currentTimeMillis()}.pdf")
@@ -39,9 +39,9 @@ fun generateCheckboxGridPdf(context: Context, numberOfPages: Int = 5): File? {
             val availableWidth = pageWidth - marginLeft - marginRight
             val availableHeight = pageHeight - marginTop - marginBottom
 
-            // Grid configuration: 15 columns x 8 rows = 120 checkboxes
+            // Grid configuration: 15 columns x 15 rows = 225 checkboxes
             val columns = 15
-            val rows = 8
+            val rows = 20
 
             // Calculate checkbox size to fill the page better
             val horizontalSpacing = 4f

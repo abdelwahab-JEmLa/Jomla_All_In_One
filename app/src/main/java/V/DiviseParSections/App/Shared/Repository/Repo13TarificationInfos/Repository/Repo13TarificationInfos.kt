@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
@@ -84,10 +85,52 @@ class Repo13TarificationInfos(
                 if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
                     cleanupDuplicateTariffs(newData)
                 }
+                M18CentralParametresOfAllApps().time_tamp_all_tariffs.ifTrue {
+                    updateTariffsWithZeroTimestamps(newData)
+                }
             }
         }
     }
 
+    private fun updateTariffsWithZeroTimestamps(tariffs: List<M13TarificationInfos>) {
+        repoScope.launch {
+            try {
+                val currentTimestamp = System.currentTimeMillis()
+
+                // Filter tariffs that need timestamp updates
+                val tariffsToUpdate = tariffs.filter { it.creationTimestamps == 0L }
+
+                if (tariffsToUpdate.isNotEmpty()) {
+                    // Update each tariff with current timestamp
+                    tariffsToUpdate.forEach { tariff ->
+                        val updatedTariff = tariff.copy(
+                            creationTimestamps = currentTimestamp,
+                            dernierTimeTampsSynchronisationAvecFireBase = currentTimestamp
+                        )
+
+                        // Save to database and Firebase
+                        dataBaseCreationFactory.set(updatedTariff)
+                    }
+
+                    // Update local state
+                    withContext(Dispatchers.Main.immediate) {
+                        _datas.value = _datas.value.map { tariff ->
+                            if (tariff.creationTimestamps == 0L) {
+                                tariff.copy(
+                                    creationTimestamps = currentTimestamp,
+                                    dernierTimeTampsSynchronisationAvecFireBase = currentTimestamp
+                                )
+                            } else {
+                                tariff
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Log error if needed
+            }
+        }
+    }
     fun upsert(data: M13TarificationInfos) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
@@ -166,7 +209,7 @@ data class M13TarificationInfos(
     val keyID: String = getPushFireBase(ref),
 
     val id: Long = 0L,
-    var creationTimestamps: Long = 0,
+    var creationTimestamps: Long =  System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var defaultNonSaved_Entre: Boolean = true,
 

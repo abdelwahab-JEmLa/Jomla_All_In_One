@@ -100,7 +100,7 @@ fun PrixVentAdjustmentButtons(
         val currentTime = System.currentTimeMillis()
         val tariffCreationTime = relative_Tariff.creationTimestamps
         val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
-        return timeDifferenceSeconds > 20
+        return true
     }
 
     fun updateTotalPriceImmediately(newTotalPrice: Double) {

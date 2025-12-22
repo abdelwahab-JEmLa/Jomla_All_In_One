@@ -51,7 +51,7 @@ fun DropDownItem_Imprime_pdf_Case_A_Cochet(
         isLoading = true
         scope.launch {
             try {
-                // Generate PDF with 20 pages of checkbox grids (10x12 = 120 checkboxes per page)
+                // Generate PDF with 20 pages of checkbox grids (15x15 = 225 checkboxes per page)
                 val pdfFile = withContext(Dispatchers.IO) {
                     generateCheckboxGridPdf(context, numberOfPages = 20)
                 }

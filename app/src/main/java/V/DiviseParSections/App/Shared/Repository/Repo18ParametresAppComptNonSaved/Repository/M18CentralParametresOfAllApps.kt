@@ -103,8 +103,11 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
 
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
+    //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
 
     val au_Lence_DimininueDatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe!!!!!!!!!!
+    //----------------------------------------------------------------------------------------------------------------------------------------------------
 
     /*     if (itsDevMode) abdelmomen_Compt_KeyId else {
             if (Build.MODEL == "Redmi Note 8")

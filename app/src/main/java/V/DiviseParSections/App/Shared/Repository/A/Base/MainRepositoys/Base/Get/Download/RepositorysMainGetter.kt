@@ -12,7 +12,6 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -219,11 +218,14 @@ class RepositorysMainGetter(
         composScope.launch {
             try {
                 M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB.ifTrue {
-                    M10OperationVentCouleur.remove_ref()
-                    M11AchatOperation.remove_ref()
+                 /*   M10OperationVentCouleur.remove_ref()
+                    M11AchatOperation.remove_ref()         */
                 }
 
+
                 databaseInitializationManager.initializeAllRepositories(context)
+
+
             } catch (e: Exception) {
                 databaseInitializationManager.updateMainInitDataBaseProgressEtate(1.0f)
             }
