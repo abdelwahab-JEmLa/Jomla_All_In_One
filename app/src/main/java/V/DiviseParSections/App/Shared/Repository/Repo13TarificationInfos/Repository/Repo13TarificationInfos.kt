@@ -85,6 +85,7 @@ class Repo13TarificationInfos(
                 if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
                     cleanupDuplicateTariffs(newData)
                 }
+
                 M18CentralParametresOfAllApps().time_tamp_all_tariffs.ifTrue {
                     updateTariffsWithZeroTimestamps(newData)
                 }

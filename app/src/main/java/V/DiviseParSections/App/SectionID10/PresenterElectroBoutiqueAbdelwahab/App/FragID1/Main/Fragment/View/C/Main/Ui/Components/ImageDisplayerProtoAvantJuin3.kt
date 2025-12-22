@@ -89,27 +89,19 @@ fun ImageDisplayerProtoAvantJuin3(
     val enablePerformAutoClickImageDisplayer =
         viewModel.aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.enablePerformAutoClickImageDisplayer
 
-    val baseFileName =
-        "${relative_M1Produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
-
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
-
-    val produitDepuitNewDATABASE = a_ProduitModelRepository
-        .modelDatas.find { it.id == relative_M1Produit.id }
+    val produitDepuitNewDATABASE = a_ProduitModelRepository.modelDatas.find { it.id == relative_M1Produit.id }
 
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
     var imageLoaded by remember { mutableStateOf(false) }
     var hasPerformedAutoClick by remember { mutableStateOf(false) }
 
-    // Calculate the initial and target quality based on device capabilities and image size
     val initialQuality = remember(imageSize) {
-        // Start with lower quality for faster initial load
         (imageSize.width.value * imageSize.height.value / 10000).coerceIn(5f, 25f)
     }
 
     val targetQuality = remember(finalequalityImagePourcentage) {
-        // Use the finalequalityImagePourcentage parameter to determine final quality
         finalequalityImagePourcentage.toFloat().coerceIn(30f, 100f)
     }
 
@@ -124,17 +116,31 @@ fun ImageDisplayerProtoAvantJuin3(
         imageLoaded = false
         currentQuality = initialQuality
         hasPerformedAutoClick = false
-
-        // Progressive loading strategy
-        delay(300) // Initial loading delay
-        currentQuality = targetQuality // Transition to target quality
+        delay(300)
+        currentQuality = targetQuality
         imageLoaded = true
-
-        delay(700) // Keep blur for 700ms after image loads
+        delay(700)
         isLoading = false
     }
 
-    val imagePath by remember(viewModel.viewModelImagesPath, relative_M1Produit.id, indexColor) {
+    val colorInfo = remember(relative_M1Produit.keyID, indexColor) {
+        if (indexColor == -1) null
+        else repoMainGetter.repo03CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == relative_M1Produit.keyID &&
+                    it.indexCouleurDansAncienProto == indexColor
+        }
+    }
+
+    val baseFileName = remember(colorInfo, relative_M1Produit.id, indexColor) {
+        when {
+            indexColor == -1 -> "${relative_M1Produit.id}_Unite"
+            colorInfo != null && colorInfo.nomImageFichieSansEtansion != "Non Dispo" ->
+                colorInfo.nomImageFichieSansEtansion
+            else -> "${relative_M1Produit.id}_${indexColor}"
+        }
+    }
+
+    val imagePath by remember(viewModel.viewModelImagesPath, baseFileName) {
         derivedStateOf {
             File(viewModel.viewModelImagesPath, baseFileName)
         }
@@ -143,13 +149,44 @@ fun ImageDisplayerProtoAvantJuin3(
     val imageFile by produceState<File?>(
         initialValue = null,
         key1 = imagePath,
-        key2 = reloadKey
+        key2 = reloadKey,
+        key3 = colorInfo?.dernierTimeTampsSynchronisationAvecFireBase
     ) {
         value = withContext(Dispatchers.IO) {
-            listOf("jpg", "webp")
+            val extensions = if (colorInfo != null) {
+                listOf(colorInfo.extensionDisponible, "webp", "jpg").distinct()
+            } else {
+                listOf("webp", "jpg")
+            }
+
+            val requestedImage = extensions
                 .asSequence()
                 .map { ext -> File("${imagePath.absolutePath}.$ext") }
                 .firstOrNull { it.exists() && it.canRead() }
+
+            if (requestedImage != null) {
+                requestedImage
+            } else if (indexColor != -1) {
+                val allColorsForProduct = repoMainGetter.repo03CouleurProduitInfos.datasValue
+                    .filter { it.parentBProduitInfosKeyID == relative_M1Produit.keyID }
+                    .filter { it.nomImageFichieSansEtansion != "Non Dispo" }
+                    .sortedBy { it.indexCouleurDansAncienProto }
+
+                allColorsForProduct
+                    .asSequence()
+                    .filter { it.keyID != colorInfo?.keyID }
+                    .mapNotNull { fallbackColor ->
+                        val fallbackPath = File(viewModel.viewModelImagesPath, fallbackColor.nomImageFichieSansEtansion)
+                        val fallbackExtensions = listOf(fallbackColor.extensionDisponible, "webp", "jpg").distinct()
+                        fallbackExtensions
+                            .asSequence()
+                            .map { ext -> File("${fallbackPath.absolutePath}.$ext") }
+                            .firstOrNull { it.exists() && it.canRead() }
+                    }
+                    .firstOrNull()
+            } else {
+                null
+            }
         }
     }
 
@@ -157,40 +194,23 @@ fun ImageDisplayerProtoAvantJuin3(
         if (enablePerformAutoClickImageDisplayer == true && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
-                true
-            )
-            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
-                relative_M1Produit.nom
-            )
+            focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
+            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
             onClickToOpenWindow()
         }
     }
 
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
-        // Main image content
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             GlideImage(
                 modifier = Modifier
                     .getSemanticsTag(relative_M1Produit, "")
                     .clickable {
-                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
-                            true
-                        )
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
-                            relative_M1Produit.nom
-                        )
-                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                            relative_M1Produit
-                        )
-
+                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
+                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_M1Produit)
                         onClickToOpenWindow()
-
-                      /*  viewModel.sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
-                            relative_M1Produit.keyID
-                        )           */
                     }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
@@ -208,11 +228,7 @@ fun ImageDisplayerProtoAvantJuin3(
                 contentScale = imageScale
             ) {
                 it.apply {
-                    applyImageOptions(
-                        relative_M1Produit,
-                        indexColor,
-                        currentQuality
-                    ) { isFirstResource ->
+                    applyImageOptions(relative_M1Produit, indexColor, currentQuality) { isFirstResource ->
                         if (isFirstResource && currentQuality < targetQuality) {
                             currentQuality = targetQuality
                         }
@@ -220,6 +236,7 @@ fun ImageDisplayerProtoAvantJuin3(
                 }
             }
         }
+
         if (indexColor==0) {
             Row(
                 modifier = Modifier
@@ -235,29 +252,17 @@ fun ImageDisplayerProtoAvantJuin3(
                         .size(50.dp)
                         .clip(CircleShape)
                         .background(Color.Red.copy(alpha = 0.6f))
-                        .clickable {
-                        /*    val rel_Prd = repoMainGetter.find_M1Produit_ByKeyID("-OV3rmTfv1RVCax896N1")
-                            viewModel.sendOrderToClientDisplayer(
-                                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
-                                rel_Prd?.keyID
-                                    ?: throw RuntimeException("Product not found - Real bug needs to be fixed")
-                            )    */
-                        }
+                        .clickable { }
                         .padding(4.dp)
                 )
             }
         }
 
         if (showOverlay) {
-            val productImageInfos =
-                calculeCouleurHandler.getProduitInfoImageParIndex(relative_M1Produit)
+            val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(relative_M1Produit)
             val currentColorInfo = productImageInfos.getOrNull(indexColor)
-
             currentColorInfo?.let { colorInfo ->
-                ColorOverlayWithBlur(
-                    color = colorInfo,
-                    cornerRadius = cornerRadius,
-                )
+                ColorOverlayWithBlur(color = colorInfo, cornerRadius = cornerRadius)
             }
         }
     }
@@ -269,19 +274,14 @@ fun ImageDisplayerProtoAvantJuin3(
                     .fillMaxWidth()
                     .background(
                         color = Color(0xFFFFA000).copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(
-                            topStart = cornerRadius,
-                            topEnd = cornerRadius
-                        )
+                        shape = RoundedCornerShape(topStart = cornerRadius, topEnd = cornerRadius)
                     )
             ) {
                 Text(
                     text = "احتمال انو غير متوفر لكن نحاولو نبحثولك عليه",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(4.dp),
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -292,41 +292,29 @@ fun ImageDisplayerProtoAvantJuin3(
 }
 
 @Composable
-fun ColorOverlayWithBlur(
-    color: CalculeCouleurHandler.ProductImageInfo,
-    cornerRadius: Dp,
-) {
+fun ColorOverlayWithBlur(color: CalculeCouleurHandler.ProductImageInfo, cornerRadius: Dp) {
     Box {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius))
-                .background(Color.White) // White background holder
+                .background(Color.White)
                 .graphicsLayer {
-                    renderEffect = BlurEffect(
-                        radiusX = 25f,
-                        radiusY = 25f,
-                        edgeTreatment = TileMode.Decal
-                    )
+                    renderEffect = BlurEffect(radiusX = 25f, radiusY = 25f, edgeTreatment = TileMode.Decal)
                 }
         )
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius))
                 .background(Color.Black.copy(alpha = 0.15f))
         )
-
         ColorOverlay(
             color = color,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius)),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(cornerRadius))
         )
     }
 }
-
 
 @Composable
 fun AutoResizedText(
@@ -336,13 +324,8 @@ fun AutoResizedText(
     style: TextStyle = MaterialTheme.typography.headlineMedium,
     maxLines: Int = Int.MAX_VALUE
 ) {
-    var fontSize by remember(text) {
-        mutableStateOf(style.fontSize)
-    }
-
-    var previousFontSize by remember {
-        mutableStateOf(fontSize)
-    }
+    var fontSize by remember(text) { mutableStateOf(style.fontSize) }
+    var previousFontSize by remember { mutableStateOf(fontSize) }
 
     Text(
         text = text,
@@ -362,17 +345,13 @@ fun AutoResizedText(
     )
 }
 
-
 fun RequestBuilder<Drawable>.applyImageOptions(
     article: ArticlesBasesStatsTable,
     indexColor: Int,
     quality: Float,
     onResourceReady: (Boolean) -> Unit
 ) = this
-    .thumbnail(
-        this.clone()
-            .transform(jp.wasabeef.glide.transformations.BlurTransformation(10))
-    )
+    .thumbnail(this.clone().transform(jp.wasabeef.glide.transformations.BlurTransformation(10)))
     .transition(DrawableTransitionOptions.withCrossFade())
     .diskCacheStrategy(DiskCacheStrategy.ALL)
     .priority(Priority.HIGH)
@@ -383,7 +362,7 @@ fun RequestBuilder<Drawable>.applyImageOptions(
             model: Any?,
             target: Target<Drawable>,
             isFirstResource: Boolean
-        ) = false
+        ): Boolean = false
 
         override fun onResourceReady(
             resource: Drawable,

@@ -45,6 +45,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+// 2. Update ArticleImageWithOverlay.kt
 @Composable
 fun ArticleImageWithOverlay(
     modifier: Modifier = Modifier,
@@ -61,13 +62,9 @@ fun ArticleImageWithOverlay(
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
-    val id = article.id
-    val imageExists = remember(id, colorIndex, reloadTrigger) {
-        checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
-    }
 
-    // FIXED: Get the related color info with fallback search by image filename pattern
-    val relative_M3CouleurInfos = remember(article, colorIndex) {
+    // FIXED: Get the related color info first, before checking image existence
+    val relative_M3CouleurInfos = remember(article, colorIndex, reloadTrigger) {
         // First try the standard method
         val directMatch = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
 
@@ -75,16 +72,38 @@ fun ArticleImageWithOverlay(
             directMatch
         } else {
             // If null, search by matching nomImageFichieSansEtansion pattern
-            // Pattern: {productId}_{colorIndex+1} (e.g., "3959_1", "3959_2")
-            val expectedImageName = "${article.id}_${colorIndex + 1}"
+            // Try both patterns: with and without +1
+            val expectedImageName1 = "${article.id}_${colorIndex + 1}"
+            val expectedImageName2 = "${article.id}_${colorIndex}"
 
             viewModel.getter.repo03CouleurProduitInfos.datasValue.find { couleur ->
-                couleur.nomImageFichieSansEtansion == expectedImageName ||
+                couleur.nomImageFichieSansEtansion == expectedImageName1 ||
+                        couleur.nomImageFichieSansEtansion == expectedImageName2 ||
                         // Also check if the parent product matches
                         (couleur.parentBProduitOldID == article.id &&
                                 couleur.indexCouleurDansAncienProto == colorIndex)
             }
         }
+    }
+
+    // FIXED: Pass repo03CouleurProduitInfos to checkImageExists
+    val imageExists = remember(article.id, colorIndex, reloadTrigger, relative_M3CouleurInfos) {
+        checkImageExists(
+            viewModelHeadViewModel,
+            article,
+            colorIndex,
+            reloadTrigger,
+            viewModel.getter.repo03CouleurProduitInfos
+        )
+    }
+
+    // Add debugging for product 4308
+    if (article.id == 4308L) {
+        android.util.Log.d("ArticleImageOverlay_4308",
+            "colorIndex: $colorIndex, " +
+                    "imageExists: $imageExists, " +
+                    "relative_M3CouleurInfos: ${relative_M3CouleurInfos?.nomImageFichieSansEtansion}, " +
+                    "showOverlay: ${!imageExists}")
     }
 
     @Composable
@@ -103,7 +122,6 @@ fun ArticleImageWithOverlay(
         val depotCount = currentCouleurInfo.count_Don_Depot
         val hasPositiveStock = depotCount > 0
         val hasNegativeStock = depotCount < 0
-        val isZero = depotCount == 0
 
         // Determine colors and styles based on stock status
         val containerColor = when {
@@ -172,9 +190,9 @@ fun ArticleImageWithOverlay(
         shadowElevation = 4.dp
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
+            // FIXED: Pass the actual onClick handler
             ImageDisplayerProtoAvantJuin3(
                 relative_M1Produit = article,
                 viewModel = viewModelHeadViewModel,
@@ -185,6 +203,9 @@ fun ArticleImageWithOverlay(
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
+                onClickToOpenWindow = {
+                    onClickToOpenWindow(article, colorIndex)
+                }
             )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
@@ -210,7 +231,9 @@ fun ArticleImageWithOverlay(
                     DisponibilityIndicator(
                         disponibilityState = article.disponibilityEtates,
                         onToggle = {
-                            aCentralFacade.repositorysMainGetter.repo1ProduitInfos.upsert(article.toggleDisponibilityEtates())
+                            aCentralFacade.repositorysMainGetter.repo1ProduitInfos.upsert(
+                                article.toggleDisponibilityEtates()
+                            )
                         }
                     )
                 }

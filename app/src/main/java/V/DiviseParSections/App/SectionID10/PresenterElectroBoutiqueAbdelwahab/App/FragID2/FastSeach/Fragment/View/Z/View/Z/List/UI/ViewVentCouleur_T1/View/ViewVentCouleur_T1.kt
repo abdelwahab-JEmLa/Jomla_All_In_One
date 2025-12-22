@@ -142,12 +142,31 @@ fun ViewVentCouleur_T1(
             relative_M3CouleurInfos.extensionDisponible
         )
     }
+    // ADD THIS LOGGING BLOCK:
+    val shouldLogForProduct4308 = relative_produit.id == 4308L
 
     val isImageAvailable by remember(imageFile) {
         derivedStateOf {
             imageFile?.exists() == true && relative_M3CouleurInfos.nomImageFichieSansEtansion != "Non Dispo"
         }
     }
+
+    LaunchedEffect(imageFile, shouldLogForProduct4308) {
+        if (shouldLogForProduct4308) {
+            android.util.Log.d("ViewVentCouleur_4308", "========================================")
+            android.util.Log.d("ViewVentCouleur_4308", "Product ID: ${relative_produit.id}")
+            android.util.Log.d("ViewVentCouleur_4308", "Color Index: ${relative_M3CouleurInfos.indexCouleurDansAncienProto}")
+            android.util.Log.d("ViewVentCouleur_4308", "Color Name: ${relative_M3CouleurInfos.nomCouleurStrSiSonImageDispo}")
+            android.util.Log.d("ViewVentCouleur_4308", "Image File Name (no ext): ${relative_M3CouleurInfos.nomImageFichieSansEtansion}")
+            android.util.Log.d("ViewVentCouleur_4308", "Extension: ${relative_M3CouleurInfos.extensionDisponible}")
+            android.util.Log.d("ViewVentCouleur_4308", "Image File Path: ${imageFile?.absolutePath}")
+            android.util.Log.d("ViewVentCouleur_4308", "File Exists: ${imageFile?.exists()}")
+            android.util.Log.d("ViewVentCouleur_4308", "File Can Read: ${imageFile?.canRead()}")
+            android.util.Log.d("ViewVentCouleur_4308", "Display Type: ${relative_M3CouleurInfos.aAffiche}")
+            android.util.Log.d("ViewVentCouleur_4308", "isImageAvailable: $isImageAvailable")
+        }
+    }
+
 
     suspend fun handleImageCaptureForExistingColor(uri: Uri) {
         if (isProcessingImage) return
@@ -384,6 +403,7 @@ fun ViewVentCouleur_T1(
         val countDonDepot = relative_M3CouleurInfos.count_Don_Depot
 
         val count_Don_DepottoString = countDonDepot.toString()
+        val shouldLogForProduct4308 = relative_produit.id == 4308L
 
         Card(
             modifier = Modifier

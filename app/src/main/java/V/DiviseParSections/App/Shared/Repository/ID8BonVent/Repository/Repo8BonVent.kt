@@ -41,7 +41,7 @@ class Repo8BonVent(
                 _datas.value = newData
 
                 if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
-                  /*  val bonVentsToRemove = newData.filter { bonVent ->
+                    val bonVentsToRemove = newData.filter { bonVent ->
                         bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit &&
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
@@ -49,7 +49,7 @@ class Repo8BonVent(
 
                     bonVentsToRemove.forEach { bonVent ->
                         delete(bonVent)
-                    }   */
+                    }
                 }
             }
         }

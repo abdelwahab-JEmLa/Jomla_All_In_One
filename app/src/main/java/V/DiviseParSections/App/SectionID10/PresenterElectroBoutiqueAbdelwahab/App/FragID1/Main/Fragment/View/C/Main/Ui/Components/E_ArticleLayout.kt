@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
+import org.koin.compose.koinInject
 
 sealed class E_ArticleLayout {
     data object DemiUno : E_ArticleLayout()
@@ -199,6 +201,8 @@ private fun DemiDisplayerMultiColor(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject (),
+
     viewModelInitApp: ViewModelInitApp
 ) {
     Column(modifier = modifier.padding(3.dp)) {
@@ -224,7 +228,7 @@ private fun DemiDisplayerMultiColor(
             val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
             items(availableColors) { index ->
                 val imageExists = remember(article.id, index, reloadTrigger) {
-                    checkImageExists(viewModel, article, index, reloadTrigger)
+                    checkImageExists(viewModel, article, index, reloadTrigger,repo03CouleurProduitInfos)
                 }
 
                 ArticleImageWithOverlay(
