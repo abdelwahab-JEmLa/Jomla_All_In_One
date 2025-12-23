@@ -28,6 +28,7 @@ import java.util.Locale
  * ✅ NIF (Tax ID) displayed
  * ✅ Continuous table borders (no spacing issues)
  * ✅ Total displayed properly under table
+ * ✅ Amount in French words (uppercase, proper format)
  */
 class AndroidNativeTaxInvoiceGenerator(
     private val formatter: PdfFormatterUtils_2,
@@ -224,9 +225,12 @@ class AndroidNativeTaxInvoiceGenerator(
         }
     }
 
+    /**
+     * Calculate header height for first page (includes NIF now)
+     */
     private fun calculateHeaderHeight(hasLogo: Boolean): Float {
         var height = MARGIN_TOP
-        if (hasLogo) height += 90f
+        if (hasLogo) height += 90f // Logo + spacing
         height += 25f // Client name
         height += 20f // Business type
         height += 25f // Invoice title
@@ -387,7 +391,7 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * FIX: Now displays both RC and NIF on separate lines
+     * Draw client info with RC and NIF
      */
     private fun drawClientInfo(canvas: Canvas, client: M2Client?, yPos: Float): Float {
         var currentY = yPos
@@ -402,8 +406,8 @@ class AndroidNativeTaxInvoiceGenerator(
         canvas.drawText("RC: $rcNumber", MARGIN_LEFT, currentY, paint)
         currentY += 18f
 
-        // NIF (Tax ID) - FIXED: Now included
-        val nifNumber = client?.nif_Num ?: "N/A"
+        // NIF (Tax ID)
+        val nifNumber = client?.nif_Num  ?: "N/A"
         canvas.drawText("NIF: $nifNumber", MARGIN_LEFT, currentY, paint)
         currentY += 18f
 
@@ -411,8 +415,8 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * FIX: Returns the Y position where table ends for proper total placement
-     * FIX: Continuous borders without spacing issues
+     * Draw products table with continuous borders
+     * Returns the Y position where table ends
      */
     private fun drawProductsTable(
         canvas: Canvas,
@@ -470,7 +474,7 @@ class AndroidNativeTaxInvoiceGenerator(
 
         yPos += HEADER_HEIGHT
 
-        // FIX: Single border paint for continuous lines
+        // Border paint for continuous lines
         val borderPaint = Paint().apply {
             color = COLOR_BLACK
             style = Paint.Style.STROKE
@@ -525,7 +529,7 @@ class AndroidNativeTaxInvoiceGenerator(
             rowNumber++
         }
 
-        // FIX: Draw complete table border as one continuous rectangle
+        // Draw complete table border as one continuous rectangle
         canvas.drawRect(MARGIN_LEFT, startY, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
 
         // Draw vertical column separators
@@ -546,7 +550,7 @@ class AndroidNativeTaxInvoiceGenerator(
     }
 
     /**
-     * FIX: Now receives tableEndY to place total directly under table
+     * Draw total and footer with amount in French words
      */
     private fun drawTotalAndFooter(canvas: Canvas, total: Double, excludedCount: Int, tableEndY: Float) {
         var yPos = tableEndY + 10f // Start just below table
@@ -568,7 +572,7 @@ class AndroidNativeTaxInvoiceGenerator(
             yPos += 25f
         }
 
-        // Total box
+        // Total box with orange background
         val totalBoxPaint = Paint().apply {
             color = COLOR_ORANGE
             style = Paint.Style.FILL
@@ -592,17 +596,18 @@ class AndroidNativeTaxInvoiceGenerator(
         canvas.drawText("TOTAL TTC", MARGIN_LEFT + 10f, yPos + 20f, totalPaint)
 
         totalPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("${formatter.round(total)} Da", PAGE_WIDTH - MARGIN_RIGHT - 10f, yPos + 20f, totalPaint)
+        canvas.drawText("${formatter.round(total)} DZD", PAGE_WIDTH - MARGIN_RIGHT - 10f, yPos + 20f, totalPaint)
 
         yPos += 45f
 
-        // Certification
+        // Certification text
         val certPaint = TextPaint().apply {
             color = COLOR_BLACK
             textSize = 9f
+            textAlign = Paint.Align.LEFT
         }
         canvas.drawText(
-            "Certifié sincères et véritable de présente facture arrêtée à la somme :",
+            "ARRETE LA PRESENTE FACTURE A LA SOMME DE",
             MARGIN_LEFT,
             yPos,
             certPaint
@@ -610,17 +615,45 @@ class AndroidNativeTaxInvoiceGenerator(
 
         yPos += 20f
 
-        // Amount in words
+        // Amount in French words (uppercase)
         val amountInWords = convertAmountToWords(total)
+
+        // Handle multi-line for long text
         val wordsPaint = TextPaint().apply {
             color = COLOR_BLACK
-            textSize = 10f
+            textSize = 9f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            textAlign = Paint.Align.CENTER
+            textAlign = Paint.Align.LEFT
         }
-        canvas.drawText(amountInWords, PAGE_WIDTH / 2f, yPos, wordsPaint)
 
-        yPos += 40f
+        // Split into lines if too long
+        val maxWidth = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
+        val words = amountInWords.split(" ")
+        var currentLine = ""
+        val lines = mutableListOf<String>()
+
+        words.forEach { word ->
+            val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+            val testWidth = wordsPaint.measureText(testLine)
+
+            if (testWidth > maxWidth && currentLine.isNotEmpty()) {
+                lines.add(currentLine)
+                currentLine = word
+            } else {
+                currentLine = testLine
+            }
+        }
+        if (currentLine.isNotEmpty()) {
+            lines.add(currentLine)
+        }
+
+        // Draw each line
+        lines.forEach { line ->
+            canvas.drawText(line, MARGIN_LEFT, yPos, wordsPaint)
+            yPos += 15f
+        }
+
+        yPos += 15f
 
         // Signature
         val sigPaint = TextPaint().apply {
@@ -639,21 +672,12 @@ class AndroidNativeTaxInvoiceGenerator(
         return "$sequenceNumber/$year"
     }
 
+    /**
+     * Convert amount to French words in uppercase
+     * Example: 327250.00 -> "TROIS CENT VINGT-SEPT MILLE DEUX CENT CINQUANTE DINARS ALGÉRIENS ET ZÉRO CENTIMES"
+     */
     private fun convertAmountToWords(amount: Double): String {
-        val roundedAmount = formatter.round(amount).toInt()
-        val thousands = roundedAmount / 1000
-        val remainder = roundedAmount % 1000
-
-        return when {
-            roundedAmount >= 1000 -> {
-                if (remainder > 0) {
-                    "$thousands mille $remainder Dinars."
-                } else {
-                    "$thousands mille Dinars."
-                }
-            }
-            else -> "$roundedAmount Dinars."
-        }
+        return formatter.numberToWordsFrench(amount)
     }
 
     private data class ProductRow(
