@@ -25,9 +25,9 @@ import java.util.Locale
  * Tax Invoice PDF Generator using Android Native PdfDocument API
  * ✅ Multi-page support with proper pagination
  * ✅ Client name displayed at top
- * ✅ Respects maximum page limit
- * ✅ Products that don't fit are excluded with warning
- * ✅ Total displayed at bottom of last page (no blank page)
+ * ✅ NIF (Tax ID) displayed
+ * ✅ Continuous table borders (no spacing issues)
+ * ✅ Total displayed properly under table
  */
 class AndroidNativeTaxInvoiceGenerator(
     private val formatter: PdfFormatterUtils_2,
@@ -44,7 +44,7 @@ class AndroidNativeTaxInvoiceGenerator(
         private const val MARGIN_LEFT = 40f
         private const val MARGIN_RIGHT = 40f
         private const val MARGIN_TOP = 40f
-        private const val MARGIN_BOTTOM = 150f // Space for total and footer
+        private const val MARGIN_BOTTOM = 150f
 
         // Row height
         private const val ROW_HEIGHT = 25f
@@ -61,9 +61,6 @@ class AndroidNativeTaxInvoiceGenerator(
         private const val INVOICE_PREFIX = "Facture N°"
     }
 
-    /**
-     * Generate tax invoice PDF with multi-page support
-     */
     suspend fun generateTaxInvoicePdf(
         context: Context,
         client: M2Client?,
@@ -88,10 +85,8 @@ class AndroidNativeTaxInvoiceGenerator(
                 bonVent?.keyID?.takeLast(4) ?: ""
             )
 
-            // Prepare product data
             val productRows = prepareProductData(operations, tarificationRepo, produitRepo)
 
-            // Calculate how many products fit per page
             val headerHeight = calculateHeaderHeight(companyLogoResId != null)
             val availableHeightFirstPage = PAGE_HEIGHT - headerHeight - MARGIN_BOTTOM
             val availableHeightOtherPages = PAGE_HEIGHT - MARGIN_TOP - HEADER_HEIGHT - MARGIN_BOTTOM
@@ -99,7 +94,6 @@ class AndroidNativeTaxInvoiceGenerator(
             val rowsPerFirstPage = (availableHeightFirstPage / ROW_HEIGHT).toInt()
             val rowsPerOtherPage = (availableHeightOtherPages / ROW_HEIGHT).toInt()
 
-            // Calculate total pages needed
             val totalRowsNeeded = productRows.size
             var pagesNeeded = 1
             var remainingRows = totalRowsNeeded - rowsPerFirstPage
@@ -108,10 +102,8 @@ class AndroidNativeTaxInvoiceGenerator(
                 pagesNeeded += (remainingRows + rowsPerOtherPage - 1) / rowsPerOtherPage
             }
 
-            // Check if we exceed max pages
             val actualPages = minOf(pagesNeeded, nombre_Page_max)
             val productsToInclude = if (pagesNeeded > nombre_Page_max) {
-                // Calculate how many products we can fit
                 val maxRows = rowsPerFirstPage + (rowsPerOtherPage * (nombre_Page_max - 1))
                 productRows.take(maxRows)
             } else {
@@ -120,14 +112,12 @@ class AndroidNativeTaxInvoiceGenerator(
 
             val excludedCount = totalRowsNeeded - productsToInclude.size
 
-            // Create PDF document
             val pdfDocument = PdfDocument()
 
             var currentPage = 1
             var currentRowIndex = 0
             var total = 0.0
 
-            // Generate pages
             while (currentPage <= actualPages && currentRowIndex < productsToInclude.size) {
                 val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, currentPage).create()
                 val page = pdfDocument.startPage(pageInfo)
@@ -147,7 +137,6 @@ class AndroidNativeTaxInvoiceGenerator(
                 val isLastPage = (currentRowIndex + rowsForThisPage >= productsToInclude.size)
 
                 if (currentPage == 1) {
-                    // First page: full header
                     val pageTotal = drawFirstPage(
                         canvas,
                         context,
@@ -164,7 +153,6 @@ class AndroidNativeTaxInvoiceGenerator(
                     )
                     total += pageTotal
                 } else {
-                    // Continuation pages: minimal header
                     val pageTotal = drawContinuationPage(
                         canvas,
                         rowsToDisplay,
@@ -184,7 +172,6 @@ class AndroidNativeTaxInvoiceGenerator(
                 currentPage++
             }
 
-            // Write to file
             FileOutputStream(file).use { outputStream ->
                 pdfDocument.writeTo(outputStream)
             }
@@ -205,9 +192,6 @@ class AndroidNativeTaxInvoiceGenerator(
         }
     }
 
-    /**
-     * Prepare product data sorted and formatted
-     */
     private fun prepareProductData(
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: Repo13TarificationInfos,
@@ -240,30 +224,22 @@ class AndroidNativeTaxInvoiceGenerator(
         }
     }
 
-    /**
-     * Calculate header height for first page
-     */
     private fun calculateHeaderHeight(hasLogo: Boolean): Float {
         var height = MARGIN_TOP
-        if (hasLogo) height += 90f // Logo + spacing
-        height += 25f // Company name
+        if (hasLogo) height += 90f
+        height += 25f // Client name
         height += 20f // Business type
-        height += 25f // RC number
-        height += 20f // Spacing
         height += 25f // Invoice title
         height += 15f // Spacing
         height += 20f // Date
         height += 10f // Spacing
         height += 20f // Client header
-        height += 36f // Client info (2 lines)
+        height += 54f // Client info (3 lines: RC + NIF + spacing)
         height += 15f // Spacing
         height += HEADER_HEIGHT // Table header
         return height
     }
 
-    /**
-     * Draw first page with full header
-     */
     private fun drawFirstPage(
         canvas: Canvas,
         context: Context,
@@ -280,44 +256,26 @@ class AndroidNativeTaxInvoiceGenerator(
     ): Double {
         var yPos = MARGIN_TOP
 
-        // 1. Company Logo
         yPos = drawCompanyLogo(canvas, context, companyLogoResId, yPos)
-
-        // 2. Client name at top
         yPos = drawClientNameAtTop(canvas, client, yPos)
-
-        // 3. Business Type
         yPos = drawBusinessType(canvas, yPos)
-
-        // 5. Invoice Title
         yPos = drawInvoiceTitle(canvas, invoiceNumber, yPos)
         yPos += 15f
-
-        // 6. Date
         yPos = drawDate(canvas, yPos)
         yPos += 10f
-
-        // 7. "Doit : clients"
         yPos = drawClientHeader(canvas, yPos)
-
-        // 8. Client Info (RC only)
         yPos = drawClientInfo(canvas, client, yPos)
         yPos += 15f
 
-        // 9. Products Table
-        val total = drawProductsTable(canvas, products, yPos, 1, pageNum, totalPages)
+        val tableEndY = drawProductsTable(canvas, products, yPos, 1, pageNum, totalPages)
 
-        // 10. If last page, draw total at bottom
         if (isLastPage) {
-            drawTotalAndFooter(canvas, grandTotal, excludedCount)
+            drawTotalAndFooter(canvas, grandTotal, excludedCount, tableEndY)
         }
 
-        return total
+        return products.sumOf { it.total }
     }
 
-    /**
-     * Draw continuation page
-     */
     private fun drawContinuationPage(
         canvas: Canvas,
         products: List<ProductRow>,
@@ -330,7 +288,6 @@ class AndroidNativeTaxInvoiceGenerator(
     ): Double {
         var yPos = MARGIN_TOP
 
-        // Page indicator
         val pagePaint = TextPaint().apply {
             color = COLOR_GRAY
             textSize = 10f
@@ -339,19 +296,15 @@ class AndroidNativeTaxInvoiceGenerator(
         canvas.drawText("Page $pageNum/$totalPages", PAGE_WIDTH - MARGIN_RIGHT, yPos, pagePaint)
         yPos += 20f
 
-        val total = drawProductsTable(canvas, products, yPos, startRowNum, pageNum, totalPages)
+        val tableEndY = drawProductsTable(canvas, products, yPos, startRowNum, pageNum, totalPages)
 
-        // If last page, draw total at bottom
         if (isLastPage) {
-            drawTotalAndFooter(canvas, grandTotal, excludedCount)
+            drawTotalAndFooter(canvas, grandTotal, excludedCount, tableEndY)
         }
 
-        return total
+        return products.sumOf { it.total }
     }
 
-    /**
-     * Draw client name at top (replaces company name)
-     */
     private fun drawClientNameAtTop(canvas: Canvas, client: M2Client?, yPos: Float): Float {
         val clientName = client?.nomPrenomArabe?.ifBlank {
             client.nom.substringBefore(".")
@@ -433,6 +386,9 @@ class AndroidNativeTaxInvoiceGenerator(
         return yPos + 20f
     }
 
+    /**
+     * FIX: Now displays both RC and NIF on separate lines
+     */
     private fun drawClientInfo(canvas: Canvas, client: M2Client?, yPos: Float): Float {
         var currentY = yPos
         val paint = TextPaint().apply {
@@ -441,16 +397,22 @@ class AndroidNativeTaxInvoiceGenerator(
             textAlign = Paint.Align.LEFT
         }
 
-        // Only show RC number (name is already at top)
+        // RC Number
         val rcNumber = client?.register_Commerce_Nm ?: "N/A"
         canvas.drawText("RC: $rcNumber", MARGIN_LEFT, currentY, paint)
+        currentY += 18f
+
+        // NIF (Tax ID) - FIXED: Now included
+        val nifNumber = client?.nif_Num ?: "N/A"
+        canvas.drawText("NIF: $nifNumber", MARGIN_LEFT, currentY, paint)
         currentY += 18f
 
         return currentY
     }
 
     /**
-     * Draw products table
+     * FIX: Returns the Y position where table ends for proper total placement
+     * FIX: Continuous borders without spacing issues
      */
     private fun drawProductsTable(
         canvas: Canvas,
@@ -459,7 +421,7 @@ class AndroidNativeTaxInvoiceGenerator(
         startRowNum: Int,
         pageNum: Int,
         totalPages: Int
-    ): Double {
+    ): Float {
         val tableWidth = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
         val colWidths = floatArrayOf(
             tableWidth * 0.08f,  // N
@@ -471,13 +433,14 @@ class AndroidNativeTaxInvoiceGenerator(
 
         var yPos = startY
 
-        // Draw header
+        // Draw header background
         val headerPaint = Paint().apply {
             color = COLOR_ORANGE
             style = Paint.Style.FILL
         }
         canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + HEADER_HEIGHT, headerPaint)
 
+        // Draw header text
         val headerTextPaint = TextPaint().apply {
             color = COLOR_BLACK
             textSize = 11f
@@ -507,19 +470,18 @@ class AndroidNativeTaxInvoiceGenerator(
 
         yPos += HEADER_HEIGHT
 
+        // FIX: Single border paint for continuous lines
         val borderPaint = Paint().apply {
             color = COLOR_BLACK
             style = Paint.Style.STROKE
             strokeWidth = 1f
         }
-        canvas.drawRect(MARGIN_LEFT, startY, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
 
         // Draw rows
-        var total = 0.0
         var rowNumber = startRowNum
 
         products.forEach { product ->
-            // Alternating colors
+            // Alternating row colors
             if (rowNumber % 2 == 0) {
                 val rowBgPaint = Paint().apply {
                     color = COLOR_LIGHT_ORANGE
@@ -559,24 +521,35 @@ class AndroidNativeTaxInvoiceGenerator(
             rowTextPaint.textAlign = Paint.Align.RIGHT
             canvas.drawText(formatter.round(product.total).toString(), xPos + colWidths[4] - 5f, yPos + 17f, rowTextPaint)
 
-            canvas.drawLine(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
-
             yPos += ROW_HEIGHT
-            total += product.total
             rowNumber++
         }
 
-        canvas.drawLine(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
+        // FIX: Draw complete table border as one continuous rectangle
         canvas.drawRect(MARGIN_LEFT, startY, PAGE_WIDTH - MARGIN_RIGHT, yPos, borderPaint)
 
-        return total
+        // Draw vertical column separators
+        xPos = MARGIN_LEFT
+        colWidths.dropLast(1).forEach { width ->
+            xPos += width
+            canvas.drawLine(xPos, startY, xPos, yPos, borderPaint)
+        }
+
+        // Draw horizontal row separators
+        var separatorY = startY + HEADER_HEIGHT
+        repeat(products.size) {
+            canvas.drawLine(MARGIN_LEFT, separatorY, PAGE_WIDTH - MARGIN_RIGHT, separatorY, borderPaint)
+            separatorY += ROW_HEIGHT
+        }
+
+        return yPos // Return end position for total placement
     }
 
     /**
-     * Draw total and footer at bottom of canvas
+     * FIX: Now receives tableEndY to place total directly under table
      */
-    private fun drawTotalAndFooter(canvas: Canvas, total: Double, excludedCount: Int) {
-        var yPos = PAGE_HEIGHT - 150f
+    private fun drawTotalAndFooter(canvas: Canvas, total: Double, excludedCount: Int, tableEndY: Float) {
+        var yPos = tableEndY + 10f // Start just below table
 
         // Warning if products excluded
         if (excludedCount > 0) {
@@ -589,25 +562,39 @@ class AndroidNativeTaxInvoiceGenerator(
             canvas.drawText(
                 "⚠️ $excludedCount produits non affichés (limite de pages atteinte)",
                 PAGE_WIDTH / 2f,
-                yPos - 20f,
+                yPos,
                 warningPaint
             )
+            yPos += 25f
         }
 
-        // Total
+        // Total box
+        val totalBoxPaint = Paint().apply {
+            color = COLOR_ORANGE
+            style = Paint.Style.FILL
+        }
+        canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + 30f, totalBoxPaint)
+
+        val borderPaint = Paint().apply {
+            color = COLOR_BLACK
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
+        }
+        canvas.drawRect(MARGIN_LEFT, yPos, PAGE_WIDTH - MARGIN_RIGHT, yPos + 30f, borderPaint)
+
         val totalPaint = TextPaint().apply {
             color = COLOR_BLACK
-            textSize = 12f
+            textSize = 14f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
         totalPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText("TOTAL TTC", MARGIN_LEFT, yPos, totalPaint)
+        canvas.drawText("TOTAL TTC", MARGIN_LEFT + 10f, yPos + 20f, totalPaint)
 
         totalPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("${formatter.round(total)} Da", PAGE_WIDTH - MARGIN_RIGHT, yPos, totalPaint)
+        canvas.drawText("${formatter.round(total)} Da", PAGE_WIDTH - MARGIN_RIGHT - 10f, yPos + 20f, totalPaint)
 
-        yPos += 25f
+        yPos += 45f
 
         // Certification
         val certPaint = TextPaint().apply {
@@ -669,9 +656,6 @@ class AndroidNativeTaxInvoiceGenerator(
         }
     }
 
-    /**
-     * Data class for product row
-     */
     private data class ProductRow(
         val name: String,
         val quantity: Int,
