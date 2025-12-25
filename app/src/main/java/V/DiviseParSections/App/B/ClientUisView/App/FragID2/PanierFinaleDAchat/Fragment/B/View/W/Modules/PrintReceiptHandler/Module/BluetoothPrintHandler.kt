@@ -36,15 +36,9 @@ class BluetoothPrintHandler {
         }
 
         return try {
-            val transactionId = "vent_${System.currentTimeMillis().toString().takeLast(4)}"
-
-            val clientName = client?.nom?.takeIf { it.isNotBlank() }?.let {
-                transliterateClientName(it)
-            } ?: "Client"
-
             val (texteImprimable, totalCalcule) = prepareTexteToPrint(
                 operations,
-                clientName,
+                client?.nom?.takeIf { it.isNotBlank() }?.let { transliterateClientName(it) } ?: "Client",
                 SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
                 client?.currentCreditBalance ?: 0.0,
                 repo13TarificationInfos,
@@ -52,19 +46,7 @@ class BluetoothPrintHandler {
                 companyHeader
             )
 
-            val finalBluetoothText = if (showCreditSection && bonVent != null) {
-                addCreditSectionToBluetoothText(
-                    texteImprimable.toString(),
-                    client,
-                    bonVent,
-                    versement,
-                    transactionId
-                )
-            } else {
-                texteImprimable.toString()
-            }
-
-            handleBluetoothPrint(context, finalBluetoothText)
+            handleBluetoothPrint(context, texteImprimable.toString())
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -85,9 +67,8 @@ class BluetoothPrintHandler {
         }
 
         return try {
-            val transactionId = bonVent.keyID.takeLast(4)
             val bluetoothText = prepareCreditBluetoothText(
-                client, bonVent, previousPayments, showPaymentHistory, transactionId, companyHeader
+                client, bonVent, previousPayments, showPaymentHistory, companyHeader
             )
             handleBluetoothPrint(context, bluetoothText)
             true
@@ -156,10 +137,12 @@ class BluetoothPrintHandler {
         var pageCounter = 0
 
         texteImprimable.apply {
-            append("<BIG><CENTER>Abdelwahab<BR>")
-            append("<BIG><CENTER>$companyHeader<BR>")
+            if (companyHeader != "Belfort Gros Confisserie") {
+                append("<MEDIUM1><CENTER>Abdelwahab<BR>")
+            }
+            append("<MEDIUM1><CENTER>$companyHeader<BR>")
             append("<SMALL><CENTER>0553885037<BR>")
-            append("<SMALL><CENTER>Facture<BR>")
+            append("<SMALL><CENTER>Bon Vent<BR>")
             append("<BR>")
             append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
             append("<BR>")
@@ -405,67 +388,11 @@ class BluetoothPrintHandler {
         }
     }
 
-    private fun addCreditSectionToBluetoothText(
-        originalText: String,
-        client: M2Client?,
-        bonVent: M8BonVent,
-        versement: Double,
-        transactionId: String
-    ): String {
-        val oldBalance = client?.currentCreditBalance ?: 0.0
-        val currentBill = bonVent.sum_De_Totale_Vents
-        val newBalance = oldBalance + currentBill - versement
-        val baseText = originalText.replace("<BR><BR><BR>>", "")
-
-        return StringBuilder().apply {
-            append(baseText)
-            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-            append("<BR>")
-            append("<MEDIUM1><CENTER>SECTION CREDIT<BR>")
-            append("<BR>")
-
-            append("<MEDIUM1><LEFT>Ancien Solde :<BR>")
-            append("<MEDIUM2><CENTER>${round(oldBalance)}Da<BR>")
-            append("<BR>")
-
-            append("<MEDIUM1><LEFT>Bon actuel :<BR>")
-            append("<MEDIUM2><CENTER>${round(currentBill)}Da<BR>")
-            append("<BR>")
-
-            append("<MEDIUM1><LEFT>Versement :<BR>")
-            append("<MEDIUM2><CENTER>${round(versement)}Da<BR>")
-            append("<BR>")
-
-            append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
-            append("<MEDIUM1><LEFT>Nouv. Solde :<BR>")
-
-            when {
-                newBalance > 0 -> {
-                    append("<MEDIUM3><RIGHT><BOLD>${round(newBalance)}Da<BR>")
-                    append("<SMALL><CENTER>(Reste a payer)<BR>")
-                }
-                newBalance < 0 -> {
-                    append("<MEDIUM3><RIGHT><BOLD>${round(newBalance)}Da<BR>")
-                    append("<SMALL><CENTER>(Credit client)<BR>")
-                }
-                else -> {
-                    append("<MEDIUM2><CENTER>0.00 Da<BR>")
-                    append("<MEDIUM1><CENTER> ✓ SOLDE ✓<BR>")
-                }
-            }
-
-            append("<BR>")
-            append("<SMALL><CENTER>Transaction: #$transactionId<BR>")
-            append("<BR><BR><BR>>")
-        }.toString()
-    }
-
     private fun prepareCreditBluetoothText(
         client: M2Client?,
         bonVent: M8BonVent,
         previousPayments: List<Double>,
         showPaymentHistory: Boolean,
-        transactionId: String,
         companyHeader: String
     ): String {
         val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
@@ -480,7 +407,9 @@ class BluetoothPrintHandler {
         val remainingAmount = totalAmount - totalPaid
 
         return StringBuilder().apply {
-            append("<BIG><CENTER>Abdelwahab<BR>")
+            if (companyHeader != "Belfort Gros Confisserie") {
+                append("<BIG><CENTER>Abdelwahab<BR>")
+            }
             append("<BIG><CENTER>$companyHeader<BR>")
             append("<SMALL><CENTER>0553885037<BR>")
             append("<SMALL><CENTER> - Credit Payment${if (showPaymentHistory) " Prix_Detaille" else ""}<BR>")
@@ -489,11 +418,6 @@ class BluetoothPrintHandler {
             append("<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
             append("<BR>")
-
-            if (showPaymentHistory) {
-                append("<SMALL><LEFT>Transaction: #$transactionId<BR>")
-                append("<BR>")
-            }
 
             append("<MEDIUM1><LEFT>${if (showPaymentHistory) "Montant Total" else "Total a Payer"} :<BR>")
             append("<MEDIUM2><CENTER>${round(totalAmount)}Da<BR>")
@@ -538,11 +462,6 @@ class BluetoothPrintHandler {
                         append("<MEDIUM2><CENTER> ✓ SOLDE<BR>")
                     }
                 }
-            }
-
-            if (!showPaymentHistory) {
-                append("<BR>")
-                append("<SMALL><CENTER>Transaction: #$transactionId<BR>")
             }
 
             append("<BR><BR><BR>>")
