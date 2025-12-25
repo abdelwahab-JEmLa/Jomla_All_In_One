@@ -35,7 +35,6 @@ class AndroidNativeTaxInvoiceGenerator(
     private val uploadHandler: UploadHandler,
     val nombre_Page_max: Int = 10
 ) {
-
     companion object {
         // Page dimensions (A4 in points: 595 x 842)
         private const val PAGE_WIDTH = 595

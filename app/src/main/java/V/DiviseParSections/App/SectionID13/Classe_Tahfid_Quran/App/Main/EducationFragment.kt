@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,6 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,17 +67,30 @@ fun EducationFragment(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     onNavigateBack: (() -> Unit)? = null
 ) {
-    // Sort by update timestamp (most recent first), then by position
-    val etudiants = repo19Etudiant.datasValue.sortedWith(
-        compareByDescending<V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant>
-        { it.dernierTimeTampsSynchronisationAvecFireBase ?: it.creationTimestamps }
+    val params = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue
+    val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
+    val currentUtilisateur = M18CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
+
+    // Set the filter based on current user
+    LaunchedEffect(currentUtilisateur) {
+        repo19Etudiant.setFilter(currentUtilisateur)
+    }
+
+    // Use filtered data if user is Amine_Madrassa, otherwise use all data
+    val etudiants = if (currentUtilisateur == Utilisateur.Amine_Madrassa) {
+        repo19Etudiant.filtered_datasValue
+    } else {
+        repo19Etudiant.datasValue
+    }.sortedWith(
+        compareByDescending<M19Etudiant>
+        { it.dernierTimeTampsSynchronisationAvecFireBase }
             .thenBy { it.positon_don_classe }
     )
 
     // Check if any student was updated today
     val hasUpdateToday = remember(etudiants) {
         etudiants.any { etudiant ->
-            val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase ?: etudiant.creationTimestamps
+            val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase
             isSameDay(updateTimestamp, System.currentTimeMillis())
         }
     }

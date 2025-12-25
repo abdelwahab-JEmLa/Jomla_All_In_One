@@ -97,6 +97,7 @@ fun A_OptionsControlsButtons_FragId_(
                             showLabels = showLabels,
                             labelText = viewModel.getActiveVendeurDisplayName(),
                             containerColor = when (viewModel.active_filter_du_vendeur) {
+                                Utilisateur.Amine_Madrassa -> Color(0xFF9C27B0) // Green for Admin
                                 Utilisateur.Admin -> Color(0xFF4CAF50) // Green for Admin
                                 Utilisateur.Abdelmoumen -> Color(0xFF2196F3) // Blue for Abdelmoumen
                                 Utilisateur.Walid -> Color(0xFF9C27B0) // Purple for Walid

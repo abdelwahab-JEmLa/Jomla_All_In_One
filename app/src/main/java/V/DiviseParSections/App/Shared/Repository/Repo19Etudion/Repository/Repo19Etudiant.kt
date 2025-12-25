@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
 import android.content.Context
 import android.widget.Toast
@@ -25,6 +27,30 @@ class Repo19Etudiant(
     private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M19Etudiant>>(emptyList())
     val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
+
+    private val _filter_query = mutableStateOf<Utilisateur?>(null)
+
+    val filtered_datasValue by derivedStateOf {
+        val currentFilter = _filter_query.value
+        if (currentFilter == null || currentFilter == Utilisateur.Admin) {
+            _datas.value
+        } else {
+            // Filter students based on their parent_ousstad_key matching the user's account
+            val params = M18CentralParametresOfAllApps()
+            val targetKeyId = when (currentFilter) {
+                Utilisateur.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
+                Utilisateur.Abdelmoumen -> params.abdelmomen_Compt_KeyId
+                Utilisateur.Walid -> params.walid_Compt_KeyId
+                Utilisateur.Admin -> return@derivedStateOf _datas.value
+            }
+            _datas.value.filter { it.parent_ousstad_key == targetKeyId }
+        }
+    }
+
+    // Function to set the filter
+    fun setFilter(utilisateur: Utilisateur?) {
+        _filter_query.value = utilisateur
+    }
 
     init {
         repoScope.launch {
@@ -163,6 +189,8 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
+    var parent_ousstad_key: String = M18CentralParametresOfAllApps().amine_madrasa_Compt_KeyId,
+
     var num_telephone_parent: String = "",
     var age: Int = 7,
     var positon_don_classe: Int = 1,
@@ -186,8 +214,8 @@ data class M19Etudiant(
     var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
     var moulahada_makouba: String = "",
 
-    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,   //مقرر
-    var istedrak_kadim_Moukarare: SOUAR = SOUAR.El_Nasse,   //مقرر
+    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
+    var istedrak_kadim_Moukarare: SOUAR = SOUAR.El_Nasse,
     var istedrak_kadim_Takyim_hali: Takiyim = Takiyim.Maqboul,
 
     var absent: Boolean = false,

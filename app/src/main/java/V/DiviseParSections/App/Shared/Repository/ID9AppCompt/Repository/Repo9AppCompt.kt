@@ -164,6 +164,7 @@ data class Z_AppCompt(
 
     val text_Message_Warning: String = "",
 
+    var ne_affiche_que_fragment: String = "",
 
     var itsProductionModePourCeCompt: Boolean = false,
     var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,

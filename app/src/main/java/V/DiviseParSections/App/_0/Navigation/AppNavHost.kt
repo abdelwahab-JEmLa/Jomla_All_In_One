@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
@@ -73,9 +72,14 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    // Check if only tahfid fragment should be displayed
+    val ne_affiche_que_fragment = focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
+
     val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
+    // Updated startup screen logic to handle tahfid mode
     val startUpScreen = when {
+        ne_affiche_que_fragment -> Screen.EducationFragment  // Start with Education fragment in tahfid mode
         !itsDevMode -> Screen.FacadePresentoireProduits
         else -> {
             val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
@@ -87,7 +91,7 @@ fun AppNavHost(
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
 
-    // RepositorysMainSetter startup screen when component initializes
+    // Set startup screen when component initializes
     LaunchedEffect(startUpScreen) {
         if (startUpScreen != null) {
             fragmentNavigationHandler.setStartupScreen(startUpScreen)
@@ -114,8 +118,10 @@ fun AppNavHost(
         )
     }
     val mapReloadTrigger = remember { mutableIntStateOf(0) }
-    val bottomNavHeight = 80.dp
-    val bottomPadding = 8.dp
+
+    // Adjust bottom padding based on tahfid mode
+    val bottomNavHeight = if (ne_affiche_que_fragment) 0.dp else 80.dp
+    val bottomPadding = if (ne_affiche_que_fragment) 0.dp else 8.dp
 
     Surface(
         modifier = modifier
@@ -277,7 +283,7 @@ fun AppNavHost(
                         }
                     }
 
-                    // Database Init Factory screen - NEW
+                    // Database Init Factory screen
                     composable(
                         route = Screen.Main_DataBaseInitFactory_1Produit.route,
                     ) { backStackEntry ->
@@ -311,7 +317,7 @@ fun AppNavHost(
                                     currentState.copy(soldArticlesModel = emptyList())
                                 }
 
-                                // Clear the database in add_New coroutine
+                                // Clear the database in coroutine
                                 viewModel.database.soldArticlesModelDao().deleteAll()
 
                                 // Clear Firebase references

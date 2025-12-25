@@ -101,6 +101,7 @@ data class M18CentralParametresOfAllApps(
     val jamale_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s6",
     val walid_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s7",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
+    val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
 
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
@@ -120,7 +121,6 @@ data class M18CentralParametresOfAllApps(
     val activeWindowsSearchProduit: Boolean = false,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
-
     //---------------------------------Notification Settings----------------------------------------------------------------------------------------------------------------------------------
     val enableNotifications: Boolean = true,
     val enableSoundNotifications: Boolean = true,
@@ -138,6 +138,7 @@ data class M18CentralParametresOfAllApps(
         fun get_utilisateur(currentComptKeyId: String): Utilisateur {
             val params = M18CentralParametresOfAllApps()
             return when (currentComptKeyId) {
+                params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
                 params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
                 params.walid_Compt_KeyId -> Utilisateur.Walid
                 else -> Utilisateur.Admin

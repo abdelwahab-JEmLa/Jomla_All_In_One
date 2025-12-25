@@ -23,7 +23,6 @@ import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -87,181 +86,102 @@ fun MainScreen(
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
 
-    // State for confirmation dialog
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
     var updateCountdown by remember { mutableStateOf(5) }
     var isCheckingFirebase by remember { mutableStateOf(false) }
 
-// Add this enhanced logging section right after the targetedPeriodDoitEtreDon is defined:
+    val ne_affiche_que_fragment = focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
 
-    // Check for M14VentPeriode with abdelmounen_Doit_Etre_Ici = true
     val targetedPeriodDoitEtreDon = repo14VentPeriode.datasValue.find {
         it.abdelmounen_Doit_Etre_Ici
     }
 
-    // Enhanced logging for warning dialog debugging
-    LaunchedEffect(targetedPeriodDoitEtreDon, focusedValuesGetter.currentActive_M9AppCompt) {
-        val TAG_WARNING = "WarningDialogDebug"
-
-        Log.d(TAG_WARNING, "=== Warning Dialog State Check ===")
-        Log.d(TAG_WARNING, "targetedPeriodDoitEtreDon: ${targetedPeriodDoitEtreDon?.keyID ?: "NULL"}")
-        Log.d(TAG_WARNING, "targetedPeriodDoitEtreDon.abdelmounen_Doit_Etre_Ici: ${targetedPeriodDoitEtreDon?.abdelmounen_Doit_Etre_Ici}")
-
-        Log.d(TAG_WARNING, "currentActive_M9AppCompt.keyID: ${focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: "NULL"}")
-        Log.d(TAG_WARNING, "abdelmomen_Compt_KeyId from M18: ${M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId}")
-
-        val isComptMatch = (focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
-        Log.d(TAG_WARNING, "Is Compt Match: $isComptMatch")
-
-        val shouldShowWarning = targetedPeriodDoitEtreDon != null && isComptMatch
-        Log.d(TAG_WARNING, "Should Show Warning: $shouldShowWarning")
-
-        Log.d(TAG_WARNING, "shouldShowContent: $shouldShowContent")
-
-        // Log all periods in repo
-        Log.d(TAG_WARNING, "All periods in repo14VentPeriode:")
-        repo14VentPeriode.datasValue.forEachIndexed { index, period ->
-            Log.d(TAG_WARNING, "  Period $index: keyID=${period.keyID}, abdelmounen_Doit_Etre_Ici=${period.abdelmounen_Doit_Etre_Ici}")
-        }
-
-        Log.d(TAG_WARNING, "================================")
-    }
-
     val shouldWarningChangePeriodVent = remember(targetedPeriodDoitEtreDon, focusedValuesGetter.currentActive_M9AppCompt) {
-        val result = targetedPeriodDoitEtreDon != null &&
+        targetedPeriodDoitEtreDon != null &&
                 (focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
-
-        Log.d("WarningDialogDebug", "shouldWarningChangePeriodVent computed: $result")
-        result
     }
-
-// Also update the initial load LaunchedEffect to include better logging:
 
     LaunchedEffect(repositoryProgress) {
         headViewModel.updateLoadingProgress((repositoryProgress * 100))
 
-        val TAG = "id1"
         if (repositoryProgress >= 0.995f) {
-            Log.d(TAG, "Repository considered loaded at: ${repositoryProgress * 100}%")
-
-            // Check Firebase immediately when repository loads
             isCheckingFirebase = true
             try {
                 val snapshot = M14VentPeriode.ref.get().await()
-                var foundFlaggedPeriod = false
-
-                Log.d(TAG, "Checking ${snapshot.childrenCount} periods from Firebase")
 
                 snapshot.children.forEach { childSnapshot ->
                     val period = childSnapshot.getValue(M14VentPeriode::class.java)
-                    Log.d(TAG, "Firebase Period: keyID=${period?.keyID}, flag=${period?.abdelmounen_Doit_Etre_Ici}")
 
                     if (period?.abdelmounen_Doit_Etre_Ici == true) {
-                        Log.d(TAG, "✓ Found period with flag during initial load: ${period.keyID}")
-                        foundFlaggedPeriod = true
-
-                        // Update local data if Firebase has the flag
                         val localPeriod = repo14VentPeriode.datasValue.find {
                             it.keyID == period.keyID
                         }
 
-                        if (localPeriod == null) {
-                            Log.d(TAG, "⚠ Period ${period.keyID} NOT found in local repo, refreshing...")
+                        if (localPeriod == null || !localPeriod.abdelmounen_Doit_Etre_Ici) {
                             repo14VentPeriode.refresh_Datas()
-                        } else if (!localPeriod.abdelmounen_Doit_Etre_Ici) {
-                            Log.d(TAG, "⚠ Local period ${period.keyID} has flag=false, refreshing...")
-                            repo14VentPeriode.refresh_Datas()
-                        } else {
-                            Log.d(TAG, "✓ Local period ${period.keyID} already has flag=true")
                         }
                     }
                 }
-
-                if (!foundFlaggedPeriod) {
-                    Log.d(TAG, "ℹ No flagged periods found during initial load")
-                }
-
             } catch (e: Exception) {
-                Log.e(TAG, "❌ Error checking Firebase during initial load: ${e.message}", e)
             } finally {
                 isCheckingFirebase = false
             }
 
             shouldShowContent = true
-            Log.d(TAG, "✓ Content display enabled")
         } else {
-            Log.w(
-                TAG,
-                "⏳ UI waiting for repository to load. Current progress: ${repositoryProgress * 100}%"
-            )
             shouldShowContent = false
         }
     }
 
-    // Verify from Firebase periodically
     LaunchedEffect(shouldShowContent) {
         if (shouldShowContent) {
             while (true) {
                 isCheckingFirebase = true
                 try {
-                    // Check Firebase for abdelmounen_Doit_Etre_Ici = true
                     val snapshot = M14VentPeriode.ref.get().await()
 
                     snapshot.children.forEach { childSnapshot ->
                         val period = childSnapshot.getValue(M14VentPeriode::class.java)
                         if (period?.abdelmounen_Doit_Etre_Ici == true) {
-                            Log.d("FirebaseCheck", "Found period with flag: ${period.keyID}")
-
-                            // Update local data if Firebase has the flag
                             val localPeriod = repo14VentPeriode.datasValue.find {
                                 it.keyID == period.keyID
                             }
 
                             if (localPeriod == null || !localPeriod.abdelmounen_Doit_Etre_Ici) {
-                                Log.d("FirebaseCheck", "Local data outdated, refreshing...")
                                 repo14VentPeriode.refresh_Datas()
                             }
                         }
                     }
 
                     isCheckingFirebase = false
-                    Log.d("FirebaseCheck", "Firebase verification completed successfully")
-
                 } catch (e: Exception) {
-                    Log.e("FirebaseCheck", "Error checking Firebase: ${e.message}")
                     isCheckingFirebase = false
                 }
 
-                // Check every 30 seconds
                 kotlinx.coroutines.delay(30000)
             }
         }
     }
 
-    // Handle countdown and refresh
     LaunchedEffect(isUpdating) {
         if (isUpdating) {
             for (i in 5 downTo 1) {
                 updateCountdown = i
                 kotlinx.coroutines.delay(1000)
             }
-            // Refresh data after countdown
             repo14VentPeriode.refresh_Datas()
             isUpdating = false
             updateCountdown = 5
         }
     }
 
-    // Handle fullscreen mode
     HandleFullscreenMode(productDisplayController)
 
-    // Navigation setup
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    // State management
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
@@ -294,14 +214,12 @@ fun MainScreen(
             val currentAppCompt = viewModel.getter.repo9AppCompt.currentAppCompt
             val hideAppScreen = currentAppCompt?.hideAppScreen ?: false
 
-            // Show loading or warning screen
             if (!shouldShowContent || shouldWarningChangePeriodVent) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     if (shouldWarningChangePeriodVent) {
-                        // Warning screen for period change
                         Box(
                             modifier = Modifier
                                 .semantics(mergeDescendants = true) {
@@ -341,7 +259,6 @@ fun MainScreen(
                                     )
                                 }
                             } else {
-
                                 BlinkingWarningCard(
                                     "التطبيق ليس في الفترة المحددة للبيع اضغط للتحديث ${
                                         targetedPeriodDoitEtreDon?.keyID?.takeLast(3)
@@ -350,7 +267,6 @@ fun MainScreen(
                             }
                         }
                     } else {
-                        // Loading screen
                         CircularProgressIndicator(
                             progress = { repositoryProgress },
                             modifier = Modifier.size(64.dp),
@@ -359,9 +275,7 @@ fun MainScreen(
                         )
                     }
                 }
-
             } else {
-                // Main content - only display when repository is loaded and no warning
                 val isHostPhone = productDisplayController.isHostPhone
 
                 if (hideAppScreen) {
@@ -395,7 +309,6 @@ fun MainScreen(
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
-
                         AnimatedVisibility(
                             visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost
                                     && !focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
@@ -416,7 +329,6 @@ fun MainScreen(
                         }
 
                         Box(modifier = Modifier.weight(1f)) {
-
                             AppNavHost(
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = headViewModel,
@@ -425,8 +337,7 @@ fun MainScreen(
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                                 isFabVisible = isFabVisible,
                                 onClickToDisplayeConexionWifi = {
-                                    isDisplayedConnexionWifiVisible =
-                                        !isDisplayedConnexionWifiVisible
+                                    isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
                                 },
                                 onToggleLockHost = { lockHost = !lockHost },
                                 targetCategoryId = targetCategoryId,
@@ -448,7 +359,7 @@ fun MainScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
+                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -538,7 +449,6 @@ fun MainScreen(
                 }
             }
 
-            // Confirmation Dialog
             if (showConfirmationDialog) {
                 AlertDialog(
                     onDismissRequest = { showConfirmationDialog = false },
@@ -579,17 +489,14 @@ fun MainScreen(
                                     focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
                                         isProcessingUpdate = true
 
-                                        // Launch coroutine to handle update with delay
                                         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
                                             try {
-                                                // Update current AppCompt with new period
                                                 aCentralFacade.repositorysMainSetter.update_M9AppCompt(
                                                     appCompt.copy(
                                                         current_OnVent_M14VentPeriode_KeyID = period.keyID,
                                                     )
                                                 )
 
-                                                // Reset all periods' abdelmounen_Doit_Etre_Ici flag
                                                 repo14VentPeriode.datasValue.forEach { ventPeriode ->
                                                     repositorysMainSetter.update_M14VentPeriode(
                                                         ventPeriode.copy(
@@ -598,11 +505,8 @@ fun MainScreen(
                                                     )
                                                 }
 
-                                                // Wait 5 seconds for task to complete
                                                 kotlinx.coroutines.delay(5000)
-
                                             } finally {
-                                                // Close dialog and start refresh countdown
                                                 isProcessingUpdate = false
                                                 showConfirmationDialog = false
                                                 isUpdating = true

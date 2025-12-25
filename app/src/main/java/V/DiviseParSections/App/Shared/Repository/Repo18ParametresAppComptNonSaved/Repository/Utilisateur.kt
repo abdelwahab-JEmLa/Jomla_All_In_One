@@ -3,7 +3,9 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 enum class Utilisateur(val comp: String) {
     Admin(""),
     Abdelmoumen(M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId),
-    Walid(M18CentralParametresOfAllApps().walid_Compt_KeyId);
+    Walid(M18CentralParametresOfAllApps().walid_Compt_KeyId),
+    Amine_Madrassa(M18CentralParametresOfAllApps().amine_madrasa_Compt_KeyId),
+    ;
 
     override fun toString(): String {
         return name
@@ -18,7 +20,8 @@ enum class Utilisateur(val comp: String) {
         return when (this) {
             Admin -> Abdelmoumen
             Abdelmoumen -> Walid
-            Walid -> Admin
+            Walid -> Amine_Madrassa
+            Amine_Madrassa -> Admin
         }
     }
 
@@ -29,6 +32,7 @@ enum class Utilisateur(val comp: String) {
         return when (this) {
             Admin -> "Admin (Tous)"
             Abdelmoumen -> "Abdelmoumen"
+            Amine_Madrassa -> "Amine_Madrassa"
             Walid -> "Walid"
         }
     }
