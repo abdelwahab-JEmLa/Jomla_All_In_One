@@ -189,7 +189,7 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
-    var parent_ousstad_key: String = M18CentralParametresOfAllApps().amine_madrasa_Compt_KeyId,
+    var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
 
     var num_telephone_parent: String = "",
     var age: Int = 7,

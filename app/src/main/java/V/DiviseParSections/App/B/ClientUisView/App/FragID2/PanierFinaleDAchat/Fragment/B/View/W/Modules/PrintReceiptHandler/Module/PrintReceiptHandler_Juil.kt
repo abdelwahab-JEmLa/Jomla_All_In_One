@@ -43,7 +43,8 @@ class PrintReceiptHandler_Juil(
         repo13TarificationInfos: Repo13TarificationInfos,
         bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
-        versement: Double = 0.0
+        versement: Double = 0.0 ,
+        companyHeader: String = "Jomla.com"
     ) {
         // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
         val shouldShowCreditSection = (showCreditSection && bonVent != null) ||
@@ -57,7 +58,8 @@ class PrintReceiptHandler_Juil(
             repoM1Produit,
             bonVent,
             shouldShowCreditSection,
-            versement
+            versement,
+            companyHeader
         )
     }
     /**
