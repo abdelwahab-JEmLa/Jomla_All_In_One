@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog
 
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.IstedrakSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Moukarar
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.TakiyimEvaluationSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.AttendanceAndBehaviorSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.IstedrakSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.Moulahadat_Kadima
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
@@ -224,14 +224,14 @@ fun EtudiantDetailsDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             dismissOnBackPress = true,
-            dismissOnClickOutside = false // Empêcher la fermeture accidentelle
+            dismissOnClickOutside = false
         )
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = if (wasUpdatedToday) {
-                    Color(0xFFFFFDE7) // Light yellow
+                    Color(0xFFFFFDE7)
                 } else {
                     MaterialTheme.colorScheme.surface
                 }
@@ -309,6 +309,20 @@ fun EtudiantDetailsDialog(
                         isEditingDernierAyaa = false
                     },
                     dernierAyaaFocusRequester = dernierAyaaFocusRequester,
+                    isEditingMokarrareAyaa = isEditingMokarrareAyaa,
+                    mokarrareAyaaInput = mokarrareAyaaInput,
+                    onMokarrareAyaaInputChange = { newValue ->
+                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
+                            mokarrareAyaaInput = newValue
+                        }
+                    },
+                    onMokarrareAyaaEditClick = { isEditingMokarrareAyaa = true },
+                    onMokarrareAyaaSave = {
+                        val newAyaa = mokarrareAyaaInput.toIntOrNull() ?: etudiant.mokarrare_hifde_sater
+                        repo19Etudiant.upsert(etudiant.copy(mokarrare_hifde_sater = newAyaa))
+                        isEditingMokarrareAyaa = false
+                    },
+                    mokarrareAyaaFocusRequester = mokarrareAyaaFocusRequester,
                     onShowTakiyimDialog = onShowTakiyimDialog
                 )
 

@@ -31,6 +31,12 @@ fun Moukarar(
     onDernierAyaaEditClick: () -> Unit,
     onDernierAyaaSave: () -> Unit,
     dernierAyaaFocusRequester: FocusRequester,
+    isEditingMokarrareAyaa: Boolean,
+    mokarrareAyaaInput: String,
+    onMokarrareAyaaInputChange: (String) -> Unit,
+    onMokarrareAyaaEditClick: () -> Unit,
+    onMokarrareAyaaSave: () -> Unit,
+    mokarrareAyaaFocusRequester: FocusRequester,
     onShowTakiyimDialog: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject()
 ) {
@@ -119,6 +125,7 @@ fun Moukarar(
 
                 Spacer(modifier = Modifier.padding(2.dp))
 
+                // Mokarrare Ayaa (editable) - if 0, show last ayaa of the soura
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -130,10 +137,19 @@ fun Moukarar(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Text(
-                        text = etudiant.mokarrare_hifde_sater.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                    FastEdite_OutlinedTextField(
+                        label = "",
+                        value = if (etudiant.mokarrare_hifde_sater == 0) {
+                            etudiant.mokarrare_hifde.rakme_akher_aya.toString()
+                        } else {
+                            etudiant.mokarrare_hifde_sater.toString()
+                        },
+                        isEditing = isEditingMokarrareAyaa,
+                        inputValue = mokarrareAyaaInput,
+                        onInputChange = onMokarrareAyaaInputChange,
+                        onEditClick = onMokarrareAyaaEditClick,
+                        onSave = onMokarrareAyaaSave,
+                        focusRequester = mokarrareAyaaFocusRequester
                     )
                 }
             }

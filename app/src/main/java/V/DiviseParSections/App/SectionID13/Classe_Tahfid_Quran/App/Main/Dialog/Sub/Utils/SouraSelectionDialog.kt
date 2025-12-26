@@ -1,10 +1,11 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,49 +22,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun TakiyimSelectionDialog(
-    currentTakiyim: M19Etudiant.Takiyim,
+ fun SouraSelectionDialog(
+    currentSoura: SOUAR,
     onDismiss: () -> Unit,
-    onSelect: (M19Etudiant.Takiyim) -> Unit
+    onSelect: (SOUAR) -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.Companion.fillMaxHeight(0.8f)
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.Companion.fillMaxSize()
             ) {
                 Text(
-                    text = "اختر التقييم",
+                    text = "اختر السورة",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center
+                    modifier = Modifier.Companion.padding(16.dp)
                 )
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(1),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp),
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.Companion.fillMaxSize(),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(M19Etudiant.Takiyim.entries.size) { index ->
-                        val takiyim = M19Etudiant.Takiyim.entries[index]
+                    items(SOUAR.entries.size) { index ->
+                        val soura = SOUAR.entries[index]
                         Card(
-                            modifier = Modifier
+                            modifier = Modifier.Companion
                                 .fillMaxWidth()
-                                .clickable { onSelect(takiyim) },
+                                .clickable { onSelect(soura) },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (takiyim == currentTakiyim)
+                                containerColor = if (soura == currentSoura)
                                     MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
                             Text(
-                                text = takiyim.arabicName,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier
-                                    .padding(16.dp)
+                                text = soura.arabicName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.Companion
+                                    .padding(12.dp)
                                     .fillMaxWidth(),
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Companion.Center
                             )
                         }
                     }

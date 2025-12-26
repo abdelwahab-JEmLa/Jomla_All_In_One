@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima
 
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.SouraSelectionDialog
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.TakiyimSelectionDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.TakiyimSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections
 
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2.QuickObservationSummary
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2.TamaHistoryDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima.QuickObservationSummary
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima.TamaHistoryDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import androidx.compose.foundation.layout.Arrangement

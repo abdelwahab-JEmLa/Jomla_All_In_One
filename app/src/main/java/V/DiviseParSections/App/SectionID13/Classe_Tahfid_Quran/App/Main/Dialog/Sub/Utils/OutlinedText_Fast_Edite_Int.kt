@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Module
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width

@@ -1,12 +1,10 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -22,49 +20,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
- fun SouraSelectionDialog(
-    currentSoura: SOUAR,
+fun TakiyimSelectionDialog(
+    currentTakiyim: M19Etudiant.Takiyim,
     onDismiss: () -> Unit,
-    onSelect: (SOUAR) -> Unit
+    onSelect: (M19Etudiant.Takiyim) -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.Companion.fillMaxHeight(0.8f)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.Companion.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "اختر السورة",
+                    text = "اختر التقييم",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.Companion.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center
                 )
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier.Companion.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    columns = GridCells.Fixed(1),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(SOUAR.entries.size) { index ->
-                        val soura = SOUAR.entries[index]
+                    items(M19Etudiant.Takiyim.entries.size) { index ->
+                        val takiyim = M19Etudiant.Takiyim.entries[index]
                         Card(
-                            modifier = Modifier.Companion
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onSelect(soura) },
+                                .clickable { onSelect(takiyim) },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (soura == currentSoura)
+                                containerColor = if (takiyim == currentTakiyim)
                                     MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
                             Text(
-                                text = soura.arabicName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.Companion
-                                    .padding(12.dp)
+                                text = takiyim.arabicName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .padding(16.dp)
                                     .fillMaxWidth(),
-                                textAlign = TextAlign.Companion.Center
+                                textAlign = TextAlign.Center
                             )
                         }
                     }

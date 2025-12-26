@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.ClickableFieldWithIcon
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
