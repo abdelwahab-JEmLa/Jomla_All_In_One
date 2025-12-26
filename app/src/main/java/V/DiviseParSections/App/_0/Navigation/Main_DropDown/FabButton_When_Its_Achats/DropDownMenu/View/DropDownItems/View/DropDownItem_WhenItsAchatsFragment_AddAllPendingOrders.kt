@@ -74,7 +74,6 @@ fun DropDownItem_WhenItsAchatsFragment_AddAllPendingOrders(
                             .find { it.keyID == couleur.parentBProduitInfosKeyID }
 
                         if (produit != null) {
-                            // Check if this color already has a vent operation in the current bon
                             val existingVent = repositorysMainGetter.repo10OperationVentCouleur.datasValue
                                 .find {
                                     it.parent_M8BonVent_KeyId == currentBonVent.keyID &&

@@ -102,7 +102,6 @@ fun Item_VentPeriod(
                 set(value = updatedValues, key = SemanticsPropertyKey(""))
             }
             .clickable {
-
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
                 onPeriodSelected_To_onDismiss(relative_Period)
             }

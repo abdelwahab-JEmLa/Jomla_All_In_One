@@ -38,7 +38,8 @@ class BluetoothPrintHandler {
         return try {
             val (texteImprimable, totalCalcule) = prepareTexteToPrint(
                 operations,
-                client?.nom?.takeIf { it.isNotBlank() }?.let { transliterateClientName(it) } ?: "Client",
+                client?.nom?.takeIf { it.isNotBlank() }?.let { transliterateClientName(it) }
+                    ?: "Client",
                 SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
                 client?.currentCreditBalance ?: 0.0,
                 repo13TarificationInfos,
@@ -139,13 +140,25 @@ class BluetoothPrintHandler {
         texteImprimable.apply {
             if (companyHeader != "Belfort Gros Confisserie") {
                 append("<MEDIUM1><CENTER>Abdelwahab<BR>")
+                append("<MEDIUM1><CENTER>$companyHeader<BR>")
+                append("<SMALL><CENTER>0553885037<BR>")
+                append("<SMALL><CENTER>Bon Vent<BR>")
+                append("<BR>")
+                append("<BIG><CENTER>$nomClient")
+                append("<BR>")
+                append("<SMALL><CENTER>$dateString")
+                append("<BR>")
+
+            } else {
+                append("<MEDIUM1><CENTER>Abdelwahab<BR>")
+                append("<MEDIUM1><CENTER>$companyHeader<BR>")
+                append("<SMALL><CENTER>0553885037<BR>")
+                append("<SMALL><CENTER>Bon Vent<BR>")
+                append("<BR>")
+                append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
+                append("<BR>")
             }
-            append("<MEDIUM1><CENTER>$companyHeader<BR>")
-            append("<SMALL><CENTER>0553885037<BR>")
-            append("<SMALL><CENTER>Bon Vent<BR>")
-            append("<BR>")
-            append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
-            append("<BR>")
+
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
             append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
@@ -263,13 +276,15 @@ class BluetoothPrintHandler {
                 val cleanName = extractCleanName(nameWithEmoji)
                 val emoji = extractEmoji(nameWithEmoji)
 
-                items.add(ColorItem(
-                    displayName = nameWithEmoji.trim(),
-                    cleanName = cleanName,
-                    emoji = emoji,
-                    quantity = quantity,
-                    clients = parseClientList(details)
-                ))
+                items.add(
+                    ColorItem(
+                        displayName = nameWithEmoji.trim(),
+                        cleanName = cleanName,
+                        emoji = emoji,
+                        quantity = quantity,
+                        clients = parseClientList(details)
+                    )
+                )
             }
         }
 
@@ -403,7 +418,8 @@ class BluetoothPrintHandler {
 
         val totalAmount = bonVent.sum_De_Totale_Vents
         val currentPayment = bonVent.versement
-        val totalPaid = if (showPaymentHistory) previousPayments.sum() + currentPayment else currentPayment
+        val totalPaid =
+            if (showPaymentHistory) previousPayments.sum() + currentPayment else currentPayment
         val remainingAmount = totalAmount - totalPaid
 
         return StringBuilder().apply {
@@ -449,10 +465,12 @@ class BluetoothPrintHandler {
                     append("<MEDIUM1><LEFT> ${if (showPaymentHistory) "Reste a Payer" else "Credit Restant"} :<BR>")
                     append("<MEDIUM3><RIGHT><BOLD>${round(remainingAmount)}Da<BR>")
                 }
+
                 remainingAmount < 0 -> {
                     append("<MEDIUM1><LEFT> ${if (showPaymentHistory) "Trop Paye" else "Surplus Paye"} :<BR>")
                     append("<MEDIUM3><RIGHT><BOLD>${round(-remainingAmount)}Da<BR>")
                 }
+
                 else -> {
                     if (showPaymentHistory) {
                         append("<MEDIUM1><CENTER> ✓ PAYE COMPLETEMENT ✓<BR>")

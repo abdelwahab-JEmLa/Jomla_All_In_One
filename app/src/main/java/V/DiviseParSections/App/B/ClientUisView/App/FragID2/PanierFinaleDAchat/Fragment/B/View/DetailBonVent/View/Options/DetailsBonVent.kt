@@ -49,8 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -266,13 +264,6 @@ fun WindowsAppShareButton(
     ) {
         FloatingActionButton(
             modifier = Modifier
-                .semantics(mergeDescendants = true) {
-                    set(value = activeVents, key = SemanticsPropertyKey(""))
-                }.semantics(mergeDescendants = true) {
-                    set(value =aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue.find { 
-                        it.keyID==activeVents.first().parentM13TarificationKeyID
-                    } , key = SemanticsPropertyKey("parentM13TarificationKeyID"))
-                }
                 .size(48.dp),
             onClick = {
                 if (!isLoading) {

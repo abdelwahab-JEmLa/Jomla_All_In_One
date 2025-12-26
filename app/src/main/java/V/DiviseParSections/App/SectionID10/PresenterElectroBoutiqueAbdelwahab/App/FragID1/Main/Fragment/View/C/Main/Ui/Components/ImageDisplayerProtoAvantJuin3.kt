@@ -210,7 +210,8 @@ fun ImageDisplayerProtoAvantJuin3(
                         focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
                         focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
                         focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_M1Produit)
-                        onClickToOpenWindow()
+                        onClickToOpenWindow()       //<--
+                        //TODO(1): pk quand je click ca me navige sans qe je veut ver A_Clients_LocationGps
                     }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))

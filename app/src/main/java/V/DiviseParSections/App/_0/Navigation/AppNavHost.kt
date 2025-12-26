@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
@@ -79,7 +80,7 @@ fun AppNavHost(
 
     // Updated startup screen logic to handle tahfid mode
     val startUpScreen = when {
-        ne_affiche_que_fragment -> Screen.EducationFragment  // Start with Education fragment in tahfid mode
+        ne_affiche_que_fragment -> Screen.EducationFragment
         !itsDevMode -> Screen.FacadePresentoireProduits
         else -> {
             val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
@@ -150,8 +151,12 @@ fun AppNavHost(
                                         relatedArticleBaseStats = articleDataBaseOn
                                         pendingIndexColor = indexColor
 
+                                        // FIXED: Don't automatically navigate to client map
+                                        // Only show dialog/message that client needs to be selected
                                         if (currentClientId == 0L) {
                                             showClientSelection = true
+                                            // Don't set showClientSelectionWithoutCondition
+                                            // This prevents automatic navigation
                                         } else {
                                             viewModel.openWindowsNewSaleWithUpdateCurrent(
                                                 relatedArticleBaseStats!!.id.toLong(),
@@ -166,6 +171,7 @@ fun AppNavHost(
                                         }
                                     },
                                     onClickToOpenClientsW = {
+                                        // FIXED: Only this explicit button click should navigate
                                         showClientSelectionWithoutCondition = true
                                     },
                                     isFabVisibleInit = isFabVisible,
@@ -332,8 +338,9 @@ fun AppNavHost(
                 }
             }
 
-            // Handle client selection navigation logic
-            if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
+            // FIXED: Only navigate when explicitly requested
+            // Don't navigate when just showing client selection dialog
+            if (showClientSelectionWithoutCondition) {
                 LaunchedEffect(Unit) {
                     navController.navigate(Screen.A_Clients_LocationGps.route) {
                         popUpTo(navController.graph.startDestinationId) {
@@ -342,12 +349,22 @@ fun AppNavHost(
                         launchSingleTop = true
                         restoreState = false // Force recreation of the screen
                     }
-                    // Reset dialog states after navigation
-                    showClientSelection = false
+                    // Reset dialog state after navigation
                     showClientSelectionWithoutCondition = false
 
                     // Trigger map reload when navigating to client map
                     mapReloadTrigger.intValue++
+                }
+            }
+
+            // FIXED: Don't navigate automatically when no client selected
+            // Just reset the flag - user must explicitly click to select client
+            if (showClientSelection && currentClientId == 0L && !showClientSelectionWithoutCondition) {
+                LaunchedEffect(Unit) {
+                    // Simply reset the flag without navigating
+                    showClientSelection = false
+                    // Don't set showClientSelectionWithoutCondition
+                    // This prevents any automatic navigation
                 }
             }
 
@@ -408,7 +425,7 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_Clients_LocationGps.route,
     ) { backStackEntry ->
-        // Create add_New more reliable key that combines time and reload trigger
+        // Create a more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
             mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
@@ -451,7 +468,7 @@ private fun navigateToMainScreen(
 }
 
 /**
- * Helper function to create add_New consistent screen key for proper recomposition
+ * Helper function to create a consistent screen key for proper recomposition
  */
 @Composable
 private fun rememberScreenKey(backStackEntry: NavBackStackEntry): Any {

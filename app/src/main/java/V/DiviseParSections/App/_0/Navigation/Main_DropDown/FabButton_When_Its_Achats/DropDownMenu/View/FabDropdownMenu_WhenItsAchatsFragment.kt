@@ -1,5 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View
 
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_But2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_1
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_3
@@ -30,7 +31,11 @@ fun FabDropdownMenu_WhenItsAchatsFragment(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-            // NEW ITEM: Add all pending orders to current bon vent
+
+            DropDownItem_But2(
+                onDismissDropdown = onDismissDropdown
+            )
+
             DropDownItem_WhenItsAchatsFragment_AddAllPendingOrders(
                 onDismissDropdown = onDismissDropdown
             )
