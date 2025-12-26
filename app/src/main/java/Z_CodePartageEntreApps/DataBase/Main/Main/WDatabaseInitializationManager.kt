@@ -12,6 +12,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.D
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_20OrderEducative
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
@@ -35,6 +36,7 @@ class WDatabaseInitializationManager(
     val dataBaseInitFactory_16CategorieProduit: DataBaseInitFactory_16CategorieProduit,
     val dataBaseInitFactory_2ClientProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
     val dataBaseInitFactory_19Etudiant: DataBaseInitFactory_19Etudiant,
+    val dataBaseInitFactory_20OrderEducative: DataBaseInitFactory_20OrderEducative,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
@@ -53,6 +55,7 @@ class WDatabaseInitializationManager(
         Entity_16CategorieProduit,
         Entity_2Client,
         Entity_19Etudiant,
+        Entity_20OrderEducative,
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -178,6 +181,17 @@ class WDatabaseInitializationManager(
             scope.launch {
                val factory =dataBaseInitFactory_19Etudiant
                 initRepo(Repository.Entity_19Etudiant.name, context) {
+                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        factory.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
+            scope.launch {
+               val factory =dataBaseInitFactory_20OrderEducative
+                initRepo(Repository.Entity_20OrderEducative.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)

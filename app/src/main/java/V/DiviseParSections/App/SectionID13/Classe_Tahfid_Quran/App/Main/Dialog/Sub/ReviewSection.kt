@@ -44,12 +44,14 @@ fun ReviewSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "🔄 المراجعة",
+            text = "🔄 المراجعة",     //<--
+            //TODO(1): change au البرنامج قبل الحالي 
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(vertical = 4.dp)
         )
-
+              //<--
+              //TODO(1): fait ici de affiche 
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(

@@ -1,9 +1,10 @@
-package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
+package V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_20OrderEducative
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Stable
@@ -20,12 +21,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class Repo19Etudiant(
+class Repo20OrderEducative(
     private val context: Context,
-    val dataBaseCreationFactory: DataBaseInitFactory_19Etudiant,
+    val dataBaseCreationFactory: DataBaseInitFactory_20OrderEducative,
 ) {
     private val repoScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<M19Etudiant>>(emptyList())
+    private val _datas = mutableStateOf<List<M20ObsarvationEtudion>>(emptyList())
     val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
 
     private val _filter_query = mutableStateOf<Utilisateur?>(null)
@@ -35,7 +36,6 @@ class Repo19Etudiant(
         if (currentFilter == null || currentFilter == Utilisateur.Admin) {
             _datas.value
         } else {
-            // Filter students based on their parent_ousstad_key matching the user's account
             val params = M18CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
                 Utilisateur.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
@@ -88,7 +88,7 @@ class Repo19Etudiant(
         }
     }
 
-    fun upsert(data: M19Etudiant) {
+    fun upsert(data: M20ObsarvationEtudion) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
@@ -107,7 +107,7 @@ class Repo19Etudiant(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    fun add(data: M19Etudiant) {
+    fun add(data: M20ObsarvationEtudion) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
@@ -122,11 +122,11 @@ class Repo19Etudiant(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M19Etudiant) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M20ObsarvationEtudion) {
         dataBaseCreationFactory.set(dataUpdate)
     }
 
-    fun delete(data: M19Etudiant) {
+    fun delete(data: M20ObsarvationEtudion) {
         repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
@@ -136,7 +136,7 @@ class Repo19Etudiant(
         }
     }
 
-    fun addNew(data: M19Etudiant) {
+    fun addNew(data: M20ObsarvationEtudion) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
@@ -151,7 +151,7 @@ class Repo19Etudiant(
         dataBaseCreationFactory.set(dataUpdate)
     }
 
-    fun updateIfExist(data: M19Etudiant) {
+    fun updateIfExist(data: M20ObsarvationEtudion) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }
@@ -184,91 +184,35 @@ class Repo19Etudiant(
 }
 
 @Entity
-data class M19Etudiant(
+data class M20ObsarvationEtudion(
     @PrimaryKey
     var keyID: String = generePushKey(),
-    var nom: String = "",
-    var prenom: String = "",
+
+    var type: Type = Type.Tama_Hifdoha,
+    var soura: SOUAR = SOUAR.El_Nasse,
+    var aya: Int = 1,
 
     var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
-
-    var num_telephone_parent: String = "",
-    var age: Int = 7,
-    var positon_don_classe: Int = 1,
-
-    var nmbr_absence_sans_justification : Int = 0,
-    var imprime_justification : Boolean = false,
-
-    var question_par_non : String = "هل يعاني ابنكم من مرض معين جزاكم الله خيرا؟",
-
-    var dernier_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
-    var dernier_Soura_sater: Int = 1,
-
-    var dernier_takyim_dabte: Takiyim = Takiyim.Jayid,
-    var tikrare: Int = 1,
-
-    var tikrare_3arde: Int = 1,
-
-    var mokarrare_hifde: SOUAR = SOUAR.El_Nasse,
-    var mokarrare_hifde_sater: Int = 1,
-
-    var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
-    var moulahada_makouba: String = "",
-
-    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
-    var istedrak_kadim_Moukarare: SOUAR = SOUAR.El_Nasse,
-    var istedrak_kadim_Takyim_hali: Takiyim = Takiyim.Maqboul,
-
-    var absent: Boolean = false,
-    var mokarrare_hifde_mahssou_li_3idat_souer: Int = 1,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-
-    enum class Takiyim(val arabicName: String) {
-        Moumtaz("ممتاز"),
-        Jayid_Jiddan("جيد جداً"),
-        Fawk_Jayid("فوق الجيد"),
-        Jayid("جيد"),
-        Fawk_Makbol("فوق المقبول"),
-        Maqboul("مقبول"),
-        Lam_Yahfed("لم يحفظ")
-    }
-
-    enum class MoulahadaSoulouk(val arabicName: String) {
-        Rien("---"),
-        Moumtaz("ممتاز"),
-        Jayid_Jiddan("جيد جداً"),
-        Jayid("جيد"),
-        Maqboul("مقبول"),
-        Daeef("ضعيف")
-    }
-
-    fun get_DebugInfos(): String {
-        return buildString {
-            append("Nom: $nom, ")
-            append("Age: $age, ")
-            append("Dernier Soura: ${dernier_Soura_Wassale_Laha.arabicName} (${dernier_Soura_sater}), ")
-            append("Mokarrare: ${mokarrare_hifde.arabicName} (${mokarrare_hifde_sater})")
-        }
-    }
-
+       enum class Type {
+           Tama_Hifdoha
+       }
     companion object {
-        const val keyModel = "ID19"
-
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
-        ).child("Datas19Etudiant")
+        ).child("DatasM20ObsarvationEtudion")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
 
-        fun get_default2(): M19Etudiant {
-            return M19Etudiant()
+        fun get_default2(): M20ObsarvationEtudion {
+            return M20ObsarvationEtudion()
         }
 
-        fun get_default(): M19Etudiant {
-            return M19Etudiant()
+        fun get_default(): M20ObsarvationEtudion {
+            return M20ObsarvationEtudion()
         }
     }
 }

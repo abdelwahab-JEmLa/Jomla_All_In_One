@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 
 enum class Utilisateur(val comp: String) {
     Admin(""),
+    Abdelwahab_Osstad(M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId),
     Abdelmoumen(M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId),
     Walid(M18CentralParametresOfAllApps().walid_Compt_KeyId),
     Amine_Madrassa(M18CentralParametresOfAllApps().amine_madrasa_Compt_KeyId),
@@ -18,7 +19,8 @@ enum class Utilisateur(val comp: String) {
      */
     fun toggle(): Utilisateur {
         return when (this) {
-            Admin -> Abdelmoumen
+            Admin -> Abdelwahab_Osstad
+            Abdelwahab_Osstad -> Abdelmoumen
             Abdelmoumen -> Walid
             Walid -> Amine_Madrassa
             Amine_Madrassa -> Admin
@@ -31,6 +33,7 @@ enum class Utilisateur(val comp: String) {
     fun getDisplayName(): String {
         return when (this) {
             Admin -> "Admin (Tous)"
+            Abdelwahab_Osstad -> "Abdelwahab_Osstad"
             Abdelmoumen -> "Abdelmoumen"
             Amine_Madrassa -> "Amine_Madrassa"
             Walid -> "Walid"

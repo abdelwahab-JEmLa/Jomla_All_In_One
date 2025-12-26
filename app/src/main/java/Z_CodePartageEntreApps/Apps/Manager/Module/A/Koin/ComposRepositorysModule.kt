@@ -21,6 +21,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo1
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20OrderEducative
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -29,6 +30,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
+    single { Repo20OrderEducative(context = androidContext(), get(),) }
     single { Repo19Etudiant(context = androidContext(),get(),) }
 
     single { Repo18CentralParametresOfAllApps(get(),) }
