@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
-fun MemorizationProgramSection(
+fun Moukarar(
     etudiant: M19Etudiant,
     onShowSouraDialog: () -> Unit,
     isEditingDernierAyaa: Boolean,

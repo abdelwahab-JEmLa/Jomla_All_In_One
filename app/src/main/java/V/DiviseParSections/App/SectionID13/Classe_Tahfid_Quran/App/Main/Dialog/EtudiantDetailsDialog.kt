@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog
 
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.MemorizationProgramSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Moukarar
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.TakiyimEvaluationSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.AttendanceAndBehaviorSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
@@ -292,7 +292,7 @@ fun EtudiantDetailsDialog(
                 Divider()
 
                 // === MEMORIZATION PROGRAM SECTION ===
-                MemorizationProgramSection(
+                Moukarar(
                     etudiant = etudiant,
                     onShowSouraDialog = onShowSouraDialog,
                     isEditingDernierAyaa = isEditingDernierAyaa,
