@@ -1,6 +1,11 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog
 
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.*
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.AttendanceAndBehaviorSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.IstedrakSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.MemorizationProgramSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.ReviewSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import android.text.format.DateUtils.isToday
@@ -39,6 +44,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun EtudiantDetailsDialog(
@@ -213,12 +219,9 @@ fun EtudiantDetailsDialog(
         )
     }
 
-    // Utiliser une clé stable basée sur l'ID de l'étudiant
-    val etudiantId = remember { etudiant.keyID }
-
     Dialog(
         onDismissRequest = onDismiss,
-        properties = androidx.compose.ui.window.DialogProperties(
+        properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = false // Empêcher la fermeture accidentelle
         )
@@ -248,10 +251,11 @@ fun EtudiantDetailsDialog(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "${etudiant.nom} ${etudiant.prenom}",
+                            text = "${etudiant.nom} ${etudiant.prenom} (${etudiant.age})",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
+
                         if (wasUpdatedToday) {
                             Text(
                                 text = "✅ محدث اليوم",
@@ -278,67 +282,6 @@ fun EtudiantDetailsDialog(
                 }
 
                 Divider()
-
-                // === BASIC INFO SECTION ===
-                BasicInfoSection(
-                    etudiant = etudiant,
-                    repo19Etudiant = repo19Etudiant,
-                    isEditingNom = isEditingNom,
-                    nomInput = nomInput,
-                    onNomInputChange = { nomInput = it },
-                    onNomEditClick = { isEditingNom = true },
-                    onNomSave = {
-                        repo19Etudiant.upsert(etudiant.copy(nom = nomInput))
-                        isEditingNom = false
-                    },
-                    nomFocusRequester = nomFocusRequester,
-                    isEditingPrenom = isEditingPrenom,
-                    prenomInput = prenomInput,
-                    onPrenomInputChange = { prenomInput = it },
-                    onPrenomEditClick = { isEditingPrenom = true },
-                    onPrenomSave = {
-                        repo19Etudiant.upsert(etudiant.copy(prenom = prenomInput))
-                        isEditingPrenom = false
-                    },
-                    prenomFocusRequester = prenomFocusRequester,
-                    isEditingAge = isEditingAge,
-                    ageInput = ageInput,
-                    onAgeInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            ageInput = newValue
-                        }
-                    },
-                    onAgeEditClick = { isEditingAge = true },
-                    onAgeSave = {
-                        val newAge = ageInput.toIntOrNull() ?: etudiant.age
-                        repo19Etudiant.upsert(etudiant.copy(age = newAge))
-                        isEditingAge = false
-                    },
-                    ageFocusRequester = ageFocusRequester,
-                    isEditingPosition = isEditingPosition,
-                    positionInput = positionInput,
-                    onPositionInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            positionInput = newValue
-                        }
-                    },
-                    onPositionEditClick = { isEditingPosition = true },
-                    onPositionSave = {
-                        val newPosition = positionInput.toIntOrNull() ?: etudiant.positon_don_classe
-                        repo19Etudiant.upsert(etudiant.copy(positon_don_classe = newPosition))
-                        isEditingPosition = false
-                    },
-                    positionFocusRequester = positionFocusRequester,
-                    isEditingPhone = isEditingPhone,
-                    phoneInput = phoneInput,
-                    onPhoneInputChange = { phoneInput = it },
-                    onPhoneEditClick = { isEditingPhone = true },
-                    onPhoneSave = {
-                        repo19Etudiant.upsert(etudiant.copy(num_telephone_parent = phoneInput))
-                        isEditingPhone = false
-                    },
-                    phoneFocusRequester = phoneFocusRequester
-                )
 
                 Divider()
 
@@ -412,6 +355,77 @@ fun EtudiantDetailsDialog(
                     },
                     tikrar3ardFocusRequester = tikrar3ardFocusRequester
                 )
+                Divider()
+
+                // === ISTEDRAK SECTION ===
+                IstedrakSection(
+                    etudiant = etudiant,
+                    onShowIstedrakSouraDialog = onShowIstedrakSouraDialog,
+                    onShowIstedrakMokarrareDialog = onShowIstedrakMokarrareDialog,
+                    onShowIstedrakTakiyimDialog = onShowIstedrakTakiyimDialog
+                )
+                Divider()
+
+                // === BASIC INFO SECTION ===
+                BasicInfoSection(
+                    etudiant = etudiant,
+                    repo19Etudiant = repo19Etudiant,
+                    isEditingNom = isEditingNom,
+                    nomInput = nomInput,
+                    onNomInputChange = { nomInput = it },
+                    onNomEditClick = { isEditingNom = true },
+                    onNomSave = {
+                        repo19Etudiant.upsert(etudiant.copy(nom = nomInput))
+                        isEditingNom = false
+                    },
+                    nomFocusRequester = nomFocusRequester,
+                    isEditingPrenom = isEditingPrenom,
+                    prenomInput = prenomInput,
+                    onPrenomInputChange = { prenomInput = it },
+                    onPrenomEditClick = { isEditingPrenom = true },
+                    onPrenomSave = {
+                        repo19Etudiant.upsert(etudiant.copy(prenom = prenomInput))
+                        isEditingPrenom = false
+                    },
+                    prenomFocusRequester = prenomFocusRequester,
+                    isEditingAge = isEditingAge,
+                    ageInput = ageInput,
+                    onAgeInputChange = { newValue ->
+                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
+                            ageInput = newValue
+                        }
+                    },
+                    onAgeEditClick = { isEditingAge = true },
+                    onAgeSave = {
+                        val newAge = ageInput.toIntOrNull() ?: etudiant.age
+                        repo19Etudiant.upsert(etudiant.copy(age = newAge))
+                        isEditingAge = false
+                    },
+                    ageFocusRequester = ageFocusRequester,
+                    isEditingPosition = isEditingPosition,
+                    positionInput = positionInput,
+                    onPositionInputChange = { newValue ->
+                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
+                            positionInput = newValue
+                        }
+                    },
+                    onPositionEditClick = { isEditingPosition = true },
+                    onPositionSave = {
+                        val newPosition = positionInput.toIntOrNull() ?: etudiant.positon_don_classe
+                        repo19Etudiant.upsert(etudiant.copy(positon_don_classe = newPosition))
+                        isEditingPosition = false
+                    },
+                    positionFocusRequester = positionFocusRequester,
+                    isEditingPhone = isEditingPhone,
+                    phoneInput = phoneInput,
+                    onPhoneInputChange = { phoneInput = it },
+                    onPhoneEditClick = { isEditingPhone = true },
+                    onPhoneSave = {
+                        repo19Etudiant.upsert(etudiant.copy(num_telephone_parent = phoneInput))
+                        isEditingPhone = false
+                    },
+                    phoneFocusRequester = phoneFocusRequester
+                )
 
                 Divider()
 
@@ -456,15 +470,6 @@ fun EtudiantDetailsDialog(
 
                 Divider()
 
-                // === ISTEDRAK SECTION ===
-                IstedrakSection(
-                    etudiant = etudiant,
-                    onShowIstedrakSouraDialog = onShowIstedrakSouraDialog,
-                    onShowIstedrakMokarrareDialog = onShowIstedrakMokarrareDialog,
-                    onShowIstedrakTakiyimDialog = onShowIstedrakTakiyimDialog
-                )
-
-                // Creation timestamp
                 Text(
                     text = "Créé: ${formatDate(etudiant.creationTimestamps)}",
                     style = MaterialTheme.typography.labelSmall,
