@@ -8,8 +8,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import android.text.format.DateUtils.isToday
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,9 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventSeat
-import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,13 +30,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -46,6 +48,7 @@ fun EtudiantCard(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     modifier: Modifier = Modifier
 ) {
+    // IMPORTANT: Utiliser l'ID de l'étudiant comme clé stable
     val etudiantId = etudiant.keyID
 
     var showDetailsDialog by remember(etudiantId) { mutableStateOf(false) }
@@ -59,17 +62,6 @@ fun EtudiantCard(
 
     // Check if updated today
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
-
-    // Get last 3 observations for this student
-    val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
-    val last3Observations by remember(etudiantId) {
-        derivedStateOf {
-            repo20.datasValue
-                .filter { it.etudiant_keyID == etudiantId }
-                .sortedByDescending { it.creationTimestamps }
-                .take(3)
-        }
-    }
 
     // Compact card - Shows basic info with yellow background if updated today
     Card(
@@ -89,18 +81,34 @@ fun EtudiantCard(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Chair icon at the top
+            // Chair icon with position badge at the top
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Chair icon
                 Icon(
                     imageVector = Icons.Default.EventSeat,
                     contentDescription = "Chaise",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
+
+                // Position badge
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${etudiant.positon_don_classe}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(2.dp))
@@ -164,68 +172,10 @@ fun EtudiantCard(
                     }
                 }
             }
-
-            // Display last 3 observations
-            if (last3Observations.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = "آخر 3 سجلات:",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-
-                    last3Observations.forEach { observation ->
-                        val isAbsence = observation.type == V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion.Type.Raeeb
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                if (isAbsence) {
-                                    Icon(
-                                        imageVector = Icons.Default.PersonOff,
-                                        contentDescription = "غياب",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                }
-                                Text(
-                                    text = "${observation.min_soura.arabicName} → ${observation.ila_soura.arabicName}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = if (isAbsence) {
-                                        MaterialTheme.colorScheme.error
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    }
-                                )
-                            }
-
-                            Text(
-                                text = observation.takyim.arabicName,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (isAbsence) {
-                                    MaterialTheme.colorScheme.error
-                                } else {
-                                    MaterialTheme.colorScheme.tertiary
-                                }
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
+
+    // In EtudiantCard.kt, replace the EtudiantDetailsDialog call with this:
 
     if (showDetailsDialog) {
         EtudiantDetailsDialog(
@@ -236,7 +186,7 @@ fun EtudiantCard(
                 showDetailsDialog = false
                 showSouraDialog = true
             },
-            onShowMokarrareSouraDialog = {
+            onShowMokarrareSouraDialog = {  // ADD THIS PARAMETER
                 showDetailsDialog = false
                 showMokarrareDialog = true
             },
@@ -267,7 +217,7 @@ fun EtudiantCard(
         )
     }
 
-    // Selection Dialogs
+    // Selection Dialogs - Fermer et rouvrir le dialogue principal après sélection
     if (showSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.dernier_Soura_Wassale_Laha,

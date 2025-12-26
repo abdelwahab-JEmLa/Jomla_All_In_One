@@ -13,9 +13,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Handles Bluetooth receipt printing for sales and credit payments.
+ * Supports Arabic-to-Latin transliteration for thermal printer compatibility.
+ */
 class BluetoothPrintHandler {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
 
+    /**
+     * Prints a sales receipt via Bluetooth.
+     * Client name is automatically transliterated from Arabic to Latin if needed.
+     */
     fun printBluetoothReceipt(
         context: Context,
         client: M2Client?,
@@ -36,10 +44,12 @@ class BluetoothPrintHandler {
         }
 
         return try {
+            // Extract and transliterate client name - handles Arabic names properly
+            val clientName = getClientDisplayName(client)
+
             val (texteImprimable, totalCalcule) = prepareTexteToPrint(
                 operations,
-                client?.nom?.takeIf { it.isNotBlank() }?.let { transliterateClientName(it) }
-                    ?: "Client",
+                clientName,
                 SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
                 client?.currentCreditBalance ?: 0.0,
                 repo13TarificationInfos,
@@ -55,6 +65,10 @@ class BluetoothPrintHandler {
         }
     }
 
+    /**
+     * Prints a credit payment receipt via Bluetooth.
+     * Client name is automatically transliterated from Arabic to Latin if needed.
+     */
     fun printCreditBluetoothReceipt(
         context: Context,
         client: M2Client?,
@@ -79,6 +93,24 @@ class BluetoothPrintHandler {
         }
     }
 
+    /**
+     * Extracts and formats client name for display on receipt.
+     * Handles Arabic names by transliterating them to Latin characters.
+     * Extracts prefix before dot if present (e.g., "Ahmed.Boutique" -> "Ahmed").
+     * Returns "Client" as default if no valid name is found.
+     */
+    private fun getClientDisplayName(client: M2Client?): String {
+        return client?.nom
+            ?.takeIf { it.isNotBlank() }
+            ?.let { extractClientNamePrefix(it) }
+            ?.let { transliterateClientName(it) }
+            ?: "Client"
+    }
+
+    private fun extractClientNamePrefix(clientName: String): String {
+        return clientName.substringBefore(".", clientName).trim()
+    }
+
     private fun isBluetoothAvailable(): Boolean {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         return bluetoothAdapter != null && bluetoothAdapter.isEnabled
@@ -92,6 +124,10 @@ class BluetoothPrintHandler {
         ContextCompat.startActivity(context, intent, null)
     }
 
+    /**
+     * Transliterates Arabic text to Latin characters for thermal printer compatibility.
+     * Maps Arabic characters to their closest Latin equivalents.
+     */
     private fun transliterateArabicToLatin(text: String): String {
         val arabicToLatinMap = mapOf(
             'ا' to "a", 'أ' to "a", 'إ' to "i", 'آ' to "aa",
@@ -115,6 +151,10 @@ class BluetoothPrintHandler {
         return result
     }
 
+    /**
+     * Processes client name for printing: transliterates Arabic, normalizes whitespace.
+     * Returns original name if transliteration results in empty string.
+     */
     private fun transliterateClientName(clientName: String): String {
         return transliterateArabicToLatin(clientName)
             .replace(Regex("\\s+"), " ")
@@ -412,9 +452,8 @@ class BluetoothPrintHandler {
     ): String {
         val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
-        val clientName = client?.nom?.takeIf { it.isNotBlank() }?.let {
-            transliterateClientName(it)
-        } ?: "Client"
+        // Use the helper method for consistent client name handling
+        val clientName = getClientDisplayName(client)
 
         val totalAmount = bonVent.sum_De_Totale_Vents
         val currentPayment = bonVent.versement

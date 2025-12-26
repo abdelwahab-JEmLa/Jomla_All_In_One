@@ -313,6 +313,10 @@ data class M2Client(
             return 0.0
         }
 
+        fun extractClientNamePrefix(clientName: String): String {
+            return clientName.substringBefore(".", clientName).trim()
+        }
+
         fun getCurrentDefaultLongitude(): Double {
             return 0.0
         }
