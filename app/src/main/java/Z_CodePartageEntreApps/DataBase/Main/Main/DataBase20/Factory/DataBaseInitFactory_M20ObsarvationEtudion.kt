@@ -15,13 +15,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 
-class DataBaseInitFactory_20OrderEducative(
+class DataBaseInitFactory_M20ObsarvationEtudion(
     appDatabase: AppDatabase
 ) {
-    val dao = appDatabase.Dao20OrderEducative()
+    val dao = appDatabase.Dao20ObsarvationEtudion()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
     val repoRef = M20ObsarvationEtudion.ref
-    val name = Repository.Entity_20OrderEducative.name
+    val name = Repository.Entity_M20ObsarvationEtudion.name
     var isListenerRegistered = false
 
     suspend fun init(

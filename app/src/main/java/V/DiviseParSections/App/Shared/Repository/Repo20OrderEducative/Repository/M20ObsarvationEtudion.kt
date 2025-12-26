@@ -3,8 +3,9 @@ package V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repositor
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant.Takiyim
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_20OrderEducative
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Stable
@@ -21,9 +22,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class Repo20OrderEducative(
+class Repo20ObsarvationEtudion(
     private val context: Context,
-    val dataBaseCreationFactory: DataBaseInitFactory_20OrderEducative,
+    val dataBaseCreationFactory: DataBaseInitFactory_M20ObsarvationEtudion,
 ) {
     private val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M20ObsarvationEtudion>>(emptyList())
@@ -189,17 +190,30 @@ data class M20ObsarvationEtudion(
     var keyID: String = generePushKey(),
 
     var type: Type = Type.Tama_Hifdoha,
-    var soura: SOUAR = SOUAR.El_Nasse,
-    var aya: Int = 1,
+
+    var etudiant_keyID: String = "",
+
+    var min_soura: SOUAR = SOUAR.El_Nasse,
+    var min_aya: Int = 1,
+    var min_sattre: Int = 1,
+
+    var ila_soura: SOUAR = SOUAR.El_Nasse,
+    var ila_aya: Int = 1,
+    var ila_sattre: Int = 1,
+
+    var tikrar: Int = 1,
+    var el3arde: Int = 1,
+
+    var takyim: Takiyim = Takiyim.Jayid,
 
     var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-       enum class Type {
-           Tama_Hifdoha
-       }
+    enum class Type {
+        Tama_Hifdoha,
+    }
     companion object {
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
@@ -207,9 +221,6 @@ data class M20ObsarvationEtudion(
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
 
-        fun get_default2(): M20ObsarvationEtudion {
-            return M20ObsarvationEtudion()
-        }
 
         fun get_default(): M20ObsarvationEtudion {
             return M20ObsarvationEtudion()

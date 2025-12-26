@@ -25,6 +25,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -69,6 +70,7 @@ class RepositorysMainGetter(
     val repo17MessageVocale: Repo17MessageVocale,
     val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
     val repo19Etudiant: Repo19Etudiant,
+    val repo20ObsarvationEtudion: Repo20ObsarvationEtudion,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {

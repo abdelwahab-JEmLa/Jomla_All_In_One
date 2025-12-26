@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface Dao20OrderEducative {
+interface Dao20ObsarvationEtudion {
     @Query("DELETE FROM M20ObsarvationEtudion WHERE keyID = :keyId")
     suspend fun deleteByKeyId(keyId: String)
 

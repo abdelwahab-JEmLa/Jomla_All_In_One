@@ -20,6 +20,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllAppsDao
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
@@ -31,7 +32,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.D
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.Dao16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.Dao19Etudiant
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20OrderEducative
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
@@ -110,7 +111,7 @@ import java.util.Date
         M17MessageVocale::class,
         M18CentralParametresOfAllApps::class,
         M19Etudiant::class,
-        M19Etudiant::class,
+        M20ObsarvationEtudion::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -164,7 +165,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun M18CentralParametresOfAllAppsDao(): M18CentralParametresOfAllAppsDao
 
     abstract fun Dao19Etudiant(): Dao19Etudiant
-    abstract fun Dao20OrderEducative(): Dao20OrderEducative
+    abstract fun Dao20ObsarvationEtudion(): Dao20ObsarvationEtudion
 
     object DatabaseModule {
 

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.IstedrakSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.MemorizationProgramSection
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.ReviewSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.Moulahadat_Kadima
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
@@ -309,7 +309,7 @@ fun EtudiantDetailsDialog(
                 Divider()
 
                 // === REVIEW SECTION ===
-                ReviewSection(
+                Moulahadat_Kadima(
                     etudiant = etudiant,
                     onShowMokarrareDialog = onShowMokarrareDialog,
                     isEditingMokarrareAyaa = isEditingMokarrareAyaa,
