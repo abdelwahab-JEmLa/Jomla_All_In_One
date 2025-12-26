@@ -213,6 +213,8 @@ data class M20ObsarvationEtudion(
 
 ) {
     enum class Type {
+        Raeeb,
+
         Tama_Hifdoha,
         Moukarrar_Itmamouhou,
         Ousstad_kama_Bil_moundat,

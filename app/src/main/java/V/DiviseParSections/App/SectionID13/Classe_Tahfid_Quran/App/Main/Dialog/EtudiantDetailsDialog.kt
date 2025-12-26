@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog
 
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.MemorizationProgramSection
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.TakiyimEvaluationSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.AttendanceAndBehaviorSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.IstedrakSection
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.MemorizationProgramSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.Moulahadat_Kadima
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
@@ -282,6 +283,11 @@ fun EtudiantDetailsDialog(
                 }
 
                 Divider()
+
+                TakiyimEvaluationSection(
+                    etudiant = etudiant,
+                    onShowTakiyimDialog = onShowTakiyimDialog
+                )
 
                 Divider()
 
