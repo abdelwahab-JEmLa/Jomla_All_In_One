@@ -44,14 +44,17 @@ fun EtudiantCard(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     modifier: Modifier = Modifier
 ) {
-    var showDetailsDialog by remember { mutableStateOf(false) }
-    var showSouraDialog by remember { mutableStateOf(false) }
-    var showMokarrareDialog by remember { mutableStateOf(false) }
-    var showTakiyimDialog by remember { mutableStateOf(false) }
-    var showMoulahada3alaSouloukDialog by remember { mutableStateOf(false) }
-    var showIstedrakSouraDialog by remember { mutableStateOf(false) }
-    var showIstedrakMokarrareDialog by remember { mutableStateOf(false) }
-    var showIstedrakTakiyimDialog by remember { mutableStateOf(false) }
+    // IMPORTANT: Utiliser l'ID de l'étudiant comme clé stable
+    val etudiantId = etudiant.keyID
+
+    var showDetailsDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showSouraDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showMoulahada3alaSouloukDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakSouraDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
 
     // Check if updated today
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
@@ -168,27 +171,51 @@ fun EtudiantCard(
         }
     }
 
-    // Full details dialog
+    // Full details dialog - UTILISER UNE CLÉ STABLE
     if (showDetailsDialog) {
         EtudiantDetailsDialog(
             etudiant = etudiant,
             repo19Etudiant = repo19Etudiant,
             onDismiss = { showDetailsDialog = false },
-            onShowSouraDialog = { showSouraDialog = true },
-            onShowMokarrareDialog = { showMokarrareDialog = true },
-            onShowTakiyimDialog = { showTakiyimDialog = true },
-            onShowMoulahada3alaSouloukDialog = { showMoulahada3alaSouloukDialog = true },
-            onShowIstedrakSouraDialog = { showIstedrakSouraDialog = true },
-            onShowIstedrakMokarrareDialog = { showIstedrakMokarrareDialog = true },
-            onShowIstedrakTakiyimDialog = { showIstedrakTakiyimDialog = true }
+            onShowSouraDialog = {
+                showDetailsDialog = false
+                showSouraDialog = true
+            },
+            onShowMokarrareDialog = {
+                showDetailsDialog = false
+                showMokarrareDialog = true
+            },
+            onShowTakiyimDialog = {
+                showDetailsDialog = false
+                showTakiyimDialog = true
+            },
+            onShowMoulahada3alaSouloukDialog = {
+                showDetailsDialog = false
+                showMoulahada3alaSouloukDialog = true
+            },
+            onShowIstedrakSouraDialog = {
+                showDetailsDialog = false
+                showIstedrakSouraDialog = true
+            },
+            onShowIstedrakMokarrareDialog = {
+                showDetailsDialog = false
+                showIstedrakMokarrareDialog = true
+            },
+            onShowIstedrakTakiyimDialog = {
+                showDetailsDialog = false
+                showIstedrakTakiyimDialog = true
+            }
         )
     }
 
-    // Selection Dialogs
+    // Selection Dialogs - Fermer et rouvrir le dialogue principal après sélection
     if (showSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.dernier_Soura_Wassale_Laha,
-            onDismiss = { showSouraDialog = false },
+            onDismiss = {
+                showSouraDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(
@@ -199,6 +226,7 @@ fun EtudiantCard(
                     )
                 )
                 showSouraDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -206,7 +234,10 @@ fun EtudiantCard(
     if (showMokarrareDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.mokarrare_hifde,
-            onDismiss = { showMokarrareDialog = false },
+            onDismiss = {
+                showMokarrareDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(
@@ -215,6 +246,7 @@ fun EtudiantCard(
                     )
                 )
                 showMokarrareDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -222,7 +254,10 @@ fun EtudiantCard(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.dernier_takyim_dabte,
-            onDismiss = { showTakiyimDialog = false },
+            onDismiss = {
+                showTakiyimDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedTakiyim ->
                 repo19Etudiant.upsert(
                     etudiant.copy(
@@ -232,6 +267,7 @@ fun EtudiantCard(
                     )
                 )
                 showTakiyimDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -239,10 +275,14 @@ fun EtudiantCard(
     if (showMoulahada3alaSouloukDialog) {
         MoulahadaSouloukSelectionDialog(
             currentMoulahada = etudiant.moulahada_3ala_soulouk,
-            onDismiss = { showMoulahada3alaSouloukDialog = false },
+            onDismiss = {
+                showMoulahada3alaSouloukDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedMoulahada ->
                 repo19Etudiant.upsert(etudiant.copy(moulahada_3ala_soulouk = selectedMoulahada))
                 showMoulahada3alaSouloukDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -251,12 +291,16 @@ fun EtudiantCard(
     if (showIstedrakSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha,
-            onDismiss = { showIstedrakSouraDialog = false },
+            onDismiss = {
+                showIstedrakSouraDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Akher_Soura_Wassale_Laha = selectedSoura)
                 )
                 showIstedrakSouraDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -264,12 +308,16 @@ fun EtudiantCard(
     if (showIstedrakMokarrareDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.istedrak_kadim_Moukarare,
-            onDismiss = { showIstedrakMokarrareDialog = false },
+            onDismiss = {
+                showIstedrakMokarrareDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Moukarare = selectedSoura)
                 )
                 showIstedrakMokarrareDialog = false
+                showDetailsDialog = true
             }
         )
     }
@@ -277,12 +325,16 @@ fun EtudiantCard(
     if (showIstedrakTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.istedrak_kadim_Takyim_hali,
-            onDismiss = { showIstedrakTakiyimDialog = false },
+            onDismiss = {
+                showIstedrakTakiyimDialog = false
+                showDetailsDialog = true
+            },
             onSelect = { selectedTakiyim ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
                 )
                 showIstedrakTakiyimDialog = false
+                showDetailsDialog = true
             }
         )
     }

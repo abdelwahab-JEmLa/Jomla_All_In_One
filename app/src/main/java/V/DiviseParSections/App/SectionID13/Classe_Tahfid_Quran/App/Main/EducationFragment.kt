@@ -163,17 +163,7 @@ fun EducationFragment(
                     .padding(paddingValues)
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
             ) {
-                // Statistics Dashboard
-                StatisticsBoard(
-                    totalStudents = totalStudents,
-                    updatedToday = updatedToday,
-                    averageAge = averageAge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-                )
 
-                // Students Grid
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier.fillMaxSize(),
@@ -182,7 +172,8 @@ fun EducationFragment(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        items = etudiants
+                        items = etudiants,
+                        key = { etudiant -> etudiant.keyID } // CLÉ STABLE IMPORTANTE!
                     ) { etudiant ->
                         EtudiantCard(
                             etudiant = etudiant,
@@ -279,14 +270,6 @@ fun StatisticsBoard(
                     modifier = Modifier.weight(1f)
                 )
 
-                VerticalDivider()
-
-                StatisticItem(
-                    label = "متوسط العمر",
-                    value = String.format("%.1f", averageAge),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.weight(1f)
-                )
             }
         }
     }
