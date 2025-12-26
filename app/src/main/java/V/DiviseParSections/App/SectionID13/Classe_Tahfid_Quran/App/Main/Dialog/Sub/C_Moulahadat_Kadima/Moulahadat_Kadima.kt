@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -75,7 +74,7 @@ fun Moulahadat_Kadima(
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
-        // Display previous observations
+        // Display previous observations - FIXED: Now shows 4 records
         if (studentObservations.isNotEmpty()) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -85,20 +84,20 @@ fun Moulahadat_Kadima(
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(
-                        text = "آخر 3 سجلات",
+                        text = "آخر 4 سجلات",  // FIXED: Changed from 3 to 4
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    studentObservations.take(3).forEach { observation ->
+                    studentObservations.take(4).forEach { observation ->  // FIXED: Changed from 3 to 4
                         QuickObservationSummary(observation)
                         Spacer(modifier = Modifier.padding(2.dp))
                     }
 
-                    if (studentObservations.size > 3) {
+                    if (studentObservations.size > 4) {  // FIXED: Changed from 3 to 4
                         Text(
-                            text = "... و ${studentObservations.size - 3} سجلات أخرى",
+                            text = "... و ${studentObservations.size - 4} سجلات أخرى",  // FIXED: Changed from 3 to 4
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)

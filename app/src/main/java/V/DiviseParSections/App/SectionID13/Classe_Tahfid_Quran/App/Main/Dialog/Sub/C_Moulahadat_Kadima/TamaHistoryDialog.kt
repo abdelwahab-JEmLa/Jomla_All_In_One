@@ -177,7 +177,8 @@ private fun ObservationCard(
     observation: M20ObsarvationEtudion,
     onEdit: (M20ObsarvationEtudion) -> Unit,
     onDelete: (M20ObsarvationEtudion) -> Unit
-) {
+) {     //<--
+//TODO(1): regle affiche absence
     val dateFormat = remember { SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault()) }
 
     Card(

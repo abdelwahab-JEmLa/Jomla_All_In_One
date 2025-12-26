@@ -44,13 +44,19 @@ fun TakiyimEvaluationSection(
                     onClick = {
                         onShowTakiyimDialog()
 
+                        val ilaAya = if (etudiant.mokarrare_hifde_sater == 0) {
+                            etudiant.mokarrare_hifde.rakme_akher_aya
+                        } else {
+                            etudiant.mokarrare_hifde_sater
+                        }
+
                         val observation = M20ObsarvationEtudion.get_default().copy(
                             type = M20ObsarvationEtudion.Type.Tama_Hifdoha,
                             etudiant_keyID = etudiant.keyID,
                             min_soura = etudiant.dernier_Soura_Wassale_Laha,
                             min_aya = etudiant.dernier_Soura_sater,
                             ila_soura = etudiant.mokarrare_hifde,
-                            ila_aya = etudiant.mokarrare_hifde_sater,
+                            ila_aya = ilaAya,
                             takyim = etudiant.dernier_takyim_dabte,
                             parent_ousstad_key = etudiant.parent_ousstad_key
                         )
