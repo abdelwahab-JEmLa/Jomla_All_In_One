@@ -62,6 +62,9 @@ data class ActiveCentralValues(
     val image_Flotant: File? = null,
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
+    //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
+    var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
+
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
     var active_filter_du_utilisateur: Utilisateur? = when (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId) {
         Utilisateur.Abdelmoumen.comp -> Utilisateur.Admin
@@ -128,6 +131,10 @@ data class ActiveCentralValues(
 
     enum class Click_On_Marque(val couleur: Color = Color(0xFF000000)) {
         Standart,
+        Call(Color(0xFF3F51B5)),
+        Navigate(Color(0xFFFFEB3B)),
+        Marck_Ferme(Color(0xFF5C5C51)),
+        Marck_Command_Livret(Color(0xFF2196F3)),
         ADD_Au_Ciblage_Clients(Color(0xFFFF5722)),
         Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
     }

@@ -113,14 +113,41 @@ class FocusedValuesGetter(
         val params = M18CentralParametresOfAllApps()
         when {
             // Special handling for abdelmomen account - always show command/delivery filter
-            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
+            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId -> {
+                // Update label if not already set correctly
+                if (!currentValues.active_drop_down_filter_client.startsWith("COMMANDE_LIVRAI")) {
+                    update_activeCentralValues(
+                        currentValues.copy(
+                            active_drop_down_filter_client = "COMMANDE_LIVRAI Filter"
+                        )
+                    )
+                }
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+            }
             // For admin users, show all
-            currentApp_Est_Admin ->
+            currentApp_Est_Admin -> {
+                // Update label if not already set correctly
+                if (currentValues.active_drop_down_filter_client != "Show All Clients") {
+                    update_activeCentralValues(
+                        currentValues.copy(
+                            active_drop_down_filter_client = "Show All Clients"
+                        )
+                    )
+                }
                 MapClientsViewModel.VisibleClientsNow.showAll
+            }
             // For non-admin users, show targeted clients
-            else ->
+            else -> {
+                // Update label if not already set correctly
+                if (currentValues.active_drop_down_filter_client != "Targeted Clients") {
+                    update_activeCentralValues(
+                        currentValues.copy(
+                            active_drop_down_filter_client = "Targeted Clients"
+                        )
+                    )
+                }
                 MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+            }
         }
     }
 

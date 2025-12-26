@@ -260,6 +260,7 @@ class MapClientsViewModel(
     // ===============================================
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
+        Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Red),
         Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
         AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),

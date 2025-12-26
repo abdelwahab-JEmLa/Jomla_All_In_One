@@ -16,7 +16,10 @@ import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -42,11 +45,8 @@ fun addOuUpdateMapMarkers(
 
     val locationOverlay = preserveLocationOverlay(mapView)
 
-    // Filter clientAchteurs based on the current mode
-    val clientsToShow =
-        filterClientsBasedOnMode(viewModel, currentFilterMode)
+    val clientsToShow = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
-    // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(
         mapView,
         clientsToShow,
@@ -91,7 +91,7 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
-    ) {
+) {
     val repo = viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
@@ -114,16 +114,24 @@ fun createAndAddMarker(
 
         setOnMarkerClickListener { clickedMarker, _ ->
             val activeCentralValues = focusedValuesGetter.active_Central_Values
-            val current_ADD_Au_Ciblage_Clients = activeCentralValues
-                .click_On_Marque
-
-            val actuelle_Ciblage_MaxPosition = activeCentralValues
-                .actuelle_Ciblage_MaxPosition
-
+            val current_ADD_Au_Ciblage_Clients = activeCentralValues.click_On_Marque
+            val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
             val newPosition = actuelle_Ciblage_MaxPosition + 1
 
-
             when (current_ADD_Au_Ciblage_Clients) {
+
+                // Standard mode - show details
+                ActiveCentralValues.Click_On_Marque.Standart -> {
+                    val clickedMarkerM2Client =
+                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
+
+                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
+
+                    if (showMarkerDetails) clickedMarker.showInfoWindow()
+                    true
+                }
+
+                // Add client to targeting list
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
                     val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
@@ -145,27 +153,23 @@ fun createAndAddMarker(
                         )
                     )
 
+                    Toast.makeText(
+                        context,
+                        "Client ajouté à la liste de ciblage (Position: $newPosition)",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     true
                 }
 
-                ActiveCentralValues.Click_On_Marque.Standart -> {
-                    val clickedMarkerM2Client =
-                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
-
-                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
-
-                    if (showMarkerDetails) clickedMarker.showInfoWindow()
-                    true
-                }
-
-
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction ->{
+                // Show on-command transaction
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
                     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
 
                     val onCommandBon_ventPeriod = datasValue.lastOrNull {
                         it.parent_M2Client_KeyID == m2Client.keyID
                                 &&
-                        it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
                             ?.keyID ?: "")
                                 && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
@@ -177,6 +181,141 @@ fun createAndAddMarker(
                                 onCommandBon_ventPeriod
                             )
                         fragmentNavigationHandler.navigateToCartScreen()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Aucune commande en cours pour ce client",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    true
+                }
+
+                // Direct phone call to client
+                ActiveCentralValues.Click_On_Marque.Call -> {
+                    val phoneNumber = m2Client.numTelephone
+
+                    if (phoneNumber.isNotEmpty() && phoneNumber != "null") {
+                        try {
+                            val intent = Intent(Intent.ACTION_DIAL).apply {
+                                data = Uri.parse("tel:$phoneNumber")
+                            }
+                            context.startActivity(intent)
+
+                            Toast.makeText(
+                                context,
+                                "Appel vers ${m2Client.nom}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                context,
+                                "Impossible de lancer l'appel",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Aucun numéro de téléphone pour ${m2Client.nom}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    true
+                }
+
+                // Navigate to client using Google Maps
+                ActiveCentralValues.Click_On_Marque.Navigate -> {
+                    val latitude = m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE
+                    val longitude = m2Client.longitude
+
+                    try {
+                        // Try Google Maps first
+                        val gmmIntentUri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                            setPackage("com.google.android.apps.maps")
+                        }
+
+                        context.startActivity(mapIntent)
+
+                        Toast.makeText(
+                            context,
+                            "Navigation vers ${m2Client.nom}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: Exception) {
+                        // Fallback to generic geo intent
+                        try {
+                            val geoUri = Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude(${m2Client.nom})")
+                            val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
+                            context.startActivity(fallbackIntent)
+                        } catch (e2: Exception) {
+                            Toast.makeText(
+                                context,
+                                "Aucune application de navigation disponible",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    true
+                }
+
+                // Mark client as closed/fermé
+                ActiveCentralValues.Click_On_Marque.Marck_Ferme -> {
+                    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+                        aCentralFacade = aCentralFacade,
+                        relative_M2Client = m2Client,
+                        etateActuellementEst = M8BonVent.EtateActuellementEst.FERME,
+                    )
+
+                    aCentralFacade.repositorysMainSetter
+                        .addNew_M8BonVent(
+                            found_Or_Default_M8BonVent.default_If_No_Found
+                        )
+
+                    Toast.makeText(
+                        context,
+                        "${m2Client.nom} marqué comme fermé",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    true
+                }
+
+                // Mark client command as delivered (livré)
+                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> {
+                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+
+                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
+                        it.parent_M2Client_KeyID == m2Client.keyID
+                                &&
+                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                            ?.keyID ?: "")
+                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                    }
+
+                    if (onCommandBon_ventPeriod != null) {
+                        aCentralFacade.repositorysMainSetter
+                            .addNew_M8BonVent(
+                                onCommandBon_ventPeriod.copy(
+                                    etateActuellementEst = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                                )
+                            )
+
+                        Toast.makeText(
+                            context,
+                            "Commande de ${m2Client.nom} marquée comme livrée",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Aucune commande confirmée à livrer pour ce client",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     true
@@ -192,10 +331,8 @@ fun createAndAddMarker(
     }
 }
 
-// Fix 2: Title display - don't show date/time when position is displayed
 private fun Marker.title(
     viewModel: MapClientsViewModel,
-
     m2Client: M2Client,
 ) {
     val relative_M8Transaction = viewModel.getLastTransaction(m2Client)
@@ -232,7 +369,6 @@ private fun Marker.title(
                 m2Client.nom
             }
         } else {
-            // Show position or just client name
             if (position != 0 && relative_M8Transaction != null) {
                 "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         "\n${m2Client.nom}"

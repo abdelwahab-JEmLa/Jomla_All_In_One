@@ -301,7 +301,6 @@ data class M8BonVent(
 
         Cette_Transaction_Type_Est_Credit(android.R.color.holo_red_dark, "تم اقراضه  "),
 
-        Credit(android.R.color.holo_red_dark, " "),
         Versemment(R.color.c5, ""),
         Demande_Versemet(android.R.color.holo_red_dark, "طلب تحظير الدين القديم عند احظار الطلبية"),
 
@@ -324,7 +323,8 @@ data class M8BonVent(
         A_EVITE(android.R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
         PASSE(R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
         CommantaireSpeciale(R.color.c7, "ملاحظة خاصة بالطلبية"),
-        Passed_Sans_Livre(android.R.color.darker_gray, "Passed_Sans_Livre"), ;
+        Passed_Sans_Livre(android.R.color.darker_gray, "Passed_Sans_Livre"),
+        Credit(android.R.color.holo_red_dark, " "),      ;
 
 
         companion object {
