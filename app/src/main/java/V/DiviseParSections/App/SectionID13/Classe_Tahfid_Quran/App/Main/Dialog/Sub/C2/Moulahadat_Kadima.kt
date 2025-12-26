@@ -2,8 +2,6 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Section
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2.QuickObservationSummary
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2.TamaHistoryDialog
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.ClickableFieldWithIcon
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.FastEdite_OutlinedTextField
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import androidx.compose.foundation.layout.Arrangement
@@ -126,67 +124,6 @@ fun Moulahadat_Kadima(
                         )
                     }
                 }
-            }
-
-            Spacer(modifier = Modifier.padding(4.dp))
-        }
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
-            )
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                // Mokarrare Hifde
-                ClickableFieldWithIcon(
-                    label = "مكررة:",
-                    value = etudiant.mokarrare_hifde.arabicName,
-                    onClick = onShowMokarrareDialog,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                // Mokarrare Ayaa (editable)
-                FastEdite_OutlinedTextField(
-                    label = "رقم الآية:",
-                    value = etudiant.mokarrare_hifde_sater.toString(),
-                    isEditing = isEditingMokarrareAyaa,
-                    inputValue = mokarrareAyaaInput,
-                    onInputChange = onMokarrareAyaaInputChange,
-                    onEditClick = onMokarrareAyaaEditClick,
-                    onSave = onMokarrareAyaaSave,
-                    focusRequester = mokarrareAyaaFocusRequester
-                )
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                // Tikrare (editable)
-                FastEdite_OutlinedTextField(
-                    label = "تكرار:",
-                    value = etudiant.tikrare.toString(),
-                    isEditing = isEditingTikrare,
-                    inputValue = tikrareInput,
-                    onInputChange = onTikrareInputChange,
-                    onEditClick = onTikrareEditClick,
-                    onSave = onTikrareSave,
-                    focusRequester = tikrareFocusRequester
-                )
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                // Tikrar 3ard (editable)
-                FastEdite_OutlinedTextField(
-                    label = "تكرار عرض:",
-                    value = etudiant.tikrare_3arde.toString(),
-                    isEditing = isEditingTikrar3ard,
-                    inputValue = tikrar3ardInput,
-                    onInputChange = onTikrar3ardInputChange,
-                    onEditClick = onTikrar3ardEditClick,
-                    onSave = onTikrar3ardSave,
-                    focusRequester = tikrar3ardFocusRequester
-                )
             }
         }
     }

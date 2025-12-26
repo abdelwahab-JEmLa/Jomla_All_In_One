@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun QuickObservationSummary(
     observation: M20ObsarvationEtudion
-) {
+) {            //<--
+//TODO(1): affiche ayat min ila 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
