@@ -170,17 +170,11 @@ fun filterClientsBasedOnMode(
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             }
         }
+
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
-            val keyID_currentActiveFocuced_M14VentPeriode =
-                focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
             clientDataBaseSnapList.filter {
-                val lastTransaction = viewModel.getLastTransaction(it)
-                (
-                        lastTransaction?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
-                                && (find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, lastTransaction)
-                            ?.parent_M14VentPeriod_KeyId ?: "")
-                                == keyID_currentActiveFocuced_M14VentPeriode
-                        )
+                viewModel.getLastTransaction(it)?.etateActuellementEst ==
+                        M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
             }
         }
 

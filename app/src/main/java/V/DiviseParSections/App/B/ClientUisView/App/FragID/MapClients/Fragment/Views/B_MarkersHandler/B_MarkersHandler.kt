@@ -364,7 +364,7 @@ private fun Marker.title(
                         "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         texy_Safe +
                         demande_Versemet_si_Type +
-                        "\n${m2Client.nom}"
+                        "\n${m2Client.nom} ${if (m2Client.numTelephone.isNotEmpty()) "N°${m2Client.numTelephone.takeLast(2)}" else ""}"
             } else {
                 m2Client.nom
             }
