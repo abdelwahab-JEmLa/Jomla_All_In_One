@@ -331,49 +331,6 @@ fun EtudiantDetailsDialog(
                 // === REVIEW SECTION ===
                 Moulahadat_Kadima(
                     etudiant = etudiant,
-                    onShowMokarrareDialog = onShowMokarrareDialog,
-                    isEditingMokarrareAyaa = isEditingMokarrareAyaa,
-                    mokarrareAyaaInput = mokarrareAyaaInput,
-                    onMokarrareAyaaInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            mokarrareAyaaInput = newValue
-                        }
-                    },
-                    onMokarrareAyaaEditClick = { isEditingMokarrareAyaa = true },
-                    onMokarrareAyaaSave = {
-                        val newAyaa = mokarrareAyaaInput.toIntOrNull() ?: etudiant.mokarrare_hifde_sater
-                        repo19Etudiant.upsert(etudiant.copy(mokarrare_hifde_sater = newAyaa))
-                        isEditingMokarrareAyaa = false
-                    },
-                    mokarrareAyaaFocusRequester = mokarrareAyaaFocusRequester,
-                    isEditingTikrare = isEditingTikrare,
-                    tikrareInput = tikrareInput,
-                    onTikrareInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            tikrareInput = newValue
-                        }
-                    },
-                    onTikrareEditClick = { isEditingTikrare = true },
-                    onTikrareSave = {
-                        val newTikrare = tikrareInput.toIntOrNull() ?: etudiant.tikrare
-                        repo19Etudiant.upsert(etudiant.copy(tikrare = newTikrare))
-                        isEditingTikrare = false
-                    },
-                    tikrareFocusRequester = tikrareFocusRequester,
-                    isEditingTikrar3ard = isEditingTikrar3ard,
-                    tikrar3ardInput = tikrar3ardInput,
-                    onTikrar3ardInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            tikrar3ardInput = newValue
-                        }
-                    },
-                    onTikrar3ardEditClick = { isEditingTikrar3ard = true },
-                    onTikrar3ardSave = {
-                        val newTikrar3ard = tikrar3ardInput.toIntOrNull() ?: etudiant.tikrare_3arde
-                        repo19Etudiant.upsert(etudiant.copy(tikrare_3arde = newTikrar3ard))
-                        isEditingTikrar3ard = false
-                    },
-                    tikrar3ardFocusRequester = tikrar3ardFocusRequester
                 )
                 Divider()
 

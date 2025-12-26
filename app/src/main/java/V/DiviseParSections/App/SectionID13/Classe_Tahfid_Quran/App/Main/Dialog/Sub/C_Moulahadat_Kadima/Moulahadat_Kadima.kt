@@ -32,25 +32,6 @@ import org.koin.compose.koinInject
 @Composable
 fun Moulahadat_Kadima(
     etudiant: M19Etudiant,
-    onShowMokarrareDialog: () -> Unit,
-    isEditingMokarrareAyaa: Boolean,
-    mokarrareAyaaInput: String,
-    onMokarrareAyaaInputChange: (String) -> Unit,
-    onMokarrareAyaaEditClick: () -> Unit,
-    onMokarrareAyaaSave: () -> Unit,
-    mokarrareAyaaFocusRequester: FocusRequester,
-    isEditingTikrare: Boolean,
-    tikrareInput: String,
-    onTikrareInputChange: (String) -> Unit,
-    onTikrareEditClick: () -> Unit,
-    onTikrareSave: () -> Unit,
-    tikrareFocusRequester: FocusRequester,
-    isEditingTikrar3ard: Boolean,
-    tikrar3ardInput: String,
-    onTikrar3ardInputChange: (String) -> Unit,
-    onTikrar3ardEditClick: () -> Unit,
-    onTikrar3ardSave: () -> Unit,
-    tikrar3ardFocusRequester: FocusRequester,
     aCentralFacade: ACentralFacade = koinInject()
 ) {
     // Get previous observations for THIS SPECIFIC STUDENT only
