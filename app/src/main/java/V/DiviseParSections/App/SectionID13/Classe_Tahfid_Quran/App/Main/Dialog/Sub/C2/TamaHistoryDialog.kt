@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C2
 
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,16 +11,28 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -30,11 +45,13 @@ import java.util.Locale
 fun TamaHistoryDialog(
     observations: List<M20ObsarvationEtudion>,
     onDismiss: () -> Unit,
-    onEdit: (M20ObsarvationEtudion) -> Unit = {}
+    onEdit: (M20ObsarvationEtudion) -> Unit = {},
+    onDelete: (M20ObsarvationEtudion) -> Unit = {}
 ) {
-    Dialog(
-        onDismissRequest = onDismiss
-    ) {
+    var editingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
+    var deletingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
+
+    Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,18 +77,18 @@ fun TamaHistoryDialog(
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     Text(
                         text = "${observations.size} سجل",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Message if no observations
                 if (observations.isEmpty()) {
                     Column(
@@ -98,14 +115,15 @@ fun TamaHistoryDialog(
                         observations.forEach { observation ->
                             ObservationCard(
                                 observation = observation,
-                                onEdit = onEdit
+                                onEdit = { editingObservation = it },
+                                onDelete = { deletingObservation = it }
                             )
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Close button
                 Button(
                     onClick = onDismiss,
@@ -116,15 +134,55 @@ fun TamaHistoryDialog(
             }
         }
     }
+
+    // Edit Dialog
+    editingObservation?.let { obs ->
+        ObservationEditDialog(
+            observation = obs,
+            onDismiss = { editingObservation = null },
+            onSave = { updated ->
+                onEdit(updated)
+                editingObservation = null
+            }
+        )
+    }
+
+    // Delete Confirmation Dialog
+    deletingObservation?.let { obs ->
+        AlertDialog(
+            onDismissRequest = { deletingObservation = null },
+            title = { Text("تأكيد الحذف") },
+            text = { Text("هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDelete(obs)
+                        deletingObservation = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("حذف")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingObservation = null }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
 }
 
 @Composable
 private fun ObservationCard(
     observation: M20ObsarvationEtudion,
-    onEdit: (M20ObsarvationEtudion) -> Unit
+    onEdit: (M20ObsarvationEtudion) -> Unit,
+    onDelete: (M20ObsarvationEtudion) -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault()) }
-    
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -137,27 +195,48 @@ private fun ObservationCard(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Date
+            // Header with edit and delete buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "التاريخ:",
+                    text = "التاريخ: ${dateFormat.format(Date(observation.creationTimestamps))}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = dateFormat.format(Date(observation.creationTimestamps)),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+
+                Row {
+                    IconButton(
+                        onClick = { onEdit(observation) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "تعديل",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { onDelete(observation) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "حذف",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
-            
+
             Divider()
-            
-            // From Sura
+
+            // From Sura and Aya
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,33 +248,13 @@ private fun ObservationCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = observation.min_soura.arabicName,
+                    text = "${observation.min_soura.arabicName} (الآية ${observation.min_aya})",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
-            
-            // From Aya
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "الآية:",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = observation.min_aya.toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(4.dp))
-            
-            // To Sura
+
+            // To Sura and Aya
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -207,32 +266,14 @@ private fun ObservationCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = observation.ila_soura.arabicName,
+                    text = "${observation.ila_soura.arabicName} (الآية ${observation.ila_aya})",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
-            
-            // To Aya
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "الآية:",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = observation.ila_aya.toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            
+
             Divider()
-            
+
             // Takyim (Evaluation)
             Row(
                 modifier = Modifier.fillMaxWidth(),

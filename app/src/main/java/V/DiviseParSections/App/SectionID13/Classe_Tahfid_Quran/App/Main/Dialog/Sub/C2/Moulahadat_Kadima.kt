@@ -53,7 +53,7 @@ fun Moulahadat_Kadima(
     tikrar3ardFocusRequester: FocusRequester,
     aCentralFacade: ACentralFacade = koinInject()
 ) {
-    // TODO(1) FIXED: Get previous observations for THIS SPECIFIC STUDENT only
+    // Get previous observations for THIS SPECIFIC STUDENT only
     val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
 
     val studentObservations by remember(etudiant.keyID) {
@@ -70,7 +70,7 @@ fun Moulahadat_Kadima(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "🔄 البرنامج قبل الحالي", // TODO(1) FIXED: Changed title
+            text = "📄 البرنامج قبل الحالي",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -94,7 +94,7 @@ fun Moulahadat_Kadima(
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
-        // TODO(1) FIXED: Display previous observations
+        // Display previous observations
         if (studentObservations.isNotEmpty()) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -128,13 +128,16 @@ fun Moulahadat_Kadima(
         }
     }
 
-    // History Dialog
+    // History Dialog with Edit and Delete functionality
     if (showHistoryDialog) {
         TamaHistoryDialog(
             observations = studentObservations,
             onDismiss = { showHistoryDialog = false },
             onEdit = { updatedObs ->
                 aCentralFacade.repositorysMainSetter.upsert_M20ObsarvationEtudion(updatedObs)
+            },
+            onDelete = { obsToDelete ->
+                repo20.delete(obsToDelete)
             }
         )
     }
