@@ -6,14 +6,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -61,12 +65,10 @@ fun FragAchats_FloatingOutlinedSearcher_4(
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 350f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
 
-    // Add keyboard controller and focus requester
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        // Draggable container - drag gestures applied here instead of the text field
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -74,65 +76,81 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                     color = Color.White.copy(alpha = 0.9f),
                     shape = RoundedCornerShape(8.dp)
                 )
-                .padding(16.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                        offsetX = offsetX.coerceIn(0f, screenWidth.value - 250f)
-                        offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
-
-                        // Hide keyboard when dragging
-                        keyboardController?.hide()
-                    }
-                }
+                .padding(8.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedTextField(
-                    value = currentValues.outlined_filter_searcher_achat,
-                    onValueChange = { newValue -> update_active(newValue) },
-                    label = { Text("Search Achats") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = Color.Gray
-                        )
-                    },
-                    trailingIcon = {
-                        if (currentValues.outlined_filter_searcher_achat.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    update_active("")
-                                    // Clear focus and hide keyboard when clearing
-                                    focusRequester.freeFocus()
-                                    keyboardController?.hide()
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "Clear search",
-                                    tint = Color.Gray
-                                )
-                            }
-                        }
-                    },
+            Column {
+                // Zone de drag - SEULEMENT cette partie est draggable
+                Box(
                     modifier = Modifier
-                        .width(200.dp)
-                        .focusRequester(focusRequester)
+                        .height(24.dp)
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
-                                // When dragging on the text field, hide keyboard and clear focus
+                                change.consume()
+                                offsetX += dragAmount.x
+                                offsetY += dragAmount.y
+                                offsetX = offsetX.coerceIn(0f, screenWidth.value - 250f)
+                                offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
+
                                 keyboardController?.hide()
                                 focusRequester.freeFocus()
                             }
+                        }
+                        .background(
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DragHandle,
+                        contentDescription = "Drag to move",
+                        tint = Color.Gray,
+                        modifier = Modifier.height(16.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // TextField - PAS de pointerInput ici, il reste interactif
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = currentValues.outlined_filter_searcher_achat,
+                        onValueChange = { newValue -> update_active(newValue) },
+                        label = { Text("Search Achats") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color.Gray
+                            )
                         },
-                    shape = RoundedCornerShape(8.dp)
-                )
+                        trailingIcon = {
+                            if (currentValues.outlined_filter_searcher_achat.isNotEmpty()) {
+                                IconButton(
+                                    onClick = {
+                                        update_active("")
+                                        focusRequester.freeFocus()
+                                        keyboardController?.hide()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Clear search",
+                                        tint = Color.Gray
+                                    )
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .width(200.dp)
+                            .focusRequester(focusRequester),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
             }
         }
     }

@@ -29,7 +29,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,13 +40,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,16 +78,30 @@ fun EducationFragment(
     val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
     val currentUtilisateur = M18CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
 
+    // State for search/filter
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchActive by remember { mutableStateOf(false) }
+
     // Set the filter based on current user
     LaunchedEffect(currentUtilisateur) {
         repo19Etudiant.setFilter(currentUtilisateur)
     }
 
     // Use filtered data if user is Amine_Madrassa, otherwise use all data
-    val etudiants = if (currentUtilisateur == Utilisateur.Amine_Madrassa) {
+    val baseEtudiants = if (currentUtilisateur == Utilisateur.Amine_Madrassa) {
         repo19Etudiant.filtered_datasValue
     } else {
         repo19Etudiant.datasValue
+    }
+
+    // Apply name filter if search is active
+    val etudiants = if (isSearchActive && searchQuery.isNotBlank()) {
+        baseEtudiants.filter { etudiant ->
+            etudiant.nom.contains(searchQuery, ignoreCase = true) ||
+                    etudiant.prenom.contains(searchQuery, ignoreCase = true)
+        }
+    } else {
+        baseEtudiants
     }.sortedWith(
         compareByDescending<M19Etudiant>
         { it.dernierTimeTampsSynchronisationAvecFireBase }
@@ -101,10 +122,6 @@ fun EducationFragment(
         val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase ?: etudiant.creationTimestamps
         isSameDay(updateTimestamp, System.currentTimeMillis())
     }
-
-    val averageAge = if (etudiants.isNotEmpty()) {
-        etudiants.map { it.age }.average()
-    } else 0.0
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -143,6 +160,26 @@ fun EducationFragment(
                         }
                     }
                 },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            isSearchActive = !isSearchActive
+                            if (!isSearchActive) {
+                                searchQuery = ""
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (isSearchActive) Icons.Default.Close else Icons.Default.Search,
+                            contentDescription = if (isSearchActive) "إغلاق البحث" else "بحث",
+                            tint = if (isSearchActive) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            }
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -150,20 +187,61 @@ fun EducationFragment(
             )
         }
     ) { paddingValues ->
-        if (etudiants.isEmpty()) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        ) {
+            // Search bar
+            AnimatedVisibility(
+                visible = isSearchActive,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = {
+                        Text(
+                            text = "ابحث باسم الطالب...",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "مسح"
+                                )
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            }
 
+            if (etudiants.isEmpty()) {
+                EmptyState(
+                    modifier = Modifier.fillMaxSize(),
+                    isFiltered = isSearchActive && searchQuery.isNotBlank()
+                )
+            } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier.fillMaxSize(),
@@ -173,7 +251,7 @@ fun EducationFragment(
                 ) {
                     items(
                         items = etudiants,
-                        key = { etudiant -> etudiant.keyID } // CLÉ STABLE IMPORTANTE!
+                        key = { etudiant -> etudiant.keyID }
                     ) { etudiant ->
                         EtudiantCard(
                             etudiant = etudiant,
@@ -206,7 +284,6 @@ fun StatisticsBoard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -249,7 +326,6 @@ fun StatisticsBoard(
             Divider()
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Statistics Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -269,7 +345,6 @@ fun StatisticsBoard(
                     color = Color(0xFF4CAF50),
                     modifier = Modifier.weight(1f)
                 )
-
             }
         }
     }
@@ -324,7 +399,10 @@ fun VerticalDivider() {
 }
 
 @Composable
-fun EmptyState(modifier: Modifier = Modifier) {
+fun EmptyState(
+    modifier: Modifier = Modifier,
+    isFiltered: Boolean = false
+) {
     Column(
         modifier = modifier.padding(32.dp),
         verticalArrangement = Arrangement.Center,
@@ -337,7 +415,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = Icons.Default.Person,
+                    imageVector = if (isFiltered) Icons.Default.Search else Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -348,7 +426,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "لا يوجد طلاب مسجلين",
+            text = if (isFiltered) "لا توجد نتائج" else "لا يوجد طلاب مسجلين",
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold
             ),
@@ -356,7 +434,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center
         )
         Text(
-            text = "سيظهر الطلاب هنا بعد إضافتهم",
+            text = if (isFiltered) "جرب البحث بكلمات أخرى" else "سيظهر الطلاب هنا بعد إضافتهم",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
