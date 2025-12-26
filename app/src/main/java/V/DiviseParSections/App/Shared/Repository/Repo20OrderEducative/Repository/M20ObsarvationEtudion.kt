@@ -210,17 +210,20 @@ data class M20ObsarvationEtudion(
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+
 ) {
     enum class Type {
         Tama_Hifdoha,
+        Moukarrar_Itmamouhou,
+        Ousstad_kama_Bil_moundat,
     }
+
     companion object {
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         ).child("DatasM20ObsarvationEtudion")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
-
 
         fun get_default(): M20ObsarvationEtudion {
             return M20ObsarvationEtudion()

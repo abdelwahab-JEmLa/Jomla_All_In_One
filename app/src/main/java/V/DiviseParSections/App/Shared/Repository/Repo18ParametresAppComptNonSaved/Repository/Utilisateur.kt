@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository
 
-enum class Utilisateur(val comp: String) {
+enum class Utilisateur(val comp: String,val ayam_tadriss : String = "dimanch/jeudi") {
+
     Admin(""),
     Abdelwahab_Osstad(M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId),
     Abdelmoumen(M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId),

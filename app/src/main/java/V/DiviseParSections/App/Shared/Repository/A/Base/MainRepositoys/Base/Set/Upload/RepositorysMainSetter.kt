@@ -33,7 +33,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.nmRepo20OrderEducative.Repository.M20ObsarvationEtudion
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
