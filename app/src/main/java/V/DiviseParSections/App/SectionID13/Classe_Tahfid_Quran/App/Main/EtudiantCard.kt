@@ -175,7 +175,8 @@ fun EtudiantCard(
         }
     }
 
-    // Full details dialog - UTILISER UNE CLÉ STABLE
+    // In EtudiantCard.kt, replace the EtudiantDetailsDialog call with this:
+
     if (showDetailsDialog) {
         EtudiantDetailsDialog(
             etudiant = etudiant,
@@ -184,6 +185,10 @@ fun EtudiantCard(
             onShowSouraDialog = {
                 showDetailsDialog = false
                 showSouraDialog = true
+            },
+            onShowMokarrareSouraDialog = {  // ADD THIS PARAMETER
+                showDetailsDialog = false
+                showMokarrareDialog = true
             },
             onShowMokarrareDialog = {
                 showDetailsDialog = false

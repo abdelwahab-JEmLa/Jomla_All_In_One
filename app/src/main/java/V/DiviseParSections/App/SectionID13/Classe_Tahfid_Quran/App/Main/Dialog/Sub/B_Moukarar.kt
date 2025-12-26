@@ -25,6 +25,7 @@ import org.koin.compose.koinInject
 fun Moukarar(
     etudiant: M19Etudiant,
     onShowSouraDialog: () -> Unit,
+    onShowMokarrareSouraDialog: () -> Unit,
     isEditingDernierAyaa: Boolean,
     dernierAyaaInput: String,
     onDernierAyaaInputChange: (String) -> Unit,
@@ -116,9 +117,10 @@ fun Moukarar(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Text(
-                        text = etudiant.mokarrare_hifde.arabicName,
-                        style = MaterialTheme.typography.bodyMedium,
+                    ClickableFieldWithIcon(
+                        label = "",
+                        value = etudiant.mokarrare_hifde.arabicName,
+                        onClick = onShowMokarrareSouraDialog,
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }

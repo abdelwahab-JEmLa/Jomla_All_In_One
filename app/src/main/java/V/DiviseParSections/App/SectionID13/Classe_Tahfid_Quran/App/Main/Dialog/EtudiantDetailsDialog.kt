@@ -53,6 +53,7 @@ fun EtudiantDetailsDialog(
     repo19Etudiant: Repo19Etudiant,
     onDismiss: () -> Unit,
     onShowSouraDialog: () -> Unit,
+    onShowMokarrareSouraDialog: () -> Unit,
     onShowMokarrareDialog: () -> Unit,
     onShowTakiyimDialog: () -> Unit,
     onShowMoulahada3alaSouloukDialog: () -> Unit,
@@ -295,6 +296,7 @@ fun EtudiantDetailsDialog(
                 Moukarar(
                     etudiant = etudiant,
                     onShowSouraDialog = onShowSouraDialog,
+                    onShowMokarrareSouraDialog = onShowMokarrareSouraDialog,
                     isEditingDernierAyaa = isEditingDernierAyaa,
                     dernierAyaaInput = dernierAyaaInput,
                     onDernierAyaaInputChange = { newValue ->
@@ -328,10 +330,10 @@ fun EtudiantDetailsDialog(
 
                 Divider()
 
-                // === REVIEW SECTION ===
                 Moulahadat_Kadima(
                     etudiant = etudiant,
                 )
+
                 Divider()
 
                 // === ISTEDRAK SECTION ===
