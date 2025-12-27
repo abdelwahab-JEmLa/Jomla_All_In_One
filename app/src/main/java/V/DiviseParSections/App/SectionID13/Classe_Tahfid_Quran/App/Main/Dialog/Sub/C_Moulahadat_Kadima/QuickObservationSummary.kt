@@ -25,6 +25,10 @@ fun QuickObservationSummary(
 ) {
     val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
 
+    // Format aya display with nihaya check
+    val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
+    val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
+
     // Force RTL layout for Arabic content
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -57,7 +61,7 @@ fun QuickObservationSummary(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${observation.min_soura.arabicName} → ${observation.ila_soura.arabicName}",
+                    text = "${observation.min_soura.arabicName} ← ${observation.ila_soura.arabicName}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -72,13 +76,13 @@ fun QuickObservationSummary(
                 )
             }
 
-            // Ayat numbers row
+            // Ayat numbers row - Now shows "نهاية السورة" when applicable
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "الآية ${observation.min_aya} → الآية ${observation.ila_aya}",
+                    text = "$minAyaDisplay ← $ilaAyaDisplay",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

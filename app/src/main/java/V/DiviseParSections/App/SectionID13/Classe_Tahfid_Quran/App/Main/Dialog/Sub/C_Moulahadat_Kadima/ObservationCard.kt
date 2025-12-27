@@ -29,18 +29,22 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
- fun ObservationCard(
+fun ObservationCard(
     observation: M20ObsarvationEtudion,
     onEdit: (M20ObsarvationEtudion) -> Unit,
     onDelete: (M20ObsarvationEtudion) -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault()) }
 
-    // FIXED: Check if this is an absence observation
+    // Check if this is an absence observation
     val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
 
+    // Format aya display with nihaya check
+    val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
+    val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
+
     Card(
-        modifier = Modifier.Companion.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isAbsence) {
                 // Use error container for absence
@@ -56,19 +60,19 @@ import java.util.Locale
         }
     ) {
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             // Header with absence indicator
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Show absence icon if applicable
@@ -77,7 +81,7 @@ import java.util.Locale
                             imageVector = Icons.Default.PersonOff,
                             contentDescription = "غياب",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.Companion.size(20.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "غياب",
@@ -96,25 +100,25 @@ import java.util.Locale
                 Row {
                     IconButton(
                         onClick = { onEdit(observation) },
-                        modifier = Modifier.Companion.size(32.dp)
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "تعديل",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.Companion.size(18.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
 
                     IconButton(
                         onClick = { onDelete(observation) },
-                        modifier = Modifier.Companion.size(32.dp)
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "حذف",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.Companion.size(18.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
@@ -122,12 +126,11 @@ import java.util.Locale
 
             Divider()
 
-            // Rest of the card content remains the same...
-            // From Sura and Aya
+            // From Sura and Aya - Now shows "نهاية السورة" when applicable
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "من سورة:",
@@ -135,17 +138,17 @@ import java.util.Locale
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${observation.min_soura.arabicName} (الآية ${observation.min_aya})",
+                    text = "${observation.min_soura.arabicName} ($minAyaDisplay)",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
 
-            // To Sura and Aya
+            // To Sura and Aya - Now shows "نهاية السورة" when applicable
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "إلى سورة:",
@@ -153,7 +156,7 @@ import java.util.Locale
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${observation.ila_soura.arabicName} (الآية ${observation.ila_aya})",
+                    text = "${observation.ila_soura.arabicName} ($ilaAyaDisplay)",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -163,9 +166,9 @@ import java.util.Locale
 
             // Takyim (Evaluation)
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "التقييم:",

@@ -103,5 +103,24 @@ enum class SOUAR(
     El_Anbiya("الأنبياء", 112, 7.5f, 112),
     Taha("طه", 135, 9.0f, 135),
     Maryam("مريم", 98, 6.5f, 98),
-    El_Kahf("الكهف", 110, 7.3f, 110)
+    El_Kahf("الكهف", 110, 7.3f, 110);
+
+    /**
+     * Checks if the given verse number is the last verse of this surah
+     * Returns true if aya equals rakme_akher_aya or if aya is 0 (which represents the end)
+     */
+    fun isNihaya(aya: Int): Boolean {
+        return aya == rakme_akher_aya || aya == 0
+    }
+
+    /**
+     * Returns formatted verse display with "نهاية السورة" if it's the last verse
+     */
+    fun formatAyaDisplay(aya: Int): String {
+        return if (isNihaya(aya)) {
+            "نهاية السورة"
+        } else {
+            aya.toString()
+        }
+    }
 }

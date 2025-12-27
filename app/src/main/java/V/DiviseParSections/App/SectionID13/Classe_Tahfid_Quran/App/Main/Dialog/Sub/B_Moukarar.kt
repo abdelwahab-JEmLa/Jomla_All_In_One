@@ -79,7 +79,7 @@ fun Moukarar(
 
                 Spacer(modifier = Modifier.padding(2.dp))
 
-                // Dernier Ayaa (editable) - if 0, show last ayaa of the soura
+                // Dernier Ayaa (editable) - Display "نهاية السورة" if applicable
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -91,13 +91,22 @@ fun Moukarar(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
+                    val dernierAyaValue = if (etudiant.dernier_Soura_sater == 0) {
+                        etudiant.dernier_Soura_Wassale_Laha.rakme_akher_aya
+                    } else {
+                        etudiant.dernier_Soura_sater
+                    }
+
+                    // Check if it's nihaya
+                    val displayValue = if (etudiant.dernier_Soura_Wassale_Laha.isNihaya(dernierAyaValue)) {
+                        "نهاية السورة"
+                    } else {
+                        dernierAyaValue.toString()
+                    }
+
                     FastEdite_OutlinedTextField(
                         label = "",
-                        value = if (etudiant.dernier_Soura_sater == 0) {
-                            etudiant.dernier_Soura_Wassale_Laha.rakme_akher_aya.toString()
-                        } else {
-                            etudiant.dernier_Soura_sater.toString()
-                        },
+                        value = displayValue,
                         isEditing = isEditingDernierAyaa,
                         inputValue = dernierAyaaInput,
                         onInputChange = onDernierAyaaInputChange,
@@ -131,7 +140,7 @@ fun Moukarar(
 
                 Spacer(modifier = Modifier.padding(2.dp))
 
-                // Mokarrare Ayaa (editable) - if 0, show last ayaa of the soura
+                // Mokarrare Ayaa (editable) - Display "نهاية السورة" if applicable
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -143,13 +152,22 @@ fun Moukarar(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
+                    val mokarrareAyaValue = if (etudiant.mokarrare_hifde_sater == 0) {
+                        etudiant.mokarrare_hifde.rakme_akher_aya
+                    } else {
+                        etudiant.mokarrare_hifde_sater
+                    }
+
+                    // Check if it's nihaya
+                    val displayValue = if (etudiant.mokarrare_hifde.isNihaya(mokarrareAyaValue)) {
+                        "نهاية السورة"
+                    } else {
+                        mokarrareAyaValue.toString()
+                    }
+
                     FastEdite_OutlinedTextField(
                         label = "",
-                        value = if (etudiant.mokarrare_hifde_sater == 0) {
-                            etudiant.mokarrare_hifde.rakme_akher_aya.toString()
-                        } else {
-                            etudiant.mokarrare_hifde_sater.toString()
-                        },
+                        value = displayValue,
                         isEditing = isEditingMokarrareAyaa,
                         inputValue = mokarrareAyaaInput,
                         onInputChange = onMokarrareAyaaInputChange,
