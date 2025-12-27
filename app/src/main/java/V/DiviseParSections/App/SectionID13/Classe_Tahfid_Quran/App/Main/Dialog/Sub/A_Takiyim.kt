@@ -44,6 +44,13 @@ fun TakiyimEvaluationSection(
                     onClick = {
                         onShowTakiyimDialog()
 
+                        // Apply the same logic for both min_aya and ila_aya
+                        val minAya = if (etudiant.dernier_Soura_sater == 0) {
+                            etudiant.dernier_Soura_Wassale_Laha.rakme_akher_aya
+                        } else {
+                            etudiant.dernier_Soura_sater
+                        }
+
                         val ilaAya = if (etudiant.mokarrare_hifde_sater == 0) {
                             etudiant.mokarrare_hifde.rakme_akher_aya
                         } else {
@@ -54,7 +61,7 @@ fun TakiyimEvaluationSection(
                             type = M20ObsarvationEtudion.Type.Tama_Hifdoha,
                             etudiant_keyID = etudiant.keyID,
                             min_soura = etudiant.dernier_Soura_Wassale_Laha,
-                            min_aya = etudiant.dernier_Soura_sater,
+                            min_aya = minAya,  // Fixed: now uses the same logic as ilaAya
                             ila_soura = etudiant.mokarrare_hifde,
                             ila_aya = ilaAya,
                             takyim = etudiant.dernier_takyim_dabte,

@@ -20,9 +20,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import org.koin.compose.koinInject
 
 @Composable
@@ -42,50 +45,52 @@ fun MainListT1(
     val affiche_Produit_OnGrid = ActiveCentralValues.get_Default().affiche_Produit_OnGrid
 
     if (affiche_Produit_OnGrid) {
-        // Grid layout with 2 columns
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(petitePaddine),
-            horizontalArrangement = Arrangement.spacedBy(petitePaddine)
-        ) {
-            if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
-                item {
-                    Card(Modifier.fillMaxWidth()) {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(petitePaddine),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "Aucun produit trouvé pour \"$searchFilter\"",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+        // Grid layout with 2 columns, RTL direction (right to left)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = modifier,
+                verticalArrangement = Arrangement.spacedBy(petitePaddine),
+                horizontalArrangement = Arrangement.spacedBy(petitePaddine)
+            ) {
+                if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
+                    item {
+                        Card(Modifier.fillMaxWidth()) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(petitePaddine),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "Aucun produit trouvé pour \"$searchFilter\"",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                         }
                     }
+                } else {
+                    items(sortedProducts) { product ->
+                        ViewProduit_T1(
+                            product = product,
+                            searchFieldFocusRequester = searchFieldFocusRequester,
+                            on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
+                            isCartonEditMode = cartonEditModeProductId == product.keyID,
+                            isBoitEditMode = boitEditModeProductId == product.keyID,
+                            on_PourEntre_CartonEditeMode = { isEditing ->
+                                on_PourEntre_CartonEditeMode(if (isEditing) product.keyID else null)
+                            },
+                            on_PourEntre_BoitEditeMode = { isEditing ->
+                                on_PourEntre_BoitEditeMode(if (isEditing) product.keyID else null)
+                            }
+                        )
+                    }
                 }
-            } else {
-                items(sortedProducts) { product ->
-                    ViewProduit_T1(
-                        product = product,
-                        searchFieldFocusRequester = searchFieldFocusRequester,
-                        on_Pour_FocuceAfficheClavieSearcherProduit = on_Pour_FocuceAfficheClavieSearcherProduit,
-                        isCartonEditMode = cartonEditModeProductId == product.keyID,
-                        isBoitEditMode = boitEditModeProductId == product.keyID,
-                        on_PourEntre_CartonEditeMode = { isEditing ->
-                            on_PourEntre_CartonEditeMode(if (isEditing) product.keyID else null)
-                        },
-                        on_PourEntre_BoitEditeMode = { isEditing ->
-                            on_PourEntre_BoitEditeMode(if (isEditing) product.keyID else null)
-                        }
-                    )
-                }
-            }
 
-            if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
-                item {
-                    MainList_Frag_Panie(its_From_SearchPrd = true)
+                if (focusedValuesGetter.active_Central_Values.affiche_Panier_au_Search_Dialog) {
+                    item {
+                        MainList_Frag_Panie(its_From_SearchPrd = true)
+                    }
                 }
             }
         }

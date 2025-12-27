@@ -3,13 +3,16 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -103,6 +106,8 @@ fun CartonQuantityDisplay_Mo_F_(
     var cartonInput by remember(totalCartons) { mutableStateOf("") }
     val localFocusRequester = remember { FocusRequester() }
 
+    val affiche_Produit_OnGrid = ActiveCentralValues.get_Default().affiche_Produit_OnGrid
+
     // Auto-focus when entering edit mode
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
@@ -184,38 +189,38 @@ fun CartonQuantityDisplay_Mo_F_(
             if (currentApp_ItsWorkChezGrossisst && produit.quantite_Boit_Par_Carton == 1) {
                 var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
 
-                // Show button to change carton quantity directly
-                Card(
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    ),
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .clickable {
-                            shouldShowDialog_quantite_Boit_Par_Carton = true
-                        }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                affiche_Produit_OnGrid.ifFalse {
+                    Card(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        ),
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .clickable {
+                                shouldShowDialog_quantite_Boit_Par_Carton = true
+                            }
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Inventory2,
-                            contentDescription = "Changer quantité carton",
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = "${produit.quantite_Boit_Par_Carton}",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Inventory2,
+                                contentDescription = "Changer quantité carton",
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                text = "${produit.quantite_Boit_Par_Carton}",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
                     }
                 }
-
                 // Dialog to edit quantite_Boit_Par_Carton
                 if (shouldShowDialog_quantite_Boit_Par_Carton) {
                     Dialog_Choisire_Quantity_Modularized(
@@ -258,7 +263,8 @@ fun CartonQuantityDisplay_Mo_F_(
                                 onEditModeChange(true)
                             } else {
                                 // First click: Create new vent with 1 carton worth of units
-                                val defaultVent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
+                                val defaultVent =
+                                    getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                                 if (defaultVent != null) {
                                     val firstColor = productColors.first()
@@ -332,37 +338,74 @@ fun CartonQuantityDisplay_Mo_F_(
                         data = totalCartons
                     )
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Inventory2,
-                        contentDescription = "Total cartons",
-                        tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    // Display cartons
-                    Text(
-                        text = "${totalCartons}C",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else MaterialTheme.colorScheme.onSecondary
-                    )
-
-                    // Display remaining units if any
-                    if (remainingUnits > 0) {
+                if (affiche_Produit_OnGrid && remainingUnits > 0) {
+                    // Grid mode: Display cartons and remaining units vertically
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Inventory2,
+                                contentDescription = "Total cartons",
+                                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "${totalCartons}C",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                        // Remaining units below
                         Text(
-                            text = " ${remainingUnits}B",
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "+${remainingUnits}B",
+                            style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Medium,
                             color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                             else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
                         )
+                    }
+                } else {
+                    // List mode OR no remaining units: Display horizontally
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Inventory2,
+                            contentDescription = "Total cartons",
+                            tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            else MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+
+                        Text(
+                            text = "${totalCartons}C",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            else MaterialTheme.colorScheme.onSecondary
+                        )
+
+                        // Display remaining units if any
+                        if (remainingUnits > 0) {
+                            Text(
+                                text = " ${remainingUnits}B",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
+                            )
+                        }
                     }
                 }
             }

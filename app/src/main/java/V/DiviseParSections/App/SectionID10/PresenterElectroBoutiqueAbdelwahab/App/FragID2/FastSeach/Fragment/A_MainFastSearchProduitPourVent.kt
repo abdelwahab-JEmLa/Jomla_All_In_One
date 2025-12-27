@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -241,7 +240,7 @@ fun MainFastSearchProduitPourVent(
                                 update_activeCentralValuesfastSearchProduitPourVent("")
                             }
                         ),
-                        trailingIcon = {
+                        leadingIcon = {
                             val newDatas = get_New_Datas(
                                 searchQuery = fastSearchProduitPourVent,
                                 aCentralFacade = aCentralFacade,
@@ -284,7 +283,7 @@ fun MainFastSearchProduitPourVent(
                                 )
                             }
                         },
-                        leadingIcon = {
+                        trailingIcon = {
                             if (fastSearchProduitPourVent.isNotEmpty()) {
                                 IconButton(
                                     onClick = {

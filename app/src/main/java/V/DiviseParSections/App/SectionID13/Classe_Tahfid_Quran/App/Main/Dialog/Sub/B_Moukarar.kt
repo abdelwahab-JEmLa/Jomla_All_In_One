@@ -79,7 +79,7 @@ fun Moukarar(
 
                 Spacer(modifier = Modifier.padding(2.dp))
 
-                // Dernier Ayaa (editable)
+                // Dernier Ayaa (editable) - if 0, show last ayaa of the soura
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -93,7 +93,11 @@ fun Moukarar(
 
                     FastEdite_OutlinedTextField(
                         label = "",
-                        value = etudiant.dernier_Soura_sater.toString(),
+                        value = if (etudiant.dernier_Soura_sater == 0) {
+                            etudiant.dernier_Soura_Wassale_Laha.rakme_akher_aya.toString()
+                        } else {
+                            etudiant.dernier_Soura_sater.toString()
+                        },
                         isEditing = isEditingDernierAyaa,
                         inputValue = dernierAyaaInput,
                         onInputChange = onDernierAyaaInputChange,
