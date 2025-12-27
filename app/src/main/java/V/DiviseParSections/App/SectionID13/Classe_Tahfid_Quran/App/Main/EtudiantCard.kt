@@ -243,14 +243,16 @@ fun EtudiantCard(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.dernier_takyim_dabte,
+            etudiantKeyID = etudiant.keyID,  // Pass student ID to load history
             onDismiss = {
                 showTakiyimDialog = false
                 showDetailsDialog = true
             },
-            onSelect = { selectedTakiyim ->
+            onSelect = { selectedTakiyim, selectedErrors ->
                 val updatedEtudiant = processTakiyimEvaluation(
                     etudiant = etudiant,
                     selectedTakiyim = selectedTakiyim,
+                    selectedErrors = selectedErrors,
                     aCentralFacade = aCentralFacade
                 )
                 repo19Etudiant.upsert(updatedEtudiant)
@@ -312,11 +314,13 @@ fun EtudiantCard(
     if (showIstedrakTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.istedrak_kadim_Takyim_hali,
+            etudiantKeyID = null,  // No history needed for istedrak
             onDismiss = {
                 showIstedrakTakiyimDialog = false
                 showDetailsDialog = true
             },
-            onSelect = { selectedTakiyim ->
+            onSelect = { selectedTakiyim, _ ->
+                // For istedrak, we don't need errors, just the takiyim
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
                 )

@@ -5,13 +5,16 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PersonOff
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -36,18 +39,18 @@ fun ObservationCard(
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault()) }
 
-    // Check if this is an absence observation
     val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
 
-    // Format aya display with nihaya check
     val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
     val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
+
+    // Get list of errors for this observation
+    val errorsList = observation.getMoulahadatList()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isAbsence) {
-                // Use error container for absence
                 MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
             } else {
                 MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
@@ -75,7 +78,6 @@ fun ObservationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Show absence icon if applicable
                     if (isAbsence) {
                         Icon(
                             imageVector = Icons.Default.PersonOff,
@@ -126,7 +128,7 @@ fun ObservationCard(
 
             Divider()
 
-            // From Sura and Aya - Now shows "نهاية السورة" when applicable
+            // From Sura and Aya
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -144,7 +146,7 @@ fun ObservationCard(
                 )
             }
 
-            // To Sura and Aya - Now shows "نهاية السورة" when applicable
+            // To Sura and Aya
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -184,6 +186,45 @@ fun ObservationCard(
                         MaterialTheme.colorScheme.tertiary
                     }
                 )
+            }
+
+            // Display errors if any
+            if (errorsList.isNotEmpty()) {
+                Divider()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "ملاحظات",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "ملاحظات للإصلاح:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, top = 4.dp)
+                ) {
+                    errorsList.forEach { error ->
+                        Text(
+                            text = "• ${error.bil_3arabiya}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                    }
+                }
             }
         }
     }

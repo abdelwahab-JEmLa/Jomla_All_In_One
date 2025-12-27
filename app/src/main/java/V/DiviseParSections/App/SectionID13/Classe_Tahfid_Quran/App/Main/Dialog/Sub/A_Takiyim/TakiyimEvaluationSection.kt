@@ -6,14 +6,21 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etu
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -24,6 +31,22 @@ fun TakiyimEvaluationSection(
     onShowTakiyimDialog: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject()
 ) {
+    // Get the most recent observation for this student
+    val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
+
+    val latestObservation by remember(etudiant.keyID) {
+        derivedStateOf {
+            repo20.datasValue
+                .filter { it.etudiant_keyID == etudiant.keyID }
+                .maxByOrNull { it.creationTimestamps }
+        }
+    }
+
+    // Get selected errors from the latest observation
+    val selectedErrors = remember(latestObservation) {
+        latestObservation?.getMoulahadatList() ?: emptyList()
+    }
+
     Column {
         Text(
             text = "⭐ تقييم الاجتهاد",
@@ -45,6 +68,35 @@ fun TakiyimEvaluationSection(
                     onClick = onShowTakiyimDialog,
                     color = MaterialTheme.colorScheme.tertiary
                 )
+
+                // Show checkboxes for errors if there's a recent observation
+                if (selectedErrors.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Divider()
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "ملاحظات للإصلاح:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+
+                    selectedErrors.forEach { error ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "• ${error.bil_3arabiya}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -55,6 +107,7 @@ fun TakiyimEvaluationSection(
 fun processTakiyimEvaluation(
     etudiant: M19Etudiant,
     selectedTakiyim: M19Etudiant.Takiyim,
+    selectedErrors: List<M20ObsarvationEtudion.Moulahadat_Akhtae_Hifd>,
     aCentralFacade: ACentralFacade
 ): M19Etudiant {
     val minAya = if (etudiant.dernier_Soura_sater == 0) {
@@ -69,6 +122,7 @@ fun processTakiyimEvaluation(
         etudiant.mokarrare_hifde_sater
     }
 
+    // Create the observation with selected errors
     val observation = M20ObsarvationEtudion.get_default().copy(
         type = M20ObsarvationEtudion.Type.Tama_Hifdoha,
         etudiant_keyID = etudiant.keyID,
@@ -77,6 +131,7 @@ fun processTakiyimEvaluation(
         ila_soura = etudiant.mokarrare_hifde,
         ila_aya = ilaAya,
         takyim = selectedTakiyim,
+        moulahadat_takyim_li_islahiha = M20ObsarvationEtudion.Moulahadat_Akhtae_Hifd.listToString(selectedErrors),
         parent_ousstad_key = etudiant.parent_ousstad_key
     )
 

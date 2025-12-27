@@ -51,6 +51,11 @@ fun ObservationEditDialog(
     var tikrar by remember { mutableStateOf(observation.tikrar.toString()) }
     var el3arde by remember { mutableStateOf(observation.el3arde.toString()) }
 
+    // Store the selected errors - initialized from THIS observation, not history
+    var selectedErrors by remember {
+        mutableStateOf(observation.getMoulahadatList().toSet())
+    }
+
     var showMinSouraDialog by remember { mutableStateOf(false) }
     var showIlaSouraDialog by remember { mutableStateOf(false) }
     var showTakiyimDialog by remember { mutableStateOf(false) }
@@ -213,6 +218,33 @@ fun ObservationEditDialog(
                     }
                 }
 
+                // Display selected errors
+                if (selectedErrors.isNotEmpty()) {
+                    Divider()
+
+                    Text(
+                        text = "ملاحظات للإصلاح:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp)
+                    ) {
+                        selectedErrors.forEach { error ->
+                            Text(
+                                text = "• ${error.bil_3arabiya}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
+
                 Divider()
 
                 // Optional fields
@@ -272,6 +304,7 @@ fun ObservationEditDialog(
                                 takyim = takyim,
                                 tikrar = tikrar.toIntOrNull() ?: observation.tikrar,
                                 el3arde = el3arde.toIntOrNull() ?: observation.el3arde,
+                                moulahadat_takyim_li_islahiha = M20ObsarvationEtudion.Moulahadat_Akhtae_Hifd.listToString(selectedErrors.toList()),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
                             onSave(updatedObservation)
@@ -311,9 +344,11 @@ fun ObservationEditDialog(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = takyim,
+            etudiantKeyID = null,  // Don't pre-populate from history when editing
             onDismiss = { showTakiyimDialog = false },
-            onSelect = { selected ->
-                takyim = selected
+            onSelect = { selectedTakiyim, errors ->
+                takyim = selectedTakiyim
+                selectedErrors = errors.toSet()
                 showTakiyimDialog = false
             }
         )

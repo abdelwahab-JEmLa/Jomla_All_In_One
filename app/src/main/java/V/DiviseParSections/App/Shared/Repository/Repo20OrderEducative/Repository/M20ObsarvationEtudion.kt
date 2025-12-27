@@ -49,7 +49,6 @@ class Repo20ObsarvationEtudion(
         }
     }
 
-    // Function to set the filter
     fun setFilter(utilisateur: Utilisateur?) {
         _filter_query.value = utilisateur
     }
@@ -206,18 +205,77 @@ data class M20ObsarvationEtudion(
 
     var takyim: Takiyim = Takiyim.Jayid,
 
+    // Store selected errors as comma-separated string
+    var moulahadat_takyim_li_islahiha: String = "",
+
     var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-) {
+    ) {
     enum class Type {
         Raeeb,
-
         Tama_Hifdoha,
         Moukarrar_Itmamouhou,
         Ousstad_kama_Bil_moundat,
+    }
+
+    enum class Moulahadat_Akhtae_Hifd(val bil_3arabiya: String) {
+        Salassa("حفظ غير سلس"),
+        Noutke_Ahrouf("نطق الأحرف"),
+        Tachkil("التشكيل"),
+        Tajwid("التجويد"),
+        Waqf("الوقف"),
+        Tartil("الترتيل");
+
+        companion object {
+            // Get all errors as comma-separated string
+            fun getAllAsString(): String {
+                return values().joinToString(",") { it.name }
+            }
+
+            // Parse comma-separated string to list of enums
+            fun parseFromString(text: String): List<Moulahadat_Akhtae_Hifd> {
+                if (text.isBlank()) return emptyList()
+                return text.split(",")
+                    .mapNotNull { name ->
+                        try {
+                            valueOf(name.trim())
+                        } catch (e: IllegalArgumentException) {
+                            null
+                        }
+                    }
+            }
+
+            // Convert list of enums to comma-separated string
+            fun listToString(errors: List<Moulahadat_Akhtae_Hifd>): String {
+                return errors.joinToString(",") { it.name }
+            }
+        }
+    }
+
+    // Helper methods for working with moulahadat
+    fun getMoulahadatList(): List<Moulahadat_Akhtae_Hifd> {
+        return Moulahadat_Akhtae_Hifd.parseFromString(moulahadat_takyim_li_islahiha)
+    }
+
+    fun setMoulahadatList(errors: List<Moulahadat_Akhtae_Hifd>) {
+        moulahadat_takyim_li_islahiha = Moulahadat_Akhtae_Hifd.listToString(errors)
+    }
+
+    fun hasMoulahada(error: Moulahadat_Akhtae_Hifd): Boolean {
+        return getMoulahadatList().contains(error)
+    }
+
+    fun toggleMoulahada(error: Moulahadat_Akhtae_Hifd) {
+        val currentList = getMoulahadatList().toMutableList()
+        if (currentList.contains(error)) {
+            currentList.remove(error)
+        } else {
+            currentList.add(error)
+        }
+        setMoulahadatList(currentList)
     }
 
     companion object {

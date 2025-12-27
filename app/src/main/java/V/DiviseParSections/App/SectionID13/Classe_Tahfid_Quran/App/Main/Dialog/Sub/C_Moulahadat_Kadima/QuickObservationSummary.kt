@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonOff
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,9 +26,11 @@ fun QuickObservationSummary(
 ) {
     val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
 
-    // Format aya display with nihaya check
     val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
     val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
+
+    // Get list of errors for this observation
+    val errorsList = observation.getMoulahadatList()
 
     // Force RTL layout for Arabic content
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -61,7 +64,7 @@ fun QuickObservationSummary(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${observation.min_soura.arabicName} ← ${observation.ila_soura.arabicName}",
+                    text = "${observation.min_soura.arabicName} → ${observation.ila_soura.arabicName}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -76,16 +79,38 @@ fun QuickObservationSummary(
                 )
             }
 
-            // Ayat numbers row - Now shows "نهاية السورة" when applicable
+            // Ayat numbers row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "$minAyaDisplay ← $ilaAyaDisplay",
+                    text = "$minAyaDisplay → $ilaAyaDisplay",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+
+            // Display errors summary if any
+            if (errorsList.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "ملاحظات",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Text(
+                        text = errorsList.joinToString("، ") { it.bil_3arabiya },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }
