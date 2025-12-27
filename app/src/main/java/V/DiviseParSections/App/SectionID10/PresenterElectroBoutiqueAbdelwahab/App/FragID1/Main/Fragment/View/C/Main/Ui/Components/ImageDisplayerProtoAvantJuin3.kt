@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -65,6 +66,8 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 
+private const val TAG = "ImageDisplayer"
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayerProtoAvantJuin3(
@@ -85,7 +88,16 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val relative_M9AppCompt= focusedValuesGetter.currentActive_M9AppCompt
+    // Log initial parameters
+    Log.d(TAG, "═══════════════════════════════════════════════════════")
+    Log.d(TAG, "ImageDisplayer INIT - Product: ${relative_M1Produit.id} '${relative_M1Produit.nom}'")
+    Log.d(TAG, "  ├─ indexColor: $indexColor")
+    Log.d(TAG, "  ├─ reloadKey: $reloadKey")
+    Log.d(TAG, "  ├─ showOverlay: $showOverlay")
+    Log.d(TAG, "  ├─ imageSize: ${imageSize.width} x ${imageSize.height}")
+    Log.d(TAG, "  └─ quality: $finalequalityImagePourcentage%")
+
+    val relative_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
     val enablePerformAutoClickImageDisplayer =
         viewModel.aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.enablePerformAutoClickImageDisplayer
 
@@ -112,37 +124,58 @@ fun ImageDisplayerProtoAvantJuin3(
     )
 
     LaunchedEffect(reloadKey) {
+        Log.d(TAG, "LaunchedEffect triggered for Product ${relative_M1Produit.id}, Color $indexColor")
         isLoading = true
         imageLoaded = false
         currentQuality = initialQuality
         hasPerformedAutoClick = false
+        Log.d(TAG, "  └─ Loading started, initial quality: $initialQuality")
         delay(300)
         currentQuality = targetQuality
         imageLoaded = true
+        Log.d(TAG, "  └─ Image marked as loaded, target quality: $targetQuality")
         delay(700)
         isLoading = false
+        Log.d(TAG, "  └─ Loading complete")
     }
 
     val colorInfo = remember(relative_M1Produit.keyID, indexColor) {
-        if (indexColor == -1) null
-        else repoMainGetter.repo03CouleurProduitInfos.datasValue.find {
-            it.parentBProduitInfosKeyID == relative_M1Produit.keyID &&
-                    it.indexCouleurDansAncienProto == indexColor
+        if (indexColor == -1) {
+            Log.d(TAG, "Product ${relative_M1Produit.id}: Using Unite image (indexColor=-1)")
+            null
+        } else {
+            val info = repoMainGetter.repo03CouleurProduitInfos.datasValue.find {
+                it.parentBProduitInfosKeyID == relative_M1Produit.keyID &&
+                        it.indexCouleurDansAncienProto == indexColor
+            }
+            Log.d(TAG, "Product ${relative_M1Produit.id}, Color $indexColor:")
+            Log.d(TAG, "  ├─ ColorInfo found: ${info != null}")
+            if (info != null) {
+                Log.d(TAG, "  ├─ keyID: ${info.keyID}")
+                Log.d(TAG, "  ├─ nomImageFichieSansEtansion: ${info.nomImageFichieSansEtansion}")
+                Log.d(TAG, "  ├─ extensionDisponible: ${info.extensionDisponible}")
+                Log.d(TAG, "  └─ dernierTimeTampsSynchronisation: ${info.dernierTimeTampsSynchronisationAvecFireBase}")
+            }
+            info
         }
     }
 
     val baseFileName = remember(colorInfo, relative_M1Produit.id, indexColor) {
-        when {
+        val fileName = when {
             indexColor == -1 -> "${relative_M1Produit.id}_Unite"
             colorInfo != null && colorInfo.nomImageFichieSansEtansion != "Non Dispo" ->
                 colorInfo.nomImageFichieSansEtansion
             else -> "${relative_M1Produit.id}_${indexColor}"
         }
+        Log.d(TAG, "Product ${relative_M1Produit.id}, Color $indexColor: baseFileName = '$fileName'")
+        fileName
     }
 
     val imagePath by remember(viewModel.viewModelImagesPath, baseFileName) {
         derivedStateOf {
-            File(viewModel.viewModelImagesPath, baseFileName)
+            val path = File(viewModel.viewModelImagesPath, baseFileName)
+            Log.d(TAG, "Product ${relative_M1Produit.id}: imagePath = ${path.absolutePath}")
+            path
         }
     }
 
@@ -152,47 +185,85 @@ fun ImageDisplayerProtoAvantJuin3(
         key2 = reloadKey,
         key3 = colorInfo?.dernierTimeTampsSynchronisationAvecFireBase
     ) {
+        Log.d(TAG, "─────────────────────────────────────────────────────")
+        Log.d(TAG, "Searching for image file: Product ${relative_M1Produit.id}, Color $indexColor")
+
         value = withContext(Dispatchers.IO) {
             val extensions = if (colorInfo != null) {
                 listOf(colorInfo.extensionDisponible, "webp", "jpg").distinct()
             } else {
                 listOf("webp", "jpg")
             }
+            Log.d(TAG, "  ├─ Extensions to try: $extensions")
 
             val requestedImage = extensions
                 .asSequence()
                 .map { ext -> File("${imagePath.absolutePath}.$ext") }
+                .onEach { file ->
+                    Log.d(TAG, "  ├─ Checking: ${file.name}")
+                    Log.d(TAG, "  │  ├─ exists: ${file.exists()}")
+                    Log.d(TAG, "  │  ├─ canRead: ${file.canRead()}")
+                    Log.d(TAG, "  │  └─ size: ${if (file.exists()) file.length() else 0} bytes")
+                }
                 .firstOrNull { it.exists() && it.canRead() }
 
             if (requestedImage != null) {
+                Log.d(TAG, "  ✓ FOUND primary image: ${requestedImage.name}")
                 requestedImage
-            } else if (indexColor != -1) {
-                val allColorsForProduct = repoMainGetter.repo03CouleurProduitInfos.datasValue
-                    .filter { it.parentBProduitInfosKeyID == relative_M1Produit.keyID }
-                    .filter { it.nomImageFichieSansEtansion != "Non Dispo" }
-                    .sortedBy { it.indexCouleurDansAncienProto }
-
-                allColorsForProduct
-                    .asSequence()
-                    .filter { it.keyID != colorInfo?.keyID }
-                    .mapNotNull { fallbackColor ->
-                        val fallbackPath = File(viewModel.viewModelImagesPath, fallbackColor.nomImageFichieSansEtansion)
-                        val fallbackExtensions = listOf(fallbackColor.extensionDisponible, "webp", "jpg").distinct()
-                        fallbackExtensions
-                            .asSequence()
-                            .map { ext -> File("${fallbackPath.absolutePath}.$ext") }
-                            .firstOrNull { it.exists() && it.canRead() }
-                    }
-                    .firstOrNull()
             } else {
-                null
+                Log.d(TAG, "  ✗ Primary image NOT FOUND")
+
+                if (indexColor != -1) {
+                    Log.d(TAG, "  └─ Searching for fallback images...")
+                    val allColorsForProduct = repoMainGetter.repo03CouleurProduitInfos.datasValue
+                        .filter { it.parentBProduitInfosKeyID == relative_M1Produit.keyID }
+                        .filter { it.nomImageFichieSansEtansion != "Non Dispo" }
+                        .sortedBy { it.indexCouleurDansAncienProto }
+
+                    Log.d(TAG, "     Available colors for this product: ${allColorsForProduct.size}")
+
+                    val fallback = allColorsForProduct
+                        .asSequence()
+                        .filter { it.keyID != colorInfo?.keyID }
+                        .onEach { fallbackColor ->
+                            Log.d(TAG, "     Trying fallback: ${fallbackColor.nomImageFichieSansEtansion} (index ${fallbackColor.indexCouleurDansAncienProto})")
+                        }
+                        .mapNotNull { fallbackColor ->
+                            val fallbackPath = File(viewModel.viewModelImagesPath, fallbackColor.nomImageFichieSansEtansion)
+                            val fallbackExtensions = listOf(fallbackColor.extensionDisponible, "webp", "jpg").distinct()
+                            fallbackExtensions
+                                .asSequence()
+                                .map { ext -> File("${fallbackPath.absolutePath}.$ext") }
+                                .onEach { file ->
+                                    Log.d(TAG, "       ├─ ${file.name}: exists=${file.exists()}, canRead=${file.canRead()}")
+                                }
+                                .firstOrNull { it.exists() && it.canRead() }
+                        }
+                        .firstOrNull()
+
+                    if (fallback != null) {
+                        Log.d(TAG, "     ✓ FOUND fallback image: ${fallback.name}")
+                    } else {
+                        Log.d(TAG, "     ✗ NO fallback images found")
+                    }
+                    fallback
+                } else {
+                    Log.d(TAG, "  └─ Unite image, no fallback search")
+                    null
+                }
             }
         }
+
+        Log.d(TAG, "─────────────────────────────────────────────────────")
+        Log.d(TAG, "Final result for Product ${relative_M1Produit.id}, Color $indexColor:")
+        Log.d(TAG, "  └─ imageFile: ${value?.name ?: "NULL"}")
+        Log.d(TAG, "═══════════════════════════════════════════════════════")
     }
 
     LaunchedEffect(imageLoaded, isLoading, enablePerformAutoClickImageDisplayer) {
         if (enablePerformAutoClickImageDisplayer == true && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
+            Log.d(TAG, "Auto-click triggered for Product ${relative_M1Produit.id}")
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
             focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
@@ -202,16 +273,17 @@ fun ImageDisplayerProtoAvantJuin3(
 
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
+            Log.d(TAG, "Rendering GlideImage for Product ${relative_M1Produit.id}, file: ${file.name}")
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             GlideImage(
                 modifier = Modifier
                     .getSemanticsTag(relative_M1Produit, "")
                     .clickable {
+                        Log.d(TAG, "Image clicked: Product ${relative_M1Produit.id}, Color $indexColor")
                         focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
                         focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
                         focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_M1Produit)
-                        onClickToOpenWindow()       //<--
-                        //TODO(1): pk quand je click ca me navige sans qe je veut ver A_Clients_LocationGps
+                        onClickToOpenWindow()
                     }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
@@ -236,9 +308,11 @@ fun ImageDisplayerProtoAvantJuin3(
                     }
                 }
             }
+        } ?: run {
+            Log.w(TAG, "⚠ No image file to display for Product ${relative_M1Produit.id}, Color $indexColor")
         }
 
-        if (indexColor==0) {
+        if (indexColor == 0) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -263,6 +337,7 @@ fun ImageDisplayerProtoAvantJuin3(
             val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(relative_M1Produit)
             val currentColorInfo = productImageInfos.getOrNull(indexColor)
             currentColorInfo?.let { colorInfo ->
+                Log.d(TAG, "Showing overlay for Product ${relative_M1Produit.id}, Color $indexColor")
                 ColorOverlayWithBlur(color = colorInfo, cornerRadius = cornerRadius)
             }
         }
@@ -270,6 +345,7 @@ fun ImageDisplayerProtoAvantJuin3(
 
     produitDepuitNewDATABASE?.let { produit ->
         if (produit.probablementNonDispo) {
+            Log.d(TAG, "Product ${relative_M1Produit.id} marked as probablement non dispo")
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -363,7 +439,21 @@ fun RequestBuilder<Drawable>.applyImageOptions(
             model: Any?,
             target: Target<Drawable>,
             isFirstResource: Boolean
-        ): Boolean = false
+        ): Boolean {
+            Log.e(TAG, "════════════════════════════════════════════════════")
+            Log.e(TAG, "✗ GLIDE LOAD FAILED for Product ${article.id}, Color $indexColor")
+            Log.e(TAG, "  ├─ model: $model")
+            Log.e(TAG, "  ├─ isFirstResource: $isFirstResource")
+            if (e != null) {
+                Log.e(TAG, "  ├─ Exception: ${e.message}")
+                e.rootCauses.forEachIndexed { index, cause ->
+                    Log.e(TAG, "  ├─ Root cause $index: ${cause.message}")
+                }
+                e.logRootCauses(TAG)
+            }
+            Log.e(TAG, "════════════════════════════════════════════════════")
+            return false
+        }
 
         override fun onResourceReady(
             resource: Drawable,
@@ -372,6 +462,10 @@ fun RequestBuilder<Drawable>.applyImageOptions(
             dataSource: DataSource,
             isFirstResource: Boolean
         ): Boolean {
+            Log.d(TAG, "✓ GLIDE SUCCESS for Product ${article.id}, Color $indexColor")
+            Log.d(TAG, "  ├─ dataSource: $dataSource")
+            Log.d(TAG, "  ├─ isFirstResource: $isFirstResource")
+            Log.d(TAG, "  └─ quality: $quality")
             onResourceReady(isFirstResource)
             return false
         }

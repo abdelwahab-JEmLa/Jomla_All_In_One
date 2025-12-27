@@ -88,8 +88,7 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                                 change.consume()
                                 offsetX += dragAmount.x
                                 offsetY += dragAmount.y
-                                offsetX = offsetX.coerceIn(0f, screenWidth.value - 250f)
-                                offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 150f)
+                                // Pas de contraintes - drag libre partout sur l'écran
 
                                 keyboardController?.hide()
                                 focusRequester.freeFocus()

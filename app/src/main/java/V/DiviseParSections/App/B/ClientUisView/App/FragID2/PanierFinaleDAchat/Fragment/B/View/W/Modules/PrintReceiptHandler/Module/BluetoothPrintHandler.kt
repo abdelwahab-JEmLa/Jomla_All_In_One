@@ -176,29 +176,17 @@ class BluetoothPrintHandler {
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
         var pageCounter = 0
+        var itemCount = 0  // FIXED: Track item count
 
         texteImprimable.apply {
-            if (companyHeader != "Belfort Gros Confisserie") {
-                append("<MEDIUM1><CENTER>Abdelwahab<BR>")
-                append("<MEDIUM1><CENTER>$companyHeader<BR>")
-                append("<SMALL><CENTER>0553885037<BR>")
-                append("<SMALL><CENTER>Bon Vent<BR>")
-                append("<BR>")
-                append("<BIG><CENTER>$nomClient")
-                append("<BR>")
-                append("<SMALL><CENTER>$dateString")
-                append("<BR>")
-
-            } else {
-                append("<MEDIUM1><CENTER>Abdelwahab<BR>")
-                append("<MEDIUM1><CENTER>$companyHeader<BR>")
-                append("<SMALL><CENTER>0553885037<BR>")
-                append("<SMALL><CENTER>Bon Vent<BR>")
-                append("<BR>")
-                append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
-                append("<BR>")
-            }
-
+            append("<MEDIUM1><CENTER> Belfort Gros<BR>")
+            append("<SMALL><CENTER>0553885037<BR>")
+            append("<SMALL><CENTER>Bon Vent<BR>")
+            append("<BR>")
+            append("<BIG><CENTER>$nomClient")
+            append("<BR>")
+            append("<SMALL><CENTER>$dateString")
+            append("<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
             append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
@@ -252,6 +240,8 @@ class BluetoothPrintHandler {
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
                 totaleBon += subtotal
+                itemCount++  // FIXED: Increment item count
+
                 if ((index + 1) % 15 == 0) {
                     pageCounter++
                     texteImprimable.append("<BR><CENTER>PAGE $pageCounter<BR><BR><BR>")
@@ -262,7 +252,9 @@ class BluetoothPrintHandler {
         texteImprimable.apply {
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
             append("<BR><BR>")
-            append("<MEDIUM1><CENTER>Total<BR>")
+
+            // FIXED: Add item count display like PDF
+            append("<MEDIUM1><CENTER>Total ($itemCount items)<BR>")
             append("<MEDIUM3><CENTER>${round(totaleBon * 10) / 10}Da<BR>")
 
             if (ancienCredits < 0) {
@@ -276,6 +268,7 @@ class BluetoothPrintHandler {
 
         return Pair(texteImprimable, totaleBon)
     }
+
 
     private fun getProductComment(operations: List<M10OperationVentCouleur>): String {
         val comments = operations.mapNotNull { it.commetaire }.filter { it.isNotBlank() }

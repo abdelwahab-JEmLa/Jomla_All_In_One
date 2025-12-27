@@ -2,6 +2,7 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
+import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.StoragePermissionDialog
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -31,11 +32,16 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private var permissionsChecked by mutableStateOf(false)
+    private var showStorageDialog by mutableStateOf(false)
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: API level ${Build.VERSION.SDK_INT}")
+        Log.d(TAG, "═══════════════════════════════════════════════════════")
+        Log.d(TAG, "MainActivity onCreate")
+        Log.d(TAG, "  API level: ${Build.VERSION.SDK_INT}")
+        Log.d(TAG, "  Android version: ${Build.VERSION.RELEASE}")
+        Log.d(TAG, "═══════════════════════════════════════════════════════")
         setupActivityContent()
     }
 
@@ -53,13 +59,30 @@ class MainActivity : ComponentActivity() {
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
         }
 
-        Log.d(TAG, "onResume: API ${Build.VERSION.SDK_INT}, Storage access = $hasStorageAccess")
+        Log.d(TAG, "─────────────────────────────────────────────────────")
+        Log.d(TAG, "onResume - Storage Status:")
+        Log.d(TAG, "  API: ${Build.VERSION.SDK_INT}")
+        Log.d(TAG, "  Storage access: ${if (hasStorageAccess) "✓ GRANTED" else "✗ DENIED"}")
+        Log.d(TAG, "  Permissions checked: $permissionsChecked")
+        Log.d(TAG, "─────────────────────────────────────────────────────")
+
+        // If we just came back from settings and now have storage access
+        if (hasStorageAccess && showStorageDialog) {
+            Log.d(TAG, "✅ Storage access granted from settings!")
+            showStorageDialog = false
+            permissionsChecked = true
+        }
 
         // If permissions weren't checked before but now we have storage access, recheck
         if (!permissionsChecked && hasStorageAccess) {
+            Log.d(TAG, "Rechecking permissions after storage grant...")
             handlePermissions()
         }
     }
@@ -75,7 +98,24 @@ class MainActivity : ComponentActivity() {
                             if (permissionsChecked) {
                                 MainScreen()
                             } else {
-                                // You could show a permission request screen here
+                                // Show loading or permission request screen
+                            }
+
+                            // Show storage permission dialog if needed
+                            if (showStorageDialog) {
+                                StoragePermissionDialog(
+                                    onOpenSettings = {
+                                        Log.d(TAG, "User clicked to open storage settings")
+                                        permissionHandler.openStorageSettings()
+                                    },
+                                    onDismiss = {
+                                        Log.d(TAG, "User dismissed storage dialog")
+                                        showStorageDialog = false
+                                        // Allow app to continue without storage access
+                                        permissionsChecked = true
+                                        showPermissionDeniedMessage()
+                                    }
+                                )
                             }
                         }
                     }
@@ -95,7 +135,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handlePermissions() {
-        Log.d(TAG, "Checking permissions...")
+        Log.d(TAG, "═══════════════════════════════════════════════════════")
+        Log.d(TAG, "handlePermissions() called")
+        Log.d(TAG, "═══════════════════════════════════════════════════════")
 
         if (permissionHandler.arePermissionsGranted()) {
             Log.d(TAG, "✅ All permissions are already granted")
@@ -105,20 +147,42 @@ class MainActivity : ComponentActivity() {
 
         permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
             override fun onPermissionsGranted() {
-                Log.d(TAG, "✅ All permissions granted through request")
+                Log.d(TAG, "═══════════════════════════════════════════════════════")
+                Log.d(TAG, "✅ CALLBACK: All permissions granted")
+                Log.d(TAG, "═══════════════════════════════════════════════════════")
                 permissionsChecked = true
+                showStorageDialog = false
+
+                // Show success message
+                Toast.makeText(
+                    this@MainActivity,
+                    "✓ جميع الأذونات ممنوحة - الصور ستظهر الآن",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onPermissionsDenied() {
-                Log.d(TAG, "⚠️ Some permissions denied")
+                Log.d(TAG, "═══════════════════════════════════════════════════════")
+                Log.d(TAG, "⚠ CALLBACK: Some permissions denied")
+                Log.d(TAG, "═══════════════════════════════════════════════════════")
+
+                // Check if it's specifically storage that's denied
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (!Environment.isExternalStorageManager()) {
+                        Log.d(TAG, "→ Storage not granted, showing dialog")
+                        showStorageDialog = true
+                        return
+                    }
+                }
+
                 showPermissionDeniedMessage()
-                // Still setting permissionsChecked to true to allow the app to run
-                // PDFs will be saved to app-specific directory instead
+                // Allow app to continue
                 permissionsChecked = true
             }
 
             override fun onPermissionRationale(permissions: Array<String>) {
-                Log.d(TAG, "ℹ️ Permission rationale needed for: ${permissions.joinToString()}")
+                Log.d(TAG, "ℹ️ CALLBACK: Permission rationale needed")
+                Log.d(TAG, "  Permissions: ${permissions.joinToString()}")
             }
         })
     }
@@ -126,13 +190,12 @@ class MainActivity : ComponentActivity() {
     private fun showPermissionDeniedMessage() {
         val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
             !Environment.isExternalStorageManager()) {
-            "Les PDFs seront sauvegardés dans le dossier de l'application. " +
-                    "Pour sauvegarder dans un dossier public, accordez l'accès au stockage dans les paramètres."
+            "⚠ الصور لن تظهر بدون إذن الوصول للملفات. يمكنك منح الإذن من الإعدادات لاحقاً"
         } else {
-            "Certaines fonctionnalités seront limitées sans les permissions nécessaires"
+            "⚠ بعض الوظائف محدودة بدون الأذونات الكاملة"
         }
 
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        Log.w(TAG, message)
     }
-
 }

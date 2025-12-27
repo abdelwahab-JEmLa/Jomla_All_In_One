@@ -29,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -40,8 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,9 +75,12 @@ fun EducationFragment(
     val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
     val currentUtilisateur = M18CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
 
-    // State for search/filter
-    var searchQuery by remember { mutableStateOf("") }
-    var isSearchActive by remember { mutableStateOf(false) }
+    // Get search query from ActiveCentralValues
+    val activeCentralValues = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
+    val searchQuery = activeCentralValues.outlined_filter_searcher_achat
+
+    // Local state for search UI visibility
+    var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
 
     // Set the filter based on current user
     LaunchedEffect(currentUtilisateur) {
@@ -94,8 +94,8 @@ fun EducationFragment(
         repo19Etudiant.datasValue
     }
 
-    // Apply name filter if search is active
-    val etudiants = if (isSearchActive && searchQuery.isNotBlank()) {
+    // Apply name filter when search query is not blank
+    val etudiants = if (searchQuery.isNotBlank()) {
         baseEtudiants.filter { etudiant ->
             etudiant.nom.contains(searchQuery, ignoreCase = true) ||
                     etudiant.prenom.contains(searchQuery, ignoreCase = true)
@@ -160,26 +160,6 @@ fun EducationFragment(
                         }
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            isSearchActive = !isSearchActive
-                            if (!isSearchActive) {
-                                searchQuery = ""
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (isSearchActive) Icons.Default.Close else Icons.Default.Search,
-                            contentDescription = if (isSearchActive) "إغلاق البحث" else "بحث",
-                            tint = if (isSearchActive) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            }
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -193,48 +173,6 @@ fun EducationFragment(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
         ) {
-            // Search bar
-            AnimatedVisibility(
-                visible = isSearchActive,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = {
-                        Text(
-                            text = "ابحث باسم الطالب...",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "مسح"
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                    )
-                )
-            }
 
             if (etudiants.isEmpty()) {
                 EmptyState(
