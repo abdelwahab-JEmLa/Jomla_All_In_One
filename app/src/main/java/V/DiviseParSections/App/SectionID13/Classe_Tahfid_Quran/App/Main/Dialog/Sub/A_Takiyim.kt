@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+
+private const val TAG = "TAKIYIM_DEBUG"
 
 @Composable
 fun TakiyimEvaluationSection(
@@ -43,25 +46,6 @@ fun TakiyimEvaluationSection(
                     label = "تقييم الاجتهاد:",
                     value = etudiant.dernier_takyim_dabte.arabicName,
                     onClick = {
-                        /*
-                         * When clicking to evaluate (Takiyim):
-                         *
-                         * Example 1: Student memorized الناس (1) → الناس (2)
-                         *   Range size = 2 - 1 = 1 (difference between ila and min)
-                         *   If NOT لم يحفظ → New min = old ila + 1 = 3
-                         *                    → New ila = new min + rangeSize = 3 + 1 = 4
-                         *                    → New range: الناس (3) → الناس (4)
-                         *
-                         * Example 2: Student memorized الناس (3) → الناس (5)
-                         *   Range size = 5 - 3 = 2
-                         *   If NOT لم يحفظ → New min = 6, New ila = 6 + 2 = 8
-                         *                    → New range: الناس (6) → الناس (8)
-                         *
-                         * Example 3: Student completed الناس (4) → الناس (نهاية السورة = 6)
-                         *   If NOT لم يحفظ → old ila is nihaya, so jump to next soura
-                         *                    → New range: الفلق (1) → الفلق (2)
-                         */
-
                         onShowTakiyimDialog()
 
                         val minAya = if (etudiant.dernier_Soura_sater == 0) {
@@ -89,11 +73,34 @@ fun TakiyimEvaluationSection(
 
                         aCentralFacade.repositorysMainSetter.upsert_M20ObsarvationEtudion(observation)
 
+                        // 🔍 LOG: État AVANT mise à jour
+                        Log.d(TAG, "==================== TAKIYIM DEBUG ====================")
+                        Log.d(TAG, "📋 État actuel de l'étudiant:")
+                        Log.d(TAG, "   - Nom: ${etudiant.nom} ${etudiant.prenom}")
+                        Log.d(TAG, "   - Dernier Soura: ${etudiant.dernier_Soura_Wassale_Laha.arabicName}")
+                        Log.d(TAG, "   - Dernier Sater: ${etudiant.dernier_Soura_sater}")
+                        Log.d(TAG, "   - Mokarrare Soura: ${etudiant.mokarrare_hifde.arabicName}")
+                        Log.d(TAG, "   - Mokarrare Sater: ${etudiant.mokarrare_hifde_sater}")
+                        Log.d(TAG, "   - Takyim: ${etudiant.dernier_takyim_dabte.arabicName}")
+                        Log.d(TAG, "")
+                        Log.d(TAG, "📊 Valeurs calculées:")
+                        Log.d(TAG, "   - minAya = $minAya")
+                        Log.d(TAG, "   - ilaAya = $ilaAya")
+                        Log.d(TAG, "")
+
                         if (etudiant.dernier_takyim_dabte != M19Etudiant.Takiyim.Lam_Yahfed) {
                             val isCompletedSoura = etudiant.mokarrare_hifde.isNihaya(ilaAya)
+                            Log.d(TAG, "✅ L'étudiant a réussi (pas 'لم يحفظ')")
+                            Log.d(TAG, "   - isCompletedSoura = $isCompletedSoura")
+                            Log.d(TAG, "")
 
                             val updatedEtudiant = if (isCompletedSoura) {
                                 val nextSoura = getNextSoura(etudiant.mokarrare_hifde)
+
+                                Log.d(TAG, "🎯 Cas 1: Sourate terminée - Passage à la suivante")
+                                Log.d(TAG, "   - Next Soura: ${nextSoura.arabicName}")
+                                Log.d(TAG, "   - Nouveau range: ${nextSoura.arabicName} (1) → ${nextSoura.arabicName} (2)")
+                                Log.d(TAG, "")
 
                                 etudiant.copy(
                                     dernier_Soura_Wassale_Laha = nextSoura,
@@ -107,6 +114,13 @@ fun TakiyimEvaluationSection(
                                 val newMin = ilaAya + 1
                                 val newIla = newMin + rangeSize
 
+                                Log.d(TAG, "🎯 Cas 2: Progression dans la même sourate")
+                                Log.d(TAG, "   - rangeSize = $ilaAya - $minAya = $rangeSize")
+                                Log.d(TAG, "   - newMin = $ilaAya + 1 = $newMin")
+                                Log.d(TAG, "   - newIla = $newMin + $rangeSize = $newIla")
+                                Log.d(TAG, "   - Nouveau range: ${etudiant.mokarrare_hifde.arabicName} ($newMin) → ${etudiant.mokarrare_hifde.arabicName} ($newIla)")
+                                Log.d(TAG, "")
+
                                 etudiant.copy(
                                     dernier_Soura_Wassale_Laha = etudiant.mokarrare_hifde,
                                     dernier_Soura_sater = newMin,
@@ -116,7 +130,17 @@ fun TakiyimEvaluationSection(
                                 )
                             }
 
+                            Log.d(TAG, "📤 État APRÈS mise à jour:")
+                            Log.d(TAG, "   - Dernier: ${updatedEtudiant.dernier_Soura_Wassale_Laha.arabicName} (${updatedEtudiant.dernier_Soura_sater})")
+                            Log.d(TAG, "   - Mokarrare: ${updatedEtudiant.mokarrare_hifde.arabicName} (${updatedEtudiant.mokarrare_hifde_sater})")
+                            Log.d(TAG, "======================================================")
+                            Log.d(TAG, "")
+
                             aCentralFacade.repositorysMainSetter.upsert_M19Etudiant(updatedEtudiant)
+                        } else {
+                            Log.d(TAG, "❌ L'étudiant n'a pas réussi (لم يحفظ) - Pas de mise à jour")
+                            Log.d(TAG, "======================================================")
+                            Log.d(TAG, "")
                         }
                     },
                     color = MaterialTheme.colorScheme.tertiary
