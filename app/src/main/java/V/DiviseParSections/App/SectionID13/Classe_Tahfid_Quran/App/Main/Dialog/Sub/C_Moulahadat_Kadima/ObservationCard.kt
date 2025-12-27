@@ -44,8 +44,8 @@ fun ObservationCard(
     val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
     val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
 
-    // Get list of errors for this observation
-    val errorsList = observation.getMoulahadatList()
+    // Get list of moulahadat for this observation
+    val moulahadatList = observation.getMoulahadatList()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -188,8 +188,8 @@ fun ObservationCard(
                 )
             }
 
-            // Display errors if any
-            if (errorsList.isNotEmpty()) {
+            // Display moulahadat if any
+            if (moulahadatList.isNotEmpty()) {
                 Divider()
 
                 Row(
@@ -216,9 +216,9 @@ fun ObservationCard(
                         .fillMaxWidth()
                         .padding(start = 8.dp, top = 4.dp)
                 ) {
-                    errorsList.forEach { error ->
+                    moulahadatList.forEach { moulahada ->
                         Text(
-                            text = "• ${error.bil_3arabiya}",
+                            text = "• $moulahada",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(vertical = 2.dp)

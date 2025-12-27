@@ -4,32 +4,14 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.S
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.TakiyimSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -51,8 +33,8 @@ fun ObservationEditDialog(
     var tikrar by remember { mutableStateOf(observation.tikrar.toString()) }
     var el3arde by remember { mutableStateOf(observation.el3arde.toString()) }
 
-    // Store the selected errors - initialized from THIS observation, not history
-    var selectedErrors by remember {
+    // Store the selected moulahadat - initialized from THIS observation, not history
+    var selectedMoulahadat by remember {
         mutableStateOf(observation.getMoulahadatList().toSet())
     }
 
@@ -218,8 +200,8 @@ fun ObservationEditDialog(
                     }
                 }
 
-                // Display selected errors
-                if (selectedErrors.isNotEmpty()) {
+                // Display selected moulahadat
+                if (selectedMoulahadat.isNotEmpty()) {
                     Divider()
 
                     Text(
@@ -234,9 +216,9 @@ fun ObservationEditDialog(
                             .fillMaxWidth()
                             .padding(start = 8.dp)
                     ) {
-                        selectedErrors.forEach { error ->
+                        selectedMoulahadat.forEach { moulahada ->
                             Text(
-                                text = "• ${error.bil_3arabiya}",
+                                text = "• $moulahada",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.padding(vertical = 2.dp)
@@ -304,7 +286,7 @@ fun ObservationEditDialog(
                                 takyim = takyim,
                                 tikrar = tikrar.toIntOrNull() ?: observation.tikrar,
                                 el3arde = el3arde.toIntOrNull() ?: observation.el3arde,
-                                moulahadat_takyim_li_islahiha = M20ObsarvationEtudion.Moulahadat_Akhtae_Hifd.listToString(selectedErrors.toList()),
+                                moulahadat_takyim_li_islahiha = selectedMoulahadat.joinToString(","),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
                             onSave(updatedObservation)
@@ -346,9 +328,9 @@ fun ObservationEditDialog(
             currentTakiyim = takyim,
             etudiantKeyID = null,  // Don't pre-populate from history when editing
             onDismiss = { showTakiyimDialog = false },
-            onSelect = { selectedTakiyim, errors ->
+            onSelect = { selectedTakiyim, moulahadat ->
                 takyim = selectedTakiyim
-                selectedErrors = errors.toSet()
+                selectedMoulahadat = moulahadat.toSet()
                 showTakiyimDialog = false
             }
         )

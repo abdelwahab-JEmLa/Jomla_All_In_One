@@ -29,8 +29,8 @@ fun QuickObservationSummary(
     val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
     val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
 
-    // Get list of errors for this observation
-    val errorsList = observation.getMoulahadatList()
+    // Get list of moulahadat for this observation
+    val moulahadatList = observation.getMoulahadatList()
 
     // Force RTL layout for Arabic content
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -91,8 +91,8 @@ fun QuickObservationSummary(
                 )
             }
 
-            // Display errors summary if any
-            if (errorsList.isNotEmpty()) {
+            // Display moulahadat summary if any
+            if (moulahadatList.isNotEmpty()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -105,7 +105,7 @@ fun QuickObservationSummary(
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
-                        text = errorsList.joinToString("، ") { it.bil_3arabiya },
+                        text = moulahadatList.joinToString("، "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         maxLines = 1

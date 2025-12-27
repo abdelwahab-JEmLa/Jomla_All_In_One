@@ -248,11 +248,11 @@ fun EtudiantCard(
                 showTakiyimDialog = false
                 showDetailsDialog = true
             },
-            onSelect = { selectedTakiyim, selectedErrors ->
+            onSelect = { selectedTakiyim, selectedMoulahadat ->
                 val updatedEtudiant = processTakiyimEvaluation(
                     etudiant = etudiant,
                     selectedTakiyim = selectedTakiyim,
-                    selectedErrors = selectedErrors,
+                    selectedMoulahadat = selectedMoulahadat,  // Fixed: pass the parameter
                     aCentralFacade = aCentralFacade
                 )
                 repo19Etudiant.upsert(updatedEtudiant)
@@ -320,7 +320,7 @@ fun EtudiantCard(
                 showDetailsDialog = true
             },
             onSelect = { selectedTakiyim, _ ->
-                // For istedrak, we don't need errors, just the takiyim
+                // For istedrak, we don't need moulahadat, just the takiyim
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
                 )
