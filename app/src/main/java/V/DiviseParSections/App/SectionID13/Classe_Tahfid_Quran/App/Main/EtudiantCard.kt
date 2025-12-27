@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.E
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.MoulahadaSouloukSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.TakiyimSelectionDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.processTakiyimEvaluation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
@@ -48,7 +49,6 @@ fun EtudiantCard(
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     modifier: Modifier = Modifier
 ) {
-    // IMPORTANT: Utiliser l'ID de l'étudiant comme clé stable
     val etudiantId = etudiant.keyID
 
     var showDetailsDialog by remember(etudiantId) { mutableStateOf(false) }
@@ -60,34 +60,24 @@ fun EtudiantCard(
     var showIstedrakMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
     var showIstedrakTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
 
-    // Check if updated today
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
-    // Compact card - Shows basic info with yellow background if updated today
     Card(
         modifier = modifier.clickable { showDetailsDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (wasUpdatedToday) {
-                Color(0xFFFFFDE7)
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
+            containerColor = if (wasUpdatedToday) Color(0xFFFFFDE7) else MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Chair icon with position badge at the top
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Chair icon
                 Icon(
                     imageVector = Icons.Default.EventSeat,
                     contentDescription = "Chaise",
@@ -95,11 +85,8 @@ fun EtudiantCard(
                     modifier = Modifier.size(28.dp)
                 )
 
-                // Position badge
                 Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
+                    modifier = Modifier.size(32.dp).clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
@@ -113,7 +100,6 @@ fun EtudiantCard(
 
             Spacer(modifier = Modifier.height(2.dp))
 
-            // Student name
             Text(
                 text = etudiant.nom.ifBlank { "---" },
                 style = MaterialTheme.typography.titleSmall,
@@ -125,7 +111,6 @@ fun EtudiantCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Age and absences row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -137,7 +122,6 @@ fun EtudiantCard(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // Display absences with warning color if > 0
                 if (etudiant.nmbr_absence_sans_justification > 0) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -149,7 +133,6 @@ fun EtudiantCard(
                             color = MaterialTheme.colorScheme.error
                         )
 
-                        // Print icon toggle button
                         IconButton(
                             onClick = {
                                 repo19Etudiant.upsert(
@@ -175,8 +158,6 @@ fun EtudiantCard(
         }
     }
 
-    // In EtudiantCard.kt, replace the EtudiantDetailsDialog call with this:
-
     if (showDetailsDialog) {
         EtudiantDetailsDialog(
             etudiant = etudiant,
@@ -186,7 +167,7 @@ fun EtudiantCard(
                 showDetailsDialog = false
                 showSouraDialog = true
             },
-            onShowMokarrareSouraDialog = {  // ADD THIS PARAMETER
+            onShowMokarrareSouraDialog = {
                 showDetailsDialog = false
                 showMokarrareDialog = true
             },
@@ -217,7 +198,6 @@ fun EtudiantCard(
         )
     }
 
-    // Selection Dialogs - Fermer et rouvrir le dialogue principal après sélection
     if (showSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.dernier_Soura_Wassale_Laha,
@@ -268,13 +248,12 @@ fun EtudiantCard(
                 showDetailsDialog = true
             },
             onSelect = { selectedTakiyim ->
-                repo19Etudiant.upsert(
-                    etudiant.copy(
-                        dernier_takyim_dabte = selectedTakiyim,
-                        dernier_Soura_Wassale_Laha = etudiant.mokarrare_hifde,
-                        dernier_Soura_sater = etudiant.mokarrare_hifde_sater
-                    )
+                val updatedEtudiant = processTakiyimEvaluation(
+                    etudiant = etudiant,
+                    selectedTakiyim = selectedTakiyim,
+                    aCentralFacade = aCentralFacade
                 )
+                repo19Etudiant.upsert(updatedEtudiant)
                 showTakiyimDialog = false
                 showDetailsDialog = true
             }
@@ -296,7 +275,6 @@ fun EtudiantCard(
         )
     }
 
-    // Istedrak Dialogs
     if (showIstedrakSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha,
