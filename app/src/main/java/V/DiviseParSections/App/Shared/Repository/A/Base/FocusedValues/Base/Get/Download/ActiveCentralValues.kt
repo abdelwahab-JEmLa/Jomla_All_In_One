@@ -90,6 +90,8 @@ data class ActiveCentralValues(
         false,
 
     val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
+    var affiche_Produit_OnGrid: Boolean = true,
+
     //-----------------Etudiont -------------------------------------------------------------------------------------------------------------------------
     val filter_les_absents: Boolean = false,
 
@@ -117,6 +119,7 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+
 ) {
     companion object {
         fun get_Default(): ActiveCentralValues {

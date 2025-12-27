@@ -57,7 +57,6 @@ fun StoragePermissionDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Explanation
                 Text(
                     text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         "التطبيق يحتاج إلى إذن \"إدارة جميع الملفات\" لعرض صور المنتجات المخزنة في:\n\n/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/"
@@ -68,7 +67,6 @@ fun StoragePermissionDialog(
                     textAlign = TextAlign.Start
                 )
 
-                // Warning card
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
@@ -94,7 +92,6 @@ fun StoragePermissionDialog(
                     }
                 }
 
-                // Steps
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -123,9 +120,7 @@ fun StoragePermissionDialog(
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                     Text(
-                                        text = "1. اضغط على \"فتح الإعدادات\"\n" +
-                                               "2. اختر \"السماح بإدارة جميع الملفات\"\n" +
-                                               "3. ارجع للتطبيق",
+                                        text = "1. اضغط على \"فتح الإعدادات\"\n2. اختر \"السماح بإدارة جميع الملفات\"\n3. ارجع للتطبيق",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
@@ -161,13 +156,9 @@ fun StoragePermissionDialog(
 }
 
 @Composable
-fun PermissionDeniedMessage(
-    modifier: Modifier = Modifier
-) {
+fun PermissionDeniedMessage(modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = modifier.fillMaxWidth().padding(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         )

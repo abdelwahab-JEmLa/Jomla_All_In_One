@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
@@ -168,7 +169,7 @@ fun ProductHeader_T1(
                     }
                 )
             )
-            .padding(12.dp)
+            .padding(petitePaddine)
     ) {
         Column(
             modifier = Modifier
@@ -184,7 +185,7 @@ fun ProductHeader_T1(
                     data = listFiltered_M10OperationVentCouleurs_By_M1Produit
                 )
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(petitePaddine)
         ) {
             // Row 1: Product names and category
             Row(
@@ -193,13 +194,13 @@ fun ProductHeader_T1(
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    // CategoryTypeDisplay at the top
+                     focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
                     CategoryTypeDisplay(
                         produit = relative_Produit,
                         category = categoriesMap[relative_Produit.idParentCategorie],
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp),
+                            .padding(petitePaddine),
                         repositorysMainSetter = repositorysMainSetter
                     ) { textValue ->
                         update_produit(
@@ -209,13 +210,13 @@ fun ProductHeader_T1(
                             )
                         )
                     }
-
+                     }
                     // French product name - now editable
                     if (isEditingName) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(petitePaddine)
                         ) {
                             OutlinedTextField(
                                 value = editingNameText,
@@ -296,13 +297,13 @@ fun ProductHeader_T1(
                     }
 
                     // Arabic product name - editable
-                    if (isEditingArabicName && isExpanded) {
+                    if (isEditingArabicName && isExpanded && false) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp),
+                                .padding(petitePaddine),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(petitePaddine)
                         ) {
                             OutlinedTextField(
                                 value = editingArabicNameText,
@@ -367,7 +368,7 @@ fun ProductHeader_T1(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.padding(top = 2.dp)
+                                modifier = Modifier.padding(petitePaddine)
                             ) {
                                 Text(
                                     text = relative_Produit.nomArab,
@@ -404,7 +405,7 @@ fun ProductHeader_T1(
                             }
                         } else {
                             // Show placeholder for Arabic name if empty
-                            isExpanded.ifTrue {
+                            (isExpanded && !ActiveCentralValues.get_Default().affiche_Produit_OnGrid).ifTrue {
                                 Text(
                                     text = "إضافة اسم عربي",
                                     style = MaterialTheme.typography.bodyMedium,
@@ -478,10 +479,11 @@ fun ProductHeader_T1(
                     ) {
                         shouldShowDialog_quantite_Unite_Par_Boit = true
                     }
-
+                    val affiche_Produit_OnGrid = ActiveCentralValues.get_Default().affiche_Produit_OnGrid
+                    affiche_Produit_OnGrid.ifFalse {
                     Card_StatueDuProduit(
                         relative_Produit = relative_Produit,
-                    )
+                    )    }
 
                     Card(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -495,7 +497,7 @@ fun ProductHeader_T1(
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(petitePaddine),
                             modifier = Modifier.padding(petitePaddine)
                         ) {
                             IconButton(

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -206,7 +207,7 @@ fun MainFastSearchProduitPourVent(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(petitePaddine)
             ) {
                 if (shouldShowTextField) {
                     OutlinedTextField(
@@ -298,7 +299,7 @@ fun MainFastSearchProduitPourVent(
                             }
                         }
                     )
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(petitePaddine))
 
                     LaunchedEffect(Unit) {
                         delay(100)
