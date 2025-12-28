@@ -20,6 +20,7 @@ data class ParentCommunicationCardData_2(
 ) {
     data class StudentInfo(
         val fullName: String,
+        val keyID: String,
         val age: Int
     )
 
@@ -91,7 +92,8 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
             return ParentCommunicationCardData_2(
                 studentInfo = StudentInfo(
                     fullName = "${etudiant.nom} ${etudiant.prenom}",
-                    age = etudiant.age
+                    age = etudiant.age,
+                    keyID = etudiant.keyID
                 ),
                 hifdProgress = HifdProgress(
                     currentSoura = etudiant.dernier_Soura_Wassale_Laha.arabicName,

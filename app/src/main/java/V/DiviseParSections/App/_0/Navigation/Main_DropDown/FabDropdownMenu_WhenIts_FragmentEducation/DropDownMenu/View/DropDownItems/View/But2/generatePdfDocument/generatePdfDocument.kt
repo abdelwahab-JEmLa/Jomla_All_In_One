@@ -1,9 +1,10 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.A.drawHifdTable
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.A.drawObservationHistoryTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawFooterSection
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawHeaderSection
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawHifdTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawIstedrakTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawJustificationTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawQuestionTable
@@ -19,9 +20,17 @@ import java.io.FileOutputStream
 
 /**
  * Generate PDF document from structured card data with proper RTL support
- * OPTIMIZED VERSION - All TODOs resolved
+ * ENHANCED VERSION - Includes observation history table
+ *
+ * @param context Android context
+ * @param cardsData List of student card data
+ * @param aCentralFacade Repository facade to access observation data
  */
-fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCardData_2>): File? {
+fun generatePdfDocument(
+    context: Context,
+    cardsData: List<ParentCommunicationCardData_2>,
+    aCentralFacade: ACentralFacade
+): File? {
     return try {
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "temp_parent_comm_${System.currentTimeMillis()}.pdf")
@@ -104,14 +113,27 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
                 paintArabicBold, paintBorder
             )
 
+            // ═══════════════════════════════════════════════════
+            // ENHANCED: Pass aCentralFacade to drawHifdTable
+            // ═══════════════════════════════════════════════════
             yPosition = drawHifdTable(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
-                paintArabicMediumBold, paintArabic, paintBorder
+                paintArabicMediumBold, paintArabic, paintBorder,
+                aCentralFacade = aCentralFacade  // NEW: Pass repository access
             )
 
             yPosition = drawIstedrakTable(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
                 paintArabicMediumBold, paintArabic, paintBorder
+            )
+
+            // ═══════════════════════════════════════════════════
+            // NEW: Draw observation history table (last 3 records)
+            // ═══════════════════════════════════════════════════
+            yPosition = drawObservationHistoryTable(
+                canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
+                paintArabicMediumBold, paintArabic, paintSmall, paintBorder,
+                aCentralFacade = aCentralFacade
             )
 
             yPosition = drawQuestionTable(
@@ -144,20 +166,4 @@ fun generatePdfDocument(context: Context, cardsData: List<ParentCommunicationCar
         Log.e("ParentCommPdf", "❌ Erreur lors de la création du PDF", e)
         null
     }
-}
-
-/**
- * Convenience function to generate PDF for a single student
- */
-fun generateSingleStudentPdf(context: Context, etudiant: M19Etudiant): File? {
-    val cardData = ParentCommunicationCardData_2.fromEtudiant(etudiant)
-    return generatePdfDocument(context, listOf(cardData))
-}
-
-/**
- * Convenience function to generate PDF for multiple students
- */
-fun generateMultipleStudentsPdf(context: Context, etudiants: List<M19Etudiant>): File? {
-    val cardsData = etudiants.map { ParentCommunicationCardData_2.fromEtudiant(it) }
-    return generatePdfDocument(context, cardsData)
 }

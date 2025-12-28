@@ -99,7 +99,7 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
 
                 // Step 4: Generate PDF document with structured data (one page per student)
                 val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument(context, cardsData)
+                    generatePdfDocument(context, cardsData,aCentralFacade)
                 }
 
                 // Step 5: Save the file to appropriate location
