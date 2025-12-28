@@ -12,11 +12,12 @@ import androidx.compose.ui.graphics.toArgb
 import java.util.Calendar
 
 /**
- * Draws ULTRA-COMPACT table showing last 3 observations
+ * Draws ULTRA-COMPACT table showing last 5 observations
  * ✅ TODO RESOLVED:
  * - Ultra compact height (38px per row)
  * - Title changed to "آخر متابعات تقدم الحفظ"
  * - Dates in Arabic format with day name and Arabic month
+ * - Shows 5 observations instead of 3
  */
 fun drawObservationHistoryTable(
     canvas: Canvas,
@@ -36,12 +37,12 @@ fun drawObservationHistoryTable(
 
     var currentY = yPosition
 
-    // Get last 3 observations
+    // Get last 5 observations (was 3)
     val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
     val last3Observations = repo20.datasValue
         .filter { it.etudiant_keyID == cardData.studentInfo.keyID }
         .sortedByDescending { it.creationTimestamps }
-        .take(3)
+        .take(4)  // ✅ Changed from 3 to 5
 
     if (last3Observations.isEmpty()) {
         return currentY
