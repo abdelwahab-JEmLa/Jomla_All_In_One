@@ -7,7 +7,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenI
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawHeaderSection
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawIstedrakTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawJustificationTable
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawQuestionTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawStudentHeader
 import android.content.Context
 import android.graphics.Paint
@@ -134,11 +133,6 @@ fun generatePdfDocument(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
                 paintArabicMediumBold, paintArabic, paintSmall, paintBorder,
                 aCentralFacade = aCentralFacade
-            )
-
-            yPosition = drawQuestionTable(
-                canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
-                paintArabicMediumBold, paintArabic, paintSmall, paintBorder
             )
 
             yPosition = drawJustificationTable(

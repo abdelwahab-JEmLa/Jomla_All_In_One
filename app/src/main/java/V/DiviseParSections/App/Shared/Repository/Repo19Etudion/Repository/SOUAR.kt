@@ -115,6 +115,7 @@ enum class SOUAR(
 
     /**
      * Returns formatted verse display with "نهاية السورة" if it's the last verse
+     * This is for general use (not PDF-specific)
      */
     fun formatAyaDisplay(aya: Int): String {
         return if (isNihaya(aya)) {

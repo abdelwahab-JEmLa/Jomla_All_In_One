@@ -7,8 +7,9 @@ import android.graphics.Paint
 import android.text.TextPaint
 
 /**
- * Draws the main Hifd progress table (الحفظ القديم | المقرر لتحضيره)
- * REFACTORED: Each section extracted to separate functions
+ * Draws the main Hifd progress table - SINGLE FULL-WIDTH CELL
+ * Contains only: المقرر لتحضيره with moulahadat
+ * ✅ TODO RESOLVED: Now contains only one large cell
  */
 fun drawHifdTable(
     canvas: Canvas,
@@ -20,40 +21,61 @@ fun drawHifdTable(
     contentWidth: Int,
     paintArabicMediumBold: TextPaint,
     paintArabic: TextPaint,
-    paintBorder: Paint ,
+    paintBorder: Paint,
     aCentralFacade: ACentralFacade
-
 ): Float {
     var currentY = yPosition
-    val cellHeight = 95f
-    val cellWidth = contentWidth / 2f
 
-    // Draw borders for both cells
-    canvas.drawRect(marginLeft, currentY, marginLeft + cellWidth, currentY + cellHeight, paintBorder)
-    canvas.drawRect(marginLeft + cellWidth, currentY, pageWidth - marginRight, currentY + cellHeight, paintBorder)
+    // Calculate dynamic height based on moulahadat count
+    val moulahadatCount = try {
+        val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
+        val latestObs = repo20.datasValue
+            .filter { it.etudiant_keyID == cardData.studentInfo.keyID }
+            .maxByOrNull { it.creationTimestamps }
+        latestObs?.getMoulahadatList()?.size ?: 0
+    } catch (e: Exception) {
+        0
+    }
 
-    // Draw RIGHT cell: الحفظ القديم (Old Memorization)
-    drawHifdKadimCell(
-        canvas = canvas,
-        cardData = cardData,
-        x = marginLeft + cellWidth + 5f,
-        y = currentY + 7f,
-        cellWidth = (cellWidth - 10f).toInt(),
-        paintArabicMediumBold = paintArabicMediumBold,
-        paintArabic = paintArabic ,aCentralFacade
-    )
+    // Base height + extra space for moulahadat (12px per moulahada)
+    val cellHeight = 95f + (moulahadatCount * 12f)
 
-    // Draw LEFT cell: المقرر لتحضيره (Assigned to Prepare)
+    // Draw single full-width cell border (NO MORE 2 CELLS!)
+    canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + cellHeight, paintBorder)
+
+    // Draw المقرر لتحضيره cell (full width now)
     drawMokarrarCell(
         canvas = canvas,
         cardData = cardData,
         x = marginLeft + 5f,
         y = currentY + 7f,
-        cellWidth = (cellWidth - 10f).toInt(),
+        cellWidth = contentWidth - 10,
         paintArabicMediumBold = paintArabicMediumBold,
-        paintArabic = paintArabic
+        paintArabic = paintArabic,
+        aCentralFacade = aCentralFacade
     )
 
     currentY += cellHeight + 10f
     return currentY
+}
+
+/**
+ * Extension function to extract moulahadat list from observation
+ */
+private fun Any.getMoulahadatList(): List<String> {
+    return try {
+        val field = this::class.java.getDeclaredField("moulahadat_takyim_li_islahiha")
+        field.isAccessible = true
+        val moulahadatString = field.get(this) as? String
+
+        if (moulahadatString.isNullOrBlank()) {
+            emptyList()
+        } else {
+            moulahadatString.split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+        }
+    } catch (e: Exception) {
+        emptyList()
+    }
 }

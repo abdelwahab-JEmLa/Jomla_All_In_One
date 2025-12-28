@@ -9,13 +9,14 @@ import android.text.Layout
 import android.text.TextPaint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.Calendar
 
 /**
- * Draws a table showing the last 3 observations for the student
- * Displays: Date, From→To, Takyim, Moulahadat
+ * Draws ULTRA-COMPACT table showing last 3 observations
+ * ✅ TODO RESOLVED:
+ * - Ultra compact height (38px per row)
+ * - Title changed to "آخر متابعات تقدم الحفظ"
+ * - Dates in Arabic format with day name and Arabic month
  */
 fun drawObservationHistoryTable(
     canvas: Canvas,
@@ -32,37 +33,37 @@ fun drawObservationHistoryTable(
     aCentralFacade: ACentralFacade?
 ): Float {
     if (aCentralFacade == null) return yPosition
-    
+
     var currentY = yPosition
-    
+
     // Get last 3 observations
     val repo20 = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
     val last3Observations = repo20.datasValue
         .filter { it.etudiant_keyID == cardData.studentInfo.keyID }
         .sortedByDescending { it.creationTimestamps }
         .take(3)
-    
+
     if (last3Observations.isEmpty()) {
         return currentY
     }
-    
+
     // ═══════════════════════════════════════════════════
-    // Table Title
+    // Table Title - NEW TEXT
     // ═══════════════════════════════════════════════════
-    val titleHeight = 28f
+    val titleHeight = 24f
     val titlePaint = Paint().apply {
-        color = Color(0xFFE3F2FD).toArgb() // Light blue background
+        color = Color(0xFFE3F2FD).toArgb()
         style = Paint.Style.FILL
     }
-    
+
     canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + titleHeight, titlePaint)
     canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + titleHeight, paintBorder)
-    
+
     drawRTLText(
         canvas = canvas,
-        text = "آخر 3 سجلات للحفظ",
+        text = "آخر متابعات تقدم الحفظ",  // ✅ NEW TITLE
         x = marginLeft + 5f,
-        y = currentY + 7f,
+        y = currentY + 5f,
         width = contentWidth - 10,
         paint = paintArabicMediumBold,
         alignment = Layout.Alignment.ALIGN_CENTER
@@ -70,70 +71,65 @@ fun drawObservationHistoryTable(
     currentY += titleHeight
 
     // ═══════════════════════════════════════════════════
-    // Draw each observation
+    // Draw each observation - ULTRA COMPACT (38px)
     // ═══════════════════════════════════════════════════
-    val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-    
     last3Observations.forEach { observation ->
-        val rowHeight = 70f
-        
-        // Background color for each row (alternating)
+        val rowHeight = 38f // ✅ ULTRA COMPACT
+
+        // Alternating background
         val rowIndex = last3Observations.indexOf(observation)
         if (rowIndex % 2 == 0) {
             val rowBgPaint = Paint().apply {
-                color = Color(0xFFF5F5F5).toArgb() // Light gray
+                color = Color(0xFFF5F5F5).toArgb()
                 style = Paint.Style.FILL
             }
             canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + rowHeight, rowBgPaint)
         }
-        
+
         // Border
         canvas.drawRect(marginLeft, currentY, pageWidth - marginRight, currentY + rowHeight, paintBorder)
-        
-        var rowY = currentY + 5f
-        
+
+        var rowY = currentY + 3f
+
         // ─────────────────────────────────────────────────
-        // Line 1: Date
+        // Line 1: Arabic Date with Day Name + Range
         // ─────────────────────────────────────────────────
-        val dateText = "التاريخ: ${dateFormat.format(Date(observation.creationTimestamps))}"
+        val arabicDate = getArabicDate(observation.creationTimestamps)
+        val minAyaDisplay = formatAyaCompact(observation.min_soura, observation.min_aya)
+        val ilaAyaDisplay = formatAyaCompact(observation.ila_soura, observation.ila_aya)
+
+        val firstLineText = "$arabicDate • $minAyaDisplay ← $ilaAyaDisplay"
+
+        val ultraCompactPaint = TextPaint(paintSmall).apply {
+            textSize = paintSmall.textSize - 2f  // Very small (9f)
+        }
+
         drawRTLText(
             canvas = canvas,
-            text = dateText,
-            x = marginLeft + 5f,
+            text = firstLineText,
+            x = marginLeft + 4f,
             y = rowY,
-            width = contentWidth - 10,
-            paint = paintSmall,
+            width = contentWidth - 8,
+            paint = ultraCompactPaint,
             alignment = Layout.Alignment.ALIGN_NORMAL
         )
         rowY += 12f
-        
+
         // ─────────────────────────────────────────────────
-        // Line 2: From → To
-        // ─────────────────────────────────────────────────
-        val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
-        val ilaAyaDisplay = observation.ila_soura.formatAyaDisplay(observation.ila_aya)
-        
-        val rangeText = "${observation.min_soura.arabicName} ($minAyaDisplay) ← ${observation.ila_soura.arabicName} ($ilaAyaDisplay)"
-        drawRTLText(
-            canvas = canvas,
-            text = rangeText,
-            x = marginLeft + 5f,
-            y = rowY,
-            width = contentWidth - 10,
-            paint = paintArabic,
-            alignment = Layout.Alignment.ALIGN_NORMAL
-        )
-        rowY += 14f
-        
-        // ─────────────────────────────────────────────────
-        // Line 3: Takyim (Colored)
+        // Line 2: Takyim + Moulahadat (combined, colored)
         // ─────────────────────────────────────────────────
         val takyimValue = observation.takyim.arabicName
-        val takyimText = "التقييم: $takyimValue"
-        
-        val takyimPaint = TextPaint(paintArabic).apply {
-            textSize = paintArabic.textSize
-            isFakeBoldText = true
+        val moulahadatList = observation.getMoulahadatList()
+
+        val combinedText = if (moulahadatList.isNotEmpty()) {
+            "$takyimValue • ${moulahadatList.joinToString(" • ")}"
+        } else {
+            takyimValue
+        }
+
+        val tinyTakyimPaint = TextPaint(paintSmall).apply {
+            textSize = paintSmall.textSize - 2.5f  // Tiny (8f)
+            isFakeBoldText = false
             color = when (takyimValue) {
                 "ممتاز" -> Color(0xFF4CAF50).toArgb()
                 "جيد جداً", "جيد جدا" -> Color(0xFF2196F3).toArgb()
@@ -145,56 +141,89 @@ fun drawObservationHistoryTable(
                 else -> android.graphics.Color.BLACK
             }
         }
-        
+
         drawRTLText(
             canvas = canvas,
-            text = takyimText,
-            x = marginLeft + 5f,
+            text = combinedText,
+            x = marginLeft + 4f,
             y = rowY,
-            width = contentWidth - 10,
-            paint = takyimPaint,
+            width = contentWidth - 8,
+            paint = tinyTakyimPaint,
             alignment = Layout.Alignment.ALIGN_NORMAL
         )
-        rowY += 14f
-        
-        // ─────────────────────────────────────────────────
-        // Line 4: Moulahadat (if any)
-        // ─────────────────────────────────────────────────
-        val moulahadatList = observation.getMoulahadatList()
-        if (moulahadatList.isNotEmpty()) {
-            val moulahadatText = "ملاحظات: ${moulahadatList.joinToString(" • ")}"
-            
-            val moulahadatPaint = TextPaint(paintSmall).apply {
-                color = Color(0xFFE53935).toArgb() // Red
-            }
-            
-            drawRTLText(
-                canvas = canvas,
-                text = moulahadatText,
-                x = marginLeft + 5f,
-                y = rowY,
-                width = contentWidth - 10,
-                paint = moulahadatPaint,
-                alignment = Layout.Alignment.ALIGN_NORMAL
-            )
-        }
-        
+
         currentY += rowHeight
     }
-    
-    currentY += 10f // Space after table
+
+    currentY += 6f
     return currentY
 }
 
 /**
- * Extension function to extract moulahadat list from observation
+ * Get Arabic formatted date with day name and Arabic month
+ * Format: "الأحد 15 جانفي" (without year)
+ */
+private fun getArabicDate(timestamp: Long): String {
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = timestamp
+    }
+
+    // Arabic day names
+    val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
+    val dayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+
+    // Arabic month names
+    val monthNames = arrayOf(
+        "جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان",
+        "جويلية", "أوت", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    )
+    val monthName = monthNames[calendar.get(Calendar.MONTH)]
+
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    return "$dayName $day $monthName"
+}
+
+/**
+ * Format aya display with end-of-soura handling
+ * Uses rakme_akher_aya field from SOUAR enum
+ */
+private fun formatAyaCompact(soura: Any, aya: Int): String {
+    return try {
+        val souraNameField = soura::class.java.getDeclaredField("arabicName")
+        souraNameField.isAccessible = true
+        val souraName = souraNameField.get(soura) as String
+
+        val rakmeAkherAyaField = soura::class.java.getDeclaredField("rakme_akher_aya")
+        rakmeAkherAyaField.isAccessible = true
+        val rakmeAkherAya = rakmeAkherAyaField.get(soura) as? Int ?: 0
+
+        if (aya >= rakmeAkherAya && rakmeAkherAya > 0) {
+            "$souraName نهاية"
+        } else {
+            "$souraName ($aya)"
+        }
+    } catch (e: Exception) {
+        try {
+            val souraNameField = soura::class.java.getDeclaredField("arabicName")
+            souraNameField.isAccessible = true
+            val souraName = souraNameField.get(soura) as String
+            "$souraName ($aya)"
+        } catch (e2: Exception) {
+            "($aya)"
+        }
+    }
+}
+
+/**
+ * Extension function to extract moulahadat list
  */
 private fun Any.getMoulahadatList(): List<String> {
     return try {
         val field = this::class.java.getDeclaredField("moulahadat_takyim_li_islahiha")
         field.isAccessible = true
         val moulahadatString = field.get(this) as? String
-        
+
         if (moulahadatString.isNullOrBlank()) {
             emptyList()
         } else {
