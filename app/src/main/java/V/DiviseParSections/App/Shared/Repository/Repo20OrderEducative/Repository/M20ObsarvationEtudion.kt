@@ -49,12 +49,75 @@ class Repo20ObsarvationEtudion(
         }
     }
 
+    // Get all unique moulahadat sorted by teacher and recency
+    fun getSortedMoulahadatForTeacher(teacherKeyID: String): List<String> {
+        // Get moulahadat from this teacher's observations (most recent first)
+        val teacherMoulahadat = _datas.value
+            .filter { it.parent_ousstad_key == teacherKeyID }
+            .sortedByDescending { it.creationTimestamps }
+            .flatMap { it.getMoulahadatList() }
+            .distinct()
+
+        // Get moulahadat from other teachers
+        val otherMoulahadat = _datas.value
+            .filter { it.parent_ousstad_key != teacherKeyID }
+            .flatMap { it.getMoulahadatList() }
+            .distinct()
+            .filter { it !in teacherMoulahadat }
+            .sorted()
+
+        // Teacher's moulahadat first (most recent), then others (alphabetically)
+        return teacherMoulahadat + otherMoulahadat
+    }
+
     // Get all unique moulahadat from all observations
     val allUniqueMoulahadat by derivedStateOf {
         _datas.value
             .flatMap { it.getMoulahadatList() }
             .distinct()
             .sorted()
+    }
+
+    // Update all observations that contain a specific moulahada
+    fun updateMoulahadaGlobally(oldMoulahada: String, newMoulahada: String) {
+        if (oldMoulahada.isBlank() || newMoulahada.isBlank()) return
+
+        repoScope.launch {
+            val observationsToUpdate = _datas.value.filter { obs ->
+                obs.hasMoulahada(oldMoulahada)
+            }
+
+            observationsToUpdate.forEach { obs ->
+                val updatedList = obs.getMoulahadatList().map {
+                    if (it == oldMoulahada) newMoulahada else it
+                }
+                val updatedObs = obs.copy(
+                    moulahadat_takyim_li_islahiha = updatedList.joinToString(","),
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+
+                // Update in database
+                dataBaseCreationFactory.set(updatedObs)
+
+                // Update in local list
+                withContext(Dispatchers.Main.immediate) {
+                    val index = _datas.value.indexOfFirst { it.keyID == updatedObs.keyID }
+                    if (index >= 0) {
+                        _datas.value = _datas.value.toMutableList().apply {
+                            this[index] = updatedObs
+                        }
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "تم تحديث ${observationsToUpdate.size} سجل",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     fun setFilter(utilisateur: Utilisateur?) {

@@ -20,7 +20,8 @@ fun drawHifdTable(
     paintArabicMediumBold: TextPaint,
     paintArabic: TextPaint,
     paintBorder: Paint
-): Float {
+): Float {          //<--
+//TODO(1): fait  que au hifde kadime ca affiche le dernie 
     var currentY = yPosition
     val cellHeight = 95f
     val cellWidth = contentWidth / 2f

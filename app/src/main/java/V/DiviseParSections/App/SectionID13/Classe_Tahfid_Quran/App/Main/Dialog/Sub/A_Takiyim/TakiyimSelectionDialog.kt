@@ -1,42 +1,18 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -66,8 +42,20 @@ fun TakiyimSelectionDialog(
         }
     }
 
-    // Get all unique moulahadat from all observations
-    val allUniqueMoulahadat = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion.allUniqueMoulahadat
+    // Get teacher's key from the observation or from latest observation
+    val teacherKeyID = remember {
+        latestObservation?.parent_ousstad_key ?:
+        aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion.datasValue
+            .maxByOrNull { it.creationTimestamps }?.parent_ousstad_key ?: ""
+    }
+
+    // Get sorted moulahadat (teacher's first, most recent, then others)
+    val sortedMoulahadat by remember(teacherKeyID) {
+        derivedStateOf {
+            aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
+                .getSortedMoulahadatForTeacher(teacherKeyID)
+        }
+    }
 
     // Initialize selected moulahadat from the latest observation
     var selectedMoulahadat by remember(latestObservation) {
@@ -78,6 +66,10 @@ fun TakiyimSelectionDialog(
 
     var showAddDialog by remember { mutableStateOf(false) }
     var newMoulahadaText by remember { mutableStateOf("") }
+
+    var showEditDialog by remember { mutableStateOf(false) }
+    var editingMoulahada by remember { mutableStateOf("") }
+    var editedMoulahadaText by remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -125,7 +117,7 @@ fun TakiyimSelectionDialog(
                             }
                         ),
                         border = if (selectedTakiyim == takiyim) {
-                            androidx.compose.foundation.BorderStroke(
+                            BorderStroke(
                                 2.dp,
                                 MaterialTheme.colorScheme.primary
                             )
@@ -193,8 +185,8 @@ fun TakiyimSelectionDialog(
                         )
                     }
 
-                    // Display all unique moulahadat from database
-                    if (allUniqueMoulahadat.isNotEmpty()) {
+                    // Display sorted moulahadat from database
+                    if (sortedMoulahadat.isNotEmpty()) {
                         Text(
                             text = "اختر من الملاحظات السابقة:",
                             style = MaterialTheme.typography.bodySmall,
@@ -202,40 +194,63 @@ fun TakiyimSelectionDialog(
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
 
-                        allUniqueMoulahadat.forEach { moulahada ->
+                        sortedMoulahadat.forEach { moulahada ->
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        selectedMoulahadat = if (selectedMoulahadat.contains(moulahada)) {
-                                            selectedMoulahadat - moulahada
-                                        } else {
-                                            selectedMoulahadat + moulahada
-                                        }
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Checkbox(
-                                    checked = selectedMoulahadat.contains(moulahada),
-                                    onCheckedChange = { checked ->
-                                        selectedMoulahadat = if (checked) {
-                                            selectedMoulahadat + moulahada
-                                        } else {
-                                            selectedMoulahadat - moulahada
+                                Row(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            selectedMoulahadat = if (selectedMoulahadat.contains(moulahada)) {
+                                                selectedMoulahadat - moulahada
+                                            } else {
+                                                selectedMoulahadat + moulahada
+                                            }
+                                        },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Checkbox(
+                                        checked = selectedMoulahadat.contains(moulahada),
+                                        onCheckedChange = { checked ->
+                                            selectedMoulahadat = if (checked) {
+                                                selectedMoulahadat + moulahada
+                                            } else {
+                                                selectedMoulahadat - moulahada
+                                            }
                                         }
-                                    }
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = moulahada,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = moulahada,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                // Edit button for each moulahada
+                                IconButton(
+                                    onClick = {
+                                        editingMoulahada = moulahada
+                                        editedMoulahadaText = moulahada
+                                        showEditDialog = true
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "تعديل",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
                             }
                         }
                     }
 
                     // Display newly added moulahadat (not yet in database)
-                    val newMoulahadat = selectedMoulahadat.filter { it !in allUniqueMoulahadat }
+                    val newMoulahadat = selectedMoulahadat.filter { it !in sortedMoulahadat }
                     if (newMoulahadat.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -352,6 +367,80 @@ fun TakiyimSelectionDialog(
                     onClick = {
                         showAddDialog = false
                         newMoulahadaText = ""
+                    }
+                ) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+
+    // Edit moulahada dialog
+    if (showEditDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showEditDialog = false
+                editingMoulahada = ""
+                editedMoulahadaText = ""
+            },
+            title = { Text("تعديل الملاحظة") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "الملاحظة الأصلية:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = editingMoulahada,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = editedMoulahadaText,
+                        onValueChange = { editedMoulahadaText = it },
+                        label = { Text("الملاحظة الجديدة") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = false,
+                        maxLines = 3
+                    )
+                    Text(
+                        text = "سيتم تحديث جميع السجلات التي تحتوي على هذه الملاحظة",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (editedMoulahadaText.isNotBlank() && editedMoulahadaText != editingMoulahada) {
+                            // Update globally in all observations
+                            aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
+                                .updateMoulahadaGlobally(editingMoulahada, editedMoulahadaText.trim())
+
+                            // Update in selected moulahadat
+                            selectedMoulahadat = selectedMoulahadat.map {
+                                if (it == editingMoulahada) editedMoulahadaText.trim() else it
+                            }.toSet()
+
+                            showEditDialog = false
+                            editingMoulahada = ""
+                            editedMoulahadaText = ""
+                        }
+                    },
+                    enabled = editedMoulahadaText.isNotBlank() && editedMoulahadaText != editingMoulahada
+                ) {
+                    Text("تحديث الكل")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showEditDialog = false
+                        editingMoulahada = ""
+                        editedMoulahadaText = ""
                     }
                 ) {
                     Text("إلغاء")

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.EtudiantDetailsDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.MoulahadaSouloukSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.TakiyimSelectionDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.processTakiyimEvaluation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
