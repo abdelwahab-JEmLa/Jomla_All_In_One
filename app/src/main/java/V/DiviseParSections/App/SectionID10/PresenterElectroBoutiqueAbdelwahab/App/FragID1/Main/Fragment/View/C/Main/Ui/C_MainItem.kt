@@ -36,7 +36,8 @@ fun ArticleItem(
     lockHost: Boolean,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     isExpanded: Boolean = false,
-    expandedElevation: Dp = 4.dp
+    expandedElevation: Dp = 4.dp,
+    expandedColorIndex: Int? = null
 ) {
     val colorCount = countColors(article)
 
@@ -92,7 +93,8 @@ fun ArticleItem(
             },
             uiState = uiState,
             lockHost = lockHost,
-            viewModelInitApp = viewModelInitApp
+            viewModelInitApp = viewModelInitApp,
+            expandedColorIndex = expandedColorIndex
         )
     }
 }

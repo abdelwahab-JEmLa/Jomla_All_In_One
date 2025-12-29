@@ -11,9 +11,9 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -174,6 +174,11 @@ fun MainList(
                     expandedColor.parentBProduitOldID == article.id
                 } ?: false
 
+                // Get the expanded color index for this article
+                val expandedColorIndex = if (isExpanded) {
+                    expanded_M3CouleurProduitInfos?.indexCouleurDansAncienProto
+                } else null
+
                 // Animate elevation when expanded
                 val elevation by animateDpAsState(
                     targetValue = if (isExpanded) 12.dp else 4.dp,
@@ -200,7 +205,8 @@ fun MainList(
                     lockHost = lockHost,
                     viewModelInitApp = viewModelInitApp,
                     isExpanded = isExpanded,
-                    expandedElevation = elevation
+                    expandedElevation = elevation,
+                    expandedColorIndex = expandedColorIndex
                 )
             }
         }

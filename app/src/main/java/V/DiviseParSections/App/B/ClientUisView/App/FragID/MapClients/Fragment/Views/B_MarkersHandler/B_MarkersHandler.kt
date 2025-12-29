@@ -193,21 +193,45 @@ fun createAndAddMarker(
                 }
 
                 // Direct phone call to client
+// Replace the Call case in your when statement with this implementation:
+
                 ActiveCentralValues.Click_On_Marque.Call -> {
                     val phoneNumber = m2Client.numTelephone
 
                     if (phoneNumber.isNotEmpty() && phoneNumber != "null") {
                         try {
-                            val intent = Intent(Intent.ACTION_DIAL).apply {
-                                data = Uri.parse("tel:$phoneNumber")
+                            // Try to open Truecaller first (package name: com.truecaller)
+                            val truecallerIntent = Intent(
+                                Intent.ACTION_DIAL,
+                                Uri.fromParts("tel", phoneNumber, null)
+                            ).apply {
+                                setPackage("com.truecaller")
                             }
-                            context.startActivity(intent)
 
-                            Toast.makeText(
-                                context,
-                                "Appel vers ${m2Client.nom}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            // Check if Truecaller is installed
+                            val packageManager = context.packageManager
+                            val isTruecallerInstalled = truecallerIntent.resolveActivity(packageManager) != null
+
+                            if (isTruecallerInstalled) {
+                                context.startActivity(truecallerIntent)
+                                Toast.makeText(
+                                    context,
+                                    "Appel vers ${m2Client.nom} via Truecaller",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                // Fallback to default dialer if Truecaller is not installed
+                                val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
+                                    data = Uri.parse("tel:$phoneNumber")
+                                }
+                                context.startActivity(defaultDialerIntent)
+
+                                Toast.makeText(
+                                    context,
+                                    "Appel vers ${m2Client.nom} (Truecaller non installé)",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,
@@ -225,7 +249,6 @@ fun createAndAddMarker(
 
                     true
                 }
-
                 // Navigate to client using Google Maps
                 ActiveCentralValues.Click_On_Marque.Navigate -> {
                     val latitude = m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE

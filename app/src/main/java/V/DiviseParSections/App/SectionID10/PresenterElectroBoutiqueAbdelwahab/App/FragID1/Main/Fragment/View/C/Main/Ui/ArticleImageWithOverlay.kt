@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.Expand_Produit_Couleur
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
@@ -45,7 +46,6 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-// 2. Update ArticleImageWithOverlay.kt
 @Composable
 fun ArticleImageWithOverlay(
     modifier: Modifier = Modifier,
@@ -60,33 +60,28 @@ fun ArticleImageWithOverlay(
     imageSize: DpSize,
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
+    showExpandIcon: Boolean = false
 ) {
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
 
-    // FIXED: Get the related color info first, before checking image existence
     val relative_M3CouleurInfos = remember(article, colorIndex, reloadTrigger) {
-        // First try the standard method
         val directMatch = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
 
         if (directMatch != null) {
             directMatch
         } else {
-            // If null, search by matching nomImageFichieSansEtansion pattern
-            // Try both patterns: with and without +1
             val expectedImageName1 = "${article.id}_${colorIndex + 1}"
             val expectedImageName2 = "${article.id}_${colorIndex}"
 
             viewModel.getter.repo03CouleurProduitInfos.datasValue.find { couleur ->
                 couleur.nomImageFichieSansEtansion == expectedImageName1 ||
                         couleur.nomImageFichieSansEtansion == expectedImageName2 ||
-                        // Also check if the parent product matches
                         (couleur.parentBProduitOldID == article.id &&
                                 couleur.indexCouleurDansAncienProto == colorIndex)
             }
         }
     }
 
-    // FIXED: Pass repo03CouleurProduitInfos to checkImageExists
     val imageExists = remember(article.id, colorIndex, reloadTrigger, relative_M3CouleurInfos) {
         checkImageExists(
             viewModelHeadViewModel,
@@ -97,37 +92,24 @@ fun ArticleImageWithOverlay(
         )
     }
 
-    // Add debugging for product 4308
-    if (article.id == 4308L) {
-        android.util.Log.d("ArticleImageOverlay_4308",
-            "colorIndex: $colorIndex, " +
-                    "imageExists: $imageExists, " +
-                    "relative_M3CouleurInfos: ${relative_M3CouleurInfos?.nomImageFichieSansEtansion}, " +
-                    "showOverlay: ${!imageExists}")
-    }
-
     @Composable
     fun ContAuDepot(relative_M3CouleurInfos: M3CouleurProduitInfos) {
-        // FIXED: Use remember with derivedStateOf to trigger recomposition when data changes
         val currentCouleurInfo by remember(relative_M3CouleurInfos.keyID) {
             derivedStateOf {
-                // Always get the latest data from repository
                 viewModel.getter.repo03CouleurProduitInfos.datasValue.find {
                     it.keyID == relative_M3CouleurInfos.keyID
                 } ?: relative_M3CouleurInfos
             }
         }
 
-        // This will trigger recomposition when count_Don_Depot changes
         val depotCount = currentCouleurInfo.count_Don_Depot
         val hasPositiveStock = depotCount > 0
         val hasNegativeStock = depotCount < 0
 
-        // Determine colors and styles based on stock status
         val containerColor = when {
-            hasPositiveStock -> MaterialTheme.colorScheme.error // Positive stock - red
-            hasNegativeStock -> MaterialTheme.colorScheme.errorContainer // Negative stock - darker red
-            else -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f) // Zero - tertiary
+            hasPositiveStock -> MaterialTheme.colorScheme.error
+            hasNegativeStock -> MaterialTheme.colorScheme.errorContainer
+            else -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
         }
 
         val contentColor = when {
@@ -150,7 +132,6 @@ fun ArticleImageWithOverlay(
                 ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Show icon for negative stock
                 if (hasNegativeStock) {
                     Icon(
                         imageVector = Icons.Default.TrendingDown,
@@ -163,8 +144,8 @@ fun ArticleImageWithOverlay(
                 Text(
                     text = when {
                         hasPositiveStock -> depotCount.toString()
-                        hasNegativeStock -> depotCount.toString() // Shows "-4", "-10", etc.
-                        else -> "احتمال كبير متوفر" // "Probablement disponible"
+                        hasNegativeStock -> depotCount.toString()
+                        else -> "احتمال كبير متوفر"
                     },
                     style = if (hasPositiveStock || hasNegativeStock) {
                         MaterialTheme.typography.labelLarge
@@ -174,7 +155,7 @@ fun ArticleImageWithOverlay(
                     fontWeight = if (hasNegativeStock) FontWeight.ExtraBold else FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     fontSize = when {
-                        hasNegativeStock -> 17.sp // Slightly larger for emphasis
+                        hasNegativeStock -> 17.sp
                         hasPositiveStock -> 16.sp
                         else -> 9.sp
                     }
@@ -192,7 +173,6 @@ fun ArticleImageWithOverlay(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // FIXED: Pass the actual onClick handler
             ImageDisplayerProtoAvantJuin3(
                 relative_M1Produit = article,
                 viewModel = viewModelHeadViewModel,
@@ -210,7 +190,6 @@ fun ArticleImageWithOverlay(
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
 
-            // Display depot count overlay - now always visible
             relative_M3CouleurInfos?.let { couleurInfo ->
                 Box(
                     modifier = Modifier
@@ -221,7 +200,21 @@ fun ArticleImageWithOverlay(
                 }
             }
 
-            // FIXED: Display availability indicator when mode_edite_dispo is enabled
+            // Show expand icon only when showExpandIcon is true
+            if (showExpandIcon) {
+                relative_M3CouleurInfos?.let { color ->
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(8.dp)
+                    ) {
+                        Expand_Produit_Couleur(
+                            relative_M3CouleurProduitInfos = color
+                        )
+                    }
+                }
+            }
+
             if (mode_edite_dispo == true) {
                 Box(
                     modifier = Modifier
@@ -295,30 +288,28 @@ private fun AfficheKeyCouleurAvecVent(
     val couleur = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
-    couleur
-        ?.let {
-            val text = with(couleur) {
-                "${keyID.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parent_M1Produit_DebugInfos ?: "NO"} ${vent?.quantity}"
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text = text,
-                    color = Color.White.copy(alpha = 0.001f), // Very low alpha for text
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .background(
-                            color = Color.Red.copy(alpha = 0.001f), // Very low alpha for background
-                            shape = RoundedCornerShape(bottomStart = 8.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
+    couleur?.let {
+        val text = with(couleur) {
+            "${keyID.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
+                    " V= ${vent?.parent_M1Produit_DebugInfos ?: "NO"} ${vent?.quantity}"
         }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                text = text,
+                color = Color.White.copy(alpha = 0.001f),
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .background(
+                        color = Color.Red.copy(alpha = 0.001f),
+                        shape = RoundedCornerShape(bottomStart = 8.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+    }
 }
