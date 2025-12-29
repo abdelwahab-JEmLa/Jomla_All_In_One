@@ -60,7 +60,7 @@ fun ArticleImageWithOverlay(
     imageSize: DpSize,
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    showExpandIcon: Boolean = false
+    alwaysShowExpandIcon: Boolean = false
 ) {
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
 
@@ -200,18 +200,16 @@ fun ArticleImageWithOverlay(
                 }
             }
 
-            // Show expand icon only when showExpandIcon is true
-            if (showExpandIcon) {
-                relative_M3CouleurInfos?.let { color ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(8.dp)
-                    ) {
-                        Expand_Produit_Couleur(
-                            relative_M3CouleurProduitInfos = color
-                        )
-                    }
+            // Show expand icon on all colors (always)
+            if (alwaysShowExpandIcon && relative_M3CouleurInfos != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp)
+                ) {
+                    Expand_Produit_Couleur(
+                        relative_M3CouleurProduitInfos = relative_M3CouleurInfos
+                    )
                 }
             }
 

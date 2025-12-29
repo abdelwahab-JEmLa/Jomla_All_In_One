@@ -76,7 +76,8 @@ fun ArticleItem(
     ) {
         // Use different layout when expanded
         val layout = when {
-            isExpanded && colorCount > 1 -> E_ArticleLayout.DemiMulti
+            isExpanded && colorCount == 2 -> E_ArticleLayout.DemiDual
+            isExpanded && colorCount > 2 -> E_ArticleLayout.DemiMulti
             isExpanded && colorCount == 1 -> E_ArticleLayout.DemiUno
             colorCount == 1 -> E_ArticleLayout.SmallUno
             colorCount == 2 -> E_ArticleLayout.SmallDual
