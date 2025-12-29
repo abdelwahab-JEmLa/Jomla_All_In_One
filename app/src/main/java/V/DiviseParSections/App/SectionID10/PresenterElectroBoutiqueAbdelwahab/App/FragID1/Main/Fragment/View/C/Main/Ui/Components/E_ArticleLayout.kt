@@ -35,7 +35,7 @@ sealed class E_ArticleLayout {
         get() = when (this) {
             is DemiUno, DemiDual, is DemiMulti -> DpSize(width = 500.dp, height = 500.dp)
             is SmallUno, is SmallDual, is SmallMulti -> {
-                val size = if(metricsWidthPixels > 400) 300.dp else 170.dp
+                val size = if(metricsWidthPixels > 400) 300.dp else 300.dp
                 DpSize(width = size, height = size)
             }
         }
@@ -260,7 +260,7 @@ private fun DemiDisplayerMultiColor(
                             .height(120.dp),
                         contentScale = ContentScale.Crop,
                         onClickToOpenWindow = onClickToOpenWindos,
-                        imageSize = DpSize(150.dp, 150.dp),
+                        imageSize = DpSize(150.dp, 300.dp),
                         viewModelInitApp = viewModelInitApp,
                         alwaysShowExpandIcon = true
                     )
@@ -317,7 +317,7 @@ private fun DemiDisplayerDualColor(
                     .height(120.dp),
                 contentScale = ContentScale.Crop,
                 onClickToOpenWindow = onClickToOpenWindos,
-                imageSize = DpSize(150.dp, 150.dp),
+                imageSize = DpSize(150.dp, 300.dp),
                 viewModelInitApp = viewModelInitApp,
                 alwaysShowExpandIcon = true
             )

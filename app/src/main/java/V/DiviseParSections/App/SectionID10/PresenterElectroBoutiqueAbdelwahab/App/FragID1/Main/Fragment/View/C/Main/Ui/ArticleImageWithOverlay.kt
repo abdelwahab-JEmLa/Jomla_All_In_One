@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.Expand_Produit_Couleur
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -62,6 +61,7 @@ fun ArticleImageWithOverlay(
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     alwaysShowExpandIcon: Boolean = false
 ) {
+
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
 
     val relative_M3CouleurInfos = remember(article, colorIndex, reloadTrigger) {

@@ -250,8 +250,7 @@ fun ImageDisplayerProtoAvantJuin3(
             }
         }
 
-        // FIXED: Show expand icon based on shouldShowExpandIcon parameter
-        if (shouldShowExpandIcon    && colorInfo != null) {    //->
+        if (shouldShowExpandIcon && colorInfo != null) {
             Expand_Produit_Couleur(
                 relative_M3CouleurProduitInfos = colorInfo
             )
