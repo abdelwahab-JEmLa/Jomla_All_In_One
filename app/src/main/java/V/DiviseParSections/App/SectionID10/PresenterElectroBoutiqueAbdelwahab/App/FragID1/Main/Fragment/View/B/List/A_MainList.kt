@@ -6,10 +6,14 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,8 +39,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun MainList(
-    aCentralFacade: ACentralFacade= koinInject(),
-
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelInitApp: ViewModelInitApp,
     headViewModelViewModel: HeadViewModel,
@@ -52,8 +56,13 @@ fun MainList(
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
 ) {
+    // Get the expanded color info
+    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+
     val categories = viewModel.getter.repoM16CategorieProduit.datasValue
-    val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText,aCentralFacade) }
+    val filteredArticles = remember(produits, filterText, currentClient) {
+        filterArticles(produits, filterText, aCentralFacade)
+    }
 
     val articlesByCategory = remember(filteredArticles, categories) {
         val sortedCategories = categories.sortedWith(
@@ -137,7 +146,19 @@ fun MainList(
             items(
                 items = articles,
                 key = { article -> "${category.id}_${article.id}" },
-                span = { StaggeredGridItemSpan.SingleLane }
+                // FIXED: Dynamic span based on expanded state
+                span = { article ->
+                    val isExpanded = expanded_M3CouleurProduitInfos?.let { expandedColor ->
+                        // Check if this article contains the expanded color
+                        expandedColor.parentBProduitOldID == article.id
+                    } ?: false
+
+                    if (isExpanded) {
+                        StaggeredGridItemSpan.FullLine // Full width when expanded
+                    } else {
+                        StaggeredGridItemSpan.SingleLane // Normal width
+                    }
+                }
             ) { article ->
                 val isFirstVisible = when {
                     !isSettled -> articles.indexOf(article) == lastSettledFirstVisible
@@ -148,20 +169,38 @@ fun MainList(
                     currentCategory = category.nom
                 }
 
+                // Check if this article is expanded
+                val isExpanded = expanded_M3CouleurProduitInfos?.let { expandedColor ->
+                    expandedColor.parentBProduitOldID == article.id
+                } ?: false
+
+                // Animate elevation when expanded
+                val elevation by animateDpAsState(
+                    targetValue = if (isExpanded) 12.dp else 4.dp,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    ),
+                    label = "elevation"
+                )
+
                 ArticleItem(
-                    viewModel=viewModel,
+                    viewModel = viewModel,
                     article = article,
                     viewModelheadViewModelViewModel = headViewModelViewModel,
                     reloadTrigger = reloadTrigger,
                     onClickToOpenWindos = onClickToOpenWindos,
                     uiState = uiState,
                     isFirstVisible = isFirstVisible,
-                    modifier = Modifier.animateItem(
-                        fadeInSpec = null,
-                        fadeOutSpec = null
-                    ),
+                    modifier = Modifier
+                        .animateItem(
+                            fadeInSpec = null,
+                            fadeOutSpec = null
+                        ),
                     lockHost = lockHost,
-                    viewModelInitApp = viewModelInitApp
+                    viewModelInitApp = viewModelInitApp,
+                    isExpanded = isExpanded,
+                    expandedElevation = elevation
                 )
             }
         }

@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
@@ -62,6 +63,8 @@ data class ActiveCentralValues(
     val image_Flotant: File? = null,
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
+    //-----------------Facade Boutique -------------------------------------------------------------------------------------------------------------------------
+    var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
