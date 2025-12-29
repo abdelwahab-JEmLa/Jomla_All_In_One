@@ -124,7 +124,7 @@ private fun SmallDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true // Show icon in normal mode
+            alwaysShowExpandIcon = true
         )
 
         ArticleImageWithOverlay(
@@ -137,7 +137,7 @@ private fun SmallDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true // Show icon in normal mode
+            alwaysShowExpandIcon = true
         )
 
         InfosArticleBottom(
@@ -175,7 +175,7 @@ private fun SmallDisplayerMultiColor(
             imageSize = imageSize,
             qualityImagePourcentage = 48,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true // Show icon in normal mode
+            alwaysShowExpandIcon = true
         )
 
         val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
@@ -192,7 +192,7 @@ private fun SmallDisplayerMultiColor(
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = true // Show icon in normal mode
+                alwaysShowExpandIcon = true
             )
         }
 
@@ -222,16 +222,10 @@ private fun DemiDisplayerMultiColor(
     Column(modifier = modifier.padding(3.dp)) {
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
 
-        // Find all available colors
         val availableColors = (0..3).filter { article.getColorIdForIndex(it) != null }
-
-        // Determine primary color (the one to show large)
         val primaryColorIndex = expandedColorIndex ?: 0
-
-        // Get secondary colors (all others)
         val secondaryColors = availableColors.filter { it != primaryColorIndex }
 
-        // Large primary/expanded color with Fit
         ArticleImageWithOverlay(
             article = article,
             viewModelHeadViewModel = viewModel,
@@ -244,7 +238,6 @@ private fun DemiDisplayerMultiColor(
             contentScale = ContentScale.Fit
         )
 
-        // Small secondary colors in a horizontal row with equal weight
         if (secondaryColors.isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -263,13 +256,13 @@ private fun DemiDisplayerMultiColor(
                         colorIndex = index,
                         reloadTrigger = reloadTrigger,
                         modifier = Modifier
-                            .weight(1f) // Equal width for all secondary colors
+                            .weight(1f)
                             .height(120.dp),
                         contentScale = ContentScale.Crop,
                         onClickToOpenWindow = onClickToOpenWindos,
                         imageSize = DpSize(150.dp, 150.dp),
                         viewModelInitApp = viewModelInitApp,
-                        alwaysShowExpandIcon = false
+                        alwaysShowExpandIcon = true
                     )
                 }
             }
@@ -293,11 +286,9 @@ private fun DemiDisplayerDualColor(
     Column(modifier = modifier.padding(3.dp)) {
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
 
-        // Determine which color is expanded (default to 0 if null)
         val primaryColorIndex = expandedColorIndex ?: 0
         val secondaryColorIndex = if (primaryColorIndex == 0) 1 else 0
 
-        // Large expanded color with Fit
         ArticleImageWithOverlay(
             article = article,
             viewModelHeadViewModel = viewModel,
@@ -310,7 +301,6 @@ private fun DemiDisplayerDualColor(
             contentScale = ContentScale.Fit
         )
 
-        // Small secondary color in a Row (horizontal)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -361,7 +351,7 @@ private fun SmallSingleColorDisplayer(
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = false
+                alwaysShowExpandIcon = true  // FIXED: Changed from false to true
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
@@ -394,7 +384,7 @@ private fun DemiSingleColorDisplayer(
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = false
+                alwaysShowExpandIcon = true  // FIXED: Changed from false to true
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
