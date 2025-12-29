@@ -212,9 +212,17 @@ fun Boit_Quantity_Handler(
                                         } else {
                                             // Create appropriate tariff based on mode
                                             val newTariff = if (currentApp_ItsWorkChezGrossisst) {
+                                                val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
+
+                                                val startingPrice = if (activeClient?.its_Fournisseur == true) {
+                                                    produit.prixAchat
+                                                } else {
+                                                    0.0
+                                                }
+
                                                 M13TarificationInfos(
                                                     typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                                                    prixCurrency = produit.prixAchat,
+                                                    prixCurrency = startingPrice,
                                                     parent_M1Produit_KeyId = produit.keyID,
                                                     parent_M1Produit_DebugInfos = produit.nom
                                                 )

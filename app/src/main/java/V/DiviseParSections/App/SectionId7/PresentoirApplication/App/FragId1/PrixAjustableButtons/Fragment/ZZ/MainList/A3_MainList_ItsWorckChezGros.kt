@@ -96,24 +96,11 @@ fun A3_MainList_ItsWorckChezGros(
         }
     }
 
-    val max_Prix = list_M13TarificationInfos
+
+    val last_Client_Tariff = list_M13TarificationInfos
         .filter {
             it.parent_M1Produit_KeyId == relative_M1Produit.keyID &&
-                    // Only include grossist tariff types for max calculation
-                    it.typeChoisi in setOf(
-                TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
-                TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
-                TypeChoisi.Tariff_ItsWorkInGrossist_Gro
-            )
-        }
-        .maxOfOrNull { it.prixCurrency } ?: 0.0
-
-    val last_list_M13TarificationInfos = list_M13TarificationInfos
-        .lastOrNull {
-            it.parent_M1Produit_KeyId == relative_M1Produit.keyID &&
                     it.parent_M2Client_KeyId == relative_M2Client?.keyID &&
-                    // Only include grossist tariff types for history
                     it.typeChoisi in setOf(
                 TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
                 TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
@@ -121,19 +108,18 @@ fun A3_MainList_ItsWorckChezGros(
                 TypeChoisi.Tariff_ItsWorkInGrossist_Gro
             )
         }
+        .maxByOrNull { it.creationTimestamps }
 
     val standardTariffs = remember(
         relative_M1Produit,
-        max_Prix,
         clientDefiniTariffs,
         currentApp_ItsWorkChezGrossisst,
         repositorysMainGetter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         list_M13TarificationInfos.map { it.dernierTimeTampsSynchronisationAvecFireBase }
     ) {
         buildList {
-            // Only include grossist-specific tariffs when currentApp_ItsWorkChezGrossisst is true
             if (currentApp_ItsWorkChezGrossisst) {
-                // Add grossist purchase price if available or if admin
+                // Add purchase price if available or if admin
                 if (relative_M1Produit.prixAchat != 0.0 || focusedValuesGetter.currentApp_Est_Admin) {
                     add(tariff_Grossist_Achat)
                 }
@@ -142,6 +128,10 @@ fun A3_MainList_ItsWorckChezGros(
                 add(tariff_Grossist_SuperGros)
                 add(tariff_Grossist_Progressive)
                 add(tariff_Grossist_Gro)
+
+                if (last_Client_Tariff != null) {
+                        add(last_Client_Tariff)
+                }
             }
         }
     }
@@ -158,6 +148,7 @@ fun A3_MainList_ItsWorckChezGros(
                     TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                     TypeChoisi.Tariff_ItsWorkInGrossist_Progressive,
                     TypeChoisi.Tariff_ItsWorkInGrossist_Gro,
+                    TypeChoisi.LeMaxPrixArrive
                 )
             }
             filteredClientTariffs + standardTariffs
@@ -175,9 +166,9 @@ fun A3_MainList_ItsWorckChezGros(
             .semantics(mergeDescendants = true) {
                 set(SemanticsPropertyKey("allTariffsGroupedAndSorted"), allTariffsGroupedAndSorted)
             }
-            .getSemanticsTag(last_list_M13TarificationInfos, "")
-            .getSemanticsTag(relative_M2Client?.keyID, "", 1)
-            .getSemanticsTag(list_M13TarificationInfos, "", 2)
+            .getSemanticsTag(last_Client_Tariff, "last_client_tariff")
+            .getSemanticsTag(relative_M2Client?.keyID, "client_id", 1)
+            .getSemanticsTag(list_M13TarificationInfos, "all_tariffs", 2)
     ) {
         Row(
             modifier = modifier,
@@ -201,19 +192,10 @@ fun A3_MainList_ItsWorckChezGros(
             }
         }
 
-        // Add GerantButton for grossist mode (similar to regular MainList)
+        // Add GerantButton for grossist mode
         itsLancedDepuit_EditeBaseDonne.ifFalse {
-            val priceToUse = if (max_Prix != 0.0) {
-                max_Prix
-            } else {
-                // Use the highest grossist price as fallback
-                standardTariffs.maxOfOrNull { it.prixCurrency } ?: relative_M1Produit.prixVent
-            }
-
-
-
             GerantButton(
-                relative_Tariff = standardTariffs.lastOrNull { it.typeChoisi ==  TypeChoisi.Tariff_ItsWorkInGrossist_Gro },
+                relative_Tariff = standardTariffs.lastOrNull { it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Gro },
                 relative_M1Produit = relative_M1Produit,
                 viewModel = viewModel,
                 showLabels = showLabels,
