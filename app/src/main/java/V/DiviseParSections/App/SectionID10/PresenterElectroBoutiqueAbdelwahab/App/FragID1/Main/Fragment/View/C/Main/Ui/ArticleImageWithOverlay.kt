@@ -185,7 +185,8 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
                 onClickToOpenWindow = {
                     onClickToOpenWindow(article, colorIndex)
-                }
+                },
+                shouldShowExpandIcon = alwaysShowExpandIcon
             )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
@@ -200,18 +201,6 @@ fun ArticleImageWithOverlay(
                 }
             }
 
-            // Show expand icon on all colors (always)
-            if (alwaysShowExpandIcon && relative_M3CouleurInfos != null) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(8.dp)
-                ) {
-                    Expand_Produit_Couleur(
-                        relative_M3CouleurProduitInfos = relative_M3CouleurInfos
-                    )
-                }
-            }
 
             if (mode_edite_dispo == true) {
                 Box(

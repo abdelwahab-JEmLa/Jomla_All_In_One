@@ -72,6 +72,7 @@ fun ImageDisplayerProtoAvantJuin3(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repoMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    repositorysMainGetter: RepositorysMainGetter= koinInject(),
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     indexColor: Int,
     reloadKey: Any,
@@ -82,8 +83,11 @@ fun ImageDisplayerProtoAvantJuin3(
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
+    shouldShowExpandIcon: Boolean = false
 ) {
-    val relative_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
+    val relative_list_M3Coleurs_Du_Produit = repositorysMainGetter
+        .find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1Produit.keyID)
+
     val enablePerformAutoClickImageDisplayer =
         viewModel.aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue?.enablePerformAutoClickImageDisplayer
 
@@ -210,9 +214,15 @@ fun ImageDisplayerProtoAvantJuin3(
                 modifier = Modifier
                     .getSemanticsTag(relative_M1Produit, "")
                     .clickable {
-                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(relative_M1Produit.nom)
-                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_M1Produit)
+                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
+                            true
+                        )
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                            relative_M1Produit.nom
+                        )
+                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                            relative_M1Produit
+                        )
                         onClickToOpenWindow()
                     }
                     .fillMaxSize()
@@ -240,13 +250,11 @@ fun ImageDisplayerProtoAvantJuin3(
             }
         }
 
-        // FIXED: Pass colorInfo to Expand_Produit_Couleur
-        if (indexColor == 0) {
-            colorInfo?.let { color ->
-                Expand_Produit_Couleur(
-                    relative_M3CouleurProduitInfos = color
-                )
-            }
+        // FIXED: Show expand icon based on shouldShowExpandIcon parameter
+        if (shouldShowExpandIcon    && colorInfo != null) {    //->
+            Expand_Produit_Couleur(
+                relative_M3CouleurProduitInfos = colorInfo
+            )
         }
 
         if (showOverlay) {
@@ -272,7 +280,9 @@ fun ImageDisplayerProtoAvantJuin3(
                     text = "احتمال انو غير متوفر لكن نحاولو نبحثولك عليه",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
-                    modifier = Modifier.fillMaxWidth().padding(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -291,7 +301,8 @@ fun ColorOverlayWithBlur(color: CalculeCouleurHandler.ProductImageInfo, cornerRa
                 .clip(RoundedCornerShape(cornerRadius))
                 .background(Color.White)
                 .graphicsLayer {
-                    renderEffect = BlurEffect(radiusX = 25f, radiusY = 25f, edgeTreatment = TileMode.Decal)
+                    renderEffect =
+                        BlurEffect(radiusX = 25f, radiusY = 25f, edgeTreatment = TileMode.Decal)
                 }
         )
         Box(
@@ -302,7 +313,9 @@ fun ColorOverlayWithBlur(color: CalculeCouleurHandler.ProductImageInfo, cornerRa
         )
         ColorOverlay(
             color = color,
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(cornerRadius))
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(cornerRadius))
         )
     }
 }

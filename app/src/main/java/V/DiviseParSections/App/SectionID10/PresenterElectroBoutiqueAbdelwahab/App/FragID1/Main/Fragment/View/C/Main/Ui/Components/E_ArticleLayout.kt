@@ -124,7 +124,7 @@ private fun SmallDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true // Only show on first color
+            alwaysShowExpandIcon = true // Show icon in normal mode
         )
 
         ArticleImageWithOverlay(
@@ -137,7 +137,7 @@ private fun SmallDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = false // No icon on second color
+            alwaysShowExpandIcon = true // Show icon in normal mode
         )
 
         InfosArticleBottom(
@@ -175,7 +175,7 @@ private fun SmallDisplayerMultiColor(
             imageSize = imageSize,
             qualityImagePourcentage = 48,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true // Only show on first color
+            alwaysShowExpandIcon = true // Show icon in normal mode
         )
 
         val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
@@ -192,7 +192,7 @@ private fun SmallDisplayerMultiColor(
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = false // No icon on other colors
+                alwaysShowExpandIcon = true // Show icon in normal mode
             )
         }
 
@@ -231,7 +231,7 @@ private fun DemiDisplayerMultiColor(
         // Get secondary colors (all others)
         val secondaryColors = availableColors.filter { it != primaryColorIndex }
 
-        // Large primary/expanded color
+        // Large primary/expanded color with Fit
         ArticleImageWithOverlay(
             article = article,
             viewModelHeadViewModel = viewModel,
@@ -244,7 +244,7 @@ private fun DemiDisplayerMultiColor(
             contentScale = ContentScale.Fit
         )
 
-        // Small secondary colors in a horizontal row
+        // Small secondary colors in a horizontal row with equal weight
         if (secondaryColors.isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -263,13 +263,13 @@ private fun DemiDisplayerMultiColor(
                         colorIndex = index,
                         reloadTrigger = reloadTrigger,
                         modifier = Modifier
-                            .weight(1f)
-                            .height(if (!imageExists) 70.dp else 100.dp),
+                            .weight(1f) // Equal width for all secondary colors
+                            .height(120.dp),
                         contentScale = ContentScale.Crop,
                         onClickToOpenWindow = onClickToOpenWindos,
                         imageSize = DpSize(150.dp, 150.dp),
                         viewModelInitApp = viewModelInitApp,
-                        alwaysShowExpandIcon = true
+                        alwaysShowExpandIcon = false
                     )
                 }
             }
@@ -297,7 +297,7 @@ private fun DemiDisplayerDualColor(
         val primaryColorIndex = expandedColorIndex ?: 0
         val secondaryColorIndex = if (primaryColorIndex == 0) 1 else 0
 
-        // Large expanded color
+        // Large expanded color with Fit
         ArticleImageWithOverlay(
             article = article,
             viewModelHeadViewModel = viewModel,
@@ -310,13 +310,21 @@ private fun DemiDisplayerDualColor(
             contentScale = ContentScale.Fit
         )
 
-        // Small secondary color
-        Box(modifier = Modifier.height(100.dp)) {
+        // Small secondary color in a Row (horizontal)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 3.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
             ArticleImageWithOverlay(
                 article = article,
                 viewModelHeadViewModel = viewModel,
                 colorIndex = secondaryColorIndex,
                 reloadTrigger = reloadTrigger,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(120.dp),
                 contentScale = ContentScale.Crop,
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = DpSize(150.dp, 150.dp),
