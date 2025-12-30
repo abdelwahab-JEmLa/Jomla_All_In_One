@@ -173,5 +173,6 @@ data class ActiveCentralValues(
         data object NonTrouve : ActiveFilter()
         data object PrixAuGerant : ActiveFilter()
         data object premier_Check_Donne : ActiveFilter()
+        data object non_premier_Check_Donne : ActiveFilter()
     }
 }

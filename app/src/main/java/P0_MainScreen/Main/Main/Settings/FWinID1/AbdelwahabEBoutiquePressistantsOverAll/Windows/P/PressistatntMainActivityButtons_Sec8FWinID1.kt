@@ -28,6 +28,8 @@ import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -136,7 +138,6 @@ fun FloatingOutlinedSearchField(
     }
 }
 // Add this composable function before PressistatntMainActivityButtons_Sec8FWinID1
-
 @Composable
 fun FloatingSearchFAB(
     searchText: String,
@@ -167,11 +168,11 @@ fun FloatingSearchFAB(
                 onValueChange = onSearchTextChange,
                 modifier = Modifier
                     .width(200.dp)
-                    .height(40.dp),
+                    .height(56.dp), // ✅ Increased from 40.dp to 56.dp (standard Material3 height)
                 placeholder = {
                     Text(
                         "Rechercher...",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium // Changed from bodySmall for better readability
                     )
                 },
                 trailingIcon = {
@@ -183,25 +184,35 @@ fun FloatingSearchFAB(
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear",
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(18.dp) // Slightly larger icon
                             )
                         }
                     }
                 },
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodySmall,
+                textStyle = MaterialTheme.typography.bodyMedium, // Better readability
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedBorderColor = MaterialTheme.colorScheme.tertiary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                )
+                ),
+                // ✅ Add interactionSource to detect clicks and clear text
+                interactionSource = remember { MutableInteractionSource() }
+                    .also { interactionSource ->
+                        LaunchedEffect(interactionSource) {
+                            interactionSource.interactions.collect { interaction ->
+                                if (interaction is PressInteraction.Release) {
+                                    onSearchTextChange("") // Clear on click
+                                }
+                            }
+                        }
+                    }
             )
         }
     }
 }
 
-// Updated version of the main composable with TODO fixed:
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
@@ -217,7 +228,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onClickAnulationButton: () -> Unit = {},
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
-    // FIXED TODO: Added state for the outlined searcher when fast panier dialog is shown
     var searchTextForFastPanier by remember { mutableStateOf("") }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -256,7 +266,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent =
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
-    // FIXED TODO: Check if we should show the floating outlined searcher
     val shouldShowFloatingSearcher = activeCentralValues.affiche_Dialog_Fast_Affiche_Panie &&
             itsFragmentProduitFastSearchDialog
 
@@ -503,7 +512,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
                     if (shouldShowFloatingSearcher) {
-                        FloatingSearchFAB(
+                        FloatingSearchFAB(            //<--
+                        //TODO(1): augment heighr et fait que au click entre efface text 
                             searchText = searchTextForFastPanier,
                             onSearchTextChange = { newText ->
                                 searchTextForFastPanier = newText

@@ -61,9 +61,13 @@ fun MainList(
                                     tariff?.laisse_Au_Gerant == true
                                 }
 
-                                // FIXED: Added implementation for premier_Check_Donne filter
                                 is ActiveCentralValues.ActiveFilter.premier_Check_Donne -> {
-                                    vent.premier_Check_Donne == true
+                                    vent.premier_Check_Donne
+                                }
+
+                                // FIXED: Added implementation for non_premier_Check_Donne filter
+                                is ActiveCentralValues.ActiveFilter.non_premier_Check_Donne -> {
+                                    !vent.premier_Check_Donne
                                 }
                             }
 
@@ -72,7 +76,7 @@ fun MainList(
                             }
                         }
 
-                        // FIXED: Filter by product name if search query is not empty
+                        // Filter by product name if search query is not empty
                         if (passesAllFilters && searchQuery.isNotEmpty()) {
                             val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(vent.parent_M1Produit_KeyId)
                             val matchesName = produit?.nom?.contains(searchQuery, ignoreCase = true) == true
