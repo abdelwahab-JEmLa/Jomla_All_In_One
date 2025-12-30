@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.A
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.InfosArticleBottom
@@ -99,57 +99,6 @@ sealed class E_ArticleLayout {
                 expandedColorIndex = expandedColorIndex
             )
         }
-    }
-}
-
-@Composable
- fun SmallDisplayerDualColor(
-    viewModel: HeadViewModel,
-    article: ArticlesBasesStatsTable,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    imageSize: DpSize,
-    lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp,
-    expandedColorIndex: Int? = null
-) {
-    Column(
-        modifier = modifier.padding(3.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        ArticleImageWithOverlay(
-            viewModelHeadViewModel = viewModel,
-            article = article,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            imageSize = imageSize,
-            viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true
-        )
-
-        ArticleImageWithOverlay(
-            article = article,
-            viewModelHeadViewModel = viewModel,
-            colorIndex = 1,
-            reloadTrigger = reloadTrigger,
-            modifier = Modifier.height(100.dp),
-            contentScale = ContentScale.Crop,
-            onClickToOpenWindow = onClickToOpenWindos,
-            imageSize = imageSize,
-            viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true ,
-            its_secondary_affiche = true
-        )
-
-        InfosArticleBottom(
-            article = article,
-            modifier = Modifier.padding(horizontal = 3.dp),
-            uiState = uiState,
-            lockHost
-        )
     }
 }
 

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.A
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.InfosArticleBottom
@@ -35,8 +35,7 @@ import org.koin.compose.koinInject
     expandedColorIndex: Int? = null,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject()
-) {              //<--
-//TODO(1): pk que c expande les seco,ndary couleurs ne s affichon pas 
+) {
     val allColorsForProduct = remember(article.keyID, repo03CouleurProduitInfos.datasValue.size) {
         repo03CouleurProduitInfos.datasValue
             .filter { it.parentBProduitInfosKeyID == article.keyID }
@@ -69,7 +68,6 @@ import org.koin.compose.koinInject
             alwaysShowExpandIcon = true
         )
 
-        // Secondary images (remaining colors)
         val secondaryIndices = availableColorIndices.drop(1)
 
         secondaryIndices.forEach { colorIndex ->
