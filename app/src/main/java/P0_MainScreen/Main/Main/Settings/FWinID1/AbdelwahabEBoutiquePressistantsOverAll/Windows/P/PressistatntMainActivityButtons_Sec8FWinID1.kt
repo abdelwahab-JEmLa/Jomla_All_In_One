@@ -18,6 +18,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
@@ -42,8 +43,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -512,16 +515,42 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
                     if (shouldShowFloatingSearcher) {
-                        FloatingSearchFAB(            //<--
-                        //TODO(1): augment heighr et fait que au click entre efface text 
+                        FloatingSearchFAB(
                             searchText = searchTextForFastPanier,
                             onSearchTextChange = { newText ->
                                 searchTextForFastPanier = newText
-                                // Update the ActiveCentralValues with the search text
                                 focusedValuesGetter.update_activeCentralValues(
                                     activeCentralValues.copy(
                                         outlined_filter_searcher_floating_abouve_all = newText
                                     )
+                                )
+                            },
+                            showLabels = showLabels
+                        )
+
+                        // ✅ FIXED: Added filter toggle FAB
+                        FloatingFilterToggleFAB(
+                            activeFilters = activeCentralValues.activeFilters,
+                            onToggleFilter = {
+                                val currentFilters = activeCentralValues.activeFilters
+                                val newFilters = when {
+                                    // If premier_Check_Donne is active, switch to non_premier_Check_Donne
+                                    currentFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) -> {
+                                        (currentFilters - ActiveCentralValues.ActiveFilter.premier_Check_Donne) +
+                                                ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
+                                    }
+                                    // If non_premier_Check_Donne is active, switch to aucun (remove it)
+                                    currentFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) -> {
+                                        currentFilters - ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
+                                    }
+                                    // If no filter is active, activate premier_Check_Donne
+                                    else -> {
+                                        currentFilters + ActiveCentralValues.ActiveFilter.premier_Check_Donne
+                                    }
+                                }
+
+                                focusedValuesGetter.update_activeCentralValues(
+                                    activeCentralValues.copy(activeFilters = newFilters)
                                 )
                             },
                             showLabels = showLabels
@@ -671,3 +700,79 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     }
 }
+@Composable
+fun FloatingFilterToggleFAB(
+    activeFilters: Set<ActiveCentralValues.ActiveFilter>,
+    onToggleFilter: () -> Unit,
+    showLabels: Boolean,
+    modifier: Modifier = Modifier
+) {
+    // Determine current filter state
+    val currentFilterState = when {
+        activeFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) ->
+            FilterState.PREMIER_CHECK
+        activeFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) ->
+            FilterState.NON_PREMIER_CHECK
+        else -> FilterState.AUCUN
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(40.dp),
+            onClick = onToggleFilter,
+            containerColor = when (currentFilterState) {
+                FilterState.PREMIER_CHECK -> Color(0xFF2196F3) // Blue
+                FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0) // Purple
+                FilterState.AUCUN -> MaterialTheme.colorScheme.surfaceVariant
+            },
+        ) {
+            Icon(
+                imageVector = when (currentFilterState) {
+                    FilterState.PREMIER_CHECK -> Icons.Default.Check
+                    FilterState.NON_PREMIER_CHECK -> Icons.Default.Close
+                    FilterState.AUCUN -> Icons.Default.FilterList
+                },
+                contentDescription = "Toggle Filter",
+                tint = when (currentFilterState) {
+                    FilterState.PREMIER_CHECK, FilterState.NON_PREMIER_CHECK -> Color.White
+                    FilterState.AUCUN -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+        }
+
+        if (showLabels) {
+            Text(
+                text = when (currentFilterState) {
+                    FilterState.PREMIER_CHECK -> "Premier Check Donné"
+                    FilterState.NON_PREMIER_CHECK -> "Non Premier Check Donné"
+                    FilterState.AUCUN -> "Aucun Filtre"
+                },
+                modifier = Modifier
+                    .background(
+                        when (currentFilterState) {
+                            FilterState.PREMIER_CHECK -> Color(0xFF2196F3)
+                            FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0)
+                            FilterState.AUCUN -> MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = when (currentFilterState) {
+                    FilterState.PREMIER_CHECK, FilterState.NON_PREMIER_CHECK -> Color.White
+                    FilterState.AUCUN -> MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+private enum class FilterState {
+    AUCUN,
+    PREMIER_CHECK,
+    NON_PREMIER_CHECK
+}
+

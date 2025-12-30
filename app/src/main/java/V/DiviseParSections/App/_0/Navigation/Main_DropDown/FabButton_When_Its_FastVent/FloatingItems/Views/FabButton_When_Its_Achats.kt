@@ -183,6 +183,7 @@ fun CheckList_ChoisiseurActiveFilter(
                         )
                     }
 
+
                     IconButton(
                         onClick = { hideFilterSelector() },
                         modifier = Modifier.size(32.dp)
