@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.countColors
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.A.E_ArticleLayout
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.core.Spring
@@ -22,9 +22,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
+import org.koin.compose.koinInject
 
 @Composable
 fun ArticleItem(
+    repositorysMainGetter: RepositorysMainGetter= koinInject(),
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelheadViewModelViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
@@ -39,7 +41,9 @@ fun ArticleItem(
     expandedElevation: Dp = 4.dp,
     expandedColorIndex: Int? = null
 ) {
-    val colorCount = countColors(article)
+
+    val colorCount = repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(article.keyID)
+        .size
 
     val cardColor = when {
         uiState.productDisplayController.isHostPhone && isFirstVisible -> {

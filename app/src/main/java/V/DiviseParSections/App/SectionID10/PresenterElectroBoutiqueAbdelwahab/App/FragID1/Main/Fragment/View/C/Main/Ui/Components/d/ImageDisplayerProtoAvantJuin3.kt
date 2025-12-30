@@ -208,11 +208,6 @@ fun ImageDisplayerProtoAvantJuin3(
         }
     }
 
-    // FIXED: Use fillMaxWidth and aspectRatio instead of fixed size
-    // Replace the Box modifier section around line 198-203
-
-    // Replace the Box modifier section around line 198-203
-
     Box(
         modifier = modifier
             .then(

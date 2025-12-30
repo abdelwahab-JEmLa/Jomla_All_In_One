@@ -1,6 +1,9 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.InfosArticleBottom
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.getColorIdForIndex
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
@@ -31,7 +34,7 @@ sealed class E_ArticleLayout {
     data object SmallDual : E_ArticleLayout()
     data object SmallMulti : E_ArticleLayout()
 
-    private val imageSize: DpSize
+     val imageSize: DpSize
         get() = when (this) {
             is DemiUno, DemiDual, is DemiMulti -> DpSize(width = 500.dp, height = 500.dp)
             is SmallUno, is SmallDual, is SmallMulti -> {
@@ -100,7 +103,7 @@ sealed class E_ArticleLayout {
 }
 
 @Composable
-private fun SmallDisplayerDualColor(
+ fun SmallDisplayerDualColor(
     viewModel: HeadViewModel,
     article: ArticlesBasesStatsTable,
     reloadTrigger: Int,
@@ -137,7 +140,8 @@ private fun SmallDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true
+            alwaysShowExpandIcon = true ,
+            its_secondary_affiche = true
         )
 
         InfosArticleBottom(
@@ -150,63 +154,7 @@ private fun SmallDisplayerDualColor(
 }
 
 @Composable
-private fun SmallDisplayerMultiColor(
-    article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    imageSize: DpSize,
-    lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp,
-    expandedColorIndex: Int? = null
-) {
-    Column(
-        modifier = modifier.padding(3.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        ArticleImageWithOverlay(
-            article = article,
-            viewModelHeadViewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            imageSize = imageSize,
-            qualityImagePourcentage = 48,
-            viewModelInitApp = viewModelInitApp,
-            alwaysShowExpandIcon = true
-        )
-
-        val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
-        availableColors.forEach { index ->
-            ArticleImageWithOverlay(
-                article = article,
-                viewModelHeadViewModel = viewModel,
-                colorIndex = index,
-                reloadTrigger = reloadTrigger,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp),
-                contentScale = ContentScale.Crop,
-                onClickToOpenWindow = onClickToOpenWindos,
-                imageSize = imageSize,
-                viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = true
-            )
-        }
-
-        InfosArticleBottom(
-            article = article,
-            modifier = Modifier.padding(horizontal = 3.dp),
-            uiState = uiState,
-            lockHost
-        )
-    }
-}
-
-@Composable
-private fun DemiDisplayerMultiColor(
+ fun DemiDisplayerMultiColor(
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
@@ -247,7 +195,13 @@ private fun DemiDisplayerMultiColor(
             ) {
                 secondaryColors.forEach { index ->
                     val imageExists = remember(article.id, index, reloadTrigger) {
-                        checkImageExists(viewModel, article, index, reloadTrigger, repo03CouleurProduitInfos)
+                        checkImageExists(
+                            viewModel,
+                            article,
+                            index,
+                            reloadTrigger,
+                            repo03CouleurProduitInfos
+                        )
                     }
 
                     ArticleImageWithOverlay(
@@ -262,7 +216,8 @@ private fun DemiDisplayerMultiColor(
                         onClickToOpenWindow = onClickToOpenWindos,
                         imageSize = DpSize(150.dp, 300.dp),
                         viewModelInitApp = viewModelInitApp,
-                        alwaysShowExpandIcon = true
+                        alwaysShowExpandIcon = true,
+                        its_secondary_affiche = true
                     )
                 }
             }
@@ -271,7 +226,7 @@ private fun DemiDisplayerMultiColor(
 }
 
 @Composable
-private fun DemiDisplayerDualColor(
+ fun DemiDisplayerDualColor(
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
@@ -327,7 +282,7 @@ private fun DemiDisplayerDualColor(
 }
 
 @Composable
-private fun SmallSingleColorDisplayer(
+ fun SmallSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
@@ -360,7 +315,7 @@ private fun SmallSingleColorDisplayer(
 }
 
 @Composable
-private fun DemiSingleColorDisplayer(
+ fun DemiSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
