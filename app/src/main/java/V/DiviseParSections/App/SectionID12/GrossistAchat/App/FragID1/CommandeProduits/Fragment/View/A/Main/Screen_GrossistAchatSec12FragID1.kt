@@ -43,7 +43,7 @@ fun Screen_GrossistAchatSec12FragID1(
                     centralValues.active_M15Grossist_AuFilterAchats == null &&
                     centralValues.active_M2Client_AuFilterAchats == null &&
                     centralValues.active_M1Produit_AuFilterAchats == null &&
-                    centralValues.outlined_filter_searcher_achat.isNullOrBlank()
+                    centralValues.outlined_filter_searcher_floating_abouve_all.isNullOrBlank()
         }
     }
 

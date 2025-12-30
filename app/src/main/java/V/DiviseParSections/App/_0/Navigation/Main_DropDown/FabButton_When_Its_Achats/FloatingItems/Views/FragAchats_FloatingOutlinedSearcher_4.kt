@@ -51,7 +51,7 @@ fun FragAchats_FloatingOutlinedSearcher_4(
     fun update_active(search: String): Unit {
         focusedValuesGetter.update_activeCentralValues(
             active_Central_Values.copy(
-                outlined_filter_searcher_achat = search
+                outlined_filter_searcher_floating_abouve_all = search
             )
         )
     }
@@ -117,7 +117,7 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     OutlinedTextField(
-                        value = currentValues.outlined_filter_searcher_achat,
+                        value = currentValues.outlined_filter_searcher_floating_abouve_all,
                         onValueChange = { newValue -> update_active(newValue) },
                         label = { Text("Search Achats") },
                         leadingIcon = {
@@ -128,7 +128,7 @@ fun FragAchats_FloatingOutlinedSearcher_4(
                             )
                         },
                         trailingIcon = {
-                            if (currentValues.outlined_filter_searcher_achat.isNotEmpty()) {
+                            if (currentValues.outlined_filter_searcher_floating_abouve_all.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
                                         update_active("")

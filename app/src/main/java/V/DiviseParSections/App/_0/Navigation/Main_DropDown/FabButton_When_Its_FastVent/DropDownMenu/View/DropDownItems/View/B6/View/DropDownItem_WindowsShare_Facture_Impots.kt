@@ -149,7 +149,6 @@ fun DropDownItem_ThermiquePrint(
                     return@DropdownMenuItem
                 }
 
-                // FIXED TODO(1): Validate prices before printing
                 val tarificationRepo = aCentralFacade.repositorysMainGetter.repo13TarificationInfos
                 val produitRepo = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 

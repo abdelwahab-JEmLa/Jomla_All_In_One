@@ -63,6 +63,10 @@ data class ActiveCentralValues(
     val image_Flotant: File? = null,
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
+    //-----------------Floating Abouve AL-------------------------------------------------------------------------------------------------------------------------
+    var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
+    val outlined_filter_searcher_floating_abouve_all: String = "",
+
     //-----------------Facade Boutique -------------------------------------------------------------------------------------------------------------------------
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
@@ -79,11 +83,9 @@ data class ActiveCentralValues(
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
-    //-----------------Fragmet.EditeBaseDonne.Fabs-------------------------------------------------------------------------------------------------------------------------
-    val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
+
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
-    var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
-    val outlined_filter_searcher_achat: String = "",
+    val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
 
     val fastSearchProduitPourVent: String = "",
@@ -123,7 +125,7 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
 
-) {
+    ) {
     companion object {
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()
@@ -170,5 +172,6 @@ data class ActiveCentralValues(
     sealed class ActiveFilter {
         data object NonTrouve : ActiveFilter()
         data object PrixAuGerant : ActiveFilter()
+        data object premier_Check_Donne : ActiveFilter()
     }
 }

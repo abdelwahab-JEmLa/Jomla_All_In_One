@@ -91,7 +91,7 @@ object filtersAndSorts_Central {
             }
         }
 
-        activeCentralValues.outlined_filter_searcher_achat?.let { searchQuery ->
+        activeCentralValues.outlined_filter_searcher_floating_abouve_all?.let { searchQuery ->
             if (searchQuery.isNotBlank()) {
                 filteredData = filteredData.filter { achat ->
                     // Search in product debug info (which contains the product name)

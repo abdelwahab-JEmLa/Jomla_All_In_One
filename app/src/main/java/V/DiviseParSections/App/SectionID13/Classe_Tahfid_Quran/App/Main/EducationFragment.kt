@@ -77,7 +77,7 @@ fun EducationFragment(
 
     // Get search query from ActiveCentralValues
     val activeCentralValues = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
-    val searchQuery = activeCentralValues.outlined_filter_searcher_achat
+    val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
 
     // Local state for search UI visibility
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }

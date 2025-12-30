@@ -33,17 +33,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -76,6 +83,125 @@ import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 // Fixed the roundToInt() error by using Float types for offset variables
+// Add this composable function before PressistatntMainActivityButtons_Sec8FWinID1
+
+@Composable
+fun FloatingOutlinedSearchField(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = onSearchTextChange,
+            modifier = Modifier.weight(1f),
+            placeholder = { Text("Rechercher produit...") },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search"
+                )
+            },
+            trailingIcon = {
+                if (searchText.isNotEmpty()) {
+                    IconButton(onClick = { onSearchTextChange("") }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear"
+                        )
+                    }
+                }
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp)
+        )
+
+        IconButton(onClick = onDismiss) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Fermer"
+            )
+        }
+    }
+}
+// Add this composable function before PressistatntMainActivityButtons_Sec8FWinID1
+
+@Composable
+fun FloatingSearchFAB(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    showLabels: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(40.dp),
+            onClick = { },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Rechercher dans panier",
+                tint = Color.White
+            )
+        }
+
+        if (showLabels) {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = onSearchTextChange,
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(40.dp),
+                placeholder = {
+                    Text(
+                        "Rechercher...",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                },
+                trailingIcon = {
+                    if (searchText.isNotEmpty()) {
+                        IconButton(
+                            onClick = { onSearchTextChange("") },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodySmall,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                )
+            )
+        }
+    }
+}
+
+// Updated version of the main composable with TODO fixed:
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
@@ -91,6 +217,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onClickAnulationButton: () -> Unit = {},
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
+    // FIXED TODO: Added state for the outlined searcher when fast panier dialog is shown
+    var searchTextForFastPanier by remember { mutableStateOf("") }
+
     val uiState by viewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
@@ -98,7 +227,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
-    // FIXED: Use Float types for offset variables to work with drag gestures and roundToInt()
     var offsetX by remember {
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.x.toFloat())
     }
@@ -109,36 +237,29 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val remainingClients =
-        recordingViewModel.getter.nombreClientsOuLeurDernierEtateCible
+    val remainingClients = recordingViewModel.getter.nombreClientsOuLeurDernierEtateCible
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
     val isDataLoading = currentAppCompt == null
     val currentSelectedCatalogueId =
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler =
-        viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+    val itsFragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
 
-    // Check if current fragment is FragmentProduitFastSearchDialog
-    val itsFragmentProduitFastSearchDialog =
-        activeFragment == Screen.FragmentProduitFastSearchDialog
-
-    val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
-
+    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
-    // Get the floating image from ActiveCentralValues
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val floatingImage = activeCentralValues.image_Flotant
-
-    // Fixed: Added the missing variable
     val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent =
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
-    // DisposableEffect and other logic remains the same...
+    // FIXED TODO: Check if we should show the floating outlined searcher
+    val shouldShowFloatingSearcher = activeCentralValues.affiche_Dialog_Fast_Affiche_Panie &&
+            itsFragmentProduitFastSearchDialog
+
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -163,7 +284,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
                 }
-
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
                         recordingViewModel.onRecordingStopped()
@@ -171,7 +291,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job?.cancel()
                     job = null
                 }
-
                 else -> {}
             }
         }
@@ -214,8 +333,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    val m17Message_avec_BonVen =
-        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
+    val m17Message_avec_BonVen = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     if (m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
@@ -242,15 +360,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         "t1" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
                         )
-
                         "t2" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
                         )
-
                         "t3" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_tebnage = 100.0
                         )
-
                         else -> currentBonVent
                     }
                     repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
@@ -261,15 +376,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     "t1" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
                     )
-
                     "t2" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
                     )
-
                     "t3" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_tebnage = 100.0,
                     )
-
                     else -> currentActiveCentralValues.copy()
                 }
 
@@ -288,14 +400,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     )
 
-    val activeDialogSearchM1Produit =
-        focusedValuesGetter.currentActive_M9AppCompt?.activeDialogSearchM1Produit
+    val activeDialogSearchM1Produit = focusedValuesGetter.currentActive_M9AppCompt?.activeDialogSearchM1Produit
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // Display floating image if available
         if (floatingImage != null && floatingImage.exists()) {
             FloatingImageDisplay(
                 imageFile = floatingImage,
@@ -315,7 +425,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
         Box(
             modifier = Modifier
-                // FIXED: Now roundToInt() works correctly with Float types
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
@@ -326,7 +435,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
                 .padding(16.dp)
         ) {
-
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -336,7 +444,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
                 if (showButtons) {
                     focusedValuesGetter.currentActive_M9AppCompt?.text_Message_Warning?.let { warningMessage ->
                         if (warningMessage.isNotBlank()) {
@@ -371,9 +478,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    if (
-                        !itsFragmentProduitFastSearchDialog
-                    ) {
+                    if (!itsFragmentProduitFastSearchDialog) {
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )
@@ -393,11 +498,26 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             },
                             viewModel = viewModel
                         )
-
                     }
                 }
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
+                    if (shouldShowFloatingSearcher) {
+                        FloatingSearchFAB(
+                            searchText = searchTextForFastPanier,
+                            onSearchTextChange = { newText ->
+                                searchTextForFastPanier = newText
+                                // Update the ActiveCentralValues with the search text
+                                focusedValuesGetter.update_activeCentralValues(
+                                    activeCentralValues.copy(
+                                        outlined_filter_searcher_floating_abouve_all = newText
+                                    )
+                                )
+                            },
+                            showLabels = showLabels
+                        )
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -407,7 +527,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
                                 .size(40.dp),
                             onClick = {
-                                // Toggle the dialog state
                                 val currentState =
                                     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
@@ -416,10 +535,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                     )
                                 )
                                 focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
-
                             },
                             containerColor = if (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie) {
-                                MaterialTheme.colorScheme.secondary // Different color when active
+                                MaterialTheme.colorScheme.secondary
                             } else {
                                 MaterialTheme.colorScheme.primary
                             },
@@ -468,9 +586,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 .size(40.dp),
                             onClick = {
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                                    .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(
-                                        true
-                                    )
+                                    .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(true)
                             },
                             containerColor = MaterialTheme.colorScheme.primary,
                         ) {
@@ -492,12 +608,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
                 }
+
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     fermeDialog = {
                         onPourFermeWindows(M13TarificationInfos())
                         val message = "تراضي"
-
                         currentToast = ToastData(
                             message = message,
                             type = ToastType.SUCCESS,

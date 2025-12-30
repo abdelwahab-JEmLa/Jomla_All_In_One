@@ -33,15 +33,16 @@ fun MainList(
 ) {
     val active_Central_Values by remember { focusedValuesGetter::active_Central_Values }
 
-    val groupedVents by remember(active_Central_Values.activeFilters) {
+    val groupedVents by remember(active_Central_Values.activeFilters, active_Central_Values.outlined_filter_searcher_floating_abouve_all) {
         derivedStateOf {
             val allVents = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             val activeFilters = active_Central_Values.activeFilters
+            val searchQuery = active_Central_Values.outlined_filter_searcher_floating_abouve_all.trim()
 
             val sortVentsParClassement = active_Central_Values.sortVentsParClassment
 
             val filteredData = when {
-                activeFilters.isEmpty() -> allVents
+                activeFilters.isEmpty() && searchQuery.isEmpty() -> allVents
 
                 else -> {
                     allVents.filter { vent ->
@@ -59,11 +60,26 @@ fun MainList(
 
                                     tariff?.laisse_Au_Gerant == true
                                 }
+
+                                // FIXED: Added implementation for premier_Check_Donne filter
+                                is ActiveCentralValues.ActiveFilter.premier_Check_Donne -> {
+                                    vent.premier_Check_Donne == true
+                                }
                             }
 
                             if (!passesThisFilter) {
                                 passesAllFilters = false
                             }
+                        }
+
+                        // FIXED: Filter by product name if search query is not empty
+                        if (passesAllFilters && searchQuery.isNotEmpty()) {
+                            val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(vent.parent_M1Produit_KeyId)
+                            val matchesName = produit?.nom?.contains(searchQuery, ignoreCase = true) == true
+                            val matchesArabName = produit?.nomArab?.contains(searchQuery, ignoreCase = true) == true
+                            val matchesDebugInfo = vent.parent_M1Produit_DebugInfos.contains(searchQuery, ignoreCase = true)
+
+                            passesAllFilters = matchesName || matchesArabName || matchesDebugInfo
                         }
 
                         passesAllFilters

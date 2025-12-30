@@ -45,7 +45,7 @@ fun List_GroupeAchatProduit(
     headViewModel: HeadViewModel = koinViewModel(),
 ) {
     // Get the search query from focused values
-    val outlined_filter_searcher_achat = focusedValuesGetter.active_Central_Values.outlined_filter_searcher_achat
+    val outlined_filter_searcher_achat = focusedValuesGetter.active_Central_Values.outlined_filter_searcher_floating_abouve_all
     val repo = aCentralFacade.repositorysMainGetter.repo11AchatOperation
     val repo10OperationVentCouleur = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
 

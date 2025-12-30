@@ -66,17 +66,24 @@ fun CheckList_ChoisiseurActiveFilter(
         return
     }
 
+    // FIXED: Added premier_Check_Donne to available filters
     val availableFilters = listOf(
         ActiveCentralValues.ActiveFilter.NonTrouve,
-        ActiveCentralValues.ActiveFilter.PrixAuGerant
+        ActiveCentralValues.ActiveFilter.PrixAuGerant,
+        ActiveCentralValues.ActiveFilter.premier_Check_Donne
     )
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 400f).coerceAtLeast(0f)) }
-    var offsetY by remember { mutableFloatStateOf((screenHeightDp.value - 400f).coerceAtLeast(0f)) }
+    // FIXED: Improved drag constraints - card can now move across entire screen
+    // Calculate card dimensions (90% width, estimated height ~300dp)
+    val cardWidth = screenWidth.value * 0.9f
+    val cardHeight = 350f // Estimated card height
+
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - cardWidth) / 2) }
+    var offsetY by remember { mutableFloatStateOf((screenHeightDp.value - cardHeight) / 2) }
 
     fun toggleFilter(filter: ActiveCentralValues.ActiveFilter) {
         val newFilters = if (activeFilters.contains(filter)) {
@@ -102,18 +109,22 @@ fun CheckList_ChoisiseurActiveFilter(
         )
     }
 
+    // FIXED: Added display name for premier_Check_Donne filter
     fun getFilterDisplayName(filter: ActiveCentralValues.ActiveFilter): String {
         return when (filter) {
             is ActiveCentralValues.ActiveFilter.NonTrouve -> "Masquer Non Trouvé"
             is ActiveCentralValues.ActiveFilter.PrixAuGerant -> "Prix au Gérant"
+            is ActiveCentralValues.ActiveFilter.premier_Check_Donne -> "Premier Check Donné"
         }
     }
 
+    // FIXED: Added color for premier_Check_Donne filter
     @Composable
     fun getFilterColor(filter: ActiveCentralValues.ActiveFilter): Color {
         return when (filter) {
             is ActiveCentralValues.ActiveFilter.NonTrouve -> Color(0xFFFF5722) // Red-orange
             is ActiveCentralValues.ActiveFilter.PrixAuGerant -> Color(0xFF4CAF50) // Green
+            is ActiveCentralValues.ActiveFilter.premier_Check_Donne -> Color(0xFF2196F3) // Blue
         }
     }
 
@@ -131,8 +142,10 @@ fun CheckList_ChoisiseurActiveFilter(
                         change.consume()
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
-                        offsetX = offsetX.coerceIn(0f, screenWidth.value - 350f)
-                        offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 300f)
+                        // FIXED: Allow dragging across entire screen with proper bounds
+                        // Allow negative values and full screen range
+                        offsetX = offsetX.coerceIn(0f, (screenWidth.value - cardWidth).coerceAtLeast(0f))
+                        offsetY = offsetY.coerceIn(0f, (screenHeightDp.value - cardHeight).coerceAtLeast(0f))
                     }
                 },
             colors = CardDefaults.cardColors(
