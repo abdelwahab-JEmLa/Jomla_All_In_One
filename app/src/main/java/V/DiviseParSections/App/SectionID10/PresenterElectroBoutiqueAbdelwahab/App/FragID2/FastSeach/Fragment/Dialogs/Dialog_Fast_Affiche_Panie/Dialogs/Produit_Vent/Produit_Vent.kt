@@ -97,7 +97,6 @@ fun Produit_Vent(
 
     produit?.let { nonNullProduit ->
         Box(modifier = modifier) {
-            // Main Card - Yellow background when checked
             Card(
                 modifier = Modifier
                     .semantics(mergeDescendants = true) {

@@ -59,7 +59,8 @@ fun ArticleImageWithOverlay(
     imageSize: DpSize,
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    alwaysShowExpandIcon: Boolean = false
+    alwaysShowExpandIcon: Boolean = false,
+    its_secondary_affiche: Boolean = false
 ) {
 
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
@@ -173,6 +174,8 @@ fun ArticleImageWithOverlay(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            // FIXED: ImageDisplayerProtoAvantJuin3 now fills parent width properly
+            // The fix is in ImageDisplayerProtoAvantJuin3.kt using fillMaxWidth() + aspectRatio()
             ImageDisplayerProtoAvantJuin3(
                 relative_M1Produit = article,
                 viewModel = viewModelHeadViewModel,
@@ -186,7 +189,8 @@ fun ArticleImageWithOverlay(
                 onClickToOpenWindow = {
                     onClickToOpenWindow(article, colorIndex)
                 },
-                shouldShowExpandIcon = alwaysShowExpandIcon
+                shouldShowExpandIcon = alwaysShowExpandIcon,
+                its_secondary_affiche = its_secondary_affiche
             )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)

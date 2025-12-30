@@ -83,7 +83,8 @@ fun ImageDisplayerProtoAvantJuin3(
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
-    shouldShowExpandIcon: Boolean = false
+    shouldShowExpandIcon: Boolean = false ,
+    its_secondary_affiche: Boolean = false
 ) {
     val relative_list_M3Coleurs_Du_Produit = repositorysMainGetter
         .find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1Produit.keyID)
@@ -207,7 +208,22 @@ fun ImageDisplayerProtoAvantJuin3(
         }
     }
 
-    Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
+    // FIXED: Use fillMaxWidth and aspectRatio instead of fixed size
+    // Replace the Box modifier section around line 198-203
+
+    // Replace the Box modifier section around line 198-203
+
+    Box(
+        modifier = modifier
+            .then(
+                if (its_secondary_affiche) {
+                    Modifier
+                        .fillMaxWidth()
+                } else {
+                    Modifier.size(width = imageSize.width, height = imageSize.height)
+                }
+            )
+    ) {
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             GlideImage(
