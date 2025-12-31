@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -216,7 +217,7 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             val couleurButton = typeTarification.couleur
-            val textColor = typeTarification.couleur_Text
+            val textColor = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst) Color.Black else  typeTarification.couleur_Text
 
             focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifTrue {
                 FloatingActionButton(
@@ -224,11 +225,13 @@ fun Prixs_currentApp_ItsWorkChezGrossisst_Handler(
                     onClick = ::save_Tariff_au_relative_vent_et_ferm_fabs_tariffs,
                     containerColor = couleurButton
                 ) {
-                    val text = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst) relative_Produit.nom.take(6) else  typeTarification.abrgNom
+                    val text = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+
+                        ) "كانتيتي" else  typeTarification.abrgNom
                     Text(
                         text = text,
                         color = textColor,
-                        fontSize = 10.sp,
+                        fontSize = 7.sp,
                         maxLines = 2
                     )
                 }
