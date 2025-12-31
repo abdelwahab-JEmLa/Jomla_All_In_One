@@ -173,7 +173,71 @@ data class M3CouleurProduitInfos(
                     ancien.nomImageFichieSansEtansion == newData.nomImageFichieSansEtansion
 
         fun get_default(): M3CouleurProduitInfos {
-                return M3CouleurProduitInfos()
+            return M3CouleurProduitInfos()
+        }
+
+        /**
+         * Finds an existing image filename by decrementing the numeric suffix if the original file doesn't exist.
+         * For example: if "image_5" doesn't exist, tries "image_4", then "image_3", etc.
+         *
+         * @param nomImageFichieSansEtansion The image filename without extension
+         * @param extensionDisponible The file extension (e.g., "webp")
+         * @return The filename (without extension) of the first existing file found, or null if no valid file exists
+         */
+        fun decrementing_file_name_si_non_trouve(
+            nomImageFichieSansEtansion: String,
+            extensionDisponible: String
+        ): String? {
+            if (nomImageFichieSansEtansion == "Non Dispo") {
+                return null
+            }
+
+            val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+
+            // Try the original filename first
+            var currentFile = File(baseDir, "$nomImageFichieSansEtansion.$extensionDisponible")
+            if (currentFile.exists()) {
+                return nomImageFichieSansEtansion
+            }
+
+            // If filename doesn't contain underscore, no decrementing possible
+            if (!nomImageFichieSansEtansion.contains("_")) {
+                return null
+            }
+
+            // Extract prefix and number
+            val prefix = nomImageFichieSansEtansion.substringBeforeLast("_")
+            val initialNumber = nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
+
+            // Try decrementing the number until we find an existing file or reach 0
+            for (number in (initialNumber - 1) downTo 0) {
+                val fileName = "${prefix}_${number}"
+                currentFile = File(baseDir, "$fileName.$extensionDisponible")
+                if (currentFile.exists()) {
+                    return fileName
+                }
+            }
+
+            // No valid file found
+            return null
+        }
+
+        fun incrementing_file_name(nomImageFichieSansEtansion: String): String? {
+            if (nomImageFichieSansEtansion == "Non Dispo") {
+                return null
+            }
+
+            // If filename doesn't contain underscore, can't increment
+            if (!nomImageFichieSansEtansion.contains("_")) {
+                return null
+            }
+
+            // Extract prefix and number
+            val prefix = nomImageFichieSansEtansion.substringBeforeLast("_")
+            val currentNumber = nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
+
+            // Return incremented filename
+            return "${prefix}_${currentNumber + 1}"
         }
     }
 }

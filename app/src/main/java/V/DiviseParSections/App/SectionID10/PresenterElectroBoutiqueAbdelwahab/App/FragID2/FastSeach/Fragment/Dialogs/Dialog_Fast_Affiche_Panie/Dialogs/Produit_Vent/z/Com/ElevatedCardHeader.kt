@@ -46,7 +46,7 @@ fun ElevatedCardHeader(
         ) {
 
             LazyRow(
-                reverseLayout = true,
+                reverseLayout = false,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

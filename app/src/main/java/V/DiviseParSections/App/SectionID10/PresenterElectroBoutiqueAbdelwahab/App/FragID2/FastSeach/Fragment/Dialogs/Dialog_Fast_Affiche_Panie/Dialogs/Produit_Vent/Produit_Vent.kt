@@ -7,7 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos.Type
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -168,8 +168,34 @@ fun Produit_Vent(
                             containerColor = innerCardColor
                         )
                     ) {
+                        val actualImageFile = M3CouleurProduitInfos.decrementing_file_name_si_non_trouve(
+                            relative_M3CouleurProduit?.nomImageFichieSansEtansion ?: "",
+                            relative_M3CouleurProduit?.extensionDisponible ?: ""
+                        )
+                        val incrementing_file_name = M3CouleurProduitInfos.incrementing_file_name(
+                            relative_M3CouleurProduit?.nomImageFichieSansEtansion ?: "",
+                        )
+
                         Row(
                             modifier = Modifier
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = incrementing_file_name,
+                                        key = SemanticsPropertyKey("incrementing_file_name")
+                                    )
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = actualImageFile,
+                                        key = SemanticsPropertyKey("actualImageFile")
+                                    )
+                                }
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = relative_M3CouleurProduit,
+                                        key = SemanticsPropertyKey("relative_M3CouleurProduit")
+                                    )
+                                }
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp, vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -197,9 +223,7 @@ fun Produit_Vent(
                                 }
                             }
 
-                            if (relative_M3CouleurProduit != null &&
-                                relative_M3CouleurProduit.aAffiche == Type.Image &&
-                                relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo.isNotEmpty()) {
+                            if (relative_M3CouleurProduit != null ) {
                                 Box(
                                     modifier = Modifier
                                         .size(size)

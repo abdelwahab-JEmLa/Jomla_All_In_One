@@ -73,6 +73,7 @@ fun ColorNameDisplayer_FragFastVent(
         )
     }
 }
+
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -88,14 +89,6 @@ fun ImageDisplayerGlide_FragFastVent(
     imageSize: DpSize,
     colorFilter: ColorFilter? = null,
 ) {
-    fun imageFile(nomImageFichieSansEtansion: String, extensionDisponible: String): File? =
-        if (nomImageFichieSansEtansion != "Non Dispo")
-            File(
-                "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
-                "$nomImageFichieSansEtansion.$extensionDisponible"
-            )
-        else null
-
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
@@ -103,12 +96,20 @@ fun ImageDisplayerGlide_FragFastVent(
         label = "blur"
     )
 
-    // Fixed: Call the function with proper parameters
-    val actualImageFile = imageFile(
+    // Use the decrementing function to find an existing image filename
+    val actualImageFileName = M3CouleurProduitInfos.decrementing_file_name_si_non_trouve(
         relative_M3CouleurProduit.nomImageFichieSansEtansion,
         relative_M3CouleurProduit.extensionDisponible
     )
-    val imageExists = actualImageFile?.exists() == true
+
+    val actualImageFile = actualImageFileName?.let {
+        File(
+            "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
+            "$it.${relative_M3CouleurProduit.extensionDisponible}"
+        )
+    }
+
+    val imageExists = actualImageFile != null
 
     Surface(
         modifier = modifier,
