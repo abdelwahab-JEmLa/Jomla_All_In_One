@@ -22,7 +22,7 @@ import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
 
 @Composable
- fun SmallDisplayerMultiColor(
+fun SmallDisplayerMultiColor(
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
@@ -36,7 +36,7 @@ import org.koin.compose.koinInject
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject()
 ) {
-    val allColorsForProduct = remember(article.keyID, repo03CouleurProduitInfos.datasValue.size) {
+    val allColorsForProduct = remember(article.keyID, repo03CouleurProduitInfos.datasValue.size, reloadTrigger) {
         repo03CouleurProduitInfos.datasValue
             .filter { it.parentBProduitInfosKeyID == article.keyID }
             .filter { it.nomImageFichieSansEtansion != "Non Dispo" }
@@ -49,13 +49,31 @@ import org.koin.compose.koinInject
         allColorsForProduct.map { it.indexCouleurDansAncienProto }.distinct()
     }
 
+    // DEBUG: Log to see what's happening
+    remember(availableColorIndices) {
+        android.util.Log.d("SmallDisplayerMultiColor",
+            "Article ${article.id}: availableColorIndices = $availableColorIndices")
+        availableColorIndices
+    }
+
+    // Use expandedColorIndex if provided, otherwise use first available
+    val primaryIndex = expandedColorIndex ?: availableColorIndices.firstOrNull() ?: 0
+
+    // Get secondary indices (all colors except the primary)
+    val secondaryIndices = availableColorIndices.filter { it != primaryIndex }
+
+    // DEBUG: Log secondary indices
+    remember(secondaryIndices) {
+        android.util.Log.d("SmallDisplayerMultiColor",
+            "Article ${article.id}: primaryIndex = $primaryIndex, secondaryIndices = $secondaryIndices")
+        secondaryIndices
+    }
+
     Column(
         modifier = modifier.padding(3.dp),
         verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
-        // Primary image (always index 0 or first available)
-        val primaryIndex = availableColorIndices.firstOrNull() ?: 0
-
+        // Primary image (expanded color or first available)
         ArticleImageWithOverlay(
             article = article,
             viewModelHeadViewModel = viewModel,
@@ -68,8 +86,7 @@ import org.koin.compose.koinInject
             alwaysShowExpandIcon = true
         )
 
-        val secondaryIndices = availableColorIndices.drop(1)
-
+        // Secondary images (all other colors)
         secondaryIndices.forEach { colorIndex ->
             ArticleImageWithOverlay(
                 article = article,
