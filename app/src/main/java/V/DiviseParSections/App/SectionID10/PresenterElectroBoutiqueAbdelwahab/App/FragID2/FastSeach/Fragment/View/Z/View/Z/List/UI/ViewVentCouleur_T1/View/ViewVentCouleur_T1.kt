@@ -474,6 +474,7 @@ fun ViewVentCouleur_T1(
 
                 val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
+
                 Box(modifier = Modifier.fillMaxWidth()) {
                     ColorImageDisplayer(
                         colorInfo = relative_M3CouleurInfos,
