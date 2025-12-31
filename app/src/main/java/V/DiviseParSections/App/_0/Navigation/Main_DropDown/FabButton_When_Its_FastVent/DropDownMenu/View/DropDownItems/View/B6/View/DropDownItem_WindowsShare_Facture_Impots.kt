@@ -280,11 +280,14 @@ fun DropDownItem_ThermiquePrint(
                                     // Button to show tariff dialog
                                     TextButton(
                                         onClick = {
-                                            val produitRepo = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
-                                            val product = produitRepo.datasValue.find { it.nom == productName }
+                                            val produitRepo =
+                                                aCentralFacade.repositorysMainGetter.repo1ProduitInfos
+                                            val product =
+                                                produitRepo.datasValue.find { it.nom == productName }
 
                                             product?.let { prod ->
-                                                val get = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                                                val get =
+                                                    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
                                                 aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                                                     m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
@@ -329,8 +332,10 @@ fun DropDownItem_ThermiquePrint(
                             // Verify and Close button
                             TextButton(
                                 onClick = {
-                                    val tarificationRepo = aCentralFacade.repositorysMainGetter.repo13TarificationInfos
-                                    val produitRepo = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
+                                    val tarificationRepo =
+                                        aCentralFacade.repositorysMainGetter.repo13TarificationInfos
+                                    val produitRepo =
+                                        aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 
                                     val stillInvalidProducts = mutableListOf<String>()
 
@@ -343,7 +348,9 @@ fun DropDownItem_ThermiquePrint(
                                         }
 
                                         if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) {
-                                            stillInvalidProducts.add(product?.nom ?: "Produit inconnu")
+                                            stillInvalidProducts.add(
+                                                product?.nom ?: "Produit inconnu"
+                                            )
                                         }
                                     }
 
@@ -424,7 +431,6 @@ fun DropDownItem_ThermiquePrint(
         }
     }
 }
-
 // Helper function to proceed with printing
 private fun proceedWithPrinting(
     scope: CoroutineScope,
@@ -438,9 +444,21 @@ private fun proceedWithPrinting(
 ) {
     scope.launch {
         try {
+            // Calculate total value of vents
+            val totalValue = activeVents.sumOf { vent ->
+                val tariff = aCentralFacade.repositorysMainGetter
+                    .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+
+                val prixCurrency = tariff?.prixCurrency ?: 0.0
+                vent.quantity * prixCurrency
+            }
+
+            // Update M8BonVent with incremented impression count and total
             aCentralFacade.repositorysMainSetter.update_M8BonVent(
                 focusedValuesGetter.activeOnVent_M8BonVent?.copy(
-                    affiche_le_verssement_au_prochen_print = false
+                    affiche_le_verssement_au_prochen_print = false,
+                    impression_conte = focusedValuesGetter.activeOnVent_M8BonVent!!.impression_conte + 1,
+                    sum_De_Totale_Vents = totalValue
                 )
             )
 

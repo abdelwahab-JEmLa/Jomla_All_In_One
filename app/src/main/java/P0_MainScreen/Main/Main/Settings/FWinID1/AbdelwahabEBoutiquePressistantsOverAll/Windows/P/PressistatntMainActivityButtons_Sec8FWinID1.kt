@@ -8,6 +8,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.B1CataloguesAffiche
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.FloatingBonVentToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons.FloatingImageDisplay
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
@@ -24,7 +25,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -48,7 +48,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -163,70 +162,6 @@ fun FloatingSearchFAB(
     }
 }
 
-// ✅ NEW: Toggle button for cycling through BonVents
-@Composable
-fun FloatingBonVentToggleFAB(
-    currentBonVent: M8BonVent?,
-    availableBonVents: List<M8BonVent>,
-    onBonVentSelected: (M8BonVent) -> Unit,
-    showLabels: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val bonVentCount = availableBonVents.size
-    val currentIndex = currentBonVent?.let { current ->
-        availableBonVents.indexOfFirst { it.keyID == current.keyID }
-    } ?: -1
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-    ) {
-        FloatingActionButton(
-            modifier = Modifier.size(40.dp),
-            onClick = {
-                if (availableBonVents.isNotEmpty()) {
-                    val nextIndex = (currentIndex + 1) % bonVentCount
-                    onBonVentSelected(availableBonVents[nextIndex])
-                }
-            },
-            containerColor = if (bonVentCount > 1) {
-                MaterialTheme.colorScheme.tertiary
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            },
-        ) {
-            Icon(
-                imageVector = Icons.Default.NavigateNext,
-                contentDescription = "Basculer BonVent",
-                tint = if (bonVentCount > 1) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        if (showLabels) {
-            Text(
-                text = if (bonVentCount > 1) {
-                    "BonVent ${currentIndex + 1}/$bonVentCount"
-                } else {
-                    "BonVent unique"
-                },
-                modifier = Modifier
-                    .background(
-                        if (bonVentCount > 1) {
-                            MaterialTheme.colorScheme.tertiary
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        },
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = if (bonVentCount > 1) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-}
-
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -280,23 +215,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val shouldShowFloatingSearcher = activeCentralValues.affiche_Dialog_Fast_Affiche_Panie &&
             itsFragmentProduitFastSearchDialog
 
-    // ✅ NEW: Get available BonVents for toggle functionality
-    val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val currentPeriod = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
-    val availableBonVentsForToggle = remember(currentBonVent, currentPeriod, repositorysMainGetter.repo8BonVent.datasValue) {
-        if (currentBonVent == null || currentPeriod == null) {
-            emptyList()
-        } else {
-            repositorysMainGetter.repo8BonVent.datasValue
-                .filter { bonVent ->
-                    bonVent.parent_M14VentPeriod_KeyId == currentPeriod.keyID &&
-                            bonVent.parent_M2Client_KeyID == currentBonVent.parent_M2Client_KeyID &&
-                            bonVent.impression_conte == 0
-                }
-                .sortedByDescending { it.creationTimestamps }
-        }
-    }
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -541,17 +460,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
                     FloatingBonVentToggleFAB(
-                        currentBonVent = currentBonVent,
-                        availableBonVents = availableBonVentsForToggle,
-                        onBonVentSelected = { selectedBonVent ->
-                            repositorysMainSetter.repo8BonVent.updateIfExist(selectedBonVent)
-                            focusedVarsHandlerFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(selectedBonVent)
-                            currentToast = ToastData(
-                                message = "BonVent basculé: ${selectedBonVent.get_DebugInfos()}",
-                                type = ToastType.INFO,
-                                duration = 1500L
-                            )
-                        },
                         showLabels = showLabels
                     )
 
