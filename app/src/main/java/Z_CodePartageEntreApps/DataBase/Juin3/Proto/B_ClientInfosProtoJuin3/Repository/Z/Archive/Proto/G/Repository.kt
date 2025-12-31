@@ -66,6 +66,19 @@ class dataBaseCreationFactoryMID2ClientRepository(
             batchFireBaseUpdate(listOf(dataAvecTigerUpdate))
         }
     }
+    fun delete(dataToDelete: M2Client) {
+        factoryScope.launch {
+            // Delete from local Room database
+            dao.delete(dataToDelete)
+
+            // Delete from Firebase
+            repoRef.child(dataToDelete.keyID).removeValue().await()
+
+            // Update repo state
+            val updatedData = dao.getAll()
+            updateRepoState(updatedData)
+        }
+    }
 
     fun batchFireBaseUpdate(datas: List<M2Client>): Unit {
         CoroutineScope(Dispatchers.IO).launch {

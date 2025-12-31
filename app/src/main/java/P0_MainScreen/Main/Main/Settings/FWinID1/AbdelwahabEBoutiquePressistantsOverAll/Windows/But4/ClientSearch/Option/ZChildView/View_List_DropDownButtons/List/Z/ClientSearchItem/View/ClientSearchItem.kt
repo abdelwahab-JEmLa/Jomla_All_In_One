@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.annotation.SuppressLint
@@ -21,10 +22,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,12 +42,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
 data class return_get_Edited_M8BonVent(
     val found_M8 :M8BonVent?,
     val default_If_No_Found :M8BonVent,
 )
+
 fun get_Edited_M8BonVent(
     aCentralFacade: ACentralFacade,
     relative_M2Client: M2Client,
@@ -92,6 +99,7 @@ fun ClientSearchItem(
     m2Client: M2Client,
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
     val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
 
@@ -109,95 +117,174 @@ fun ClientSearchItem(
         m2Client
     ) { toastDataToShow -> toastData = toastDataToShow }
 
+    val currentValues = focusedValuesGetter.active_Central_Values
+    val isInDeletionList = currentValues.list_clients_por_suprime.any { it.keyID == m2Client.keyID }
+
     ModernToastMessage(
         toastData = toastData,
         onDismiss = { toastData = null }
     )
 
     bonVentResult?.let { (existingBonVent, newBonVent, semanticsModifier) ->
-        ElevatedCard(
+        Box(
             modifier = Modifier
                 .padding(petitePaddine)
                 .then(semanticsModifier)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val handleClick = {
-                            if (existingBonVent != null) {
-                                viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
-                                    existingBonVent
-                                )
-                            } else {
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(
-                                    newBonVent
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            val handleClick = {
+                                if (existingBonVent != null) {
+                                    viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                                        existingBonVent
+                                    )
+                                } else {
+                                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(
+                                        newBonVent
+                                    )
+                                }
+
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
+                                    existingBonVent ?: newBonVent
                                 )
                             }
-
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
-                                existingBonVent ?: newBonVent
-                            )
+                            handleClick()
+                            onClick()
                         }
-                        handleClick()
-                        onClick()
-                    }
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = Color(
-                                latestBonVent?.etateActuellementEst?.color
-                                    ?: m2Client.actuelleEtat.color
-                            ),
-                            shape = CircleShape
-                        )
-                )
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = m2Client.nom,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        .padding(12.dp)
+                        .padding(end = 80.dp), // Space for floating buttons
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(
+                                color = Color(
+                                    latestBonVent?.etateActuellementEst?.color
+                                        ?: m2Client.actuelleEtat.color
+                                ),
+                                shape = CircleShape
+                            )
                     )
 
-                    latestBonVent?.let {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
+                            text = m2Client.nom,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
                         )
-                    }
 
-                    if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
-                        Text(
-                            text = "📍 ${
-                                String.format(
-                                    "%.4f",
-                                    m2Client.latitude
+                        latestBonVent?.let {
+                            Text(
+                                text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
+                        }
+
+                        if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
+                            Text(
+                                text = "📍 ${
+                                    String.format(
+                                        "%.4f",
+                                        m2Client.latitude
+                                    )
+                                }, ${String.format("%.4f", m2Client.longitude)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF4CAF50)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // ✅ TODO(1) FIXED: Floating buttons positioned absolutely to avoid hiding text
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Print toggle button with counter badge
+                val bonVentToToggle = existingBonVent ?: latestBonVent
+                if (bonVentToToggle != null) {
+                    val impressionConte = bonVentToToggle.impression_conte
+                    Box(
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        IconButton(
+                            onClick = {
+                                val newCount = if (impressionConte > 0) 0 else 1
+                                val updatedBonVent = bonVentToToggle.copy(
+                                    impression_conte = newCount
                                 )
-                            }, ${String.format("%.4f", m2Client.longitude)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF4CAF50)
-                        )
+                                viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                                    updatedBonVent
+                                )
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Print,
+                                contentDescription = "Toggle impression: $impressionConte",
+                                tint = if (impressionConte > 0) Color(0xFF4CAF50) else Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        // Counter badge
+                        if (impressionConte > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(16.dp)
+                                    .background(
+                                        color = Color(0xFFFF5722),
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = impressionConte.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White,
+                                    fontSize = 10.dp.value.toInt().sp
+                                )
+                            }
+                        }
                     }
                 }
 
-                Row {
+                // Add/Remove from deletion list button
+                IconButton(
+                    onClick = {
+                        val updatedList = if (isInDeletionList) {
+                            currentValues.list_clients_por_suprime.filter { it.keyID != m2Client.keyID }
+                        } else {
+                            currentValues.list_clients_por_suprime + m2Client
+                        }
+                        focusedValuesGetter.update_activeCentralValues(
+                            currentValues.copy(list_clients_por_suprime = updatedList)
+                        )
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
                     Icon(
-                        imageVector = m2Client.clientTypeMode.icon,
-                        contentDescription = null,
-                        tint = m2Client.clientTypeMode.color,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Receipt,
-                        contentDescription = null,
-                        tint = m2Client.clientTypeMode.color,
-                        modifier = Modifier.size(16.dp)
+                        imageVector = if (isInDeletionList) Icons.Default.RemoveCircle else Icons.Default.AddCircle,
+                        contentDescription = if (isInDeletionList) "Retirer de la liste" else "Ajouter à la liste",
+                        tint = if (isInDeletionList) Color(0xFFFF5722) else Color(0xFF4CAF50),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

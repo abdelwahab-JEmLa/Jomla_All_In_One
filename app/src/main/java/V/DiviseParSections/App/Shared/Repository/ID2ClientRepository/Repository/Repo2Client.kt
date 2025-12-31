@@ -122,6 +122,34 @@ class Repo2Client(
         this._datas.value = this._datas.value.filter { it.id != clientId }
     }
 
+    // In Repo2Client class (first file)
+    fun delete_M2Client(data: M2Client) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            repoScope.launch {
+                withContext(Dispatchers.Main) {
+                    runtime_throw_Erreur_Pour_Regle_Le_Real_Bug("delete_M2Client: Client not found")
+                }
+            }
+            return
+        }
+
+        repoScope.launch {
+            // Remove from UI state
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    removeAt(existingIndex)
+                }
+            }
+        }
+
+        // Delete from database
+        dataBaseCreationFactory.delete(data)
+    }
+    
     fun updateClients(newClients: List<M2Client>) {
         this._datas.value = newClients
         _isInitialized.value = true

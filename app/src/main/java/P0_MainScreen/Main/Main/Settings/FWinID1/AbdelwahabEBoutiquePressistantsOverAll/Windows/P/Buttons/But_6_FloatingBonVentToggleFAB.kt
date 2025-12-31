@@ -48,8 +48,6 @@ fun FloatingBonVentToggleFAB(
     val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
     val currentPeriod = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
 
-    // ✅ FIXED TODO(1): Trouve les clients avec BonVents (impression_conte=0)
-    // et trie par sortClientsByLastVentOperation
     val clientsWithBonVents = remember(currentPeriod, repositorysMainGetter.repo8BonVent.datasValue, repositorysMainGetter.repo2Client.datasValue) {
         if (currentPeriod == null) {
             emptyList()
@@ -78,6 +76,21 @@ fun FloatingBonVentToggleFAB(
         clientsWithBonVents.indexOfFirst { it.keyID == bonVent.parent_M2Client_KeyID }
     } ?: -1
 
+    // ✅ TODO(1) FIXED: Calculate next client to display
+    val nextClientInfo = remember(currentClientIndex, clientCount, clientsWithBonVents) {
+        if (clientsWithBonVents.isEmpty()) {
+            null
+        } else {
+            val nextIndex = if (currentClientIndex >= clientCount - 1 || currentClientIndex < 0) {
+                0 // Retour au premier client
+            } else {
+                currentClientIndex + 1 // Client suivant
+            }
+            val nextClient = clientsWithBonVents[nextIndex]
+            Pair(nextIndex, nextClient.nom)
+        }
+    }
+
     // Show toast messages
     ModernToastMessage(
         toastData = toastData,
@@ -92,9 +105,13 @@ fun FloatingBonVentToggleFAB(
         FloatingActionButton(
             modifier = Modifier.Companion.size(40.dp),
             onClick = {
-                // ✅ FIXED TODO(2): Toggle au CLIENT suivant (pas BonVent suivant)
                 if (clientsWithBonVents.isNotEmpty()) {
-                    val nextClientIndex = (currentClientIndex + 1) % clientCount
+                    // Si on est au dernier ou index invalide, retour au premier (index 0)
+                    val nextClientIndex = if (currentClientIndex >= clientCount - 1 || currentClientIndex < 0) {
+                        0 // Retour au premier client
+                    } else {
+                        currentClientIndex + 1 // Client suivant
+                    }
                     val nextClient = clientsWithBonVents[nextClientIndex]
 
                     try {
@@ -163,10 +180,14 @@ fun FloatingBonVentToggleFAB(
 
         if (showLabels) {
             Text(
-                text = if (clientCount > 1) {
-                    "Client ${currentClientIndex + 1}/$clientCount"
-                } else {
-                    "Client unique"
+                text = when {
+                    clientCount == 0 -> "Aucun client"
+                    clientCount == 1 -> "Client unique: ${clientsWithBonVents.firstOrNull()?.nom ?: ""}"
+                    nextClientInfo != null -> {
+                        val (nextIdx, nextName) = nextClientInfo
+                        "Actuel: ${currentClientIndex + 1}/$clientCount | Suivant: ${nextIdx + 1} - $nextName"
+                    }
+                    else -> "Client ${currentClientIndex + 1}/$clientCount"
                 },
                 modifier = Modifier.Companion
                     .background(

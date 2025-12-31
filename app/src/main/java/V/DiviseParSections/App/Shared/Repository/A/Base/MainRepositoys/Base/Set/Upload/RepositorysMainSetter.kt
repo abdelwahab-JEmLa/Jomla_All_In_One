@@ -172,6 +172,7 @@ class RepositorysMainSetter(
 
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M2Client(data: M2Client) = repo2Client.upsert(data)
+    fun delete_M2Client(data: M2Client) = repo2Client.delete_M2Client(data)
 
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
     fun addOrUpdateData_M3CouleurProduitInfos(data: M3CouleurProduitInfos) = repo03CouleurProduitInfos.addOrUpdateData(data)

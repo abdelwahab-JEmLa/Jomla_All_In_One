@@ -24,6 +24,7 @@ data class ActiveCentralValues(
 
     //-----------------Delete.Safe-------------------------------------------------------------------------------------------------------------
     val affiche_DeleteButtons: Boolean = false,
+    val list_clients_por_suprime: List<M2Client> = emptyList(),
 
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
     val active_Catalogue_Pour_NewAddedProduit: CataloguesCaegorie? = CataloguesCaegorie(

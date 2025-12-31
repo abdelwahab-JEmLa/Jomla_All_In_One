@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -72,12 +73,18 @@ fun ID4ClientSearchButton(
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<M2Client>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
-    var isFournisseurMode by remember { mutableStateOf(false) } // New state for toggle
+    var isFournisseurMode by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val searchQueryFlow = remember { MutableStateFlow("") }
 
+    // FIXED TODO(1): Get deletion list and filter out clients
+    val currentValues = getter.active_Central_Values
+    val deletionList = currentValues.list_clients_por_suprime
+    val deletionKeyIds = deletionList.map { it.keyID }.toSet()
+
     val clientsWithCommandBonVents =
         getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
+            .filter { !deletionKeyIds.contains(it.keyID) } // Filter out clients in deletion list
 
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
@@ -95,7 +102,7 @@ fun ID4ClientSearchButton(
         if (isSearchMode) searchQueryFlow.value = searchQuery
     }
 
-    LaunchedEffect(isSearchMode) {
+    LaunchedEffect(isSearchMode, deletionKeyIds) {
         if (isSearchMode) {
             searchQueryFlow
                 .debounce(300)
@@ -105,10 +112,13 @@ fun ID4ClientSearchButton(
                         filteredClients = clientsWithCommandBonVents
                         showDropdown = clientsWithCommandBonVents.isNotEmpty()
                     } else {
-                        val filtered = hClientRepository.datasValue.filter { client ->
-                            client.nom.contains(query, ignoreCase = true) ||
-                                    client.numTelephone.contains(query, ignoreCase = true)
-                        }
+                        // FIXED TODO(1): Filter search results to exclude deletion list
+                        val filtered = hClientRepository.datasValue
+                            .filter { client ->
+                                !deletionKeyIds.contains(client.keyID) &&
+                                        (client.nom.contains(query, ignoreCase = true) ||
+                                                client.numTelephone.contains(query, ignoreCase = true))
+                            }
                         filteredClients = filtered
                         showDropdown = filtered.isNotEmpty()
                     }
@@ -148,7 +158,6 @@ fun ID4ClientSearchButton(
             if (showLabels) {
                 val nomClient = getter.activeOnVent_M2Client?.nom ?: ""
                 val onVentId8BonVent = getter.activeOnVent_M8BonVent
-
 
                 Text(
                     text = if (isTextCollapsed) {
@@ -195,7 +204,7 @@ fun ID4ClientSearchButton(
                                         currentValues.copy(markerStatusDialogActiveM2Client = activeClient)
                                     )
                                 },
-                                containerColor = Color(0xFF9C27B0) // Purple to match dialog theme
+                                containerColor = Color(0xFF9C27B0)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
@@ -206,7 +215,7 @@ fun ID4ClientSearchButton(
                             }
                         }
 
-                        // Toggle Button for Client/Fournisseur (without toast)
+                        // Toggle Button for Client/Fournisseur
                         ClientFournisseurToggleButton(
                             isFournisseurMode = isFournisseurMode,
                             onToggle = { isFournisseurMode = !isFournisseurMode }
@@ -237,7 +246,6 @@ fun ID4ClientSearchButton(
                                     else "Nom client ou téléphone..."
                                 )
                             },
-
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color.White,
@@ -260,22 +268,60 @@ fun ID4ClientSearchButton(
                                 )
                             },
                             trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        isSearchMode = false
-                                        searchQuery = ""
-                                        showDropdown = false
-                                    }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Fermer"
-                                    )
+                                // FIXED TODO(1): Switch between Close and Delete icon based on search query
+                                if (searchQuery.trim().equals("supp", ignoreCase = true)) {
+                                    IconButton(
+                                        onClick = {
+                                            // Delete all clients in the deletion list from repository
+                                            val clientsToDelete = currentValues.list_clients_por_suprime
+                                            if (clientsToDelete.isNotEmpty()) {
+                                                clientsToDelete.forEach { client ->
+                                                    viewModel.aCentralFacade.repositorysMainSetter.delete_M2Client(client)
+                                                }
+
+                                                // Clear the deletion list
+                                                focusedValuesGetter.update_activeCentralValues(
+                                                    currentValues.copy(list_clients_por_suprime = emptyList())
+                                                )
+
+                                                // Show confirmation toast
+                                                onClientSelectedToToast(
+                                                    M2Client().copy(
+                                                        nom = "${clientsToDelete.size} client(s) supprimé(s)"
+                                                    )
+                                                )
+                                            }
+
+                                            // Reset search mode
+                                            isSearchMode = false
+                                            searchQuery = ""
+                                            showDropdown = false
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Supprimer les clients",
+                                            tint = Color(0xFFFF5722) // Red color for delete
+                                        )
+                                    }
+                                } else {
+                                    IconButton(
+                                        onClick = {
+                                            isSearchMode = false
+                                            searchQuery = ""
+                                            showDropdown = false
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Fermer"
+                                        )
+                                    }
                                 }
                             }
                         )
                     }
                 }
-
 
                 // Display current mode
                 Text(
