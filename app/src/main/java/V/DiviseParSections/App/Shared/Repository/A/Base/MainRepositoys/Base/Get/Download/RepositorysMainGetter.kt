@@ -137,6 +137,36 @@ class RepositorysMainGetter(
     fun find_M13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }
 
+    fun find_List_Tariffs_Du_Produit(
+        parent_Produit_keyID: String,
+        its_grossist_app: Boolean = false
+    ): List<M13TarificationInfos> {
+        return repo13TarificationInfos.datasValue
+            .filter { tariff ->
+                tariff.parent_M1Produit_KeyId == parent_Produit_keyID &&
+                        if (its_grossist_app) {
+                            tariff.typeChoisi.its_gro_app
+                        } else {
+                            !tariff.typeChoisi.its_gro_app
+                        }
+            }
+            .groupBy { it.typeChoisi }
+            .mapValues { (_, tariffsOfType) ->
+                tariffsOfType.maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+            }
+            .values
+            .filterNotNull()
+    }
+
+    // Helper function to find specific grossist tariff types
+    fun find_Tariff_SuperGros_For_Produit(parent_Produit_keyID: String): M13TarificationInfos? {
+        return repo13TarificationInfos.datasValue
+            .filter {
+                it.parent_M1Produit_KeyId == parent_Produit_keyID &&
+                        it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+            }
+            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+    }
     //--------------M16----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M16CategorieProduit_By_OldID(OldID: Long): CategoriesTabelle? =
         repoM16CategorieProduit.datasValue.find { it.id == OldID }

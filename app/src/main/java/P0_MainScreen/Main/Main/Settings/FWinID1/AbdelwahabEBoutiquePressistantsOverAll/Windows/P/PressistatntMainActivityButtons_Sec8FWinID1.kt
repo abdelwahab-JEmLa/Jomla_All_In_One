@@ -24,6 +24,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -47,6 +48,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -87,60 +89,6 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
-// Fixed the roundToInt() error by using Float types for offset variables
-// Add this composable function before PressistatntMainActivityButtons_Sec8FWinID1
-
-@Composable
-fun FloatingOutlinedSearchField(
-    searchText: String,
-    onSearchTextChange: (String) -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = onSearchTextChange,
-            modifier = Modifier.weight(1f),
-            placeholder = { Text("Rechercher produit...") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search"
-                )
-            },
-            trailingIcon = {
-                if (searchText.isNotEmpty()) {
-                    IconButton(onClick = { onSearchTextChange("") }) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear"
-                        )
-                    }
-                }
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        IconButton(onClick = onDismiss) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Fermer"
-            )
-        }
-    }
-}
-// Add this composable function before PressistatntMainActivityButtons_Sec8FWinID1
 @Composable
 fun FloatingSearchFAB(
     searchText: String,
@@ -171,11 +119,11 @@ fun FloatingSearchFAB(
                 onValueChange = onSearchTextChange,
                 modifier = Modifier
                     .width(200.dp)
-                    .height(56.dp), // ✅ Increased from 40.dp to 56.dp (standard Material3 height)
+                    .height(56.dp),
                 placeholder = {
                     Text(
                         "Rechercher...",
-                        style = MaterialTheme.typography.bodyMedium // Changed from bodySmall for better readability
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 },
                 trailingIcon = {
@@ -187,26 +135,25 @@ fun FloatingSearchFAB(
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear",
-                                modifier = Modifier.size(18.dp) // Slightly larger icon
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 },
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodyMedium, // Better readability
+                textStyle = MaterialTheme.typography.bodyMedium,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedBorderColor = MaterialTheme.colorScheme.tertiary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 ),
-                // ✅ Add interactionSource to detect clicks and clear text
                 interactionSource = remember { MutableInteractionSource() }
                     .also { interactionSource ->
                         LaunchedEffect(interactionSource) {
                             interactionSource.interactions.collect { interaction ->
                                 if (interaction is PressInteraction.Release) {
-                                    onSearchTextChange("") // Clear on click
+                                    onSearchTextChange("")
                                 }
                             }
                         }
@@ -216,6 +163,69 @@ fun FloatingSearchFAB(
     }
 }
 
+// ✅ NEW: Toggle button for cycling through BonVents
+@Composable
+fun FloatingBonVentToggleFAB(
+    currentBonVent: M8BonVent?,
+    availableBonVents: List<M8BonVent>,
+    onBonVentSelected: (M8BonVent) -> Unit,
+    showLabels: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val bonVentCount = availableBonVents.size
+    val currentIndex = currentBonVent?.let { current ->
+        availableBonVents.indexOfFirst { it.keyID == current.keyID }
+    } ?: -1
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.size(40.dp),
+            onClick = {
+                if (availableBonVents.isNotEmpty()) {
+                    val nextIndex = (currentIndex + 1) % bonVentCount
+                    onBonVentSelected(availableBonVents[nextIndex])
+                }
+            },
+            containerColor = if (bonVentCount > 1) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+        ) {
+            Icon(
+                imageVector = Icons.Default.NavigateNext,
+                contentDescription = "Basculer BonVent",
+                tint = if (bonVentCount > 1) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        if (showLabels) {
+            Text(
+                text = if (bonVentCount > 1) {
+                    "BonVent ${currentIndex + 1}/$bonVentCount"
+                } else {
+                    "BonVent unique"
+                },
+                modifier = Modifier
+                    .background(
+                        if (bonVentCount > 1) {
+                            MaterialTheme.colorScheme.tertiary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = if (bonVentCount > 1) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
@@ -266,11 +276,27 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val floatingImage = activeCentralValues.image_Flotant
-    val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent =
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
     val shouldShowFloatingSearcher = activeCentralValues.affiche_Dialog_Fast_Affiche_Panie &&
             itsFragmentProduitFastSearchDialog
+
+    // ✅ NEW: Get available BonVents for toggle functionality
+    val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
+    val currentPeriod = focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+
+    val availableBonVentsForToggle = remember(currentBonVent, currentPeriod, repositorysMainGetter.repo8BonVent.datasValue) {
+        if (currentBonVent == null || currentPeriod == null) {
+            emptyList()
+        } else {
+            repositorysMainGetter.repo8BonVent.datasValue
+                .filter { bonVent ->
+                    bonVent.parent_M14VentPeriod_KeyId == currentPeriod.keyID &&
+                            bonVent.parent_M2Client_KeyID == currentBonVent.parent_M2Client_KeyID &&
+                            bonVent.impression_conte == 0
+                }
+                .sortedByDescending { it.creationTimestamps }
+        }
+    }
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -514,7 +540,23 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
+                    FloatingBonVentToggleFAB(
+                        currentBonVent = currentBonVent,
+                        availableBonVents = availableBonVentsForToggle,
+                        onBonVentSelected = { selectedBonVent ->
+                            repositorysMainSetter.repo8BonVent.updateIfExist(selectedBonVent)
+                            focusedVarsHandlerFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(selectedBonVent)
+                            currentToast = ToastData(
+                                message = "BonVent basculé: ${selectedBonVent.get_DebugInfos()}",
+                                type = ToastType.INFO,
+                                duration = 1500L
+                            )
+                        },
+                        showLabels = showLabels
+                    )
+
                     if (shouldShowFloatingSearcher) {
+
                         FloatingSearchFAB(
                             searchText = searchTextForFastPanier,
                             onSearchTextChange = { newText ->
@@ -528,22 +570,18 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showLabels = showLabels
                         )
 
-                        // ✅ FIXED: Added filter toggle FAB
                         FloatingFilterToggleFAB(
                             activeFilters = activeCentralValues.activeFilters,
                             onToggleFilter = {
                                 val currentFilters = activeCentralValues.activeFilters
                                 val newFilters = when {
-                                    // If premier_Check_Donne is active, switch to non_premier_Check_Donne
                                     currentFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) -> {
                                         (currentFilters - ActiveCentralValues.ActiveFilter.premier_Check_Donne) +
                                                 ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
                                     }
-                                    // If non_premier_Check_Donne is active, switch to aucun (remove it)
                                     currentFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) -> {
                                         currentFilters - ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
                                     }
-                                    // If no filter is active, activate premier_Check_Donne
                                     else -> {
                                         currentFilters + ActiveCentralValues.ActiveFilter.premier_Check_Donne
                                     }
@@ -555,6 +593,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             },
                             showLabels = showLabels
                         )
+
                     }
 
                     Row(
@@ -652,7 +691,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     showLabels = showLabels,
                     fermeDialog = {
                         onPourFermeWindows(M13TarificationInfos())
-                        val message = "تراضي"
+                        val message = "ترافي"
                         currentToast = ToastData(
                             message = message,
                             type = ToastType.SUCCESS,
@@ -700,6 +739,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     }
 }
+
 @Composable
 fun FloatingFilterToggleFAB(
     activeFilters: Set<ActiveCentralValues.ActiveFilter>,
@@ -707,7 +747,6 @@ fun FloatingFilterToggleFAB(
     showLabels: Boolean,
     modifier: Modifier = Modifier
 ) {
-    // Determine current filter state
     val currentFilterState = when {
         activeFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) ->
             FilterState.PREMIER_CHECK
@@ -725,8 +764,8 @@ fun FloatingFilterToggleFAB(
             modifier = Modifier.size(40.dp),
             onClick = onToggleFilter,
             containerColor = when (currentFilterState) {
-                FilterState.PREMIER_CHECK -> Color(0xFF2196F3) // Blue
-                FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0) // Purple
+                FilterState.PREMIER_CHECK -> Color(0xFF2196F3)
+                FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0)
                 FilterState.AUCUN -> MaterialTheme.colorScheme.surfaceVariant
             },
         ) {
@@ -770,9 +809,9 @@ fun FloatingFilterToggleFAB(
         }
     }
 }
+
 private enum class FilterState {
     AUCUN,
     PREMIER_CHECK,
     NON_PREMIER_CHECK
 }
-

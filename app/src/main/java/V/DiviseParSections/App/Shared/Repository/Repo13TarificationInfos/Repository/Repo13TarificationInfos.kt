@@ -235,6 +235,9 @@ data class M13TarificationInfos(
     var parent_M2Client_KeyId: String = "null",
     val parent_M2Client_DebugInfos: String = "null",
 ) {
+    // Updated TypeChoisi enum in M13TarificationInfos class
+// This fixes the TODO by properly marking grossist-specific tariffs
+
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
@@ -242,95 +245,129 @@ data class M13TarificationInfos(
         val couleur_Text: Color = Color.White,
         val profitabilityScore: Int = 0,
         val abrgNom: String = "",
+        val its_gro_app: Boolean = false,
     ) {
-        //---------------------------------------currentApp_ItsWorkChezGrossisst  ------------------------------------------------------------------------------------------------
+        //------- Grossist App Specific Tariffs (its_gro_app = true) --------
         Tariff_ItsWorkInGrossist_Achat(
             Icons.Filled.History,
             Color(0xFFEEEEEE),
-            "Tariff_ItsWorkInGrossist_Achat",
+            "سعر شراء الجملة",
             Color(0xFF2196F3),
             1,
-            "س.ش"
+            "س.ش",
+            its_gro_app = true  // Only shown in grossist app
         ),
 
         Tariff_ItsWorkInGrossist_SuperGros(
-            Icons.Filled.History,
+            Icons.Filled.Warning,
             Color(0xFF000000),
-            "Tariff_ItsWorkInGrossist_SuperGros",
+            "سعر السوبر جملة عند الكمية",
             Color(0xFFF44336),
-            1,
-            "كمية"
+            2,
+            "كمية",
+            its_gro_app = true
         ),
+
         Tariff_ItsWorkInGrossist_Progressive(
-            Icons.Filled.History,
+            Icons.Filled.Edit,
             Color(0xFFEEEEEE),
-            "Tariff_ItsWorkInGrossist_Progressive",
+            "سعر انتقالي للجملة",
             Color(0xFF000000),
-            1
+            3,
+            "انتقالي",
+            its_gro_app = true  // Only shown in grossist app
         ),
 
         Tariff_ItsWorkInGrossist_Gro(
-            Icons.Filled.History,
+            Icons.Filled.Person,
             Color(0xFFCDDC39),
-            "Tariff_ItsWorkInGrossist_Gro",
+            "سعر النصف جملة",
             Color(0xFF2196F3),
-            1,
-            "نصف"
+            4,
+            "نصف",
+            its_gro_app = true  // Only shown in grossist app
         ),
 
-        //--------------------------------------------------------------------------------------------------------------------------------
+        //------- Regular App Tariffs (its_gro_app = false) --------
         Tariff_Achat_Depuit_Grossisst(
             Icons.Filled.History,
             Color(0xFF000000),
             "سعر الشراء",
             Color(0xFF2196F3),
-            1
+            1,
+            "ش",
+            its_gro_app = false
         ),
 
-        DEFIN_OLd(Icons.Filled.Edit, Color(0xFFFFEB3B), "قديم", Color.Black, 0),
+        DEFIN_OLd(
+            Icons.Filled.Edit,
+            Color(0xFFFFEB3B),
+            "قديم",
+            Color.Black,
+            0,
+            "قديم",
+            its_gro_app = false
+        ),
 
         LeMaxPrixArrive(
             Icons.Filled.ArrowUpward,
             Color(0xFFFF9800),
             "اعلى سعر وصل له",
             Color.Black,
-            5
+            5,
+            "أعلى",
+            its_gro_app = false
         ),
 
         Historique(
             Icons.Filled.History,
             Color(0xFF2196F3),
-            "السعر الأخير - يمكن تحسينه للربح الأكثر",
+            "السعر الأخير",
             Color.White,
-            2
+            2,
+            "أخير",
+            its_gro_app = false
         ),
 
         Prix_SupperGro_Et_PresentationService(
             Icons.Filled.Warning,
             Color(0xFF000000),
-            "عرض + السوبر جملة عند الكمية",
+            "عرض + السوبر جملة",
             Color.Red,
-            1
+            1,
+            "عرض",
+            its_gro_app = false
         ),
 
         Edited_Pour_Client(
             Icons.Filled.Edit,
             Color(0xFFEEEEEE),
-            " سعر انتقالي",
+            "سعر انتقالي",
             Color.Black,
-            3
+            3,
+            "انتقالي",
+            its_gro_app = false
         ),
 
         Prix_Detaille(
             Icons.Filled.Person,
             Color(0xFFCDDC39),
-            "سعر التجزئة - ربح جيد",
+            "سعر التجزئة",
             Color.Black,
-            4
+            4,
+            "تجزئة",
+            its_gro_app = false
         );
 
         fun getNextProfitableType(): TypeChoisi? {
             return when (this) {
+                // Grossist app progression
+                Tariff_ItsWorkInGrossist_Achat -> Tariff_ItsWorkInGrossist_SuperGros
+                Tariff_ItsWorkInGrossist_SuperGros -> Tariff_ItsWorkInGrossist_Progressive
+                Tariff_ItsWorkInGrossist_Progressive -> Tariff_ItsWorkInGrossist_Gro
+                Tariff_ItsWorkInGrossist_Gro -> null  // Top level for grossist
+
+                // Regular app progression
                 Tariff_Achat_Depuit_Grossisst -> Prix_SupperGro_Et_PresentationService
                 Prix_SupperGro_Et_PresentationService -> Historique
                 Historique -> Edited_Pour_Client
@@ -338,11 +375,8 @@ data class M13TarificationInfos(
                 Prix_Detaille -> LeMaxPrixArrive
                 LeMaxPrixArrive -> null
                 DEFIN_OLd -> Historique
-
-                else -> null
             }
         }
-
 
         fun isTopProfitable(): Boolean {
             return profitabilityScore >= 3
