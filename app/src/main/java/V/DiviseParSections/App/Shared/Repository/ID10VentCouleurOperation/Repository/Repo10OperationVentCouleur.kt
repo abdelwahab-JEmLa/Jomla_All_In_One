@@ -298,6 +298,7 @@ data class M10OperationVentCouleur(
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
     var premier_Check_Donne: Boolean = false,
+    var lence_pour_check: Boolean = false,
 
     var non_places_au_depot: Boolean = false,
     var pas_Dispo_Pour_Aujourduit: Boolean = false,

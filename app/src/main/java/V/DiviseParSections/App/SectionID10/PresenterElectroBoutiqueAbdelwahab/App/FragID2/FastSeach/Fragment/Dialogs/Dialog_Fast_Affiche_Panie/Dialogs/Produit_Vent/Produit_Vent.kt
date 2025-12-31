@@ -74,6 +74,11 @@ fun Produit_Vent(
         ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
     }
 
+    // Check if any item has lence_pour_check (warning state)
+    val anyLencePourCheck = remember(ventList) {
+        ventList.any { it.lence_pour_check }
+    }
+
     val relative_M10OperationVentCouleur = ventList.first()
     val relative_M3CouleurProduit =
         repositorysMainGetter.find_M3CouleurInfos_By_KeyID(relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID)
@@ -95,6 +100,27 @@ fun Produit_Vent(
         }
     }
 
+    // Determine card colors based on state
+    val outerCardColor = when {
+        anyLencePourCheck -> Color(0xFFFF9800) // Orange for warning state
+        allChecked -> Color(0xFFFFEB3B) // Yellow when checked
+        hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.colorScheme.surface
+    }
+
+    val innerCardColor = when {
+        anyLencePourCheck -> Color(0xFFFFB74D) // Lighter orange for inner card
+        allChecked -> Color(0xFFFFD54F) // Lighter yellow for inner card
+        hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val textColor = when {
+        anyLencePourCheck -> Color.Black
+        allChecked -> Color.Black
+        else -> MaterialTheme.colorScheme.error
+    }
+
     produit?.let { nonNullProduit ->
         Box(modifier = modifier) {
             Card(
@@ -107,16 +133,10 @@ fun Produit_Vent(
                     }
                     .fillMaxWidth()
                     .clickable {
-                        // Toggle the check state when main card is clicked
-                        upsert_M10OperationVentCouleur(!allChecked)
                     },
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = when {
-                        allChecked -> Color(0xFFFFEB3B) // Yellow when checked
-                        hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
-                        else -> MaterialTheme.colorScheme.surface
-                    }
+                    containerColor = outerCardColor
                 )
             ) {
                 Column(
@@ -139,21 +159,13 @@ fun Produit_Vent(
 
                     val ventListS = if (ventList.size > 1) "[${ventList.size} C]" else ""
 
-                    // Inner Card - Also yellow when checked, clickable
                     Card(
                         modifier = modifier
                             .fillMaxWidth()
-                            .clickable {
-                                // Toggle the check state when inner card is clicked
-                                upsert_M10OperationVentCouleur(!allChecked)
-                            },
+                            ,
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = when {
-                                allChecked -> Color(0xFFFFD54F) // Lighter yellow for inner card
-                                hasNonTrouve -> MaterialTheme.colorScheme.errorContainer
-                                else -> MaterialTheme.colorScheme.surfaceVariant
-                            }
+                            containerColor = innerCardColor
                         )
                     ) {
                         Row(
@@ -167,15 +179,11 @@ fun Produit_Vent(
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clickable {
-                                        // Text is also clickable
-                                        upsert_M10OperationVentCouleur(!allChecked)
-                                    }
                             ) {
                                 Text(
                                     text = "${nonNullProduit.nom} $ventListS",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = if (allChecked) Color.Black else MaterialTheme.colorScheme.error,
+                                    color = textColor,
                                     fontWeight = FontWeight.Bold
                                 )
 
@@ -183,24 +191,18 @@ fun Produit_Vent(
                                     Text(
                                         text = nonNullProduit.nomArab,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = if (allChecked) Color.Black else MaterialTheme.colorScheme.error,
+                                        color = textColor,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
                             }
 
-                            // Image on the right - Also clickable
-                            // Only display if image type AND has a color name
                             if (relative_M3CouleurProduit != null &&
                                 relative_M3CouleurProduit.aAffiche == Type.Image &&
                                 relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo.isNotEmpty()) {
                                 Box(
                                     modifier = Modifier
                                         .size(size)
-                                        .clickable {
-                                            // Image is also clickable
-                                            upsert_M10OperationVentCouleur(!allChecked)
-                                        }
                                 ) {
                                     ImageDisplayerGlide_FragFastVent(
                                         modifier = Modifier.size(size),
@@ -221,17 +223,22 @@ fun Produit_Vent(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (allChecked)
-                                    Color(0xFFFFE082) // Light yellow variant for nomMutable when checked
-                                else
-                                    MaterialTheme.colorScheme.primaryContainer
+                                containerColor = when {
+                                    anyLencePourCheck -> Color(0xFFFFCC80) // Light orange variant for nomMutable
+                                    allChecked -> Color(0xFFFFE082) // Light yellow variant for nomMutable when checked
+                                    else -> MaterialTheme.colorScheme.primaryContainer
+                                }
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Text(
                                 text = nonNullProduit.nomMutable,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = when {
+                                    anyLencePourCheck -> Color.Black
+                                    allChecked -> Color.Black
+                                    else -> MaterialTheme.colorScheme.onPrimaryContainer
+                                },
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(8.dp)
                             )
@@ -254,10 +261,11 @@ fun Produit_Vent(
                             uniqueComments.forEach { (comment, colorName) ->
                                 Card(
                                     colors = CardDefaults.cardColors(
-                                        containerColor = if (allChecked)
-                                            Color(0xFFFFF59D) // Very light yellow for comments when checked
-                                        else
-                                            MaterialTheme.colorScheme.secondaryContainer
+                                        containerColor = when {
+                                            anyLencePourCheck -> Color(0xFFFFE0B2) // Very light orange for comments
+                                            allChecked -> Color(0xFFFFF59D) // Very light yellow for comments when checked
+                                            else -> MaterialTheme.colorScheme.secondaryContainer
+                                        }
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
@@ -267,16 +275,21 @@ fun Produit_Vent(
                                         Text(
                                             text = colorName,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = if (allChecked)
-                                                Color.Black.copy(alpha = 0.7f)
-                                            else
-                                                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                                            color = when {
+                                                anyLencePourCheck -> Color.Black.copy(alpha = 0.7f)
+                                                allChecked -> Color.Black.copy(alpha = 0.7f)
+                                                else -> MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                                            },
                                             fontWeight = FontWeight.Medium
                                         )
                                         Text(
                                             text = comment,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSecondaryContainer
+                                            color = when {
+                                                anyLencePourCheck -> Color.Black
+                                                allChecked -> Color.Black
+                                                else -> MaterialTheme.colorScheme.onSecondaryContainer
+                                            }
                                         )
                                     }
                                 }

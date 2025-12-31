@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductHeader_SemiModularized.NonTrouve_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -25,7 +24,7 @@ fun ElevatedCardHeader(
     allNonTrouve: Boolean,
     ventList: List<M10OperationVentCouleur>,
     aCentralFacade: ACentralFacade,
-    positionIndex: Int, // <-- Ajoutez ce paramètre
+    positionIndex: Int,
     focusedValuesSetter: FocusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
     modifier: Modifier = Modifier,
     upsert_M10OperationVentCouleur: (Boolean) -> Unit,
@@ -47,41 +46,37 @@ fun ElevatedCardHeader(
         ) {
 
             LazyRow(
-                reverseLayout = true, // This makes it scroll from right to left
+                reverseLayout = true,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 item {
                     ToggleButton_PremierCheckDonne(
                         ventList = ventList,
-                        positionIndex = positionIndex, // Passez la position du produit (1-4)
+                        positionIndex = positionIndex,
                         onToggle = { newState ->
                             upsert_M10OperationVentCouleur(newState)
                         },
                         modifier = Modifier
                     )
                 }
+
+                item {
+                    Lence_pour_check_Handler(
+                        allNonTrouve = allNonTrouve,
+                        hasNonTrouve = hasNonTrouve,
+                        relative_List_M10OperationVentCouleur = ventList
+                    )
+                }
+
                 item {
                     InfoButton(
                         produit = produit,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-               /* item {
-                    ToggleButton_MoveToStorePosition(
-                        produit = produit,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }    */
-                item {
-                    NonTrouve_Handler(
-                        aCentralFacade = aCentralFacade,
-                        allNonTrouve = allNonTrouve,
-                        hasNonTrouve = hasNonTrouve,
-                        relative_List_M10OperationVentCouleur = ventList
-                    )
-                }
             }
         }
     }
 }
+

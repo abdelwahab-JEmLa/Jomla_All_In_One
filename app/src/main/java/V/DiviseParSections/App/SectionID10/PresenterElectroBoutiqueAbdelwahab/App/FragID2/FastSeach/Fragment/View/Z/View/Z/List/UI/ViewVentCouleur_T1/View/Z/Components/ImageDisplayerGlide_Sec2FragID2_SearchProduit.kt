@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,8 @@ import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 import java.io.File
 
+private const val TAG = "ImageDisplayerGlide"
+
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -61,6 +65,9 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
     onClickToOpenWindow: () -> Unit = {},
     hideImage: Boolean = false
 ) {
+    // Track which products have been displayed to detect duplicates
+    val displayTracker = remember { mutableMapOf<String, Int>() }
+
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
@@ -69,6 +76,46 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
     )
 
     val imageExists = imageFile?.exists() == true
+
+    // Log image display for the same product
+    LaunchedEffect(relative_M3CouleurInfos, imageFile) {
+        relative_M3CouleurInfos?.let { couleurInfo ->
+            val productKey = "${couleurInfo.parentBProduitOldID}_${couleurInfo.indexCouleurDansAncienProto}"
+            val displayCount = displayTracker.getOrDefault(productKey, 0) + 1
+            displayTracker[productKey] = displayCount
+
+            Log.d(TAG, buildString {
+                append("=".repeat(60))
+                append("\n")
+                append("Image Display Event #$displayCount\n")
+                append("-".repeat(60))
+                append("\n")
+                append("Product Info:\n")
+                append("  - Product ID: ${couleurInfo.parentBProduitOldID}\n")
+                append("  - Product Name: ${couleurInfo.parentId1ProduitInfosDebugName}\n")
+                append("  - Color Index: ${couleurInfo.indexCouleurDansAncienProto}\n")
+                append("  - Color Name: ${couleurInfo.nomCouleurStrSiSonImageDispo}\n")
+                append("  - Key ID: ${couleurInfo.keyID.takeLast(8)}\n")
+                append("\n")
+                append("Image Details:\n")
+                append("  - File Name: ${imageFile?.name ?: "N/A"}\n")
+                append("  - File Exists: $imageExists\n")
+                append("  - Hide Image: $hideImage\n")
+                append("  - Display Type: ${couleurInfo.aAffiche}\n")
+                append("\n")
+                if (displayCount > 1) {
+                    append("⚠️  WARNING: This product has been displayed $displayCount times!\n")
+                }
+                append("=".repeat(60))
+            })
+
+            // Additional warning log for duplicate displays
+            if (displayCount > 1) {
+                Log.w(TAG, "Duplicate display detected for product ${couleurInfo.parentBProduitOldID} " +
+                        "(${couleurInfo.parentId1ProduitInfosDebugName}) - Display count: $displayCount")
+            }
+        }
+    }
 
     Surface(
         modifier = modifier,
@@ -122,7 +169,14 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                                 model: Any?,
                                 target: Target<Drawable>,
                                 isFirstResource: Boolean
-                            ) = false
+                            ): Boolean {
+                                Log.e(TAG, "Image load failed for: ${imageFile.name}", e)
+                                relative_M3CouleurInfos?.let { info ->
+                                    Log.e(TAG, "Failed product: ${info.parentId1ProduitInfosDebugName} " +
+                                            "(ID: ${info.parentBProduitOldID})")
+                                }
+                                return false
+                            }
 
                             override fun onResourceReady(
                                 resource: Drawable,
@@ -131,7 +185,11 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                                 dataSource: DataSource,
                                 isFirstResource: Boolean
                             ): Boolean {
-                                if (isFirstResource) isLoading = false
+                                if (isFirstResource) {
+                                    isLoading = false
+                                    Log.d(TAG, "Image loaded successfully: ${imageFile.name} " +
+                                            "(Source: ${dataSource.name})")
+                                }
                                 return false
                             }
                         })
