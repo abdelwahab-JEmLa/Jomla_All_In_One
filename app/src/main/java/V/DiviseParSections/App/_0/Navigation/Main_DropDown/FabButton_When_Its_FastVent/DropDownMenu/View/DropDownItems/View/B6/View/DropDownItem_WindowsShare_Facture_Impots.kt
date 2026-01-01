@@ -457,7 +457,7 @@ private fun proceedWithPrinting(
             aCentralFacade.repositorysMainSetter.update_M8BonVent(
                 focusedValuesGetter.activeOnVent_M8BonVent?.copy(
                     affiche_le_verssement_au_prochen_print = false,
-                    impression_conte = focusedValuesGetter.activeOnVent_M8BonVent!!.impression_conte + 1,
+                    impression_conte = 1,
                     sum_De_Totale_Vents = totalValue
                 )
             )

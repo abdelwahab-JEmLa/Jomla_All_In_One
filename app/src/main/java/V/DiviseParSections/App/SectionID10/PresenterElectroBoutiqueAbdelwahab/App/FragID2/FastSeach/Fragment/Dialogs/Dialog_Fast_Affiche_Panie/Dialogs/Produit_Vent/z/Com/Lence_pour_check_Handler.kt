@@ -27,6 +27,12 @@ fun Lence_pour_check_Handler(
     hasNonTrouve: Boolean = false,
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>
 ) {
+    val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
+
+    // Check if secure click is active
+    val isSecureClickEnabled = activeCentralValues.le_pourvoire_clike_checked_est_active
+
     // Determine if all items have lence_pour_check = true
     val allLencePourCheck = remember(relative_List_M10OperationVentCouleur) {
         relative_List_M10OperationVentCouleur.isNotEmpty() &&
@@ -35,34 +41,45 @@ fun Lence_pour_check_Handler(
 
     IconButton(
         onClick = {
-            // Toggle lence_pour_check for all items in the list
-            val newLenceState = !allLencePourCheck
-            relative_List_M10OperationVentCouleur.forEach { ventCouleur ->
-                repo10OperationVentCouleur.update_If_Exist(
-                    ventCouleur.copy(lence_pour_check = newLenceState)
-                )
+            // FIXED: Only allow toggle if secure click is enabled
+            if (isSecureClickEnabled) {
+                // Toggle lence_pour_check for all items in the list
+                val newLenceState = !allLencePourCheck
+                relative_List_M10OperationVentCouleur.forEach { ventCouleur ->
+                    repo10OperationVentCouleur.update_If_Exist(
+                        ventCouleur.copy(lence_pour_check = newLenceState)
+                    )
+                }
             }
         },
-        modifier = Modifier.Companion
+        modifier = Modifier
             .size(40.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(
-                if (allLencePourCheck) {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-                } else {
-                    MaterialTheme.colorScheme.errorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
+                when {
+                    !isSecureClickEnabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    allLencePourCheck -> MaterialTheme.colorScheme.primaryContainer.copy(
+                        alpha = if (allNonTrouve) 0.7f else 1.0f
+                    )
+                    else -> MaterialTheme.colorScheme.errorContainer.copy(
+                        alpha = if (allNonTrouve) 0.7f else 1.0f
+                    )
                 }
             )
     ) {
         Icon(
             imageVector = if (allLencePourCheck) Icons.Default.Hearing else Icons.Default.HearingDisabled,
             contentDescription = if (allLencePourCheck) "Disable lence pour check" else "Enable lence pour check",
-            tint = if (allLencePourCheck) {
-                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            } else {
-                MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
+            tint = when {
+                !isSecureClickEnabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                allLencePourCheck -> MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                    alpha = if (allNonTrouve) 0.7f else 1.0f
+                )
+                else -> MaterialTheme.colorScheme.onErrorContainer.copy(
+                    alpha = if (allNonTrouve) 0.7f else 1.0f
+                )
             },
-            modifier = Modifier.Companion.size(20.dp)
+            modifier = Modifier.size(20.dp)
         )
     }
 }

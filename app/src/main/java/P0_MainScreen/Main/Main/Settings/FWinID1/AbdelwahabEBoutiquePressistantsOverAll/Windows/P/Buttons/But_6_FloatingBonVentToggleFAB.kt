@@ -36,7 +36,6 @@ fun FloatingBonVentToggleFAB(
     modifier: Modifier = Modifier.Companion,
     aCentralFacade: ACentralFacade = koinInject(),
 ) {
-    // Toast state for notifications
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
     // Get repositories from central facade
@@ -76,7 +75,6 @@ fun FloatingBonVentToggleFAB(
         clientsWithBonVents.indexOfFirst { it.keyID == bonVent.parent_M2Client_KeyID }
     } ?: -1
 
-    // ✅ TODO(1) FIXED: Calculate next client to display
     val nextClientInfo = remember(currentClientIndex, clientCount, clientsWithBonVents) {
         if (clientsWithBonVents.isEmpty()) {
             null

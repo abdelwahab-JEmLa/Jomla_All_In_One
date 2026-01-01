@@ -234,6 +234,7 @@ data class M8BonVent(
     var cUn_Versement_duBonVentKey: String = "",
 
     var impression_conte: Int = 0,
+    var a_etai_imprime_au_moi_ne_foit: Boolean = false,
 
     var versement_fait: Double = 0.0,
     var ancien_credit: Double = 0.0,

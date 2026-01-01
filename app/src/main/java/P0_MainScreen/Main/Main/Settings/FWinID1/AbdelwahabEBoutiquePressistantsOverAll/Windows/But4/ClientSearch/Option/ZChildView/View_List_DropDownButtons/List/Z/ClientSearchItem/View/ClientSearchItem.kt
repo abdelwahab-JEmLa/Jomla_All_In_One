@@ -204,7 +204,6 @@ fun ClientSearchItem(
                 }
             }
 
-            // ✅ TODO(1) FIXED: Floating buttons positioned absolutely to avoid hiding text
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
@@ -216,8 +215,26 @@ fun ClientSearchItem(
                     .padding(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+
+                // Find the bon vent for current period and client
+                val currentPeriodBonVent = remember(
+                    m2Client.keyID,
+                    currentPeriodKeyID,
+                    bonVentRepository.datasValue
+                ) {
+                    if (currentPeriodKeyID != null) {
+                        bonVentRepository.datasValue.find { bonVent ->
+                            bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
+                                    bonVent.parent_M2Client_KeyID == m2Client.keyID
+                        }
+                    } else null
+                }
+
+                // Use either the existing bon vent from current period or the latest one as fallback
+                val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
+
                 // Print toggle button with counter badge
-                val bonVentToToggle = existingBonVent ?: latestBonVent
                 if (bonVentToToggle != null) {
                     val impressionConte = bonVentToToggle.impression_conte
                     Box(
@@ -229,6 +246,7 @@ fun ClientSearchItem(
                                 val updatedBonVent = bonVentToToggle.copy(
                                     impression_conte = newCount
                                 )
+                                // Update the bon vent in repository
                                 viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                     updatedBonVent
                                 )

@@ -88,6 +88,7 @@ data class ActiveCentralValues(
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
+    var le_pourvoire_clike_checked_est_active: Boolean = false,
 
     val fastSearchProduitPourVent: String = "",
     val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId

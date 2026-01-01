@@ -2,53 +2,14 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-
-@Composable
-fun ToggleButton_MoveToStorePosition(
-    produit: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier,
-    focusedValuesGetter: FocusedValuesGetter = koinInject()
-) {
-    val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val isSelected =
-        activeCentralValues.held_Produit_Pour_Move_Au_Position_Store?.keyID == produit.keyID
-
-    IconButton(
-        onClick = {
-            val newHeldProduit = if (isSelected) null else produit
-            focusedValuesGetter.update_activeCentralValues(
-                activeCentralValues.copy(
-                    held_Produit_Pour_Move_Au_Position_Store = newHeldProduit
-                )
-            )
-        },
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = if (isSelected) Icons.Filled.Cancel else Icons.Filled.Upload,
-            contentDescription = if (isSelected) "Désélectionner" else "Sélectionner pour déplacer",
-            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
 
 @Composable
 fun InfoButton(
@@ -77,32 +38,3 @@ fun InfoButton(
     }
 }
 
-@Composable
-fun ToggleButton_PremierCheckDonne(
-    ventList: List<M10OperationVentCouleur>,
-    onToggle: (Boolean) -> Unit,
-    positionIndex: Int, // Position du produit dans la grille (1-4)
-    modifier: Modifier = Modifier
-) {
-    // Determine current state: true if ALL items have premier_Check_Donne = true
-    val allChecked = remember(ventList) {
-        ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
-    }
-
-    // Determine what the new state should be when toggled
-    val newStateWhenToggled = !allChecked
-
-    FloatingActionButton(
-        onClick = { onToggle(newStateWhenToggled) },
-        modifier = modifier.size(48.dp),
-        containerColor = if (allChecked) Color(0xFFFFEB3B) else MaterialTheme.colorScheme.surfaceVariant, // Yellow when checked
-        contentColor = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
-    ) {
-        Text(
-            text = positionIndex.toString(),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (allChecked) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
