@@ -45,13 +45,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.util.concurrent.TimeUnit
 
@@ -68,8 +65,7 @@ fun ID4ClientSearchButton(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     repositorysMainGetter: RepositorysMainGetter=koinInject()
-) {           //<--
-//TODO(1): ici affiche to les clients ou il on un bon vent de current vent period 
+) {
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
@@ -86,33 +82,29 @@ fun ID4ClientSearchButton(
 
     val clientsWithCommandBonVents =
         getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
-            .filter { !deletionKeyIds.contains(it.keyID) } // Filter out clients in deletion list
+            .filter { !deletionKeyIds.contains(it.keyID) }
 
-    LaunchedEffect(isSearchMode) {
-        if (isSearchMode) {
-            filteredClients = emptyList()
-            showDropdown = false
-
-            withContext(Dispatchers.Main) {
-                delay(100)
-                focusRequester.requestFocus()
-            }
-        }
-    }
-
-    LaunchedEffect(searchQuery) {
-        if (isSearchMode) searchQueryFlow.value = searchQuery
-    }
-
-    LaunchedEffect(isSearchMode, deletionKeyIds) {
+    LaunchedEffect(
+        isSearchMode,
+        deletionKeyIds,
+        getter.activeOnVent_M8BonVent?.keyID,
+        getter.currentActiveFocuced_M14VentPeriode?.keyID
+    ) {
         if (isSearchMode) {
             searchQueryFlow
                 .debounce(300)
                 .distinctUntilChanged()
                 .collect { query ->
-                    if (query.isEmpty()) {
-                        filteredClients = clientsWithCommandBonVents
-                        showDropdown = clientsWithCommandBonVents.isNotEmpty()
+                    if (query.trim().equals("supp", ignoreCase = true)) {
+                        filteredClients = deletionList
+                        showDropdown = deletionList.isNotEmpty()
+                    } else if (query.isEmpty()) {
+                        // FIXED: Recalculate clients with command bon vents for current period
+                        val updatedClientsWithCommandBonVents =
+                            getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
+                                .filter { !deletionKeyIds.contains(it.keyID) }
+                        filteredClients = updatedClientsWithCommandBonVents
+                        showDropdown = updatedClientsWithCommandBonVents.isNotEmpty()
                     } else {
                         val filtered = hClientRepository.datasValue
                             .filter { client ->
@@ -125,6 +117,10 @@ fun ID4ClientSearchButton(
                     }
                 }
         }
+    }
+
+    LaunchedEffect(searchQuery) {
+        if (isSearchMode) searchQueryFlow.value = searchQuery
     }
 
     Row(

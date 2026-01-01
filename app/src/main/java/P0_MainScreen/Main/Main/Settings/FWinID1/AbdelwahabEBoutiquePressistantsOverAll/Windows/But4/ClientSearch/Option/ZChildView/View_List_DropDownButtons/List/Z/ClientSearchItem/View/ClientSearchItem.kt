@@ -34,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -94,7 +95,6 @@ fun get_Edited_M8BonVent(
 
     return Triple(existingBonVent, newBonVent, semanticsModifier)
 }
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
@@ -102,15 +102,35 @@ fun ClientSearchItem(
     m2Client: M2Client,
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    focusedValuesGetter: FocusedValuesGetter = koinInject() ,
-    repositorysMainSetter: RepositorysMainSetter=koinInject()
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    repositorysMainSetter: RepositorysMainSetter = koinInject()
 ) {
     val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
-    val latestBonVent = bonVentRepository.datasValue
-        .filter { it.parent_M2Client_KeyID == m2Client.keyID }
-        .maxByOrNull { it.creationTimestamps }
+    // Store the latest bon vent in a remembered state that updates with repository changes
+    val latestBonVent by remember(bonVentRepository.datasValue, m2Client.keyID) {
+        derivedStateOf {
+            bonVentRepository.datasValue
+                .filter { it.parent_M2Client_KeyID == m2Client.keyID }
+                .maxByOrNull { it.creationTimestamps }
+        }
+    }
+
+    // Store the current period bon vent in a remembered state
+    val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
+    val currentPeriodBonVent by remember(bonVentRepository.datasValue, m2Client.keyID, currentPeriodKeyID) {
+        derivedStateOf {
+            if (currentPeriodKeyID != null) {
+                bonVentRepository.datasValue.find { bonVent ->
+                    bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
+                            bonVent.parent_M2Client_KeyID == m2Client.keyID
+                }
+            } else {
+                null
+            }
+        }
+    }
 
     val bonVentResult = get_Edited_M8BonVent(
         aCentralFacade,
@@ -210,17 +230,7 @@ fun ClientSearchItem(
                     .padding(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-
-                val currentPeriodBonVent = if (currentPeriodKeyID != null) {
-                    bonVentRepository.datasValue.find { bonVent ->
-                        bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
-                                bonVent.parent_M2Client_KeyID == m2Client.keyID
-                    }
-                } else {
-                    null
-                }
-
+                // Use the remembered state for the toggle button
                 val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
 
                 if (bonVentToToggle != null) {

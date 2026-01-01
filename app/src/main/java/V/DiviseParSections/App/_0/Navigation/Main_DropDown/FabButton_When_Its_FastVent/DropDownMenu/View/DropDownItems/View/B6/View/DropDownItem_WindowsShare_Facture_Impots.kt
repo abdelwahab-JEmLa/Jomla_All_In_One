@@ -4,6 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
@@ -441,7 +442,8 @@ private fun proceedWithPrinting(
     activeVents: List<M10OperationVentCouleur>,
     printHandler: PrintReceiptHandler_Juil,
     selectedHeader: CompanyHeader,
-    onDismissDropdown: () -> Unit
+    onDismissDropdown: () -> Unit,
+    repositorysMainSetter: RepositorysMainSetter=aCentralFacade.repositorysMainSetter
 ) {
     scope.launch {
         try {
@@ -462,6 +464,7 @@ private fun proceedWithPrinting(
                     sum_De_Totale_Vents = totalValue
                 )
             )
+            repositorysMainSetter.refresh_Datas_M8BonVent()
 
             delay(300)
 
@@ -486,7 +489,6 @@ private fun proceedWithPrinting(
             }
 
             onDismissDropdown()
-
         } catch (e: Exception) {
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(

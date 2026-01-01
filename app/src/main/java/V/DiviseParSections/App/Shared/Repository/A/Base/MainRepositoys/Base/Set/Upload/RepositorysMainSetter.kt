@@ -47,7 +47,7 @@ class RepositorysMainSetter(
     private val repoM1Produit: RepoM1Produit,
     private val repo2Client: Repo2Client,
     private val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
-    private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo11AchatOperation: Repo11AchatOperation,
@@ -111,7 +111,7 @@ class RepositorysMainSetter(
 
     fun upsert_M10OperationVentCouleur(data: M10OperationVentCouleur) {
         repo10OperationVentCouleur
-            .addOrUpdateData(data)
+            .update_If_Exist(data)
     }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,6 +187,7 @@ class RepositorysMainSetter(
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_M8BonVent(data: M8BonVent?) = data?.let { repo8BonVent.upsert(it) }
+    fun refresh_Datas_M8BonVent() = repo8BonVent.refresh_Datas()
 
     fun delete_M8BonVent(data: M8BonVent) {
         repo8BonVent.delete(data)

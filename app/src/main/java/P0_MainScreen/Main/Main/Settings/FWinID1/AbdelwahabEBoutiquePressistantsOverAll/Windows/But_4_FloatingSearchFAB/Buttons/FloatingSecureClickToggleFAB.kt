@@ -36,15 +36,15 @@ fun FloatingSecureClickToggleFAB(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
 
-    // FIXED: Inverted logic - true means security is DISABLED (temporary unlock)
+    // true means security is DISABLED (temporary unlock)
     val isSecurityDisabled = activeCentralValues.le_pourvoire_clike_checked_est_active
 
     var timeRemaining by remember { mutableStateOf(0) }
 
-    // FIXED TODO(1): When affiche_Dialog_Fast_Affiche_Panie becomes true, start 5 second timer
+    // When affiche_Dialog_Fast_Affiche_Panie becomes true, start 10 second timer
     LaunchedEffect(activeCentralValues.affiche_Dialog_Fast_Affiche_Panie) {
         if (activeCentralValues.affiche_Dialog_Fast_Affiche_Panie && !isSecurityDisabled) {
-            // Dialog opened - disable security for 5 seconds
+            // Dialog opened - disable security for 10 seconds
             focusedValuesGetter.update_activeCentralValues(
                 activeCentralValues.copy(le_pourvoire_clike_checked_est_active = true)
             )
@@ -54,7 +54,7 @@ fun FloatingSecureClickToggleFAB(
     // Timer countdown when security is disabled
     LaunchedEffect(isSecurityDisabled) {
         if (isSecurityDisabled) {
-            timeRemaining = 5
+            timeRemaining = 10
             while (timeRemaining > 0) {
                 delay(1000L)
                 timeRemaining--
@@ -71,16 +71,16 @@ fun FloatingSecureClickToggleFAB(
     }
 
     // Monitor operations for premier_Check_Donne or lence_pour_check toggles
-    // FIXED: When any check is toggled, reset timer to 5 seconds
+    // When any check is toggled, reset timer to 10 seconds
     val repo10 = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
     val ventOperations = repo10.datasValue
 
     LaunchedEffect(
         ventOperations.map { it.premier_Check_Donne to it.lence_pour_check }
     ) {
-        // If security is currently disabled (allowing clicks), reset to 5 seconds
+        // If security is currently disabled (allowing clicks), reset to 10 seconds
         if (isSecurityDisabled && timeRemaining > 0) {
-            timeRemaining = 5
+            timeRemaining = 10
         }
     }
 
@@ -92,16 +92,16 @@ fun FloatingSecureClickToggleFAB(
         FloatingActionButton(
             modifier = Modifier.size(40.dp),
             onClick = {
-                // FIXED: Manual toggle also resets to 5 seconds when disabling security
+                // Manual toggle also resets to 10 seconds when disabling security
                 val newState = !isSecurityDisabled
                 focusedValuesGetter.update_activeCentralValues(
                     activeCentralValues.copy(
                         le_pourvoire_clike_checked_est_active = newState
                     )
                 )
-                // If we just disabled security, reset timer to 5
+                // If we just disabled security, reset timer to 10
                 if (newState) {
-                    timeRemaining = 5
+                    timeRemaining = 10
                 }
             },
             containerColor = if (isSecurityDisabled) {
