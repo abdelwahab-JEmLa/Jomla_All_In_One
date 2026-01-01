@@ -1,4 +1,4 @@
-package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons
+package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons
 
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
@@ -51,26 +51,26 @@ fun FloatingBonVentToggleFAB(
         if (currentPeriod == null) {
             emptyList()
         } else {
-            // Trouve tous les BonVents non imprimés de cette période
+            // Find all unprinted BonVents for this period
             val bonVentsInPeriod = repositorysMainGetter.repo8BonVent.datasValue
                 .filter { bonVent ->
                     bonVent.parent_M14VentPeriod_KeyId == currentPeriod.keyID &&
-                            bonVent.impression_conte == 0
+                            !bonVent.a_etai_imprime_au_moi_ne_foit  // ✅ Fixed: use boolean instead of vala_supp
                 }
 
-            // Récupère les clients uniques qui ont ces BonVents
+            // Get unique clients who have these BonVents
             val clientIds = bonVentsInPeriod.map { it.parent_M2Client_KeyID }.distinct()
             val clients = repositorysMainGetter.repo2Client.datasValue
                 .filter { it.keyID in clientIds }
 
-            // Trie les clients par dernière opération de vente
+            // Sort clients by last sale operation
             sortClientsByLastVentOperation(clients, repositorysMainGetter)
         }
     }
 
     val clientCount = clientsWithBonVents.size
 
-    // Trouve l'index du client actuel
+    // Find the index of the current client
     val currentClientIndex = currentBonVent?.let { bonVent ->
         clientsWithBonVents.indexOfFirst { it.keyID == bonVent.parent_M2Client_KeyID }
     } ?: -1
@@ -80,9 +80,9 @@ fun FloatingBonVentToggleFAB(
             null
         } else {
             val nextIndex = if (currentClientIndex >= clientCount - 1 || currentClientIndex < 0) {
-                0 // Retour au premier client
+                0 // Return to first client
             } else {
-                currentClientIndex + 1 // Client suivant
+                currentClientIndex + 1 // Next client
             }
             val nextClient = clientsWithBonVents[nextIndex]
             Pair(nextIndex, nextClient.nom)
@@ -104,28 +104,28 @@ fun FloatingBonVentToggleFAB(
             modifier = Modifier.Companion.size(40.dp),
             onClick = {
                 if (clientsWithBonVents.isNotEmpty()) {
-                    // Si on est au dernier ou index invalide, retour au premier (index 0)
+                    // If at last or invalid index, return to first (index 0)
                     val nextClientIndex = if (currentClientIndex >= clientCount - 1 || currentClientIndex < 0) {
-                        0 // Retour au premier client
+                        0 // Return to first client
                     } else {
-                        currentClientIndex + 1 // Client suivant
+                        currentClientIndex + 1 // Next client
                     }
                     val nextClient = clientsWithBonVents[nextClientIndex]
 
                     try {
-                        // Trouve ou crée le BonVent pour ce client
+                        // Find or create BonVent for this client
                         val existingBonVent = repositorysMainGetter.repo8BonVent.datasValue.find { bonVent ->
                             bonVent.parent_M14VentPeriod_KeyId == currentPeriod?.keyID &&
                                     bonVent.parent_M2Client_KeyID == nextClient.keyID &&
-                                    bonVent.impression_conte == 0
+                                    !bonVent.a_etai_imprime_au_moi_ne_foit  // ✅ Fixed: use boolean
                         }
 
                         val bonVentToUse = if (existingBonVent != null) {
-                            // Update le BonVent existant
+                            // Update existing BonVent
                             repositorysMainSetter.update_M8BonVent(existingBonVent)
                             existingBonVent
                         } else {
-                            // Crée un nouveau BonVent pour ce client
+                            // Create new BonVent for this client
                             val newBonVent = M8BonVent().copy(
                                 parent_M9AppCompt_KeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: "",
                                 parent_M14VentPeriod_KeyId = currentPeriod?.keyID ?: "",
@@ -138,11 +138,11 @@ fun FloatingBonVentToggleFAB(
                             newBonVent
                         }
 
-                        // Set comme BonVent actif focused
+                        // Set as active focused BonVent
                         aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
                             .setIN_M9CurrentApp_onVentM8BonVentKey(bonVentToUse)
 
-                        // Show toast notification avec nom du client
+                        // Show toast notification with client name
                         toastData = ToastData(
                             message = "Client ${nextClientIndex + 1}/$clientCount: ${nextClient.nom}",
                             type = ToastType.INFO,

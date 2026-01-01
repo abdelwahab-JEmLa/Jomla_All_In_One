@@ -27,8 +27,8 @@ fun ToggleButton_PremierCheckDonne(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
 
-    // FIXED TODO: Check if secure click is active
-    val isSecureClickEnabled = activeCentralValues.le_pourvoire_clike_checked_est_active
+    // FIXED: Inverted logic - true means security is DISABLED (can click)
+    val canClick = activeCentralValues.le_pourvoire_clike_checked_est_active
 
     val allChecked = remember(ventList) {
         ventList.isNotEmpty() && ventList.all { it.premier_Check_Donne }
@@ -39,8 +39,8 @@ fun ToggleButton_PremierCheckDonne(
 
     FloatingActionButton(
         onClick = {
-            // FIXED TODO: Only allow toggle if secure click is enabled
-            if (isSecureClickEnabled) {
+            // FIXED TODO: Only allow toggle if security is DISABLED (le_pourvoire_clike_checked_est_active = true)
+            if (canClick) {
                 onToggle(newStateWhenToggled)
 
                 // FIXED TODO(1): When toggling from OFF to ON, deactivate lence_pour_check
@@ -55,12 +55,12 @@ fun ToggleButton_PremierCheckDonne(
         },
         modifier = modifier.size(48.dp),
         containerColor = when {
-            !isSecureClickEnabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            !canClick -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) // Disabled when security is ENABLED
             allChecked -> Color(0xFFFFEB3B) // Yellow when checked
             else -> MaterialTheme.colorScheme.surfaceVariant
         },
         contentColor = when {
-            !isSecureClickEnabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+            !canClick -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
             allChecked -> Color.Black
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         }
@@ -70,7 +70,7 @@ fun ToggleButton_PremierCheckDonne(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = when {
-                !isSecureClickEnabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                !canClick -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                 allChecked -> Color.Black
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }

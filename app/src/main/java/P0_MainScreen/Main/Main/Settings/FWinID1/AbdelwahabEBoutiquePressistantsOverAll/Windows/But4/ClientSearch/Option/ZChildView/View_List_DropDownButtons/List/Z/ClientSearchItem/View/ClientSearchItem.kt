@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.Z.ClientSearchItem.View
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.getTimeElapsedString
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.getTimeElapsedString
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
@@ -231,20 +231,18 @@ fun ClientSearchItem(
                     } else null
                 }
 
-                // Use either the existing bon vent from current period or the latest one as fallback
                 val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
 
-                // Print toggle button with counter badge
                 if (bonVentToToggle != null) {
-                    val impressionConte = bonVentToToggle.impression_conte
+                    val isPrinted = bonVentToToggle.a_etai_imprime_au_moi_ne_foit  // ✅ Use boolean
                     Box(
                         modifier = Modifier.size(32.dp)
                     ) {
                         IconButton(
                             onClick = {
-                                val newCount = if (impressionConte > 0) 0 else 1
+                                // Toggle the printed status
                                 val updatedBonVent = bonVentToToggle.copy(
-                                    impression_conte = newCount
+                                    a_etai_imprime_au_moi_ne_foit = !isPrinted  // ✅ Toggle boolean
                                 )
                                 // Update the bon vent in repository
                                 viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
@@ -255,29 +253,30 @@ fun ClientSearchItem(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Print,
-                                contentDescription = "Toggle impression: $impressionConte",
-                                tint = if (impressionConte > 0) Color(0xFF4CAF50) else Color.Gray,
+                                contentDescription = "Toggle impression: ${if (isPrinted) "Imprimé" else "Non imprimé"}",
+                                tint = if (isPrinted) Color(0xFF4CAF50) else Color.Gray,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
 
-                        // Counter badge
-                        if (impressionConte > 0) {
+                        // Status indicator badge
+                        if (isPrinted) {
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
                                     .size(16.dp)
                                     .background(
-                                        color = Color(0xFFFF5722),
+                                        color = Color(0xFF4CAF50),  // Green for printed
                                         shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = impressionConte.toString(),
+                                    text = "✓",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color.White,
-                                    fontSize = 10.dp.value.toInt().sp
+                                    fontSize = 10.dp.value.toInt().sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }

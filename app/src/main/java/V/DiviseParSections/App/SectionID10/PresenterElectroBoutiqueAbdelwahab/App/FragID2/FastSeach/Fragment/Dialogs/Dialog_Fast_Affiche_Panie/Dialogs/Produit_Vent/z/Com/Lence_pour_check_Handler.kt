@@ -30,8 +30,8 @@ fun Lence_pour_check_Handler(
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
 
-    // Check if secure click is active
-    val isSecureClickEnabled = activeCentralValues.le_pourvoire_clike_checked_est_active
+    // FIXED: Inverted logic - true means security is DISABLED (can click)
+    val canClick = activeCentralValues.le_pourvoire_clike_checked_est_active
 
     // Determine if all items have lence_pour_check = true
     val allLencePourCheck = remember(relative_List_M10OperationVentCouleur) {
@@ -41,8 +41,8 @@ fun Lence_pour_check_Handler(
 
     IconButton(
         onClick = {
-            // FIXED: Only allow toggle if secure click is enabled
-            if (isSecureClickEnabled) {
+            // FIXED: Only allow toggle if security is DISABLED (le_pourvoire_clike_checked_est_active = true)
+            if (canClick) {
                 // Toggle lence_pour_check for all items in the list
                 val newLenceState = !allLencePourCheck
                 relative_List_M10OperationVentCouleur.forEach { ventCouleur ->
@@ -57,7 +57,7 @@ fun Lence_pour_check_Handler(
             .clip(RoundedCornerShape(20.dp))
             .background(
                 when {
-                    !isSecureClickEnabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    !canClick -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) // Disabled when security is ENABLED
                     allLencePourCheck -> MaterialTheme.colorScheme.primaryContainer.copy(
                         alpha = if (allNonTrouve) 0.7f else 1.0f
                     )
@@ -71,7 +71,7 @@ fun Lence_pour_check_Handler(
             imageVector = if (allLencePourCheck) Icons.Default.Hearing else Icons.Default.HearingDisabled,
             contentDescription = if (allLencePourCheck) "Disable lence pour check" else "Enable lence pour check",
             tint = when {
-                !isSecureClickEnabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                !canClick -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                 allLencePourCheck -> MaterialTheme.colorScheme.onPrimaryContainer.copy(
                     alpha = if (allNonTrouve) 0.7f else 1.0f
                 )

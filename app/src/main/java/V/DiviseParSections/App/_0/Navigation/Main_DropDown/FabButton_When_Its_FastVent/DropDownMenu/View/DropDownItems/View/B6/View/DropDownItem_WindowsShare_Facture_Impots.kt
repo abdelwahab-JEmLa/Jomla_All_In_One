@@ -1,6 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B6.View
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.PressistatntMainActivityButtons_Sec8FWinID1
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -431,7 +431,8 @@ fun DropDownItem_ThermiquePrint(
         }
     }
 }
-// Helper function to proceed with printing
+// In the proceedWithPrinting function, replace the update_M8BonVent call:
+
 private fun proceedWithPrinting(
     scope: CoroutineScope,
     aCentralFacade: ACentralFacade,
@@ -453,11 +454,11 @@ private fun proceedWithPrinting(
                 vent.quantity * prixCurrency
             }
 
-            // Update M8BonVent with incremented impression count and total
+            // ✅ Fixed: Update M8BonVent with boolean flag instead of integer counter
             aCentralFacade.repositorysMainSetter.update_M8BonVent(
                 focusedValuesGetter.activeOnVent_M8BonVent?.copy(
                     affiche_le_verssement_au_prochen_print = false,
-                    impression_conte = 1,
+                    a_etai_imprime_au_moi_ne_foit = true,  // ✅ Set to true when printed
                     sum_De_Totale_Vents = totalValue
                 )
             )

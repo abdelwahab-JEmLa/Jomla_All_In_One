@@ -1,4 +1,4 @@
-package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.P.Buttons
+package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.compose.foundation.background
@@ -35,20 +35,31 @@ fun FloatingSecureClickToggleFAB(
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val isSecureClickEnabled = activeCentralValues.le_pourvoire_clike_checked_est_active
+
+    // FIXED: Inverted logic - true means security is DISABLED (temporary unlock)
+    val isSecurityDisabled = activeCentralValues.le_pourvoire_clike_checked_est_active
 
     var timeRemaining by remember { mutableStateOf(0) }
 
-    // FIXED TODO(1): Listen for changes to premier_Check_Donne, lence_pour_check,
-    // or affiche_Dialog_Fast_Affiche_Panie and add 5 more seconds
-    LaunchedEffect(isSecureClickEnabled) {
-        if (isSecureClickEnabled) {
+    // FIXED TODO(1): When affiche_Dialog_Fast_Affiche_Panie becomes true, start 5 second timer
+    LaunchedEffect(activeCentralValues.affiche_Dialog_Fast_Affiche_Panie) {
+        if (activeCentralValues.affiche_Dialog_Fast_Affiche_Panie && !isSecurityDisabled) {
+            // Dialog opened - disable security for 5 seconds
+            focusedValuesGetter.update_activeCentralValues(
+                activeCentralValues.copy(le_pourvoire_clike_checked_est_active = true)
+            )
+        }
+    }
+
+    // Timer countdown when security is disabled
+    LaunchedEffect(isSecurityDisabled) {
+        if (isSecurityDisabled) {
             timeRemaining = 5
             while (timeRemaining > 0) {
                 delay(1000L)
                 timeRemaining--
             }
-            // Auto-disable after countdown
+            // Re-enable security after countdown
             focusedValuesGetter.update_activeCentralValues(
                 focusedValuesGetter.active_Central_Values.copy(
                     le_pourvoire_clike_checked_est_active = false
@@ -60,18 +71,16 @@ fun FloatingSecureClickToggleFAB(
     }
 
     // Monitor operations for premier_Check_Donne or lence_pour_check toggles
+    // FIXED: When any check is toggled, reset timer to 5 seconds
     val repo10 = aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
     val ventOperations = repo10.datasValue
 
-    // Track changes to add time when operations are toggled
     LaunchedEffect(
-        ventOperations.map { it.premier_Check_Donne to it.lence_pour_check },
-        activeCentralValues.affiche_Dialog_Fast_Affiche_Panie
+        ventOperations.map { it.premier_Check_Donne to it.lence_pour_check }
     ) {
-        // Only add time if secure click is already enabled
-        if (isSecureClickEnabled && timeRemaining > 0) {
-            // Add 5 more seconds (capped at 10 total)
-            timeRemaining = minOf(timeRemaining + 5, 10)
+        // If security is currently disabled (allowing clicks), reset to 5 seconds
+        if (isSecurityDisabled && timeRemaining > 0) {
+            timeRemaining = 5
         }
     }
 
@@ -83,58 +92,64 @@ fun FloatingSecureClickToggleFAB(
         FloatingActionButton(
             modifier = Modifier.size(40.dp),
             onClick = {
+                // FIXED: Manual toggle also resets to 5 seconds when disabling security
+                val newState = !isSecurityDisabled
                 focusedValuesGetter.update_activeCentralValues(
                     activeCentralValues.copy(
-                        le_pourvoire_clike_checked_est_active = !isSecureClickEnabled
+                        le_pourvoire_clike_checked_est_active = newState
                     )
                 )
+                // If we just disabled security, reset timer to 5
+                if (newState) {
+                    timeRemaining = 5
+                }
             },
-            containerColor = if (isSecureClickEnabled) {
-                Color(0xFF4CAF50) // Green when enabled
+            containerColor = if (isSecurityDisabled) {
+                Color(0xFFFFEB3B) // Yellow when security is DISABLED (unlocked)
             } else {
-                MaterialTheme.colorScheme.surfaceVariant
+                Color(0xFF4CAF50) // Green when security is ENABLED (locked)
             },
         ) {
             Icon(
-                imageVector = if (isSecureClickEnabled) {
-                    Icons.Default.Lock
+                imageVector = if (isSecurityDisabled) {
+                    Icons.Default.LockOpen // Open lock = security disabled
                 } else {
-                    Icons.Default.LockOpen
+                    Icons.Default.Lock // Closed lock = security enabled
                 },
-                contentDescription = if (isSecureClickEnabled) {
-                    "Click sécurisé activé"
+                contentDescription = if (isSecurityDisabled) {
+                    "Sécurité désactivée (${timeRemaining}s restantes)"
                 } else {
-                    "Click sécurisé désactivé"
+                    "Sécurité activée"
                 },
-                tint = if (isSecureClickEnabled) {
+                tint = if (isSecurityDisabled) {
+                    Color.Black
+                } else {
                     Color.White
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
         }
 
         if (showLabels) {
             Text(
-                text = if (isSecureClickEnabled) {
-                    "Click Sécurisé: ON (${timeRemaining}s)"
+                text = if (isSecurityDisabled) {
+                    "Débloqué: ${timeRemaining}s"
                 } else {
-                    "Click Sécurisé: OFF"
+                    "Sécurisé"
                 },
                 modifier = Modifier
                     .background(
-                        if (isSecureClickEnabled) {
-                            Color(0xFF4CAF50)
+                        if (isSecurityDisabled) {
+                            Color(0xFFFFEB3B)
                         } else {
-                            MaterialTheme.colorScheme.surfaceVariant
+                            Color(0xFF4CAF50)
                         },
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = if (isSecureClickEnabled) {
-                    Color.White
+                color = if (isSecurityDisabled) {
+                    Color.Black
                 } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    Color.White
                 },
                 style = MaterialTheme.typography.bodySmall
             )

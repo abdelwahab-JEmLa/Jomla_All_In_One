@@ -1,6 +1,7 @@
-package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option
+package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.CreateNewClientIcon
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -269,7 +271,8 @@ fun ID4ClientSearchButton(
                             },
                             trailingIcon = {
                                 // FIXED TODO(1): Switch between Close and Delete icon based on search query
-                                if (searchQuery.trim().equals("supp", ignoreCase = true)) {
+                                if (searchQuery.trim().equals("supp", ignoreCase = true)) {  //<--
+                                //TODO(1): fait ici si supp de affiche les client a supp list 
                                     IconButton(
                                         onClick = {
                                             // Delete all clients in the deletion list from repository
@@ -326,7 +329,7 @@ fun ID4ClientSearchButton(
                 // Display current mode
                 Text(
                     text = "Mode: ${if (isFournisseurMode) "Fournisseur" else "Client"}",
-                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall,
                     color = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3),
                     modifier = Modifier.padding(horizontal = 36.dp, vertical = 2.dp)
                 )
@@ -384,7 +387,7 @@ private fun ClientFournisseurToggleButton(
         Text(
             text = if (isFournisseurMode) "F" else "C",
             color = Color.White,
-            style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall
         )
     }
 }
