@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -37,16 +36,9 @@ class Repo8BonVent(
     val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
 
     init {
-        Log.d("suit_flow", "📊 Repo8BonVent: Initialisation du repository")
-
         repoScope.launch {
-            Log.d("suit_flow", "🔄 Repo8BonVent: Démarrage de la collecte du Flow DAO")
-
             dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
-                Log.d("suit_flow", "📥 Repo8BonVent: Flow collecté - ${newData.size} éléments reçus")
-
                 _datas.value = newData
-                Log.d("suit_flow", "✅ Repo8BonVent: État local mis à jour avec ${newData.size} éléments")
 
                 if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
                     val bonVentsToRemove = newData.filter { bonVent ->
@@ -54,9 +46,7 @@ class Repo8BonVent(
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
                     }
-
                     if (bonVentsToRemove.isNotEmpty()) {
-                        Log.d("suit_flow", "🗑️ Repo8BonVent: ${bonVentsToRemove.size} éléments à supprimer détectés")
                         bonVentsToRemove.forEach { bonVent ->
                             delete(bonVent)
                         }
@@ -67,38 +57,24 @@ class Repo8BonVent(
     }
 
     fun refresh_Datas() {
-        Log.d("suit_flow", "🔄 Repo8BonVent: Début du refresh des données")
-
         repoScope.launch {
             try {
-                Log.d("suit_flow", "🗑️ Repo8BonVent: Suppression de toutes les données locales")
                 dataBaseCreationFactory.dao.deleteAll()
-
                 withContext(Dispatchers.Main.immediate) {
                     _datas.value = emptyList()
-                    Log.d("suit_flow", "✅ Repo8BonVent: État local vidé")
                 }
 
-                Log.d("suit_flow", "☁️ Repo8BonVent: Chargement des données depuis Firebase")
                 val freshDataFromFirebase = dataBaseCreationFactory.onLoadFromFireBase()
-                Log.d("suit_flow", "📥 Repo8BonVent: ${freshDataFromFirebase.size} éléments reçus de Firebase")
-
                 dataBaseCreationFactory.dao.insertAll(freshDataFromFirebase)
-                Log.d("suit_flow", "💾 Repo8BonVent: Données insérées dans Room")
 
                 withContext(Dispatchers.Main.immediate) {
                     _datas.value = freshDataFromFirebase
-                    Log.d("suit_flow", "✅ Repo8BonVent: État local mis à jour après refresh")
                 }
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Data refreshed successfully", Toast.LENGTH_SHORT).show()
                 }
-
-                Log.d("suit_flow", "✅ Repo8BonVent: Refresh terminé avec succès")
-
             } catch (e: Exception) {
-                Log.e("suit_flow", "❌ Repo8BonVent: Erreur lors du refresh: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -111,69 +87,38 @@ class Repo8BonVent(
     }
 
     fun upsert(data: M8BonVent) {
-        Log.d("suit_flow", "🔄 Repo8BonVent.upsert: Début - keyID=${data.keyID.takeLast(4)}")
-        Log.d("suit_flow", "📝 Repo8BonVent.upsert: Données avant update - isPrinted=${data.a_etai_imprime_au_moi_ne_foit}")
-
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
-
-        Log.d("suit_flow", "⏰ Repo8BonVent.upsert: Timestamp mis à jour - ${dataUpdate.dernierTimeTampsSynchronisationAvecFireBase}")
-
-        // Option 1: Laisser le Flow gérer la mise à jour de l'UI
-        // Le Flow va automatiquement mettre à jour _datas.value quand le DAO changera
-        Log.d("suit_flow", "➡️ Repo8BonVent.upsert: Appel de ancienRepoUpsertUneDataEtReturnVID")
-
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
-
-        Log.d("suit_flow", "✅ Repo8BonVent.upsert: Fin - La mise à jour sera propagée par le Flow")
     }
 
     fun add(data: M8BonVent) {
-        Log.d("suit_flow", "➕ Repo8BonVent.add: Début - keyID=${data.keyID.takeLast(4)}")
-
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
-
-        Log.d("suit_flow", "➡️ Repo8BonVent.add: Appel de ancienRepoUpsertUneDataEtReturnVID")
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
-
-        Log.d("suit_flow", "✅ Repo8BonVent.add: Fin - L'ajout sera propagé par le Flow")
     }
 
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M8BonVent) {
-        Log.d("suit_flow", "📤 Repo8BonVent.ancienRepo: Appel de DataBaseInitFactory.set")
         dataBaseCreationFactory.set(dataUpdate)
     }
 
     fun delete(data: M8BonVent) {
-        Log.d("suit_flow", "🗑️ Repo8BonVent.delete: Début - keyID=${data.keyID.takeLast(4)}")
-
         repoScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
-                Log.d("suit_flow", "✅ Repo8BonVent.delete: Élément retiré de l'état local")
-
                 dataBaseCreationFactory.delete(data)
-                Log.d("suit_flow", "✅ Repo8BonVent.delete: Suppression propagée à la Factory")
             } catch (e: Exception) {
-                Log.e("suit_flow", "❌ Repo8BonVent.delete: Erreur - ${e.message}", e)
             }
         }
     }
 
     fun addNew(data: M8BonVent) {
-        Log.d("suit_flow", "🆕 Repo8BonVent.addNew: Début - keyID=${data.keyID.takeLast(4)}")
-
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
-
-        Log.d("suit_flow", "➡️ Repo8BonVent.addNew: Appel de DataBaseInitFactory.set")
         dataBaseCreationFactory.set(dataUpdate)
-
-        Log.d("suit_flow", "✅ Repo8BonVent.addNew: Fin - L'ajout sera propagé par le Flow")
     }
 }
 
@@ -181,83 +126,50 @@ class Repo8BonVent(
 data class M8BonVent(
     @PrimaryKey
     var keyID: String = generePushKey(),
-
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-
     var confirmeCommande_TimeTamp: Long = 0,
-
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
-
-    //---------------------------------Parent.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     var parent_M9AppCompt_KeyID: String = "null",
     var parent_M9AppCompt_DebugInfos: String = "null",
-    //---------------------------------Parent.M14VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parent_M14VentPeriod_KeyId: String = "null",
     var parent_M14VentPeriod_DebugInfos: String = "null",
-    //---------------------------------Parent.M2Client----------------------------------------------------------------------------------------------------------------------------------
     var parent_M2Client_KeyID: String = "null",
     var parent_M2Client_DebugInfos: String = "null",
     var parent_M2Client_OldLongID: Long = 0L,
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //---------------------------------Parent.M17----------------------------------------------------------------------------------------------------------------------------------
     var parent_M17Message_KeyID: String = "null",
     var parent_M17Message_DebugInfos: String = "null",
-    //-----------------------------------Parent.Realations-------------------------------------------------------------------------------------------------------------------------------
     var its_Confirmation_de_TransactionKeyId: String = "",
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    // Section InfosDeBase
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
     var heurFinInString: String = "Non Defini",
-
-    // Section StatuesMutable
     var its_working_for_wholesaler: Boolean = false,
-
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
-
     var totale_saved: Double = 0.0,
     var cUn_Versement_duBonVentKey: String = "",
-
     var vala_supp: Int = 0,
     var a_etai_imprime_au_moi_ne_foit: Boolean = false,
-
     var versement_fait: Double = 0.0,
     var ancien_credit: Double = 0.0,
     var cUn_Credit_duBonVentKey: String = "",
-
     var new_credit_apre_tout_fait: Double = 0.0,
-
     var affiche_le_verssement_au_prochen_print: Boolean = false,
-
     var demande_Versemet_si_Type: Double = 0.0,
     var demande_Versemet_si_Type_est_regle: Boolean = false,
-
     var credit_fait: Double = 0.0,
-
     var sum_De_Totale_Vents: Double = 0.0,
     var sum_De_Credit_Fait: Double = 0.0,
     var versement: Double = 0.0,
-
-    //Mutable
     var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
-
-    // Section Centralization Valeurs Pour Injection add_New TOu modules
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
-
-    //A Supp
     val parentID8C2TypeTransactionKeyByParent: String = "",
     var vid: Long = 0L,
-
-    // Section keyFireBase et Update Version Id
 ) {
-
     fun get_DebugInfos(): String {
         return buildString {
             append("Bon")
@@ -274,38 +186,30 @@ data class M8BonVent(
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
-
         ON_MODE_COMMEND_ACTUELLEMENT(
             android.R.color.holo_green_light,
             " تنفيذ المطلوب في تحسين الوضع معه"
         ),
-
         Rapport_Entre_On_Etate_De_Bloquage(
             android.R.color.holo_red_light,
             ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"
         ),
         Bloque_Probleme(R.color.c3, "حدث مشكل معه"),
         Ordre_Gerant(R.color.c4, "توجيه المسير"),
-
         A_COMMANDE_CONFIRME(
             android.R.color.holo_purple, "تم تاكيد الطلبية"
         ),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
-
         Cette_Transaction_Type_Est_Credit(android.R.color.holo_red_dark, "تم اقراضه  "),
-
         Versemment(R.color.c5, ""),
         Demande_Versemet(android.R.color.holo_red_dark, "طلب تحظير الدين القديم عند احظار الطلبية"),
-
         ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
         AVEC_MARCHANDISE(R.color.c5, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
-
         Cible(android.R.color.holo_orange_dark, "معين من المسير"),
         CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
         CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
-
         PourVoirPanie(
             android.R.color.holo_red_light, "للنظر"
         ),
@@ -315,7 +219,7 @@ data class M8BonVent(
         PASSE(R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
         CommantaireSpeciale(R.color.c7, "ملاحظة خاصة بالطلبية"),
         Passed_Sans_Livre(android.R.color.darker_gray, "Passed_Sans_Livre"),
-        Credit(android.R.color.holo_red_dark, " "),      ;
+        Credit(android.R.color.holo_red_dark, " "),;
 
         companion object {
             const val keyModel = "ID8C2"
@@ -344,8 +248,8 @@ data class M8BonVent(
         ).child("Datas08BonVent")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
-        fun get_default2(
-        ): M8BonVent {
+
+        fun get_default2(): M8BonVent {
             return M8BonVent()
         }
 
@@ -381,7 +285,6 @@ data class M8BonVent(
                     data.parent_M14VentPeriod_KeyId == parent_M14VentPeriod_KeyId
                             && data.parent_M2Client_KeyID == parent_M2Client_KeyID
                             && data.etateActuellementEst == relative_Etate
-
                 match_MainValuesKeys
             }
     }
