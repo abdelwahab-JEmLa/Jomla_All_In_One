@@ -40,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -234,17 +236,21 @@ fun ClientSearchItem(
                 val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
 
                 if (bonVentToToggle != null) {
-                    val isPrinted = bonVentToToggle.a_etai_imprime_au_moi_ne_foit  // ✅ Use boolean
+                    val isPrinted = bonVentToToggle.a_etai_imprime_au_moi_ne_foit     &
                     Box(
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier
+                            .semantics(mergeDescendants = true) {
+                                set(value = bonVentToToggle, key = SemanticsPropertyKey(""))
+                            }
+                            .size(32.dp)
                     ) {
                         IconButton(
                             onClick = {
                                 // Toggle the printed status
                                 val updatedBonVent = bonVentToToggle.copy(
-                                    a_etai_imprime_au_moi_ne_foit = !isPrinted  // ✅ Toggle boolean
+                                    a_etai_imprime_au_moi_ne_foit = !isPrinted
                                 )
-                                // Update the bon vent in repository
+
                                 viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                     updatedBonVent
                                 )

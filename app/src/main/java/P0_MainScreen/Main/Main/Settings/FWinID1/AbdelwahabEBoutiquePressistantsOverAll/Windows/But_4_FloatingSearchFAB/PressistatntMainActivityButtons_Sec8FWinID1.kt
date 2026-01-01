@@ -244,7 +244,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                         else -> currentBonVent
                     }
-                    repositorysMainSetter.repo8BonVent.updateIfExist(updatedBonVent)
+                    repositorysMainSetter.repo8BonVent.upsert(updatedBonVent)
                 }
 
                 val currentActiveCentralValues = focusedValuesGetter.active_Central_Values

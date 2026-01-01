@@ -153,36 +153,6 @@ class Repo8BonVent(
         dataBaseCreationFactory.set(dataUpdate)
     }
 
-    fun updateIfExist(data: M8BonVent) {
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.keyID == data.keyID
-        }
-
-        if (existingIndex < 0) {
-            repoScope.launch {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-            return
-        }
-
-        val updatedItem = data.copy(
-            keyID = datasValue[existingIndex].keyID,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-
-        repoScope.launch {
-            withContext(Dispatchers.Main.immediate) {
-                _datas.value = datasValue.toMutableList().apply {
-                    this[existingIndex] = updatedItem
-                }
-            }
-        }
-
-        dataBaseCreationFactory.set(updatedItem)
-    }
 }
 
 @Entity

@@ -150,7 +150,9 @@ class DataBaseInitFactory_8BonVent(
             )
             dao.upsert(entityWithUpdatedTimestamp)
             batchFireBaseUpdateGBonVent(listOf(entityWithUpdatedTimestamp))
-        }
+        }                                              //<--
+        //TODO(2.C Relative Au Todo(1): 
+                //... pk
     }
 
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<M8BonVent>) {

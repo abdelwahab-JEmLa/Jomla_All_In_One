@@ -68,7 +68,8 @@ fun ID4ClientSearchButton(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     repositorysMainGetter: RepositorysMainGetter=koinInject()
-) {
+) {           //<--
+//TODO(1): ici affiche to les clients ou il on un bon vent de current vent period 
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
@@ -79,7 +80,6 @@ fun ID4ClientSearchButton(
     val focusRequester = remember { FocusRequester() }
     val searchQueryFlow = remember { MutableStateFlow("") }
 
-    // FIXED TODO(1): Get deletion list and filter out clients
     val currentValues = getter.active_Central_Values
     val deletionList = currentValues.list_clients_por_suprime
     val deletionKeyIds = deletionList.map { it.keyID }.toSet()
@@ -114,7 +114,6 @@ fun ID4ClientSearchButton(
                         filteredClients = clientsWithCommandBonVents
                         showDropdown = clientsWithCommandBonVents.isNotEmpty()
                     } else {
-                        // FIXED TODO(1): Filter search results to exclude deletion list
                         val filtered = hClientRepository.datasValue
                             .filter { client ->
                                 !deletionKeyIds.contains(client.keyID) &&
