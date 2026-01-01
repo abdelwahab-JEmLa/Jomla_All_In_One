@@ -12,6 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
 data class return_get_Edited_M8BonVent(
-    val found_M8 :M8BonVent?,
-    val default_If_No_Found :M8BonVent,
+    val found_M8: M8BonVent?,
+    val default_If_No_Found: M8BonVent,
 )
 
 fun get_Edited_M8BonVent(
@@ -57,11 +58,14 @@ fun get_Edited_M8BonVent(
     relative_M2Client: M2Client,
     onShowToast: (ToastData) -> Unit
 ): Triple<M8BonVent?, M8BonVent, Modifier>? {
+    Log.d("suit_flow", "🔍 ClientSearchItem.get_Edited_M8BonVent: Début - Client=${relative_M2Client.nom}")
+
     val getFocusedVars = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
     val currentPeriod = getFocusedVars.currentActiveFocuced_M14VentPeriode
 
     if (currentPeriod == null) {
+        Log.w("suit_flow", "⚠️ ClientSearchItem.get_Edited_M8BonVent: Aucune période active")
         onShowToast(
             ToastData(
                 message = "Aucune période de vente active trouvée",
@@ -73,6 +77,7 @@ fun get_Edited_M8BonVent(
     }
 
     val currentPeriodKeyID = currentPeriod.keyID
+    Log.d("suit_flow", "📊 ClientSearchItem.get_Edited_M8BonVent: Période active=${currentPeriodKeyID.takeLast(4)}")
 
     val existingBonVent = repo8BonVent.datasValue.find { bonVent ->
         bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
@@ -80,6 +85,12 @@ fun get_Edited_M8BonVent(
     }?.copy(
         its_working_for_wholesaler = true
     )
+
+    if (existingBonVent != null) {
+        Log.d("suit_flow", "✅ ClientSearchItem.get_Edited_M8BonVent: BonVent existant trouvé - keyID=${existingBonVent.keyID.takeLast(4)}, isPrinted=${existingBonVent.a_etai_imprime_au_moi_ne_foit}")
+    } else {
+        Log.d("suit_flow", "➕ ClientSearchItem.get_Edited_M8BonVent: Aucun BonVent existant, création d'un nouveau")
+    }
 
     val newBonVent = M8BonVent().copy(
         parent_M9AppCompt_KeyID = getFocusedVars.currentActive_M9AppCompt?.keyID ?: "",
@@ -103,16 +114,21 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
+    Log.d("suit_flow", "🎨 ClientSearchItem.Compose: Rendu pour client=${m2Client.nom}")
+
     val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
 
     // Add toast state management
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
-    val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
-        bonVentRepository.datasValue
-            .filter { it.parent_M2Client_KeyID == m2Client.keyID }
-            .maxByOrNull { it.creationTimestamps }
-    }
+    // ⚠️ IMPORTANT: Ne pas utiliser remember ici car il cache la valeur
+    // On veut que latestBonVent se recalcule à chaque changement de bonVentRepository.datasValue
+    val latestBonVent = bonVentRepository.datasValue
+        .filter { it.parent_M2Client_KeyID == m2Client.keyID }
+        .maxByOrNull { it.creationTimestamps }
+        .also { latest ->
+            Log.d("suit_flow", "📊 ClientSearchItem.Compose: Dernier BonVent pour ${m2Client.nom} = ${latest?.keyID?.takeLast(4) ?: "null"}, isPrinted=${latest?.a_etai_imprime_au_moi_ne_foit}")
+        }
 
     val bonVentResult = get_Edited_M8BonVent(
         aCentralFacade,
@@ -140,17 +156,22 @@ fun ClientSearchItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
+                            Log.d("suit_flow", "👆 ClientSearchItem.onClick: Click sur client=${m2Client.nom}")
+
                             val handleClick = {
                                 if (existingBonVent != null) {
+                                    Log.d("suit_flow", "🔄 ClientSearchItem.onClick: Mise à jour BonVent existant - keyID=${existingBonVent.keyID.takeLast(4)}")
                                     viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                         existingBonVent
                                     )
                                 } else {
+                                    Log.d("suit_flow", "➕ ClientSearchItem.onClick: Ajout nouveau BonVent - keyID=${newBonVent.keyID.takeLast(4)}")
                                     viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(
                                         newBonVent
                                     )
                                 }
 
+                                Log.d("suit_flow", "🎯 ClientSearchItem.onClick: Définition du BonVent actif")
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
                                     existingBonVent ?: newBonVent
                                 )
@@ -219,24 +240,27 @@ fun ClientSearchItem(
             ) {
                 val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
 
-                // Find the bon vent for current period and client
-                val currentPeriodBonVent = remember(
-                    m2Client.keyID,
-                    currentPeriodKeyID,
-                    bonVentRepository.datasValue
-                ) {
-                    if (currentPeriodKeyID != null) {
-                        bonVentRepository.datasValue.find { bonVent ->
-                            bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
-                                    bonVent.parent_M2Client_KeyID == m2Client.keyID
-                        }
-                    } else null
+                // ⚠️ IMPORTANT: Ne pas utiliser remember ici non plus
+                // On veut recalculer à chaque changement de datasValue
+                val currentPeriodBonVent = if (currentPeriodKeyID != null) {
+                    bonVentRepository.datasValue.find { bonVent ->
+                        bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
+                                bonVent.parent_M2Client_KeyID == m2Client.keyID
+                    }.also { bonVent ->
+                        Log.d("suit_flow", "📊 ClientSearchItem.currentPeriodBonVent: Pour ${m2Client.nom}, période=${currentPeriodKeyID.takeLast(4)}, bonVent=${bonVent?.keyID?.takeLast(4) ?: "null"}, isPrinted=${bonVent?.a_etai_imprime_au_moi_ne_foit}")
+                    }
+                } else {
+                    Log.d("suit_flow", "⚠️ ClientSearchItem.currentPeriodBonVent: Aucune période active")
+                    null
                 }
 
                 val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
 
                 if (bonVentToToggle != null) {
-                    val isPrinted = bonVentToToggle.a_etai_imprime_au_moi_ne_foit     &
+                    val isPrinted = bonVentToToggle.a_etai_imprime_au_moi_ne_foit
+                    Log.d("suit_flow", "🖨️ ClientSearchItem.PrintButton: BonVent à toggle - keyID=${bonVentToToggle.keyID.takeLast(4)}, isPrinted ACTUEL=$isPrinted")
+                    Log.d("suit_flow", "🎨 ClientSearchItem.RECOMPOSITION: Client=${m2Client.nom}, isPrinted=$isPrinted")
+
                     Box(
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
@@ -246,14 +270,22 @@ fun ClientSearchItem(
                     ) {
                         IconButton(
                             onClick = {
+                                Log.d("suit_flow", "👆 ClientSearchItem.PrintButton.onClick: Click sur bouton d'impression")
+                                Log.d("suit_flow", "📝 ClientSearchItem.PrintButton.onClick: État AVANT - keyID=${bonVentToToggle.keyID.takeLast(4)}, isPrinted=$isPrinted")
+
                                 // Toggle the printed status
                                 val updatedBonVent = bonVentToToggle.copy(
                                     a_etai_imprime_au_moi_ne_foit = !isPrinted
                                 )
 
+                                Log.d("suit_flow", "🔄 ClientSearchItem.PrintButton.onClick: État APRÈS - keyID=${updatedBonVent.keyID.takeLast(4)}, isPrinted=${updatedBonVent.a_etai_imprime_au_moi_ne_foit}")
+                                Log.d("suit_flow", "➡️ ClientSearchItem.PrintButton.onClick: Appel de update_M8BonVent")
+
                                 viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                     updatedBonVent
                                 )
+
+                                Log.d("suit_flow", "✅ ClientSearchItem.PrintButton.onClick: update_M8BonVent appelé, attente de la mise à jour du Flow")
                             },
                             modifier = Modifier.size(32.dp)
                         ) {
@@ -287,11 +319,15 @@ fun ClientSearchItem(
                             }
                         }
                     }
+                } else {
+                    Log.d("suit_flow", "⚠️ ClientSearchItem.PrintButton: Aucun BonVent à toggle pour ${m2Client.nom}")
                 }
 
                 // Add/Remove from deletion list button
                 IconButton(
                     onClick = {
+                        Log.d("suit_flow", "👆 ClientSearchItem.DeletionButton.onClick: Toggle liste de suppression pour ${m2Client.nom}, état actuel=$isInDeletionList")
+
                         val updatedList = if (isInDeletionList) {
                             currentValues.list_clients_por_suprime.filter { it.keyID != m2Client.keyID }
                         } else {
@@ -300,6 +336,8 @@ fun ClientSearchItem(
                         focusedValuesGetter.update_activeCentralValues(
                             currentValues.copy(list_clients_por_suprime = updatedList)
                         )
+
+                        Log.d("suit_flow", "✅ ClientSearchItem.DeletionButton.onClick: Liste mise à jour, nouveau état=${!isInDeletionList}")
                     },
                     modifier = Modifier.size(32.dp)
                 ) {
@@ -313,6 +351,8 @@ fun ClientSearchItem(
             }
         }
     } ?: run {
+        Log.w("suit_flow", "⚠️ ClientSearchItem.Compose: bonVentResult est null pour ${m2Client.nom} - Affichage du placeholder")
+
         // Optional: Show a placeholder or error state when bonVentResult is null
         ElevatedCard(
             modifier = Modifier
