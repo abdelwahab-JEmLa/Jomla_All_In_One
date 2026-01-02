@@ -4,7 +4,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,16 +40,11 @@ fun Expand_Produit_Couleur(
                 expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
             )
         )
-        val data = buildString {
-            append(WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix)
-            append(relative_M3CouleurProduitInfos.keyID)
-        }
-
-        Log.d("sendData", "Expand_Produit_Couleur>$data")
-
-        wifiTransferDatas.sendData(
-            data
+        viewModel.sendOrderToClientDisplayer(
+            WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+            4
         )
+
 
     }
 
