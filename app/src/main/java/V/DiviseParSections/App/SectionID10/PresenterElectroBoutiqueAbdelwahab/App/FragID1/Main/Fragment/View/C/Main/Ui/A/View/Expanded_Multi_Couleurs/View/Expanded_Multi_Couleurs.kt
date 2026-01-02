@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Expand
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,9 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
@@ -156,9 +160,14 @@ private fun ColorImageCard(
                     )
                 ) {
                     Icon(
-                        painter = painterResource(android.R.drawable.ic_menu_rotate),
-                        contentDescription = "Swap to top",
-                        modifier = Modifier.size(20.dp)
+                        imageVector = Icons.Default.Expand,
+                        contentDescription = "Expand color details",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red.copy(alpha = 0.6f))
+                            .padding(4.dp)
                     )
                 }
             }
@@ -169,32 +178,13 @@ private fun ColorImageCard(
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos
 ) = this
-    // Désactiver les animations pour réduire l'utilisation des ressources
     .dontAnimate()
-
-    // Cache stratégie optimisée - utilise seulement le cache disque
     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-
-    // Priorité normale au lieu de HIGH pour réduire la pression
     .priority(Priority.NORMAL)
-
-    // Désactiver le thumbnail pour économiser les ressources
     .dontTransform()
-
-    // Signature simple pour le cache
     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-
-    // Définir des dimensions fixes pour éviter le redimensionnement multiple
     .override(400, 400)
-
-    // Désactiver le décodage hardware si disponible (économise la mémoire GPU)
     .disallowHardwareConfig()
-
-    // Format de décodage optimisé (RGB_565 utilise 2 bytes par pixel au lieu de 4)
     .format(com.bumptech.glide.load.DecodeFormat.PREFER_RGB_565)
-
-    // Réduire la qualité JPEG si applicable (70% est un bon compromis)
     .encodeQuality(70)
-
-    // Skip memory cache pour les grandes images (force l'utilisation du cache disque seulement)
     .skipMemoryCache(false)
