@@ -47,7 +47,6 @@ class WifiTransferDatas(
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
-    // CRITICAL: Both endpointId and isConnected must be accessed together atomically
     @Volatile
     private var endpointId: String? = null
     private val connectionStateMutex = Mutex()
@@ -63,6 +62,11 @@ class WifiTransferDatas(
     private val baseRetryDelayMs = 3000L
 
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
+
+    // Buffer pour les messages en attente
+    private val pendingMessages = mutableListOf<String>()
+    private val pendingMessagesMutex = Mutex()
+    private val maxPendingMessages = 50 // Limite pour éviter la surcharge mémoire
 
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
@@ -81,6 +85,26 @@ class WifiTransferDatas(
             endpointId = endpoint
             _connectionUiState.update { it.copy(isConnected = connected) }
             Log.d(TAG, "🔄 État connexion mis à jour: isConnected=$connected, endpointId=$endpoint")
+        }
+
+        // Si reconnecté, envoyer les messages en attente
+        if (connected && endpoint != null) {
+            flushPendingMessages()
+        }
+    }
+
+    // Envoyer tous les messages en attente
+    private suspend fun flushPendingMessages() {
+        pendingMessagesMutex.withLock {
+            if (pendingMessages.isNotEmpty()) {
+                Log.d(TAG, "📬 Envoi de ${pendingMessages.size} messages en attente")
+                val messagesToSend = pendingMessages.toList()
+                pendingMessages.clear()
+
+                messagesToSend.forEach { message ->
+                    sendDataInternal(message)
+                }
+            }
         }
     }
 
@@ -464,7 +488,8 @@ class WifiTransferDatas(
 
     fun sendData(data: Any) {
         viewModelScope.launch {
-            Log.d("sendData", "📤 sendData() appelé avec: $data")
+            val dataStr = data.toString()
+            Log.d("sendData", "📤 sendData() appelé avec: $dataStr")
 
             // CRITICAL: Atomically check both isConnected and endpointId together
             val (isConnected, endpoint) = getConnectionInfo()
@@ -472,39 +497,81 @@ class WifiTransferDatas(
             Log.d("sendData", "🔗 État atomique: isConnected=$isConnected, endpointId=$endpoint")
 
             if (!isConnected) {
-                Log.e("sendData", "❌ Non connecté (isConnected=false), données ignorées: $data")
+                // Ne pas ignorer les messages importants - les mettre en buffer
+                if (!dataStr.equals("ping", ignoreCase = true) &&
+                    !dataStr.equals("Connection established", ignoreCase = true)) {
+
+                    pendingMessagesMutex.withLock {
+                        if (pendingMessages.size < maxPendingMessages) {
+                            pendingMessages.add(dataStr)
+                            Log.d("sendData", "📥 Message mis en buffer (${pendingMessages.size} en attente): $dataStr")
+                        } else {
+                            Log.e("sendData", "⚠️ Buffer plein, message ignoré: $dataStr")
+                        }
+                    }
+                } else {
+                    Log.d("sendData", "⏭️ Message système ignoré (non connecté): $dataStr")
+                }
                 return@launch
             }
 
             if (endpoint == null) {
                 Log.e("sendData", "❌ INCOHÉRENCE: isConnected=true mais endpointId=null!")
-                Log.e("sendData", "❌ Force déconnexion pour corriger l'état. Données: $data")
+                Log.e("sendData", "❌ Force déconnexion pour corriger l'état. Données: $dataStr")
                 // Force fix the inconsistent state
                 setConnectionState(connected = false, endpoint = null)
+
+                // Buffer le message si important
+                if (!dataStr.equals("ping", ignoreCase = true) &&
+                    !dataStr.equals("Connection established", ignoreCase = true)) {
+                    pendingMessagesMutex.withLock {
+                        if (pendingMessages.size < maxPendingMessages) {
+                            pendingMessages.add(dataStr)
+                            Log.d("sendData", "📥 Message bufferisé après incohérence: $dataStr")
+                        }
+                    }
+                }
                 return@launch
             }
 
-            try {
-                val payload = when (data) {
-                    is String -> Payload.fromBytes(data.toByteArray())
-                    else -> {
-                        Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
-                        return@launch
-                    }
-                }
+            sendDataInternal(dataStr, endpoint)
+        }
+    }
 
-                Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
-                    .addOnSuccessListener {
-                        Log.d("sendData", "✅ Données envoyées avec succès: $data")
+    // Fonction interne pour l'envoi réel
+    private suspend fun sendDataInternal(dataStr: String, endpoint: String? = null) {
+        val actualEndpoint = endpoint ?: connectionStateMutex.withLock { endpointId } ?: run {
+            Log.e("sendData", "❌ Aucun endpoint disponible pour: $dataStr")
+            return
+        }
+
+        try {
+            val payload = Payload.fromBytes(dataStr.toByteArray())
+
+            Nearby.getConnectionsClient(context).sendPayload(actualEndpoint, payload)
+                .addOnSuccessListener {
+                    Log.d("sendData", "✅ Données envoyées avec succès: $dataStr")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("sendData", "❌ Échec de l'envoi des données: $dataStr", e)
+
+                    // Re-buffer le message si l'envoi échoue et que ce n'est pas un ping
+                    if (!dataStr.equals("ping", ignoreCase = true) &&
+                        !dataStr.equals("Connection established", ignoreCase = true)) {
+                        viewModelScope.launch {
+                            pendingMessagesMutex.withLock {
+                                if (!pendingMessages.contains(dataStr) && pendingMessages.size < maxPendingMessages) {
+                                    pendingMessages.add(dataStr)
+                                    Log.d("sendData", "🔄 Message re-bufferisé après échec: $dataStr")
+                                }
+                            }
+                        }
                     }
-                    .addOnFailureListener { e ->
-                        Log.e("sendData", "❌ Échec de l'envoi des données: $data", e)
-                        handleTransferFailure()
-                    }
-            } catch (e: Exception) {
-                Log.e("sendData", "❌ Exception lors de l'envoi des données: $data", e)
-                handleTransferFailure()
-            }
+                    handleTransferFailure()
+                }
+        } catch (e: Exception) {
+            Log.e("sendData", "❌ Exception lors de l'envoi des données: $dataStr", e)
+            handleTransferFailure()
         }
     }
 
@@ -525,6 +592,14 @@ class WifiTransferDatas(
             }
 
             setConnectionState(connected = false, endpoint = null)
+
+            // Vider le buffer des messages en attente
+            pendingMessagesMutex.withLock {
+                if (pendingMessages.isNotEmpty()) {
+                    Log.d(TAG, "🗑️ ${pendingMessages.size} messages en attente supprimés")
+                    pendingMessages.clear()
+                }
+            }
 
             lastConnectionMode = ConnectionMode.NONE
             retryCount = 0
