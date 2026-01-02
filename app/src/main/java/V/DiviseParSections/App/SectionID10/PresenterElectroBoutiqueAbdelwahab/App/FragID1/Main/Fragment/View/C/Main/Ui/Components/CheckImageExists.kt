@@ -15,7 +15,7 @@ fun checkImageExists(
     // Try to get the actual filename from M3CouleurProduitInfos first
     val baseFileName = if (colorIndex == -1) {
         "${article.id}_Unite"
-    } else if (repo03CouleurProduitInfos != null) {
+    } else run {
         // Get color info to find actual filename
         val colorInfo = repo03CouleurProduitInfos.datasValue.find {
             it.parentBProduitOldID == article.id &&
@@ -23,9 +23,6 @@ fun checkImageExists(
         }
 
         colorInfo?.nomImageFichieSansEtansion ?: "${article.id}_${colorIndex}"
-    } else {
-        // Fallback to indexColor (without +1)
-        "${article.id}_${colorIndex}"
     }
 
     val baseImagePath = File(viewModel.viewModelImagesPath, baseFileName).absolutePath

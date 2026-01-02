@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.ArticleItem
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -190,20 +190,20 @@ fun MainList(
                 )
 
                 ArticleItem(
+                    relative_M1produit = article,
                     viewModel = viewModel,
-                    article = article,
                     viewModelheadViewModelViewModel = headViewModelViewModel,
+                    viewModelInitApp = viewModelInitApp,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos,
-                    uiState = uiState,
-                    isFirstVisible = isFirstVisible,
                     modifier = Modifier
                         .animateItem(
                             fadeInSpec = null,
                             fadeOutSpec = null
                         ),
+                    uiState = uiState,
+                    isFirstVisible = isFirstVisible,
                     lockHost = lockHost,
-                    viewModelInitApp = viewModelInitApp,
+                    onClickToOpenWindos = onClickToOpenWindos,
                     isExpanded = isExpanded,
                     expandedElevation = elevation,
                     expandedColorIndex = expandedColorIndex

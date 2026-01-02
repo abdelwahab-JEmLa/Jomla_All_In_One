@@ -1,6 +1,7 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Expanded_Multi_Couleurs
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout.E_ArticleLayout
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -23,14 +24,13 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
-
 @Composable
 fun ArticleItem(
+    relative_M1produit: ArticlesBasesStatsTable,
     repositorysMainGetter: RepositorysMainGetter= koinInject(),
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelheadViewModelViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
-    article: ArticlesBasesStatsTable,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     uiState: UiState,
@@ -42,7 +42,7 @@ fun ArticleItem(
     expandedColorIndex: Int? = null
 ) {
 
-    val colorCount = repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(article.keyID)
+    val colorCount = repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
         .size
 
     val cardColor = when {
@@ -50,14 +50,13 @@ fun ArticleItem(
             Color.Red
         }
         isExpanded -> {
-            MaterialTheme.colorScheme.primaryContainer // Highlight when expanded
+            MaterialTheme.colorScheme.primaryContainer
         }
         else -> {
             MaterialTheme.colorScheme.surface
         }
     }
 
-    // Animate scale when expanded
     val scale by animateFloatAsState(
         targetValue = if (isExpanded) 1.02f else 1f,
         animationSpec = spring(
@@ -78,28 +77,36 @@ fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = expandedElevation),
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
-        // Use different layout when expanded
-        val layout = when {
-            isExpanded && colorCount == 2 -> E_ArticleLayout.DemiDual
-            isExpanded && colorCount > 2 -> E_ArticleLayout.DemiMulti
-            isExpanded && colorCount == 1 -> E_ArticleLayout.DemiUno
-            colorCount == 1 -> E_ArticleLayout.SmallUno
-            colorCount == 2 -> E_ArticleLayout.SmallDual
-            colorCount > 2 -> E_ArticleLayout.SmallMulti
-            else -> E_ArticleLayout.SmallUno
-        }
+        // Check if should display Expanded_Multi_Couleurs
+        if (isExpanded && colorCount > 2) {
+            // Display ONLY Expanded_Multi_Couleurs
+            Expanded_Multi_Couleurs(
+                relative_M1produit = relative_M1produit,
+                repositorysMainGetter = repositorysMainGetter
+            )
+        } else {
+            // Display normal layout
+            val layout = when {
+                isExpanded && colorCount == 2 -> E_ArticleLayout.DemiDual
+                isExpanded && colorCount == 1 -> E_ArticleLayout.DemiUno
+                colorCount == 1 -> E_ArticleLayout.SmallUno
+                colorCount == 2 -> E_ArticleLayout.SmallDual
+                colorCount > 2 -> E_ArticleLayout.SmallMulti
+                else -> E_ArticleLayout.SmallUno
+            }
 
-        layout.Content(
-            article = article,
-            viewModelheadViewModelViewModel = viewModelheadViewModelViewModel,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = { article, indexCouleur ->
-                onClickToOpenWindos(article, indexCouleur)
-            },
-            uiState = uiState,
-            lockHost = lockHost,
-            viewModelInitApp = viewModelInitApp,
-            expandedColorIndex = expandedColorIndex
-        )
+            layout.Content(
+                article = relative_M1produit,
+                viewModelheadViewModelViewModel = viewModelheadViewModelViewModel,
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindos = { article, indexCouleur ->
+                    onClickToOpenWindos(article, indexCouleur)
+                },
+                uiState = uiState,
+                lockHost = lockHost,
+                viewModelInitApp = viewModelInitApp,
+                expandedColorIndex = expandedColorIndex
+            )
+        }
     }
 }
