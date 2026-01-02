@@ -534,6 +534,14 @@ class WifiTransferDatas(
                 return@launch
             }
 
+            // SIMPLE: Vérifier et envoyer les messages en attente SI connecté et SI ce n'est pas déjà un message bufferisé
+            val messagesCount = pendingMessagesMutex.withLock { pendingMessages.size }
+            if (messagesCount > 0) {
+                Log.d("sendData", "🔔 ${messagesCount} messages en attente détectés, envoi immédiat...")
+                flushPendingMessages()
+            }
+
+            // Puis envoyer le message actuel
             sendDataInternal(dataStr, endpoint)
         }
     }
