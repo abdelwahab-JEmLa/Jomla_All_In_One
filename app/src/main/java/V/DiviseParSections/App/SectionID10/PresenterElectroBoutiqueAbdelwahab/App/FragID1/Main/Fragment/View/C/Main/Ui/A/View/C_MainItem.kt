@@ -6,24 +6,20 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
+
 @Composable
 fun ArticleItem(
     relative_M1produit: ArticlesBasesStatsTable,
@@ -57,35 +53,19 @@ fun ArticleItem(
         }
     }
 
-    val scale by animateFloatAsState(
-        targetValue = if (isExpanded) 1.02f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "scale"
-    )
-
     Card(
         modifier = modifier
             .padding(4.dp)
-            .fillMaxWidth()
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            },
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = expandedElevation),
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
-        // Check if should display Expanded_Multi_Couleurs
         if (isExpanded && colorCount > 2) {
-            // Display ONLY Expanded_Multi_Couleurs
             Expanded_Multi_Couleurs(
                 relative_M1produit = relative_M1produit,
                 repositorysMainGetter = repositorysMainGetter
             )
         } else {
-            // Display normal layout
             val layout = when {
                 isExpanded && colorCount == 2 -> E_ArticleLayout.DemiDual
                 isExpanded && colorCount == 1 -> E_ArticleLayout.DemiUno
