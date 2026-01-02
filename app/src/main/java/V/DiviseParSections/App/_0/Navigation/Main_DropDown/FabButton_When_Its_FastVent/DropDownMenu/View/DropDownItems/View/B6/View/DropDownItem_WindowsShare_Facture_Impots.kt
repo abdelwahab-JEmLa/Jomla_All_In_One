@@ -464,7 +464,6 @@ private fun proceedWithPrinting(
                     sum_De_Totale_Vents = totalValue
                 )
             )
-            repositorysMainSetter.refresh_Datas_M8BonVent()
 
             delay(300)
 
@@ -479,6 +478,8 @@ private fun proceedWithPrinting(
                 bonVent = focusedValuesGetter.activeOnVent_M8BonVent,
                 companyHeader = selectedHeader.displayName
             )
+
+            repositorysMainSetter.refresh_Datas_M8BonVent()
 
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(
