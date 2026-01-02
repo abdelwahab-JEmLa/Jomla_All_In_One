@@ -32,6 +32,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
 @SuppressLint("StaticFieldLeak")
@@ -45,7 +47,11 @@ class WifiTransferDatas(
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
+    // CRITICAL: Both endpointId and isConnected must be accessed together atomically
+    @Volatile
     private var endpointId: String? = null
+    private val connectionStateMutex = Mutex()
+
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_POINT_TO_POINT
 
@@ -56,11 +62,26 @@ class WifiTransferDatas(
     private val maxRetries = 10
     private val baseRetryDelayMs = 3000L
 
-    // Garde en mémoire le dernier mode de connexion utilisé
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
 
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
+    }
+
+    // Helper to atomically check connection and get endpoint
+    private suspend fun getConnectionInfo(): Pair<Boolean, String?> {
+        return connectionStateMutex.withLock {
+            _connectionUiState.value.isConnected to endpointId
+        }
+    }
+
+    // Helper to atomically update connection state
+    private suspend fun setConnectionState(connected: Boolean, endpoint: String?) {
+        connectionStateMutex.withLock {
+            endpointId = endpoint
+            _connectionUiState.update { it.copy(isConnected = connected) }
+            Log.d(TAG, "🔄 État connexion mis à jour: isConnected=$connected, endpointId=$endpoint")
+        }
     }
 
     fun sendOrderToClientDisplayerT(
@@ -115,11 +136,11 @@ class WifiTransferDatas(
                     )
 
                     val relative_Produit = repositorysMainGetter.find_M1Produit_ByKeyID(content)
-                        appComptComposeRepositoryProtoJuin17.upsert(
-                            appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
-                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = if (relative_Produit==null ) "" else relative_Produit.keyID
-                            )
+                    appComptComposeRepositoryProtoJuin17.upsert(
+                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
+                            active_ProduitKeyID_Au_DroopDown_PresenterEcran = if (relative_Produit == null) "" else relative_Produit.keyID
                         )
+                    )
                 }
 
                 else -> {}
@@ -140,12 +161,11 @@ class WifiTransferDatas(
 
                     delay(2000)
 
-                    // If still disconnected after initial delay, start exponential backoff
-                    if (!_connectionUiState.value.isConnected) {
+                    val (isConnected, _) = getConnectionInfo()
+                    if (!isConnected) {
                         val backoffDelay = calculateBackoffDelay()
                         delay(backoffDelay)
 
-                        // Update UI state to show reconnection attempt
                         _connectionUiState.update {
                             it.copy(
                                 connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
@@ -164,7 +184,6 @@ class WifiTransferDatas(
 
                         retryCount++
 
-                        // Update last attempt timestamp
                         _connectionUiState.update {
                             it.copy(
                                 lastSuccessfulConnection = System.currentTimeMillis()
@@ -181,21 +200,26 @@ class WifiTransferDatas(
         }
     }
 
-    // Add add_New new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
-    private fun shouldAttemptReconnection(): Boolean {
-        return !_connectionUiState.value.isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
+    private suspend fun shouldAttemptReconnection(): Boolean {
+        val (isConnected, _) = getConnectionInfo()
+        return !isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
     }
 
-    // Update handleDisconnection to use the new logic
     @SuppressLint("NewApi")
     private fun handleDisconnection(disconnectedEndpointId: String) {
-        if (endpointId == disconnectedEndpointId) {
-            this.endpointId = null
-            updateConnectionStatus("Déconnecté")
-            _connectionUiState.update {
-                it.copy(
-                    isConnected = false, lastSuccessfulConnection = System.currentTimeMillis()
-                )
+        viewModelScope.launch {
+            connectionStateMutex.withLock {
+                if (endpointId == disconnectedEndpointId) {
+                    endpointId = null
+                    updateConnectionStatus("Déconnecté")
+                    _connectionUiState.update {
+                        it.copy(
+                            isConnected = false,
+                            lastSuccessfulConnection = System.currentTimeMillis()
+                        )
+                    }
+                    Log.d(TAG, "🔄 Déconnexion appliquée: endpointId=null, isConnected=false")
+                }
             }
 
             if (shouldAttemptReconnection()) {
@@ -217,12 +241,13 @@ class WifiTransferDatas(
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     Log.d(TAG, "✅ Connexion établie avec succès!")
-                    this@WifiTransferDatas.endpointId = endpointId
-                    updateConnectionStatus("Connecté")
-                    _connectionUiState.update { it.copy(isConnected = true) }
-                    retryCount = 0 // Réinitialisation du compteur de tentatives
-                    startConnectionMonitoring()
-                    sendData("Connection established")
+                    viewModelScope.launch {
+                        setConnectionState(connected = true, endpoint = endpointId)
+                        updateConnectionStatus("Connecté")
+                        retryCount = 0
+                        startConnectionMonitoring()
+                        sendData("Connection established")
+                    }
                 }
 
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
@@ -296,9 +321,9 @@ class WifiTransferDatas(
 
     private fun handleTransferFailure() {
         viewModelScope.launch {
-            if (_connectionUiState.value.isConnected) {
+            val (isConnected, _) = getConnectionInfo()
+            if (isConnected) {
                 Log.d(TAG, "🔄 Tentative de réenvoi des données...")
-                // Logique de réessai pour les données non envoyées
             }
         }
     }
@@ -307,19 +332,22 @@ class WifiTransferDatas(
         connectionMonitorJob?.cancel()
         connectionMonitorJob = viewModelScope.launch {
             while (isActive) {
-                delay(5000) // Vérification toutes les 5 secondes
+                delay(5000)
                 checkConnectionHealth()
             }
         }
     }
 
     private fun checkConnectionHealth() {
-        endpointId?.let { endpoint ->
-            try {
-                sendData("ping")
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Erreur lors de la vérification de la connexion", e)
-                handleConnectionFailure("Perte de connexion détectée")
+        viewModelScope.launch {
+            val (isConnected, endpoint) = getConnectionInfo()
+            if (isConnected && endpoint != null) {
+                try {
+                    sendData("ping")
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Erreur lors de la vérification de la connexion", e)
+                    handleConnectionFailure("Perte de connexion détectée")
+                }
             }
         }
     }
@@ -327,14 +355,15 @@ class WifiTransferDatas(
     @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
         Log.e(TAG, "⚠️ Échec de connexion: $reason")
-        if (!isReconnecting.get() && retryCount < maxRetries) {
-            initiateReconnection()
-        } else if (retryCount >= maxRetries) {
-            Log.e(TAG, "🛑 Nombre maximum de tentatives atteint")
-            handleFinalDisconnection()
+        viewModelScope.launch {
+            if (!isReconnecting.get() && retryCount < maxRetries) {
+                initiateReconnection()
+            } else if (retryCount >= maxRetries) {
+                Log.e(TAG, "🛑 Nombre maximum de tentatives atteint")
+                handleFinalDisconnection()
+            }
         }
     }
-
 
     private fun calculateBackoffDelay(): Long {
         return baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
@@ -434,60 +463,83 @@ class WifiTransferDatas(
     }
 
     fun sendData(data: Any) {
-        endpointId?.let { endpoint ->
+        viewModelScope.launch {
+            Log.d("sendData", "📤 sendData() appelé avec: $data")
+
+            // CRITICAL: Atomically check both isConnected and endpointId together
+            val (isConnected, endpoint) = getConnectionInfo()
+
+            Log.d("sendData", "🔗 État atomique: isConnected=$isConnected, endpointId=$endpoint")
+
+            if (!isConnected) {
+                Log.e("sendData", "❌ Non connecté (isConnected=false), données ignorées: $data")
+                return@launch
+            }
+
+            if (endpoint == null) {
+                Log.e("sendData", "❌ INCOHÉRENCE: isConnected=true mais endpointId=null!")
+                Log.e("sendData", "❌ Force déconnexion pour corriger l'état. Données: $data")
+                // Force fix the inconsistent state
+                setConnectionState(connected = false, endpoint = null)
+                return@launch
+            }
+
             try {
                 val payload = when (data) {
                     is String -> Payload.fromBytes(data.toByteArray())
                     else -> {
                         Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
-                        return
+                        return@launch
                     }
                 }
 
                 Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
                     .addOnSuccessListener {
-                        Log.d(TAG, "✅ Données envoyées")
-                    }.addOnFailureListener { e ->
-                        Log.e(TAG, "❌ Échec de l'envoi", e)
+                        Log.d("sendData", "✅ Données envoyées avec succès: $data")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("sendData", "❌ Échec de l'envoi des données: $data", e)
                         handleTransferFailure()
                     }
             } catch (e: Exception) {
-                Log.e(TAG, "❌ Exception lors de l'envoi", e)
+                Log.e("sendData", "❌ Exception lors de l'envoi des données: $data", e)
                 handleTransferFailure()
             }
         }
     }
 
     fun disconnect() {
-        Log.d(TAG, "🔌 Déconnexion...")
+        Log.d(TAG, "🔌 Déconnection...")
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
 
-        try {
-            Nearby.getConnectionsClient(context).apply {
-                stopAdvertising()
-                stopDiscovery()
-                stopAllEndpoints()
+        viewModelScope.launch {
+            try {
+                Nearby.getConnectionsClient(context).apply {
+                    stopAdvertising()
+                    stopDiscovery()
+                    stopAllEndpoints()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Erreur lors de la déconnexion", e)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Erreur lors de la déconnexion", e)
+
+            setConnectionState(connected = false, endpoint = null)
+
+            lastConnectionMode = ConnectionMode.NONE
+            retryCount = 0
+            isReconnecting.set(false)
+
+            _connectionUiState.update {
+                it.copy(
+                    isHostPhone = false,
+                    connectionStatus = "Déconnecté",
+                    error = null
+                )
+            }
+
+            Log.d(TAG, "👋 Déconnexion terminée")
         }
-
-        endpointId = null
-        lastConnectionMode = ConnectionMode.NONE
-        retryCount = 0
-        isReconnecting.set(false)
-
-        _connectionUiState.update {
-            it.copy(
-                isConnected = false,
-                isHostPhone = false,
-                connectionStatus = "Déconnecté",
-                error = null
-            )
-        }
-
-        Log.d(TAG, "👋 Déconnexion terminée")
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -528,7 +580,7 @@ class WifiTransferDatas(
                 context, permission
             ) != PackageManager.PERMISSION_GRANTED
 
-            Log.d(TAG, "🔐 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
+            Log.d(TAG, "🔍 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
             isGranted
         }
 
@@ -546,7 +598,7 @@ class WifiTransferDatas(
         _connectionUiState.update {
             it.copy(
                 connectionStatus = status,
-                error = null  // Réinitialise l'erreur lors de la mise à jour du statut
+                error = null
             )
         }
     }
@@ -583,21 +635,16 @@ data class ConnectionUiState(
 )
 
 enum class WifiUpdateClientDisplayerStats(val prefix: String) {
-    ClientMainGridScrollPosition("ClientMainGridScrollPosition"), ClientWindowsLazyRowSupColorsScrolle(
-        "ClientWindowsLazyRowSupColorsScrolle"
-    ),
-    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"), ClientWindowsSelectedColorId(
-        "clientWindowsSelectedColorId"
-    ),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"), WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"), SearchWindowsDisplaye(
-        "SearchWindowsDisplaye"
-    ),
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
+    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
+    SearchWindowsDisplaye("SearchWindowsDisplaye"),
     NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"),
-    FilterProduitsParCatalogueBsonID_ET_Autres_Types(
-        "FilterProduitsParCatalogueBsonID_ET_Autres_Types"
-    ),
-
-    Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran"), ;
+    FilterProduitsParCatalogueBsonID_ET_Autres_Types("FilterProduitsParCatalogueBsonID_ET_Autres_Types"),
+    Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran");
 
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {

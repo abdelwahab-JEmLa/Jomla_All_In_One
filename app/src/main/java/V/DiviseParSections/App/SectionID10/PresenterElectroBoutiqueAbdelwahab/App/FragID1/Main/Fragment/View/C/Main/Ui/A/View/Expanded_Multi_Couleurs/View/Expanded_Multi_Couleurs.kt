@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View
 
+// AJOUT: Import du HeadViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -27,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +46,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 import java.io.File
 
@@ -50,6 +54,8 @@ import java.io.File
 fun Expanded_Multi_Couleurs(
     relative_M1produit: ArticlesBasesStatsTable,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    viewModel: HeadViewModel = koinInject(), // AJOUT: Pour envoyer au displayer
     modifier: Modifier = Modifier
 ) {
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
@@ -58,18 +64,41 @@ fun Expanded_Multi_Couleurs(
 
     var top_presanted_prisipame_couleur by remember { mutableStateOf(0) }
 
+    // Sync avec expanded_M3CouleurProduitInfos du payload
+    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+
+    LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
+        expanded_M3CouleurProduitInfos?.let { expandedColor ->
+            // Vérifier si cette couleur appartient au produit actuel
+            if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
+                val matchingIndex = findMatchingColorIndex(
+                    expandedColor = expandedColor,
+                    availableColors = relative_ListM3Couleurs
+                )
+
+                if (matchingIndex != -1 && matchingIndex != top_presanted_prisipame_couleur) {
+                    top_presanted_prisipame_couleur = matchingIndex
+                }
+            }
+        }
+    }
+
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
 
         ColorImageCard(
             couleur = selectedCouleur,
             isSelected = true,
-            onIconClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
+            onIconClick = {
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        expanded_M3CouleurProduitInfos = selectedCouleur
+                    )
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -86,6 +115,12 @@ fun Expanded_Multi_Couleurs(
                             isSelected = false,
                             onIconClick = {
                                 top_presanted_prisipame_couleur = index
+                                // Mettre à jour l'état local
+                                focusedValuesGetter.update_activeCentralValues(
+                                    focusedValuesGetter.active_Central_Values.copy(
+                                        expanded_M3CouleurProduitInfos = couleur
+                                    )
+                                )
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -96,6 +131,40 @@ fun Expanded_Multi_Couleurs(
             }
         }
     }
+}
+
+/**
+ * Trouve l'index de la couleur correspondante par correspondance directe uniquement.
+ * Recherche par: keyID, index, et nom de couleur
+ */
+private fun findMatchingColorIndex(
+    expandedColor: M3CouleurProduitInfos,
+    availableColors: List<M3CouleurProduitInfos>
+): Int {
+    // Tentative 1: correspondance exacte par keyID
+    val exactMatch = availableColors.indexOfFirst { it.keyID == expandedColor.keyID }
+    if (exactMatch != -1) return exactMatch
+
+    // Tentative 2: correspondance par index dans l'ancien proto
+    val indexMatch = availableColors.indexOfFirst {
+        it.parentBProduitOldID == expandedColor.parentBProduitOldID &&
+                it.indexCouleurDansAncienProto == expandedColor.indexCouleurDansAncienProto
+    }
+    if (indexMatch != -1) return indexMatch
+
+    // Tentative 3: correspondance par nom de couleur
+    if (expandedColor.nomCouleurStrSiSonImageDispo.isNotBlank()) {
+        val colorNameMatch = availableColors.indexOfFirst {
+            it.nomCouleurStrSiSonImageDispo.equals(
+                expandedColor.nomCouleurStrSiSonImageDispo,
+                ignoreCase = true
+            )
+        }
+        if (colorNameMatch != -1) return colorNameMatch
+    }
+
+    // Aucune correspondance trouvée
+    return -1
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -134,22 +203,19 @@ private fun ColorImageCard(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = !isSelected) {
-
+                            // Le click est géré par le IconButton
                         },
                     contentScale = if (isSelected) ContentScale.Fit else ContentScale.Crop
                 ) {
                     it.applyOptimizedImageOptions(couleur)
                 }
             } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
+                Box(modifier = Modifier.fillMaxSize())
             }
 
             if (!isSelected) {
                 IconButton(
-                    onClick = onIconClick,
+                    onClick = onIconClick, // Cela appellera maintenant viewModel.onColorSelectedByHost()
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp)

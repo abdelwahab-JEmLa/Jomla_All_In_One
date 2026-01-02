@@ -134,8 +134,22 @@ open class HeadViewModel(
                     copy(mainGridScrollPosition = content.toInt())
                 }
 
-                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
-                    copy(clientWindowsDisplayedProductId = content.toLong())
+                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> {
+                    // Log the received product ID
+                    Log.d("ClientWindowsDisplayedProductId", "📱 ClientWindowsDisplayedProductId reçu: $content (Long: ${content.toLong()})")
+
+                    updateDisplayController {
+                        copy(clientWindowsDisplayedProductId = content.toLong())
+                    }
+
+                    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
+                        Log.d(tag, "✅ Mise à jour de active_ProduitKeyID_Au_DroopDown_PresenterEcran: $content")
+                        aCentralFacade.repositorysMainSetter.update_M9AppCompt(
+                            it.copy(
+                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = content
+                            )
+                        )
+                    } ?: Log.e(tag, "❌ currentActive_M9AppCompt est null, impossible de mettre à jour")
                 }
 
                 WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
@@ -143,8 +157,8 @@ open class HeadViewModel(
                         clientWindowsDisplayedProductId = null, searchWindowsDisplaye = ""
                     )
                 }
-                WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
-                {
+
+                WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
                     aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
                         aCentralFacade.repositorysMainSetter.update_M9AppCompt(
                             it.copy(

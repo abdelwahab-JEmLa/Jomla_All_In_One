@@ -2,6 +2,9 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,22 +21,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun Expand_Produit_Couleur(
-    relative_M3CouleurProduitInfos: M3CouleurProduitInfos, // Fixed: Added missing comma
-    focusedValuesGetter: FocusedValuesGetter = koinInject()
+    relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    viewModel: HeadViewModel = koinInject() ,
+    wifiTransferDatas: WifiTransferDatas=koinInject()
 ) {
-
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
+
     fun updateExpandedCouleur() {
+        // Mettre à jour localement
         focusedValuesGetter.update_activeCentralValues(
             active_Central_Values.copy(
                 expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
             )
         )
+        val data = buildString {
+            append(WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix)
+            append(relative_M3CouleurProduitInfos.keyID)
+        }
+
+        Log.d("sendData", "Expand_Produit_Couleur>$data")
+
+        wifiTransferDatas.sendData(
+            data
+        )
+
     }
 
     Row(
