@@ -67,6 +67,7 @@ fun AppNavHost(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
+    on_pour_send_data: (String, String) -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -184,6 +185,7 @@ fun AppNavHost(
                                     targetCategoryId = targetCategoryId,
                                     lockHost = lockHost,
                                     onClickImageToShowControles = onClickImageToShowControles
+                                , on_pour_send_data = on_pour_send_data
                                 )
                             }
 

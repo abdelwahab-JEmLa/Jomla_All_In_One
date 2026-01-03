@@ -84,7 +84,9 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
     shouldShowExpandIcon: Boolean = false ,
-    its_secondary_affiche: Boolean = false
+    its_secondary_affiche: Boolean = false ,
+    on_pour_send_data: (String, String) -> Unit,
+
 ) {
     val relative_list_M3Coleurs_Du_Produit = repositorysMainGetter
         .find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1Produit.keyID)
@@ -264,6 +266,7 @@ fun ImageDisplayerProtoAvantJuin3(
         if (shouldShowExpandIcon && colorInfo != null) {
             Expand_Produit_Couleur(
                 relative_M3CouleurProduitInfos = colorInfo
+                , on_pour_send_data = on_pour_send_data
             )
         }
 

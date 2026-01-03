@@ -346,6 +346,13 @@ fun MainScreen(
                                 onClickImageToShowControles = {
                                     isControleFabVisible = !isControleFabVisible
                                 }
+                            , on_pour_send_data = {  it1,it2->
+                                      viewModel   .sendOrderToClientDisplayer(
+                                             it1 ,
+                                    it2
+                                    )
+
+                                }
                             )
 
                             if (!isHostPhone && productDisplayController.isConnected) {

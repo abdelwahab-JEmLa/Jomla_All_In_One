@@ -50,6 +50,7 @@ sealed class E_ArticleLayout {
         modifier: Modifier = Modifier,
         lockHost: Boolean,
         viewModelInitApp: ViewModelInitApp,
+        on_pour_send_data: (String, String) -> Unit,
         expandedColorIndex: Int? = null
     ) {
         when (this) {
@@ -58,24 +59,28 @@ sealed class E_ArticleLayout {
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
+            , on_pour_send_data = on_pour_send_data
             )
             is DemiDual -> DemiDisplayerDualColor(
                 article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
+            , on_pour_send_data = on_pour_send_data
             )
             is DemiMulti -> DemiDisplayerMultiColor(
                 article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
+            , on_pour_send_data = on_pour_send_data
             )
             is SmallUno -> DemiSingleColorDisplayer(
                 article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
+            , on_pour_send_data = on_pour_send_data
             )
             is SmallDual -> SmallDisplayerDualColor(
                 viewModelheadViewModelViewModel,
@@ -87,13 +92,15 @@ sealed class E_ArticleLayout {
                 imageSize = this.imageSize,
                 lockHost = lockHost,
                 viewModelInitApp = viewModelInitApp,
-                expandedColorIndex = expandedColorIndex
+                expandedColorIndex = expandedColorIndex              , on_pour_send_data = on_pour_send_data
+
             )
             is SmallMulti -> SmallDisplayerMultiColor(
                 article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp,
-                expandedColorIndex = expandedColorIndex
+                expandedColorIndex = expandedColorIndex             , on_pour_send_data = on_pour_send_data
+
             )
         }
     }
@@ -110,6 +117,7 @@ sealed class E_ArticleLayout {
     imageSize: DpSize,
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp,
+    on_pour_send_data: (String, String) -> Unit,
     expandedColorIndex: Int? = null
 ) {
     Column(modifier = modifier.padding(3.dp)) {
@@ -128,6 +136,7 @@ sealed class E_ArticleLayout {
             viewModelInitApp = viewModelInitApp,
             alwaysShowExpandIcon = true,
             contentScale = ContentScale.Fit
+        , on_pour_send_data = on_pour_send_data
         )
 
         Row(
@@ -150,6 +159,7 @@ sealed class E_ArticleLayout {
                 viewModelInitApp = viewModelInitApp,
                 alwaysShowExpandIcon = true,
                 its_secondary_affiche = true
+            , on_pour_send_data = on_pour_send_data
             )
         }
     }
@@ -166,6 +176,8 @@ sealed class E_ArticleLayout {
     imageSize: DpSize,
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp,
+
+    on_pour_send_data: (String, String) -> Unit,
     expandedColorIndex: Int? = null
 ) {
     Column(modifier = modifier.padding(3.dp)) {
@@ -181,7 +193,10 @@ sealed class E_ArticleLayout {
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = true  // FIXED: Changed from false to true
+                alwaysShowExpandIcon = true
+            , on_pour_send_data = on_pour_send_data
+
+            // FIXED: Changed from false to true
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
@@ -199,6 +214,8 @@ sealed class E_ArticleLayout {
     imageSize: DpSize,
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp,
+
+    on_pour_send_data: (String, String) -> Unit,
     expandedColorIndex: Int? = null
 ) {
     Column(modifier = modifier.padding(3.dp)) {
@@ -214,7 +231,10 @@ sealed class E_ArticleLayout {
                 onClickToOpenWindow = onClickToOpenWindos,
                 imageSize = imageSize,
                 viewModelInitApp = viewModelInitApp,
-                alwaysShowExpandIcon = true  // FIXED: Changed from false to true
+                alwaysShowExpandIcon = true
+
+            , on_pour_send_data = on_pour_send_data
+            // FIXED: Changed from false to true
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)

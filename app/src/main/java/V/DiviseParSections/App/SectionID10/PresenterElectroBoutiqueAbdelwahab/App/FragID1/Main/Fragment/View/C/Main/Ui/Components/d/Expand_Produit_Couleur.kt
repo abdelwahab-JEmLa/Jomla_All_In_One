@@ -27,8 +27,9 @@ import org.koin.compose.koinInject
 fun Expand_Produit_Couleur(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    viewModel: HeadViewModel = koinInject() ,
-    wifiTransferDatas: WifiTransferDatas=koinInject()
+    viewModel: HeadViewModel = koinInject(),
+    wifiTransferDatas: WifiTransferDatas = koinInject(),
+    on_pour_send_data: (String, String) -> Unit,
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
@@ -40,11 +41,10 @@ fun Expand_Produit_Couleur(
                 expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
             )
         )
-        viewModel.sendOrderToClientDisplayer(
-            WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
-            4
+        on_pour_send_data(
+            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+            relative_M3CouleurProduitInfos.keyID
         )
-
 
     }
 

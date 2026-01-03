@@ -76,6 +76,7 @@ open class HeadViewModel(
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
+    val focusedValuesGetter =aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val getter = aCentralFacade.repositorysMainGetter
 
     private val tag = "HeadViewModel"
@@ -159,13 +160,13 @@ open class HeadViewModel(
                 }
 
                 WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
-                    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                        aCentralFacade.repositorysMainSetter.update_M9AppCompt(
-                            it.copy(
-                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = content
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            expanded_M3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.find_M3CouleurInfos_By_KeyID(
+                                content
                             )
                         )
-                    }
+                    )
                 }
 
                 else -> {}

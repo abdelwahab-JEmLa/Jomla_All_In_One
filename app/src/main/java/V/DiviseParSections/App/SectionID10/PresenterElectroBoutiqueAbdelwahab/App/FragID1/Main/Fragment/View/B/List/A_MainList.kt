@@ -54,6 +54,7 @@ fun MainList(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: M2Client?,
     lockHost: Boolean,
+    on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
 ) {
     // Get the expanded color info
@@ -207,6 +208,7 @@ fun MainList(
                     isExpanded = isExpanded,
                     expandedElevation = elevation,
                     expandedColorIndex = expandedColorIndex
+                , on_pour_send_data = on_pour_send_data
                 )
             }
         }

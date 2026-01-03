@@ -54,6 +54,7 @@ fun MainUi(
     currentClient: M2Client?,
     viewModelInitApp: ViewModelInitApp,
     lockHost: Boolean,
+    on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit
 ) {
 
@@ -160,6 +161,7 @@ fun MainUi(
                         currentClient = currentClient,
                         viewModelInitApp = viewModelInitApp, lockHost = lockHost,
                         onClickImageToShowControles = onClickImageToShowControles
+                    , on_pour_send_data = on_pour_send_data
                     )
                 }
             }

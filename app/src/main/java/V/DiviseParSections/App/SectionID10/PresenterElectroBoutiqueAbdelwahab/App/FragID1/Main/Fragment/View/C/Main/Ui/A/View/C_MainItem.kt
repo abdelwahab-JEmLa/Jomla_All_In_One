@@ -35,6 +35,7 @@ fun ArticleItem(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     isExpanded: Boolean = false,
     expandedElevation: Dp = 4.dp,
+    on_pour_send_data: (String, String) -> Unit,
     expandedColorIndex: Int? = null
 ) {
 
@@ -86,6 +87,7 @@ fun ArticleItem(
                 lockHost = lockHost,
                 viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
+            , on_pour_send_data = on_pour_send_data
             )
         }
     }

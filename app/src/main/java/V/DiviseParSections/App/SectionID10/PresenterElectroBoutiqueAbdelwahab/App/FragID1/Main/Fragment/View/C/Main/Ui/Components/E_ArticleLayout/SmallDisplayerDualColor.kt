@@ -27,6 +27,7 @@ import com.example.clientjetpack.ViewModel.UiState
     imageSize: DpSize,
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp,
+    on_pour_send_data: (String, String) -> Unit,
     expandedColorIndex: Int? = null
 ) {
     Column(
@@ -42,6 +43,7 @@ import com.example.clientjetpack.ViewModel.UiState
             imageSize = imageSize,
             viewModelInitApp = viewModelInitApp,
             alwaysShowExpandIcon = true
+        , on_pour_send_data = on_pour_send_data
         )
 
         ArticleImageWithOverlay(
@@ -56,6 +58,7 @@ import com.example.clientjetpack.ViewModel.UiState
             viewModelInitApp = viewModelInitApp,
             alwaysShowExpandIcon = true,
             its_secondary_affiche = true
+        , on_pour_send_data = on_pour_send_data
         )
 
         InfosArticleBottom(
