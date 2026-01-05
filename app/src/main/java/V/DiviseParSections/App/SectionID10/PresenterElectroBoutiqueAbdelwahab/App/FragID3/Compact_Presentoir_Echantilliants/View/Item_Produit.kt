@@ -16,9 +16,9 @@ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpd
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -43,6 +42,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Item_Produit_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
@@ -60,7 +60,7 @@ fun Item_Produit_FragID3(
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
     }
 
-    var top_presanted_prisipame_couleur by remember { mutableStateOf(0) }
+    var big_presenter_couleur_produit by remember { mutableStateOf(0) }
 
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
@@ -79,8 +79,8 @@ fun Item_Produit_FragID3(
                     availableColors = relative_ListM3Couleurs
                 )
 
-                if (matchingIndex != -1 && matchingIndex != top_presanted_prisipame_couleur) {
-                    top_presanted_prisipame_couleur = matchingIndex
+                if (matchingIndex != -1 && matchingIndex != big_presenter_couleur_produit) {
+                    big_presenter_couleur_produit = matchingIndex
                 }
             }
         }
@@ -110,8 +110,8 @@ fun Item_Produit_FragID3(
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
             && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
 
-    // Show buttons when expanded AND host phone
-    val shouldShowButtons = isHostPhone && isThisProductExpanded
+    // Show buttons when host phone (always show lence_vent)
+    val shouldShowButtons = isHostPhone
 
     fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
         updateExpandedCouleur(
@@ -139,7 +139,7 @@ fun Item_Produit_FragID3(
         )
     }
 
-    val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
+    val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
     Column(
         modifier = modifier
@@ -158,115 +158,72 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                if (expand_affiche_button_Lence_vent && shouldShowButtons) {
-                    // Column layout: Image first, then quantity selector
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
+                // 1. Main color image - clickable to expand/collapse
+                ColorImageCard_FragID3(
+                    relative_M3CouleurProduitInfos = selectedCouleur,
+                    isSelected = true,
+                    onIconClick = { onClick_Icon(selectedCouleur) },
+                    on_pour_send_data = on_pour_send_data,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 2. Tariffs and Lence_vent - displayed based on expansion state
+                // Tariffs only shown when EXPANDED, Lence_vent ALWAYS shown (when host)
+                if (shouldShowButtons) {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = Color.White.copy(alpha = 0.95f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Main color image - clickable to collapse
-                        ColorImageCard_FragID3(
-                            relative_M3CouleurProduitInfos = selectedCouleur,
-                            isSelected = true,
-                            onIconClick = { onClick_Icon(selectedCouleur) },
-                            on_pour_send_data = on_pour_send_data,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Quantity selector and tariffs row below image
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = Color.White.copy(alpha = 0.95f),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Tariffs list on the left
+                        // Tariffs - only show when EXPANDED
+                        if (isThisProductExpanded) {
                             Pricipale_Tariffs_Vendeurs_FragID3(
                                 relative_M1produit = relative_M1produit,
                                 tariffsList = datasValue
                             )
-
-                            // Sale button on the right
-                            Lenceur_Vent_Handler_FragID3(
-                                relative_M1produit = relative_M1produit,
-                                selectedCouleur = selectedCouleur,
-                                finale_Tariff = finale_Tariff
-                            )
                         }
-                    }
-                } else {
-                    // Original Box layout with floating action row (or without buttons if not expanded)
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // Main color image - clickable to collapse
-                        ColorImageCard_FragID3(
-                            relative_M3CouleurProduitInfos = selectedCouleur,
-                            isSelected = true,
-                            onIconClick = { onClick_Icon(selectedCouleur) },
-                            on_pour_send_data = on_pour_send_data,
-                            modifier = Modifier.fillMaxWidth()
+
+                        // Sale button - ALWAYS show when host
+                        Lenceur_Vent_Handler_FragID3(
+                            relative_M1produit = relative_M1produit,
+                            selectedCouleur = selectedCouleur,
+                            finale_Tariff = finale_Tariff
                         )
-
-                        // Floating action row - only show if expanded
-                        if (shouldShowButtons) {
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .padding(8.dp)
-                                    .background(
-                                        color = Color.White.copy(alpha = 0.95f),
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Tariffs list on the left
-                                Pricipale_Tariffs_Vendeurs_FragID3(
-                                    relative_M1produit = relative_M1produit,
-                                    tariffsList = datasValue
-                                )
-
-                                // Sale button on the right
-                                Lenceur_Vent_Handler_FragID3(
-                                    relative_M1produit = relative_M1produit,
-                                    selectedCouleur = selectedCouleur,
-                                    finale_Tariff = finale_Tariff
-                                )
-                            }
-                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Sub-colors display: ROW when expanded, COLUMN when collapsed
+                // 3. Sub-colors display - at the end
                 if (relative_ListM3Couleurs.size > 1) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     if (isThisProductExpanded) {
-                        // EXPANDED: Show sub-colors in horizontal ROW
-                        Row(
+                        // EXPANDED: Show sub-colors in horizontal FlowRow (wraps if needed)
+                        FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            maxItemsInEachRow = 4
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                                if (index != top_presanted_prisipame_couleur) {
+                                if (index != big_presenter_couleur_produit) {
                                     ColorImageCard_FragID3(
                                         relative_M3CouleurProduitInfos = couleur,
                                         isSelected = false,
                                         onIconClick = {
-                                            top_presanted_prisipame_couleur = index
+                                            big_presenter_couleur_produit = index
                                             onClick_Icon(couleur)
                                         },
                                         on_pour_send_data = on_pour_send_data,
                                         modifier = Modifier
-                                            .weight(1f)
+                                            .weight(1f, fill = false)
                                             .height(80.dp)
                                     )
                                 }
@@ -279,12 +236,12 @@ fun Item_Produit_FragID3(
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                                if (index != top_presanted_prisipame_couleur) {
+                                if (index != big_presenter_couleur_produit) {
                                     ColorImageCard_FragID3(
                                         relative_M3CouleurProduitInfos = couleur,
                                         isSelected = false,
                                         onIconClick = {
-                                            top_presanted_prisipame_couleur = index
+                                            big_presenter_couleur_produit = index
                                             onClick_Icon(couleur)
                                         },
                                         on_pour_send_data = on_pour_send_data,

@@ -25,13 +25,15 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>
 ) {
+
     // Define the tariff types to display in order
     val displayTariffs = listOf(
-        M13TarificationInfos.TypeChoisi.LeMaxPrixArrive,
-        M13TarificationInfos.TypeChoisi.Historique,
         M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
-        M13TarificationInfos.TypeChoisi.Prix_Detaille
+        M13TarificationInfos.TypeChoisi.Prix_Detaille,
+
+        M13TarificationInfos.TypeChoisi.Historique,
+        M13TarificationInfos.TypeChoisi.LeMaxPrixArrive,
     )
 
     // Filter and prepare tariffs to display
@@ -43,10 +45,9 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
 
         // Get price
-        val prix = matchingTariff?.prixCurrency ?: getDefaultPrice(tariffType, relative_M1produit)
+        val prix = matchingTariff?.prixCurrency ?: 0.0
 
-        // Only include if price is not 0.0 and either tariff exists or should show default
-        if (prix != 0.0 && (matchingTariff != null || shouldShowDefaultTariff(tariffType, relative_M1produit))) {
+        if (prix != 0.0) {
             tariffType to prix
         } else {
             null
@@ -111,24 +112,3 @@ private fun TariffItem(
     }
 }
 
-private fun shouldShowDefaultTariff(
-    tariffType: M13TarificationInfos.TypeChoisi,
-    produit: ArticlesBasesStatsTable
-): Boolean {
-    return when (tariffType) {
-        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
-        M13TarificationInfos.TypeChoisi.Prix_Detaille -> true
-        else -> false
-    }
-}
-
-private fun getDefaultPrice(
-    tariffType: M13TarificationInfos.TypeChoisi,
-    produit: ArticlesBasesStatsTable
-): Double {
-    return when (tariffType) {
-        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> produit.prixVent
-        M13TarificationInfos.TypeChoisi.Prix_Detaille -> produit.prixVent
-        else -> 0.0
-    }
-}
