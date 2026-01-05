@@ -328,7 +328,16 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    if (focusedValuesGetter.activeOnVent_M8BonVent == null || focusedValuesGetter.currentApp_Est_Admin) {
+                    (itsFragmentProduitFastSearchDialog && shouldShowFloatingSearcher).ifTrue {
+                        FloatingUpdateAllChecksFAB(
+                            showLabels = showLabels
+                        )
+                    }
+
+                    if (focusedValuesGetter.activeOnVent_M8BonVent == null ||
+                        focusedValuesGetter.currentApp_Est_Admin
+                        && !itsFragmentProduitFastSearchDialog
+                        ) {
                         ID3RecordingButton(
                             viewModel,
                             isRecording,
@@ -426,9 +435,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showLabels = showLabels
                         )
 
-                        FloatingUpdateAllChecksFAB (
-                            showLabels = showLabels
-                        )
                     }
 
                     Row(

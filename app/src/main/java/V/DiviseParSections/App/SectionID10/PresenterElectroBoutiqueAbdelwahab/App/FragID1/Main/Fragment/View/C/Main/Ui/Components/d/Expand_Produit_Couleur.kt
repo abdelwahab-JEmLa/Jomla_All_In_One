@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -33,19 +34,17 @@ fun Expand_Produit_Couleur(
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
 
-
     fun updateExpandedCouleur() {
-        // Mettre à jour localement
-        focusedValuesGetter.update_activeCentralValues(
-            active_Central_Values.copy(
-                expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
-            )
+        // Utiliser la fonction toggle pour mettre à jour
+        toggle_update_expanded_M3CouleurProduitInfos(
+            focusedValuesGetter = focusedValuesGetter,
+            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
         )
+
         on_pour_send_data(
             WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
             relative_M3CouleurProduitInfos.keyID
         )
-
     }
 
     Row(

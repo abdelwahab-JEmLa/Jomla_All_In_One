@@ -24,29 +24,32 @@ fun drawFooterSection(
     paintVerySmall: TextPaint,
     paintBorder: Paint
 ) {
-    val bottomMargin = 25f
-    val row2Height = 75f
+    // Reduced dimensions for smaller text and table
+    val bottomMargin = 20f
+    val row2Height = 65f
     val yPosition = pageHeight - bottomMargin - row2Height
     val cellWidth = contentWidth / 2f
 
     canvas.drawRect(marginLeft, yPosition, marginLeft + cellWidth, yPosition + row2Height, paintBorder)
     canvas.drawRect(marginLeft + cellWidth, yPosition, pageWidth - marginRight, yPosition + row2Height, paintBorder)
 
-    // RIGHT cell: Instructions
+    // RIGHT cell: Instructions with return request
     val notesText = if (cardData.notes.specialAttention.isNotBlank()) {
         """يرجى الاطلاع على المقرر
 و محاولة التعاون على تحقيقه
 بالهدايا و التنبيه له
+يرجى إعادة الورقة معه
 
 ${cardData.notes.specialAttention}"""
     } else {
         """يرجى الاطلاع على المقرر
 و محاولة التعاون على تحقيقه
-بالهدايا و التنبيه له"""
+بالهدايا و التنبيه له
+يرجى إعادة الورقة معه"""
     }
 
     drawRTLText(canvas, notesText,
-        marginLeft + cellWidth + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintSmall,
+        marginLeft + cellWidth + 5f, yPosition + 5f, (cellWidth - 10f).toInt(), paintVerySmall,
         Layout.Alignment.ALIGN_NORMAL)
 
     // LEFT cell: Date and signature
@@ -57,10 +60,10 @@ ${cardData.notes.specialAttention}"""
     val todayDate = "$hijriDate\nموافق ل $gregorianDay $gregorianMonth $gregorianYear م"
 
     drawRTLText(canvas, todayDate,
-        marginLeft + 5f, yPosition + 7f, (cellWidth - 10f).toInt(), paintVerySmall,
+        marginLeft + 5f, yPosition + 5f, (cellWidth - 10f).toInt(), paintVerySmall,
         Layout.Alignment.ALIGN_NORMAL)
 
     drawRTLText(canvas, "التوقيع:",
-        marginLeft + 5f, yPosition + 50f, (cellWidth - 10f).toInt(), paintSmall,
+        marginLeft + 5f, yPosition + 45f, (cellWidth - 10f).toInt(), paintVerySmall,
         Layout.Alignment.ALIGN_NORMAL)
 }

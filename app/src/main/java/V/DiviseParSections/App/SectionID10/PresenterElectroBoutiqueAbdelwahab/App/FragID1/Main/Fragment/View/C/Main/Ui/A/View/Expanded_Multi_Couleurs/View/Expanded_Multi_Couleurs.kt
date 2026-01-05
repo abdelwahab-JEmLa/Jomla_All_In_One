@@ -2,9 +2,11 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 // AJOUT: Import du HeadViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,7 +48,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 import java.io.File
 
@@ -55,7 +56,7 @@ fun Expanded_Multi_Couleurs(
     relative_M1produit: ArticlesBasesStatsTable,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    viewModel: HeadViewModel = koinInject(), // AJOUT: Pour envoyer au displayer
+    on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
@@ -83,6 +84,19 @@ fun Expanded_Multi_Couleurs(
         }
     }
 
+    fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
+        // Utiliser la fonction toggle pour mettre à jour
+        toggle_update_expanded_M3CouleurProduitInfos(
+            focusedValuesGetter = focusedValuesGetter,
+            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
+        )
+
+        on_pour_send_data(
+            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+            relative_M3CouleurProduitInfos.keyID
+        )
+    }
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -92,11 +106,7 @@ fun Expanded_Multi_Couleurs(
             couleur = selectedCouleur,
             isSelected = true,
             onIconClick = {
-                focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
-                        expanded_M3CouleurProduitInfos = selectedCouleur
-                    )
-                )
+                onClick_Icon(selectedCouleur)
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -116,11 +126,7 @@ fun Expanded_Multi_Couleurs(
                             onIconClick = {
                                 top_presanted_prisipame_couleur = index
                                 // Mettre à jour l'état local
-                                focusedValuesGetter.update_activeCentralValues(
-                                    focusedValuesGetter.active_Central_Values.copy(
-                                        expanded_M3CouleurProduitInfos = couleur
-                                    )
-                                )
+                                onClick_Icon(couleur)
                             },
                             modifier = Modifier
                                 .weight(1f)

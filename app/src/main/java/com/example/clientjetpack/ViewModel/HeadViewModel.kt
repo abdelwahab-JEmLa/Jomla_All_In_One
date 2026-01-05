@@ -1,6 +1,7 @@
 package com.example.clientjetpack.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -160,13 +161,18 @@ open class HeadViewModel(
                 }
 
                 WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
-                    focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
-                            expanded_M3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.find_M3CouleurInfos_By_KeyID(
-                                content
-                            )
+                    // Trouver la couleur correspondante
+                    val couleurInfos = aCentralFacade.repositorysMainGetter.find_M3CouleurInfos_By_KeyID(content)
+
+                    if (couleurInfos != null) {
+                        // Utiliser la fonction toggle pour mettre à jour
+                        toggle_update_expanded_M3CouleurProduitInfos(
+                            focusedValuesGetter = focusedValuesGetter,
+                            relative_M3CouleurProduitInfos = couleurInfos
                         )
-                    )
+                    } else {
+                        Log.e(tag, "❌ Couleur introuvable pour keyID: $content")
+                    }
                 }
 
                 else -> {}

@@ -64,7 +64,8 @@ fun ArticleItem(
         if (isExpanded && colorCount > 2) {
             Expanded_Multi_Couleurs(
                 relative_M1produit = relative_M1produit,
-                repositorysMainGetter = repositorysMainGetter
+                repositorysMainGetter = repositorysMainGetter ,
+                on_pour_send_data=on_pour_send_data
             )
         } else {
             val layout = when {

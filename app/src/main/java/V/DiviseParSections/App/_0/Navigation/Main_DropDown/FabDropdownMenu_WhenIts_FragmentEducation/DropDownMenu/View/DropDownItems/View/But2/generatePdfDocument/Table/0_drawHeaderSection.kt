@@ -28,7 +28,7 @@ fun drawHeaderSection(
         marginLeft, yPosition, contentWidth, paintHeaderLarge, Layout.Alignment.ALIGN_CENTER)
     yPosition += 18f
 
-    drawRTLText(canvas, "لمتابعة سير حفظ ابنكم ليليسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
+    drawRTLText(canvas, "لمتابعة سير حفظ ابنكم ليلبسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
         marginLeft, yPosition, contentWidth, paintSmall, Layout.Alignment.ALIGN_CENTER)
     yPosition += 18f
 
