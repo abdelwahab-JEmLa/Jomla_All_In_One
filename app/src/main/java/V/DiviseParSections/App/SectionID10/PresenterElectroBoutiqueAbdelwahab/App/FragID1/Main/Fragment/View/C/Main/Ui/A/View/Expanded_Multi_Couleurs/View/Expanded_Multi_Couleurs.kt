@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View
 
 // AJOUT: Import du HeadViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.updateExpandedCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -86,9 +86,10 @@ fun Expanded_Multi_Couleurs(
 
     fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
         // Utiliser la fonction toggle pour mettre à jour
-        toggle_update_expanded_M3CouleurProduitInfos(
-            focusedValuesGetter = focusedValuesGetter,
-            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
+        updateExpandedCouleur(
+            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
+            focusedValuesGetter=focusedValuesGetter,
+            on_pour_send_data = on_pour_send_data
         )
 
         on_pour_send_data(
@@ -103,11 +104,12 @@ fun Expanded_Multi_Couleurs(
         val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
 
         ColorImageCard(
-            couleur = selectedCouleur,
+            relative_M3CouleurProduitInfos = selectedCouleur,
             isSelected = true,
             onIconClick = {
                 onClick_Icon(selectedCouleur)
             },
+            on_pour_send_data = on_pour_send_data,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -121,13 +123,14 @@ fun Expanded_Multi_Couleurs(
                 relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                     if (index != top_presanted_prisipame_couleur) {
                         ColorImageCard(
-                            couleur = couleur,
+                            relative_M3CouleurProduitInfos = couleur,
                             isSelected = false,
                             onIconClick = {
                                 top_presanted_prisipame_couleur = index
                                 // Mettre à jour l'état local
                                 onClick_Icon(couleur)
                             },
+                            on_pour_send_data = on_pour_send_data,
                             modifier = Modifier
                                 .weight(1f)
                                 .height(80.dp)
@@ -176,14 +179,17 @@ private fun findMatchingColorIndex(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorImageCard(
-    couleur: M3CouleurProduitInfos,
+    repositorysMainGetter: RepositorysMainGetter = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     isSelected: Boolean,
     onIconClick: () -> Unit,
+    on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val imageFile = remember(couleur.nomImageFichieSansEtansion, couleur.extensionDisponible) {
-        if (couleur.nomImageFichieSansEtansion != "Non Dispo") {
-            val fileName = "${couleur.nomImageFichieSansEtansion}.${couleur.extensionDisponible}"
+    val imageFile = remember(relative_M3CouleurProduitInfos.nomImageFichieSansEtansion, relative_M3CouleurProduitInfos.extensionDisponible) {
+        if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
+            val fileName = "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
             File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
         } else {
             null
@@ -205,15 +211,19 @@ private fun ColorImageCard(
             if (imageFile != null && imageFile.exists()) {
                 GlideImage(
                     model = imageFile,
-                    contentDescription = couleur.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
+                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = !isSelected) {
-                            // Le click est géré par le IconButton
+                            updateExpandedCouleur(
+                                relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
+                                focusedValuesGetter=focusedValuesGetter,
+                                on_pour_send_data = on_pour_send_data
+                            )
                         },
                     contentScale = if (isSelected) ContentScale.Fit else ContentScale.Crop
                 ) {
-                    it.applyOptimizedImageOptions(couleur)
+                    it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
                 }
             } else {
                 Box(modifier = Modifier.fillMaxSize())

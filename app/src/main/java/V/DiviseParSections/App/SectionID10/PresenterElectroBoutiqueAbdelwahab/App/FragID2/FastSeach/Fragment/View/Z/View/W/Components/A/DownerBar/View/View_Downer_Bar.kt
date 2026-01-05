@@ -145,12 +145,6 @@ fun Downer_Bar_SemiModularized_Searcher(
                         produit = produit,
                         aCentralFacade = viewModel.aCentralFacade,
                         allNonTrouve = allNonTrouve,
-                        onShowColorsClick = onShowColorsClick,
-                        isEditMode = isBoitEditMode,
-                        onEditModeChange = { newMode ->
-                            if (!newMode) on_Pour_FocuceAfficheClavieSearcherProduit()
-                            on_PourEntre_BoitEditeMode(newMode)
-                        },
                         onRequestSearchFocus = on_Pour_FocuceAfficheClavieSearcherProduit
                     )
                 }

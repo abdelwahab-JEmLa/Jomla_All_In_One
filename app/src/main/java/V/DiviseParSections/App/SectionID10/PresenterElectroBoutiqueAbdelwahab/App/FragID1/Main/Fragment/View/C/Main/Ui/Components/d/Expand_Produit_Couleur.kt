@@ -1,9 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,17 +26,6 @@ fun Expand_Produit_Couleur(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
 ) {
-    fun updateExpandedCouleur() {
-        toggle_update_expanded_M3CouleurProduitInfos(
-            focusedValuesGetter = focusedValuesGetter,
-            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
-        )
-
-        on_pour_send_data(
-            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-            relative_M3CouleurProduitInfos.keyID
-        )
-    }
 
     Row(
         modifier = Modifier
@@ -55,7 +42,11 @@ fun Expand_Produit_Couleur(
                 .clip(CircleShape)
                 .background(Color.Red.copy(alpha = 0.6f))
                 .clickable {
-                    updateExpandedCouleur()
+                    updateExpandedCouleur(
+                        relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
+                        focusedValuesGetter=focusedValuesGetter,
+                        on_pour_send_data = on_pour_send_data
+                    )
                 }
                 .padding(4.dp)
         )

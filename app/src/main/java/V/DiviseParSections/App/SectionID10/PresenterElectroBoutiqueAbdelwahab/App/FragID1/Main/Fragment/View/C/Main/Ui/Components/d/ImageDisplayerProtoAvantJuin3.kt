@@ -18,7 +18,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
@@ -87,7 +92,7 @@ fun ImageDisplayerProtoAvantJuin3(
     its_secondary_affiche: Boolean = false ,
     on_pour_send_data: (String, String) -> Unit,
 
-) {
+    ) {
     val relative_list_M3Coleurs_Du_Produit = repositorysMainGetter
         .find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1Produit.keyID)
 
@@ -128,7 +133,7 @@ fun ImageDisplayerProtoAvantJuin3(
         isLoading = false
     }
 
-    val colorInfo = remember(relative_M1Produit.keyID, indexColor) {
+    val relative_M3CouleurProduitInfos = remember(relative_M1Produit.keyID, indexColor) {
         if (indexColor == -1) {
             null
         } else {
@@ -139,11 +144,11 @@ fun ImageDisplayerProtoAvantJuin3(
         }
     }
 
-    val baseFileName = remember(colorInfo, relative_M1Produit.id, indexColor) {
+    val baseFileName = remember(relative_M3CouleurProduitInfos, relative_M1Produit.id, indexColor) {
         when {
             indexColor == -1 -> "${relative_M1Produit.id}_Unite"
-            colorInfo != null && colorInfo.nomImageFichieSansEtansion != "Non Dispo" ->
-                colorInfo.nomImageFichieSansEtansion
+            relative_M3CouleurProduitInfos != null && relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo" ->
+                relative_M3CouleurProduitInfos.nomImageFichieSansEtansion
             else -> "${relative_M1Produit.id}_${indexColor}"
         }
     }
@@ -158,11 +163,11 @@ fun ImageDisplayerProtoAvantJuin3(
         initialValue = null,
         key1 = imagePath,
         key2 = reloadKey,
-        key3 = colorInfo?.dernierTimeTampsSynchronisationAvecFireBase
+        key3 = relative_M3CouleurProduitInfos?.dernierTimeTampsSynchronisationAvecFireBase
     ) {
         value = withContext(Dispatchers.IO) {
-            val extensions = if (colorInfo != null) {
-                listOf(colorInfo.extensionDisponible, "webp", "jpg").distinct()
+            val extensions = if (relative_M3CouleurProduitInfos != null) {
+                listOf(relative_M3CouleurProduitInfos.extensionDisponible, "webp", "jpg").distinct()
             } else {
                 listOf("webp", "jpg")
             }
@@ -183,7 +188,7 @@ fun ImageDisplayerProtoAvantJuin3(
 
                     allColorsForProduct
                         .asSequence()
-                        .filter { it.keyID != colorInfo?.keyID }
+                        .filter { it.keyID != relative_M3CouleurProduitInfos?.keyID }
                         .mapNotNull { fallbackColor ->
                             val fallbackPath = File(viewModel.viewModelImagesPath, fallbackColor.nomImageFichieSansEtansion)
                             val fallbackExtensions = listOf(fallbackColor.extensionDisponible, "webp", "jpg").distinct()
@@ -227,16 +232,13 @@ fun ImageDisplayerProtoAvantJuin3(
                 modifier = Modifier
                     .getSemanticsTag(relative_M1Produit, "")
                     .clickable {
-                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
-                            true
-                        )
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
-                            relative_M1Produit.nom
-                        )
-                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                            relative_M1Produit
-                        )
-                        onClickToOpenWindow()
+                        relative_M3CouleurProduitInfos?.let {
+                            updateExpandedCouleur(
+                                relative_M3CouleurProduitInfos = it,
+                                focusedValuesGetter=focusedValuesGetter,
+                                on_pour_send_data = on_pour_send_data
+                            )
+                        }
                     }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
@@ -263,10 +265,33 @@ fun ImageDisplayerProtoAvantJuin3(
             }
         }
 
-        if (shouldShowExpandIcon && colorInfo != null) {
+        if (shouldShowExpandIcon && relative_M3CouleurProduitInfos != null) {
             Expand_Produit_Couleur(
-                relative_M3CouleurProduitInfos = colorInfo
-                , on_pour_send_data = on_pour_send_data
+                relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
+                on_pour_send_data = on_pour_send_data
+            )
+        }
+
+        // Added: Info button at bottom end to open product window
+        if (shouldShowExpandIcon) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Open product info window",
+                tint = Color.White,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(4.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Blue.copy(alpha = 0.7f))
+                    .clickable {
+                        open_window_infos_produit(
+                            focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade,
+                            relative_M1Produit = relative_M1Produit,
+                            onClickToOpenWindow = onClickToOpenWindow
+                        )
+                    }
+                    .padding(8.dp)
             )
         }
 
