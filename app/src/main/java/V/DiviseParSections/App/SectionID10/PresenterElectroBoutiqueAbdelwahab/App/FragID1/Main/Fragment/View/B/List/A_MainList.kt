@@ -102,11 +102,12 @@ fun MainList(
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
 
-    // FIXED: Auto-scroll to expanded item
+    // State variable to track when scroll lock should expire
+    var scrollLockUntil by remember { mutableStateOf(0L) }
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            // Find the index of the expanded item in the grid
-            var currentIndex = if (!showFilter) 1 else 0 // Account for banner
+            var currentIndex = if (!showFilter) 1 else 0
             var foundIndex = -1
 
             for ((category, articles) in articlesByCategory) {
@@ -128,11 +129,55 @@ fun MainList(
 
             if (foundIndex != -1) {
                 delay(100) // Small delay to ensure layout is complete
+
+                // Set lock time to 2 seconds from now
+                scrollLockUntil = System.currentTimeMillis() + 2000
+
                 coroutineScope.launch {
                     gridState.animateScrollToItem(foundIndex)
                 }
             }
         }
+    }
+
+    // Enforce scroll lock: keep scroll position for 2 seconds
+    LaunchedEffect(gridState, scrollLockUntil) {
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .collect { currentIndex ->
+                val now = System.currentTimeMillis()
+
+                // If we're still in lock period
+                if (now < scrollLockUntil) {
+                    expanded_M3CouleurProduitInfos?.let { expandedColor ->
+                        var targetIndex = if (!showFilter) 1 else 0
+                        var found = false
+
+                        for ((category, articles) in articlesByCategory) {
+                            if (category.displayedHeader) {
+                                targetIndex++
+                            }
+
+                            val articleIndex = articles.indexOfFirst {
+                                it.id == expandedColor.parentBProduitOldID
+                            }
+
+                            if (articleIndex != -1) {
+                                targetIndex += articleIndex
+                                found = true
+                                break
+                            }
+
+                            targetIndex += articles.size
+                        }
+
+                        // If user scrolled away from target, scroll back
+                        if (found && currentIndex != targetIndex) {
+                            delay(50) // Small delay to avoid too rapid corrections
+                            gridState.animateScrollToItem(targetIndex)
+                        }
+                    }
+                }
+            }
     }
 
     LaunchedEffect(gridState) {

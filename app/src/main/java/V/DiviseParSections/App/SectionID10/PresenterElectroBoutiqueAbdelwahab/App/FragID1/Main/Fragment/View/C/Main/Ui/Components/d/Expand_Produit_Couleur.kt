@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,21 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun Expand_Produit_Couleur(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    viewModel: HeadViewModel = koinInject(),
-    wifiTransferDatas: WifiTransferDatas = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
 ) {
-    val active_Central_Values = focusedValuesGetter.active_Central_Values
-
     fun updateExpandedCouleur() {
-        // Utiliser la fonction toggle pour mettre à jour
         toggle_update_expanded_M3CouleurProduitInfos(
             focusedValuesGetter = focusedValuesGetter,
             relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
