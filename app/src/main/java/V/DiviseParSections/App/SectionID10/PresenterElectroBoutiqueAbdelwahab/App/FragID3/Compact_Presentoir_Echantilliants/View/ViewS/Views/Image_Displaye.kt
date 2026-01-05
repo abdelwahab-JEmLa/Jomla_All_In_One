@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -27,7 +27,7 @@ import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 import java.io.File
 
-// FIXED TODO(1): Extracted image display component
+// FIXED TODO(1): Click handler properly applied to GlideImage
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -50,23 +50,27 @@ fun Image_Displaye(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        val imageModifier = if (onImageClick != null) {
-            modifier.clickable { onImageClick() }
-        } else {
-            modifier
-        }
+        // Build the complete modifier with click handler BEFORE passing to GlideImage
+        val completeModifier = modifier
+            .fillMaxSize()
+            .then(
+                if (onImageClick != null) {
+                    Modifier.clickable { onImageClick() }
+                } else {
+                    Modifier
+                }
+            )
 
-        GlideImage(     //<--
-        //TODO(1):pk au click ici  de big presenter image ca n expand pas le produit
+        GlideImage(
             model = imageFile,
             contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = imageModifier,
+            modifier = completeModifier,
             contentScale = contentScale
         ) {
             it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
         }
     } else {
-        Box(modifier = modifier)
+        Box(modifier = modifier.fillMaxSize())
     }
 }
 
@@ -97,10 +101,9 @@ fun ColorImageCard_FragID3(
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 contentScale = if (isSelected) ContentScale.Fit else ContentScale.Crop,
                 onImageClick = {
-                    // Always call onIconClick which handles both expand and collapse
                     onIconClick()
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier // Don't add fillMaxSize here, let Image_Displaye handle it
             )
         }
     }

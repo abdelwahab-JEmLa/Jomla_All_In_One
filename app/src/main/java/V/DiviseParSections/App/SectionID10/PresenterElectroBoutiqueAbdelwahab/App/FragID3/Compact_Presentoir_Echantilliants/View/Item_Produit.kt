@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur.updateExpandedCouleur
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.ColorImageCard_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -110,7 +110,7 @@ fun Item_Produit_FragID3(
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
             && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
 
-    // FIXED: Show buttons when expanded OR when host phone
+    // Show buttons when expanded AND host phone
     val shouldShowButtons = isHostPhone && isThisProductExpanded
 
     fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
@@ -127,11 +127,10 @@ fun Item_Produit_FragID3(
     }
 
     fun onCollapse() {
-
         focusedValuesGetter.update_activeCentralValues(
-           focusedValuesGetter.active_Central_Values.copy(
-               expanded_M3CouleurProduitInfos=null
-           )
+            focusedValuesGetter.active_Central_Values.copy(
+                expanded_M3CouleurProduitInfos=null
+            )
         )
 
         on_pour_send_data(
@@ -159,7 +158,6 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                // Structured layout with conditional quantity selector
                 if (expand_affiche_button_Lence_vent && shouldShowButtons) {
                     // Column layout: Image first, then quantity selector
                     Column(
@@ -169,7 +167,7 @@ fun Item_Produit_FragID3(
                         ColorImageCard_FragID3(
                             relative_M3CouleurProduitInfos = selectedCouleur,
                             isSelected = true,
-                            onIconClick = { onCollapse() },
+                            onIconClick = { onClick_Icon(selectedCouleur) },
                             on_pour_send_data = on_pour_send_data,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -211,7 +209,7 @@ fun Item_Produit_FragID3(
                         ColorImageCard_FragID3(
                             relative_M3CouleurProduitInfos = selectedCouleur,
                             isSelected = true,
-                            onIconClick = { onCollapse() },
+                            onIconClick = { onClick_Icon(selectedCouleur) },
                             on_pour_send_data = on_pour_send_data,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -249,26 +247,52 @@ fun Item_Produit_FragID3(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Other color cards row
+                // Sub-colors display: ROW when expanded, COLUMN when collapsed
                 if (relative_ListM3Couleurs.size > 1) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                            if (index != top_presanted_prisipame_couleur) {
-                                ColorImageCard_FragID3(
-                                    relative_M3CouleurProduitInfos = couleur,
-                                    isSelected = false,
-                                    onIconClick = {
-                                        top_presanted_prisipame_couleur = index
-                                        onClick_Icon(couleur)
-                                    },
-                                    on_pour_send_data = on_pour_send_data,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(80.dp)
-                                )
+                    if (isThisProductExpanded) {
+                        // EXPANDED: Show sub-colors in horizontal ROW
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                                if (index != top_presanted_prisipame_couleur) {
+                                    ColorImageCard_FragID3(
+                                        relative_M3CouleurProduitInfos = couleur,
+                                        isSelected = false,
+                                        onIconClick = {
+                                            top_presanted_prisipame_couleur = index
+                                            onClick_Icon(couleur)
+                                        },
+                                        on_pour_send_data = on_pour_send_data,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(80.dp)
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        // COLLAPSED: Show sub-colors in vertical COLUMN
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                                if (index != top_presanted_prisipame_couleur) {
+                                    ColorImageCard_FragID3(
+                                        relative_M3CouleurProduitInfos = couleur,
+                                        isSelected = false,
+                                        onIconClick = {
+                                            top_presanted_prisipame_couleur = index
+                                            onClick_Icon(couleur)
+                                        },
+                                        on_pour_send_data = on_pour_send_data,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                    )
+                                }
                             }
                         }
                     }
