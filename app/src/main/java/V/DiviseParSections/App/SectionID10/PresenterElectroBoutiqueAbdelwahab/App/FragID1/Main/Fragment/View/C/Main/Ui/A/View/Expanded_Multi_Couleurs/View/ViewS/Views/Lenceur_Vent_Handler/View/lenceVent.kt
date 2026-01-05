@@ -11,10 +11,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import kotlin.math.abs
 
-/**
- * Extracted sales launch logic that was previously inline in ViewVentCouleur_T1
- * This handles the creation/update of sale operations
- */
 fun lenceVent(
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     defaultM10Vent: M10OperationVentCouleur,
