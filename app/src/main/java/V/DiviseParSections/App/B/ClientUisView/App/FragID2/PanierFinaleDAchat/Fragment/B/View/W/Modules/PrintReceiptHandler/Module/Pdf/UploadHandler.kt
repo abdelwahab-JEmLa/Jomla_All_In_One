@@ -26,7 +26,6 @@ class UploadHandler {
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
         if (!dir.exists()) dir.mkdirs()
 
-        // Use the naming utility for consistency (FIXED: TODO(1))
         val fileName = PdfFileNamingUtils.generateInternalPdfFileName(clientName, type, id)
 
         return File(dir, fileName)

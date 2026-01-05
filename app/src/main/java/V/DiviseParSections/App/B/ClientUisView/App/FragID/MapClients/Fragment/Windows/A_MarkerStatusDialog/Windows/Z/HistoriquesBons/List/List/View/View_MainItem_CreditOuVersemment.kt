@@ -177,8 +177,9 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     relative_M8BonVent: M8BonVent,
-) {            //<--
-//TODO(1): pk le affiche si  demande_Versemet_si_Type_est_regle et comme c regle normalemen t quand demande_Versemet_si_Type_est_regle ca veut dire non regle
+) {
+    //<--
+//(1): pk le affiche si  demande_Versemet_si_Type_est_regle et comme c regle normalemen t quand demande_Versemet_si_Type_est_regle ca veut dire non regle
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 

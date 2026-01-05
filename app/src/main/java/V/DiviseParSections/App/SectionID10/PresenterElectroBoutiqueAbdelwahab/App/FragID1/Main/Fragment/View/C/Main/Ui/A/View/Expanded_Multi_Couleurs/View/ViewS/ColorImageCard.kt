@@ -50,8 +50,7 @@ import java.io.File
     onIconClick: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion
-) {    //<--
-//TODO(1): extract image don Image_Displaye.kt
+) {
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
         relative_M3CouleurProduitInfos.extensionDisponible

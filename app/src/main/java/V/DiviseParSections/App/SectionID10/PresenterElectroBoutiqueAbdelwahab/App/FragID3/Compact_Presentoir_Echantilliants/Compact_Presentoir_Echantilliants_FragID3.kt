@@ -37,10 +37,14 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     val list_M3couleur = remember(repositorysMainGetter.repo03CouleurProduitInfos.datasValue) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
             couleur.count_Don_Depot > 0 &&
+                    
+                    //<--
+                    //TODO(1): a lieux de ca fait que si il son dispo au last bon de type on commande de find_M10OperationVentCouleur_Du_Abdelwahab_echantillons_Produits 
                     repositorysMainGetter.repoM1Produit.datasValue.find {
                         it.keyID == couleur.parentBProduitInfosKeyID
                     }?.disponibilityEtates == DisponibilityEtates.DISPO
-        }
+        }                //<--
+        //TODO(1): fait sort par creation find_M10OperationVentCouleur_Du_Abdelwahab_echantillons_Produits 
     }
 
     // Group colors by their parent product

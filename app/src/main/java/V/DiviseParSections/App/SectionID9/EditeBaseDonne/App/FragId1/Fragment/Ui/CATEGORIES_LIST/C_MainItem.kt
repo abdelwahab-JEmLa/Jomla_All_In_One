@@ -112,9 +112,7 @@ fun MainItemEditeCategories(
                 )
 
                 // Add availability toggle button
-                DisponibilityToggleButton(         //<--
-                //TODO(2.C Relative Au Todo(1): 
-                        //... utilise ca 
+                DisponibilityToggleButton(
                     viewModel=viewModel,
                     currentState = produit.disponibilityEtates,
                     onToggle = {

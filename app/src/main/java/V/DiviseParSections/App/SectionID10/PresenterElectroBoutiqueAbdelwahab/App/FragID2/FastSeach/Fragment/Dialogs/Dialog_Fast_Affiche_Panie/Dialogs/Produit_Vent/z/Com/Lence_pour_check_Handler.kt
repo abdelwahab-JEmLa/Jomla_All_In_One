@@ -26,7 +26,8 @@ fun Lence_pour_check_Handler(
     allNonTrouve: Boolean = false,
     hasNonTrouve: Boolean = false,
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>
-) {
+) {         //<--
+//TODO(1): ajout update de last_update_premier_Check_Donne_TimeTamps 
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
 

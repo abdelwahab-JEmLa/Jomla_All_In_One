@@ -52,7 +52,8 @@ fun Item_Produit_FragID3(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
-) {
+) {            //<--
+//TODO(1): fait que si nin expand de diminue max paddings
     val developement_test = true
     val expand_affiche_button_Lence_vent = developement_test
 

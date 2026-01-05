@@ -12,15 +12,6 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
-
-/**
- * Handles PDF table creation for products
- * FIXED TODO(1):
- * - Increased table size and text size
- * - Made line borders thicker between rows
- * - Made designation and price bold and larger
- * - Products are now sorted alphabetically by name
- */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
     private val contentBuilder: PdfContentBuilder

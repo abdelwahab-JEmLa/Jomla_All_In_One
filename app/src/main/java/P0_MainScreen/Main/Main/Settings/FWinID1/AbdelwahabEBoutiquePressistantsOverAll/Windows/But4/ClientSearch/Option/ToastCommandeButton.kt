@@ -40,8 +40,7 @@ fun ToastCommandeButton(
 
     val context = LocalContext.current
 
-    FloatingActionButton(           //<--
-    //TODO(1): chan
+    FloatingActionButton(
         modifier = Modifier.size(32.dp),
         onClick = {
             CoroutineScope(Dispatchers.IO).launch {

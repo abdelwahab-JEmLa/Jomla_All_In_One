@@ -265,9 +265,7 @@ fun ID4ClientSearchButton(
                                 )
                             },
                             trailingIcon = {
-                                // FIXED TODO(1): Switch between Close and Delete icon based on search query
-                                if (searchQuery.trim().equals("supp", ignoreCase = true)) {  //<--
-                                //TODO(1): fait ici si supp de affiche les client a supp list 
+                                if (searchQuery.trim().equals("supp", ignoreCase = true)) {
                                     IconButton(
                                         onClick = {
                                             // Delete all clients in the deletion list from repository

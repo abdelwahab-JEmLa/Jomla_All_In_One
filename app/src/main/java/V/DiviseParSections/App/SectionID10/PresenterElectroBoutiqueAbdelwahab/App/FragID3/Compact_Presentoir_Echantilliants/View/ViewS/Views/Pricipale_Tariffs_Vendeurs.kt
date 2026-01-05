@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.sp
 fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>
-) {
+) {           //<--
+//TODO(1): fait que compact de enleve le nom et dimminue iminue max
 
     // Define the tariff types to display in order
     val displayTariffs = listOf(

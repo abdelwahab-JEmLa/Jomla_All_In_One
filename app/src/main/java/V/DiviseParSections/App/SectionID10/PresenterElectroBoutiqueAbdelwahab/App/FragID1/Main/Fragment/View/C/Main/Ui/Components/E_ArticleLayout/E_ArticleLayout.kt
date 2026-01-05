@@ -29,9 +29,7 @@ sealed class E_ArticleLayout {
     data object SmallDual : E_ArticleLayout()
     data object SmallMulti : E_ArticleLayout()
 
-     val imageSize: DpSize      //<--
-         //TODO(2.C Relative Au Todo(1):
-         //... regle ici si il faut
+     val imageSize: DpSize
         get() = when (this) {
             is DemiUno, DemiDual, is DemiMulti -> DpSize(width = 500.dp, height = 500.dp)
             is SmallUno, is SmallDual, is SmallMulti -> {

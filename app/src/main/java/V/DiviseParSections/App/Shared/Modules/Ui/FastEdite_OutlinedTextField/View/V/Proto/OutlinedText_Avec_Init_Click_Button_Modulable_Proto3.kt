@@ -1,38 +1,6 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-
+/*
 /**
  * A reusable component that displays a quantity button with two-click behavior:
  * - First click: Updates to standard_count and triggers onFirstClick
@@ -46,13 +14,16 @@ import androidx.compose.ui.unit.dp
  * @param modifier Optional modifier for the component
  */
 @Composable
-fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto2(
+fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
+//TODO(1): fait que si null ne pas affiche l icon
     start_count: Int,
     standard_count: Int = 1,
-    icon: ImageVector = Icons.Default.ShoppingCart,
+    icon: ImageVector = null,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
-    on_Data_Update: (Int) -> Unit
+    on_Data_Update: (Int) -> Unit,
+    compact_taille : false  //<--
+    //TODO(1): fait que si compact de diminue le max taille de paddings et text
 ) {
     var isEditMode by remember { mutableStateOf(false) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
@@ -146,26 +117,4 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto2(
         }
     }
 }
-
-/**
- * Extended version with explicit disabled state handling
- * This version makes it clearer when items are unavailable
- */
-@Composable
-fun OutlinedText_Avec_Init_Click_Button_WithAvailabilityP2(
-    start_count: Int,
-    standard_count: Int = 1,
-    icon: ImageVector = Icons.Default.ShoppingCart,
-    isAvailable: Boolean = true,
-    modifier: Modifier = Modifier,
-    on_Data_Update: (Int) -> Unit
-) {
-    OutlinedText_Avec_Init_Click_Button_Modulable_Proto2(
-        start_count = start_count,
-        standard_count = standard_count,
-        icon = icon,
-        enabled = isAvailable,
-        modifier = modifier,
-        on_Data_Update = on_Data_Update
-    )
-}
+                             */

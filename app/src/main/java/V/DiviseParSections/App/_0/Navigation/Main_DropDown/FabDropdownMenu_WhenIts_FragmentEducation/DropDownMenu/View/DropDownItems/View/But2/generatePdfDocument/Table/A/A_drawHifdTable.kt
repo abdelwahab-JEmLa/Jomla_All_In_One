@@ -6,11 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.text.TextPaint
 
-/**
- * Draws the main Hifd progress table - SINGLE FULL-WIDTH CELL
- * Contains only: المقرر لتحضيره with moulahadat
- * ✅ TODO RESOLVED: Now contains only one large cell
- */
 fun drawHifdTable(
     canvas: Canvas,
     cardData: ParentCommunicationCardData_2,

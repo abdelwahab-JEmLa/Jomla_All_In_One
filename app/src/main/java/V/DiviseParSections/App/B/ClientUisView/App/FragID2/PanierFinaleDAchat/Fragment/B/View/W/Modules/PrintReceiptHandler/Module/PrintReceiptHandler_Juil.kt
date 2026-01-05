@@ -12,16 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
-/**
- * FIXED TODO(1): Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
- *
- * When bonVent.demande_Versemet_si_Type_est_regle == true, the receipt will display:
- * - Total of current bon
- * - Ancien credit
- * - Nouveau credit (calculated)
- * - Versement
- * - Nouveau compte calculé
- */
 class PrintReceiptHandler_Juil(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {

@@ -11,14 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import java.util.Calendar
 
-/**
- * Draws ULTRA-COMPACT table showing last 5 observations
- * ✅ TODO RESOLVED:
- * - Ultra compact height (38px per row)
- * - Title changed to "آخر متابعات تقدم الحفظ"
- * - Dates in Arabic format with day name and Arabic month
- * - Shows 5 observations instead of 3
- */
 fun drawObservationHistoryTable(
     canvas: Canvas,
     cardData: ParentCommunicationCardData_2,

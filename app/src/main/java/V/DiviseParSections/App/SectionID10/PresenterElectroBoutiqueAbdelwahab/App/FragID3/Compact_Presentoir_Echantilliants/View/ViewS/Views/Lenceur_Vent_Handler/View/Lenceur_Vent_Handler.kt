@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_Modulable_Proto2
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_WithAvailabilityP2
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -112,12 +112,13 @@ fun Lenceur_Vent_Handler_FragID3(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        OutlinedText_Avec_Init_Click_Button_Modulable_Proto2(
+    ) {//<--
+    //TODO(1): fait qe si non expand de campact mod
+        OutlinedText_Avec_Init_Click_Button_WithAvailabilityP2(
             start_count = currentQuantity,
             standard_count = standardCount,
             icon = Icons.Default.ShoppingCart,
-            enabled = isAvailable,
+            isAvailable = isAvailable,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) { newQuantity ->
             handleLenceVent(newQuantity)

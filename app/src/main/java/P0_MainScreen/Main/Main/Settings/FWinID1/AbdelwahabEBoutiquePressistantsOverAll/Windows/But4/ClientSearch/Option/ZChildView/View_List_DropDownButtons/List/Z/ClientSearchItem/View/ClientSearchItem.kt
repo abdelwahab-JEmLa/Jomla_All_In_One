@@ -9,7 +9,6 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -96,6 +95,7 @@ fun get_Edited_M8BonVent(
 
     return Triple(existingBonVent, newBonVent, semanticsModifier)
 }
+
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
@@ -120,7 +120,11 @@ fun ClientSearchItem(
 
     // Store the current period bon vent in a remembered state
     val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-    val currentPeriodBonVent by remember(bonVentRepository.datasValue, m2Client.keyID, currentPeriodKeyID) {
+    val currentPeriodBonVent by remember(
+        bonVentRepository.datasValue,
+        m2Client.keyID,
+        currentPeriodKeyID
+    ) {
         derivedStateOf {
             if (currentPeriodKeyID != null) {
                 bonVentRepository.datasValue.find { bonVent ->
@@ -197,9 +201,10 @@ fun ClientSearchItem(
                     Column(modifier = Modifier.weight(1f)) {
                         val text = m2Client.nom
                         val uppercase =
-                            focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
-                            m2Client.keyID.takeLast(3).uppercase()
-                            }
+                            if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                                m2Client.keyID.takeLast(3).uppercase()
+                            } else ""
+
                         Text(
                             text = text + uppercase,
                             style = MaterialTheme.typography.bodyMedium,
@@ -216,7 +221,12 @@ fun ClientSearchItem(
 
                         if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
                             Text(
-                                text = "📍 ${String.format("%.4f", m2Client.latitude)}, ${String.format("%.4f", m2Client.longitude)}",
+                                text = "📍 ${
+                                    String.format(
+                                        "%.4f",
+                                        m2Client.latitude
+                                    )
+                                }, ${String.format("%.4f", m2Client.longitude)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color(0xFF4CAF50)
                             )

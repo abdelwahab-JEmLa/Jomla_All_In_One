@@ -39,7 +39,8 @@ fun MainList(
             val activeFilters = active_Central_Values.activeFilters
             val searchQuery = active_Central_Values.outlined_filter_searcher_floating_abouve_all.trim()
 
-            val sortVentsParClassement = active_Central_Values.sortVentsParClassment
+            val sortVentsParClassement = active_Central_Values.sortVentsParClassment     //<--
+            //TODO(1): regle ici aussi 
 
             val filteredData = when {
                 activeFilters.isEmpty() && searchQuery.isEmpty() -> allVents
