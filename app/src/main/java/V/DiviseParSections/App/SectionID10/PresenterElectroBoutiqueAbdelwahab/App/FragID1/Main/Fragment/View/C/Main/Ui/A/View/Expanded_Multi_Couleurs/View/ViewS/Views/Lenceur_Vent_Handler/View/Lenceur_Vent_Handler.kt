@@ -41,6 +41,7 @@ import kotlin.math.abs
  * @param aCentralFacade Central facade for repository access (injected by default)
  * @param modifier Optional modifier
  */
+
 @Composable
 fun Lenceur_Vent_Handler(
     relative_M1produit: ArticlesBasesStatsTable,
