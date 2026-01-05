@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Expanded_Multi_Couleurs
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.ViewS.A_Expanded_Produit_Ac_Multi_Couleurs
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout.E_ArticleLayout
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -62,7 +62,7 @@ fun ArticleItem(
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         if (isExpanded && colorCount > 2) {
-            Expanded_Multi_Couleurs(
+            A_Expanded_Produit_Ac_Multi_Couleurs(
                 relative_M1produit = relative_M1produit,
                 repositorysMainGetter = repositorysMainGetter ,
                 on_pour_send_data=on_pour_send_data
