@@ -103,7 +103,8 @@ fun Expanded_Multi_Couleurs(
         start_Prix_Depuit_Ancient = relative_M1produit.prixAchat
     )
     val finale_Tariff = findTariff ?: default_Tariff.first
-     val developement_affiche =true
+    val developement_affiche = true
+
     // Check if this phone is NOT a client and is in host mode (big display mode)
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
             && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
@@ -121,55 +122,78 @@ fun Expanded_Multi_Couleurs(
         )
     }
 
-    Column(
+    // Define selectedCouleur at the top level so it's accessible throughout the Box
+    val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
+
+    Box(
         modifier = modifier.fillMaxWidth()
     ) {
-        val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
-
-        ColorImageCard(
-            relative_M3CouleurProduitInfos = selectedCouleur,
-            isSelected = true,
-            onIconClick = {
-                onClick_Icon(selectedCouleur)
-            },
-            on_pour_send_data = on_pour_send_data,
+        Column(
             modifier = Modifier.fillMaxWidth()
-        )
+        ) {
+            ColorImageCard(
+                relative_M3CouleurProduitInfos = selectedCouleur,
+                isSelected = true,
+                onIconClick = {
+                    onClick_Icon(selectedCouleur)
+                },
+                on_pour_send_data = on_pour_send_data,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        // Only show the sale button if this is the host phone (big display)
-        if (isHostPhone) {  //<--
-        //TODO(1): fait que cette row soit unn floatin boton end under image card
-            Lenceur_Vent_Handler(
-                relative_M1produit = relative_M1produit,
-                selectedCouleur = selectedCouleur,
-                finale_Tariff = finale_Tariff
-            )       //<--
-            //TODO(1): affiche a cote gauche Pricipale_Tariffs_Vendeurs 
-        }
-
-        if (relative_ListM3Couleurs.size > 1) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                    if (index != top_presanted_prisipame_couleur) {
-                        ColorImageCard(
-                            relative_M3CouleurProduitInfos = couleur,
-                            isSelected = false,
-                            onIconClick = {
-                                top_presanted_prisipame_couleur = index
-                                onClick_Icon(couleur)
-                            },
-                            on_pour_send_data = on_pour_send_data,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(80.dp)
-                        )
+            if (relative_ListM3Couleurs.size > 1) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                        if (index != top_presanted_prisipame_couleur) {
+                            ColorImageCard(
+                                relative_M3CouleurProduitInfos = couleur,
+                                isSelected = false,
+                                onIconClick = {
+                                    top_presanted_prisipame_couleur = index
+                                    onClick_Icon(couleur)
+                                },
+                                on_pour_send_data = on_pour_send_data,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(80.dp)
+                            )
+                        }
                     }
                 }
+            }
+        }
+
+        // Floating action row positioned at bottom end of the image card
+        if (isHostPhone) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
+                    .background(
+                        color = Color.White.copy(alpha = 0.95f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Tariffs list on the left
+                Pricipale_Tariffs_Vendeurs(
+                    relative_M1produit = relative_M1produit,
+                    tariffsList = datasValue
+                )
+
+                // Sale button on the right
+                Lenceur_Vent_Handler(
+                    relative_M1produit = relative_M1produit,
+                    selectedCouleur = selectedCouleur,
+                    finale_Tariff = finale_Tariff
+                )
             }
         }
     }

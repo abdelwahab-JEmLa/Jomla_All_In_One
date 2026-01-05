@@ -235,9 +235,6 @@ data class M13TarificationInfos(
     var parent_M2Client_KeyId: String = "null",
     val parent_M2Client_DebugInfos: String = "null",
 ) {
-    // Updated TypeChoisi enum in M13TarificationInfos class
-// This fixes the TODO by properly marking grossist-specific tariffs
-
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
