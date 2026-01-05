@@ -49,6 +49,7 @@ class RepositorysMainGetter(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val repo1ProduitInfos: RepoM1Produit,
+    val repoM1Produit: RepoM1Produit,
     val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
