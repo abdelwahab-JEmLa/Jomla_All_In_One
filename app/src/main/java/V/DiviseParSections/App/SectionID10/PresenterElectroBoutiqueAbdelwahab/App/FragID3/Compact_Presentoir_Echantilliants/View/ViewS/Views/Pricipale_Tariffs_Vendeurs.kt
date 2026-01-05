@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Pricipale_Tariffs_Vendeurs(
+fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>
 ) {

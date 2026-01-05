@@ -134,10 +134,10 @@ class RepositorysMainGetter(
     fun find_M10OperationVentCouleur(keyID: String): M10OperationVentCouleur? =
         repo10OperationVentCouleur.datasValue.find { it.keyID == keyID }
      /*
-    fun find_M10OperationVentCouleur_Du_Abdelwahab_echantillons_Produits(keyID: String): List<M10OperationVentCouleur>? =
+    fun find_M10OperationVentCouleur_Du_Abdelwahab_echantillons_Produits(keyID: String,client_filtreur_key : String = "" ): List<M10OperationVentCouleur>? =
         repo10OperationVentCouleur.datasValue.find { it.parent_M8BonVent_KeyId
                                                     //<--
-                                                    //TODO(1): du client keyid
+                                                    //TODO(1): du client keyid ==
             == keyID  &}     */
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------

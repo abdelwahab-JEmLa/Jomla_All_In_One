@@ -43,7 +43,7 @@ import kotlin.math.abs
  */
 
 @Composable
-fun Lenceur_Vent_Handler(
+fun Lenceur_Vent_Handler_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     selectedCouleur: M3CouleurProduitInfos,
     finale_Tariff: M13TarificationInfos,

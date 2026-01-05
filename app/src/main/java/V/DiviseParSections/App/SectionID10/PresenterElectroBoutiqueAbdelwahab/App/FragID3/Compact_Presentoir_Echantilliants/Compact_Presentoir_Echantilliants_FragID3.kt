@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -22,12 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
-fun Compact_Presentoir_Echantilliants(
+fun Compact_Presentoir_Echantilliants_FragID3(
     modifier: Modifier = Modifier,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
@@ -64,7 +65,7 @@ fun Compact_Presentoir_Echantilliants(
             .sortedBy { (category, _) -> category.positionDouble }
     }
 
-    Etager_LazyColumn(
+    Etager_LazyColumn_FragID3(
         modifier = modifier,
         categoriesWithProducts = groupe_Par_Categorie,
         on_pour_send_data = on_pour_send_data
@@ -72,7 +73,7 @@ fun Compact_Presentoir_Echantilliants(
 }
 
 @Composable
-fun Etager_LazyColumn(
+fun Etager_LazyColumn_FragID3(
     modifier: Modifier = Modifier,
     categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
@@ -81,10 +82,12 @@ fun Etager_LazyColumn(
     val gridState = rememberLazyStaggeredGridState()
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
+        columns = StaggeredGridCells.Fixed(4),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color(0xFFFFF0F5)), // Rose clair (lavender blush)
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp
     ) {
@@ -113,7 +116,7 @@ fun Etager_LazyColumn(
                         StaggeredGridItemSpan.SingleLane
                     }
                 ) {
-                    LazyStigerList_Produits(
+                    LazyStigerList_Produits_FragID3(
                         product = product,
                         colors = colors,
                         on_pour_send_data = on_pour_send_data
@@ -145,7 +148,7 @@ fun CategoryStickyHeader(
 }
 
 @Composable
-fun LazyStigerList_Produits(
+fun LazyStigerList_Produits_FragID3(
     modifier: Modifier = Modifier,
     product: ArticlesBasesStatsTable,
     colors: List<M3CouleurProduitInfos>,
@@ -157,7 +160,7 @@ fun LazyStigerList_Produits(
             colors.any { it.keyID == expandedColor.keyID }
         } ?: false
 
-    Item_Produit(
+    Item_Produit_FragID3(
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
         modifier = modifier
