@@ -125,10 +125,11 @@ fun Expanded_Multi_Couleurs(
     // Define selectedCouleur at the top level so it's accessible throughout the Box
     val selectedCouleur = relative_ListM3Couleurs[top_presanted_prisipame_couleur]
 
-    Box(
+    Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(
+        // Box only wraps the big presenter image
+        Box(
             modifier = Modifier.fillMaxWidth()
         ) {
             ColorImageCard(
@@ -141,59 +142,60 @@ fun Expanded_Multi_Couleurs(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            if (relative_ListM3Couleurs.size > 1) {
+            // Floating action row positioned at bottom end of the big image only
+            if (isHostPhone) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .background(
+                            color = Color.White.copy(alpha = 0.95f),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                        if (index != top_presanted_prisipame_couleur) {
-                            ColorImageCard(
-                                relative_M3CouleurProduitInfos = couleur,
-                                isSelected = false,
-                                onIconClick = {
-                                    top_presanted_prisipame_couleur = index
-                                    onClick_Icon(couleur)
-                                },
-                                on_pour_send_data = on_pour_send_data,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(80.dp)
-                            )
-                        }
-                    }
+                    // Tariffs list on the left
+                    Pricipale_Tariffs_Vendeurs(
+                        relative_M1produit = relative_M1produit,
+                        tariffsList = datasValue
+                    )
+
+                    // Sale button on the right
+                    Lenceur_Vent_Handler(
+                        relative_M1produit = relative_M1produit,
+                        selectedCouleur = selectedCouleur,
+                        finale_Tariff = finale_Tariff
+                    )
                 }
             }
         }
 
-        // Floating action row positioned at bottom end of the image card
-        if (isHostPhone) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.95f),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Tariffs list on the left
-                Pricipale_Tariffs_Vendeurs(
-                    relative_M1produit = relative_M1produit,
-                    tariffsList = datasValue
-                )
+        Spacer(modifier = Modifier.height(4.dp))
 
-                // Sale button on the right
-                Lenceur_Vent_Handler(
-                    relative_M1produit = relative_M1produit,
-                    selectedCouleur = selectedCouleur,
-                    finale_Tariff = finale_Tariff
-                )
+        // Other color cards row outside the Box
+        if (relative_ListM3Couleurs.size > 1) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                    if (index != top_presanted_prisipame_couleur) {
+                        ColorImageCard(
+                            relative_M3CouleurProduitInfos = couleur,
+                            isSelected = false,
+                            onIconClick = {
+                                top_presanted_prisipame_couleur = index
+                                onClick_Icon(couleur)
+                            },
+                            on_pour_send_data = on_pour_send_data,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp)
+                        )
+                    }
+                }
             }
         }
     }

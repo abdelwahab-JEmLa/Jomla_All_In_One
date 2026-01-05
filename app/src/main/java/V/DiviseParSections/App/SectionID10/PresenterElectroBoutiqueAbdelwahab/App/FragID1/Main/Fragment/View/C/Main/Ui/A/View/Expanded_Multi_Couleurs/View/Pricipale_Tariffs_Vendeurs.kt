@@ -4,7 +4,8 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs(
     relative_M1produit: ArticlesBasesStatsTable,
@@ -32,26 +34,36 @@ fun Pricipale_Tariffs_Vendeurs(
         M13TarificationInfos.TypeChoisi.Prix_Detaille
     )
 
-    Column(
+    // Filter and prepare tariffs to display
+    val tariffsToDisplay = displayTariffs.mapNotNull { tariffType ->
+        // Find matching tariff for this product
+        val matchingTariff = tariffsList.firstOrNull {
+            it.typeChoisi == tariffType &&
+                    it.parent_M1Produit_KeyId == relative_M1produit.keyID
+        }
+
+        // Get price
+        val prix = matchingTariff?.prixCurrency ?: getDefaultPrice(tariffType, relative_M1produit)
+
+        // Only include if price is not 0.0 and either tariff exists or should show default
+        if (prix != 0.0 && (matchingTariff != null || shouldShowDefaultTariff(tariffType, relative_M1produit))) {
+            tariffType to prix
+        } else {
+            null
+        }
+    }
+
+    // Use FlowRow to wrap items when space is not available
+    FlowRow(
         modifier = Modifier.padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        displayTariffs.forEach { tariffType ->
-            // Find matching tariff for this product
-            val matchingTariff = tariffsList.firstOrNull {
-                it.typeChoisi == tariffType &&
-                        it.parent_M1Produit_KeyId == relative_M1produit.keyID
-            }
-
-            // Display if tariff exists or if it's a default type
-            if (matchingTariff != null || shouldShowDefaultTariff(tariffType, relative_M1produit)) {
-                val prix = matchingTariff?.prixCurrency ?: getDefaultPrice(tariffType, relative_M1produit)
-
-                TariffItem(
-                    tariffType = tariffType,
-                    prix = prix
-                )
-            }
+        tariffsToDisplay.forEach { (tariffType, prix) ->
+            TariffItem(
+                tariffType = tariffType,
+                prix = prix
+            )
         }
     }
 }
