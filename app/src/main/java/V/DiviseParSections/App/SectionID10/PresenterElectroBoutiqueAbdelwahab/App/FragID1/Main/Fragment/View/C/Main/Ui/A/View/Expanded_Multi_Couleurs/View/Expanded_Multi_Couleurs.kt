@@ -1,11 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View
 
-// AJOUT: Import du HeadViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.L.View.Lenceur_Vent_Handler
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.d.updateExpandedCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
@@ -57,7 +59,8 @@ fun Expanded_Multi_Couleurs(
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    wifiTransferDatas: WifiTransferDatas = koinInject()
 ) {
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
@@ -65,12 +68,10 @@ fun Expanded_Multi_Couleurs(
 
     var top_presanted_prisipame_couleur by remember { mutableStateOf(0) }
 
-    // Sync avec expanded_M3CouleurProduitInfos du payload
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
     LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            // Vérifier si cette couleur appartient au produit actuel
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
                 val matchingIndex = findMatchingColorIndex(
                     expandedColor = expandedColor,
@@ -84,11 +85,33 @@ fun Expanded_Multi_Couleurs(
         }
     }
 
+    // Get the tariff for this product
+    val datasValue = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val findTariff = remember(relative_M1produit.keyID, focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+        datasValue.find { tariff ->
+            val type_A_Cherche = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+            else
+                M13TarificationInfos.TypeChoisi.Prix_Detaille
+
+            tariff.typeChoisi == type_A_Cherche && tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
+        }
+    }
+
+    val default_Tariff = M13TarificationInfos.get_default_P0(
+        relative_M1produit,
+        start_Prix_Depuit_Ancient = relative_M1produit.prixAchat
+    )
+    val finale_Tariff = findTariff ?: default_Tariff.first
+     val developement_affiche =true
+    // Check if this phone is NOT a client and is in host mode (big display mode)
+    val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
+            && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
+
     fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
-        // Utiliser la fonction toggle pour mettre à jour
         updateExpandedCouleur(
             relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-            focusedValuesGetter=focusedValuesGetter,
+            focusedValuesGetter = focusedValuesGetter,
             on_pour_send_data = on_pour_send_data
         )
 
@@ -115,6 +138,17 @@ fun Expanded_Multi_Couleurs(
 
         Spacer(modifier = Modifier.height(4.dp))
 
+        // Only show the sale button if this is the host phone (big display)
+        if (isHostPhone) {  //<--
+        //TODO(1): fait que cette row soit unn floatin boton end under image card
+            Lenceur_Vent_Handler(
+                relative_M1produit = relative_M1produit,
+                selectedCouleur = selectedCouleur,
+                finale_Tariff = finale_Tariff
+            )       //<--
+            //TODO(1): affiche a cote gauche Pricipale_Tariffs_Vendeurs 
+        }
+
         if (relative_ListM3Couleurs.size > 1) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -127,7 +161,6 @@ fun Expanded_Multi_Couleurs(
                             isSelected = false,
                             onIconClick = {
                                 top_presanted_prisipame_couleur = index
-                                // Mettre à jour l'état local
                                 onClick_Icon(couleur)
                             },
                             on_pour_send_data = on_pour_send_data,
@@ -140,40 +173,6 @@ fun Expanded_Multi_Couleurs(
             }
         }
     }
-}
-
-/**
- * Trouve l'index de la couleur correspondante par correspondance directe uniquement.
- * Recherche par: keyID, index, et nom de couleur
- */
-private fun findMatchingColorIndex(
-    expandedColor: M3CouleurProduitInfos,
-    availableColors: List<M3CouleurProduitInfos>
-): Int {
-    // Tentative 1: correspondance exacte par keyID
-    val exactMatch = availableColors.indexOfFirst { it.keyID == expandedColor.keyID }
-    if (exactMatch != -1) return exactMatch
-
-    // Tentative 2: correspondance par index dans l'ancien proto
-    val indexMatch = availableColors.indexOfFirst {
-        it.parentBProduitOldID == expandedColor.parentBProduitOldID &&
-                it.indexCouleurDansAncienProto == expandedColor.indexCouleurDansAncienProto
-    }
-    if (indexMatch != -1) return indexMatch
-
-    // Tentative 3: correspondance par nom de couleur
-    if (expandedColor.nomCouleurStrSiSonImageDispo.isNotBlank()) {
-        val colorNameMatch = availableColors.indexOfFirst {
-            it.nomCouleurStrSiSonImageDispo.equals(
-                expandedColor.nomCouleurStrSiSonImageDispo,
-                ignoreCase = true
-            )
-        }
-        if (colorNameMatch != -1) return colorNameMatch
-    }
-
-    // Aucune correspondance trouvée
-    return -1
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -217,7 +216,7 @@ private fun ColorImageCard(
                         .clickable(enabled = !isSelected) {
                             updateExpandedCouleur(
                                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-                                focusedValuesGetter=focusedValuesGetter,
+                                focusedValuesGetter = focusedValuesGetter,
                                 on_pour_send_data = on_pour_send_data
                             )
                         },
@@ -231,7 +230,7 @@ private fun ColorImageCard(
 
             if (!isSelected) {
                 IconButton(
-                    onClick = onIconClick, // Cela appellera maintenant viewModel.onColorSelectedByHost()
+                    onClick = onIconClick,
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp)

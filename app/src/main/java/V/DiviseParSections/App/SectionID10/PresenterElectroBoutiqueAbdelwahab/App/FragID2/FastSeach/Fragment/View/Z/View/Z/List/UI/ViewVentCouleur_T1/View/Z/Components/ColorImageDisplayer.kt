@@ -69,9 +69,7 @@ fun ColorImageDisplayer(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (colorInfo.nomCouleurStrSiSonImageDispo.isNotBlank()) {
-                        colorInfo.nomCouleurStrSiSonImageDispo
-                    } else {
+                    text = colorInfo.nomCouleurStrSiSonImageDispo.ifBlank {
                         "Image\nNon Dispo"
                     },
                     style = MaterialTheme.typography.bodySmall.copy(

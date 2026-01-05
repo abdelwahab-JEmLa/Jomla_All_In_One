@@ -60,7 +60,37 @@ class FocusedValuesGetter(
             currentActiveFocuced_M14VentPeriode ?: return@derivedStateOf emptyList<M8BonVent>()
         repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
     }
+    /**
+     * Adds a new M10OperationVentCouleur to the repository
+     * @param operation The operation to add
+     */
+    fun ajoute_New_M10OperationVentCouleur(operation: M10OperationVentCouleur) {
+        repo10OperationVentCouleur.add_New(operation)
+    }
 
+    /**
+     * Updates an existing M10OperationVentCouleur
+     * @param operation The operation to update
+     */
+    fun update_M10OperationVentCouleur(operation: M10OperationVentCouleur) {
+        repo10OperationVentCouleur.update_If_Exist(operation)
+    }
+
+    /**
+     * Opens the dialog for choosing quantity for a specific color/operation
+     * @param operation The M10OperationVentCouleur to open dialog for
+     */
+    fun active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(operation: M10OperationVentCouleur) {
+        val currentAppCompt = repo9AppCompt.currentAppCompt ?: return
+
+        // Update the app compte with the operation's keyID to trigger dialog
+        val updatedAppCompt = currentAppCompt.copy(
+            onVentM3CouleurProduitInfosKeyID = operation.keyID,
+            dialogChoisireQuantityM1ProduitInfosKeyID = operation.parent_M1Produit_KeyId
+        )
+
+        repo9AppCompt.upsert(updatedAppCompt)
+    }
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         val currentPeriod = currentActiveFocuced_M14VentPeriode
             ?: return@derivedStateOf emptyList<M10OperationVentCouleur>()

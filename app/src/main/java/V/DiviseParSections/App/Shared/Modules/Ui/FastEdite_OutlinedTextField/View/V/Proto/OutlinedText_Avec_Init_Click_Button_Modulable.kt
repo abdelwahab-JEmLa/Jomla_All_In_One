@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View
+package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -47,7 +49,7 @@ import androidx.compose.ui.unit.dp
 fun OutlinedText_Avec_Init_Click_Button_Modulable(
     start_count: Int,
     standard_count: Int = 1,
-    icon: ImageVector,
+    icon: ImageVector= Icons.Default.ShoppingCart,
     allNonTrouve: Boolean,
     modifier: Modifier = Modifier,
     on_Data_Update: (Int) -> Unit
