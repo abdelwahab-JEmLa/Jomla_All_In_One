@@ -46,7 +46,8 @@ class Repo8BonVent(
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
                                 bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
                     }
-                    if (bonVentsToRemove.isNotEmpty()) {
+                    if (bonVentsToRemove.isNotEmpty()) {         //<--
+                    //TODO(1): fait comme au m10op just ajou les condition des bon vent et separe le on fichie 
                         bonVentsToRemove.forEach { bonVent ->
                             delete(bonVent)
                         }

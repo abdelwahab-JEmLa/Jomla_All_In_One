@@ -5,6 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.Compact_Presentoir_Echantilliants
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.EducationFragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
@@ -75,7 +76,8 @@ fun AppNavHost(
     val currentRoute = navBackStackEntry?.destination?.route
 
     // Check if only tahfid fragment should be displayed
-    val ne_affiche_que_fragment = focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
+    val ne_affiche_que_fragment =
+        focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
 
     val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
@@ -184,8 +186,8 @@ fun AppNavHost(
                                     currentClient = currentClient,
                                     targetCategoryId = targetCategoryId,
                                     lockHost = lockHost,
-                                    onClickImageToShowControles = onClickImageToShowControles
-                                , on_pour_send_data = on_pour_send_data
+                                    onClickImageToShowControles = onClickImageToShowControles,
+                                    on_pour_send_data = on_pour_send_data
                                 )
                             }
 
@@ -197,6 +199,25 @@ fun AppNavHost(
                             }
                         }
                     }
+                    composable(
+                        route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
+                    ) { backStackEntry ->
+                        val screenKey = rememberScreenKey(backStackEntry)
+
+                        CleanupEffect {
+                        }
+
+                        LaunchedEffect(Unit) {
+                            scrollTiger++
+                        }
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            key(screenKey) {
+                                Compact_Presentoir_Echantilliants()
+                            }
+                        }
+                    }
+
                     focusedValuesGetter.currentApp_Est_Admin.ifTrue {
                         composable(
                             route = Screen.FragmentProduitFastSearchDialog.route,
@@ -330,7 +351,8 @@ fun AppNavHost(
 
                                 // Clear Firebase references
                                 val database = Firebase.database
-                                database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                                database.getReference("K_GroupeurBonCommendToSupplierRef")
+                                    .removeValue()
                                 database.getReference("O_SoldArticlesTabelle").removeValue()
                             }
                         },

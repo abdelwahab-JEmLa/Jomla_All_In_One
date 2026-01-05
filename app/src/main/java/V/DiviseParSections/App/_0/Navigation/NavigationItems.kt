@@ -4,6 +4,7 @@ package V.DiviseParSections.App._0.Navigation
 object NavigationItems {
     fun getItems() = listOf(
         ScreensApp2.A_ClientsLocationGps,
+        Screen.Fragment_Compact_Presentoir_Echantilliants,
         Screen.FacadePresentoireProduits,
         Screen.TravailleTempRecorder,
         Screen.Achats_Produits_Chez_Grossists,

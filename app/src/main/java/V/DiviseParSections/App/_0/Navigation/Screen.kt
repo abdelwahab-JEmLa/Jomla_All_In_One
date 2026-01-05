@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
+import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -27,6 +28,12 @@ sealed class Screen(
         icon = Icons.Default.MapsHomeWork,
         title = "A_Clients_LocationGps",
         color = Color(0xFFFF5722)
+    )
+    data object Fragment_Compact_Presentoir_Echantilliants: Screen(
+        route = "Fragment_Compact_Presentoir_Echantilliants",
+        icon = Icons.Default.ProductionQuantityLimits,
+        title = "Fragment_Compact_Presentoir_Echantilliants",
+        color = Color(0xFF9C27B0)
     )
 
     data object FacadePresentoireProduits : Screen(
@@ -98,6 +105,8 @@ sealed class Screen(
         title = "FragmentProduitFastSearchDialog",
         color = Color(0xFF009688)
     )
+
+
 
     data object Main_DataBaseInitFactory_1Produit : Screen(
         route = "Main_DataBaseInitFactory_1Produit",

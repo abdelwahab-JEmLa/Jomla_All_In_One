@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -194,8 +195,13 @@ fun ClientSearchItem(
                     )
 
                     Column(modifier = Modifier.weight(1f)) {
+                        val text = m2Client.nom
+                        val uppercase =
+                            focusedValuesGetter.currentApp_ItsWorkChezGrossisst.ifFalse {
+                            m2Client.keyID.takeLast(3).uppercase()
+                            }
                         Text(
-                            text = m2Client.nom,
+                            text = text + uppercase,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )

@@ -57,6 +57,8 @@ class Repo10OperationVentCouleur(
                         } catch (e: Exception) {
                         }
                     }
+                    //<--
+                    //TODO(1): cree une fyun au fichie separe qui delete si m18 dim efface les datas ou leur parentcilient nom != abdelwahab 
                 }
             } catch (e: Exception) {
             }

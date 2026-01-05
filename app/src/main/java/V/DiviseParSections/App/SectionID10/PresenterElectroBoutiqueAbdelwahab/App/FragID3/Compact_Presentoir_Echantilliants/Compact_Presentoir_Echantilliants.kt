@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,13 +33,12 @@ fun Compact_Presentoir_Echantilliants(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
-    // TODO(1): Filter colors where depot count > 0 and parent product state is PETITE_PROBABILITY
     val list_M3couleur = remember(repositorysMainGetter.repo03CouleurProduitInfos.datasValue) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
             couleur.count_Don_Depot > 0 &&
                     repositorysMainGetter.repoM1Produit.datasValue.find {
                         it.keyID == couleur.parentBProduitInfosKeyID
-                    }?.disponibilityEtates == DisponibilityEtates.PETITE_PROBABILITY
+                    }?.disponibilityEtates == DisponibilityEtates.DISPO
         }
     }
 
@@ -92,7 +89,7 @@ fun Etager_LazyColumn(
         verticalItemSpacing = 8.dp
     ) {
         categoriesWithProducts.forEach { (category, productColorPairs) ->
-            // TODO(1): Display sticky header for each category
+            // Display sticky header for each category
             item(
                 key = "header_${category.id}",
                 span = StaggeredGridItemSpan.FullLine
@@ -100,22 +97,20 @@ fun Etager_LazyColumn(
                 CategoryStickyHeader(category = category)
             }
 
-            // TODO(1): Display each LazyStigerList_Produits
+            // Display each product with its colors
             productColorPairs.forEach { (product, colors) ->
+                // Check if any color is expanded
+                val isExpanded = focusedValuesGetter.active_Central_Values
+                    .expanded_M3CouleurProduitInfos?.let { expandedColor ->
+                        colors.any { it.keyID == expandedColor.keyID }
+                    } ?: false
+
                 item(
                     key = "product_${product.keyID}",
-                    span = {
-                        // Check if any color is expanded
-                        val isExpanded = focusedValuesGetter.active_Central_Values
-                            .expanded_M3CouleurProduitInfos?.let { expandedColor ->
-                                colors.any { it.keyID == expandedColor.keyID }
-                            } ?: false
-
-                        if (isExpanded) {
-                            StaggeredGridItemSpan.FullLine
-                        } else {
-                            StaggeredGridItemSpan.SingleLane
-                        }
+                    span = if (isExpanded) {
+                        StaggeredGridItemSpan.FullLine
+                    } else {
+                        StaggeredGridItemSpan.SingleLane
                     }
                 ) {
                     LazyStigerList_Produits(
@@ -157,7 +152,6 @@ fun LazyStigerList_Produits(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit
 ) {
-    // TODO(1): Display a lazy staggered list with StaggeredGridItemSpan.FullLine if product color is expanded, otherwise normal
     val isExpanded = focusedValuesGetter.active_Central_Values
         .expanded_M3CouleurProduitInfos?.let { expandedColor ->
             colors.any { it.keyID == expandedColor.keyID }

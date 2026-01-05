@@ -82,7 +82,7 @@ val composRepositorysModule = module {
         get(),
         get(),
         get(),
-        get(), get(), ) }
+        get(), get(),get(), ) }
 
     single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(),get(),
         get(),
