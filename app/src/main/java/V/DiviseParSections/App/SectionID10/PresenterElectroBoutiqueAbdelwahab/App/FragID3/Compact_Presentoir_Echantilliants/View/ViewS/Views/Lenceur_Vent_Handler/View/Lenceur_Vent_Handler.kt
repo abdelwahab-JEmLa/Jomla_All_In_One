@@ -109,7 +109,6 @@ fun Lenceur_Vent_Handler_FragID3(
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
-    // Adjust padding based on compact mode
     val horizontalPadding = if (compactMode) 4.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
 

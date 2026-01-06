@@ -35,7 +35,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
-    val developement_test = true
+    val developement_test = false
 
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
