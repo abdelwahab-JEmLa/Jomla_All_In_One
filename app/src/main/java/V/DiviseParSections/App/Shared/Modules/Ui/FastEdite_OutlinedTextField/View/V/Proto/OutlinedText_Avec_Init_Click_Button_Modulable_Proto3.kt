@@ -31,6 +31,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
+/**
+ * A reusable component that displays a quantity button with two-click behavior:
+ * - First click: Updates to standard_count and triggers on_Data_Update
+ * - Second click: Enters edit mode and shows an outlined text field
+ *
+ * @param start_count The initial/current count to display
+ * @param standard_count The count to set on first click (default: 1)
+ * @param icon The icon to display in the button (nullable - won't display if null)
+ * @param isAvailable Whether the component is enabled for interaction (default: true)
+ * @param compact_taille Whether to use compact sizing (reduces padding and text size)
+ * @param on_Data_Update Callback when quantity needs to be updated (returns new quantity)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
     start_count: Int,
@@ -128,16 +141,14 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Only show icon if not null AND not in compact mode
-                if (!compact_taille) {
-                    icon?.let {
-                        Icon(
-                            imageVector = it,
-                            contentDescription = "Quantity",
-                            tint = contentColor,
-                            modifier = Modifier.size(iconSize)
-                        )
-                    }
+                // Only show icon if not null
+                icon?.let {
+                    Icon(
+                        imageVector = it,
+                        contentDescription = "Quantity",
+                        tint = contentColor,
+                        modifier = Modifier.size(iconSize)
+                    )
                 }
 
                 Text(

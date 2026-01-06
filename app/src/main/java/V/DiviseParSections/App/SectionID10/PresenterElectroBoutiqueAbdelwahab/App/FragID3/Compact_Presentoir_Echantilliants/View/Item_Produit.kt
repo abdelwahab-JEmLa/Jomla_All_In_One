@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Item_Produit_FragID3(
@@ -173,8 +175,6 @@ fun Item_Produit_FragID3(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 2. Tariffs and Lence_vent - displayed based on expansion state
-                // Tariffs only shown when EXPANDED, Lence_vent ALWAYS shown (when host)
                 if (shouldShowButtons) {
                     FlowRow(
                         modifier = Modifier
@@ -187,20 +187,17 @@ fun Item_Produit_FragID3(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Tariffs - only show when EXPANDED
-                        if (isThisProductExpanded) {
-                            Pricipale_Tariffs_Vendeurs_FragID3(
-                                relative_M1produit = relative_M1produit,
-                                tariffsList = datasValue,
-                                compactMode = !isThisProductExpanded
-                            )
-                        }
 
-                        // Sale button - ALWAYS show when host
                         Lenceur_Vent_Handler_FragID3(
                             relative_M1produit = relative_M1produit,
                             selectedCouleur = selectedCouleur,
                             finale_Tariff = finale_Tariff,
+                            compactMode = !isThisProductExpanded
+                        )
+
+                        Pricipale_Tariffs_Vendeurs_FragID3(
+                            relative_M1produit = relative_M1produit,
+                            tariffsList = datasValue,
                             compactMode = !isThisProductExpanded
                         )
                     }
