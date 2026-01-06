@@ -19,20 +19,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Displays tariff information for a product
+ *
+ * @param relative_M1produit The product to display tariffs for
+ * @param tariffsList List of all available tariffs
+ * @param compactMode Whether to use compact display (removes names and reduces size)
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
-    tariffsList: List<M13TarificationInfos>
-) {           //<--
-//TODO(1): fait que compact de enleve le nom et dimminue iminue max
-
+    tariffsList: List<M13TarificationInfos>,
+    compactMode: Boolean = false
+) {
     // Define the tariff types to display in order
     val displayTariffs = listOf(
         M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
         M13TarificationInfos.TypeChoisi.Prix_Detaille,
-
         M13TarificationInfos.TypeChoisi.Historique,
         M13TarificationInfos.TypeChoisi.LeMaxPrixArrive,
     )
@@ -55,16 +60,20 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
     }
 
+    // Adjust padding based on compact mode
+    val containerPadding = if (compactMode) 2.dp else 4.dp
+
     // Use FlowRow to wrap items when space is not available
     FlowRow(
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(containerPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariffType, prix) ->
             TariffItem(
                 tariffType = tariffType,
-                prix = prix
+                prix = prix,
+                compactMode = compactMode
             )
         }
     }
@@ -73,15 +82,22 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 @Composable
 private fun TariffItem(
     tariffType: M13TarificationInfos.TypeChoisi,
-    prix: Double
+    prix: Double,
+    compactMode: Boolean = false
 ) {
+    // Adjust sizes based on compact mode
+    val horizontalPadding = if (compactMode) 6.dp else 8.dp
+    val verticalPadding = if (compactMode) 2.dp else 4.dp
+    val iconSize = if (compactMode) 14.dp else 16.dp
+    val fontSize = if (compactMode) 9.sp else 10.sp
+
     Row(
         modifier = Modifier
             .background(
                 color = tariffType.couleur.copy(alpha = 0.9f),
                 shape = CircleShape
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -92,24 +108,25 @@ private fun TariffItem(
                 contentDescription = tariffType.nomArabe,
                 tint = tariffType.couleur_Text,
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(iconSize)
                     .clip(CircleShape)
             )
         }
 
-        // Short name
-        Text(
-            text = tariffType.abrgNom,
-            color = tariffType.couleur_Text,
-            fontSize = 10.sp
-        )
+        // In compact mode, only show the abbreviated name (no full name)
+        if (!compactMode) {
+            Text(
+                text = tariffType.abrgNom,
+                color = tariffType.couleur_Text,
+                fontSize = fontSize
+            )
+        }
 
-        // Price
+        // Price (always shown)
         Text(
             text = String.format("%.0f", prix),
             color = tariffType.couleur_Text,
-            fontSize = 10.sp
+            fontSize = fontSize
         )
     }
 }
-

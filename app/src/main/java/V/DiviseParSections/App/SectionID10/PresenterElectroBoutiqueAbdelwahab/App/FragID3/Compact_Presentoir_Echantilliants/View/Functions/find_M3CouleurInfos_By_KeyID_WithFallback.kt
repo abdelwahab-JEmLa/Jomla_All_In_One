@@ -33,7 +33,7 @@ fun RepositorysMainGetter.find_M3CouleurInfos_By_KeyID_WithFallback(
  * Finds the best matching color from available colors
  * Priority: keyID > color index > color name
  */
-fun RepositorysMainGetter.findBestMatchingColor(
+fun findBestMatchingColor(
     targetColor: M3CouleurProduitInfos,
     availableColors: List<M3CouleurProduitInfos>
 ): M3CouleurProduitInfos? {
@@ -69,37 +69,4 @@ fun RepositorysMainGetter.findBestMatchingColor(
     
     Log.w("ColorSearch", "No matching color found")
     return null
-}
-
-/**
- * Validates and returns a color, or finds the best alternative
- * This is useful when receiving a keyID from payload
- */
-fun RepositorysMainGetter.validateAndGetColorOrFallback(
-    keyID: String
-): M3CouleurProduitInfos? {
-    // Try direct lookup first
-    val color = find_M3CouleurInfos_By_KeyID(keyID)
-    
-    if (color == null) {
-        Log.e("ColorSearch", "Could not find color for keyID: $keyID")
-        return null
-    }
-    
-    Log.d("ColorSearch", "Found color: ${color.keyID}")
-    return color
-}
-
-/**
- * Finds a color and returns the best match from a specific product's colors
- * Used when you want to ensure the color belongs to a specific product
- */
-fun RepositorysMainGetter.findColorInProduct(
-    keyID: String,
-    productKeyID: String
-): M3CouleurProduitInfos? {
-    val targetColor = find_M3CouleurInfos_By_KeyID(keyID) ?: return null
-    val productColors = find_ListM3CouleurInfos_By_Parent_Produit_KeyID(productKeyID)
-    
-    return findBestMatchingColor(targetColor, productColors)
 }

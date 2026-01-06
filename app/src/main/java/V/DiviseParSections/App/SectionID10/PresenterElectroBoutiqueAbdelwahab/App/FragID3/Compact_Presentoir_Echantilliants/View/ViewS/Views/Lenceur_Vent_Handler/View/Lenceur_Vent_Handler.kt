@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_WithAvailabilityP2
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -37,16 +37,17 @@ import kotlin.math.abs
  * @param relative_M1produit The product being sold
  * @param selectedCouleur The currently selected color variant
  * @param finale_Tariff The tariff/pricing to use for this sale
+ * @param compactMode Whether to use compact layout (reduces padding)
  * @param focusedValuesGetter Getter for focused values (injected by default)
  * @param aCentralFacade Central facade for repository access (injected by default)
  * @param modifier Optional modifier
  */
-
 @Composable
 fun Lenceur_Vent_Handler_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     selectedCouleur: M3CouleurProduitInfos,
     finale_Tariff: M13TarificationInfos,
+    compactMode: Boolean = false,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
@@ -108,17 +109,21 @@ fun Lenceur_Vent_Handler_FragID3(
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
+    // Adjust padding based on compact mode
+    val horizontalPadding = if (compactMode) 4.dp else 8.dp
+    val verticalPadding = if (compactMode) 2.dp else 4.dp
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {//<--
-    //TODO(1): fait qe si non expand de campact mod
-        OutlinedText_Avec_Init_Click_Button_WithAvailabilityP2(
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+    ) {
+        OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
             start_count = currentQuantity,
             standard_count = standardCount,
             icon = Icons.Default.ShoppingCart,
             isAvailable = isAvailable,
+            compact_taille = compactMode,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) { newQuantity ->
             handleLenceVent(newQuantity)

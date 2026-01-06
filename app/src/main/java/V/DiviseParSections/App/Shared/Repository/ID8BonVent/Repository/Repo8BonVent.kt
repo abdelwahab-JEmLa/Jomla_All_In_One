@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.cleanupOldBonVents
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
@@ -31,7 +32,7 @@ class Repo8BonVent(
     val dataBaseCreationFactory: DataBaseInitFactory_8BonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
-    private val repoScope = CoroutineScope(Dispatchers.IO)
+    val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M8BonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
 
@@ -41,17 +42,7 @@ class Repo8BonVent(
                 _datas.value = newData
 
                 if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
-                    val bonVentsToRemove = newData.filter { bonVent ->
-                        bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit &&
-                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Credit &&
-                                bonVent.etateActuellementEst != M8BonVent.EtateActuellementEst.Versemment
-                    }
-                    if (bonVentsToRemove.isNotEmpty()) {         //<--
-                    //TODO(1): fait comme au m10op just ajou les condition des bon vent et separe le on fichie 
-                        bonVentsToRemove.forEach { bonVent ->
-                            delete(bonVent)
-                        }
-                    }
+                    cleanupOldBonVents(this@Repo8BonVent, newData)
                 }
             }
         }

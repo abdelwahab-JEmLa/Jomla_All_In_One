@@ -52,8 +52,7 @@ fun Item_Produit_FragID3(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
-) {            //<--
-//TODO(1): fait que si nin expand de diminue max paddings
+) {
     val developement_test = true
     val expand_affiche_button_Lence_vent = developement_test
 
@@ -142,10 +141,14 @@ fun Item_Produit_FragID3(
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
+    // Adjust padding based on expansion state
+    val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
+    val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(cardPadding)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -157,7 +160,7 @@ fun Item_Produit_FragID3(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(innerPadding)
             ) {
                 // 1. Main color image - clickable to expand/collapse
                 ColorImageCard_FragID3(
@@ -188,7 +191,8 @@ fun Item_Produit_FragID3(
                         if (isThisProductExpanded) {
                             Pricipale_Tariffs_Vendeurs_FragID3(
                                 relative_M1produit = relative_M1produit,
-                                tariffsList = datasValue
+                                tariffsList = datasValue,
+                                compactMode = !isThisProductExpanded
                             )
                         }
 
@@ -196,7 +200,8 @@ fun Item_Produit_FragID3(
                         Lenceur_Vent_Handler_FragID3(
                             relative_M1produit = relative_M1produit,
                             selectedCouleur = selectedCouleur,
-                            finale_Tariff = finale_Tariff
+                            finale_Tariff = finale_Tariff,
+                            compactMode = !isThisProductExpanded
                         )
                     }
                 }

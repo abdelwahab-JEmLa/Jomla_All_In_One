@@ -1,29 +1,58 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
-/*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+
 /**
  * A reusable component that displays a quantity button with two-click behavior:
- * - First click: Updates to standard_count and triggers onFirstClick
+ * - First click: Updates to standard_count and triggers on_Data_Update
  * - Second click: Enters edit mode and shows an outlined text field
  *
  * @param start_count The initial/current count to display
  * @param standard_count The count to set on first click (default: 1)
- * @param icon The icon to display in the button
- * @param enabled Whether the component is enabled for interaction (default: true)
+ * @param icon The icon to display in the button (nullable - won't display if null)
+ * @param isAvailable Whether the component is enabled for interaction (default: true)
+ * @param compact_taille Whether to use compact sizing (reduces padding and text size)
  * @param on_Data_Update Callback when quantity needs to be updated (returns new quantity)
  * @param modifier Optional modifier for the component
  */
 @Composable
-fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
-//TODO(1): fait que si null ne pas affiche l icon
+fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
     start_count: Int,
     standard_count: Int = 1,
-    icon: ImageVector = null,
-    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    isAvailable: Boolean = true,
+    compact_taille: Boolean = false,
     modifier: Modifier = Modifier,
-    on_Data_Update: (Int) -> Unit,
-    compact_taille : false  //<--
-    //TODO(1): fait que si compact de diminue le max taille de paddings et text
+    on_Data_Update: (Int) -> Unit
 ) {
     var isEditMode by remember { mutableStateOf(false) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
@@ -33,6 +62,16 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
         if (isEditMode) {
             focusRequester.requestFocus()
         }
+    }
+
+    // Adjust sizes based on compact mode
+    val horizontalPadding = if (compact_taille) 8.dp else 12.dp
+    val verticalPadding = if (compact_taille) 4.dp else 6.dp
+    val iconSize = if (compact_taille) 14.dp else 16.dp
+    val textStyle = if (compact_taille) {
+        MaterialTheme.typography.labelMedium
+    } else {
+        MaterialTheme.typography.labelLarge
     }
 
     if (isEditMode && start_count > 0) {
@@ -59,14 +98,12 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
                 }
             ),
             singleLine = true,
-            textStyle = MaterialTheme.typography.labelLarge.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            enabled = enabled
+            textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
+            enabled = isAvailable
         )
     } else {
         // Display mode: Show clickable card
-        val containerColor = if (!enabled) {
+        val containerColor = if (!isAvailable) {
             MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
         } else if (start_count > 0) {
             MaterialTheme.colorScheme.tertiary
@@ -74,7 +111,7 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
             MaterialTheme.colorScheme.primary
         }
 
-        val contentColor = if (!enabled) {
+        val contentColor = if (!isAvailable) {
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         } else {
             MaterialTheme.colorScheme.onPrimary
@@ -83,7 +120,7 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = containerColor),
-            modifier = modifier.clickable(enabled = enabled) {
+            modifier = modifier.clickable(enabled = isAvailable) {
                 when {
                     start_count == 0 -> {
                         // First click: Set to standard_count
@@ -97,19 +134,26 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
             }
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                modifier = Modifier.padding(
+                    horizontal = horizontalPadding,
+                    vertical = verticalPadding
+                ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = "Quantity",
-                    tint = contentColor,
-                    modifier = Modifier.size(16.dp)
-                )
+                // Only show icon if not null
+                icon?.let {
+                    Icon(
+                        imageVector = it,
+                        contentDescription = "Quantity",
+                        tint = contentColor,
+                        modifier = Modifier.size(iconSize)
+                    )
+                }
+
                 Text(
                     text = start_count.toString(),
-                    style = MaterialTheme.typography.labelLarge,
+                    style = textStyle,
                     fontWeight = FontWeight.Bold,
                     color = contentColor
                 )
@@ -117,4 +161,3 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(     //<--
         }
     }
 }
-                             */

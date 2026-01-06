@@ -90,6 +90,9 @@ class RepositorysMainGetter(
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M2Client(keyID: String): M2Client? =
         repo2Client.datasValue.find { it.keyID == keyID }
+    
+    fun find_M2Client_By_KeyID(keyID: String): M2Client? =
+        repo2Client.datasValue.find { it.keyID == keyID }
 
     fun find_M2Client_By_M10Vent(key: M10OperationVentCouleur): M2Client? =
         repo2Client.datasValue.find {
@@ -133,14 +136,24 @@ class RepositorysMainGetter(
     //--------------M10----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun find_M10OperationVentCouleur(keyID: String): M10OperationVentCouleur? =
         repo10OperationVentCouleur.datasValue.find { it.keyID == keyID }
-     /*
-    fun find_M10OperationVentCouleur_Du_Abdelwahab_echantillons_Produits(keyID: String,client_filtreur_key : String = "keyID	-Oh4W0-igT_bXGOo-LC_" ): List<M10OperationVentCouleur>? =
-        repo10OperationVentCouleur.datasValue.find { it.parent_M8BonVent_KeyId
-                                                    //<--
-                                                    //TODO(1): du client keyid ==
-            == keyID  &}     */
 
-    
+    object Jomla_Clients {
+        const val ECHATILLANTS_KEY_ID = "-Oh4W0-igT_bXGOo-LC_"
+    }
+
+    // Replace the getLastBonVentForClient function with this fixed version:
+    fun getLastBonVentForClient(
+        clientKeyID: String,
+        etateFilter: M8BonVent.EtateActuellementEst? = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    ): M8BonVent? {
+        return repo8BonVent.datasValue
+            .filter { bonVent ->
+                val matchesClient = bonVent.parent_M2Client_KeyID == clientKeyID
+                val matchesEtate = etateFilter == null || bonVent.etateActuellementEst == etateFilter
+                matchesClient && matchesEtate
+            }
+            .maxByOrNull { it.creationTimestamps }
+    }
 
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------

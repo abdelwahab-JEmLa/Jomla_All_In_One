@@ -352,7 +352,6 @@ class PdfTableBuilder(
             .setTextAlignment(align)
     }
 
-    // FIXED TODO(1): Increased border thickness from 0.1f to 0.5f
     private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
         Cell()
             .add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
