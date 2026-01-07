@@ -28,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -124,6 +125,18 @@ fun Item_Produit_FragID3(
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
+    // FIXED: Use derivedStateOf to reactively find the operation for the selected color
+    // Added dependency on the full list to detect any changes in operations
+    val relative_M10OperationVentCouleur by remember(
+        selectedCouleur.keyID,
+        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size
+    ) {
+        derivedStateOf {
+            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                .find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+        }
+    }
+
     // Adjust padding based on expansion state
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
@@ -154,20 +167,8 @@ fun Item_Produit_FragID3(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // 2. Sale button for main color - directly under image
-                if (shouldShowButtons) {
-                    Lenceur_Vent_Handler_FragID3(
-                        relative_M1produit = relative_M1produit,
-                        selectedCouleur = selectedCouleur,
-                        finale_Tariff = finale_Tariff,
-                        compactMode = !isThisProductExpanded,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 3. Tariffs section
                 if (shouldShowButtons) {
                     FlowRow(
                         modifier = Modifier
@@ -180,6 +181,15 @@ fun Item_Produit_FragID3(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
+                        // FIXED: Now properly passes the operation for the selected color
+                        Lenceur_Vent_Handler_FragID3(
+                            relative_M1produit = relative_M1produit,
+                            relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                            selectedCouleur = selectedCouleur,
+                            finale_Tariff = finale_Tariff,
+                            compactMode = !isThisProductExpanded
+                        )
+
                         Pricipale_Tariffs_Vendeurs_FragID3(
                             relative_M1produit = relative_M1produit,
                             tariffsList = datasValue,
@@ -188,8 +198,8 @@ fun Item_Produit_FragID3(
                     }
                 }
 
-                // 4. Sub-colors display - at the end
-                if (relative_ListM3Couleurs.size > 1) {
+                // 3. Sub-colors display - at the end
+                if (relative_ListM3Couleurs.size > 1 && shouldShowButtons) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (isThisProductExpanded) {
@@ -202,37 +212,20 @@ fun Item_Produit_FragID3(
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
-                                    // Container for sub-color with sale button
-                                    Column(
+                                    SubColorCard_WithButton(
+                                        couleur = couleur,
+                                        relative_M1produit = relative_M1produit,
+                                        finale_Tariff = finale_Tariff,
+                                        focusedValuesGetter = focusedValuesGetter,
+                                        onClick = {
+                                            big_presenter_couleur_produit = index
+                                            onClick_Icon(couleur)
+                                        },
+                                        on_pour_send_data = on_pour_send_data,
+                                        isExpanded = true,
                                         modifier = Modifier
-                                            .weight(1f, fill = false),
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        // Sub-color image
-                                        ColorImageCard_FragID3(
-                                            relative_M3CouleurProduitInfos = couleur,
-                                            isSelected = false,
-                                            onIconClick = {
-                                                big_presenter_couleur_produit = index
-                                                onClick_Icon(couleur)
-                                            },
-                                            on_pour_send_data = on_pour_send_data,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(80.dp)
-                                        )
-
-                                        // Sale button for this color - directly under image
-                                        if (shouldShowButtons) {
-                                            Lenceur_Vent_Handler_FragID3(
-                                                relative_M1produit = relative_M1produit,
-                                                selectedCouleur = couleur,
-                                                finale_Tariff = finale_Tariff,
-                                                compactMode = true,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
-                                        }
-                                    }
+                                            .weight(1f, fill = false)
+                                    )
                                 }
                             }
                         }
@@ -244,36 +237,20 @@ fun Item_Produit_FragID3(
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
-                                    // Container for sub-color with sale button
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        // Sub-color image
-                                        ColorImageCard_FragID3(
-                                            relative_M3CouleurProduitInfos = couleur,
-                                            isSelected = false,
-                                            onIconClick = {
-                                                big_presenter_couleur_produit = index
-                                                onClick_Icon(couleur)
-                                            },
-                                            on_pour_send_data = on_pour_send_data,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(80.dp)
-                                        )
-
-                                        // Sale button for this color - directly under image
-                                        if (shouldShowButtons) {
-                                            Lenceur_Vent_Handler_FragID3(
-                                                relative_M1produit = relative_M1produit,
-                                                selectedCouleur = couleur,
-                                                finale_Tariff = finale_Tariff,
-                                                compactMode = true,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
-                                        }
-                                    }
+                                    SubColorCard_WithButton(
+                                        couleur = couleur,
+                                        relative_M1produit = relative_M1produit,
+                                        finale_Tariff = finale_Tariff,
+                                        focusedValuesGetter = focusedValuesGetter,
+                                        onClick = {
+                                            big_presenter_couleur_produit = index
+                                            onClick_Icon(couleur)
+                                        },
+                                        on_pour_send_data = on_pour_send_data,
+                                        isExpanded = false,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    )
                                 }
                             }
                         }
@@ -283,3 +260,4 @@ fun Item_Produit_FragID3(
         }
     }
 }
+

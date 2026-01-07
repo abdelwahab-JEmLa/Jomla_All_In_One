@@ -118,20 +118,20 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
         }
 
         Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = containerColor),
-            modifier = modifier.clickable(enabled = isAvailable) {
+            modifier = modifier
+
+                .clickable(enabled = isAvailable) {
                 when {
                     start_count == 0 -> {
-                        // First click: Set to standard_count
                         on_Data_Update(standard_count)
                     }
                     start_count >= standard_count -> {
-                        // Second click: Enter edit mode
                         isEditMode = true
                     }
                 }
-            }
+            },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = containerColor)
         ) {
             Row(
                 modifier = Modifier.padding(
