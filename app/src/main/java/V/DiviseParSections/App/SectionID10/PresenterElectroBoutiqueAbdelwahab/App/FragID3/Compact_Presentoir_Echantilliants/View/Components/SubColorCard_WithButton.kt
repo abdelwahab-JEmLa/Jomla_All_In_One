@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
@@ -24,7 +24,6 @@ fun SubColorCard_WithButton(
     relative_M1produit: ArticlesBasesStatsTable,
     finale_Tariff: M13TarificationInfos,
     focusedValuesGetter: FocusedValuesGetter,
-    onClick: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     isExpanded: Boolean,
     modifier: Modifier = Modifier.Companion
@@ -49,7 +48,6 @@ fun SubColorCard_WithButton(
             ColorImageCard_FragID3(
                 relative_M3CouleurProduitInfos = couleur,
                 isSelected = false,
-                onIconClick = onClick,
                 on_pour_send_data = on_pour_send_data,
                 modifier = Modifier.Companion.fillMaxWidth()
             )

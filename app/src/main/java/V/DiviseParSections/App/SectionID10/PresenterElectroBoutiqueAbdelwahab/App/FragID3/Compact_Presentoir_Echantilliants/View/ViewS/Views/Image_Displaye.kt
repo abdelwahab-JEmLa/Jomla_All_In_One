@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import org.koin.compose.koinInject
 import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -23,8 +26,9 @@ import java.io.File
 fun Image_Displaye(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     contentScale: ContentScale = ContentScale.Fit,
-    onImageClick: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    on_pour_send_data: (String, String) -> Unit
 ) {
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -44,10 +48,27 @@ fun Image_Displaye(
         val completeModifier = modifier
             .fillMaxSize()
             .then(
-                if (onImageClick != null) {
-                    Modifier.clickable { onImageClick() }
-                } else {
-                    Modifier
+                Modifier.clickable {
+                    val currentExpanded =
+                        focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+
+                    val newValue =
+                        if (currentExpanded?.keyID == relative_M3CouleurProduitInfos.keyID) {
+                            null
+                        } else {
+                            relative_M3CouleurProduitInfos
+                        }
+
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            expanded_M3CouleurProduitInfos = newValue
+                        )
+                    )
+
+                    on_pour_send_data(
+                        WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+                        relative_M3CouleurProduitInfos.keyID
+                    )
                 }
             )
 

@@ -1,20 +1,15 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur.updateExpandedCouleur
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.ColorImageCard_FragID3
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Big_Principale_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.SubColorCard_WithButton
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -34,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -50,16 +44,28 @@ fun Item_Produit_FragID3(
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
 ) {
-    val developement_test = true
-    val expand_affiche_button_Lence_vent = developement_test
-
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
     }
 
-    var big_presenter_couleur_produit by remember { mutableStateOf(0) }
-
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+
+    // FIXED: Initialize based on expanded color if it belongs to this product
+    val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
+        expanded_M3CouleurProduitInfos?.let { expandedColor ->
+            if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
+                val matchingIndex = findMatchingColorIndex(
+                    expandedColor = expandedColor,
+                    availableColors = relative_ListM3Couleurs
+                )
+                if (matchingIndex != -1) matchingIndex else 0
+            } else 0
+        } ?: 0
+    }
+
+    var big_presenter_couleur_produit by remember(initialColorIndex) {
+        mutableStateOf(initialColorIndex)
+    }
 
     // Check if THIS product is expanded
     val isThisProductExpanded = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
@@ -68,6 +74,7 @@ fun Item_Produit_FragID3(
         } ?: false
     }
 
+    // Sync with expanded color changes
     LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -103,30 +110,13 @@ fun Item_Produit_FragID3(
     val finale_Tariff = findTariff ?: default_Tariff.first
     val developement_affiche = true
 
-    // Check if this phone is NOT a client and is in host mode (big display mode)
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
             && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
 
-    // Show buttons when host phone (always show lence_vent)
     val shouldShowButtons = isHostPhone
-
-    fun onClick_Icon(relative_M3CouleurProduitInfos: M3CouleurProduitInfos) {
-        updateExpandedCouleur(
-            relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-            focusedValuesGetter = focusedValuesGetter,
-            on_pour_send_data = on_pour_send_data
-        )
-
-        on_pour_send_data(
-            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-            relative_M3CouleurProduitInfos.keyID
-        )
-    }
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
-    // FIXED: Use derivedStateOf to reactively find the operation for the selected color
-    // Added dependency on the full list to detect any changes in operations
     val relative_M10OperationVentCouleur by remember(
         selectedCouleur.keyID,
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size
@@ -158,52 +148,21 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
-                // 1. Main color image - clickable to expand/collapse
-                ColorImageCard_FragID3(
-                    relative_M3CouleurProduitInfos = selectedCouleur,
-                    isSelected = true,
-                    onIconClick = { onClick_Icon(selectedCouleur) },
-                    on_pour_send_data = on_pour_send_data,
-                    modifier = Modifier.fillMaxWidth()
+                Big_Principale_FragID3(
+                    relative_M1produit = relative_M1produit,
+                    selectedCouleur = selectedCouleur,
+                    relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                    finale_Tariff = finale_Tariff,
+                    datasValue = datasValue,
+                    isThisProductExpanded = isThisProductExpanded,
+                    shouldShowButtons = shouldShowButtons,
+                    on_pour_send_data = on_pour_send_data
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (shouldShowButtons) {
-                    FlowRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.White.copy(alpha = 0.95f),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        // FIXED: Now properly passes the operation for the selected color
-                        Lenceur_Vent_Handler_FragID3(
-                            relative_M1produit = relative_M1produit,
-                            relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                            selectedCouleur = selectedCouleur,
-                            finale_Tariff = finale_Tariff,
-                            compactMode = !isThisProductExpanded
-                        )
-
-                        Pricipale_Tariffs_Vendeurs_FragID3(
-                            relative_M1produit = relative_M1produit,
-                            tariffsList = datasValue,
-                            compactMode = !isThisProductExpanded
-                        )
-                    }
-                }
-
-                // 3. Sub-colors display - at the end
                 if (relative_ListM3Couleurs.size > 1 && shouldShowButtons) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (isThisProductExpanded) {
-                        // EXPANDED: Show sub-colors in horizontal FlowRow (wraps if needed)
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -217,10 +176,6 @@ fun Item_Produit_FragID3(
                                         relative_M1produit = relative_M1produit,
                                         finale_Tariff = finale_Tariff,
                                         focusedValuesGetter = focusedValuesGetter,
-                                        onClick = {
-                                            big_presenter_couleur_produit = index
-                                            onClick_Icon(couleur)
-                                        },
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
                                         modifier = Modifier
@@ -242,10 +197,6 @@ fun Item_Produit_FragID3(
                                         relative_M1produit = relative_M1produit,
                                         finale_Tariff = finale_Tariff,
                                         focusedValuesGetter = focusedValuesGetter,
-                                        onClick = {
-                                            big_presenter_couleur_produit = index
-                                            onClick_Icon(couleur)
-                                        },
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = false,
                                         modifier = Modifier
@@ -260,4 +211,3 @@ fun Item_Produit_FragID3(
         }
     }
 }
-
