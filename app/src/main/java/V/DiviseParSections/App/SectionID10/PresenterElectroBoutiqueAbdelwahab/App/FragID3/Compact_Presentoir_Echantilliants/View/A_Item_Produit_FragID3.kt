@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Big_Principale_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Compact_Header_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.SubColorCard_WithButton
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
@@ -148,6 +149,12 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
+                Compact_Header_FragID3(
+                    relative_M1produit = relative_M1produit,
+                    isExpanded =isThisProductExpanded,
+                    modifier = modifier
+                )
+
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
