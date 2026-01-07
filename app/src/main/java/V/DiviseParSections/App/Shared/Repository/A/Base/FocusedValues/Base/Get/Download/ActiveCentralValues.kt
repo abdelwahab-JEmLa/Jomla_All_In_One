@@ -183,7 +183,7 @@ data class ActiveCentralValues(
 
 // NEW: Sort mode enum for enhanced sorting capabilities
 enum class SortVentMode {
-    PAR_CLASSEMENT,      // Sort by position_store_3jamale (warehouse position)
+    PAR_Creation_Vent,      // Sort by position_store_3jamale (warehouse position)
     PAR_ENTREE,          // Sort alphabetically by product name
     PAR_DERNIERE_UPDATE_LENCE  // Sort by last_update_premier_Check_Donne_TimeTamps (most recent verification)
 }

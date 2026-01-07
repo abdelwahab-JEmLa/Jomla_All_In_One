@@ -48,7 +48,7 @@ fun MainList(
             // Determine sort mode from both new and legacy fields
             val sortMode: SortVentMode = when {
                 active_Central_Values.sortVentMode != null -> active_Central_Values.sortVentMode!!
-                active_Central_Values.sortVentsParClassment -> SortVentMode.PAR_CLASSEMENT
+                active_Central_Values.sortVentsParClassment -> SortVentMode.PAR_Creation_Vent
                 else -> SortVentMode.PAR_ENTREE
             }
 
@@ -109,14 +109,15 @@ fun MainList(
                 .toList()
 
             val sortedData = when (sortMode) {
-                SortVentMode.PAR_CLASSEMENT -> {
-                    // Sort by position_store_3jamale
-                    groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+                SortVentMode.PAR_Creation_Vent -> {
+                    // Sort by creation timestamp of the most recent vent in each product group
+                    groupedData.sortedWith(compareByDescending<Pair<String, List<M10OperationVentCouleur>>> { (_, ventList) ->
+                        // Get the most recent vent creation timestamp from this product group
+                        ventList.maxOfOrNull { vent -> vent.creationTimestamps } ?: 0L
+                    }.thenBy { (produitKeyId, _) ->
+                        // Secondary sort by product name for items with same timestamp
                         val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                        produit?.position_store_3jamale ?: Int.MAX_VALUE
-                    }.thenByDescending { (produitKeyId, _) ->
-                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                        produit?.dernier_timeTamps_position_store_3jamale ?: 0L
+                        produit?.nom?.lowercase() ?: ""
                     })
                 }
 
@@ -134,11 +135,16 @@ fun MainList(
                 }
 
                 SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> {
-                    // Sort by last_update_premier_Check_Donne_TimeTamps (most recent first)
+                    // Sort by last_update_premier_Check_Donne_TimeTamps if non-zero, otherwise by creationTimestamps
                     groupedData.sortedWith(compareByDescending<Pair<String, List<M10OperationVentCouleur>>> { (_, ventList) ->
-                        // Get the most recent update timestamp from all vents in this product group
+                        // Get the most recent timestamp from all vents in this product group
                         ventList.maxOfOrNull { vent ->
-                            vent.last_update_premier_Check_Donne_TimeTamps
+                            // Use last_update timestamp if it's non-zero, otherwise fall back to creation timestamp
+                            if (vent.last_update_premier_Check_Donne_TimeTamps != 0L) {
+                                vent.last_update_premier_Check_Donne_TimeTamps
+                            } else {
+                                vent.creationTimestamps
+                            }
                         } ?: 0L
                     }.thenBy { (produitKeyId, _) ->
                         // Secondary sort by product name for items with same timestamp

@@ -21,6 +21,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -57,14 +58,59 @@ class Repo10OperationVentCouleur(
                         } catch (e: Exception) {
                         }
                     }
-                    //<--
-                    //TODO(1): cree une fyun au fichie separe qui delete si m18 dim efface les datas ou leur parentcilient nom != abdelwahab 
+                  //  cleanupInvalidOperations()
                 }
             } catch (e: Exception) {
             }
         }
     }
+    fun cleanupInvalidOperations() {
+        repoScope.launch {
+            try {
+                val operationsToDelete = datasValue.filter { operation ->
+                    // Check if parent BonVent exists
+                    val parentBonVent = zAppComptRepositoryComposable.currentAppCompt
+                        ?.onVentM8BonVentKey?.let { bonVentKey ->
+                            dataBaseCreationFactory.dao.getAllFlow()
+                                .first()
+                                .find { it.parent_M8BonVent_KeyId == bonVentKey }
+                        }
 
+                    // Check if parent client is valid (not "abdelwahab")
+                    val isInvalidClient = operation.parentClientName != "abdelwahab"
+
+                    // Check if parent M18 dimension reference is valid
+                    // (You'll need to add logic here based on your M18 repository structure)
+
+                    // Delete if parent doesn't exist OR client name is invalid
+                    parentBonVent == null || isInvalidClient
+                }
+
+                // Delete invalid operations
+                operationsToDelete.forEach { operation ->
+                    delete(operation)
+                }
+
+                if (operationsToDelete.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "Cleaned up ${operationsToDelete.size} invalid operations",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Failed to cleanup operations: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
     fun refresh_Datas() {
         repoScope.launch {
             try {

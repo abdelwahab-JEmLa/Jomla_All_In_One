@@ -7,9 +7,11 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
@@ -24,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -38,16 +41,19 @@ import kotlin.math.abs
  * @param selectedCouleur The currently selected color variant
  * @param finale_Tariff The tariff/pricing to use for this sale
  * @param compactMode Whether to use compact layout (reduces padding)
+ * @param attachedToImage Whether this button is attached to an image (rounded corners only on bottom)
  * @param focusedValuesGetter Getter for focused values (injected by default)
  * @param aCentralFacade Central facade for repository access (injected by default)
  * @param modifier Optional modifier
  */
+
 @Composable
 fun Lenceur_Vent_Handler_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     selectedCouleur: M3CouleurProduitInfos,
     finale_Tariff: M13TarificationInfos,
     compactMode: Boolean = false,
+    attachedToImage: Boolean = true,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
@@ -112,9 +118,39 @@ fun Lenceur_Vent_Handler_FragID3(
     val horizontalPadding = if (compactMode) 4.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
 
+    // Shape based on whether attached to image
+    val shape = if (attachedToImage) {
+        RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = 12.dp,
+            bottomEnd = 12.dp
+        )
+    } else {
+        RoundedCornerShape(12.dp)
+    }
+
+    // Match the button's container color based on availability and current quantity
+    val containerColor = if (!isAvailable) {
+        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+    } else if (currentQuantity > 0) {
+        MaterialTheme.colorScheme.tertiary
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (attachedToImage) {
+                    Modifier
+                        .clip(shape)
+                        .background(containerColor.copy(alpha = 0.15f))
+                } else {
+                    Modifier
+                }
+            )
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
     ) {
         OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(

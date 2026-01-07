@@ -39,7 +39,7 @@ fun DropDownItem_WhenIts_FragFastVent_3(
     // Determine sort mode from both new and legacy fields
     val sortMode = when {
         currentValues.sortVentMode != null -> currentValues.sortVentMode
-        currentValues.sortVentsParClassment -> SortVentMode.PAR_CLASSEMENT
+        currentValues.sortVentsParClassment -> SortVentMode.PAR_Creation_Vent
         else -> SortVentMode.PAR_ENTREE
     }
 
@@ -48,7 +48,7 @@ fun DropDownItem_WhenIts_FragFastVent_3(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = when (sortMode) {
-                SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primaryContainer
+                SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primaryContainer
                 else -> MaterialTheme.colorScheme.surfaceVariant
             }
         ),
@@ -58,13 +58,13 @@ fun DropDownItem_WhenIts_FragFastVent_3(
             leadingIcon = {
                 Icon(
                     imageVector = when (sortMode) {
-                        SortVentMode.PAR_CLASSEMENT -> Icons.Default.SortByAlpha
+                        SortVentMode.PAR_Creation_Vent -> Icons.Default.SortByAlpha
                         SortVentMode.PAR_ENTREE -> Icons.Default.Sort
                         SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> Icons.Default.AccessTime
                     },
                     contentDescription = null,
                     tint = when (sortMode) {
-                        SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primary
+                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primary
                         else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
@@ -72,12 +72,12 @@ fun DropDownItem_WhenIts_FragFastVent_3(
             text = {
                 Text(
                     text = when (sortMode) {
-                        SortVentMode.PAR_CLASSEMENT -> "Trier par Entrée"
+                        SortVentMode.PAR_Creation_Vent -> "Trier par Entrée"
                         SortVentMode.PAR_ENTREE -> "Trier par Dernière Vérification"
                         SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Trier par Classement"
                     },
                     color = when (sortMode) {
-                        SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primary
+                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primary
                         else -> MaterialTheme.colorScheme.onSurface
                     }
                 )
@@ -85,22 +85,22 @@ fun DropDownItem_WhenIts_FragFastVent_3(
             onClick = {
                 // Cycle through sort modes: Classement -> Entrée -> Dernière Update -> Classement
                 val nextMode = when (sortMode) {
-                    SortVentMode.PAR_CLASSEMENT -> SortVentMode.PAR_ENTREE
+                    SortVentMode.PAR_Creation_Vent -> SortVentMode.PAR_ENTREE
                     SortVentMode.PAR_ENTREE -> SortVentMode.PAR_DERNIERE_UPDATE_LENCE
-                    SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> SortVentMode.PAR_CLASSEMENT
+                    SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> SortVentMode.PAR_Creation_Vent
                 }
 
                 val updatedValues = currentValues.copy(
                     sortVentMode = nextMode,
                     // Keep backward compatibility with sortVentsParClassment flag
-                    sortVentsParClassment = nextMode == SortVentMode.PAR_CLASSEMENT
+                    sortVentsParClassment = nextMode == SortVentMode.PAR_Creation_Vent
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
 
                 Toast.makeText(
                     context,
                     when (nextMode) {
-                        SortVentMode.PAR_CLASSEMENT -> "Tri changé vers: Par Classement"
+                        SortVentMode.PAR_Creation_Vent -> "Tri changé vers: Par Classement"
                         SortVentMode.PAR_ENTREE -> "Tri changé vers: Par Entrée"
                         SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Tri changé vers: Par Dernière Vérification"
                     },

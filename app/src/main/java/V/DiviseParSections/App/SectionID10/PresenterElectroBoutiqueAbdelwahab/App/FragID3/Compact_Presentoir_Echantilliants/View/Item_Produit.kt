@@ -122,7 +122,6 @@ fun Item_Produit_FragID3(
         )
     }
 
-
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
     // Adjust padding based on expansion state
@@ -155,8 +154,20 @@ fun Item_Produit_FragID3(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                // 2. Sale button for main color - directly under image
+                if (shouldShowButtons) {
+                    Lenceur_Vent_Handler_FragID3(
+                        relative_M1produit = relative_M1produit,
+                        selectedCouleur = selectedCouleur,
+                        finale_Tariff = finale_Tariff,
+                        compactMode = !isThisProductExpanded,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // 3. Tariffs section
                 if (shouldShowButtons) {
                     FlowRow(
                         modifier = Modifier
@@ -169,14 +180,6 @@ fun Item_Produit_FragID3(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-
-                        Lenceur_Vent_Handler_FragID3(
-                            relative_M1produit = relative_M1produit,
-                            selectedCouleur = selectedCouleur,
-                            finale_Tariff = finale_Tariff,
-                            compactMode = !isThisProductExpanded
-                        )
-
                         Pricipale_Tariffs_Vendeurs_FragID3(
                             relative_M1produit = relative_M1produit,
                             tariffsList = datasValue,
@@ -185,7 +188,7 @@ fun Item_Produit_FragID3(
                     }
                 }
 
-                // 3. Sub-colors display - at the end
+                // 4. Sub-colors display - at the end
                 if (relative_ListM3Couleurs.size > 1) {
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -199,18 +202,37 @@ fun Item_Produit_FragID3(
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
-                                    ColorImageCard_FragID3(
-                                        relative_M3CouleurProduitInfos = couleur,
-                                        isSelected = false,
-                                        onIconClick = {
-                                            big_presenter_couleur_produit = index
-                                            onClick_Icon(couleur)
-                                        },
-                                        on_pour_send_data = on_pour_send_data,
+                                    // Container for sub-color with sale button
+                                    Column(
                                         modifier = Modifier
-                                            .weight(1f, fill = false)
-                                            .height(80.dp)
-                                    )
+                                            .weight(1f, fill = false),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        // Sub-color image
+                                        ColorImageCard_FragID3(
+                                            relative_M3CouleurProduitInfos = couleur,
+                                            isSelected = false,
+                                            onIconClick = {
+                                                big_presenter_couleur_produit = index
+                                                onClick_Icon(couleur)
+                                            },
+                                            on_pour_send_data = on_pour_send_data,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(80.dp)
+                                        )
+
+                                        // Sale button for this color - directly under image
+                                        if (shouldShowButtons) {
+                                            Lenceur_Vent_Handler_FragID3(
+                                                relative_M1produit = relative_M1produit,
+                                                selectedCouleur = couleur,
+                                                finale_Tariff = finale_Tariff,
+                                                compactMode = true,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -222,18 +244,36 @@ fun Item_Produit_FragID3(
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
-                                    ColorImageCard_FragID3(
-                                        relative_M3CouleurProduitInfos = couleur,
-                                        isSelected = false,
-                                        onIconClick = {
-                                            big_presenter_couleur_produit = index
-                                            onClick_Icon(couleur)
-                                        },
-                                        on_pour_send_data = on_pour_send_data,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(80.dp)
-                                    )
+                                    // Container for sub-color with sale button
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        // Sub-color image
+                                        ColorImageCard_FragID3(
+                                            relative_M3CouleurProduitInfos = couleur,
+                                            isSelected = false,
+                                            onIconClick = {
+                                                big_presenter_couleur_produit = index
+                                                onClick_Icon(couleur)
+                                            },
+                                            on_pour_send_data = on_pour_send_data,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(80.dp)
+                                        )
+
+                                        // Sale button for this color - directly under image
+                                        if (shouldShowButtons) {
+                                            Lenceur_Vent_Handler_FragID3(
+                                                relative_M1produit = relative_M1produit,
+                                                selectedCouleur = couleur,
+                                                finale_Tariff = finale_Tariff,
+                                                compactMode = true,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

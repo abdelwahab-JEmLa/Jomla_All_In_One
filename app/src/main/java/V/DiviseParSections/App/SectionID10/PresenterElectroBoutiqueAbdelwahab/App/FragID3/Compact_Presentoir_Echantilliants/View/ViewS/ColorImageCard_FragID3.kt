@@ -25,14 +25,15 @@ fun ColorImageCard_FragID3(
     isSelected: Boolean,
     onIconClick: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier.Companion,
+    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp) // Default: all corners rounded
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
 
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-        shape = RoundedCornerShape(0.dp)
+        shape = roundedCorners
     ) {
         Box(
             modifier = if (isSelected) {
