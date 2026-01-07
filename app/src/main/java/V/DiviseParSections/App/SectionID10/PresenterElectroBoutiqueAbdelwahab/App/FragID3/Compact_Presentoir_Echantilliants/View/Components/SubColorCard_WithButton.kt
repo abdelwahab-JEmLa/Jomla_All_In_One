@@ -6,7 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,10 +13,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * A card component for displaying sub-colors (non-primary colors) with a button below.
+ *
+ * This component stacks a color image card with a sales button directly underneath it.
+ * The button is positioned below the image in a vertical column layout.
+ *
+ * @param couleur The color product information to display
+ * @param relative_M1produit The parent product information
+ * @param finale_Tariff The pricing tariff to use for sales
+ * @param focusedValuesGetter Getter for focused/active values from repository
+ * @param on_pour_send_data Callback for sending data updates
+ * @param isExpanded Whether the parent product is in expanded state
+ * @param modifier Modifier for customizing the component
+ */
 @Composable
 fun SubColorCard_WithButton(
     couleur: M3CouleurProduitInfos,
@@ -26,8 +38,10 @@ fun SubColorCard_WithButton(
     focusedValuesGetter: FocusedValuesGetter,
     on_pour_send_data: (String, String) -> Unit,
     isExpanded: Boolean,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier
 ) {
+    // Find the sales operation for this specific color
+    // This is recalculated whenever the color changes or the sales list is updated
     val colorOperation by remember(
         couleur.keyID,
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size
@@ -39,31 +53,24 @@ fun SubColorCard_WithButton(
     }
 
     Column(modifier = modifier) {
-        // Color image card with overlaid button - FIXED: Added fixed height
-        Box(
-            modifier = Modifier.Companion
+        // Color image card
+        ColorImageCard_FragID3(
+            relative_M3CouleurProduitInfos = couleur,
+            isSelected = false, // Sub-colors are never "selected"
+            on_pour_send_data = on_pour_send_data,
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp)
-        ) {
-            ColorImageCard_FragID3(
-                relative_M3CouleurProduitInfos = couleur,
-                isSelected = false,
-                on_pour_send_data = on_pour_send_data,
-                modifier = Modifier.Companion.fillMaxWidth()
-            )
+                .height(if (isExpanded) 80.dp else 40.dp)
+        )
 
-            // Lenceur button overlaid at the bottom of the image
-            Lenceur_Vent_Handler_FragID3(
-                relative_M1produit = relative_M1produit,
-                relative_M10OperationVentCouleur = colorOperation,
-                selectedCouleur = couleur,
-                finale_Tariff = finale_Tariff,
-                compactMode = !isExpanded,
-                attachedToImage = true,
-                modifier = Modifier.Companion
-                    .align(Alignment.Companion.BottomCenter)
-                    .fillMaxWidth()
-            )
-        }
+        // Sales button directly below the image
+        Lenceur_Vent_Handler_FragID3(
+            relative_M1produit = relative_M1produit,
+            relative_M10OperationVentCouleur = colorOperation,
+            selectedCouleur = couleur,
+            finale_Tariff = finale_Tariff,
+            compactMode = !isExpanded,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

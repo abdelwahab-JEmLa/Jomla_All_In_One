@@ -47,7 +47,9 @@ fun Image_Displaye(
         // Build the complete modifier with click handler BEFORE passing to GlideImage
         val completeModifier = modifier
             .fillMaxSize()
-            .then(
+            .then(              //<--
+            //TODO(2.C Relative Au Todo(1): 
+                    //... pk il ya des produit quand je click a leur image le paretnt item ne devie pas FullLine
                 Modifier.clickable {
                     val currentExpanded =
                         focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos

@@ -148,7 +148,8 @@ fun Etager_LazyColumn_FragID3(
             // Display each product with its colors
             productColorPairs.forEach { (product, colors) ->
                 // Check if any color is expanded
-                val isExpanded = focusedValuesGetter.active_Central_Values
+                val isExpanded = focusedValuesGetter.active_Central_Values     //<--
+                //TODO(1): cree log suit 
                     .expanded_M3CouleurProduitInfos?.let { expandedColor ->
                         colors.any { it.keyID == expandedColor.keyID }
                     } ?: false
