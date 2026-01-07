@@ -53,20 +53,29 @@ fun ToggleButton_PremierCheckDonne(
                     ).show()
                 }
 
+                val repo10 = aCentralFacade.repositorysMainSetter.repo10OperationVentCouleur
+                val currentTimestamp = System.currentTimeMillis()
+
                 // FIXED: If changing from false to true (checking), also set lence_pour_check to false
                 if (newStateWhenToggled) {
                     // Toggle to true AND set lence_pour_check to false
-                    val repo10 = aCentralFacade.repositorysMainSetter.repo10OperationVentCouleur
                     ventList.forEach { vent ->
                         val updatedVent = vent.copy(
                             premier_Check_Donne = true,
-                            lence_pour_check = false
+                            lence_pour_check = false,
+                            last_update_premier_Check_Donne_TimeTamps = currentTimestamp
                         )
                         repo10.update_If_Exist(updatedVent)
                     }
                 } else {
-                    // Just toggle normally (uncheck)
-                    onToggle(newStateWhenToggled)
+                    // Just toggle normally (uncheck) with timestamp update
+                    ventList.forEach { vent ->
+                        val updatedVent = vent.copy(
+                            premier_Check_Donne = false,
+                            last_update_premier_Check_Donne_TimeTamps = currentTimestamp
+                        )
+                        repo10.update_If_Exist(updatedVent)
+                    }
                 }
             } else {
                 // Show toast when security is enabled

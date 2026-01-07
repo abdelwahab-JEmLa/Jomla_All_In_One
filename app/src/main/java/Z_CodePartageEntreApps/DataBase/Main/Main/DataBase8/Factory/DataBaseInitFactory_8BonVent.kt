@@ -30,7 +30,6 @@ class DataBaseInitFactory_8BonVent(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {         //<--
-    //TODO(1): fait ici que ca soit comme au 
         Log.d("suit_flow", "🔧 Factory8.init: Début de l'initialisation")
 
         val isTableEmpty = dao.isTableEmpty()

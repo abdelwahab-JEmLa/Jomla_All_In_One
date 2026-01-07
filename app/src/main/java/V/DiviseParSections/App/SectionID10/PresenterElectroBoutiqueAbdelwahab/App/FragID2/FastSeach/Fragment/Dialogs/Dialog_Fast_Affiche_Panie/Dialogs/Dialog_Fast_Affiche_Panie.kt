@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.SortVentMode
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,14 +34,23 @@ fun MainList(
 ) {
     val active_Central_Values by remember { focusedValuesGetter::active_Central_Values }
 
-    val groupedVents by remember(active_Central_Values.activeFilters, active_Central_Values.outlined_filter_searcher_floating_abouve_all) {
+    val groupedVents by remember(
+        active_Central_Values.activeFilters,
+        active_Central_Values.outlined_filter_searcher_floating_abouve_all,
+        active_Central_Values.sortVentMode,
+        active_Central_Values.sortVentsParClassment
+    ) {
         derivedStateOf {
             val allVents = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             val activeFilters = active_Central_Values.activeFilters
             val searchQuery = active_Central_Values.outlined_filter_searcher_floating_abouve_all.trim()
 
-            val sortVentsParClassement = active_Central_Values.sortVentsParClassment     //<--
-            //TODO(1): regle ici aussi 
+            // Determine sort mode from both new and legacy fields
+            val sortMode: SortVentMode = when {
+                active_Central_Values.sortVentMode != null -> active_Central_Values.sortVentMode!!
+                active_Central_Values.sortVentsParClassment -> SortVentMode.PAR_CLASSEMENT
+                else -> SortVentMode.PAR_ENTREE
+            }
 
             val filteredData = when {
                 activeFilters.isEmpty() && searchQuery.isEmpty() -> allVents
@@ -66,7 +76,6 @@ fun MainList(
                                     vent.premier_Check_Donne
                                 }
 
-                                // FIXED: Added implementation for non_premier_Check_Donne filter
                                 is ActiveCentralValues.ActiveFilter.non_premier_Check_Donne -> {
                                     !vent.premier_Check_Donne
                                 }
@@ -99,33 +108,44 @@ fun MainList(
                 }
                 .toList()
 
-            val sortedData = if (sortVentsParClassement) {
-                // Sort by position_store_3jamale when sortVentsParClassement is true
-                groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
-                    val produit =
-                        aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                    produit?.position_store_3jamale ?: Int.MAX_VALUE
-                }.thenByDescending { (produitKeyId, _) ->
-                    val produit =
-                        aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                    produit?.dernier_timeTamps_position_store_3jamale ?: 0L
-                })
-            } else {
-                // Sort alphabetically by product name when sortVentsParClassement is false
-                groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
-                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                    // Use nom for sorting, fallback to empty string if product not found
-                    produit?.nom?.lowercase() ?: ""
-                }.thenBy { (produitKeyId, _) ->
-                    // Secondary sort by nomArab if available
-                    val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
-                    produit?.nomArab?.lowercase() ?: ""
-                }.thenByDescending { (_, ventList) ->
-                    // Tertiary sort by creation timestamp (most recent first)
-                    ventList.maxOfOrNull { vent ->
-                        vent.creationTimestamps
-                    } ?: 0L
-                })
+            val sortedData = when (sortMode) {
+                SortVentMode.PAR_CLASSEMENT -> {
+                    // Sort by position_store_3jamale
+                    groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                        produit?.position_store_3jamale ?: Int.MAX_VALUE
+                    }.thenByDescending { (produitKeyId, _) ->
+                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                        produit?.dernier_timeTamps_position_store_3jamale ?: 0L
+                    })
+                }
+
+                SortVentMode.PAR_ENTREE -> {
+                    // Sort alphabetically by product name
+                    groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
+                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                        produit?.nom?.lowercase() ?: ""
+                    }.thenBy { (produitKeyId, _) ->
+                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                        produit?.nomArab?.lowercase() ?: ""
+                    }.thenByDescending { (_, ventList) ->
+                        ventList.maxOfOrNull { vent -> vent.creationTimestamps } ?: 0L
+                    })
+                }
+
+                SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> {
+                    // Sort by last_update_premier_Check_Donne_TimeTamps (most recent first)
+                    groupedData.sortedWith(compareByDescending<Pair<String, List<M10OperationVentCouleur>>> { (_, ventList) ->
+                        // Get the most recent update timestamp from all vents in this product group
+                        ventList.maxOfOrNull { vent ->
+                            vent.last_update_premier_Check_Donne_TimeTamps
+                        } ?: 0L
+                    }.thenBy { (produitKeyId, _) ->
+                        // Secondary sort by product name for items with same timestamp
+                        val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                        produit?.nom?.lowercase() ?: ""
+                    })
+                }
             }
 
             sortedData.toMap()

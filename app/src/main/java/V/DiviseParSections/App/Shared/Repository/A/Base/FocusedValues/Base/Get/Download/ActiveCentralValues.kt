@@ -110,7 +110,9 @@ data class ActiveCentralValues(
     val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
+    // UPDATED: Keep backward compatibility while adding new sort mode
     val sortVentsParClassment: Boolean = false,
+    val sortVentMode: SortVentMode? = null,  // New field for enhanced sorting
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = true,
@@ -177,4 +179,11 @@ data class ActiveCentralValues(
         data object premier_Check_Donne : ActiveFilter()
         data object non_premier_Check_Donne : ActiveFilter()
     }
+}
+
+// NEW: Sort mode enum for enhanced sorting capabilities
+enum class SortVentMode {
+    PAR_CLASSEMENT,      // Sort by position_store_3jamale (warehouse position)
+    PAR_ENTREE,          // Sort alphabetically by product name
+    PAR_DERNIERE_UPDATE_LENCE  // Sort by last_update_premier_Check_Donne_TimeTamps (most recent verification)
 }

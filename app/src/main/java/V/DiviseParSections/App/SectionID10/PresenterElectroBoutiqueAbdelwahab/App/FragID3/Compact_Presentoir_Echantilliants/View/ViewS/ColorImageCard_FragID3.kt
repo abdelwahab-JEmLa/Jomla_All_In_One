@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,8 +26,7 @@ fun ColorImageCard_FragID3(
     onIconClick: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion
-) {        //<--
-//TODO(1): fait que si sub couler que warp au content pour le height
+) {
     val elevation = if (isSelected) 4.dp else 2.dp
 
     Card(
@@ -35,9 +35,17 @@ fun ColorImageCard_FragID3(
         shape = RoundedCornerShape(0.dp)
     ) {
         Box(
-            modifier = Modifier.Companion
-                .fillMaxWidth()
-                .aspectRatio(if (isSelected) 370.dp / 500.dp else 100.dp / 60.dp)
+            modifier = if (isSelected) {
+                // Selected (main color): use fixed aspect ratio
+                Modifier.Companion
+                    .fillMaxWidth()
+                    .aspectRatio(370.dp / 500.dp)
+            } else {
+                // Sub-color: wrap to content height
+                Modifier.Companion
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            }
         ) {
             // Image always clickable
             Image_Displaye(
@@ -46,7 +54,7 @@ fun ColorImageCard_FragID3(
                 onImageClick = {
                     onIconClick()
                 },
-                modifier = Modifier.Companion // Don't add fillMaxSize here, let Image_Displaye handle it
+                modifier = Modifier.Companion
             )
         }
     }

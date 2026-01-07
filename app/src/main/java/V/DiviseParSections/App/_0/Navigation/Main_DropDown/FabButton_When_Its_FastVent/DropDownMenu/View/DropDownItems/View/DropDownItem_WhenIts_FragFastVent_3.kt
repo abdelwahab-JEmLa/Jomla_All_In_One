@@ -2,12 +2,14 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_F
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.SortVentMode
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material3.Card
@@ -33,16 +35,21 @@ fun DropDownItem_WhenIts_FragFastVent_3(
     context: Context = LocalContext.current
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
-    val isSortByClassement = currentValues.sortVentsParClassment
+
+    // Determine sort mode from both new and legacy fields
+    val sortMode = when {
+        currentValues.sortVentMode != null -> currentValues.sortVentMode
+        currentValues.sortVentsParClassment -> SortVentMode.PAR_CLASSEMENT
+        else -> SortVentMode.PAR_ENTREE
+    }
 
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSortByClassement) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
+            containerColor = when (sortMode) {
+                SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primaryContainer
+                else -> MaterialTheme.colorScheme.surfaceVariant
             }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -50,42 +57,53 @@ fun DropDownItem_WhenIts_FragFastVent_3(
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
-                    imageVector = if (isSortByClassement) Icons.Default.SortByAlpha else Icons.Default.Sort,
+                    imageVector = when (sortMode) {
+                        SortVentMode.PAR_CLASSEMENT -> Icons.Default.SortByAlpha
+                        SortVentMode.PAR_ENTREE -> Icons.Default.Sort
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> Icons.Default.AccessTime
+                    },
                     contentDescription = null,
-                    tint = if (isSortByClassement) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = when (sortMode) {
+                        SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
             },
-            text = {        //<--
-            //TODO(1): aout un autre sort par derne update lence pour chque
+            text = {
                 Text(
-                    text = if (isSortByClassement)
-                        "Trier par Entrée"
-                    else
-                        "Trier par Classement",
-                    color = if (isSortByClassement) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
+                    text = when (sortMode) {
+                        SortVentMode.PAR_CLASSEMENT -> "Trier par Entrée"
+                        SortVentMode.PAR_ENTREE -> "Trier par Dernière Vérification"
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Trier par Classement"
+                    },
+                    color = when (sortMode) {
+                        SortVentMode.PAR_CLASSEMENT -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurface
                     }
                 )
             },
             onClick = {
-                // Toggle sortVentsParClassment
+                // Cycle through sort modes: Classement -> Entrée -> Dernière Update -> Classement
+                val nextMode = when (sortMode) {
+                    SortVentMode.PAR_CLASSEMENT -> SortVentMode.PAR_ENTREE
+                    SortVentMode.PAR_ENTREE -> SortVentMode.PAR_DERNIERE_UPDATE_LENCE
+                    SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> SortVentMode.PAR_CLASSEMENT
+                }
+
                 val updatedValues = currentValues.copy(
-                    sortVentsParClassment = !isSortByClassement
+                    sortVentMode = nextMode,
+                    // Keep backward compatibility with sortVentsParClassment flag
+                    sortVentsParClassment = nextMode == SortVentMode.PAR_CLASSEMENT
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
 
                 Toast.makeText(
                     context,
-                    if (isSortByClassement)
-                        "Tri changé vers: Par Entrée"
-                    else
-                        "Tri changé vers: Par Classement",
+                    when (nextMode) {
+                        SortVentMode.PAR_CLASSEMENT -> "Tri changé vers: Par Classement"
+                        SortVentMode.PAR_ENTREE -> "Tri changé vers: Par Entrée"
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Tri changé vers: Par Dernière Vérification"
+                    },
                     Toast.LENGTH_SHORT
                 ).show()
 
