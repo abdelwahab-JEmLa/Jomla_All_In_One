@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
@@ -28,6 +29,7 @@ fun Image_Displaye(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit
 ) {
     val imageFile = remember(
@@ -44,29 +46,56 @@ fun Image_Displaye(
     }
 
     if (imageFile != null && imageFile.exists()) {
+        // FIXED: Get the parent product for this color
+        val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
+            repositorysMainGetter.repoM1Produit.datasValue.find {
+                it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+            }
+        }
+
         // Build the complete modifier with click handler BEFORE passing to GlideImage
         val completeModifier = modifier
             .fillMaxSize()
-            .then(              //<--
-            //TODO(2.C Relative Au Todo(1): 
-                    //... pk il ya des produit quand je click a leur image le paretnt item ne devie pas FullLine
+            .then(
                 Modifier.clickable {
-                    val currentExpanded =
-                        focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+                    val currentExpandedProduct = focusedValuesGetter.active_Central_Values.expanded_M1Produit
+                    val currentExpandedColor = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-                    val newValue =
-                        if (currentExpanded?.keyID == relative_M3CouleurProduitInfos.keyID) {
+                    // Check if we're clicking on a color from the SAME product that's already expanded
+                    val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
+                    val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
+
+                    if (isSameProductExpanded && isDifferentColor) {
+                        // CASE 1: Same product, different color → Update only the selected color
+                        focusedValuesGetter.update_activeCentralValues(
+                            focusedValuesGetter.active_Central_Values.copy(
+                                expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
+                                // Keep expanded_M1Produit unchanged
+                            )
+                        )
+                    } else {
+                        // CASE 2: Different product OR same color → Toggle product expansion
+                        val newProductValue = if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
+                            // Same product, same color → Collapse
                             null
                         } else {
-                            relative_M3CouleurProduitInfos
+                            // Different product → Expand it
+                            parentProduct
                         }
 
-                    focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
-                            expanded_M3CouleurProduitInfos = newValue
+                        focusedValuesGetter.update_activeCentralValues(
+                            focusedValuesGetter.active_Central_Values.copy(
+                                expanded_M1Produit = newProductValue,
+                                expanded_M3CouleurProduitInfos = if (newProductValue != null) {
+                                    relative_M3CouleurProduitInfos
+                                } else {
+                                    null
+                                }
+                            )
                         )
-                    )
+                    }
 
+                    // Send the data update
                     on_pour_send_data(
                         WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
                         relative_M3CouleurProduitInfos.keyID

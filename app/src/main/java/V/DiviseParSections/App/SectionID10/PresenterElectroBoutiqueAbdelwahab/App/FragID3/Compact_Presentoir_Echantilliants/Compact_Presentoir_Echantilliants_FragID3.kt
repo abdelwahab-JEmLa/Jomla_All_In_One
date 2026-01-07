@@ -124,6 +124,7 @@ fun Etager_LazyColumn_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit
 ) {
+    // FIXED: Use expanded_M1Produit instead of expanded_M3CouleurProduitInfos
     val gridState = rememberLazyStaggeredGridState()
 
     LazyVerticalStaggeredGrid(
@@ -147,12 +148,9 @@ fun Etager_LazyColumn_FragID3(
 
             // Display each product with its colors
             productColorPairs.forEach { (product, colors) ->
-                // Check if any color is expanded
-                val isExpanded = focusedValuesGetter.active_Central_Values     //<--
-                //TODO(1): cree log suit 
-                    .expanded_M3CouleurProduitInfos?.let { expandedColor ->
-                        colors.any { it.keyID == expandedColor.keyID }
-                    } ?: false
+                // FIXED: Check if THIS product is expanded using expanded_M1Produit
+                val isExpanded = focusedValuesGetter.active_Central_Values
+                    .expanded_M1Produit?.keyID == product.keyID
 
                 item(
                     key = "product_${product.keyID}",
@@ -201,10 +199,9 @@ fun LazyStigerList_Produits_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit
 ) {
+    // FIXED: Check expansion state using expanded_M1Produit
     val isExpanded = focusedValuesGetter.active_Central_Values
-        .expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            colors.any { it.keyID == expandedColor.keyID }
-        } ?: false
+        .expanded_M1Produit?.keyID == product.keyID
 
     Item_Produit_FragID3(
         relative_M1produit = product,

@@ -70,6 +70,7 @@ data class ActiveCentralValues(
 
     //-----------------Facade Boutique -------------------------------------------------------------------------------------------------------------------------
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
+    var expanded_M1Produit: ArticlesBasesStatsTable? = null,
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 

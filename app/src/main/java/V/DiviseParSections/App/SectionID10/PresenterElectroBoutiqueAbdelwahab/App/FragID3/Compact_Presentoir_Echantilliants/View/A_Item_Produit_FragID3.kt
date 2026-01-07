@@ -48,9 +48,16 @@ fun Item_Produit_FragID3(
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
     }
 
+    // UPDATED: Use both expanded_M1Produit and expanded_M3CouleurProduitInfos
+    val expanded_M1Produit = focusedValuesGetter.active_Central_Values.expanded_M1Produit
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // FIXED: Initialize based on expanded color if it belongs to this product
+    // Check if THIS product is expanded
+    val isThisProductExpanded = remember(expanded_M1Produit) {
+        expanded_M1Produit?.keyID == relative_M1produit.keyID
+    }
+
+    // Initialize based on expanded color if it belongs to this product
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -65,13 +72,6 @@ fun Item_Produit_FragID3(
 
     var big_presenter_couleur_produit by remember(initialColorIndex) {
         mutableStateOf(initialColorIndex)
-    }
-
-    // Check if THIS product is expanded
-    val isThisProductExpanded = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
-        expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            relative_ListM3Couleurs.any { it.keyID == expandedColor.keyID }
-        } ?: false
     }
 
     // Sync with expanded color changes
