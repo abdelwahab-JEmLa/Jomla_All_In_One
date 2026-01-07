@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur.updateExpandedCouleur
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.ColorImageCard_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -14,7 +14,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,11 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.Priority
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -128,18 +122,6 @@ fun Item_Produit_FragID3(
         )
     }
 
-    fun onCollapse() {
-        focusedValuesGetter.update_activeCentralValues(
-            focusedValuesGetter.active_Central_Values.copy(
-                expanded_M3CouleurProduitInfos=null
-            )
-        )
-
-        on_pour_send_data(
-            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-            ""
-        )
-    }
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
@@ -261,17 +243,3 @@ fun Item_Produit_FragID3(
         }
     }
 }
-
-private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
-    couleur: M3CouleurProduitInfos
-) = this
-    .dontAnimate()
-    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(Priority.NORMAL)
-    .dontTransform()
-    .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(400, 400)
-    .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_RGB_565)
-    .encodeQuality(70)
-    .skipMemoryCache(false)
