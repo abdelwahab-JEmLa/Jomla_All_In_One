@@ -38,9 +38,6 @@ fun Compact_Header_FragID3(
     isExpanded: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val displayMode = relative_M1produit.setIN_Vent_Its_Quantity_Represent
-    val isCartonMode = displayMode == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
-
     // Dynamic text sizes based on expansion state
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
@@ -114,42 +111,43 @@ fun Compact_Header_FragID3(
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
-                // Number of units card
-                InfoCard(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.ViewModule,
-                            contentDescription = "Units",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(iconSize)
-                        )
-                    },
-                    value = "${relative_M1produit.nombreUniteInt}",
-                    label = "U",
-                    labelTextSize = labelTextSize,
-                    valueTextSize = valueTextSize,
-                    itemPadding = itemPadding
-                )
+                // Number of units card - only show if > 1
+                if (relative_M1produit.nombreUniteInt > 1) {
+                    InfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.ViewModule,
+                                contentDescription = "Units",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "${relative_M1produit.nombreUniteInt}",
+                        label = "U",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding
+                    )
+                }
 
-                // Carton mode indicator + quantity per carton
-                InfoCard(
-                    icon = {
-                        Icon(
-                            imageVector = if (isCartonMode) Icons.Default.Inventory2 else Icons.Default.Numbers,
-                            contentDescription = if (isCartonMode) "Carton mode" else "Box mode",
-                            tint = if (isCartonMode)
-                                MaterialTheme.colorScheme.tertiary
-                            else
-                                MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(iconSize)
-                        )
-                    },
-                    value = "${relative_M1produit.quantite_Boit_Par_Carton}",
-                    label = if (isCartonMode) "C" else "B",
-                    labelTextSize = labelTextSize,
-                    valueTextSize = valueTextSize,
-                    itemPadding = itemPadding
-                )
+                // Carton quantity card - only show if > 1
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1) {
+                    InfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Inventory2,
+                                contentDescription = "Carton",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "${relative_M1produit.quantite_Boit_Par_Carton}",
+                        label = "C",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding
+                    )
+                }
             }
         }
     }
