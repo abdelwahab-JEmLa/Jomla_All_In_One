@@ -35,9 +35,6 @@ fun Big_Principale_FragID3(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // REMOVED: selectedTariff is now managed by parent (Item_Produit_FragID3)
-    // No local state needed here anymore
-
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,

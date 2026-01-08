@@ -42,7 +42,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     onTariffSelected: (M13TarificationInfos) -> Unit,
     compactMode: Boolean = false
 ) {
-    // Define the tariff types to display in order
     val displayTariffs = listOf(
         M13TarificationInfos.TypeChoisi.Prix_Detaille,
         M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
@@ -96,8 +95,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         tariffsToDisplay.forEach { (tariff, prix) ->
             // FIXED: Use key() to ensure proper recomposition and state tracking
             key(tariff.typeChoisi, relative_M1produit.keyID) {
-                // FIXED: Improved selection logic - compare by type AND product
-                // This ensures the selection is visible from initial render
                 val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
                         selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                         tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
@@ -114,12 +111,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     }
 }
 
-/**
- * Calculate progressive tariff with flexible logic:
- * - If both Prix_Detaille and Prix_SupperGro available: use average
- * - If only one available: use that one
- * - If neither available: return tariff with 0.0
- */
 private fun calculateProgressiveTariff(
     tariffsList: List<M13TarificationInfos>,
     product: ArticlesBasesStatsTable
