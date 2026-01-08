@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +59,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                     it.parent_M1Produit_KeyId == relative_M1produit.keyID
         }
 
-        // FIXED: Always calculate progressive tariff
+        // Always calculate progressive tariff
         val tariff = if (tariffType == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
             matchingTariff ?: calculateProgressiveTariff(tariffsList, relative_M1produit)
         } else {
@@ -68,7 +69,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         // Get price
         val prix = tariff?.prixCurrency ?: 0.0
 
-        // FIXED: For progressive tariff, always show it (even with 0.0)
+        // For progressive tariff, always show it (even with 0.0)
         if (tariffType == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable && tariff != null) {
             tariff to prix
         } else if (prix != 0.0 && tariff != null) {
@@ -78,7 +79,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
     }
 
-    // FIXED: If no tariffs to display, don't render anything
+    // If no tariffs to display, don't render anything
     if (tariffsToDisplay.isEmpty()) {
         return
     }
@@ -93,17 +94,22 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariff, prix) ->
-            // FIXED: Compare by typeChoisi AND ensure it's for the same product
-            val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
-                    selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID
+            // FIXED: Use key() to ensure proper recomposition and state tracking
+            key(tariff.typeChoisi, relative_M1produit.keyID) {
+                // FIXED: Improved selection logic - compare by type AND product
+                // This ensures the selection is visible from initial render
+                val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
+                        selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                        tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
 
-            TariffItem(
-                tariff = tariff,
-                prix = prix,
-                isSelected = isSelected,
-                compactMode = compactMode,
-                onClick = { onTariffSelected(tariff) }
-            )
+                TariffItem(
+                    tariff = tariff,
+                    prix = prix,
+                    isSelected = isSelected,
+                    compactMode = compactMode,
+                    onClick = { onTariffSelected(tariff) }
+                )
+            }
         }
     }
 }
@@ -172,14 +178,17 @@ private fun TariffItem(
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 14.dp else 16.dp
     val fontSize = if (compactMode) 9.sp else 10.sp
+
+    // FIXED: Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
     Row(
         modifier = Modifier
             .clip(CircleShape)
             .border(
                 width = borderWidth,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                color = borderColor,
                 shape = CircleShape
             )
             .background(

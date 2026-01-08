@@ -89,23 +89,7 @@ fun Item_Produit_FragID3(
 
     val datasValue = repositorysMainGetter.repo13TarificationInfos.datasValue
 
-    // MOVED: Manage selectedTariff here at the parent level
-    var selectedTariff by remember(relative_M1produit.keyID) {
-        mutableStateOf<M13TarificationInfos?>(null)
-    }
-
-    val findTariff = remember(relative_M1produit.keyID, focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-        datasValue.find { tariff ->
-            val type_A_Cherche = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
-                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
-            else
-                M13TarificationInfos.TypeChoisi.Prix_Detaille
-
-            tariff.typeChoisi == type_A_Cherche && tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
-        }
-    }
-
-
+    // FIXED: Calculate default tariff FIRST, before state initialization
     val start_Prix = remember(relative_M1produit.keyID, datasValue) {
         val historicalTariff = datasValue.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
@@ -125,29 +109,40 @@ fun Item_Produit_FragID3(
                 }
                 retailTariff?.prixCurrency ?: relative_M1produit.prixAchat
             }
-            // Priority 3: Fallback to purchase price
             else -> relative_M1produit.prixAchat
         }
     }
 
-    val default_Tariff = M13TarificationInfos.get_default_P0(
-        relative_M1produit,
-        start_Prix_Depuit_Ancient = start_Prix
-    )
-    val finale_Tariff = findTariff ?: default_Tariff.first
+    val default_Tariff = remember(relative_M1produit.keyID, start_Prix) {
+        M13TarificationInfos.get_default_P0(
+            relative_M1produit,
+            start_Prix_Depuit_Ancient = start_Prix
+        )
+    }
 
-    // FIXED: Initialize selectedTariff with finale_Tariff on first load
-    LaunchedEffect(finale_Tariff.keyID, finale_Tariff.typeChoisi) {
-        if (selectedTariff == null) {
-            selectedTariff = finale_Tariff
-        } else {
-            // Verify that current selectedTariff is still valid for this product
-            val isValidForProduct = selectedTariff?.parent_M1Produit_KeyId == relative_M1produit.keyID
-            if (!isValidForProduct) {
-                selectedTariff = finale_Tariff
-            }
+    val findTariff = remember(relative_M1produit.keyID, focusedValuesGetter.currentApp_ItsWorkChezGrossisst, datasValue) {
+        datasValue.find { tariff ->
+            val type_A_Cherche = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+            else
+                M13TarificationInfos.TypeChoisi.Prix_Detaille
+
+            tariff.typeChoisi == type_A_Cherche && tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
         }
     }
+
+    val finale_Tariff = remember(findTariff, default_Tariff) {
+        findTariff ?: default_Tariff.first
+    }
+
+    // FIXED: Initialize selectedTariff directly with finale_Tariff (NOT null)
+    // This ensures the tariff is selected from the very first composition
+    var selectedTariff by remember(relative_M1produit.keyID, finale_Tariff.keyID) {
+        mutableStateOf(finale_Tariff)
+    }
+
+    // FIXED: Removed LaunchedEffect - no longer needed since we initialize directly
+    // The selection is now immediate on first render
 
     val developement_affiche = true
 
@@ -190,7 +185,7 @@ fun Item_Produit_FragID3(
             ) {
                 Compact_Header_FragID3(
                     relative_M1produit = relative_M1produit,
-                    isExpanded =isThisProductExpanded,
+                    isExpanded = isThisProductExpanded,
                     modifier = modifier
                 )
 
@@ -198,7 +193,7 @@ fun Item_Produit_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
                     relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                    selectedTariff = selectedTariff ?: finale_Tariff,
+                    selectedTariff = selectedTariff,  // FIXED: Now always non-null
                     onTariffSelected = { newTariff ->
                         selectedTariff = newTariff
                     },
@@ -223,7 +218,7 @@ fun Item_Produit_FragID3(
                                     SubColorCard_WithButton(
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
-                                        selectedTariff = selectedTariff ?: finale_Tariff,
+                                        selectedTariff = selectedTariff,  // FIXED: Now always non-null
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
@@ -243,7 +238,7 @@ fun Item_Produit_FragID3(
                                     SubColorCard_WithButton(
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
-                                        selectedTariff = selectedTariff ?: finale_Tariff,
+                                        selectedTariff = selectedTariff,  // FIXED: Now always non-null
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = false,
