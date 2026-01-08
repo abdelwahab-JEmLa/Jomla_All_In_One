@@ -38,13 +38,12 @@ fun Lenceur_Vent_Handler_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedCouleur: M3CouleurProduitInfos,
-    finale_Tariff: M13TarificationInfos,
+    selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier,
-) {              //<--
-//TODO(1): regle ici pour que mete le selectable tariff relative tariff
+) {
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
     val haptic = LocalHapticFeedback.current
 
@@ -71,8 +70,12 @@ fun Lenceur_Vent_Handler_FragID3(
     }
 
     fun handleLenceVent(quantity: Int) {
+        // Create or update the operation with the selected tariff
         val operationToUse = relative_M10OperationVentCouleur?.copy(
             quantity = quantity,
+            parentM13TarificationKeyID = selectedTariff.keyID,
+            parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
+            typeTarificationEnumT2 = selectedTariff.typeChoisi,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         ) ?: M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
             focusedValuesGetter.activeOnVent_M8BonVent,
@@ -81,12 +84,16 @@ fun Lenceur_Vent_Handler_FragID3(
             creationTimestamps = System.currentTimeMillis(),
             setIN_Vent_Its_Quantity_Represent = relative_M1produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_M1produit.quantite_Boit_Par_Carton,
-            quantity = quantity
+            quantity = quantity,
+            parentM13TarificationKeyID = selectedTariff.keyID,
+            parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
+            typeTarificationEnumT2 = selectedTariff.typeChoisi,
+            its_created_in_working_for_wholesaler = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
         )
 
         lenceVent(
             relative_M10OperationVentCouleur = operationToUse,
-            finale_Tariff = finale_Tariff,
+            selectedTariff = selectedTariff,
             relative_M3CouleurInfos = selectedCouleur,
             aCentralFacade = aCentralFacade,
             onDepotUpdateFailed = { result ->
@@ -100,7 +107,6 @@ fun Lenceur_Vent_Handler_FragID3(
     val horizontalPadding = if (compactMode) 4.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
 
-    // Button always attached to bottom of image with rounded bottom corners
     val shape = RoundedCornerShape(
         topStart = 0.dp,
         topEnd = 0.dp,
@@ -177,7 +183,7 @@ private fun DepotAlertDialog(
 
 fun lenceVent(
     relative_M10OperationVentCouleur: M10OperationVentCouleur,
-    finale_Tariff: M13TarificationInfos,
+    selectedTariff: M13TarificationInfos,
     relative_M3CouleurInfos: M3CouleurProduitInfos,
     aCentralFacade: ACentralFacade,
     onDepotUpdateFailed: (DepotUpdateResult) -> Unit
@@ -192,7 +198,7 @@ fun lenceVent(
     if (isNewOperation) {
         focusedValuesSetter.ajoute_New_M10OperationVentCouleur(relative_M10OperationVentCouleur)
         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-            finale_Tariff,
+            selectedTariff,
             buildList { add(relative_M10OperationVentCouleur) },
             aCentralFacade
         )
@@ -210,7 +216,7 @@ fun lenceVent(
         }
     } else {
         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-            finale_Tariff,
+            selectedTariff,
             buildList { add(relative_M10OperationVentCouleur) },
             aCentralFacade
         )

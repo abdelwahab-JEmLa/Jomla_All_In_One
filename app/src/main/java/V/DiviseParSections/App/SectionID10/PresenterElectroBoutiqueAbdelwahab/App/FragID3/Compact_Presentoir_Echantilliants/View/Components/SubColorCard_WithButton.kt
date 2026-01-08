@@ -68,7 +68,7 @@ fun SubColorCard_WithButton(
             relative_M1produit = relative_M1produit,
             relative_M10OperationVentCouleur = colorOperation,
             selectedCouleur = couleur,
-            finale_Tariff = finale_Tariff,
+            selectedTariff = finale_Tariff,  // Fixed: Changed parameter name from finale_Tariff to selectedTariff
             compactMode = !isExpanded,
             modifier = Modifier.fillMaxWidth()
         )
