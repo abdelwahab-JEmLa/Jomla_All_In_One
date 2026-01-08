@@ -198,6 +198,7 @@ data class M19Etudiant(
 
     var nmbr_absence_sans_justification : Int = 0,
     var imprime_justification : Boolean = false,
+    var exclue_de_l_affiche_au_classe : Boolean = false,
 
     var question_par_non : String = "هل يعاني ابنكم من مرض معين جزاكم الله خيرا؟",
 
