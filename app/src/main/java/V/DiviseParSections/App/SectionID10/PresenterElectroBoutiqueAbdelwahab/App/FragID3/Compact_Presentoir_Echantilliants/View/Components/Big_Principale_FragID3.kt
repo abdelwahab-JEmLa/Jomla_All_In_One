@@ -17,10 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -31,17 +27,16 @@ fun Big_Principale_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     selectedCouleur: M3CouleurProduitInfos,
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
-    finale_Tariff: M13TarificationInfos,
+    selectedTariff: M13TarificationInfos,
+    onTariffSelected: (M13TarificationInfos) -> Unit,
     datasValue: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // State to track selected tariff (starts with finale_Tariff)
-    var selectedTariff by remember(finale_Tariff.keyID) {
-        mutableStateOf(finale_Tariff)
-    }
+    // REMOVED: selectedTariff is now managed by parent (Item_Produit_FragID3)
+    // No local state needed here anymore
 
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
@@ -76,9 +71,7 @@ fun Big_Principale_FragID3(
                 relative_M1produit = relative_M1produit,
                 tariffsList = datasValue,
                 selectedTariff = selectedTariff,
-                onTariffSelected = { newTariff ->
-                    selectedTariff = newTariff
-                },
+                onTariffSelected = onTariffSelected,
                 compactMode = !isThisProductExpanded
             )
         }

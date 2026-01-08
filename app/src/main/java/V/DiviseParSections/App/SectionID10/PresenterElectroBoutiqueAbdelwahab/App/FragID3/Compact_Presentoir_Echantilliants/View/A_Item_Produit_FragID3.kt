@@ -49,16 +49,13 @@ fun Item_Produit_FragID3(
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
     }
 
-    // UPDATED: Use both expanded_M1Produit and expanded_M3CouleurProduitInfos
     val expanded_M1Produit = focusedValuesGetter.active_Central_Values.expanded_M1Produit
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // Check if THIS product is expanded
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
     }
 
-    // Initialize based on expanded color if it belongs to this product
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -75,7 +72,6 @@ fun Item_Produit_FragID3(
         mutableStateOf(initialColorIndex)
     }
 
-    // Sync with expanded color changes
     LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -91,8 +87,13 @@ fun Item_Produit_FragID3(
         }
     }
 
-    // Get the tariff for this product
     val datasValue = repositorysMainGetter.repo13TarificationInfos.datasValue
+
+    // MOVED: Manage selectedTariff here at the parent level
+    var selectedTariff by remember(relative_M1produit.keyID) {
+        mutableStateOf<M13TarificationInfos?>(null)
+    }
+
     val findTariff = remember(relative_M1produit.keyID, focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
         datasValue.find { tariff ->
             val type_A_Cherche = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
@@ -104,11 +105,50 @@ fun Item_Produit_FragID3(
         }
     }
 
+
+    val start_Prix = remember(relative_M1produit.keyID, datasValue) {
+        val historicalTariff = datasValue.find { tariff ->
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
+                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    tariff.prixCurrency != 0.0
+        }
+
+        when {
+            historicalTariff != null && historicalTariff.prixCurrency != 0.0 -> {
+                historicalTariff.prixCurrency
+            }
+            !focusedValuesGetter.currentApp_ItsWorkChezGrossisst -> {
+                val retailTariff = datasValue.find { tariff ->
+                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                            tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                            tariff.prixCurrency != 0.0
+                }
+                retailTariff?.prixCurrency ?: relative_M1produit.prixAchat
+            }
+            // Priority 3: Fallback to purchase price
+            else -> relative_M1produit.prixAchat
+        }
+    }
+
     val default_Tariff = M13TarificationInfos.get_default_P0(
         relative_M1produit,
-        start_Prix_Depuit_Ancient = relative_M1produit.prixAchat
+        start_Prix_Depuit_Ancient = start_Prix
     )
     val finale_Tariff = findTariff ?: default_Tariff.first
+
+    // FIXED: Initialize selectedTariff with finale_Tariff on first load
+    LaunchedEffect(finale_Tariff.keyID, finale_Tariff.typeChoisi) {
+        if (selectedTariff == null) {
+            selectedTariff = finale_Tariff
+        } else {
+            // Verify that current selectedTariff is still valid for this product
+            val isValidForProduct = selectedTariff?.parent_M1Produit_KeyId == relative_M1produit.keyID
+            if (!isValidForProduct) {
+                selectedTariff = finale_Tariff
+            }
+        }
+    }
+
     val developement_affiche = true
 
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
@@ -128,7 +168,6 @@ fun Item_Produit_FragID3(
         }
     }
 
-    // Adjust padding based on expansion state
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
 
@@ -159,7 +198,10 @@ fun Item_Produit_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
                     relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                    finale_Tariff = finale_Tariff,
+                    selectedTariff = selectedTariff ?: finale_Tariff,
+                    onTariffSelected = { newTariff ->
+                        selectedTariff = newTariff
+                    },
                     datasValue = datasValue,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
@@ -181,7 +223,7 @@ fun Item_Produit_FragID3(
                                     SubColorCard_WithButton(
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
-                                        finale_Tariff = finale_Tariff,
+                                        selectedTariff = selectedTariff ?: finale_Tariff,
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
@@ -192,7 +234,6 @@ fun Item_Produit_FragID3(
                             }
                         }
                     } else {
-                        // COLLAPSED: Show sub-colors in vertical COLUMN
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -202,7 +243,7 @@ fun Item_Produit_FragID3(
                                     SubColorCard_WithButton(
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
-                                        finale_Tariff = finale_Tariff,
+                                        selectedTariff = selectedTariff ?: finale_Tariff,
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = false,

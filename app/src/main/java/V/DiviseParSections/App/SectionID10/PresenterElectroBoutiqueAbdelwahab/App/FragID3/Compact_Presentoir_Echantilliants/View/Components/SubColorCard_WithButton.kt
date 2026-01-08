@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
  *
  * @param couleur The color product information to display
  * @param relative_M1produit The parent product information
- * @param finale_Tariff The pricing tariff to use for sales
+ * @param selectedTariff The pricing tariff to use for sales (FIXED: renamed from finale_Tariff)
  * @param focusedValuesGetter Getter for focused/active values from repository
  * @param on_pour_send_data Callback for sending data updates
  * @param isExpanded Whether the parent product is in expanded state
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 fun SubColorCard_WithButton(
     couleur: M3CouleurProduitInfos,
     relative_M1produit: ArticlesBasesStatsTable,
-    finale_Tariff: M13TarificationInfos,
+    selectedTariff: M13TarificationInfos,  // FIXED: Renamed parameter to match usage
     focusedValuesGetter: FocusedValuesGetter,
     on_pour_send_data: (String, String) -> Unit,
     isExpanded: Boolean,
@@ -68,7 +68,7 @@ fun SubColorCard_WithButton(
             relative_M1produit = relative_M1produit,
             relative_M10OperationVentCouleur = colorOperation,
             selectedCouleur = couleur,
-            selectedTariff = finale_Tariff,  // Fixed: Changed parameter name from finale_Tariff to selectedTariff
+            selectedTariff = selectedTariff,  // FIXED: Now matches the parameter name
             compactMode = !isExpanded,
             modifier = Modifier.fillMaxWidth()
         )

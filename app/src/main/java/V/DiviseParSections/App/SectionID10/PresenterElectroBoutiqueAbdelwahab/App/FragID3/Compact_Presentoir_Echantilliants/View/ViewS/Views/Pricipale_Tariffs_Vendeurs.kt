@@ -58,19 +58,29 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                     it.parent_M1Produit_KeyId == relative_M1produit.keyID
         }
 
-        // If no tariff exists and it's Prix_Progressive_Editable, calculate it
-        val tariff = matchingTariff ?: if (tariffType == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
-            calculateProgressiveTariff(tariffsList, relative_M1produit)
-        } else null
+        // FIXED: Always calculate progressive tariff
+        val tariff = if (tariffType == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
+            matchingTariff ?: calculateProgressiveTariff(tariffsList, relative_M1produit)
+        } else {
+            matchingTariff
+        }
 
         // Get price
         val prix = tariff?.prixCurrency ?: 0.0
 
-        if (prix != 0.0 && tariff != null) {
+        // FIXED: For progressive tariff, always show it (even with 0.0)
+        if (tariffType == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable && tariff != null) {
+            tariff to prix
+        } else if (prix != 0.0 && tariff != null) {
             tariff to prix
         } else {
             null
         }
+    }
+
+    // FIXED: If no tariffs to display, don't render anything
+    if (tariffsToDisplay.isEmpty()) {
+        return
     }
 
     // Adjust padding based on compact mode
@@ -83,7 +93,9 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariff, prix) ->
-            val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi
+            // FIXED: Compare by typeChoisi AND ensure it's for the same product
+            val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
+                    selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID
 
             TariffItem(
                 tariff = tariff,
@@ -97,7 +109,10 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 }
 
 /**
- * Calculate progressive tariff as average of Prix_Detaille and Prix_SupperGro
+ * Calculate progressive tariff with flexible logic:
+ * - If both Prix_Detaille and Prix_SupperGro available: use average
+ * - If only one available: use that one
+ * - If neither available: return tariff with 0.0
  */
 private fun calculateProgressiveTariff(
     tariffsList: List<M13TarificationInfos>,
@@ -113,16 +128,35 @@ private fun calculateProgressiveTariff(
                 it.parent_M1Produit_KeyId == product.keyID
     }
 
-    if (prixDetaille != null && prixSupperGro != null) {
-        val avgPrice = (prixDetaille.prixCurrency + prixSupperGro.prixCurrency) / 2.0
+    val detaillePrice = prixDetaille?.prixCurrency ?: 0.0
+    val supperGroPrice = prixSupperGro?.prixCurrency ?: 0.0
 
-        return prixDetaille.copy(
-            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
-            prixCurrency = avgPrice
-        )
+    // Calculate progressive price based on availability
+    val progressivePrice = when {
+        // Both available: use average
+        detaillePrice > 0.0 && supperGroPrice > 0.0 -> {
+            (detaillePrice + supperGroPrice) / 2.0
+        }
+        // Only Detaille available: use it
+        detaillePrice > 0.0 -> detaillePrice
+        // Only SupperGro available: use it
+        supperGroPrice > 0.0 -> supperGroPrice
+        // Neither available: 0.0
+        else -> 0.0
     }
 
-    return null
+    // Use the first available tariff as base, or create a new one
+    val baseTariff = prixDetaille ?: prixSupperGro ?: M13TarificationInfos(
+        parent_M1Produit_KeyId = product.keyID,
+        parent_M1Produit_DebugInfos = product.getDebugInfos()
+    )
+
+    return baseTariff.copy(
+        keyID = "progressive_${product.keyID}",
+        typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
+        prixCurrency = progressivePrice,
+        parent_M1Produit_KeyId = product.keyID
+    )
 }
 
 @Composable
