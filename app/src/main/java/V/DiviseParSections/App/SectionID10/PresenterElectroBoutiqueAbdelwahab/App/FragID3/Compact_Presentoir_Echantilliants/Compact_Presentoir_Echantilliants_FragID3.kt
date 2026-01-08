@@ -34,8 +34,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
-) {          //<--
-//TODO(1): fait que le suit de scrolle par wifi send et recive marche comme au atre fragment 
+) {      
     val developement_test = false
 
     val lastBonVentAbdelwahab = remember(

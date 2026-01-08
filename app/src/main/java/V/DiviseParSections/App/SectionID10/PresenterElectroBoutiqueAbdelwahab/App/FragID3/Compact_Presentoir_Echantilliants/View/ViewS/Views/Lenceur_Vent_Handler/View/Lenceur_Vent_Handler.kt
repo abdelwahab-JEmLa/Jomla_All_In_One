@@ -43,7 +43,8 @@ fun Lenceur_Vent_Handler_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier,
-) {
+) {              //<--
+//TODO(1): regle ici pour que mete le selectable tariff relative tariff
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
     val haptic = LocalHapticFeedback.current
 

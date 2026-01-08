@@ -33,11 +33,20 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     tariffsList: List<M13TarificationInfos>,
     compactMode: Boolean = false
 ) {
+    //<--
+    //TODO(1): au click donne le tariff soit le choisi pour les orations de vents
+     //<--
+     //TODO(1): fait que au click un est selected  gere ui pour affiche le selected
+    //<--
+    //TODO(1): ajout un Prix_Progressive_Editable =Prix_Detaille + Prix_SupperGro_Et_PresentationService / 2 au click c un outlined //<--
+    //TODO(1): il enregestre pouqeu ca soit un selected
+    //<--
+//TODO(1): fait que prix / p.u:
     // Define the tariff types to display in order
     val displayTariffs = listOf(
-        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
-        M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
         M13TarificationInfos.TypeChoisi.Prix_Detaille,
+        M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
+        M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
         M13TarificationInfos.TypeChoisi.Historique,
         M13TarificationInfos.TypeChoisi.LeMaxPrixArrive,
     )

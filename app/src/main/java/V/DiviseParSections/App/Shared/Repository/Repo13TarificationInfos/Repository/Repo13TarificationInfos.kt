@@ -346,6 +346,16 @@ data class M13TarificationInfos(
             its_gro_app = false
         ),
 
+        Prix_Progressive_Editable(
+            Icons.Filled.Edit,
+            Color(0xFFEEEEEE),
+            "سعر انتقالي",
+            Color.Black,
+            3,
+            "انتقالي",
+            its_gro_app = false
+        ),
+
         Prix_Detaille(
             Icons.Filled.Person,
             Color(0xFFCDDC39),
@@ -368,7 +378,8 @@ data class M13TarificationInfos(
                 Tariff_Achat_Depuit_Grossisst -> Prix_SupperGro_Et_PresentationService
                 Prix_SupperGro_Et_PresentationService -> Historique
                 Historique -> Edited_Pour_Client
-                Edited_Pour_Client -> Prix_Detaille
+                Edited_Pour_Client -> Prix_Progressive_Editable
+                Prix_Progressive_Editable -> Prix_Detaille
                 Prix_Detaille -> LeMaxPrixArrive
                 LeMaxPrixArrive -> null
                 DEFIN_OLd -> Historique

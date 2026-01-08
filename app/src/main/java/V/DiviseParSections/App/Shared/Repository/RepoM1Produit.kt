@@ -287,6 +287,7 @@ data class ArticlesBasesStatsTable(
     var setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent =
         M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
     var quantite_Boit_Par_Carton: Int = 1,
+
     ) {
 
     fun getDebugInfos(): String {
@@ -294,7 +295,8 @@ data class ArticlesBasesStatsTable(
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(
+        return mapOf(             //<--
+        //TODO(1): ajout les non dispo vals
             "id" to id,
             "keyID" to keyID,
             "bsonObjectId" to bsonObjectId,

@@ -153,7 +153,12 @@ class RepositorysMainGetter(
                 matchesClient && matchesEtate
             }
             .maxByOrNull { it.creationTimestamps }
-    }
+    }            //<--
+    //TODO(1): fait que si les prduits son du getLastBonVentForClient grid de 4
+    //  trie par
+    // si non 2 pour les autres categorie san affiche ler header et trie comme auutre
+    //fragment
+    //<--
 
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
