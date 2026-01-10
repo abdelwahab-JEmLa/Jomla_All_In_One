@@ -170,7 +170,7 @@ val classesHandlersModule = module {
     single { PrintInPdf_itextpdf_Handler(get(), get(), ) }
     single { PrintReceiptHandler_Juil( get()) }
     single { DebugKey(get()) }
-    single { WifiTransferDatas(androidContext(), get()) }
+    single { WifiTransferDatas(androidContext(), get(), get()) }
     single { WDatabaseInitializationManager(get(), get(),get(), get(), get(),get(),get(),get(), get(),get(),get(),get(),get(), ) }
 
     single { CalculeCouleurHandler(get()) }

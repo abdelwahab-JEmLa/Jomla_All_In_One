@@ -3,6 +3,8 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.ColorImageCard_FragID4
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID4
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID4
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -20,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
@@ -29,6 +32,7 @@ fun Big_Principale_FragID4(
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     datasValue: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     on_pour_send_data: (String, String) -> Unit,
@@ -41,33 +45,35 @@ fun Big_Principale_FragID4(
         modifier = Modifier.fillMaxWidth()
     )
 
-    Spacer(modifier = Modifier.height(8.dp))
+    focusedValuesGetter.active_Central_Values.hide_prix_lence_vent_buttons.ifFalse {
+        Spacer(modifier = Modifier.height(8.dp))
 
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = Color.White.copy(alpha = 0.95f),
-                shape = RoundedCornerShape(16.dp)
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White.copy(alpha = 0.95f),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Lenceur_Vent_Handler_FragID4(
+                relative_M1produit = relative_M1produit,
+                relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                selectedCouleur = selectedCouleur,
+                selectedTariff = selectedTariff,
+                compactMode = !isThisProductExpanded
             )
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Lenceur_Vent_Handler_FragID4(
-            relative_M1produit = relative_M1produit,
-            relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-            selectedCouleur = selectedCouleur,
-            selectedTariff = selectedTariff,
-            compactMode = !isThisProductExpanded
-        )
 
-        Pricipale_Tariffs_Vendeurs_FragID4(
-            relative_M1produit = relative_M1produit,
-            tariffsList = datasValue,
-            selectedTariff = selectedTariff,
-            onTariffSelected = onTariffSelected,
-            compactMode = !isThisProductExpanded
-        )
+            Pricipale_Tariffs_Vendeurs_FragID4(
+                relative_M1produit = relative_M1produit,
+                tariffsList = datasValue,
+                selectedTariff = selectedTariff,
+                onTariffSelected = onTariffSelected,
+                compactMode = !isThisProductExpanded
+            )
+        }
     }
 }

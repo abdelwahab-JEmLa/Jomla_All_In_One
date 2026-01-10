@@ -17,7 +17,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 private const val TAG = "FragID4GridScroll"
-
+        //<--
+        //TODO(1): fait comme au autre on expand de metre le expanded item premie visble et de lock le scroll 3 sec pourevite aletoire scrolle
 /**
  * Handle scroll broadcasting from HOST to CLIENT for FragID4 Presenter Grid
  * Utilise EXACTEMENT la même logique que HandleScrollBroadcast de FragID1

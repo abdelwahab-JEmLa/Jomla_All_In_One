@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.ColorImageCard_FragID4
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID4
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -49,15 +50,15 @@ fun SubColorCard_WithButton_FragId4(
                 .fillMaxWidth()
                 .height(if (isExpanded) 80.dp else 40.dp)
         )
-
-        // Sales button directly below the image
-        Lenceur_Vent_Handler_FragID4(
-            relative_M1produit = relative_M1produit,
-            relative_M10OperationVentCouleur = colorOperation,
-            selectedCouleur = couleur,
-            selectedTariff = selectedTariff,  // FIXED: Now matches the parameter name
-            compactMode = !isExpanded,
-            modifier = Modifier.fillMaxWidth()
-        )
+        focusedValuesGetter.active_Central_Values.hide_prix_lence_vent_buttons.ifFalse {
+            Lenceur_Vent_Handler_FragID4(
+                relative_M1produit = relative_M1produit,
+                relative_M10OperationVentCouleur = colorOperation,
+                selectedCouleur = couleur,
+                selectedTariff = selectedTariff,  // FIXED: Now matches the parameter name
+                compactMode = !isExpanded,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

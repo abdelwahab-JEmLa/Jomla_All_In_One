@@ -71,6 +71,8 @@ data class ActiveCentralValues(
     //-----------------Facade Boutique -------------------------------------------------------------------------------------------------------------------------
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     var expanded_M1Produit: ArticlesBasesStatsTable? = null,
+
+    var hide_prix_lence_vent_buttons: Boolean = false,
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
@@ -81,10 +83,8 @@ data class ActiveCentralValues(
         else -> Utilisateur.Admin
     },
 
-
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
-
 
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,

@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.Manifest
 import android.annotation.SuppressLint
@@ -38,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class WifiTransferDatas(
     private val context: Context,
     val repositorysMainGetter: RepositorysMainGetter,
+    val focusedValuesGetter: FocusedValuesGetter,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     val appComptComposeRepositoryProtoJuin17 = repositorysMainGetter.repo9AppCompt
@@ -62,45 +64,31 @@ class WifiTransferDatas(
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
+    init {
+        viewModelScope.launch {
+            connectionUiState.collect { connectionState ->
+                updatePrixButtonsVisibility(connectionState)
+            }
+        }
+    }
+
+    private fun updatePrixButtonsVisibility(connectionState: ConnectionUiState) {
+        val shouldHideButtons = !connectionState.isHostPhone && connectionState.isConnected
+
+        val currentValues = focusedValuesGetter.active_Central_Values
+        if (currentValues.hide_prix_lence_vent_buttons != shouldHideButtons) {
+            focusedValuesGetter.update_activeCentralValues(
+                currentValues.copy(hide_prix_lence_vent_buttons = shouldHideButtons)
+            )
+            Log.d(TAG, "✅ Updated hide_prix_lence_vent_buttons to: $shouldHideButtons (isHost=${connectionState.isHostPhone}, isConnected=${connectionState.isConnected})")
+        }
+    }
 
     fun sendOrderToClientDisplayerT(
         orderName: WifiUpdateClientDisplayerStats, data: Any? = null
     ) {
         viewModelScope.launch {
             sendData("${orderName.prefix}$data")
-        }
-    }
-
-    private fun handle_Text_Payload(payload: String) {
-        val parts = payload.split("=", limit = 2)
-
-        if (parts.size == 2) {
-            val command = parts[0]
-            val data = parts[1]
-
-            when (command) {
-                "Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran" -> {
-                    appComptComposeRepositoryProtoJuin17.currentAppCompt?.let { currentAppCompt ->
-                        appComptComposeRepositoryProtoJuin17.upsert(
-                            currentAppCompt.copy(
-                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = data
-                            )
-                        )
-                        Log.d(
-                            TAG,
-                            "✅ Updated active_ProduitKeyID_Au_DroopDown_PresenterEcran to: $data"
-                        )
-                    } ?: run {
-                        Log.e(TAG, "❌ Cannot update: currentAppCompt is null")
-                    }
-                }
-
-                else -> {
-                    Log.d(TAG, "📩 Unhandled command: $command with data: $data")
-                }
-            }
-        } else {
-            Log.d(TAG, "📩 Invalid payload format (no '=' separator): $payload")
         }
     }
 
@@ -115,11 +103,11 @@ class WifiTransferDatas(
                     )
 
                     val relative_Produit = repositorysMainGetter.find_M1Produit_ByKeyID(content)
-                        appComptComposeRepositoryProtoJuin17.upsert(
-                            appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
-                                active_ProduitKeyID_Au_DroopDown_PresenterEcran = if (relative_Produit==null ) "" else relative_Produit.keyID
-                            )
+                    appComptComposeRepositoryProtoJuin17.upsert(
+                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
+                            active_ProduitKeyID_Au_DroopDown_PresenterEcran = if (relative_Produit == null) "" else relative_Produit.keyID
                         )
+                    )
                 }
 
                 else -> {}
@@ -140,12 +128,10 @@ class WifiTransferDatas(
 
                     delay(2000)
 
-                    // If still disconnected after initial delay, start exponential backoff
                     if (!_connectionUiState.value.isConnected) {
                         val backoffDelay = calculateBackoffDelay()
                         delay(backoffDelay)
 
-                        // Update UI state to show reconnection attempt
                         _connectionUiState.update {
                             it.copy(
                                 connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
@@ -164,7 +150,6 @@ class WifiTransferDatas(
 
                         retryCount++
 
-                        // Update last attempt timestamp
                         _connectionUiState.update {
                             it.copy(
                                 lastSuccessfulConnection = System.currentTimeMillis()
@@ -181,12 +166,10 @@ class WifiTransferDatas(
         }
     }
 
-    // Add add_New new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
     private fun shouldAttemptReconnection(): Boolean {
         return !_connectionUiState.value.isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
     }
 
-    // Update handleDisconnection to use the new logic
     @SuppressLint("NewApi")
     private fun handleDisconnection(disconnectedEndpointId: String) {
         if (endpointId == disconnectedEndpointId) {
@@ -194,7 +177,8 @@ class WifiTransferDatas(
             updateConnectionStatus("Déconnecté")
             _connectionUiState.update {
                 it.copy(
-                    isConnected = false, lastSuccessfulConnection = System.currentTimeMillis()
+                    isConnected = false,
+                    lastSuccessfulConnection = System.currentTimeMillis()
                 )
             }
 
@@ -220,7 +204,7 @@ class WifiTransferDatas(
                     this@WifiTransferDatas.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
-                    retryCount = 0 // Réinitialisation du compteur de tentatives
+                    retryCount = 0
                     startConnectionMonitoring()
                     sendData("Connection established")
                 }
@@ -298,7 +282,6 @@ class WifiTransferDatas(
         viewModelScope.launch {
             if (_connectionUiState.value.isConnected) {
                 Log.d(TAG, "🔄 Tentative de réenvoi des données...")
-                // Logique de réessai pour les données non envoyées
             }
         }
     }
@@ -307,7 +290,7 @@ class WifiTransferDatas(
         connectionMonitorJob?.cancel()
         connectionMonitorJob = viewModelScope.launch {
             while (isActive) {
-                delay(5000) // Vérification toutes les 5 secondes
+                delay(5000)
                 checkConnectionHealth()
             }
         }
@@ -334,7 +317,6 @@ class WifiTransferDatas(
             handleFinalDisconnection()
         }
     }
-
 
     private fun calculateBackoffDelay(): Long {
         return baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
@@ -434,7 +416,6 @@ class WifiTransferDatas(
     }
 
     fun sendData(data: Any) {
-        // Log AVANT tout - pour voir si la fonction est appelée
         Log.d("sendData", "📤 sendData() appelé avec: $data")
         Log.d("sendData", "🔗 endpointId actuel: $endpointId")
 
@@ -535,7 +516,7 @@ class WifiTransferDatas(
                 context, permission
             ) != PackageManager.PERMISSION_GRANTED
 
-            Log.d(TAG, "🔐 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
+            Log.d(TAG, "🔍 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
             isGranted
         }
 
@@ -553,7 +534,7 @@ class WifiTransferDatas(
         _connectionUiState.update {
             it.copy(
                 connectionStatus = status,
-                error = null  // Réinitialise l'erreur lors de la mise à jour du statut
+                error = null
             )
         }
     }
@@ -562,7 +543,8 @@ class WifiTransferDatas(
         Log.e(TAG, "⚠️ Erreur: $error")
         _connectionUiState.update {
             it.copy(
-                error = error, connectionStatus = "Erreur: $error"
+                error = error,
+                connectionStatus = "Erreur: $error"
             )
         }
     }
@@ -590,21 +572,16 @@ data class ConnectionUiState(
 )
 
 enum class WifiUpdateClientDisplayerStats(val prefix: String) {
-    ClientMainGridScrollPosition("ClientMainGridScrollPosition"), ClientWindowsLazyRowSupColorsScrolle(
-        "ClientWindowsLazyRowSupColorsScrolle"
-    ),
-    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"), ClientWindowsSelectedColorId(
-        "clientWindowsSelectedColorId"
-    ),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"), WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"), SearchWindowsDisplaye(
-        "SearchWindowsDisplaye"
-    ),
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
+    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
+    SearchWindowsDisplaye("SearchWindowsDisplaye"),
     NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"),
-    FilterProduitsParCatalogueBsonID_ET_Autres_Types(
-        "FilterProduitsParCatalogueBsonID_ET_Autres_Types"
-    ),
-
-    Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran"), ;
+    FilterProduitsParCatalogueBsonID_ET_Autres_Types("FilterProduitsParCatalogueBsonID_ET_Autres_Types"),
+    Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran");
 
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {

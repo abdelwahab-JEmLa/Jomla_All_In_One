@@ -7,6 +7,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
@@ -60,7 +61,8 @@ fun A_Item_Produit_FragID4(
     }
 
     val expanded_M1Produit = focusedValuesGetter.active_Central_Values.expanded_M1Produit
-    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+    val expanded_M3CouleurProduitInfos =
+        focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
@@ -235,19 +237,18 @@ fun A_Item_Produit_FragID4(
                     isExpanded = isThisProductExpanded,
                     modifier = modifier
                 )
-
-                Big_Principale_FragID4(
-                    relative_M1produit = relative_M1produit,
-                    selectedCouleur = selectedCouleur,
-                    relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
-                    selectedTariff = selectedTariff,
-                    onTariffSelected = { newTariff ->
-                        selectedTariff = newTariff
-                    },
-                    datasValue = datasValue,
-                    isThisProductExpanded = isThisProductExpanded,
-                    on_pour_send_data = on_pour_send_data
-                )
+                    Big_Principale_FragID4(
+                        relative_M1produit = relative_M1produit,
+                        selectedCouleur = selectedCouleur,
+                        relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+                        selectedTariff = selectedTariff,
+                        onTariffSelected = { newTariff ->
+                            selectedTariff = newTariff
+                        },
+                        datasValue = datasValue,
+                        isThisProductExpanded = isThisProductExpanded,
+                        on_pour_send_data = on_pour_send_data
+                    )
 
                 if (relative_ListM3Couleurs.size > 1 && isHostPhone) {
                     Spacer(modifier = Modifier.height(8.dp))
