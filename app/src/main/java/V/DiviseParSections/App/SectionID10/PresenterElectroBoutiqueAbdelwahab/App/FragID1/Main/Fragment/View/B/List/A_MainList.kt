@@ -39,7 +39,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-//TODO(1): fait que le suit de scrolle par wifi send et recive marche comme au atre fragment
 @Composable
 fun MainList(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -59,9 +58,7 @@ fun MainList(
     lockHost: Boolean,
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
-) {      //<--
-//TODO(2.C Relative Au Todo(1): 
-        //... ca
+) {
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
     val coroutineScope = rememberCoroutineScope()
 

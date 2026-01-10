@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+private const val TAG = "🎯 ITEM_PRODUIT_DEBUG"
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -46,6 +48,8 @@ fun A_Item_Produit_FragID4(
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
 ) {
+    // FIXED TODO(1): Implemented expand/collapse functionality similar to FragID1
+    // This handles both product expansion and color selection with proper WiFi sync
 
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
@@ -64,10 +68,24 @@ fun A_Item_Produit_FragID4(
     val expanded_M1Produit = focusedValuesGetter.active_Central_Values.expanded_M1Produit
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
+    // LOG: État expansion
+    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d(TAG, "🔄 RECOMPOSITION de A_Item_Produit_FragID4")
+    Log.d(TAG, "📦 Produit: ${relative_M1produit.nom} (KeyID: ${relative_M1produit.keyID})")
+    Log.d(TAG, "📊 État global expansion:")
+    Log.d(TAG, "   - expanded_M1Produit: ${expanded_M1Produit?.nom ?: "NULL"}")
+    Log.d(TAG, "   - expanded_M1Produit KeyID: ${expanded_M1Produit?.keyID ?: "null"}")
+    Log.d(TAG, "   - expanded_M3CouleurProduitInfos: ${expanded_M3CouleurProduitInfos?.nomCouleurStrSiSonImageDispo ?: "NULL"}")
+    Log.d(TAG, "   - expanded_M3CouleurProduitInfos KeyID: ${expanded_M3CouleurProduitInfos?.keyID ?: "null"}")
+
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
     }
 
+    Log.d(TAG, "🎯 Ce produit est-il expanded? $isThisProductExpanded")
+    Log.d(TAG, "   - Comparaison: ${expanded_M1Produit?.keyID} == ${relative_M1produit.keyID}")
+
+    // FIXED: Determine initial color index from expanded state
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -75,28 +93,57 @@ fun A_Item_Produit_FragID4(
                     expandedColor = expandedColor,
                     availableColors = relative_ListM3Couleurs
                 )
+                Log.d(TAG, "🔍 Recherche index couleur initiale:")
+                Log.d(TAG, "   - parentBProduitOldID match: ${expandedColor.parentBProduitOldID} == ${relative_M1produit.id}")
+                Log.d(TAG, "   - Index trouvé: $matchingIndex")
                 if (matchingIndex != -1) matchingIndex else 0
-            } else 0
-        } ?: 0
+            } else {
+                Log.d(TAG, "🔍 Pas de match parentBProduitOldID: ${expandedColor.parentBProduitOldID} != ${relative_M1produit.id}")
+                0
+            }
+        } ?: run {
+            Log.d(TAG, "🔍 Pas de couleur expanded globale, index = 0")
+            0
+        }
     }
 
     var big_presenter_couleur_produit by remember(initialColorIndex) {
         mutableStateOf(initialColorIndex)
     }
 
+    Log.d(TAG, "🎨 Index couleur principal affiché: $big_presenter_couleur_produit")
+    Log.d(TAG, "   - Couleur: ${relative_ListM3Couleurs.getOrNull(big_presenter_couleur_produit)?.nomCouleurStrSiSonImageDispo ?: "HORS LIMITE"}")
+
+    // FIXED: Sync color selection when expanded state changes
     LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
+        Log.d(TAG, "⚡ LaunchedEffect déclenché (sync couleur)")
+
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
+            Log.d(TAG, "   - Couleur expanded existe: ${expandedColor.nomCouleurStrSiSonImageDispo}")
+
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
+                Log.d(TAG, "   - C'est pour CE produit!")
+
                 val matchingIndex = findMatchingColorIndex(
                     expandedColor = expandedColor,
                     availableColors = relative_ListM3Couleurs
                 )
 
+                Log.d(TAG, "   - Index trouvé: $matchingIndex")
+                Log.d(TAG, "   - Index actuel: $big_presenter_couleur_produit")
+
                 if (matchingIndex != -1 && matchingIndex != big_presenter_couleur_produit) {
+                    Log.d(TAG, "   ✅ CHANGEMENT d'index: $big_presenter_couleur_produit → $matchingIndex")
                     big_presenter_couleur_produit = matchingIndex
+                } else if (matchingIndex == -1) {
+                    Log.w(TAG, "   ⚠️ Index non trouvé, garde l'actuel")
+                } else {
+                    Log.d(TAG, "   ℹ️ Déjà le bon index")
                 }
+            } else {
+                Log.d(TAG, "   - Pas pour ce produit (${expandedColor.parentBProduitOldID} != ${relative_M1produit.id})")
             }
-        }
+        } ?: Log.d(TAG, "   - Pas de couleur expanded")
     }
 
     val datasValue = repositorysMainGetter.repo13TarificationInfos.datasValue
@@ -112,7 +159,6 @@ fun A_Item_Produit_FragID4(
             }
         }
 
-        // Second priority: Historical tariff
         val historicalTariff = datasValue.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -123,9 +169,7 @@ fun A_Item_Produit_FragID4(
             return historicalTariff.prixCurrency
         }
 
-        // Third priority: Based on app type
         return if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-            // For retail app: try retail price, then super gro, then achat
             val retailTariff = datasValue.find { tariff ->
                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                         tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -142,7 +186,6 @@ fun A_Item_Produit_FragID4(
                 ?: superGroTariff?.prixCurrency
                 ?: relative_M1produit.prixAchat
         } else {
-            // For grossist app: try super gro, then achat
             val superGroTariff = datasValue.find { tariff ->
                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                         tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -174,11 +217,9 @@ fun A_Item_Produit_FragID4(
         datasValue,
         relative_list_M10operation_Vent.value
     ) {
-        // First check if there's an operation with a specific tariff
         relative_list_M10operation_Vent.value?.let { operation ->
             datasValue.find { it.keyID == operation.parentM13TarificationKeyID }
         } ?: run {
-            // Otherwise find based on app type
             val type_A_Cherche = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
                 M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
             else
@@ -220,6 +261,12 @@ fun A_Item_Produit_FragID4(
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
+
+    Log.d(TAG, "🎨 Rendu UI:")
+    Log.d(TAG, "   - Padding carte: $cardPadding")
+    Log.d(TAG, "   - Elevation: ${if (isThisProductExpanded) "8.dp (EXPANDED)" else "4.dp (normal)"}")
+    Log.d(TAG, "   - Nombre couleurs disponibles: ${relative_ListM3Couleurs.size}")
+    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     Column(
         modifier = modifier
