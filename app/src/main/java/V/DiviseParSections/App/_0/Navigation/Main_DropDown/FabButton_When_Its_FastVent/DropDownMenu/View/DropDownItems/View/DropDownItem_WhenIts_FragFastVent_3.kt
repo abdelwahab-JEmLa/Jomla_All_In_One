@@ -3,8 +3,6 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_F
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.SortVentMode
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -26,30 +24,27 @@ import org.koin.compose.koinInject
 
 @Composable
 fun DropDownItem_WhenIts_FragFastVent_3(
-    nomFun: String,
     onDismissDropdown: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     context: Context = LocalContext.current
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
 
-    // Determine sort mode from both new and legacy fields
-    val sortMode = when {
-        currentValues.sortVentMode != null -> currentValues.sortVentMode
+    // Determine current sort mode - default to PAR_Creation_Vent (Classement)
+    val currentSortMode = when {
+        currentValues.sortVentMode != null -> currentValues.sortVentMode!!
         currentValues.sortVentsParClassment -> SortVentMode.PAR_Creation_Vent
-        else -> SortVentMode.PAR_ENTREE
+        else -> SortVentMode.PAR_Creation_Vent
     }
 
     Card(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = when (sortMode) {
+            containerColor = when (currentSortMode) {
                 SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primaryContainer
-                else -> MaterialTheme.colorScheme.surfaceVariant
+                SortVentMode.PAR_ENTREE -> MaterialTheme.colorScheme.secondaryContainer
+                SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> MaterialTheme.colorScheme.tertiaryContainer
             }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -57,34 +52,39 @@ fun DropDownItem_WhenIts_FragFastVent_3(
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
-                    imageVector = when (sortMode) {
-                        SortVentMode.PAR_Creation_Vent -> Icons.Default.SortByAlpha
-                        SortVentMode.PAR_ENTREE -> Icons.Default.Sort
+                    imageVector = when (currentSortMode) {
+                        SortVentMode.PAR_Creation_Vent -> Icons.Default.Sort
+                        SortVentMode.PAR_ENTREE -> Icons.Default.SortByAlpha
                         SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> Icons.Default.AccessTime
                     },
                     contentDescription = null,
-                    tint = when (sortMode) {
-                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primary
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = when (currentSortMode) {
+                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.onPrimaryContainer
+                        SortVentMode.PAR_ENTREE -> MaterialTheme.colorScheme.onSecondaryContainer
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> MaterialTheme.colorScheme.onTertiaryContainer
                     }
                 )
             },
             text = {
                 Text(
-                    text = when (sortMode) {
-                        SortVentMode.PAR_Creation_Vent -> "Trier par Entrée"
-                        SortVentMode.PAR_ENTREE -> "Trier par Dernière Vérification"
-                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Trier par Classement"
+                    text = when (currentSortMode) {
+                        // Currently on Classement, clicking will go to Alphabétique
+                        SortVentMode.PAR_Creation_Vent -> "Actuel: Plus récent d'abord → Alphabétique"
+                        // Currently on Alphabétique, clicking will go to Dernière Vérification
+                        SortVentMode.PAR_ENTREE -> "Actuel: Alphabétique → Vérification"
+                        // Currently on Vérification, clicking will go to Classement
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Actuel: Dernière Vérification → Classement"
                     },
-                    color = when (sortMode) {
-                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.primary
-                        else -> MaterialTheme.colorScheme.onSurface
+                    color = when (currentSortMode) {
+                        SortVentMode.PAR_Creation_Vent -> MaterialTheme.colorScheme.onPrimaryContainer
+                        SortVentMode.PAR_ENTREE -> MaterialTheme.colorScheme.onSecondaryContainer
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> MaterialTheme.colorScheme.onTertiaryContainer
                     }
                 )
             },
             onClick = {
-                // Cycle through sort modes: Classement -> Entrée -> Dernière Update -> Classement
-                val nextMode = when (sortMode) {
+                // Cycle: Classement → Alphabétique → Vérification → Classement
+                val nextMode = when (currentSortMode) {
                     SortVentMode.PAR_Creation_Vent -> SortVentMode.PAR_ENTREE
                     SortVentMode.PAR_ENTREE -> SortVentMode.PAR_DERNIERE_UPDATE_LENCE
                     SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> SortVentMode.PAR_Creation_Vent
@@ -92,7 +92,7 @@ fun DropDownItem_WhenIts_FragFastVent_3(
 
                 val updatedValues = currentValues.copy(
                     sortVentMode = nextMode,
-                    // Keep backward compatibility with sortVentsParClassment flag
+                    // Keep backward compatibility
                     sortVentsParClassment = nextMode == SortVentMode.PAR_Creation_Vent
                 )
                 focusedValuesGetter.update_activeCentralValues(updatedValues)
@@ -100,9 +100,9 @@ fun DropDownItem_WhenIts_FragFastVent_3(
                 Toast.makeText(
                     context,
                     when (nextMode) {
-                        SortVentMode.PAR_Creation_Vent -> "Tri changé vers: Par Classement"
-                        SortVentMode.PAR_ENTREE -> "Tri changé vers: Par Entrée"
-                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "Tri changé vers: Par Dernière Vérification"
+                        SortVentMode.PAR_Creation_Vent -> "✓ Tri: Par Classement (Plus récent d'abord)"
+                        SortVentMode.PAR_ENTREE -> "✓ Tri: Par Ordre Alphabétique (A-Z)"
+                        SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> "✓ Tri: Par Dernière Vérification"
                     },
                     Toast.LENGTH_SHORT
                 ).show()

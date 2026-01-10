@@ -105,7 +105,7 @@ fun generatePdfDocument_list_talaba(
                 style = Paint.Style.FILL
             }
 
-            // Title - Changed from "قائمة الطلاب - تقرير الحفظ والتقدم"
+            // Title
             drawRTLText(canvas, "تقرير السداسي من بداية الدراسة الى شهر ديسمبر",
                 marginLeft, yPosition, contentWidth.toInt(), paintHeader, Layout.Alignment.ALIGN_CENTER)
             yPosition += 25f
@@ -117,30 +117,36 @@ fun generatePdfDocument_list_talaba(
                 marginLeft, yPosition, contentWidth.toInt(), paintSmall, Layout.Alignment.ALIGN_CENTER)
             yPosition += 25f
 
-            // Table column widths - Updated columns
+            // Table column widths (removed المقرر للتحضير)
             val colWidths = floatArrayOf(
                 40f,   // # الرقم
-                100f,  // الاسم الكامل
+                120f,  // الاسم الكامل
                 35f,   // السن
-                80f,   // رقم هاتف الولي (changed from رقم الهاتف)
-                40f,   // الغيابات
-                90f,   // آخر سورة وصل إليها
-                90f,   // المقرر للتحضير
-                90f,   // تقدم في الحفظ (new column)
-                80f,   // التفاعل و المتابعة مع الولي (new column)
-                contentWidth - (40f + 100f + 35f + 80f + 40f + 90f + 90f + 90f + 80f) // ملاحظات
+                90f,   // رقم هاتف الولي
+                50f,   // الغيابات
+                100f,  // آخر سورة وصل إليها
+                100f,  // تقدم في الحفظ
+                100f,  // التفاعل و المتابعة مع الولي
+                contentWidth - (40f + 120f + 35f + 90f + 50f + 100f + 100f + 100f) // ملاحظات
             )
 
             val rowHeight = 45f
             val headerHeight = 35f
 
-            // Draw table header - Updated headers
+            // Draw table header (removed المقرر للتحضير)
             var xPosition = marginLeft
             canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth, yPosition + headerHeight, paintHeaderBg)
 
             val headers = arrayOf(
-                "#", "الاسم الكامل", "السن", "رقم هاتف الولي",
-                "الغيابات", "آخر ما وصل إليه", "المقرر للتحضير", "تقدم في الحفظ", "التفاعل و المتابعة مع الولي", "ملاحظات"
+                "#",
+                "الاسم الكامل",
+                "السن",
+                "رقم هاتف الولي",
+                "الغيابات",
+                "آخر ما وصل إليه",
+                "تقدم في الحفظ",
+                "التفاعل و المتابعة مع الولي",
+                "ملاحظات"
             )
 
             for (i in headers.indices) {
@@ -188,11 +194,10 @@ fun generatePdfDocument_list_talaba(
                     student.studentInfo.fullName,
                     "${student.studentInfo.age}",
                     phoneNumber,
-                    absenceDisplay,  // Changed to show "غير محدد" for 0 absences
+                    absenceDisplay,
                     "${student.hifdProgress.currentSoura}\nآية ${student.hifdProgress.currentAya}",
-                    "${student.hifdProgress.mokarrarSoura}\nآية ${student.hifdProgress.mokarrarDetails.split("\n").lastOrNull()?.filter { it.isDigit() } ?: ""}",
-                    "غير محدد",  // تقدم في الحفظ - always "غير محدد"
-                    "غير محدد",  // التفاعل و المتابعة مع الولي - always "غير محدد"
+                    "غير محدد",  // تقدم في الحفظ
+                    "غير محدد",  // التفاعل و المتابعة مع الولي
                     student.notes.specialAttention.take(30) + if (student.notes.specialAttention.length > 30) "..." else ""
                 )
 

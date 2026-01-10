@@ -55,7 +55,6 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             )
 
             DropDownItem_WhenIts_FragFastVent_3(
-                nomFun ="sort par entre ou classement  ",
                 onDismissDropdown = onDismissDropdown
             )
             DropDownItem_WhenIts_FragFastVent_2(

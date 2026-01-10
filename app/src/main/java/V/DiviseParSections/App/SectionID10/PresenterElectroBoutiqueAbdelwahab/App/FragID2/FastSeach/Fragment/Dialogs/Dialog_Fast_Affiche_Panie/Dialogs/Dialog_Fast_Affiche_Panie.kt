@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.SortVentMode
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,11 +46,35 @@ fun MainList(
             val activeFilters = active_Central_Values.activeFilters
             val searchQuery = active_Central_Values.outlined_filter_searcher_floating_abouve_all.trim()
 
-            // Determine sort mode from both new and legacy fields
+            // Determine sort mode - default to PAR_Creation_Vent (Classement)
             val sortMode: SortVentMode = when {
                 active_Central_Values.sortVentMode != null -> active_Central_Values.sortVentMode!!
                 active_Central_Values.sortVentsParClassment -> SortVentMode.PAR_Creation_Vent
-                else -> SortVentMode.PAR_ENTREE
+                else -> SortVentMode.PAR_Creation_Vent
+            }
+
+            Log.d("Dialog_Fast_Affiche", "=== SORT DEBUG ===")
+            Log.d("Dialog_Fast_Affiche", "sortVentMode: ${active_Central_Values.sortVentMode}")
+            Log.d("Dialog_Fast_Affiche", "sortVentsParClassment: ${active_Central_Values.sortVentsParClassment}")
+            Log.d("Dialog_Fast_Affiche", "Effective sortMode: $sortMode")
+            Log.d("Dialog_Fast_Affiche", "Total vents before filter: ${allVents.size}")
+
+            // Check timestamp values
+            if (allVents.isNotEmpty()) {
+                Log.d("Dialog_Fast_Affiche", "=== TIMESTAMP ANALYSIS ===")
+                allVents.take(5).forEachIndexed { index, vent ->
+                    Log.d("Dialog_Fast_Affiche", "Vent ${index + 1}: keyID=${vent.keyID.take(8)}..., creationTimestamps=${vent.creationTimestamps}, produit=${vent.parent_M1Produit_DebugInfos}")
+                }
+                val ventsWithZeroTimestamp = allVents.count { it.creationTimestamps == 0L }
+                val ventsWithNonZeroTimestamp = allVents.count { it.creationTimestamps != 0L }
+                Log.d("Dialog_Fast_Affiche", "Vents with timestamp=0: $ventsWithZeroTimestamp")
+                Log.d("Dialog_Fast_Affiche", "Vents with timestamp>0: $ventsWithNonZeroTimestamp")
+
+                if (ventsWithZeroTimestamp > 0) {
+                    Log.w("Dialog_Fast_Affiche", "⚠️ WARNING: $ventsWithZeroTimestamp vents have creationTimestamps=0")
+                    Log.w("Dialog_Fast_Affiche", "⚠️ These vents were likely created without setting the timestamp")
+                    Log.w("Dialog_Fast_Affiche", "⚠️ Sort by Classement will not work properly until timestamps are fixed")
+                }
             }
 
             val filteredData = when {
@@ -86,7 +111,6 @@ fun MainList(
                             }
                         }
 
-                        // Filter by product name if search query is not empty
                         if (passesAllFilters && searchQuery.isNotEmpty()) {
                             val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(vent.parent_M1Produit_KeyId)
                             val matchesName = produit?.nom?.contains(searchQuery, ignoreCase = true) == true
@@ -101,6 +125,8 @@ fun MainList(
                 }
             }
 
+            Log.d("Dialog_Fast_Affiche", "Total vents after filter: ${filteredData.size}")
+
             val groupedData = filteredData
                 .groupBy { it.parent_M1Produit_KeyId }
                 .mapValues { (_, ventList) ->
@@ -108,21 +134,28 @@ fun MainList(
                 }
                 .toList()
 
+            Log.d("Dialog_Fast_Affiche", "Total product groups: ${groupedData.size}")
+
             val sortedData = when (sortMode) {
                 SortVentMode.PAR_Creation_Vent -> {
-                    // Sort by creation timestamp of the most recent vent in each product group
+                    // Sort by creation timestamp (most recent first = "Classement")
                     groupedData.sortedWith(compareByDescending<Pair<String, List<M10OperationVentCouleur>>> { (_, ventList) ->
-                        // Get the most recent vent creation timestamp from this product group
                         ventList.maxOfOrNull { vent -> vent.creationTimestamps } ?: 0L
                     }.thenBy { (produitKeyId, _) ->
-                        // Secondary sort by product name for items with same timestamp
                         val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                         produit?.nom?.lowercase() ?: ""
-                    })
+                    }).also { sorted ->
+                        Log.d("Dialog_Fast_Affiche", "PAR_Creation_Vent (Classement) - First 5 products:")
+                        sorted.take(5).forEachIndexed { index, (produitKeyId, ventList) ->
+                            val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                            val maxTimestamp = ventList.maxOfOrNull { it.creationTimestamps } ?: 0L
+                            Log.d("Dialog_Fast_Affiche", "  ${index + 1}. ${produit?.nom} - timestamp: $maxTimestamp (${ventList.size} vents)")
+                        }
+                    }
                 }
 
                 SortVentMode.PAR_ENTREE -> {
-                    // Sort alphabetically by product name
+                    // Sort alphabetically by product name (A-Z = "Entrée")
                     groupedData.sortedWith(compareBy<Pair<String, List<M10OperationVentCouleur>>> { (produitKeyId, _) ->
                         val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                         produit?.nom?.lowercase() ?: ""
@@ -131,15 +164,15 @@ fun MainList(
                         produit?.nomArab?.lowercase() ?: ""
                     }.thenByDescending { (_, ventList) ->
                         ventList.maxOfOrNull { vent -> vent.creationTimestamps } ?: 0L
-                    })
+                    }).also {
+                        Log.d("Dialog_Fast_Affiche", "PAR_ENTREE (Alphabétique) - Sorted")
+                    }
                 }
 
                 SortVentMode.PAR_DERNIERE_UPDATE_LENCE -> {
-                    // Sort by last_update_premier_Check_Donne_TimeTamps if non-zero, otherwise by creationTimestamps
+                    // Sort by last update timestamp (most recently checked first = "Dernière Vérification")
                     groupedData.sortedWith(compareByDescending<Pair<String, List<M10OperationVentCouleur>>> { (_, ventList) ->
-                        // Get the most recent timestamp from all vents in this product group
                         ventList.maxOfOrNull { vent ->
-                            // Use last_update timestamp if it's non-zero, otherwise fall back to creation timestamp
                             if (vent.last_update_premier_Check_Donne_TimeTamps != 0L) {
                                 vent.last_update_premier_Check_Donne_TimeTamps
                             } else {
@@ -147,10 +180,22 @@ fun MainList(
                             }
                         } ?: 0L
                     }.thenBy { (produitKeyId, _) ->
-                        // Secondary sort by product name for items with same timestamp
                         val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
                         produit?.nom?.lowercase() ?: ""
-                    })
+                    }).also { sorted ->
+                        Log.d("Dialog_Fast_Affiche", "PAR_DERNIERE_UPDATE_LENCE (Dernière Vérification) - First 5 products:")
+                        sorted.take(5).forEachIndexed { index, (produitKeyId, ventList) ->
+                            val produit = aCentralFacade.repositorysMainGetter.find_M1Produit_ByKeyID(produitKeyId)
+                            val maxTimestamp = ventList.maxOfOrNull { vent ->
+                                if (vent.last_update_premier_Check_Donne_TimeTamps != 0L) {
+                                    vent.last_update_premier_Check_Donne_TimeTamps
+                                } else {
+                                    vent.creationTimestamps
+                                }
+                            } ?: 0L
+                            Log.d("Dialog_Fast_Affiche", "  ${index + 1}. ${produit?.nom} - timestamp: $maxTimestamp (${ventList.size} vents)")
+                        }
+                    }
                 }
             }
 
