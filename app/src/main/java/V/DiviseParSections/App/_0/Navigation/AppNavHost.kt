@@ -85,7 +85,7 @@ fun AppNavHost(
     // Updated startup screen logic to handle tahfid mode
     val startUpScreen = when {
         ne_affiche_que_fragment -> Screen.EducationFragment
-        !itsDevMode -> Screen.FacadePresentoireProduits
+        !itsDevMode -> Screen.Fragment_Compact_Presentoir_Echantilliants
         else -> {
             val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
             getScreenFromRoute(devStartUpRoute)
@@ -141,7 +141,7 @@ fun AppNavHost(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     composable(
-                        route = Screen.FacadePresentoireProduits.route,
+                        route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
                     ) { backStackEntry ->
                         val screenKey = rememberScreenKey(backStackEntry)
                         Box(modifier = Modifier.fillMaxSize()) {
@@ -217,7 +217,8 @@ fun AppNavHost(
                             key(screenKey) {
                                 Compact_Presentoire_App_Produits_FragID4(
                                     viewModelHeadViewModel=viewModel,
-                                    on_pour_send_data= on_pour_send_data
+                                    on_pour_send_data= on_pour_send_data,
+                                    onClickImageToShowControles = onClickImageToShowControles
                                 )
                             }
                         }
@@ -444,7 +445,6 @@ fun AppNavHost(
 
 private fun getScreenFromRoute(route: String?): Screen? {
     return when (route) {
-        Screen.FacadePresentoireProduits.route -> Screen.FacadePresentoireProduits
         Screen.FragmentProduitFastSearchDialog.route -> Screen.FragmentProduitFastSearchDialog
         Screen.Screen1PanieVentsFinale.route -> Screen.Screen1PanieVentsFinale
         Screen.TravailleTempRecorder.route -> Screen.TravailleTempRecorder
@@ -501,7 +501,7 @@ private fun navigateToMainScreen(
     navController: NavHostController,
     fragmentNavigationHandler: FragmentNavigationHandler
 ) {
-    navController.navigate(Screen.FacadePresentoireProduits.route) {
+    navController.navigate(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
         // Pop the current fragment off the back stack
         popUpTo(Screen.A_Clients_LocationGps.route) {
             inclusive = true
@@ -512,7 +512,7 @@ private fun navigateToMainScreen(
     }
 
     // Update the fragment handler
-    fragmentNavigationHandler.updateCurrentFragment(Screen.FacadePresentoireProduits)
+    fragmentNavigationHandler.updateCurrentFragment(Screen.Fragment_Compact_Presentoir_Echantilliants)
 }
 
 /**

@@ -188,7 +188,7 @@ fun NavigationBarWithFab(
                 onCatalogSelected = { categoryId ->
                     onCatalogSelected(categoryId)
                     showCatalogDialog = false
-                    onNavigate(Screen.FacadePresentoireProduits.route)
+                    onNavigate(Screen.Fragment_Compact_Presentoir_Echantilliants.route)
                 },
                 viewModelInitApp = viewModelInitApp
             )

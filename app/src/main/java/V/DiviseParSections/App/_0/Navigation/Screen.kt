@@ -43,13 +43,6 @@ sealed class Screen(
         color = Color(0xFFF44336)
     )
 
-    data object FacadePresentoireProduits : Screen(
-        route = "FacadePresentoireProduits",
-        icon = Icons.Default.EditRoad,
-        title = "FacadePresentoireProduits",
-        color = Color(0xFF151414)
-    )
-
     data object EditDatabaseWithCreateNewArticles : Screen(
         route = "EditDatabaseWithCreateNewArticles",
         icon = Icons.Default.Dataset,

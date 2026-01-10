@@ -197,10 +197,10 @@ fun MainScreen(
 
         if (productDisplayController.clientWindowsDisplayedProductId == null
             && productDisplayController.isHostPhone
-            && currentRoute != Screen.FacadePresentoireProduits.route
+            && currentRoute != Screen.Fragment_Compact_Presentoir_Echantilliants.route
             && navController.currentDestination != null
         ) {
-            navController.navigate(Screen.FacadePresentoireProduits.route) {
+            navController.navigate(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
 
             }
         }

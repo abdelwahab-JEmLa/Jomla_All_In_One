@@ -17,13 +17,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 private const val TAG = "FragID4GridScroll"
-        //<--
-        //TODO(1): fait comme au autre on expand de metre le expanded item premie visble et de lock le scroll 3 sec pourevite aletoire scrolle
-/**
- * Handle scroll broadcasting from HOST to CLIENT for FragID4 Presenter Grid
- * Utilise EXACTEMENT la même logique que HandleScrollBroadcast de FragID1
- * Utilise mainGridScrollPosition (pas besoin de nouveau champ)
- */
+
 @Composable
 fun HandlePresenterScrollBroadcast(
     isHostPhone: Boolean,
@@ -72,7 +66,6 @@ fun HandlePresenterScrollBroadcast(
                         lastScrollPosition = position
                         onScrollHostChange(position)
                         Log.d(TAG, "Sending scroll position to client: $position")
-                        // Utilise le MÊME message type que FragID1
                         viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                             position
@@ -92,8 +85,7 @@ fun HandlePresenterScrollBroadcast(
 
 /**
  * Handle scroll receiving on CLIENT from HOST for FragID4 Presenter Grid
- * Utilise EXACTEMENT la même logique que HandleClientScroll de FragID1
- * Utilise mainGridScrollPosition (pas besoin de nouveau champ)
+ * Uses the same logic as HandleClientScroll from FragID1
  */
 @Composable
 fun HandlePresenterClientScroll(
@@ -112,7 +104,6 @@ fun HandlePresenterClientScroll(
             if (!isAnimating) {
                 isAnimating = true
                 scope.launch {
-                    // Smooth scroll to the received position
                     gridState.animateScrollToItem(
                         index = scrollPosition,
                         scrollOffset = 0
@@ -123,7 +114,6 @@ fun HandlePresenterClientScroll(
             }
         } catch (e: Exception) {
             isAnimating = false
-            // Fallback to instant scroll
             gridState.scrollToItem(scrollPosition)
         }
     }

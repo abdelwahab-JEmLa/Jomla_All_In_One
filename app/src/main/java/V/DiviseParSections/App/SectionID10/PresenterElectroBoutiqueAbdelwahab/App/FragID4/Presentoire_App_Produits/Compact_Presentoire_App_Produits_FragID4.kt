@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.A_Item_Produit_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.Autres.ScrolleAdBanner
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -22,14 +23,18 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -37,7 +42,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
-    on_pour_send_data: (String, String) -> Unit = { _, _ -> }
+    on_pour_send_data: (String, String) -> Unit = { _, _ -> } ,
+    onClickImageToShowControles: () -> Unit
 ) {
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
@@ -103,7 +109,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
         modifier = modifier,
         categoriesWithProducts = groupe_Par_Categorie,
         viewModelHeadViewModel = viewModelHeadViewModel,
-        on_pour_send_data = on_pour_send_data
+        on_pour_send_data = on_pour_send_data,
+        onClickImageToShowControles = onClickImageToShowControles
     )
 }
 
@@ -113,19 +120,55 @@ fun Etager_LazyColumn_FragID4(
     categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    onClickImageToShowControles: () -> Unit
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     val isHostPhone = uiState.productDisplayController.isHostPhone
     val isConnected = uiState.productDisplayController.isConnected
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
-
-    // FIXED: Client scroll is disabled when connected to host
     val isScrollEnabled = isHostPhone || !isConnected
+
+    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+
+    // Handle expanded item scroll to position WITHOUT lock
+    LaunchedEffect(expanded_M3CouleurProduitInfos) {
+        expanded_M3CouleurProduitInfos?.let { expandedColor ->
+            var currentIndex = 0
+            var foundIndex = -1
+
+            // Account for banner at the top (index 0)
+            currentIndex = 1
+
+            for ((category, productColorPairs) in categoriesWithProducts) {
+                // Category header takes one slot
+                currentIndex++
+
+                val productIndex = productColorPairs.indexOfFirst { (product, _) ->
+                    product.id == expandedColor.parentBProduitOldID
+                }
+
+                if (productIndex != -1) {
+                    foundIndex = currentIndex + productIndex
+                    break
+                }
+
+                currentIndex += productColorPairs.size
+            }
+
+            if (foundIndex != -1) {
+                delay(100)
+                coroutineScope.launch {
+                    gridState.animateScrollToItem(foundIndex)
+                }
+            }
+        }
+    }
 
     HandlePresenterScrollBroadcast(
         isHostPhone = isHostPhone,
@@ -150,9 +193,21 @@ fun Etager_LazyColumn_FragID4(
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
-        // FIXED: Disable user scrolling when client is connected to host
         userScrollEnabled = isScrollEnabled
     ) {
+        // Add banner at the top
+        item(
+            key = "ad_banner_header",
+            span = StaggeredGridItemSpan.FullLine
+        ) {
+            ScrolleAdBanner(
+                onBannerClick = { bannerIndex ->
+                    // Handle banner click if needed
+                },
+                onClickImageToShowControles = onClickImageToShowControles
+            )
+        }
+
         categoriesWithProducts.forEach { (category, productColorPairs) ->
             item(
                 key = "header_${category.id}",
