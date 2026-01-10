@@ -139,6 +139,9 @@ fun Etager_LazyColumn_FragID4(
     // Handle expanded item scroll to position WITHOUT lock
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
+            // Only scroll if we're the host phone
+            if (!isHostPhone) return@LaunchedEffect
+
             var currentIndex = 0
             var foundIndex = -1
 

@@ -60,7 +60,7 @@ fun HandlePresenterScrollBroadcast(
                     else -> false
                 }
 
-                if (isDragging) {
+                if (isDragging || position != lastScrollPosition) {
                     isScrollInProgress = true
                     if (position != lastScrollPosition) {
                         lastScrollPosition = position
@@ -85,7 +85,7 @@ fun HandlePresenterScrollBroadcast(
 
 /**
  * Handle scroll receiving on CLIENT from HOST for FragID4 Presenter Grid
- * Uses the same logic as HandleClientScroll from FragID1
+ * Now handles scroll updates more reliably after expand operations
  */
 @Composable
 fun HandlePresenterClientScroll(
@@ -95,26 +95,37 @@ fun HandlePresenterClientScroll(
     tag: String = TAG
 ) {
     val scope = rememberCoroutineScope()
+    var lastReceivedPosition by remember { mutableStateOf(-1) }
     var isAnimating by remember { mutableStateOf(false) }
 
     LaunchedEffect(scrollPosition) {
         if (isHostPhone) return@LaunchedEffect
 
+        // Only scroll if position actually changed
+        if (scrollPosition == lastReceivedPosition) return@LaunchedEffect
+
+        Log.d(tag, "Client received scroll position: $scrollPosition (last: $lastReceivedPosition)")
+
+        lastReceivedPosition = scrollPosition
+
         try {
             if (!isAnimating) {
                 isAnimating = true
                 scope.launch {
-                    gridState.animateScrollToItem(
-                        index = scrollPosition,
-                        scrollOffset = 0
-                    )
-                    delay(100)
+                    // Cancel any ongoing animation first
+                    gridState.scrollToItem(scrollPosition, 0)
+                    delay(50)
                     isAnimating = false
                 }
             }
         } catch (e: Exception) {
+            Log.e(tag, "Error scrolling to position $scrollPosition", e)
             isAnimating = false
-            gridState.scrollToItem(scrollPosition)
+            try {
+                gridState.scrollToItem(scrollPosition)
+            } catch (e2: Exception) {
+                Log.e(tag, "Fallback scroll also failed", e2)
+            }
         }
     }
 }
