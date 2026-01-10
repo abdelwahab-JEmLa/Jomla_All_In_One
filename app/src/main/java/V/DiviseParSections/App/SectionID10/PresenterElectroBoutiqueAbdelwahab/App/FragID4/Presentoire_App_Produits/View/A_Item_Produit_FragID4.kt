@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -45,6 +46,7 @@ fun A_Item_Produit_FragID4(
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
 ) {
+
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
     }

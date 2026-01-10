@@ -215,7 +215,7 @@ fun AppNavHost(
 
                         Box(modifier = Modifier.fillMaxSize()) {
                             key(screenKey) {
-                                Compact_Presentoire_App_Produits_FragID4()
+                                Compact_Presentoire_App_Produits_FragID4(viewModelHeadViewModel=viewModel)
                             }
                         }
                     }
