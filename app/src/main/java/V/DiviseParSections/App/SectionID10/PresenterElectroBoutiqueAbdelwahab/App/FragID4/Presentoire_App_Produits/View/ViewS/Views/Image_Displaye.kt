@@ -46,14 +46,12 @@ fun Image_Displaye_FragId4(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        // FIXED: Get the parent product for this color
         val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
             repositorysMainGetter.repoM1Produit.datasValue.find {
                 it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
             }
         }
 
-        // Build the complete modifier with click handler BEFORE passing to GlideImage
         val completeModifier = modifier
             .fillMaxSize()
             .then(
@@ -61,25 +59,19 @@ fun Image_Displaye_FragId4(
                     val currentExpandedProduct = focusedValuesGetter.active_Central_Values.expanded_M1Produit
                     val currentExpandedColor = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-                    // Check if we're clicking on a color from the SAME product that's already expanded
                     val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
                     val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
 
                     if (isSameProductExpanded && isDifferentColor) {
-                        // CASE 1: Same product, different color → Update only the selected color
                         focusedValuesGetter.update_activeCentralValues(
                             focusedValuesGetter.active_Central_Values.copy(
                                 expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
-                                // Keep expanded_M1Produit unchanged
                             )
                         )
                     } else {
-                        // CASE 2: Different product OR same color → Toggle product expansion
                         val newProductValue = if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
-                            // Same product, same color → Collapse
                             null
                         } else {
-                            // Different product → Expand it
                             parentProduct
                         }
 
@@ -95,7 +87,6 @@ fun Image_Displaye_FragId4(
                         )
                     }
 
-                    // Send the data update
                     on_pour_send_data(
                         WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
                         relative_M3CouleurProduitInfos.keyID

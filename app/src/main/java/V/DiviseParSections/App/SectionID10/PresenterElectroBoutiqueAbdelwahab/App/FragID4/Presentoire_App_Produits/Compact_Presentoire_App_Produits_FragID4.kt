@@ -41,6 +41,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
+    val uiState by viewModelHeadViewModel.uiState.collectAsState()
+    val productDisplayController = uiState.productDisplayController
     val developement_test = false
 
     val lastBonVentAbdelwahab = remember(
@@ -130,14 +132,15 @@ fun Etager_LazyColumn_FragID4(
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
 
-    // Utilise les MÊMES valeurs que PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
     val isHostPhone = uiState.productDisplayController.isHostPhone
     val isConnected = uiState.productDisplayController.isConnected
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
 
-    // Réutilise HandleScrollBroadcast de FragID1 (même logique)
+    // FIXED: Client scroll is disabled when connected to host
+    val isScrollEnabled = isHostPhone || !isConnected
+
     HandlePresenterScrollBroadcast(
         isHostPhone = isHostPhone,
         isConnected = isConnected,
@@ -145,7 +148,6 @@ fun Etager_LazyColumn_FragID4(
         viewModel = viewModelHeadViewModel
     )
 
-    // Réutilise HandleClientScroll de FragID1 (même logique)
     HandlePresenterClientScroll(
         isHostPhone = isHostPhone,
         scrollPosition = currentScrollPosition,
@@ -161,7 +163,9 @@ fun Etager_LazyColumn_FragID4(
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalItemSpacing = 8.dp
+        verticalItemSpacing = 8.dp,
+        // FIXED: Disable user scrolling when client is connected to host
+        userScrollEnabled = isScrollEnabled
     ) {
         categoriesWithProducts.forEach { (category, productColorPairs) ->
             item(

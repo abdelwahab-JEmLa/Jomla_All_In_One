@@ -354,14 +354,14 @@ fun MainScreen(
 
                                 }
                             )
-
+                                        /*
                             if (!isHostPhone && productDisplayController.isConnected) {
                                 Box(
                                     modifier = Modifier
                                         .matchParentSize()
                                         .clickable(enabled = false) { }
                                 )
-                            }
+                            }      */
                         }
                     }
                 }
