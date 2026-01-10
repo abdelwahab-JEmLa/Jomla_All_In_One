@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.A_Item_Produit_FragID4
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -29,14 +29,15 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
-fun Compact_Presentoir_Echantilliants_FragID3(
+fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
-    // Display all products where countdepot > 0 and from operationsFromLastBon
-    // Development mode removed - using production logic
+    // Production mode - shows all products where count_Don_Depot > 0 and disponibilityEtates == DISPO
+    // Products are NOT filtered by lastBonVentAbdelwahab
+    val developement_test = false
 
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
@@ -48,7 +49,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         )
     }
 
-    // Get all M10 operations for the last bon vent
+    // Get all M10 operations for the last bon vent (only used in development mode)
     val operationsFromLastBon = remember(
         lastBonVentAbdelwahab,
         repositorysMainGetter.repo10OperationVentCouleur.datasValue
@@ -62,26 +63,32 @@ fun Compact_Presentoir_Echantilliants_FragID3(
 
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
-        operationsFromLastBon
+        operationsFromLastBon,
+        developement_test
     ) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
-            // Filter: must have stock (count_Don_Depot > 0)
+            // Check if product has stock
             val hasStock = couleur.count_Don_Depot > 0
 
+            // Find the parent product
             val produit = repositorysMainGetter.repoM1Produit.datasValue.find {
                 it.keyID == couleur.parentBProduitInfosKeyID
             }
 
-            // Filter: must be in operationsFromLastBon AND be available
-            val isInOperations = operationsFromLastBon.any { operation ->
-                operation.parent_M3CouleurProduit_KeyID == couleur.keyID
+            // Determine availability based on mode
+            val isAvailable = if (developement_test) {
+                // Development mode: check if color is in last bon vent operations
+                operationsFromLastBon.any { operation ->
+                    operation.parent_M3CouleurProduit_KeyID == couleur.keyID
+                }
+            } else {
+                // Production mode: check product availability status
+                produit?.disponibilityEtates == DisponibilityEtates.DISPO
             }
 
-            val isAvailable = produit?.disponibilityEtates == DisponibilityEtates.DISPO
-
-            hasStock && isInOperations && isAvailable
+            hasStock && isAvailable
         }.sortedByDescending { couleur ->
-            // Sort by creation timestamp from operations
+            // Sort by creation timestamp from operations (if exists)
             operationsFromLastBon.find { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
             }?.creationTimestamps ?: 0L
@@ -110,7 +117,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
             .sortedBy { (category, _) -> category.positionDouble }
     }
 
-    Etager_LazyColumn_FragID3(
+    Etager_LazyColumn_FragID4(
         modifier = modifier,
         categoriesWithProducts = groupe_Par_Categorie,
         on_pour_send_data = on_pour_send_data
@@ -118,7 +125,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
 }
 
 @Composable
-fun Etager_LazyColumn_FragID3(
+fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier,
     categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
@@ -127,12 +134,12 @@ fun Etager_LazyColumn_FragID3(
     val gridState = rememberLazyStaggeredGridState()
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(4),
+        columns = StaggeredGridCells.Fixed(2),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFFFF0F5)), // Rose clair (lavender blush)
+            .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp
     ) {
@@ -158,7 +165,7 @@ fun Etager_LazyColumn_FragID3(
                         StaggeredGridItemSpan.SingleLane
                     }
                 ) {
-                    LazyStigerList_Produits_FragID3(
+                    LazyStigerList_Produits_FragID4(
                         product = product,
                         colors = colors,
                         on_pour_send_data = on_pour_send_data
@@ -190,7 +197,7 @@ fun CategoryStickyHeader(
 }
 
 @Composable
-fun LazyStigerList_Produits_FragID3(
+fun LazyStigerList_Produits_FragID4(
     modifier: Modifier = Modifier,
     product: ArticlesBasesStatsTable,
     colors: List<M3CouleurProduitInfos>,
@@ -200,7 +207,7 @@ fun LazyStigerList_Produits_FragID3(
     val isExpanded = focusedValuesGetter.active_Central_Values
         .expanded_M1Produit?.keyID == product.keyID
 
-    Item_Produit_FragID3(
+    A_Item_Produit_FragID4(
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
         modifier = modifier

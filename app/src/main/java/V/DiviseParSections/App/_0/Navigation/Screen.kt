@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
+import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
@@ -34,6 +35,12 @@ sealed class Screen(
         icon = Icons.Default.ProductionQuantityLimits,
         title = "Fragment_Compact_Presentoir_Echantilliants",
         color = Color(0xFF9C27B0)
+    )
+    data object Compact_Presentoire_App_Produits_FragID4: Screen(
+        route = "Compact_Presentoire_App_Produits_FragID4",
+        icon = Icons.Default.PauseCircleOutline,
+        title = "Compact_Presentoire_App_Produits_FragID4",
+        color = Color(0xFFF44336)
     )
 
     data object FacadePresentoireProduits : Screen(

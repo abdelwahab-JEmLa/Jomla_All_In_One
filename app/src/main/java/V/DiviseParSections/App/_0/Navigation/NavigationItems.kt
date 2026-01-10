@@ -5,6 +5,7 @@ object NavigationItems {
     fun getItems() = listOf(
         ScreensApp2.A_ClientsLocationGps,
         Screen.Fragment_Compact_Presentoir_Echantilliants,
+        Screen.Compact_Presentoire_App_Produits_FragID4,
         Screen.FacadePresentoireProduits,
         Screen.TravailleTempRecorder,
         Screen.Achats_Produits_Chez_Grossists,
