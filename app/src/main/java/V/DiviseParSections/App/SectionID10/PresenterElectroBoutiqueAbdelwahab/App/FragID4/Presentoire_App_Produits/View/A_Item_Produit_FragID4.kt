@@ -193,12 +193,18 @@ fun A_Item_Produit_FragID4(
         mutableStateOf(finale_Tariff)
     }
 
-    val developement_affiche = true
-
+    // FIXED: Proper connection logic
+    // - If NOT connected: show everything (normal mode)
+    // - If connected AND host: show buttons
+    // - If connected AND client: hide buttons but show sub-colors
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
-            && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
+    val isConnected = wifiTransferDatas.connectionUiState.value.isConnected
 
-    val shouldShowButtons = isHostPhone
+    // Show buttons if: NOT connected OR (connected AND is host)
+    val shouldShowButtons = !isConnected || (isConnected && isHostPhone)
+
+    // Show sub-colors always (they're just visual display)
+    val shouldShowSubColors = true
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
@@ -252,7 +258,8 @@ fun A_Item_Produit_FragID4(
                     on_pour_send_data = on_pour_send_data
                 )
 
-                if (relative_ListM3Couleurs.size > 1 && shouldShowButtons) {
+                // FIXED: Show sub-colors always, but control button visibility
+                if (relative_ListM3Couleurs.size > 1) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (isThisProductExpanded) {
@@ -271,6 +278,7 @@ fun A_Item_Produit_FragID4(
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
+                                        shouldShowButtons = shouldShowButtons, // FIXED: Control buttons, not sub-colors
                                         modifier = Modifier.weight(1f, fill = false)
                                     )
                                 }
@@ -290,6 +298,7 @@ fun A_Item_Produit_FragID4(
                                         focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = false,
+                                        shouldShowButtons = shouldShowButtons, // FIXED: Control buttons, not sub-colors
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }

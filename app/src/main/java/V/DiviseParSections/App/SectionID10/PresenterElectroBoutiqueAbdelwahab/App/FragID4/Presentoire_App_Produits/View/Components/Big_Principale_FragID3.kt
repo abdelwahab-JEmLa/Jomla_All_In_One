@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+// FIXED: Only show Lenceur_Vent_Handler and Tariffs to host phone (not clients)
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
 fun Big_Principale_FragID4(
@@ -35,6 +36,7 @@ fun Big_Principale_FragID4(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Color image is always visible to both host and client
     ColorImageCard_FragID4(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
@@ -42,9 +44,11 @@ fun Big_Principale_FragID4(
         modifier = Modifier.fillMaxWidth()
     )
 
-    Spacer(modifier = Modifier.height(8.dp))
-
+    // Only show sales controls and tariffs to host phone (shouldShowButtons)
+    // This prevents clients from seeing these interactive elements
     if (shouldShowButtons) {
+        Spacer(modifier = Modifier.height(8.dp))
+
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()

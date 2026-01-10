@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
@@ -37,14 +36,9 @@ import org.koin.compose.koinInject
 fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
-    val uiState by viewModelHeadViewModel.uiState.collectAsState()
-    val productDisplayController = uiState.productDisplayController
-    val developement_test = false
-
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
         repositorysMainGetter.repo2Client.datasValue
@@ -69,23 +63,15 @@ fun Compact_Presentoire_App_Produits_FragID4(
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
-        developement_test
     ) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
             val hasStock = couleur.count_Don_Depot > 0
-            val produit = repositorysMainGetter.repoM1Produit.datasValue.find {
-                it.keyID == couleur.parentBProduitInfosKeyID
+
+            operationsFromLastBon.any { operation ->
+                operation.parent_M3CouleurProduit_KeyID == couleur.keyID
             }
 
-            val isAvailable = if (developement_test) {
-                operationsFromLastBon.any { operation ->
-                    operation.parent_M3CouleurProduit_KeyID == couleur.keyID
-                }
-            } else {
-                produit?.disponibilityEtates == DisponibilityEtates.DISPO
-            }
-
-            hasStock && isAvailable
+            hasStock
         }.sortedByDescending { couleur ->
             operationsFromLastBon.find { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
