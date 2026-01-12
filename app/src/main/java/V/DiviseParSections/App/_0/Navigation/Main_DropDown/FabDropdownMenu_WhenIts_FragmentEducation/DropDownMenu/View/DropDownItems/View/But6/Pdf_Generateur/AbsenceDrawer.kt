@@ -1,5 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.Pdf_Generateur
 
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawRTLText
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -7,6 +9,8 @@ import android.graphics.Paint
 import android.text.Layout
 import android.text.TextPaint
 import androidx.core.graphics.toColorInt
+import java.util.Calendar
+import java.util.Date
 
 /**
  * Utility object for drawing absence-related cells in PDF documents
@@ -157,4 +161,93 @@ object AbsenceDrawer {
         val absenceLabel: TextPaint,
         val justificationLabel: TextPaint
     )
+}
+
+data class SessionDate(
+    val dayOfMonth: Int,
+    val dayOfWeek: Int,
+    val date: Date
+)
+
+fun getSessionDatesForMonth(): List<SessionDate> {
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
+    val currentYear = calendar.get(Calendar.YEAR)
+
+    val sessionDates = mutableListOf<SessionDate>()
+
+    calendar.set(Calendar.DAY_OF_MONTH, 1)
+    val maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    for (day in 1..maxDay) {
+        calendar.set(Calendar.DAY_OF_MONTH, day)
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+        if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.THURSDAY) {
+            sessionDates.add(
+                SessionDate(
+                    dayOfMonth = day,
+                    dayOfWeek = dayOfWeek,
+                    date = calendar.time
+                )
+            )
+        }
+    }
+
+    return sessionDates
+}
+
+/**
+ * FIXED: Get absences from observations (Type.Raeeb)
+ * Maps session dates to absence information including justification
+ */
+fun getAbsencesByDate(
+    etudiant: M19Etudiant,
+    observations: List<M20ObsarvationEtudion>
+): Map<SessionDate, ParentCommunicationCardData_But6.AbsenceDay> {
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
+    val currentYear = calendar.get(Calendar.YEAR)
+
+    val absenceObservations = observations.filter { obs ->
+        obs.etudiant_keyID == etudiant.keyID &&
+                obs.type == M20ObsarvationEtudion.Type.Raeeb
+    }
+
+    val sessionDates = getSessionDatesForMonth()
+    val absenceMap = mutableMapOf<SessionDate, ParentCommunicationCardData_But6.AbsenceDay>()
+
+    absenceObservations.forEach { obs ->
+        val obsDate = Date(obs.creationTimestamps)
+        val obsCal = Calendar.getInstance().apply { time = obsDate }
+
+        if (obsCal.get(Calendar.MONTH) == currentMonth &&
+            obsCal.get(Calendar.YEAR) == currentYear) {
+
+            val obsDayOfMonth = obsCal.get(Calendar.DAY_OF_MONTH)
+            val obsDayOfWeek = obsCal.get(Calendar.DAY_OF_WEEK)
+
+            val matchingSession = sessionDates.find {
+                it.dayOfMonth == obsDayOfMonth && it.dayOfWeek == obsDayOfWeek
+            }
+
+            if (matchingSession != null) {
+                val isJustified = obs.tabrire_riyab.isNotBlank()
+                val justification = if (isJustified) obs.tabrire_riyab else ""
+
+                absenceMap[matchingSession] = ParentCommunicationCardData_But6.AbsenceDay(
+                    dayOfWeek = when (obsDayOfWeek) {
+                        Calendar.SUNDAY -> 0
+                        Calendar.THURSDAY -> 4
+                        else -> -1
+                    },
+                    date = obsDate,
+                    isJustified = isJustified,
+                    justification = justification
+                )
+            }
+        }
+    }
+
+    return absenceMap
 }
