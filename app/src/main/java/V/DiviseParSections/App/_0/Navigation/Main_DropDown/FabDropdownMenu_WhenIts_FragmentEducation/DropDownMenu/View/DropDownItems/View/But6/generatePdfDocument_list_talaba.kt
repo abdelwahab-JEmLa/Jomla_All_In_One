@@ -14,6 +14,7 @@ import androidx.core.graphics.toColorInt
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
+import java.util.Calendar
 
 data class ParentCommunicationCardData_But6(
     val studentInfo: StudentInfo,
@@ -33,7 +34,8 @@ data class ParentCommunicationCardData_But6(
     data class AbsenceDay(
         val dayOfWeek: Int,  // 0-4 for Sunday-Thursday
         val date: Date,
-        val isJustified: Boolean
+        val isJustified: Boolean,
+        val justification: String = ""  // Added justification text
     )
 
     companion object {
@@ -77,10 +79,16 @@ data class ParentCommunicationCardData_But6(
 private const val SIZE_TEXT_ATTENDANCE_STATUS = 9f
 private const val SIZE_TEXT_ABSENCE_COUNT = 9f
 private const val SIZE_TEXT_NAME_AGE = 9f
-private const val SIZE_TEXT_ABSENCE_LABEL = 7f  // For "غياب غير مبرر" text
+private const val SIZE_TEXT_ABSENCE_LABEL = 7f
+private const val SIZE_TEXT_JUSTIFICATION = 6f  // For justification text
 
 // PNG/Image size constant
-private const val SIZE_PNG = 20f  // Size for absence icon
+private const val SIZE_PNG = 20f
+
+// Layout constants
+private const val NOMB_ETUDION_PAR_PAGE = 8
+private const val COLUMN_HEIGHT_ETUDION = 50f
+private const val FIRST_HEADER_HEIGHT = 20f
 
 fun generatePdfDocument_6(
     context: Context,
@@ -111,17 +119,24 @@ fun generatePdfDocument_6(
             null
         }
 
+        // Load justification icon
+        val justificationIcon = try {
+            val iconStream = context.resources.openRawResource(
+                context.resources.getIdentifier("tabrire", "drawable", context.packageName)
+            )
+            BitmapFactory.decodeStream(iconStream)
+        } catch (e: Exception) {
+            Log.w("PDF", "Justification icon (tabrire.png) not found")
+            null
+        }
+
         // Sort students: first by absences (descending), then by name (ascending)
         val sortedIndices = etudiants.indices.sortedWith(
             compareByDescending<Int> { etudiants[it].nmbr_absence_sans_justification }
                 .thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
         )
 
-        val nomb_etudion_par_page = 8
-        val column_height_etudion = 50f
-        val first_header_height = 20f
-
-        val studentsPerPage = nomb_etudion_par_page
+        val studentsPerPage = NOMB_ETUDION_PAR_PAGE
         val totalPages = (cardsData.size + studentsPerPage - 1) / studentsPerPage
 
         for (pageIndex in 0 until totalPages) {
@@ -187,6 +202,14 @@ fun generatePdfDocument_6(
                 color = android.graphics.Color.WHITE
             }
 
+            // Text for justification label
+            val paintJustificationLabel = TextPaint().apply {
+                textSize = SIZE_TEXT_JUSTIFICATION
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = android.graphics.Color.WHITE
+            }
+
             val paintWarning = TextPaint().apply {
                 textSize = SIZE_TEXT_ABSENCE_COUNT
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -226,6 +249,11 @@ fun generatePdfDocument_6(
 
             val paintAbsenceBg = Paint().apply {
                 color = "#F44336".toColorInt()
+                style = Paint.Style.FILL
+            }
+
+            val paintJustifiedBg = Paint().apply {
+                color = "#FF9800".toColorInt()  // Orange for justified absence
                 style = Paint.Style.FILL
             }
 
@@ -293,8 +321,8 @@ fun generatePdfDocument_6(
                 add("رقم")
             }.toTypedArray()
 
-            val rowHeight = column_height_etudion
-            val headerHeight = first_header_height
+            val rowHeight = COLUMN_HEIGHT_ETUDION
+            val headerHeight = FIRST_HEADER_HEIGHT
             val subHeaderHeight = 28f
             val totalHeaderHeight = headerHeight + subHeaderHeight
 
@@ -422,7 +450,7 @@ fun generatePdfDocument_6(
                 xPosition += colWidths[0]
 
                 // Columns 2-5: Weekly attendance with icon
-                val weeklyAbsences = getWeeklyAbsences(etudiant, observations)
+                val weeklyAbsences = getWeeklyAbsencesWithJustification(etudiant, observations)
 
                 for (weekIndex in 3 downTo 0) {
                     val absences = weeklyAbsences[weekIndex]
@@ -440,35 +468,60 @@ fun generatePdfDocument_6(
                     val thursdayAbsence = absences.find { it.dayOfWeek == 4 }
 
                     if (thursdayAbsence != null) {
+                        // Use different background color based on justification
+                        val bgPaint = if (thursdayAbsence.isJustified) paintJustifiedBg else paintAbsenceBg
+
                         canvas.drawRect(
                             thursdayCellX + 1f, yPosition + 1f,
                             thursdayCellX + dayCellWidth - 1f, yPosition + rowHeight - 1f,
-                            paintAbsenceBg
+                            bgPaint
                         )
 
-                        // Draw absence icon if available
-                        if (absenceIcon != null) {
+                        // Choose icon based on justification
+                        val iconToUse = if (thursdayAbsence.isJustified && justificationIcon != null) {
+                            justificationIcon
+                        } else {
+                            absenceIcon
+                        }
+
+                        if (iconToUse != null) {
                             val iconSize = SIZE_PNG
                             val iconX = thursdayCellX + (dayCellWidth - iconSize) / 2
                             val iconY = yPosition + 5f
 
                             canvas.drawBitmap(
-                                absenceIcon,
+                                iconToUse,
                                 null,
                                 android.graphics.RectF(iconX, iconY, iconX + iconSize, iconY + iconSize),
                                 null
                             )
 
                             // Draw text below icon
+                            val labelText = if (thursdayAbsence.isJustified) {
+                                "غياب\nمبرر"
+                            } else {
+                                "غياب\nغير مبرر"
+                            }
+
                             drawRTLText(
-                                canvas, "غياب\nغير مبرر",
-                                thursdayCellX + 2f, yPosition + 37f, (dayCellWidth - 4f).toInt(),
+                                canvas, labelText,
+                                thursdayCellX + 2f, yPosition + 28f, (dayCellWidth - 4f).toInt(),
                                 paintAbsenceLabel, Layout.Alignment.ALIGN_CENTER
                             )
+
+                            // If justified, show justification text
+                            if (thursdayAbsence.isJustified && thursdayAbsence.justification.isNotBlank()) {
+                                drawRTLText(
+                                    canvas, thursdayAbsence.justification,
+                                    thursdayCellX + 2f, yPosition + 40f, (dayCellWidth - 4f).toInt(),
+                                    paintJustificationLabel, Layout.Alignment.ALIGN_CENTER
+                                )
+                            }
                         } else {
                             // Fallback if icon not found
+                            val labelText = if (thursdayAbsence.isJustified) "⚠️\nغياب\nمبرر" else "⚠️\nغياب\nغير\nمبرر"
                             drawRTLText(
-                                canvas, "⚠\nغياب\nغير\nمبرر",
+                                canvas, labelText,
                                 thursdayCellX + 2f, yPosition + 8f, (dayCellWidth - 4f).toInt(),
                                 paintAbsenceLabel, Layout.Alignment.ALIGN_CENTER
                             )
@@ -480,35 +533,60 @@ fun generatePdfDocument_6(
                     val sundayAbsence = absences.find { it.dayOfWeek == 0 }
 
                     if (sundayAbsence != null) {
+                        // Use different background color based on justification
+                        val bgPaint = if (sundayAbsence.isJustified) paintJustifiedBg else paintAbsenceBg
+
                         canvas.drawRect(
                             sundayCellX + 1f, yPosition + 1f,
                             sundayCellX + dayCellWidth - 1f, yPosition + rowHeight - 1f,
-                            paintAbsenceBg
+                            bgPaint
                         )
 
-                        // Draw absence icon if available
-                        if (absenceIcon != null) {
+                        // Choose icon based on justification
+                        val iconToUse = if (sundayAbsence.isJustified && justificationIcon != null) {
+                            justificationIcon
+                        } else {
+                            absenceIcon
+                        }
+
+                        if (iconToUse != null) {
                             val iconSize = SIZE_PNG
                             val iconX = sundayCellX + (dayCellWidth - iconSize) / 2
                             val iconY = yPosition + 5f
 
                             canvas.drawBitmap(
-                                absenceIcon,
+                                iconToUse,
                                 null,
                                 android.graphics.RectF(iconX, iconY, iconX + iconSize, iconY + iconSize),
                                 null
                             )
 
                             // Draw text below icon
+                            val labelText = if (sundayAbsence.isJustified) {
+                                "غياب\nمبرر"
+                            } else {
+                                "غياب\nغير مبرر"
+                            }
+
                             drawRTLText(
-                                canvas, "غياب\nغير مبرر",
-                                sundayCellX + 2f, yPosition + 37f, (dayCellWidth - 4f).toInt(),
+                                canvas, labelText,
+                                sundayCellX + 2f, yPosition + 28f, (dayCellWidth - 4f).toInt(),
                                 paintAbsenceLabel, Layout.Alignment.ALIGN_CENTER
                             )
+
+                            // If justified, show justification text
+                            if (sundayAbsence.isJustified && sundayAbsence.justification.isNotBlank()) {
+                                drawRTLText(
+                                    canvas, sundayAbsence.justification,
+                                    sundayCellX + 2f, yPosition + 40f, (dayCellWidth - 4f).toInt(),
+                                    paintJustificationLabel, Layout.Alignment.ALIGN_CENTER
+                                )
+                            }
                         } else {
                             // Fallback if icon not found
+                            val labelText = if (sundayAbsence.isJustified) "⚠️\nغياب\nمبرر" else "⚠️\nغياب\nغير\nمبرر"
                             drawRTLText(
-                                canvas, "⚠\nغياب\nغير\nمبرر",
+                                canvas, labelText,
                                 sundayCellX + 2f, yPosition + 8f, (dayCellWidth - 4f).toInt(),
                                 paintAbsenceLabel, Layout.Alignment.ALIGN_CENTER
                             )
@@ -564,4 +642,58 @@ fun generatePdfDocument_6(
         Log.e("AttendanceReport", "❌ Error creating PDF", e)
         null
     }
+}
+
+// Helper function to get weekly absences with justification info
+fun getWeeklyAbsencesWithJustification(
+    etudiant: M19Etudiant?,
+    observations: List<M20ObsarvationEtudion>
+): List<List<ParentCommunicationCardData_But6.AbsenceDay>> {
+    if (etudiant == null) return List(4) { emptyList() }
+
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
+    val currentYear = calendar.get(Calendar.YEAR)
+
+    val absenceObservations = observations.filter { obs ->
+        obs.etudiant_keyID == etudiant.keyID &&
+                obs.type == M20ObsarvationEtudion.Type.Raeeb
+    }
+
+    val weeklyAbsences = MutableList(4) { mutableListOf<ParentCommunicationCardData_But6.AbsenceDay>() }
+
+    absenceObservations.forEach { obs ->
+        val obsDate = Date(obs.creationTimestamps)
+        val obsCal = Calendar.getInstance().apply { time = obsDate }
+
+        if (obsCal.get(Calendar.MONTH) == currentMonth &&
+            obsCal.get(Calendar.YEAR) == currentYear) {
+
+            val weekOfMonth = obsCal.get(Calendar.WEEK_OF_MONTH) - 1
+            val dayOfWeek = when (obsCal.get(Calendar.DAY_OF_WEEK)) {
+                Calendar.SUNDAY -> 0
+                Calendar.MONDAY -> 1
+                Calendar.TUESDAY -> 2
+                Calendar.WEDNESDAY -> 3
+                Calendar.THURSDAY -> 4
+                else -> -1
+            }
+
+            if (weekOfMonth in 0..3 && dayOfWeek in 0..4) {
+                val isJustified = obs.tabrire_riyab.isNotBlank()
+                val justification = if (isJustified) obs.tabrire_riyab else ""
+
+                weeklyAbsences[weekOfMonth].add(
+                    ParentCommunicationCardData_But6.AbsenceDay(
+                        dayOfWeek = dayOfWeek,
+                        date = obsDate,
+                        isJustified = isJustified,
+                        justification = justification
+                    )
+                )
+            }
+        }
+    }
+
+    return weeklyAbsences
 }
