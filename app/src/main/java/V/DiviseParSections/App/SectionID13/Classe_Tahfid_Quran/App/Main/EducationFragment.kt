@@ -9,34 +9,37 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etu
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.SessionsEducationDialog
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,18 +48,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-      //<--
-      //TODO(1): enlve header nom ousstad  
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EducationFragment(
@@ -76,7 +82,6 @@ fun EducationFragment(
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
     var selectedEtudiantForSessions by remember { mutableStateOf<M19Etudiant?>(null) }
 
- 
     val activeOusstad = activeCentralValues.active_Ousstad_Tahfid
     val ousstadTitle = activeOusstad?.nom_arab ?: "قسم حفظة القرآن منظم"
 
@@ -155,79 +160,225 @@ fun EducationFragment(
         isSameDay(updateTimestamp, System.currentTimeMillis())
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = ousstadTitle,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
-                        )
-                        Text(
-                            text = "حمنيش عبدالوهاب",
-                            style = MaterialTheme.typography.titleSmall.copy(
-                                fontSize = 14.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    if (onNavigateBack != null) {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Retour",
-                                tint = if (hasUpdateToday) {
-                                    Color(0xFFFFC107)
-                                } else {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                }
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+    ) {
+        // Auto-scrolling banner
+        ScrollableInformationBanner(
+            ousstadName = activeOusstad?.nom_arab ?: "",
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (etudiants.isEmpty()) {
+            EmptyState(
+                modifier = Modifier.fillMaxSize(),
+                isFiltered = isSearchActive && searchQuery.isNotBlank()
             )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-        ) {
-            if (etudiants.isEmpty()) {
-                EmptyState(
-                    modifier = Modifier.fillMaxSize(),
-                    isFiltered = isSearchActive && searchQuery.isNotBlank()
-                )
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        items = etudiants,
-                        key = { etudiant -> etudiant.keyID }
-                    ) { etudiant ->
-                        EtudiantCard(
-                            etudiant = etudiant,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    items = etudiants,
+                    key = { etudiant -> etudiant.keyID }
+                ) { etudiant ->
+                    EtudiantCard(
+                        etudiant = etudiant,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ScrollableInformationBanner(
+    ousstadName: String,
+    modifier: Modifier = Modifier
+) {
+    var currentBannerIndex by remember { mutableStateOf(0) }
+    val scrollState = rememberScrollState()
+    val density = LocalDensity.current
+    val cardWidth = with(density) { 320.dp.toPx() }
+    val totalCards = 3
+
+    // Auto-scroll behavior similar to ScrolleAdBanner
+    LaunchedEffect(Unit) {
+        while (true) {
+            // Forward scroll (left to right)
+            while (currentBannerIndex < totalCards - 1) {
+                delay(1500)
+
+                val totalSteps = 35
+                val stepSize = cardWidth / totalSteps
+
+                for (step in 0 until totalSteps) {
+                    val nextPosition = (currentBannerIndex * cardWidth) + (step * stepSize)
+                    scrollState.scrollTo(nextPosition.toInt())
+                    delay(10)
+                }
+
+                currentBannerIndex++
+            }
+
+            delay(3000)
+
+            // Reverse scroll (right to left)
+            val totalSteps = 35
+            val maxScroll = (totalCards - 1) * cardWidth
+            val stepSize = maxScroll / totalSteps
+
+            for (step in 0 until totalSteps) {
+                val nextPosition = maxScroll - (step * stepSize)
+                scrollState.scrollTo(nextPosition.toInt())
+                delay(10)
+            }
+
+            currentBannerIndex = 0
+        }
+    }
+
+    Row(
+        modifier = modifier
+            .horizontalScroll(scrollState)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Banner 1: School logo and blessing
+        Card(
+            modifier = Modifier
+                .width(320.dp)
+                .height(140.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ecole_logo1),
+                    contentDescription = "School Logo",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(4.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "وفقنا الله وإياكم لما يحب ويرضى",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+
+        // Banner 2: Ousstad name
+        Card(
+            modifier = Modifier
+                .width(320.dp)
+                .height(140.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+            )
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "الأستاذ",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = ousstadName.ifEmpty { "قسم حفظة القرآن" },
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        // Banner 3: Goals
+        Card(
+            modifier = Modifier
+                .width(320.dp)
+                .height(140.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "الأهداف المبتغاة",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "إيصال الغيابات والتقارير للإدارة\nتسهيل تذكر المحفوظ للطلبة",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 13.sp,
+                        lineHeight = 18.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.9f),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -285,10 +436,6 @@ fun EmptyState(
         )
     }
 }
-//<--
-//TODO(1): affiche au top un banner comme au qui affiche image_madarasa  et autre un text cootien وفقنا اله و اياكم لما يحب و يرضى autre    // FIXED TODO(1): Get active Ousstad name
-//<--
-//TODO(1): fait pour le nom
 
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())

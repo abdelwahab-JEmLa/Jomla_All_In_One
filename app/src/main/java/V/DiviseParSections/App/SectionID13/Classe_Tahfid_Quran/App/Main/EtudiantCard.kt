@@ -11,6 +11,9 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etu
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import android.text.format.DateUtils.isToday
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventSeat
+import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.SwapHoriz
@@ -37,6 +41,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -70,9 +75,9 @@ fun EtudiantCard(
     var showIstedrakMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
     var showIstedrakTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
 
-    // FIXED TODO(1): Add Ousstad transfer dialog state
-    var showOussstadTransferDialog by remember(etudiantId) { mutableStateOf(false) }
+    var isExpanded by remember(etudiantId) { mutableStateOf(false) }
     var showOussstadDropdownMenu by remember(etudiantId) { mutableStateOf(false) }
+    var selectedOusstad by remember(etudiantId) { mutableStateOf<Ousstad_Tahfid?>(null) }
 
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
@@ -82,7 +87,7 @@ fun EtudiantCard(
     }
 
     Card(
-        modifier = modifier.clickable { showDetailsDialog = true },
+        modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (wasUpdatedToday) Color(0xFFFFFDE7) else MaterialTheme.colorScheme.surface
@@ -94,156 +99,183 @@ fun EtudiantCard(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Main content - clickable to show details
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showDetailsDialog = true },
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.EventSeat,
-                    contentDescription = "Chaise",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "${etudiant.positon_don_classe}",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    Icon(
+                        imageVector = Icons.Default.EventSeat,
+                        contentDescription = "Chaise",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
                     )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Text(
-                text = etudiant.nom.ifBlank { "---" },
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = etudiant.prenom.ifBlank { "---" },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${etudiant.age} سنة",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                if (absenceCount > 0) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "غياب: $absenceCount",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
+                            text = "${etudiant.positon_don_classe}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
+                    }
+                }
 
-                        IconButton(
-                            onClick = {
-                                repo19Etudiant.upsert(
-                                    etudiant.copy(imprime_justification = !etudiant.imprime_justification)
-                                )
-                            },
-                            modifier = Modifier.size(20.dp)
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = etudiant.nom.ifBlank { "---" },
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = etudiant.prenom.ifBlank { "---" },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${etudiant.age} سنة",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (absenceCount > 0) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Print,
-                                contentDescription = "Imprimer justification",
-                                tint = if (etudiant.imprime_justification) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                                },
-                                modifier = Modifier.size(16.dp)
+                            Text(
+                                text = "غياب: $absenceCount",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
                             )
+
+                            IconButton(
+                                onClick = {
+                                    repo19Etudiant.upsert(
+                                        etudiant.copy(imprime_justification = !etudiant.imprime_justification)
+                                    )
+                                },
+                                modifier = Modifier.size(20.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Print,
+                                    contentDescription = "Imprimer justification",
+                                    tint = if (etudiant.imprime_justification) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                                    },
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
 
-            // FIXED TODO(1): Add Ousstad transfer button at bottom
-            Box(modifier = Modifier.fillMaxWidth()) {
+            // Expand/Collapse button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 IconButton(
-                    onClick = { showOussstadDropdownMenu = true },
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    onClick = { isExpanded = !isExpanded }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.SwapHoriz,
-                        contentDescription = "تحويل للأستاذ",
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(20.dp)
+                        imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (isExpanded) "إخفاء الخيارات" else "إظهار الخيارات",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
+            }
 
-                DropdownMenu(
-                    expanded = showOussstadDropdownMenu,
-                    onDismissRequest = { showOussstadDropdownMenu = false }
+            // Expanded options
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Ousstad_Tahfid.values().forEach { ousstad ->
-                        DropdownMenuItem(
-                            text = { Text(ousstad.nom_arab) },
-                            onClick = {
-                                showOussstadDropdownMenu = false
-                                showOussstadTransferDialog = true
+                    // Teacher transfer button
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = { showOussstadDropdownMenu = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.SwapHoriz,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text("تحويل للأستاذ")
+                        }
+
+                        DropdownMenu(
+                            expanded = showOussstadDropdownMenu,
+                            onDismissRequest = { showOussstadDropdownMenu = false }
+                        ) {
+                            Ousstad_Tahfid.values().forEach { ousstad ->
+                                DropdownMenuItem(
+                                    text = { Text(ousstad.nom_arab) },
+                                    onClick = {
+                                        selectedOusstad = ousstad
+                                        showOussstadDropdownMenu = false
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
+
+                    // You can add more action buttons here
+                    // Example:
+                    // OutlinedButton(
+                    //     onClick = { /* autre action */ },
+                    //     modifier = Modifier.fillMaxWidth()
+                    // ) {
+                    //     Text("Autre action")
+                    // }
                 }
             }
         }
     }
 
-    // FIXED TODO(1): Ousstad Transfer Confirmation Dialog
-    if (showOussstadTransferDialog) {
-        var selectedOusstad by remember { mutableStateOf<Ousstad_Tahfid?>(null) }
-
+    // Teacher transfer confirmation dialog
+    if (selectedOusstad != null) {
         AlertDialog(
-            onDismissRequest = { showOussstadTransferDialog = false },
-            title = { Text("تحويل الطالب للأستاذ") },
+            onDismissRequest = { selectedOusstad = null },
+            title = { Text("تأكيد تحويل الطالب") },
             text = {
                 Column {
-                    Text("اختر الأستاذ الجديد:")
+                    Text("هل تريد تحويل الطالب ${etudiant.nom} ${etudiant.prenom} إلى:")
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Ousstad_Tahfid.values().forEach { ousstad ->
-                        TextButton(
-                            onClick = { selectedOusstad = ousstad },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(ousstad.nom_arab)
-                                if (selectedOusstad == ousstad) {
-                                    Icon(
-                                        imageVector = Icons.Default.ExpandMore,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Text(
+                        text = selectedOusstad?.nom_arab ?: "",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             },
             confirmButton = {
@@ -266,15 +298,14 @@ fun EtudiantCard(
                                     repo20Observation.upsert(updatedObservation)
                                 }
                         }
-                        showOussstadTransferDialog = false
-                    },
-                    enabled = selectedOusstad != null
+                        selectedOusstad = null
+                    }
                 ) {
                     Text("تأكيد")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showOussstadTransferDialog = false }) {
+                TextButton(onClick = { selectedOusstad = null }) {
                     Text("إلغاء")
                 }
             }
