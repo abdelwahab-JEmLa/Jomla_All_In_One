@@ -10,10 +10,12 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
+import java.util.Calendar
 
 data class ActiveCentralValues(
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
@@ -77,6 +79,29 @@ data class ActiveCentralValues(
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
+    var active_Ousstad_Tahfid: Ousstad_Tahfid? = run {
+        val params = M18CentralParametresOfAllApps()
+        val utilisateur = when (params.au_Lence_Set_Compt_Ac_KeyId) {
+            params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
+            params.walid_Compt_KeyId -> Utilisateur.Walid
+            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
+            else -> Utilisateur.Admin
+        }
+
+        // FIXED: Map Utilisateur to Ousstad_Tahfid
+        when (utilisateur) {
+            Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
+            Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
+            Utilisateur.Admin -> if (params.au_Lence_Set_Compt_Ac_KeyId == params.abdelwahabTravailleChezGros_KeyId) {
+                Ousstad_Tahfid.Abdelwahab_Osstad
+            } else {
+                null
+            }
+            else -> null
+        }
+    },
+
     var active_filter_du_utilisateur: Utilisateur? = run {
         val params = M18CentralParametresOfAllApps()
         when (params.au_Lence_Set_Compt_Ac_KeyId) {
@@ -87,6 +112,12 @@ data class ActiveCentralValues(
             else -> Utilisateur.Admin
         }
     },
+
+    //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
+
+    val displaye_sections_education_du_mois: Calendar? = null,
+
+
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
@@ -108,7 +139,7 @@ data class ActiveCentralValues(
     val displaye_dialog_mois_moinAcPlus_6_du_current: Boolean = false,
    // val displaye_sections_education_du_mois: Calned = null,         //<--
     //TODO(1): regle contdie moi 
-    
+
     val filter_les_absents: Boolean = false,
 
     //-----------------Fast.PAnie-------------------------------------------------------------------------------------------------------------------------

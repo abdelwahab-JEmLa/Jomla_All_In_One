@@ -3,8 +3,10 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,29 +62,40 @@ fun EducationFragment(
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     onNavigateBack: (() -> Unit)? = null,
-    focusedValuesGetter: FocusedValuesGetter=koinInject()
-) {       //<--
-//TODO(1): fait que si displaye_dialog_mois_moinAcPlus_6_du_current de affiche dialoge contien  
-    // 
-    // <--
-//    //TODO(1): affiche les mois de - 6 de current  
-//au click un ferm et affiche dialoge contien des items de displaye_sections_education_du_mois  de mois 
-//chque item contien cree et delete fait au click delete de delete tout les oservations de session 
-//ajout un outlined text au donne  ajout pour chaque etdiont raeb tabtire= text
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
+) {
     val params = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue
     val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
     val currentUtilisateur = M18CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
 
-    // Get search query from ActiveCentralValues
-    val activeCentralValues = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
 
-    // Local state for search UI visibility
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
 
-    // Set the filter based on current user
+    // Show month selection dialog when needed
+    if (activeCentralValues.displaye_dialog_mois_moinAcPlus_6_du_current) {
+        MonthSelectionDialog(
+            onDismiss = {
+                focusedValuesGetter.update_activeCentralValues(
+                    activeCentralValues.copy(displaye_dialog_mois_moinAcPlus_6_du_current = false)
+                )
+            },
+            onMonthSelected = { selectedMonth ->
+                focusedValuesGetter.update_activeCentralValues(
+                    activeCentralValues.copy(
+                        displaye_dialog_mois_moinAcPlus_6_du_current = false,
+                        displaye_sections_education_du_mois = selectedMonth
+                    )
+                )
+            }
+        )
+    }
+
+    // FIXED: Map Utilisateur to Ousstad_Tahfid before setting filter
     LaunchedEffect(currentUtilisateur) {
-        repo19Etudiant.setFilter(currentUtilisateur)
+        val ousstad = mapUtilisateurToOusstad(currentUtilisateur)
+        repo19Etudiant.setFilter(ousstad)
     }
 
     // Use filtered data if user is Amine_Madrassa, otherwise use all data
@@ -197,6 +210,18 @@ fun EducationFragment(
                 }
             }
         }
+    }
+}
+
+/**
+ * Maps Utilisateur enum to Ousstad_Tahfid enum
+ * Returns null for users who don't have a corresponding Ousstad role
+ */
+private fun mapUtilisateurToOusstad(utilisateur: Utilisateur): Ousstad_Tahfid? {
+    return when (utilisateur) {
+        Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
+        Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
+        else -> null // For other users, no filter is applied
     }
 }
 

@@ -6,6 +6,10 @@ import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSave
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,9 +27,7 @@ fun DropDownItem_ButID8(
     repo20Observation: Repo20ObsarvationEtudion = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     context: Context = LocalContext.current
-) {     //<--
-//TODO(1): fait au click de toggle active . displaye_dialog_mois_moinAcPlus_6_du_current
-
+) {
     var isLoading by remember { mutableStateOf(false) }
     var generationStatus by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
@@ -37,5 +39,23 @@ fun DropDownItem_ButID8(
 
     val activeStudentsCount = remember(repo19Etudiant.datasValue) {
         repo19Etudiant.datasValue.count { !it.exclue_de_l_affiche_au_classe }
+    }
+
+    // FIXED: Toggle dialog visibility when clicked
+    IconButton(
+        onClick = {
+            val currentValues = focusedValuesGetter.active_Central_Values
+            focusedValuesGetter.update_activeCentralValues(
+                currentValues.copy(
+                    displaye_dialog_mois_moinAcPlus_6_du_current =
+                        !currentValues.displaye_dialog_mois_moinAcPlus_6_du_current
+                )
+            )
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.CalendarMonth, // You'll need to import this
+            contentDescription = "Afficher mois tahfid"
+        )
     }
 }
