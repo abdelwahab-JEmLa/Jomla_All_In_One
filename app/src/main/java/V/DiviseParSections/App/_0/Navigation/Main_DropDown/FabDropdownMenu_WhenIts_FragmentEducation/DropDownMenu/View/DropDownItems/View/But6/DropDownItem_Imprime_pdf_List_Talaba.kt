@@ -1,6 +1,8 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import android.content.Context
@@ -42,22 +44,25 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * OPTION 1: Enhanced Dropdown Item (Current Style with Improvements)
- * Use this if you want to keep it as a dropdown menu item
- */
 @Composable
 fun DropDownItem_ID6(
     nomFun: String = "قائمة متابعة الغيابات (PDF)",
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
+    focusedValuesGetter: FocusedValuesGetter=koinInject() ,
     context: Context = LocalContext.current
 ) {
     var isLoading by remember { mutableStateOf(false) }
     var generationStatus by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    // Get active students count (excluding those marked for exclusion)
+    // Get current teacher/user from focused values
+    val currentUtilisateur = remember(focusedValuesGetter.active_Central_Values) {
+        focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
+            ?: Utilisateur.Admin
+    }
+
+    // Get active students count
     val activeStudentsCount = remember(repo19Etudiant.datasValue) {
         repo19Etudiant.datasValue.count { !it.exclue_de_l_affiche_au_classe }
     }
@@ -75,14 +80,10 @@ fun DropDownItem_ID6(
     ) {
         DropdownMenuItem(
             leadingIcon = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .size(20.dp),
+                            modifier = Modifier.padding(4.dp).size(20.dp),
                             strokeWidth = 2.dp,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -122,6 +123,7 @@ fun DropDownItem_ID6(
                     createAndOpenPdfDocument(
                         context = context,
                         repo19Etudiant = repo19Etudiant,
+                        currentUtilisateur = currentUtilisateur,
                         onLoadingChange = { isLoading = it },
                         onStatusChange = { generationStatus = it }
                     )
@@ -131,9 +133,11 @@ fun DropDownItem_ID6(
         )
     }
 }
+
 private fun createAndOpenPdfDocument(
     context: Context,
     repo19Etudiant: Repo19Etudiant,
+    currentUtilisateur: Utilisateur,
     onLoadingChange: (Boolean) -> Unit,
     onStatusChange: (String) -> Unit
 ) {
@@ -142,7 +146,7 @@ private fun createAndOpenPdfDocument(
 
     kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
         try {
-            // Step 1: Fetch and filter active students
+            // Fetch and filter active students
             val activeEtudiants = repo19Etudiant.datasValue
                 .filter { !it.exclue_de_l_affiche_au_classe }
                 .sortedWith(
@@ -161,16 +165,21 @@ private fun createAndOpenPdfDocument(
 
             onStatusChange("جاري معالجة ${activeEtudiants.size} طالب...")
 
-            // Step 2: Structure the data
+            // Structure the data
             val cardsData = activeEtudiants.map { etudiant ->
                 ParentCommunicationCardData_But6.fromEtudiant(etudiant)
             }
 
             onStatusChange("جاري إنشاء الجدول...")
 
-            // Step 3: Generate PDF document
+            // Generate PDF with teacher info
             val pdfFile = withContext(Dispatchers.IO) {
-                generatePdfDocument_6(context, cardsData, activeEtudiants)
+                generatePdfDocument_6(
+                    context = context,
+                    cardsData = cardsData,
+                    etudiants = activeEtudiants,
+                    currentUtilisateur = currentUtilisateur
+                )
             }
 
             if (pdfFile == null || !pdfFile.exists()) {
@@ -179,8 +188,9 @@ private fun createAndOpenPdfDocument(
 
             onStatusChange("جاري الحفظ...")
 
-            // Step 4: Save the file
-            val fileName = "قائمة_الطلاب_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
+            // Save the file
+            val teacherName = currentUtilisateur.getArabicName()
+            val fileName = "قائمة_الطلاب_${teacherName}_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
             val saveResult = withContext(Dispatchers.IO) {
                 PdfSaverUtility_But6.savePdf(
                     context = context,
@@ -190,7 +200,7 @@ private fun createAndOpenPdfDocument(
                 )
             }
 
-            // Step 5: Handle result
+            // Handle result
             withContext(Dispatchers.Main) {
                 saveResult.fold(
                     onSuccess = { savedPath ->
@@ -213,11 +223,7 @@ private fun createAndOpenPdfDocument(
         } catch (e: Exception) {
             Log.e("AttendanceReport", "❌ خطأ: ${e.message}", e)
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "❌ خطأ: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, "❌ خطأ: ${e.message}", Toast.LENGTH_LONG).show()
             }
         } finally {
             onLoadingChange(false)
@@ -250,10 +256,6 @@ private fun openPdfWithViewer(context: Context, pdfFile: File) {
         }
     } catch (e: Exception) {
         Log.e("AttendanceReport", "❌ خطأ في فتح PDF", e)
-        Toast.makeText(
-            context,
-            "❌ خطأ في فتح الملف: ${e.message}",
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(context, "❌ خطأ في فتح الملف: ${e.message}", Toast.LENGTH_LONG).show()
     }
 }

@@ -77,12 +77,16 @@ data class ActiveCentralValues(
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
-    var active_filter_du_utilisateur: Utilisateur? = when (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId) {
-        Utilisateur.Abdelmoumen.comp -> Utilisateur.Admin
-        Utilisateur.Walid.comp -> Utilisateur.Admin
-        else -> Utilisateur.Admin
+    var active_filter_du_utilisateur: Utilisateur? = run {
+        val params = M18CentralParametresOfAllApps()
+        when (params.au_Lence_Set_Compt_Ac_KeyId) {
+            params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
+            params.walid_Compt_KeyId -> Utilisateur.Walid
+            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
+            else -> Utilisateur.Admin
+        }
     },
-
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
