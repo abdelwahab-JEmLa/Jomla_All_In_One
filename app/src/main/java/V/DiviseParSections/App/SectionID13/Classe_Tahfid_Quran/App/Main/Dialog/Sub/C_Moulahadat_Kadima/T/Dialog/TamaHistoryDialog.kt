@@ -1,5 +1,7 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima.T.Dialog
 
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima.ObservationCard
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima.ObservationEditDialog
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,12 +12,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,12 +40,12 @@ fun TamaHistoryDialog(
     observations: List<M20ObsarvationEtudion>,
     onDismiss: () -> Unit,
     onEdit: (M20ObsarvationEtudion) -> Unit = {},
-    onDelete: (M20ObsarvationEtudion) -> Unit = {}
-) { //<--
-//TODO(1): ajout un add button au click String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings avec le current date dd.mm.yyyy au click donne  il relance String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings 
-//si entre vide il add obs type raeeb sans tabrire si exrit don il add le tabrire  et la c l entre date au 1 ere etap outlined
+    onDelete: (M20ObsarvationEtudion) -> Unit = {},
+    onAdd: (M20ObsarvationEtudion) -> Unit = {}
+) {
     var editingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
     var deletingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
+    var showAddDialog by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -68,11 +74,27 @@ fun TamaHistoryDialog(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    Text(
-                        text = "${observations.size} سجل",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${observations.size} سجل",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        FloatingActionButton(
+                            onClick = { showAddDialog = true },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "إضافة سجل جديد"
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -125,6 +147,17 @@ fun TamaHistoryDialog(
         }
     }
 
+    // Add Dialog
+    if (showAddDialog) {
+        AddObservationDialog(
+            onDismiss = { showAddDialog = false },
+            onAdd = { newObs ->
+                onAdd(newObs)
+                showAddDialog = false
+            }
+        )
+    }
+
     // Edit Dialog
     editingObservation?.let { obs ->
         ObservationEditDialog(
@@ -164,3 +197,4 @@ fun TamaHistoryDialog(
         )
     }
 }
+
