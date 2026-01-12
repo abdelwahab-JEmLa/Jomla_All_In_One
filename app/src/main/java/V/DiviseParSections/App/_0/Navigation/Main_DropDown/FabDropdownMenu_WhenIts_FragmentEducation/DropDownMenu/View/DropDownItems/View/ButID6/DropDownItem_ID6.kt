@@ -49,7 +49,9 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun DropDownItem_ID6(
+fun DropDownItem_ID6(              //<--
+//TODO(1): ajout un cons qui passe la date pour pourvoir imprime de plusier mois 
+//ajout un qui passe ousstade 
     nomFun: String = "قائمة متابعة الغيابات (PDF)",
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,

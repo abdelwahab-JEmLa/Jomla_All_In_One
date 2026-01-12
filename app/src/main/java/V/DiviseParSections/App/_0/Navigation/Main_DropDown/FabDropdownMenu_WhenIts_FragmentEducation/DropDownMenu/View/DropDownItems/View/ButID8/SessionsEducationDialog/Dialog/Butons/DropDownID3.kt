@@ -22,12 +22,12 @@ import androidx.compose.ui.Modifier
  * Deletes all Raeeb (absence) observations for a specific session date
  */
 @Composable
-fun DropDownID2(
-    sessionDate: SessionDate,     //<--
-    //TODO(1): regle que ca deele avant date
+fun DropDownID3(
+    sessionDate: SessionDate,
     repo20Observation: Repo20ObsarvationEtudion,
     sessionObservations: List<M20ObsarvationEtudion>
-) {
+) {                  //<--
+//TODO(1): regle le ui fait que au click affiche dialog contien ousstad list au click lence imprime du ousstade de le moi passed
     val raeebObservations = sessionObservations.filter { 
         it.type == M20ObsarvationEtudion.Type.Raeeb 
     }

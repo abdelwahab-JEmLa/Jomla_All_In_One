@@ -34,9 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
 // Replace the SessionActionDialog composable with this updated version
 
 @Composable
@@ -115,15 +115,34 @@ fun SessionsEducationDialog(
         )
     }
 }
-
 @Composable
- fun SessionDateCard(
+fun SessionDateCard(
     sessionDate: SessionDate,
     observations: List<M20ObsarvationEtudion>,
     onSessionClick: () -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEEE", Locale("ar"))
-    val dateString = dateFormat.format(sessionDate.date)
+    // Calculate week number and session number within the month
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = sessionDate.timestamp
+    }
+
+    val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+    val dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale("ar")) ?: ""
+
+    // Calculate which week of the month (1-5)
+    val weekOfMonth = ((dayOfMonth - 1) / 7) + 1
+
+    // Calculate which session of the week (assuming 2 sessions per week: Thursday and Monday)
+    // Adjust this logic based on your actual session schedule
+    val dayOfWeekNum = calendar.get(Calendar.DAY_OF_WEEK)
+    val sessionOfWeek = when (dayOfWeekNum) {
+        Calendar.MONDAY -> 1
+        Calendar.THURSDAY -> 2
+        else -> 1 // Default
+    }
+
+    // Format: "الأسبوع 1 - الحصة 1 - الاثنين 5"
+    val displayText = "الأسبوع $weekOfMonth - الحصة $sessionOfWeek - $dayOfWeek $dayOfMonth"
 
     Card(
         modifier = Modifier
@@ -143,7 +162,7 @@ fun SessionsEducationDialog(
                 .padding(12.dp)
         ) {
             Text(
-                text = dateString,
+                text = displayText,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
