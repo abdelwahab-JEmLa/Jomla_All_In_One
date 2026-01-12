@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSave
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,6 +73,7 @@ fun EducationFragment(
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
 
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
+    var selectedStudentForSessions by remember { mutableStateOf<M19Etudiant?>(null) }
 
     // Show month selection dialog when needed
     if (activeCentralValues.displaye_dialog_mois_moinAcPlus_6_du_current) {
@@ -87,6 +89,25 @@ fun EducationFragment(
                         displaye_dialog_mois_moinAcPlus_6_du_current = false,
                         displaye_sections_education_du_mois = selectedMonth
                     )
+                )
+            }
+        )
+    }
+
+    // Show sessions education dialog when month and student are selected
+    val selectedMonth = activeCentralValues.displaye_sections_education_du_mois
+    if (selectedMonth != null && selectedStudentForSessions != null) {
+        val repo20Observation = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
+
+        SessionsEducationDialog(
+            selectedMonth = selectedMonth,
+            etudiant = selectedStudentForSessions!!,
+            repo20Observation = repo20Observation,
+            onDismiss = {
+                selectedStudentForSessions = null
+                // Reset the selected month
+                focusedValuesGetter.update_activeCentralValues(
+                    activeCentralValues.copy(displaye_sections_education_du_mois = null)
                 )
             }
         )
@@ -141,7 +162,7 @@ fun EducationFragment(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "قسم حفظة القران منظم",
+                            text = "قسم حفظة القرآن منظم",
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
@@ -204,7 +225,7 @@ fun EducationFragment(
                     ) { etudiant ->
                         EtudiantCard(
                             etudiant = etudiant,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
