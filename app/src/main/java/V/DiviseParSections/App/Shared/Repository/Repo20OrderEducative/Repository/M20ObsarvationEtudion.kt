@@ -253,7 +253,6 @@ class Repo20ObsarvationEtudion(
         dataBaseCreationFactory.set(updatedItem)
     }
 }
-
 @Entity
 data class M20ObsarvationEtudion(
     @PrimaryKey
@@ -284,6 +283,9 @@ data class M20ObsarvationEtudion(
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+
+    // AJOUT: Timestamp de la date de session pour filtrer par date
+    var sessionDateTimestamp: Long = System.currentTimeMillis(),
 ) {
     enum class Type {
         Raeeb,

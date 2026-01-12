@@ -30,10 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
+/**
+ * Smart text field for absence justification with auto-completion:
+ * - "م" -> auto-completes to "مبرر"
+ * - "ا" -> auto-completes to "اجازة من المدرسة"
+ * - Any other text is kept as is
+ */
 @Composable
 fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
     start_text: String,
-    placeholder: String = "",
+    placeholder: String = "تبرير الغياب",
     icon: ImageVector? = null,
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
@@ -60,12 +66,29 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
         MaterialTheme.typography.labelLarge
     }
 
+    // Smart auto-completion function
+    fun processSmartInput(input: String): String {
+        return when {
+            input == "م" -> "مبرر"
+            input == "ا" -> "اجازة من المدرسة"
+            else -> input
+        }
+    }
+
     if (isEditMode) {
         // Edit mode: Show outlined text field
         OutlinedTextField(
             value = textInput,
             onValueChange = { newValue ->
                 textInput = newValue
+                // Auto-complete when single character shortcuts are entered
+                if (newValue == "م" || newValue == "ا") {
+                    val completed = processSmartInput(newValue)
+                    textInput = completed
+                    // Auto-save and exit edit mode
+                    on_DonneClick_Data_Update(completed)
+                    isEditMode = false
+                }
             },
             modifier = modifier
                 .width(200.dp)
@@ -82,22 +105,32 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
             ),
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
-            enabled = isAvailable
+            enabled = isAvailable,
+            supportingText = {
+                Text(
+                    text = "م = مبرر | ا = اجازة من المدرسة",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         )
     } else {
         // Display mode: Show clickable card
+        val isJustified = start_text.isNotBlank()
+
         val containerColor = if (!isAvailable) {
             MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        } else if (start_text.isNotEmpty()) {
+        } else if (isJustified) {
             MaterialTheme.colorScheme.tertiary
         } else {
-            MaterialTheme.colorScheme.primary
+            MaterialTheme.colorScheme.errorContainer
         }
 
         val contentColor = if (!isAvailable) {
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        } else if (isJustified) {
+            MaterialTheme.colorScheme.onTertiary
         } else {
-            MaterialTheme.colorScheme.onPrimary
+            MaterialTheme.colorScheme.error
         }
 
         Card(
@@ -120,14 +153,18 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
                 icon?.let {
                     Icon(
                         imageVector = it,
-                        contentDescription = "Text",
+                        contentDescription = "Tabrire",
                         tint = contentColor,
                         modifier = Modifier.size(iconSize)
                     )
                 }
 
                 Text(
-                    text = start_text.ifEmpty { placeholder },
+                    text = if (start_text.isNotEmpty()) {
+                        start_text
+                    } else {
+                        "⚠️ غير مبرر - اضغط للتبرير"
+                    },
                     style = textStyle,
                     fontWeight = FontWeight.Bold,
                     color = contentColor

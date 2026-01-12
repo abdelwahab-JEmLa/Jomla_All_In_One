@@ -115,7 +115,6 @@ data class ActiveCentralValues(
 
     //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
 
-    val displaye_sections_education_du_mois: Calendar? = null,
 
 
     var affiche_dialoge_add_temp_travaille: Boolean = false,
@@ -137,8 +136,7 @@ data class ActiveCentralValues(
 
     //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
     val displaye_dialog_mois_moinAcPlus_6_du_current: Boolean = false,
-   // val displaye_sections_education_du_mois: Calned = null,         //<--
-    //TODO(1): regle contdie moi 
+    val displaye_sections_education_du_mois: Calendar? = null,
 
     val filter_les_absents: Boolean = false,
 

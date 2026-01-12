@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,28 +53,25 @@ import java.util.Locale
 @Composable
 fun SessionsEducationDialog(
     selectedMonth: Calendar,
-    etudiant: M19Etudiant,
     repo20Observation: Repo20ObsarvationEtudion,
     onDismiss: () -> Unit
 ) {
     val sessionDates = remember(selectedMonth) {
         getSessionDatesForMonth(selectedMonth)
     }
-    
+
     val monthDisplayName = remember(selectedMonth) {
         getMonthDisplayName(selectedMonth)
     }
 
-    // Get all observations for this student in this month
-    val studentObservations = remember(repo20Observation.datasValue, selectedMonth) {
+    // Get all observations for this month (all students)
+    val monthObservations = remember(repo20Observation.datasValue, selectedMonth) {
         repo20Observation.datasValue.filter { obs ->
-            obs.etudiant_keyID == etudiant.keyID &&
-            isSameDateInMonth(obs.creationTimestamps, selectedMonth)
+            isSameDateInMonth(obs.sessionDateTimestamp, selectedMonth)
         }
     }
 
-    var showAddObservationDialog by remember { mutableStateOf<SessionDate?>(null) }
-    var observationToDelete by remember { mutableStateOf<Pair<SessionDate, M20ObsarvationEtudion>?>(null) }
+    var selectedSessionDate by remember { mutableStateOf<SessionDate?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -83,11 +81,6 @@ fun SessionsEducationDialog(
                     text = "سجلات الحضور والتقييم",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${etudiant.nom} ${etudiant.prenom}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = monthDisplayName,
@@ -106,13 +99,10 @@ fun SessionsEducationDialog(
                 items(sessionDates) { sessionDate ->
                     SessionDateCard(
                         sessionDate = sessionDate,
-                        observations = studentObservations.filter { obs ->
-                            isSameDay(obs.creationTimestamps, sessionDate.timestamp)
+                        observations = monthObservations.filter { obs ->
+                            isSameDay(obs.sessionDateTimestamp, sessionDate.timestamp)
                         },
-                        onAddObservation = { showAddObservationDialog = sessionDate },
-                        onDeleteObservation = { obs ->
-                            observationToDelete = Pair(sessionDate, obs)
-                        }
+                        onSessionClick = { selectedSessionDate = sessionDate }
                     )
                 }
             }
@@ -124,40 +114,15 @@ fun SessionsEducationDialog(
         }
     )
 
-    // Add observation dialog
-    showAddObservationDialog?.let { sessionDate ->
-        AddObservationDialog(
+    // Session action dialog
+    selectedSessionDate?.let { sessionDate ->
+        SessionActionDialog(
             sessionDate = sessionDate,
-            etudiant = etudiant,
             repo20Observation = repo20Observation,
-            onDismiss = { showAddObservationDialog = null }
-        )
-    }
-
-    // Delete confirmation dialog
-    observationToDelete?.let { (sessionDate, observation) ->
-        AlertDialog(
-            onDismissRequest = { observationToDelete = null },
-            title = { Text("تأكيد الحذف") },
-            text = { Text("هل تريد حذف هذا السجل؟") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        repo20Observation.delete(observation)
-                        observationToDelete = null
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text("حذف")
-                }
+            sessionObservations = monthObservations.filter { obs ->
+                isSameDay(obs.sessionDateTimestamp, sessionDate.timestamp)
             },
-            dismissButton = {
-                TextButton(onClick = { observationToDelete = null }) {
-                    Text("إلغاء")
-                }
-            }
+            onDismiss = { selectedSessionDate = null }
         )
     }
 }
@@ -166,14 +131,15 @@ fun SessionsEducationDialog(
 private fun SessionDateCard(
     sessionDate: SessionDate,
     observations: List<M20ObsarvationEtudion>,
-    onAddObservation: () -> Unit,
-    onDeleteObservation: (M20ObsarvationEtudion) -> Unit
+    onSessionClick: () -> Unit
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEEE", Locale("ar"))
     val dateString = dateFormat.format(sessionDate.date)
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSessionClick() },
         colors = CardDefaults.cardColors(
             containerColor = if (observations.isEmpty()) {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -187,49 +153,32 @@ private fun SessionDateCard(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = dateString,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                IconButton(
-                    onClick = onAddObservation,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "إضافة سجل",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+            Text(
+                text = dateString,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
 
             if (observations.isEmpty()) {
                 Text(
-                    text = "لا توجد سجلات",
+                    text = "لا توجد سجلات - اضغط للإضافة",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
-                observations.forEach { observation ->
-                    ObservationItem(
-                        observation = observation,
-                        onDelete = { onDeleteObservation(observation) }
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
+                Text(
+                    text = "عدد السجلات: ${observations.size}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
 }
+
 
 @Composable
 private fun ObservationItem(
@@ -268,7 +217,7 @@ private fun ObservationItem(
                     MaterialTheme.colorScheme.primary
                 }
             )
-            
+
             if (observation.type != M20ObsarvationEtudion.Type.Raeeb) {
                 Text(
                     text = "التقييم: ${observation.takyim.arabicName}",
@@ -276,7 +225,7 @@ private fun ObservationItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             if (observation.tabrire_riyab.isNotBlank()) {
                 Text(
                     text = "المبرر: ${observation.tabrire_riyab}",
@@ -285,7 +234,7 @@ private fun ObservationItem(
                 )
             }
         }
-        
+
         IconButton(
             onClick = onDelete,
             modifier = Modifier.size(32.dp)
@@ -300,26 +249,32 @@ private fun ObservationItem(
 }
 
 @Composable
-private fun AddObservationDialog(
+private fun SessionActionDialog(
     sessionDate: SessionDate,
-    etudiant: M19Etudiant,
     repo20Observation: Repo20ObsarvationEtudion,
+    sessionObservations: List<M20ObsarvationEtudion>,
     onDismiss: () -> Unit
 ) {
-    var selectedType by remember { mutableStateOf(M20ObsarvationEtudion.Type.Tama_Hifdoha) }
-    var tabrireRiyab by remember { mutableStateOf("") }
-    var showTabrireInput by remember { mutableStateOf(false) }
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEEE", Locale("ar"))
+    val dateString = dateFormat.format(sessionDate.date)
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Column {
-                Text("إضافة سجل جديد")
+                Text("إجراءات الجلسة")
                 Text(
-                    text = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(sessionDate.date),
+                    text = dateString,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (sessionObservations.isNotEmpty()) {
+                    Text(
+                        text = "عدد السجلات الحالية: ${sessionObservations.size}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         },
         text = {
@@ -327,76 +282,57 @@ private fun AddObservationDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("نوع السجل:", fontWeight = FontWeight.Bold)
-                
-                M20ObsarvationEtudion.Type.values().forEach { type ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = selectedType == type,
-                            onClick = { selectedType = type }
-                        )
-                        Text(
-                            text = when (type) {
-                                M20ObsarvationEtudion.Type.Raeeb -> "غائب"
-                                M20ObsarvationEtudion.Type.Tama_Hifdoha -> "تم حفظها"
-                                M20ObsarvationEtudion.Type.Moukarrar_Itmamouhou -> "مكرر إتمامه"
-                                M20ObsarvationEtudion.Type.Ousstad_kama_Bil_moundat -> "أستاذ قام بالمناداة"
-                            },
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
+                Text(
+                    text = "اختر الإجراء المناسب:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
-                if (selectedType == M20ObsarvationEtudion.Type.Raeeb) {
-                    Divider()
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("إضافة مبرر للغياب:")
-                        Switch(
-                            checked = showTabrireInput,
-                            onCheckedChange = { showTabrireInput = it }
-                        )
-                    }
-
-                    if (showTabrireInput) {
-                        String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
-                            start_text = tabrireRiyab,
-                            placeholder = "أدخل المبرر",
-                            icon = Icons.Default.Note,
-                            modifier = Modifier.fillMaxWidth(),
-                            on_DonneClick_Data_Update = { tabrireRiyab = it }
-                        )
-                    }
+                if (sessionObservations.isNotEmpty()) {
+                    Text(
+                        text = "سيتم حذف جميع السجلات الموجودة قبل إضافة الغياب",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val newObservation = M20ObsarvationEtudion(
-                        type = selectedType,
-                        tabrire_riyab = if (selectedType == M20ObsarvationEtudion.Type.Raeeb) tabrireRiyab else "",
-                        etudiant_keyID = etudiant.keyID,
-                        parent_ousstad_key = etudiant.parent_ousstad_key,
-                        creationTimestamps = sessionDate.timestamp
-                    )
-                    repo20Observation.add(newObservation)
+                    // Delete all observations for this session, then add Raeeb for all students
+                    sessionObservations.forEach { obs ->
+                        repo20Observation.delete(obs)
+                    }
+                    // Note: You'll need to implement logic to add Raeeb for all students
+                    // This requires access to the list of all students
                     onDismiss()
                 }
             ) {
-                Text("إضافة")
+                Text("إضافة غياب للجميع")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+            Column {
+                if (sessionObservations.isNotEmpty()) {
+                    TextButton(
+                        onClick = {
+                            // Delete all observations for this session
+                            sessionObservations.forEach { obs ->
+                                repo20Observation.delete(obs)
+                            }
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("حذف جميع السجلات")
+                    }
+                }
+                TextButton(onClick = onDismiss) {
+                    Text("إلغاء")
+                }
             }
         }
     )

@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthS
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -73,15 +76,20 @@ fun EducationFragment(
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
 
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
-    var selectedStudentForSessions by remember { mutableStateOf<M19Etudiant?>(null) }
+
+    // Track selected student locally
+    var selectedEtudiantForSessions by remember { mutableStateOf<M19Etudiant?>(null) }
 
     // Show month selection dialog when needed
     if (activeCentralValues.displaye_dialog_mois_moinAcPlus_6_du_current) {
         MonthSelectionDialog(
             onDismiss = {
                 focusedValuesGetter.update_activeCentralValues(
-                    activeCentralValues.copy(displaye_dialog_mois_moinAcPlus_6_du_current = false)
+                    activeCentralValues.copy(
+                        displaye_dialog_mois_moinAcPlus_6_du_current = false
+                    )
                 )
+                selectedEtudiantForSessions = null
             },
             onMonthSelected = { selectedMonth ->
                 focusedValuesGetter.update_activeCentralValues(
@@ -94,26 +102,26 @@ fun EducationFragment(
         )
     }
 
-    // Show sessions education dialog when month and student are selected
+    // Show sessions education dialog when month is selected
     val selectedMonth = activeCentralValues.displaye_sections_education_du_mois
-    if (selectedMonth != null && selectedStudentForSessions != null) {
+    if (selectedMonth != null) {
         val repo20Observation = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
 
         SessionsEducationDialog(
             selectedMonth = selectedMonth,
-            etudiant = selectedStudentForSessions!!,
             repo20Observation = repo20Observation,
             onDismiss = {
-                selectedStudentForSessions = null
-                // Reset the selected month
                 focusedValuesGetter.update_activeCentralValues(
-                    activeCentralValues.copy(displaye_sections_education_du_mois = null)
+                    activeCentralValues.copy(
+                        displaye_sections_education_du_mois = null
+                    )
                 )
+                selectedEtudiantForSessions = null
             }
         )
     }
 
-    // FIXED: Map Utilisateur to Ousstad_Tahfid before setting filter
+    // Map Utilisateur to Ousstad_Tahfid before setting filter
     LaunchedEffect(currentUtilisateur) {
         val ousstad = mapUtilisateurToOusstad(currentUtilisateur)
         repo19Etudiant.setFilter(ousstad)
@@ -135,8 +143,7 @@ fun EducationFragment(
     } else {
         baseEtudiants
     }.sortedWith(
-        compareByDescending<M19Etudiant>
-        { it.dernierTimeTampsSynchronisationAvecFireBase }
+        compareByDescending<M19Etudiant> { it.dernierTimeTampsSynchronisationAvecFireBase }
             .thenBy { it.positon_don_classe }
     )
 
@@ -226,6 +233,8 @@ fun EducationFragment(
                         EtudiantCard(
                             etudiant = etudiant,
                             modifier = Modifier.fillMaxWidth(),
+                            focusedValuesGetter = focusedValuesGetter,
+                            onEtudiantSelected = { }
                         )
                     }
                 }
@@ -246,6 +255,76 @@ private fun mapUtilisateurToOusstad(utilisateur: Utilisateur): Ousstad_Tahfid? {
     }
 }
 
+@Composable
+fun EtudiantCard(
+    etudiant: M19Etudiant,
+    modifier: Modifier = Modifier,
+    focusedValuesGetter: FocusedValuesGetter,
+    onEtudiantSelected: (M19Etudiant) -> Unit
+) {
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
+
+    Card(
+        modifier = modifier
+            .clickable {
+                // Show month selection dialog directly
+                focusedValuesGetter.update_activeCentralValues(
+                    activeCentralValues.copy(
+                        displaye_dialog_mois_moinAcPlus_6_du_current = true
+                    )
+                )
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Student icon or avatar
+            Surface(
+                modifier = Modifier.size(48.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Student name
+            Text(
+                text = "${etudiant.nom} ${etudiant.prenom}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                minLines = 2
+            )
+
+            // Position in class
+            Text(
+                text = "المرتبة: ${etudiant.positon_don_classe}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
 
 @Composable
 fun EmptyState(

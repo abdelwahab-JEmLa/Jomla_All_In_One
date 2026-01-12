@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,6 +25,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,6 +67,9 @@ fun ObservationEditDialog(
     // NEW: Add field for tabrire (justification)
     var tabrire by remember { mutableStateOf(observation.tabrire_riyab) }
 
+    // NEW: Track observation type (can be toggled)
+    var observationType by remember { mutableStateOf(observation.type) }
+
     // Store the selected moulahadat - initialized from THIS observation, not history
     var selectedMoulahadat by remember {
         mutableStateOf(observation.getMoulahadatList().toSet())
@@ -73,10 +79,10 @@ fun ObservationEditDialog(
     var showIlaSouraDialog by remember { mutableStateOf(false) }
     var showTakiyimDialog by remember { mutableStateOf(false) }
 
-    // NEW: Track if absence type
-    val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
+    // Track if absence type
+    val isAbsence = observationType == M20ObsarvationEtudion.Type.Raeeb
 
-    // NEW: Determine if absence is justified
+    // Determine if absence is justified
     val isJustified = tabrire.isNotBlank()
 
     Dialog(onDismissRequest = onDismiss) {
@@ -101,6 +107,46 @@ fun ObservationEditDialog(
                     text = "✏️ تعديل السجل",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
+                )
+
+                Divider()
+
+                // NEW: Type toggle (Raeeb/Layare)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isAbsence) "غياب (Raeeb)" else "حضور (Layare)",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (isAbsence) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+                    )
+
+                    Switch(
+                        checked = isAbsence,
+                        onCheckedChange = { isChecked ->
+                            observationType = if (isChecked) {
+                                M20ObsarvationEtudion.Type.Raeeb
+                            } else {
+                                M20ObsarvationEtudion.Type.Tama_Hifdoha
+                            }
+                            // Clear justification when switching to non-absence
+                            if (!isChecked) {
+                                tabrire = ""
+                            }
+                        }
+                    )
+                }
+
+                Text(
+                    text = if (isAbsence) "تبديل لتسجيل حضور" else "تبديل لتسجيل غياب",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Divider()
@@ -138,40 +184,38 @@ fun ObservationEditDialog(
 
                 Divider()
 
-                // NEW: Show justification field if absence
+                // NEW: Smart justification field if absence
                 if (isAbsence) {
-                    OutlinedTextField(
-                        value = tabrire,
-                        onValueChange = { newValue ->
-                            tabrire = newValue
-                            // Auto-update type based on justification
-                            // If starts with 'ح' -> remove Raeeb type
-                            // If starts with 'م' and equals "مبرر" -> mark as justified
-                        },
-                        label = { Text("تبرير الغياب") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next
-                        ),
-                        singleLine = false,
-                        minLines = 2,
-                        colors = if (!isJustified) {
-                            androidx.compose.material3.TextFieldDefaults.colors(
-                                unfocusedContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-                                focusedContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
-                            )
+                    Text(
+                        text = "تبرير الغياب:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (isJustified) {
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            androidx.compose.material3.TextFieldDefaults.colors()
-                        },
-                        supportingText = if (!isJustified) {
-                            {
-                                Text(
-                                    text = "⚠️ غياب غير مبرر",
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        } else null
+                            MaterialTheme.colorScheme.error
+                        }
                     )
+
+                    // Use the smart text field component
+                    String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
+                        start_text = tabrire,
+                        placeholder = "اضغط للتبرير",
+                        icon = Icons.Default.Edit,
+                        isAvailable = true,
+                        compact_taille = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        on_DonneClick_Data_Update = { newValue ->
+                            tabrire = newValue
+                        }
+                    )
+
+                    if (!isJustified) {
+                        Text(
+                            text = "⚠️ غياب غير مبرر",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
                     Divider()
                 }
@@ -391,6 +435,7 @@ fun ObservationEditDialog(
                     Button(
                         onClick = {
                             val updatedObservation = observation.copy(
+                                type = observationType, // Save the updated type
                                 min_soura = minSoura,
                                 min_aya = minAya.toIntOrNull() ?: observation.min_aya,
                                 ila_soura = ilaSoura,
@@ -399,8 +444,8 @@ fun ObservationEditDialog(
                                 tikrar = tikrar.toIntOrNull() ?: observation.tikrar,
                                 el3arde = el3arde.toIntOrNull() ?: observation.el3arde,
                                 moulahadat_takyim_li_islahiha = selectedMoulahadat.joinToString(","),
-                                tabrire_riyab = tabrire, // NEW: Save justification
-                                creationTimestamps = creationDate, // NEW: Save updated date
+                                tabrire_riyab = tabrire,
+                                creationTimestamps = creationDate,
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
                             onSave(updatedObservation)
@@ -440,7 +485,7 @@ fun ObservationEditDialog(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = takyim,
-            etudiantKeyID = null,  // Don't pre-populate from history when editing
+            etudiantKeyID = null,
             onDismiss = { showTakiyimDialog = false },
             onSelect = { selectedTakiyim, moulahadat ->
                 takyim = selectedTakiyim
