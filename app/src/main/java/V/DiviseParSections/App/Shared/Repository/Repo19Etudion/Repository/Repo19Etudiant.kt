@@ -250,19 +250,21 @@ data class M19Etudiant(
      * Counts only Raeeb observations without justification (tabrire_riyab is blank)
      */
     fun calculateUnjustifiedAbsences(
-        observations: List<M20ObsarvationEtudion>
+        observations: List<M20ObsarvationEtudion>,
+        forMonth: Calendar? = null  // Add this parameter
     ): Int {
-        val calendar = Calendar.getInstance()
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentYear = calendar.get(Calendar.YEAR)
+        val calendar = forMonth?.clone() as? Calendar ?: Calendar.getInstance()
+        val targetMonth = calendar.get(Calendar.MONTH)
+        val targetYear = calendar.get(Calendar.YEAR)
+
 
         return observations.count { obs ->
             val obsDate = Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
             obs.etudiant_keyID == keyID &&
                     obs.type == M20ObsarvationEtudion.Type.Raeeb &&
                     obs.tabrire_riyab.isBlank() && // Not justified
-                    obsDate.get(Calendar.MONTH) == currentMonth &&
-                    obsDate.get(Calendar.YEAR) == currentYear
+                    obsDate.get(Calendar.MONTH) == targetMonth &&
+                    obsDate.get(Calendar.YEAR) == targetYear
         }
     }
 

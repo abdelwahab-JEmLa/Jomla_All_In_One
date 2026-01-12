@@ -30,14 +30,14 @@ private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5
 private const val NOMB_ETUDION_PAR_PAGE = 8
 private const val COLUMN_HEIGHT_ETUDION = 60f
 private const val FIRST_HEADER_HEIGHT = 20f
-// Add selectedMonth parameter to function signature
+
 fun generatePdfDocument_6(
     context: Context,
     cardsData: List<ParentCommunicationCardData_But6>,
     etudiants: List<M19Etudiant> = emptyList(),
     observations: List<M20ObsarvationEtudion> = emptyList(),
     selectedTeacher: Ousstad_Tahfid? = Ousstad_Tahfid.Abdelwahab_Osstad,
-    selectedMonth: Calendar? = null  // FIXED: Added missing parameter
+    selectedMonth: Calendar? = null
 ): File? {
     return try {
         val outputDir = context.cacheDir
@@ -55,7 +55,7 @@ fun generatePdfDocument_6(
 
         // Calculate total sessions for the selected month
         val totalSessions = calculateSessionsForMonth(targetMonth)
-        val teacherNameArabic = selectedTeacher?.nom_arab ?:""
+        val teacherNameArabic = selectedTeacher?.nom_arab ?: ""
 
         val absenceIcon = try {
             val iconStream = context.resources.openRawResource(
@@ -79,8 +79,9 @@ fun generatePdfDocument_6(
 
         // Sort students by calculated absences from observations
         val sortedIndices = etudiants.indices.sortedWith(
-            compareByDescending<Int> { etudiants[it].calculateUnjustifiedAbsences(observations) }
-                .thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
+            compareByDescending<Int> {
+                AbsenceStatistics.calculate(etudiants[it], observations, selectedMonth).unjustifiedAbsences
+            }.thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
         )
 
         val studentsFirstPage = NOMB_ETUDION_PAR_PAGE_FIRST
@@ -99,13 +100,12 @@ fun generatePdfDocument_6(
 
             val marginLeft = 20f
             val marginRight = 20f
-            if (pageIndex == 0) 120f else 30f
             val marginBottom = 30f
             val contentWidth = pageWidth - marginLeft - marginRight
 
             var yPosition = 20f
 
-            // Paint configurations (same as before)
+            // Paint configurations
             val paintTitleRed = TextPaint().apply {
                 textSize = 22f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -150,6 +150,20 @@ fun generatePdfDocument_6(
 
             val paintSuccess = TextPaint().apply {
                 textSize = SIZE_TEXT_ATTENDANCE_STATUS
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = "#4CAF50".toColorInt()
+            }
+
+            val paintJustified = TextPaint().apply {
+                textSize = 7f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = "#FF9800".toColorInt()
+            }
+
+            val paintIjaza = TextPaint().apply {
+                textSize = 7f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = "#4CAF50".toColorInt()
@@ -355,28 +369,80 @@ fun generatePdfDocument_6(
 
                 xPosition = marginLeft
 
-                // Column 1: Total unjustified absences count
+                // Column 1: Absence statistics with color coding
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[0],
                     yPosition + rowHeight, paintBorder)
 
-                val absenceCount = etudiant.calculateUnjustifiedAbsences(observations)
+                val stats = AbsenceStatistics.calculate(etudiant, observations, selectedMonth)
 
-                if (absenceCount == 0) {
-                    drawRTLText(
-                        canvas, "تم\nحضور\nال$totalSessions\nحصص",
-                        xPosition + 3f, yPosition + 12f, (colWidths[0] - 6f).toInt(),
-                        paintSuccess, Layout.Alignment.ALIGN_CENTER
-                    )
-                } else {
-                    drawRTLText(
-                        canvas, "$absenceCount",
-                        xPosition + 5f, yPosition + 18f, (colWidths[0] - 10f).toInt(),
-                        paintWarning, Layout.Alignment.ALIGN_CENTER
-                    )
+                when {
+                    stats.totalAbsences == 0 -> {
+                        // Perfect attendance - green
+                        drawRTLText(
+                            canvas, "تم\nحضور\nال$totalSessions\nحصص",
+                            xPosition + 3f, yPosition + 12f, (colWidths[0] - 6f).toInt(),
+                            paintSuccess, Layout.Alignment.ALIGN_CENTER
+                        )
+                    }
+                    stats.unjustifiedAbsences > 0 -> {
+                        // Has unjustified absences - red (most serious)
+                        drawRTLText(
+                            canvas, "${stats.unjustifiedAbsences}\nغ.م",
+                            xPosition + 3f, yPosition + 10f, (colWidths[0] - 6f).toInt(),
+                            paintWarning, Layout.Alignment.ALIGN_CENTER
+                        )
+
+                        // Show justified count below if exists
+                        if (stats.justifiedAbsences > 0) {
+                            drawRTLText(
+                                canvas, "${stats.justifiedAbsences}م",
+                                xPosition + 3f, yPosition + 32f, (colWidths[0] - 6f).toInt(),
+                                paintJustified, Layout.Alignment.ALIGN_CENTER
+                            )
+                        }
+
+                        // Show ijaza count at bottom if exists
+                        if (stats.ijazaAbsences > 0) {
+                            drawRTLText(
+                                canvas, "${stats.ijazaAbsences}إ",
+                                xPosition + 3f, yPosition + 45f, (colWidths[0] - 6f).toInt(),
+                                paintIjaza, Layout.Alignment.ALIGN_CENTER
+                            )
+                        }
+                    }
+                    stats.ijazaAbsences > 0 -> {
+                        // Only ijaza absences - green
+                        val paintIjazaBig = TextPaint().apply {
+                            textSize = SIZE_TEXT_ABSENCE_COUNT
+                            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                            isAntiAlias = true
+                            color = "#4CAF50".toColorInt()
+                        }
+                        drawRTLText(
+                            canvas, "${stats.ijazaAbsences}\nإجازة",
+                            xPosition + 3f, yPosition + 15f, (colWidths[0] - 6f).toInt(),
+                            paintIjazaBig, Layout.Alignment.ALIGN_CENTER
+                        )
+                    }
+                    else -> {
+                        // Only regular justified absences - orange
+                        val paintJustifiedBig = TextPaint().apply {
+                            textSize = SIZE_TEXT_ABSENCE_COUNT
+                            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                            isAntiAlias = true
+                            color = "#FF9800".toColorInt()
+                        }
+                        drawRTLText(
+                            canvas, "${stats.justifiedAbsences}\nمبرر",
+                            xPosition + 3f, yPosition + 15f, (colWidths[0] - 6f).toInt(),
+                            paintJustifiedBig, Layout.Alignment.ALIGN_CENTER
+                        )
+                    }
                 }
                 xPosition += colWidths[0]
 
-                val absencesByDate = getAbsencesByDate(etudiant, observations)
+                // Get absences by date for this student
+                val absencesByDate = getAbsencesByDate(etudiant, observations, selectedMonth)
 
                 // Session columns
                 for (sessionIdx in minOf(totalSessions, maxSessionsToShow) - 1 downTo 0) {
@@ -406,6 +472,7 @@ fun generatePdfDocument_6(
                                 justificationIcon = justificationIcon,
                                 paintAbsenceBg = absencePaints.absenceBg,
                                 paintJustifiedBg = absencePaints.justifiedBg,
+                                paintIjazaBg = absencePaints.ijazaBg,
                                 paintAbsenceLabel = absencePaints.absenceLabel,
                                 paintJustificationLabel = absencePaints.justificationLabel,
                                 paintBorder = paintBorder
@@ -489,7 +556,6 @@ private fun calculateSessionsForMonth(month: Calendar): Int {
     return sessionCount
 }
 
-
 data class ParentCommunicationCardData_But6(
     val studentInfo: StudentInfo,
     val attendanceInfo: AttendanceInfo
@@ -513,9 +579,6 @@ data class ParentCommunicationCardData_But6(
     )
 
     companion object {
-        /**
-         * FIXED: Now requires observations to calculate absences dynamically
-         */
         fun fromEtudiant(
             etudiant: M19Etudiant,
             observations: List<M20ObsarvationEtudion> = emptyList(),
@@ -527,7 +590,7 @@ data class ParentCommunicationCardData_But6(
                     age = etudiant.age
                 ),
                 attendanceInfo = AttendanceInfo(
-                    totalAbsences = etudiant.calculateUnjustifiedAbsences(observations),
+                    totalAbsences = AbsenceStatistics.calculate(etudiant, observations).unjustifiedAbsences,
                     totalSessions = getCurrentMonthSessions(),
                     weeklyAbsences = weeklyAbsences
                 )
@@ -543,8 +606,7 @@ data class ParentCommunicationCardData_But6(
                 calendar.set(Calendar.DAY_OF_MONTH, day)
                 val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
-                if (dayOfWeek == Calendar.SUNDAY ||
-                    dayOfWeek == Calendar.THURSDAY) {
+                if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.THURSDAY) {
                     sessionCount++
                 }
             }

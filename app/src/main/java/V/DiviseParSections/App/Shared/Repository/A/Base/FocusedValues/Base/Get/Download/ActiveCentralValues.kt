@@ -93,11 +93,7 @@ data class ActiveCentralValues(
         when (utilisateur) {
             Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
             Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
-            Utilisateur.Admin -> if (params.au_Lence_Set_Compt_Ac_KeyId == params.abdelwahabTravailleChezGros_KeyId) {
-                Ousstad_Tahfid.Abdelwahab_Osstad
-            } else {
-                null
-            }
+            Utilisateur.Admin -> null
             else -> null
         }
     },

@@ -25,6 +25,10 @@ object AbsenceDrawer {
 
     /**
      * Draw a single absence cell with icon, label, and optional justification
+     * Now supports three types:
+     * - Unjustified (red background)
+     * - Justified (orange background)
+     * - Ijaza/School permission (green background)
      */
     fun drawAbsenceCell(
         canvas: Canvas,
@@ -39,6 +43,7 @@ object AbsenceDrawer {
         justificationIcon: Bitmap?,
         paintAbsenceBg: Paint,
         paintJustifiedBg: Paint,
+        paintIjazaBg: Paint,
         paintAbsenceLabel: TextPaint,
         paintJustificationLabel: TextPaint,
         paintBorder: Paint
@@ -53,9 +58,22 @@ object AbsenceDrawer {
             return
         }
 
+        // Determine if this is an ijaza (school permission)
+        val isIjaza = justificationText.contains("مجاز من المدرسة", ignoreCase = true) ||
+                justificationText.contains("اجازة من المدرسة", ignoreCase = true)
+
         Log.d("AbsenceDrawer", "  ✅ Drawing background...")
-        // Draw background
-        val bgPaint = if (isJustified) paintJustifiedBg else paintAbsenceBg
+        Log.d("AbsenceDrawer", "  isJustified: $isJustified")
+        Log.d("AbsenceDrawer", "  isIjaza: $isIjaza")
+        Log.d("AbsenceDrawer", "  justificationText: '$justificationText'")
+
+        // Draw background based on type
+        val bgPaint = when {
+            isIjaza -> paintIjazaBg
+            isJustified -> paintJustifiedBg
+            else -> paintAbsenceBg
+        }
+
         canvas.drawRect(
             cellX + 1f,
             cellY + 1f,
@@ -63,47 +81,56 @@ object AbsenceDrawer {
             cellY + cellHeight - 1f,
             bgPaint
         )
-        Log.d("AbsenceDrawer", "  ✅ Background drawn with color: ${if (isJustified) "orange" else "red"}")
+
+        val colorName = when {
+            isIjaza -> "green (ijaza)"
+            isJustified -> "orange (justified)"
+            else -> "red (unjustified)"
+        }
+        Log.d("AbsenceDrawer", "  ✅ Background drawn with color: $colorName")
 
         // Draw icon
-        val iconToUse = if (isJustified && justificationIcon != null) {
-            justificationIcon
-        } else {
-            absenceIcon
+        val iconToUse = when {
+            isIjaza && justificationIcon != null -> justificationIcon
+            isJustified && justificationIcon != null -> justificationIcon
+            else -> absenceIcon
         }
 
         if (iconToUse != null) {
             drawIconInCell(canvas, cellX, cellY, cellWidth, iconToUse)
+            Log.d("AbsenceDrawer", "  ✅ Icon drawn")
         }
 
-        // Draw label
-        val labelText = if (isJustified) {
-            "غياب\nمبرر"
-        } else {
-            "غياب\nغير مبرر"
+        // Draw label based on type
+        val labelText = when {
+            isIjaza -> "غياب\nبإذن\nالمدرسة"
+            isJustified -> "غياب\nمبرر"
+            else -> "غياب\nغير مبرر"
         }
 
         drawRTLText(
             canvas,
             labelText,
             cellX + 2f,
-            cellY + 28f,
+            cellY + 20f,
             (cellWidth - 4f).toInt(),
             paintAbsenceLabel,
             Layout.Alignment.ALIGN_CENTER
         )
+        Log.d("AbsenceDrawer", "  ✅ Label drawn: $labelText")
 
-        // Draw justification text if present
-        if (isJustified && justificationText.isNotBlank()) {
+        // Draw justification text if present and not ijaza (ijaza is shown in label)
+        if (isJustified && justificationText.isNotBlank() && !isIjaza) {
             drawRTLText(
                 canvas,
                 justificationText,
                 cellX + 2f,
-                cellY + 40f,
+                cellY + 45f,
                 (cellWidth - 4f).toInt(),
                 paintJustificationLabel,
                 Layout.Alignment.ALIGN_CENTER
             )
+            Log.d("AbsenceDrawer", "  ✅ Justification text drawn")
         }
     }
 
@@ -142,6 +169,10 @@ object AbsenceDrawer {
                 color = "#FF9800".toColorInt()
                 style = Paint.Style.FILL
             },
+            ijazaBg = Paint().apply {
+                color = "#4CAF50".toColorInt()
+                style = Paint.Style.FILL
+            },
             absenceLabel = TextPaint().apply {
                 textSize = SIZE_TEXT_ABSENCE_LABEL
                 typeface = android.graphics.Typeface.create(
@@ -165,33 +196,35 @@ object AbsenceDrawer {
 
     /**
      * Data class holding Paint objects for absence rendering
+     * Now includes ijazaBg for green background
      */
     data class AbsencePaints(
         val absenceBg: Paint,
         val justifiedBg: Paint,
+        val ijazaBg: Paint,
         val absenceLabel: TextPaint,
         val justificationLabel: TextPaint
     )
 }
 
 /**
- * FIXED: Get absences from observations (Type.Raeeb)
- * Now uses the SELECTED MONTH from the calendar parameter instead of always using current month
+ * Get absences from observations (Type.Raeeb)
  * Maps session dates to absence information including justification
+ * FIXED: Now uses the SELECTED MONTH parameter instead of always using current month
  */
 fun getAbsencesByDate(
     etudiant: M19Etudiant,
     observations: List<M20ObsarvationEtudion>,
-    selectedMonth: Calendar? = null  // FIXED: Added parameter to use selected month
+    selectedMonth: Calendar? = null
 ): Map<SessionDate, ParentCommunicationCardData_But6.AbsenceDay> {
-    // FIXED: Use selected month instead of always using current month
+    // Use selected month instead of always using current month
     val targetCalendar = selectedMonth?.clone() as? Calendar ?: Calendar.getInstance()
     val targetMonth = targetCalendar.get(Calendar.MONTH)
     val targetYear = targetCalendar.get(Calendar.YEAR)
 
     val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
-    // SPECIAL LOGGING: Check if this is a target student for debugging
+    // Check if this is a target student for debugging
     val isTargetStudent = etudiant.prenom.contains("هدى", ignoreCase = true)
 
     if (isTargetStudent) {
@@ -202,7 +235,7 @@ fun getAbsencesByDate(
         Log.e("AbsenceDrawer", "Target Month: ${targetMonth + 1}/$targetYear")
     }
 
-    // FIXED: Filter observations for this student of type Raeeb in SELECTED month (not current month)
+    // Filter observations for this student of type Raeeb in SELECTED month
     val absenceObservations = observations.filter { obs ->
         val obsDate = Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
         val matchesStudent = obs.etudiant_keyID == etudiant.keyID
@@ -233,7 +266,7 @@ fun getAbsencesByDate(
         Log.e("AbsenceDrawer", "✅ FILTERED Raeeb observations for target month: ${absenceObservations.size}")
     }
 
-    // FIXED: Get session dates for the SELECTED month (not current month)
+    // Get session dates for the SELECTED month
     val sessionDates = getSessionDatesForMonth(targetCalendar)
     val absenceMap = mutableMapOf<SessionDate, ParentCommunicationCardData_But6.AbsenceDay>()
 
@@ -246,20 +279,20 @@ fun getAbsencesByDate(
     }
 
     // Debug logging
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     Log.d("AbsenceDrawer", "Student: ${etudiant.nom} ${etudiant.prenom}")
     Log.d("AbsenceDrawer", "Student KeyID: ${etudiant.keyID}")
     Log.d("AbsenceDrawer", "Target Month: ${targetMonth + 1}/$targetYear")
     Log.d("AbsenceDrawer", "Total Raeeb observations found: ${absenceObservations.size}")
     Log.d("AbsenceDrawer", "Total session dates (الأحد/الخميس): ${sessionDates.size}")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     // Log all session dates
     Log.d("AbsenceDrawer", "Session dates in month:")
     sessionDates.forEach { session ->
         Log.d("AbsenceDrawer", "  - Day ${session.dayOfMonth} (${getDayName(session.dayOfWeek)})")
     }
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     // Process each observation
     absenceObservations.forEachIndexed { index, obs ->
@@ -276,6 +309,11 @@ fun getAbsencesByDate(
         Log.d("AbsenceDrawer", "  Is justified: ${obs.tabrire_riyab.isNotBlank()}")
         if (obs.tabrire_riyab.isNotBlank()) {
             Log.d("AbsenceDrawer", "  Justification: '${obs.tabrire_riyab}'")
+
+            // Check if it's ijaza
+            val isIjaza = obs.tabrire_riyab.contains("مجاز من المدرسة", ignoreCase = true) ||
+                    obs.tabrire_riyab.contains("اجازة من المدرسة", ignoreCase = true)
+            Log.d("AbsenceDrawer", "  Is Ijaza: $isIjaza")
         }
 
         // Match by day-of-month to the nearest session date
@@ -346,12 +384,12 @@ fun getAbsencesByDate(
     }
 
     Log.d("AbsenceDrawer", "")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     Log.d("AbsenceDrawer", "SUMMARY:")
     Log.d("AbsenceDrawer", "  Total observations: ${absenceObservations.size}")
     Log.d("AbsenceDrawer", "  Matched to sessions: ${absenceMap.size}")
     Log.d("AbsenceDrawer", "  Unmatched: ${absenceObservations.size - absenceMap.size}")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     return absenceMap
 }

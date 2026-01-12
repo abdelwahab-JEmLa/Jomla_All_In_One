@@ -124,16 +124,14 @@ fun EducationFragment(
         )
     }
 
-    LaunchedEffect(currentUtilisateur) {
-        val ousstad = mapUtilisateurToOusstad(currentUtilisateur)
-        repo19Etudiant.setFilter(ousstad)
+    // FIXED: Apply filter based on activeOusstad from activeCentralValues
+    LaunchedEffect(activeOusstad) {
+        repo19Etudiant.setFilter(activeOusstad)
     }
 
-    val baseEtudiants = if (currentUtilisateur == Utilisateur.Amine_Madrassa) {
-        repo19Etudiant.filtered_datasValue
-    } else {
-        repo19Etudiant.datasValue
-    }
+    // FIXED: Use filtered_datasValue instead of switching based on currentUtilisateur
+    // The filter is now properly set by activeOusstad above
+    val baseEtudiants = repo19Etudiant.filtered_datasValue
 
     val etudiants = if (searchQuery.isNotBlank()) {
         baseEtudiants.filter { etudiant ->
@@ -381,14 +379,6 @@ fun ScrollableInformationBanner(
                 )
             }
         }
-    }
-}
-
-private fun mapUtilisateurToOusstad(utilisateur: Utilisateur): Ousstad_Tahfid? {
-    return when (utilisateur) {
-        Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
-        Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
-        else -> null
     }
 }
 

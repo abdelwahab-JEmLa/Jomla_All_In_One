@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.AbsenceJustificationShortcuts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,7 @@ import androidx.compose.ui.unit.dp
 /**
  * Smart text field for absence justification with auto-completion:
  * - "م" -> auto-completes to "مبرر"
- * - "ا" -> auto-completes to "اجازة من المدرسة"
+ * - "ا" -> auto-completes to "مجاز من المدرسة"
  * - Any other text is kept as is
  */
 @Composable
@@ -66,15 +67,6 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
         MaterialTheme.typography.labelLarge
     }
 
-    // Smart auto-completion function
-    fun processSmartInput(input: String): String {
-        return when {
-            input == "م" -> "مبرر"
-            input == "ا" -> "اجازة من المدرسة"
-            else -> input
-        }
-    }
-
     if (isEditMode) {
         // Edit mode: Show outlined text field
         OutlinedTextField(
@@ -82,8 +74,8 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
             onValueChange = { newValue ->
                 textInput = newValue
                 // Auto-complete when single character shortcuts are entered
-                if (newValue == "م" || newValue == "ا") {
-                    val completed = processSmartInput(newValue)
+                if (AbsenceJustificationShortcuts.isShortcut(newValue)) {
+                    val completed = AbsenceJustificationShortcuts.processInput(newValue)
                     textInput = completed
                     // Auto-save and exit edit mode
                     on_DonneClick_Data_Update(completed)
@@ -108,7 +100,7 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
             enabled = isAvailable,
             supportingText = {
                 Text(
-                    text = "م = مبرر | ا = اجازة من المدرسة",
+                    text = AbsenceJustificationShortcuts.getHelperText(),
                     style = MaterialTheme.typography.bodySmall
                 )
             }

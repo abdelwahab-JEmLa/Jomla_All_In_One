@@ -173,8 +173,8 @@ fun DropDownItem_ID6(
                 }
 
                 Text(           //<--
-                //TODO(1): creee log Spesifie pk mem si pour moi nov 25 quand je schoi moi au dialof select moi 
-                    // il ya raeeb obsrv mais au pdf ce nai pas affiche au tableau
+                //TODO(1): creee log Spesifie pk mem si pour moi nov 25 quand je schoi moi au dialof select moi
+                    // il ya raeeb obsrv mais au pdf ce nai pas affiche au tableau    et recree ce fiche
                     text = when {
                         isLoading && generationStatus.isNotEmpty() -> generationStatus
                         isLoading -> "جاري الإنشاء..."
