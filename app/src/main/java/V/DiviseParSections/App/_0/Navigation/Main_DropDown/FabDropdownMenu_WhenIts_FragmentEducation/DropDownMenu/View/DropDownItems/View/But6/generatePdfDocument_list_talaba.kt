@@ -24,9 +24,9 @@ private const val SIZE_TEXT_NAME_AGE = 14f
 private const val SIZE_TEXT_ABSENCE_LABEL = 7f
 private const val SIZE_TEXT_JUSTIFICATION = 6f
 private const val SIZE_PNG = 20f
-private const val NOMB_ETUDION_PAR_PAGE_FIRST = 8  // 8 students on first page (reduced by 1)
-private const val NOMB_ETUDION_PAR_PAGE = 9        // 9 students on subsequent pages
-private const val COLUMN_HEIGHT_ETUDION = 50f
+private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5  // 8 students on first page (reduced by 1)
+private const val NOMB_ETUDION_PAR_PAGE = 8        // 9 students on subsequent pages
+private const val COLUMN_HEIGHT_ETUDION = 60f
 private const val FIRST_HEADER_HEIGHT = 20f
 
 fun generatePdfDocument_6(
@@ -47,7 +47,7 @@ fun generatePdfDocument_6(
 
         val currentMonth = getCurrentMonthArabic()
         val totalSessions = getCurrentMonthSessions()
-        val teacherNameArabic = currentUtilisateur.getArabicName()
+        val teacherNameArabic = currentUtilisateur.nom_arab
 
         // Load icons
         val absenceIcon = try {

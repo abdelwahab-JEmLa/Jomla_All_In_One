@@ -189,7 +189,7 @@ private fun createAndOpenPdfDocument(
             onStatusChange("جاري الحفظ...")
 
             // Save the file
-            val teacherName = currentUtilisateur.getArabicName()
+            val teacherName = currentUtilisateur.nom_arab
             val fileName = "قائمة_الطلاب_${teacherName}_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
             val saveResult = withContext(Dispatchers.IO) {
                 PdfSaverUtility_But6.savePdf(

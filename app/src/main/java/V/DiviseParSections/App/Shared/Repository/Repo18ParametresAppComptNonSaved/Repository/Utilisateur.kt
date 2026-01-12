@@ -9,7 +9,7 @@ enum class Utilisateur(
     Abdelwahab_Osstad(
         M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
         "dimanch/jeudi",
-        "عبدالوهاب حنيش"
+        "عبدالوهاب حمنيش"
     ),
     Abdelmoumen(
         M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId,
@@ -57,12 +57,6 @@ enum class Utilisateur(
         }
     }
 
-    /**
-     * Get Arabic name for PDF reports
-     */
-    fun getArabicName(): String {
-        return nom_arab.ifBlank { getDisplayName() }
-    }
 
     companion object {
         /**
