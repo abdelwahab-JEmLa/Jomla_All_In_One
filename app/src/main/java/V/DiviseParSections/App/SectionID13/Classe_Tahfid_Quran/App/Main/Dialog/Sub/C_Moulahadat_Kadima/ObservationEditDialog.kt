@@ -1,23 +1,44 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.C_Moulahadat_Kadima
 
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ObservationEditDialog(
@@ -33,6 +54,16 @@ fun ObservationEditDialog(
     var tikrar by remember { mutableStateOf(observation.tikrar.toString()) }
     var el3arde by remember { mutableStateOf(observation.el3arde.toString()) }
 
+    // NEW: Add field for date/time editing
+    var creationDate by remember { mutableStateOf(observation.creationTimestamps) }
+    var dateInput by remember {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        mutableStateOf(dateFormat.format(Date(observation.creationTimestamps)))
+    }
+
+    // NEW: Add field for tabrire (justification)
+    var tabrire by remember { mutableStateOf(observation.tabrire_riyab) }
+
     // Store the selected moulahadat - initialized from THIS observation, not history
     var selectedMoulahadat by remember {
         mutableStateOf(observation.getMoulahadatList().toSet())
@@ -41,6 +72,12 @@ fun ObservationEditDialog(
     var showMinSouraDialog by remember { mutableStateOf(false) }
     var showIlaSouraDialog by remember { mutableStateOf(false) }
     var showTakiyimDialog by remember { mutableStateOf(false) }
+
+    // NEW: Track if absence type
+    val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
+
+    // NEW: Determine if absence is justified
+    val isJustified = tabrire.isNotBlank()
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -68,109 +105,182 @@ fun ObservationEditDialog(
 
                 Divider()
 
-                // From Sura Section
-                Text(
-                    text = "من سورة:",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showMinSouraDialog = true },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "السورة:",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = minSoura.arabicName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null
-                        )
-                    }
-                }
-
+                // NEW: Date editing field
                 OutlinedTextField(
-                    value = minAya,
+                    value = dateInput,
                     onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            minAya = newValue
+                        dateInput = newValue
+                        // Try to parse the date in format dd.MM.yyyy
+                        try {
+                            val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                            val parsedDate = dateFormat.parse(newValue)
+                            if (parsedDate != null) {
+                                creationDate = parsedDate.time
+                            }
+                        } catch (e: Exception) {
+                            // Keep the old date if parsing fails
                         }
                     },
-                    label = { Text("رقم الآية (من)") },
+                    label = { Text("التاريخ (dd.MM.yyyy)") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    singleLine = true
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // To Sura Section
-                Text(
-                    text = "إلى سورة:",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showIlaSouraDialog = true },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "السورة:",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
+                    singleLine = true,
+                    supportingText = {
                         Text(
-                            text = ilaSoura.arabicName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null
+                            text = "مثال: 04.01.2026",
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
-                }
-
-                OutlinedTextField(
-                    value = ilaAya,
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            ilaAya = newValue
-                        }
-                    },
-                    label = { Text("رقم الآية (إلى)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true
                 )
 
                 Divider()
+
+                // NEW: Show justification field if absence
+                if (isAbsence) {
+                    OutlinedTextField(
+                        value = tabrire,
+                        onValueChange = { newValue ->
+                            tabrire = newValue
+                            // Auto-update type based on justification
+                            // If starts with 'ح' -> remove Raeeb type
+                            // If starts with 'م' and equals "مبرر" -> mark as justified
+                        },
+                        label = { Text("تبرير الغياب") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = false,
+                        minLines = 2,
+                        colors = if (!isJustified) {
+                            androidx.compose.material3.TextFieldDefaults.colors(
+                                unfocusedContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                                focusedContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                            )
+                        } else {
+                            androidx.compose.material3.TextFieldDefaults.colors()
+                        },
+                        supportingText = if (!isJustified) {
+                            {
+                                Text(
+                                    text = "⚠️ غياب غير مبرر",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        } else null
+                    )
+
+                    Divider()
+                }
+
+                // From Sura Section (only if not absence)
+                if (!isAbsence) {
+                    Text(
+                        text = "من سورة:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showMinSouraDialog = true },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "السورة:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = minSoura.arabicName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = minAya,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                minAya = newValue
+                            }
+                        },
+                        label = { Text("رقم الآية (من)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // To Sura Section
+                    Text(
+                        text = "إلى سورة:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showIlaSouraDialog = true },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "السورة:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = ilaSoura.arabicName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = ilaAya,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                ilaAya = newValue
+                            }
+                        },
+                        label = { Text("رقم الآية (إلى)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = true
+                    )
+
+                    Divider()
+                }
 
                 // Takyim Section
                 Row(
@@ -229,38 +339,40 @@ fun ObservationEditDialog(
 
                 Divider()
 
-                // Optional fields
-                OutlinedTextField(
-                    value = tikrar,
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            tikrar = newValue
-                        }
-                    },
-                    label = { Text("التكرار") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true
-                )
+                // Optional fields (only if not absence)
+                if (!isAbsence) {
+                    OutlinedTextField(
+                        value = tikrar,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                tikrar = newValue
+                            }
+                        },
+                        label = { Text("التكرار") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = true
+                    )
 
-                OutlinedTextField(
-                    value = el3arde,
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            el3arde = newValue
-                        }
-                    },
-                    label = { Text("العرض") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true
-                )
+                    OutlinedTextField(
+                        value = el3arde,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                el3arde = newValue
+                            }
+                        },
+                        label = { Text("العرض") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = true
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -287,6 +399,8 @@ fun ObservationEditDialog(
                                 tikrar = tikrar.toIntOrNull() ?: observation.tikrar,
                                 el3arde = el3arde.toIntOrNull() ?: observation.el3arde,
                                 moulahadat_takyim_li_islahiha = selectedMoulahadat.joinToString(","),
+                                tabrire_riyab = tabrire, // NEW: Save justification
+                                creationTimestamps = creationDate, // NEW: Save updated date
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
                             onSave(updatedObservation)

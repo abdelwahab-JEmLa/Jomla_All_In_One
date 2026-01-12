@@ -124,4 +124,31 @@ enum class SOUAR(
             aya.toString()
         }
     }
+
+    /**
+     * Extension function to format Aya display for SOUAR enum
+     * Returns the aya number formatted as a string, or "---" if aya is 0 or negative
+     */
+    fun SOUAR.formatAyaDisplay(ayaNumber: Int): String {
+        return if (ayaNumber > 0) {
+            "الآية $ayaNumber"
+        } else {
+            "---"
+        }
+    }
+
+    /**
+     * Extension function to get full display text with sura name and aya
+     */
+    fun SOUAR.getFullDisplay(ayaNumber: Int): String {
+        return "${this.arabicName} ${formatAyaDisplay(ayaNumber)}"
+    }
+
+    /**
+     * Extension function to check if aya number is valid for this sura
+     * Note: You would need to add numberOfAyas property to SOUAR enum for full validation
+     */
+    fun SOUAR.isValidAya(ayaNumber: Int): Boolean {
+        return ayaNumber > 0 // Basic validation, enhance with actual sura aya counts
+    }
 }
