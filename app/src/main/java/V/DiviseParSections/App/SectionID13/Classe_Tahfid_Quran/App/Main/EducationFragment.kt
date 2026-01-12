@@ -10,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthS
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +29,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -233,8 +230,6 @@ fun EducationFragment(
                         EtudiantCard(
                             etudiant = etudiant,
                             modifier = Modifier.fillMaxWidth(),
-                            focusedValuesGetter = focusedValuesGetter,
-                            onEtudiantSelected = { }
                         )
                     }
                 }
@@ -252,77 +247,6 @@ private fun mapUtilisateurToOusstad(utilisateur: Utilisateur): Ousstad_Tahfid? {
         Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
         Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
         else -> null // For other users, no filter is applied
-    }
-}
-
-@Composable
-fun EtudiantCard(
-    etudiant: M19Etudiant,
-    modifier: Modifier = Modifier,
-    focusedValuesGetter: FocusedValuesGetter,
-    onEtudiantSelected: (M19Etudiant) -> Unit
-) {
-    val activeCentralValues = focusedValuesGetter.active_Central_Values
-
-    Card(
-        modifier = modifier
-            .clickable {
-                // Show month selection dialog directly
-                focusedValuesGetter.update_activeCentralValues(
-                    activeCentralValues.copy(
-                        displaye_dialog_mois_moinAcPlus_6_du_current = true
-                    )
-                )
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Student icon or avatar
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Student name
-            Text(
-                text = "${etudiant.nom} ${etudiant.prenom}",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                minLines = 2
-            )
-
-            // Position in class
-            Text(
-                text = "المرتبة: ${etudiant.positon_don_classe}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 
