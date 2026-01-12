@@ -166,7 +166,7 @@ fun generatePdfDocument_list_talaba(
             for (i in startIndex until endIndex) {
                 val student = filteredData[i]
                 val etudiant = filteredEtudiants.getOrNull(i)
-                val absenceCount = etudiant?.nmbr_absence_sans_justification ?: 0
+                val absenceCount =  0
 
                 // Alternate row background
                 if ((i - startIndex) % 2 == 1) {

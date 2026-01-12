@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.Pdf_Generateur.ParentCommunicationCardData_But6
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.Pdf_Generateur.generatePdfDocument_6
 import android.content.Context
@@ -51,20 +52,19 @@ fun DropDownItem_ID6(
     nomFun: String = "قائمة متابعة الغيابات (PDF)",
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
-    focusedValuesGetter: FocusedValuesGetter=koinInject() ,
+    repo20Observation: Repo20ObsarvationEtudion = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     context: Context = LocalContext.current
 ) {
     var isLoading by remember { mutableStateOf(false) }
     var generationStatus by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    // Get current teacher/user from focused values
     val currentUtilisateur = remember(focusedValuesGetter.active_Central_Values) {
         focusedValuesGetter.active_Central_Values.active_filter_du_utilisateur
             ?: Utilisateur.Admin
     }
 
-    // Get active students count
     val activeStudentsCount = remember(repo19Etudiant.datasValue) {
         repo19Etudiant.datasValue.count { !it.exclue_de_l_affiche_au_classe }
     }
@@ -125,6 +125,7 @@ fun DropDownItem_ID6(
                     createAndOpenPdfDocument(
                         context = context,
                         repo19Etudiant = repo19Etudiant,
+                        repo20Observation = repo20Observation,
                         currentUtilisateur = currentUtilisateur,
                         onLoadingChange = { isLoading = it },
                         onStatusChange = { generationStatus = it }
@@ -139,6 +140,7 @@ fun DropDownItem_ID6(
 private fun createAndOpenPdfDocument(
     context: Context,
     repo19Etudiant: Repo19Etudiant,
+    repo20Observation: Repo20ObsarvationEtudion,
     currentUtilisateur: Utilisateur,
     onLoadingChange: (Boolean) -> Unit,
     onStatusChange: (String) -> Unit
@@ -148,7 +150,7 @@ private fun createAndOpenPdfDocument(
 
     kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
         try {
-            // Fetch and filter active students
+            // Fetch active students
             val activeEtudiants = repo19Etudiant.datasValue
                 .filter { !it.exclue_de_l_affiche_au_classe }
                 .sortedWith(
@@ -165,21 +167,28 @@ private fun createAndOpenPdfDocument(
                 return@launch
             }
 
+            // FIXED: Fetch all observations from repository
+            val observations = repo20Observation.datasValue
+
             onStatusChange("جاري معالجة ${activeEtudiants.size} طالب...")
 
-            // Structure the data
+            // FIXED: Structure the data with observations
             val cardsData = activeEtudiants.map { etudiant ->
-                ParentCommunicationCardData_But6.fromEtudiant(etudiant)
+                ParentCommunicationCardData_But6.fromEtudiant(
+                    etudiant = etudiant,
+                    observations = observations
+                )
             }
 
             onStatusChange("جاري إنشاء الجدول...")
 
-            // Generate PDF with teacher info
+            // FIXED: Generate PDF with observations
             val pdfFile = withContext(Dispatchers.IO) {
                 generatePdfDocument_6(
                     context = context,
                     cardsData = cardsData,
                     etudiants = activeEtudiants,
+                    observations = observations,
                     currentUtilisateur = currentUtilisateur
                 )
             }

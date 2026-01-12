@@ -118,7 +118,7 @@ ${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrar
                     date = dateText,
                     attendanceStatus = if (etudiant.absent) "غائب ❌" else "حاضر ✅",
                     parentPhone = etudiant.num_telephone_parent,
-                    absenceCount = etudiant.nmbr_absence_sans_justification,
+                    absenceCount = 0,
                     shouldPrintJustification = etudiant.imprime_justification
                 )
             )

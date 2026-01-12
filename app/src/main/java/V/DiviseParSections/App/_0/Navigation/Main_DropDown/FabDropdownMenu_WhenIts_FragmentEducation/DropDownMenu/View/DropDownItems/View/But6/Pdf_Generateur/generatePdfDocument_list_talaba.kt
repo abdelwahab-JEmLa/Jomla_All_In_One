@@ -26,8 +26,8 @@ import java.util.Date
 private const val SIZE_TEXT_ATTENDANCE_STATUS = 9f
 private const val SIZE_TEXT_ABSENCE_COUNT = 9f
 private const val SIZE_TEXT_NAME_AGE = 14f
-private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5  // 5 students on first page
-private const val NOMB_ETUDION_PAR_PAGE = 8        // 8 students on subsequent pages
+private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5
+private const val NOMB_ETUDION_PAR_PAGE = 8
 private const val COLUMN_HEIGHT_ETUDION = 60f
 private const val FIRST_HEADER_HEIGHT = 20f
 
@@ -42,7 +42,7 @@ fun generatePdfDocument_6(
         val outputDir = context.cacheDir
         val pdfFile = File(outputDir, "temp_attendance_report_${System.currentTimeMillis()}.pdf")
 
-        val pageWidth = 842  // A4 Landscape
+        val pageWidth = 842
         val pageHeight = 595
 
         val pdfDocument = PdfDocument()
@@ -51,7 +51,6 @@ fun generatePdfDocument_6(
         val totalSessions = getCurrentMonthSessions()
         val teacherNameArabic = currentUtilisateur.nom_arab
 
-        // Load icons
         val absenceIcon = try {
             val iconStream = context.resources.openRawResource(
                 context.resources.getIdentifier("absent", "drawable", context.packageName)
@@ -72,13 +71,12 @@ fun generatePdfDocument_6(
             null
         }
 
-        // Sort students: first by absences (descending), then by name (ascending)
+        // FIXED: Sort students by calculated absences from observations
         val sortedIndices = etudiants.indices.sortedWith(
-            compareByDescending<Int> { etudiants[it].nmbr_absence_sans_justification }
+            compareByDescending<Int> { etudiants[it].calculateUnjustifiedAbsences(observations) }
                 .thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
         )
 
-        // Calculate pagination with different size for first page
         val studentsFirstPage = NOMB_ETUDION_PAR_PAGE_FIRST
         val studentsPerPage = NOMB_ETUDION_PAR_PAGE
 
@@ -186,10 +184,9 @@ fun generatePdfDocument_6(
                 color = Color.WHITE
             }
 
-            // Create absence paints using the extracted utility
             val absencePaints = AbsenceDrawer.createAbsencePaints()
 
-            // First page header with logo and teacher name
+            // First page header
             if (pageIndex == 0) {
                 try {
                     val logoStream = context.resources.openRawResource(
@@ -213,7 +210,6 @@ fun generatePdfDocument_6(
                     yPosition += 10f
                 }
 
-                // Title line
                 drawRTLText(
                     canvas,
                     "تقرير شهر $currentMonth لمتابعة الحضور",
@@ -222,7 +218,6 @@ fun generatePdfDocument_6(
                 )
                 yPosition += 30f
 
-                // Section label
                 drawRTLText(
                     canvas,
                     "قسم المنظم",
@@ -231,7 +226,6 @@ fun generatePdfDocument_6(
                 )
                 yPosition += 28f
 
-                // Teacher name in RED
                 drawRTLText(
                     canvas,
                     teacherNameArabic,
@@ -241,15 +235,13 @@ fun generatePdfDocument_6(
                 yPosition += 30f
             }
 
-            // TODO(1) FIXED: Instead of 4 weeks with 2 sessions each, show 8 individual sessions
             val reportColWidth = 75f
-            val sessionColWidth = 80f  // Width for each individual session
+            val sessionColWidth = 80f
             val nameColWidth = 110f
             val numberColWidth = 30f
 
-            // Calculate total number of sessions for the month
             val sessionsInMonth = getCurrentMonthSessions()
-            val maxSessionsToShow = 8  // Maximum 8 sessions to fit on page
+            val maxSessionsToShow = 8
 
             val colWidths = buildList {
                 add(reportColWidth)
@@ -260,13 +252,10 @@ fun generatePdfDocument_6(
                 add(numberColWidth)
             }.toFloatArray()
 
-            // Get all session dates for the month
             val sessionDates = getSessionDatesForMonth()
 
-            // Headers in RTL order
             val headers = buildList {
                 add("عدد\nالغيابات\nمن\n$totalSessions\nحصة")
-                // Add session headers from right to left (حصة 8, حصة 7, ..., حصة 1)
                 for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
                     add("حصة ${sessionIdx + 1}")
                 }
@@ -279,19 +268,17 @@ fun generatePdfDocument_6(
             val subHeaderHeight = 28f
             val totalHeaderHeight = headerHeight + subHeaderHeight
 
-            // Draw table header background
+            // Draw table header
             var xPosition = marginLeft
             canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
                 yPosition + totalHeaderHeight, paintHeaderBg)
 
-            // Draw main header cells
             for (i in headers.indices) {
                 val isFirstCol = i == 0
                 val isNameCol = i == headers.size - 2
                 val isNumberCol = i == headers.lastIndex
 
                 if (isFirstCol || isNameCol || isNumberCol) {
-                    // First, name, and number columns span full height
                     canvas.drawRect(xPosition, yPosition, xPosition + colWidths[i],
                         yPosition + totalHeaderHeight, paintBorder)
 
@@ -304,7 +291,6 @@ fun generatePdfDocument_6(
                         headerPaint, Layout.Alignment.ALIGN_CENTER
                     )
                 } else {
-                    // Session columns have two-part header
                     canvas.drawRect(xPosition, yPosition, xPosition + colWidths[i],
                         yPosition + headerHeight, paintBorder)
                     drawRTLText(
@@ -318,7 +304,7 @@ fun generatePdfDocument_6(
 
             yPosition += headerHeight
 
-            // Draw sub-headers for session dates
+            // Sub-headers for session dates
             xPosition = marginLeft
             xPosition += reportColWidth
 
@@ -370,11 +356,12 @@ fun generatePdfDocument_6(
 
                 xPosition = marginLeft
 
-                // Column 1: Total absences count
+                // Column 1: Total unjustified absences count
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[0],
                     yPosition + rowHeight, paintBorder)
 
-                val absenceCount = etudiant.nmbr_absence_sans_justification
+                // FIXED: Calculate absences from observations
+                val absenceCount = etudiant.calculateUnjustifiedAbsences(observations)
 
                 if (absenceCount == 0) {
                     drawRTLText(
@@ -391,7 +378,7 @@ fun generatePdfDocument_6(
                 }
                 xPosition += colWidths[0]
 
-                // Session columns: Get all absences mapped by date
+                // FIXED: Get absences from observations
                 val absencesByDate = getAbsencesByDate(etudiant, observations)
 
                 for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
@@ -481,10 +468,6 @@ fun generatePdfDocument_6(
     }
 }
 
-/**
- * Get all session dates (Sunday and Thursday) for the current month
- * Returns list of SessionDate objects with day info
- */
 data class SessionDate(
     val dayOfMonth: Int,
     val dayOfWeek: Int,
@@ -520,7 +503,8 @@ fun getSessionDatesForMonth(): List<SessionDate> {
 }
 
 /**
- * Get absences mapped by session date for easy lookup
+ * FIXED: Get absences from observations (Type.Raeeb)
+ * Maps session dates to absence information including justification
  */
 fun getAbsencesByDate(
     etudiant: M19Etudiant,
@@ -548,7 +532,6 @@ fun getAbsencesByDate(
             val obsDayOfMonth = obsCal.get(Calendar.DAY_OF_MONTH)
             val obsDayOfWeek = obsCal.get(Calendar.DAY_OF_WEEK)
 
-            // Find matching session date
             val matchingSession = sessionDates.find {
                 it.dayOfMonth == obsDayOfMonth && it.dayOfWeek == obsDayOfWeek
             }
@@ -574,7 +557,6 @@ fun getAbsencesByDate(
     return absenceMap
 }
 
-// Keep the old function for backward compatibility if needed
 fun getWeeklyAbsencesWithJustification(
     etudiant: M19Etudiant?,
     observations: List<M20ObsarvationEtudion>
@@ -651,8 +633,12 @@ data class ParentCommunicationCardData_But6(
     )
 
     companion object {
+        /**
+         * FIXED: Now requires observations to calculate absences dynamically
+         */
         fun fromEtudiant(
             etudiant: M19Etudiant,
+            observations: List<M20ObsarvationEtudion> = emptyList(),
             weeklyAbsences: List<List<AbsenceDay>> = emptyList()
         ): ParentCommunicationCardData_But6 {
             return ParentCommunicationCardData_But6(
@@ -661,7 +647,7 @@ data class ParentCommunicationCardData_But6(
                     age = etudiant.age
                 ),
                 attendanceInfo = AttendanceInfo(
-                    totalAbsences = etudiant.nmbr_absence_sans_justification,
+                    totalAbsences = etudiant.calculateUnjustifiedAbsences(observations),
                     totalSessions = getCurrentMonthSessions(),
                     weeklyAbsences = weeklyAbsences
                 )

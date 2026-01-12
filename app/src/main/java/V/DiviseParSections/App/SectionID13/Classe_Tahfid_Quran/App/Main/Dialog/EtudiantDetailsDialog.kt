@@ -9,6 +9,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import android.text.format.DateUtils.isToday
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ import androidx.compose.ui.window.DialogProperties
 fun EtudiantDetailsDialog(
     etudiant: M19Etudiant,
     repo19Etudiant: Repo19Etudiant,
+    repo20Observation: Repo20ObsarvationEtudion,
     onDismiss: () -> Unit,
     onShowSouraDialog: () -> Unit,
     onShowMokarrareSouraDialog: () -> Unit,
@@ -62,6 +64,9 @@ fun EtudiantDetailsDialog(
     onShowIstedrakTakiyimDialog: () -> Unit
 ) {
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
+
+    // FIXED: Get observations for absence calculation
+    val observations = remember(repo20Observation.datasValue) { repo20Observation.datasValue }
 
     // Edit states
     var isEditingNom by remember { mutableStateOf(false) }
@@ -75,7 +80,6 @@ fun EtudiantDetailsDialog(
     var isEditingTikrar3ard by remember { mutableStateOf(false) }
     var isEditingPosition by remember { mutableStateOf(false) }
     var isEditingQuestionOuiNon by remember { mutableStateOf(false) }
-    var isEditingAbsences by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     // Input values
@@ -90,7 +94,6 @@ fun EtudiantDetailsDialog(
     var tikrar3ardInput by remember { mutableStateOf("") }
     var positionInput by remember { mutableStateOf("") }
     var questionOuiNonInput by remember { mutableStateOf("") }
-    var absencesInput by remember { mutableStateOf("") }
 
     // Focus requesters
     val nomFocusRequester = remember { FocusRequester() }
@@ -104,7 +107,6 @@ fun EtudiantDetailsDialog(
     val tikrar3ardFocusRequester = remember { FocusRequester() }
     val positionFocusRequester = remember { FocusRequester() }
     val questionOuiNonFocusRequester = remember { FocusRequester() }
-    val absencesFocusRequester = remember { FocusRequester() }
 
     // LaunchedEffects for focus management
     LaunchedEffect(isEditingNom) {
@@ -181,13 +183,6 @@ fun EtudiantDetailsDialog(
         if (isEditingQuestionOuiNon) {
             questionOuiNonInput = etudiant.question_par_non
             questionOuiNonFocusRequester.requestFocus()
-        }
-    }
-
-    LaunchedEffect(isEditingAbsences) {
-        if (isEditingAbsences) {
-            absencesInput = ""
-            absencesFocusRequester.requestFocus()
         }
     }
 
@@ -408,24 +403,10 @@ fun EtudiantDetailsDialog(
 
                 Divider()
 
-                // === ATTENDANCE AND BEHAVIOR SECTION ===
                 AttendanceAndBehaviorSection(
                     etudiant = etudiant,
                     repo19Etudiant = repo19Etudiant,
-                    isEditingAbsences = isEditingAbsences,
-                    absencesInput = absencesInput,
-                    onAbsencesInputChange = { newValue ->
-                        if (newValue.isEmpty() || (newValue.all { it.isDigit() } && newValue.toIntOrNull() != null)) {
-                            absencesInput = newValue
-                        }
-                    },
-                    onAbsencesEditClick = { isEditingAbsences = true },
-                    onAbsencesSave = {
-                        val newAbsences = absencesInput.toIntOrNull() ?: etudiant.nmbr_absence_sans_justification
-                        repo19Etudiant.upsert(etudiant.copy(nmbr_absence_sans_justification = newAbsences))
-                        isEditingAbsences = false
-                    },
-                    absencesFocusRequester = absencesFocusRequester,
+                    observations = observations,
                     isEditingQuestionOuiNon = isEditingQuestionOuiNon,
                     questionOuiNonInput = questionOuiNonInput,
                     onQuestionOuiNonInputChange = { questionOuiNonInput = it },

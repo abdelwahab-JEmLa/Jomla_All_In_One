@@ -4,41 +4,30 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.S
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.EditableField
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import androidx.compose.foundation.clickable
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AttendanceAndBehaviorSection(
     etudiant: M19Etudiant,
     repo19Etudiant: Repo19Etudiant,
-    isEditingAbsences: Boolean,
-    absencesInput: String,
-    onAbsencesInputChange: (String) -> Unit,
-    onAbsencesEditClick: () -> Unit,
-    onAbsencesSave: () -> Unit,
-    absencesFocusRequester: FocusRequester,
+    observations: List<M20ObsarvationEtudion>,
     isEditingQuestionOuiNon: Boolean,
     questionOuiNonInput: String,
     onQuestionOuiNonInputChange: (String) -> Unit,
@@ -53,10 +42,15 @@ fun AttendanceAndBehaviorSection(
     onMoulahadaSave: () -> Unit,
     moulahadaFocusRequester: FocusRequester
 ) {
+    // FIXED: Calculate absences from observations
+    val absenceCount = remember(etudiant, observations) {
+        etudiant.calculateUnjustifiedAbsences(observations)
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Absences sans justification (editable with print toggle)
+        // FIXED: Display calculated absences (read-only, calculated from observations)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,31 +62,16 @@ fun AttendanceAndBehaviorSection(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Number field
-                if (isEditingAbsences) {
-                    OutlinedTextField(
-                        value = absencesInput,
-                        onValueChange = onAbsencesInputChange,
-                        modifier = Modifier.width(80.dp).focusRequester(absencesFocusRequester),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(onDone = { onAbsencesSave() }),
-                        singleLine = true
-                    )
-                } else {
-                    Text(
-                        text = etudiant.nmbr_absence_sans_justification.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (etudiant.nmbr_absence_sans_justification > 0) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        },
-                        modifier = Modifier.clickable { onAbsencesEditClick() }
-                    )
-                }
+                // Display calculated count (read-only)
+                Text(
+                    text = absenceCount.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (absenceCount > 0) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                )
 
                 // Print toggle button
                 IconButton(
@@ -115,6 +94,12 @@ fun AttendanceAndBehaviorSection(
                 }
             }
         }
+
+        Text(
+            text = "ℹ️ يتم حساب الغياب تلقائياً من الملاحظات",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
 
         // Question Oui/Non (editable)
         EditableField(

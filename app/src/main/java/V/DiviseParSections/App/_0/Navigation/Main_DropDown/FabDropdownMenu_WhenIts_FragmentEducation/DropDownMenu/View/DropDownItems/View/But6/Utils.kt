@@ -13,50 +13,6 @@ import com.aminography.primecalendar.hijri.HijriCalendar
 import java.util.Calendar
 import java.util.Date
 
-fun getWeeklyAbsences(
-    etudiant: M19Etudiant?,
-    observations: List<M20ObsarvationEtudion>
-): List<List<AbsenceInfo>> {
-    if (etudiant == null) return List(4) { emptyList() }
-
-    val calendar = Calendar.getInstance()
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentYear = calendar.get(Calendar.YEAR)
-
-    val absenceObservations = observations.filter { obs ->
-        obs.etudiant_keyID == etudiant.keyID &&
-                obs.type == M20ObsarvationEtudion.Type.Raeeb
-    }
-
-    val weeklyAbsences = MutableList(4) { mutableListOf<AbsenceInfo>() }
-
-    absenceObservations.forEach { obs ->
-        val obsDate = Date(obs.creationTimestamps)
-        val obsCal = Calendar.getInstance().apply { time = obsDate }
-
-        if (obsCal.get(Calendar.MONTH) == currentMonth &&
-            obsCal.get(Calendar.YEAR) == currentYear) {
-
-            val weekOfMonth = obsCal.get(Calendar.WEEK_OF_MONTH) - 1
-            val dayOfWeek = when (obsCal.get(Calendar.DAY_OF_WEEK)) {
-                Calendar.SUNDAY -> 0
-                Calendar.MONDAY -> 1
-                Calendar.TUESDAY -> 2
-                Calendar.WEDNESDAY -> 3
-                Calendar.THURSDAY -> 4
-                else -> -1
-            }
-
-            if (weekOfMonth in 0..3 && dayOfWeek in 0..4) {
-                weeklyAbsences[weekOfMonth].add(
-                    AbsenceInfo(weekOfMonth, dayOfWeek, obsDate)
-                )
-            }
-        }
-    }
-
-    return weeklyAbsences
-}
 
 fun getCurrentMonthArabic(): String {
     val monthNames = arrayOf(

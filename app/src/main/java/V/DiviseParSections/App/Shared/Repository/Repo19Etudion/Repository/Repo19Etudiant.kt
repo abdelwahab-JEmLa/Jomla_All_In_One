@@ -3,6 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
 import android.content.Context
 import android.widget.Toast
@@ -18,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 @Stable
 class Repo19Etudiant(
@@ -35,7 +37,6 @@ class Repo19Etudiant(
         if (currentFilter == null || currentFilter == Utilisateur.Admin) {
             _datas.value
         } else {
-            // Filter students based on their parent_ousstad_key matching the user's account
             val params = M18CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
                 Utilisateur.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
@@ -48,7 +49,6 @@ class Repo19Etudiant(
         }
     }
 
-    // Function to set the filter
     fun setFilter(utilisateur: Utilisateur?) {
         _filter_query.value = utilisateur
     }
@@ -196,7 +196,7 @@ data class M19Etudiant(
     var age: Int = 7,
     var positon_don_classe: Int = 1,
 
-    var nmbr_absence_sans_justification : Int = 0,
+    // REMOVED: nmbr_absence_sans_justification - now calculated from observations
     var imprime_justification : Boolean = false,
     var exclue_de_l_affiche_au_classe : Boolean = false,
 
@@ -226,7 +226,6 @@ data class M19Etudiant(
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-
     enum class Takiyim(val arabicName: String) {
         Moumtaz("ممتاز"),
         Jayid_Jiddan("جيد جداً"),
@@ -244,6 +243,46 @@ data class M19Etudiant(
         Jayid("جيد"),
         Maqboul("مقبول"),
         Daeef("ضعيف")
+    }
+
+    /**
+     * Calculate unjustified absences for the current month from observations
+     * Counts only Raeeb observations without justification (tabrire_riyab is blank)
+     */
+    fun calculateUnjustifiedAbsences(
+        observations: List<M20ObsarvationEtudion>
+    ): Int {
+        val calendar = Calendar.getInstance()
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        return observations.count { obs ->
+            val obsDate = Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
+            obs.etudiant_keyID == keyID &&
+                    obs.type == M20ObsarvationEtudion.Type.Raeeb &&
+                    obs.tabrire_riyab.isBlank() && // Not justified
+                    obsDate.get(Calendar.MONTH) == currentMonth &&
+                    obsDate.get(Calendar.YEAR) == currentYear
+        }
+    }
+
+    /**
+     * Calculate total absences (justified + unjustified) for the current month
+     */
+    fun calculateTotalAbsences(
+        observations: List<M20ObsarvationEtudion>
+    ): Int {
+        val calendar = Calendar.getInstance()
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        return observations.count { obs ->
+            val obsDate = Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
+            obs.etudiant_keyID == keyID &&
+                    obs.type == M20ObsarvationEtudion.Type.Raeeb &&
+                    obsDate.get(Calendar.MONTH) == currentMonth &&
+                    obsDate.get(Calendar.YEAR) == currentYear
+        }
     }
 
     fun get_DebugInfos(): String {

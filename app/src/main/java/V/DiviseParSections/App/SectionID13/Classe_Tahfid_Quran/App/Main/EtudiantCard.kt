@@ -1,13 +1,14 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.EtudiantDetailsDialog
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.MoulahadaSouloukSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.processTakiyimEvaluation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import android.text.format.DateUtils.isToday
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ fun EtudiantCard(
     etudiant: M19Etudiant,
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
+    repo20Observation: Repo20ObsarvationEtudion = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion,
     modifier: Modifier = Modifier
 ) {
     val etudiantId = etudiant.keyID
@@ -62,6 +64,12 @@ fun EtudiantCard(
 
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
+    // FIXED: Calculate absences from observations
+    val observations = remember(repo20Observation.datasValue) { repo20Observation.datasValue }
+    val absenceCount = remember(etudiant, observations) {
+        etudiant.calculateUnjustifiedAbsences(observations)
+    }
+
     Card(
         modifier = modifier.clickable { showDetailsDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -70,7 +78,9 @@ fun EtudiantCard(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(
@@ -86,7 +96,9 @@ fun EtudiantCard(
                 )
 
                 Box(
-                    modifier = Modifier.size(32.dp).clip(CircleShape)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
@@ -122,13 +134,14 @@ fun EtudiantCard(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                if (etudiant.nmbr_absence_sans_justification > 0) {
+                // FIXED: Use calculated absence count
+                if (absenceCount > 0) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "غياب: ${etudiant.nmbr_absence_sans_justification}",
+                            text = "غياب: $absenceCount",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -162,6 +175,7 @@ fun EtudiantCard(
         EtudiantDetailsDialog(
             etudiant = etudiant,
             repo19Etudiant = repo19Etudiant,
+            repo20Observation = repo20Observation,
             onDismiss = { showDetailsDialog = false },
             onShowSouraDialog = {
                 showDetailsDialog = false
@@ -243,7 +257,7 @@ fun EtudiantCard(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.dernier_takyim_dabte,
-            etudiantKeyID = etudiant.keyID,  // Pass student ID to load history
+            etudiantKeyID = etudiant.keyID,
             onDismiss = {
                 showTakiyimDialog = false
                 showDetailsDialog = true
@@ -252,7 +266,7 @@ fun EtudiantCard(
                 val updatedEtudiant = processTakiyimEvaluation(
                     etudiant = etudiant,
                     selectedTakiyim = selectedTakiyim,
-                    selectedMoulahadat = selectedMoulahadat,  // Fixed: pass the parameter
+                    selectedMoulahadat = selectedMoulahadat,
                     aCentralFacade = aCentralFacade
                 )
                 repo19Etudiant.upsert(updatedEtudiant)
@@ -314,13 +328,12 @@ fun EtudiantCard(
     if (showIstedrakTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.istedrak_kadim_Takyim_hali,
-            etudiantKeyID = null,  // No history needed for istedrak
+            etudiantKeyID = null,
             onDismiss = {
                 showIstedrakTakiyimDialog = false
                 showDetailsDialog = true
             },
             onSelect = { selectedTakiyim, _ ->
-                // For istedrak, we don't need moulahadat, just the takiyim
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
                 )
