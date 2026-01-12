@@ -72,6 +72,7 @@ data class ParentCommunicationCardData_But6(
         }
     }
 }
+
 fun generatePdfDocument_6(
     context: Context,
     cardsData: List<ParentCommunicationCardData_But6>,
@@ -152,6 +153,13 @@ fun generatePdfDocument_6(
                 color = "#F44336".toColorInt()
             }
 
+            val paintSessionLabel = TextPaint().apply {
+                textSize = 7f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = android.graphics.Color.WHITE
+            }
+
             val paintBorder = Paint().apply {
                 color = android.graphics.Color.BLACK
                 style = Paint.Style.STROKE
@@ -197,7 +205,7 @@ fun generatePdfDocument_6(
                     yPosition += 10f
                 }
 
-                // Report title - MONTH ONLY
+                // Report title
                 drawRTLText(
                     canvas,
                     "تقرير شهر $currentMonth لمتابعة الحضور لقسم عبدالوهاب حنيش",
@@ -207,12 +215,11 @@ fun generatePdfDocument_6(
                 yPosition += 35f
             }
 
-            // Table starts here (RTL - right to left)
+            // Table configuration (RTL - right to left)
             val reportColWidth = 80f   // عدد الغيابات (rightmost)
             val weekColWidth = 160f    // Each week column (2 cells: Sunday + Thursday)
             val nameColWidth = 110f    // الاسم الكامل (leftmost)
 
-            // RTL order: Report -> Week4 -> Week3 -> Week2 -> Week1 -> Name
             val colWidths = floatArrayOf(
                 reportColWidth, // عدد الغيابات (rightmost)
                 weekColWidth,   // الأسبوع 4
@@ -225,12 +232,13 @@ fun generatePdfDocument_6(
             val rowHeight = 70f
             val headerHeight = 90f
 
-            // Draw table header (RTL)
+            // Get week dates for headers
+            val weekDatesForHeaders = (0 until 4).map { getSundayThursdayDates(it) }
+
+            // Draw table header background
             var xPosition = marginLeft
             canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
                 yPosition + headerHeight, paintHeaderBg)
-
-            val weekDatesForHeaders = (0 until 4).map { getSundayThursdayDates(it) }
 
             // Headers in RTL order
             val headers = buildList {
@@ -245,6 +253,7 @@ fun generatePdfDocument_6(
                 add("الاسم\nالكامل")
             }.toTypedArray()
 
+            // Draw header cells
             for (i in headers.indices) {
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[i],
                     yPosition + headerHeight, paintBorder)
@@ -257,6 +266,50 @@ fun generatePdfDocument_6(
             }
 
             yPosition += headerHeight
+
+            // Draw sub-headers for session labels (حصة 1 with dates)
+            val subHeaderHeight = 25f
+            xPosition = marginLeft
+
+            // Skip report column
+            xPosition += reportColWidth
+
+            // Add sub-headers for each week (reversed for RTL)
+            for (weekIdx in 3 downTo 0) {
+                val dates = weekDatesForHeaders[weekIdx]
+                val dayCellWidth = weekColWidth / 2
+
+                // Draw border
+                canvas.drawRect(xPosition, yPosition, xPosition + weekColWidth,
+                    yPosition + subHeaderHeight, paintBorder)
+
+                // Sunday sub-header (right cell)
+                val sundayCellX = xPosition
+                canvas.drawLine(sundayCellX + dayCellWidth, yPosition,
+                    sundayCellX + dayCellWidth, yPosition + subHeaderHeight, paintBorder)
+
+                if (dates.first > 0) {
+                    drawRTLText(
+                        canvas, "حصة 1\nالأحد ${dates.first} ${getCurrentMonthArabic()}",
+                        sundayCellX + 2f, yPosition + 3f, (dayCellWidth - 4f).toInt(),
+                        paintSessionLabel, Layout.Alignment.ALIGN_CENTER
+                    )
+                }
+
+                // Thursday sub-header (left cell)
+                val thursdayCellX = xPosition + dayCellWidth
+                if (dates.second > 0) {
+                    drawRTLText(
+                        canvas, "حصة 2\nالخميس ${dates.second} ${getCurrentMonthArabic()}",
+                        thursdayCellX + 2f, yPosition + 3f, (dayCellWidth - 4f).toInt(),
+                        paintSessionLabel, Layout.Alignment.ALIGN_CENTER
+                    )
+                }
+
+                xPosition += weekColWidth
+            }
+
+            yPosition += subHeaderHeight
 
             // Draw student rows
             val startIndex = pageIndex * studentsPerPage
@@ -294,22 +347,19 @@ fun generatePdfDocument_6(
                 for (weekIndex in 3 downTo 0) {
                     val absences = weeklyAbsences[weekIndex]
                     val weekCellStart = xPosition
-                    val dayCellWidth = weekColWidth / 2  // 2 cells: Sunday and Thursday
+                    val dayCellWidth = weekColWidth / 2
 
                     canvas.drawRect(weekCellStart, yPosition, weekCellStart + weekColWidth,
                         yPosition + rowHeight, paintBorder)
-
-                    val weekDates = getSundayThursdayDates(weekIndex)
 
                     // Cell 1: Sunday (الأحد)
                     val sundayCellX = weekCellStart
                     canvas.drawLine(sundayCellX + dayCellWidth, yPosition,
                         sundayCellX + dayCellWidth, yPosition + rowHeight, paintBorder)
 
-                    val sundayAbsence = absences.find { it.dayOfWeek == 0 } // Sunday = 0
+                    val sundayAbsence = absences.find { it.dayOfWeek == 0 }
 
                     if (sundayAbsence != null) {
-                        // Red cell for Sunday absence
                         canvas.drawRect(
                             sundayCellX + 1f, yPosition + 1f,
                             sundayCellX + dayCellWidth - 1f, yPosition + rowHeight - 1f,
@@ -321,15 +371,13 @@ fun generatePdfDocument_6(
                             paintAbsenceCell, Layout.Alignment.ALIGN_CENTER
                         )
                     }
-                    // else: leave Sunday cell empty (no text)
 
                     // Cell 2: Thursday (الخميس)
                     val thursdayCellX = weekCellStart + dayCellWidth
 
-                    val thursdayAbsence = absences.find { it.dayOfWeek == 4 } // Thursday = 4
+                    val thursdayAbsence = absences.find { it.dayOfWeek == 4 }
 
                     if (thursdayAbsence != null) {
-                        // Red cell for Thursday absence
                         canvas.drawRect(
                             thursdayCellX + 1f, yPosition + 1f,
                             thursdayCellX + dayCellWidth - 1f, yPosition + rowHeight - 1f,
@@ -341,7 +389,6 @@ fun generatePdfDocument_6(
                             paintAbsenceCell, Layout.Alignment.ALIGN_CENTER
                         )
                     }
-                    // else: leave Thursday cell empty (no text)
 
                     xPosition += weekColWidth
                 }
@@ -381,4 +428,3 @@ fun generatePdfDocument_6(
         null
     }
 }
-
