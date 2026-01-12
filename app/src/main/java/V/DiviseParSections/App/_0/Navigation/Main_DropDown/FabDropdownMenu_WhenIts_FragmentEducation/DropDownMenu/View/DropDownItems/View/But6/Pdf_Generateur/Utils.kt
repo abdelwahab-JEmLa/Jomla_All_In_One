@@ -1,17 +1,12 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.Pdf_Generateur
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import android.graphics.Canvas
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
-import android.util.Log
 import androidx.core.graphics.withTranslation
-import com.aminography.primecalendar.hijri.HijriCalendar
 import java.util.Calendar
-import java.util.Date
 
 
 fun getCurrentMonthArabic(): String {
@@ -60,23 +55,3 @@ fun drawRTLText(
     }
 }
 
-fun getHijriDate(): String {
-    return try {
-        val hijriCalendar = HijriCalendar()
-
-        val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء",
-            "الخميس", "الجمعة", "السبت")
-        val dayName = dayNames[hijriCalendar.dayOfWeek - 1]
-
-        val monthNames = arrayOf(
-            "محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة",
-            "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
-        )
-        val monthName = monthNames[hijriCalendar.month]
-
-        "$dayName ${hijriCalendar.dayOfMonth} $monthName ${hijriCalendar.year} هـ"
-    } catch (e: Exception) {
-        Log.e("HijriDate", "Error formatting Hijri date", e)
-        "التاريخ الهجري"
-    }
-}

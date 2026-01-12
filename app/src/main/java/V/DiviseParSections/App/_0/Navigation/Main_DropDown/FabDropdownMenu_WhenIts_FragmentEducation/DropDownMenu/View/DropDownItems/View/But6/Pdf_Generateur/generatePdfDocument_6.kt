@@ -3,9 +3,6 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.drawRTLText
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.getCurrentMonthArabic
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.getCurrentMonthSessions
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -349,6 +346,21 @@ fun generatePdfDocument_6(
                 val student = cardsData[i]
                 val etudiant = etudiants[i]
 
+                // ADD THIS DEBUG CODE:
+                if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
+                    Log.e("PDF_DEBUG", "")
+                    Log.e("PDF_DEBUG", "🎯 Drawing فداء حمنيش (Row ${idx + 1})")
+                    Log.e("PDF_DEBUG", "Student index in original list: $i")
+                    Log.e("PDF_DEBUG", "Student KeyID: ${etudiant.keyID}")
+                    Log.e("PDF_DEBUG", "Y Position: $yPosition")
+
+                    val absencesByDate = getAbsencesByDate(etudiant, observations)
+                    Log.e("PDF_DEBUG", "Absences map size: ${absencesByDate.size}")
+                    absencesByDate.forEach { (session, absence) ->
+                        Log.e("PDF_DEBUG", "  Session day ${session.dayOfMonth}: ${if (absence.isJustified) "مبرر" else "غير مبرر"}")
+                    }
+                }
+
                 if ((idx - startIndex) % 2 == 1) {
                     canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
                         yPosition + rowHeight, paintAlternateBg)
@@ -391,7 +403,25 @@ fun generatePdfDocument_6(
                         val sessionDate = sessionDates[sessionIdx]
                         val absence = absencesByDate[sessionDate]
 
+                        // ADD THIS DEBUG:
+                        if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
+                            Log.e("PDF_DEBUG", "  Session #$sessionIdx (day ${sessionDate.dayOfMonth}):")
+                            Log.e("PDF_DEBUG", "    Cell X: $sessionCellStart, Y: $yPosition")
+                            Log.e("PDF_DEBUG", "    Absence found: ${absence != null}")
+                            if (absence != null) {
+                                Log.e("PDF_DEBUG", "    Is justified: ${absence.isJustified}")
+                                Log.e("PDF_DEBUG", "    absenceIcon available: ${absenceIcon != null}")
+                                Log.e("PDF_DEBUG", "    justificationIcon available: ${justificationIcon != null}")
+                                Log.e("PDF_DEBUG", "    About to call drawAbsenceCell...")
+                            }
+                        }
+
                         if (absence != null) {
+                            // ADD BEFORE the drawAbsenceCell call:
+                            if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
+                                Log.e("PDF_DEBUG", "    ✅ Calling drawAbsenceCell NOW!")
+                            }
+
                             AbsenceDrawer.drawAbsenceCell(
                                 canvas = canvas,
                                 cellX = sessionCellStart,
@@ -409,11 +439,19 @@ fun generatePdfDocument_6(
                                 paintJustificationLabel = absencePaints.justificationLabel,
                                 paintBorder = paintBorder
                             )
+
+                            // ADD AFTER the drawAbsenceCell call:
+                            if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
+                                Log.e("PDF_DEBUG", "    ✅ drawAbsenceCell completed!")
+                            }
                         }
                     }
 
                     xPosition += sessionColWidth
                 }
+
+                Log.e("PDF_DEBUG", "🎨🎨🎨 FINISHED DRAWING STUDENTS 🎨🎨🎨")
+                Log.e("PDF_DEBUG", "")
 
                 // Column: Name with age
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[colWidths.size - 2],
