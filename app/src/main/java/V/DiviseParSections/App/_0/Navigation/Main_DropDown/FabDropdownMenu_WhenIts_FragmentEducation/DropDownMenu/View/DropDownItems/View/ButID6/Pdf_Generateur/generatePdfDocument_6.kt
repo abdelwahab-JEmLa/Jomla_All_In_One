@@ -1,6 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID6.Pdf_Generateur
 
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.getSessionDatesForMonth
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
@@ -17,8 +17,10 @@ import android.util.Log
 import androidx.core.graphics.toColorInt
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Constants
 private const val SIZE_TEXT_ATTENDANCE_STATUS = 9f
@@ -28,13 +30,14 @@ private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5
 private const val NOMB_ETUDION_PAR_PAGE = 8
 private const val COLUMN_HEIGHT_ETUDION = 60f
 private const val FIRST_HEADER_HEIGHT = 20f
-
+// Add selectedMonth parameter to function signature
 fun generatePdfDocument_6(
     context: Context,
     cardsData: List<ParentCommunicationCardData_But6>,
     etudiants: List<M19Etudiant> = emptyList(),
     observations: List<M20ObsarvationEtudion> = emptyList(),
-    currentUtilisateur: Utilisateur = Utilisateur.Admin
+    selectedTeacher: Ousstad_Tahfid? = Ousstad_Tahfid.Abdelwahab_Osstad,
+    selectedMonth: Calendar? = null  // FIXED: Added missing parameter
 ): File? {
     return try {
         val outputDir = context.cacheDir
@@ -45,9 +48,14 @@ fun generatePdfDocument_6(
 
         val pdfDocument = PdfDocument()
 
-        val currentMonth = getCurrentMonthArabic()
-        val totalSessions = getCurrentMonthSessions()
-        val teacherNameArabic = currentUtilisateur.nom_arab
+        // Use selected month or current month
+        val targetMonth = selectedMonth ?: Calendar.getInstance()
+        val monthFormat = SimpleDateFormat("MMMM", Locale("ar"))
+        val currentMonth = monthFormat.format(targetMonth.time)
+
+        // Calculate total sessions for the selected month
+        val totalSessions = calculateSessionsForMonth(targetMonth)
+        val teacherNameArabic = selectedTeacher?.nom_arab ?:""
 
         val absenceIcon = try {
             val iconStream = context.resources.openRawResource(
@@ -64,12 +72,12 @@ fun generatePdfDocument_6(
                 context.resources.getIdentifier("tabrire", "drawable", context.packageName)
             )
             BitmapFactory.decodeStream(iconStream)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Log.w("PDF", "Justification icon (tabrire.png) not found")
             null
         }
 
-        // FIXED: Sort students by calculated absences from observations
+        // Sort students by calculated absences from observations
         val sortedIndices = etudiants.indices.sortedWith(
             compareByDescending<Int> { etudiants[it].calculateUnjustifiedAbsences(observations) }
                 .thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
@@ -91,13 +99,13 @@ fun generatePdfDocument_6(
 
             val marginLeft = 20f
             val marginRight = 20f
-            val marginTop = if (pageIndex == 0) 120f else 30f
+            if (pageIndex == 0) 120f else 30f
             val marginBottom = 30f
             val contentWidth = pageWidth - marginLeft - marginRight
 
             var yPosition = 20f
 
-            // Paint configurations
+            // Paint configurations (same as before)
             val paintTitleRed = TextPaint().apply {
                 textSize = 22f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -145,13 +153,6 @@ fun generatePdfDocument_6(
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = "#4CAF50".toColorInt()
-            }
-
-            val paintSessionLabel = TextPaint().apply {
-                textSize = 7f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                isAntiAlias = true
-                color = Color.WHITE
             }
 
             val paintBorder = Paint().apply {
@@ -238,23 +239,23 @@ fun generatePdfDocument_6(
             val nameColWidth = 110f
             val numberColWidth = 30f
 
-            val sessionsInMonth = getCurrentMonthSessions()
             val maxSessionsToShow = 8
 
             val colWidths = buildList {
                 add(reportColWidth)
-                repeat(minOf(sessionsInMonth, maxSessionsToShow)) {
+                repeat(minOf(totalSessions, maxSessionsToShow)) {
                     add(sessionColWidth)
                 }
                 add(nameColWidth)
                 add(numberColWidth)
             }.toFloatArray()
 
-            val sessionDates = getSessionDatesForMonth()
+            // Get session dates for the selected month
+            val sessionDates = getSessionDatesForMonth(targetMonth)
 
             val headers = buildList {
                 add("عدد\nالغيابات\nمن\n$totalSessions\nحصة")
-                for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
+                for (sessionIdx in minOf(totalSessions, maxSessionsToShow) - 1 downTo 0) {
                     add("حصة ${sessionIdx + 1}")
                 }
                 add("الاسم\nالكامل")
@@ -306,7 +307,7 @@ fun generatePdfDocument_6(
             xPosition = marginLeft
             xPosition += reportColWidth
 
-            for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
+            for (sessionIdx in minOf(totalSessions, maxSessionsToShow) - 1 downTo 0) {
                 if (sessionIdx < sessionDates.size) {
                     val sessionDate = sessionDates[sessionIdx]
 
@@ -375,45 +376,10 @@ fun generatePdfDocument_6(
                 }
                 xPosition += colWidths[0]
 
-                // ✅ FIX: Call getAbsencesByDate for THIS student
                 val absencesByDate = getAbsencesByDate(etudiant, observations)
 
-                // Enhanced debug logging
-                val isTargetStudent = etudiant.prenom.contains("هداء", ignoreCase = true)
-                if (isTargetStudent) {
-                    Log.e("PDF_DEBUG", "═══════════════════════════════════════")
-                    Log.e("PDF_DEBUG", "🎯 Drawing row for: ${etudiant.nom} ${etudiant.prenom}")
-                    Log.e("PDF_DEBUG", "Row index: ${idx + 1}, Y Position: $yPosition")
-                    Log.e("PDF_DEBUG", "Total absences map size: ${absencesByDate.size}")
-                    Log.e("PDF_DEBUG", "Session dates available: ${sessionDates.size}")
-
-                    // Log all absences
-                    absencesByDate.forEach { (session, absence) ->
-                        Log.e("PDF_DEBUG", "  📅 Day ${session.dayOfMonth}: ${if (absence.isJustified) "مبرر" else "غير مبرر"}")
-                    }
-
-                    // Check if day 4 exists in both maps
-                    val day4InSessionDates = sessionDates.find { it.dayOfMonth == 4 }
-                    val day4InAbsences = absencesByDate.keys.find { it.dayOfMonth == 4 }
-
-                    Log.e("PDF_DEBUG", "Day 4 in sessionDates: ${day4InSessionDates != null}")
-                    Log.e("PDF_DEBUG", "Day 4 in absencesByDate: ${day4InAbsences != null}")
-
-                    if (day4InSessionDates != null && day4InAbsences != null) {
-                        // Check if they're the same object (referential equality)
-                        Log.e("PDF_DEBUG", "Are they same object? ${day4InSessionDates === day4InAbsences}")
-                        Log.e("PDF_DEBUG", "SessionDate hashCode: ${day4InSessionDates.hashCode()}")
-                        Log.e("PDF_DEBUG", "AbsenceDate hashCode: ${day4InAbsences.hashCode()}")
-
-                        // Manual equality check
-                        Log.e("PDF_DEBUG", "Manual check - dayOfMonth match: ${day4InSessionDates.dayOfMonth == day4InAbsences.dayOfMonth}")
-                        Log.e("PDF_DEBUG", "Manual check - dayOfWeek match: ${day4InSessionDates.dayOfWeek == day4InAbsences.dayOfWeek}")
-                    }
-                    Log.e("PDF_DEBUG", "═══════════════════════════════════════")
-                }
-
                 // Session columns
-                for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
+                for (sessionIdx in minOf(totalSessions, maxSessionsToShow) - 1 downTo 0) {
                     val sessionCellStart = xPosition
 
                     canvas.drawRect(sessionCellStart, yPosition, sessionCellStart + sessionColWidth,
@@ -422,43 +388,11 @@ fun generatePdfDocument_6(
                     if (sessionIdx < sessionDates.size) {
                         val sessionDate = sessionDates[sessionIdx]
 
-                        // ⚠️ CRITICAL FIX: Match by dayOfMonth only, not object equality
                         val absence = absencesByDate.entries.find {
                             it.key.dayOfMonth == sessionDate.dayOfMonth
                         }?.value
 
-                        if (isTargetStudent && sessionDate.dayOfMonth == 4) {
-                            Log.e("PDF_DEBUG", "")
-                            Log.e("PDF_DEBUG", "🔍 Processing Session Day 4 for هداء:")
-                            Log.e("PDF_DEBUG", "  Session index: $sessionIdx")
-                            Log.e("PDF_DEBUG", "  Looking for day: ${sessionDate.dayOfMonth}")
-                            Log.e("PDF_DEBUG", "  Absence found: ${absence != null}")
-                            Log.e("PDF_DEBUG", "  Cell position - X: $sessionCellStart, Y: $yPosition")
-                            Log.e("PDF_DEBUG", "  Cell size - Width: $sessionColWidth, Height: $rowHeight")
-
-                            if (absence != null) {
-                                Log.e("PDF_DEBUG", "  ✅ ABSENCE DATA FOUND!")
-                                Log.e("PDF_DEBUG", "  Is justified: ${absence.isJustified}")
-                                Log.e("PDF_DEBUG", "  Justification text: '${absence.justification}'")
-                                Log.e("PDF_DEBUG", "  About to call drawAbsenceCell...")
-                            } else {
-                                Log.e("PDF_DEBUG", "  ❌ NO ABSENCE FOUND!")
-                                Log.e("PDF_DEBUG", "  Available days in absencesByDate:")
-                                absencesByDate.keys.forEach { key ->
-                                    Log.e("PDF_DEBUG", "    - Day ${key.dayOfMonth} (hashCode: ${key.hashCode()})")
-                                }
-                                Log.e("PDF_DEBUG", "  Current sessionDate hashCode: ${sessionDate.hashCode()}")
-                            }
-                        }
-
                         if (absence != null) {
-                            if (isTargetStudent && sessionDate.dayOfMonth == 4) {
-                                Log.e("PDF_DEBUG", "  🎨 Calling drawAbsenceCell with:")
-                                Log.e("PDF_DEBUG", "    cellX=$sessionCellStart, cellY=$yPosition")
-                                Log.e("PDF_DEBUG", "    cellWidth=$sessionColWidth, cellHeight=$rowHeight")
-                                Log.e("PDF_DEBUG", "    isAbsent=true, isJustified=${absence.isJustified}")
-                            }
-
                             AbsenceDrawer.drawAbsenceCell(
                                 canvas = canvas,
                                 cellX = sessionCellStart,
@@ -476,10 +410,6 @@ fun generatePdfDocument_6(
                                 paintJustificationLabel = absencePaints.justificationLabel,
                                 paintBorder = paintBorder
                             )
-
-                            if (isTargetStudent && sessionDate.dayOfMonth == 4) {
-                                Log.e("PDF_DEBUG", "  ✅ drawAbsenceCell COMPLETED for day 4!")
-                            }
                         }
                     }
 
@@ -537,6 +467,26 @@ fun generatePdfDocument_6(
         Log.e("AttendanceReport", "❌ Error creating PDF", e)
         null
     }
+}
+
+/**
+ * Helper function to calculate total sessions for a given month
+ */
+private fun calculateSessionsForMonth(month: Calendar): Int {
+    val calendar = month.clone() as Calendar
+    val maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    var sessionCount = 0
+
+    for (day in 1..maxDay) {
+        calendar.set(Calendar.DAY_OF_MONTH, day)
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+        if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.THURSDAY) {
+            sessionCount++
+        }
+    }
+
+    return sessionCount
 }
 
 

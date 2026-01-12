@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.Butons.DeleteObservationsBeforeDateButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.Butons.DropDownID1
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.Butons.DropDownID2
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.Butons.DropDownID3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
- fun SessionActionDialog(
+fun SessionActionDialog(
     sessionDate: SessionDate,
     repo20Observation: Repo20ObsarvationEtudion,
     sessionObservations: List<M20ObsarvationEtudion>,
@@ -52,7 +53,6 @@ import java.util.Locale
     var showIndividualInput by remember { mutableStateOf(false) }
 
     if (showJustificationDialog) {
-        // Justification input dialog
         AlertDialog(
             onDismissRequest = { showJustificationDialog = false },
             title = { Text("أدخل تبرير الغياب") },
@@ -69,12 +69,10 @@ import java.util.Locale
             confirmButton = {
                 Button(
                     onClick = {
-                        // Delete existing observations first
                         sessionObservations.forEach { obs ->
                             repo20Observation.delete(obs)
                         }
 
-                        // Add Raeeb observation for all students with justification
                         val allStudents = repo19Etudiant.datasValue
                         allStudents.forEach { student ->
                             val absenceObservation = M20ObsarvationEtudion(
@@ -136,15 +134,12 @@ import java.util.Locale
                     fontWeight = FontWeight.Companion.Bold
                 )
 
-                // Add Absence without justification
                 Button(
                     onClick = {
-                        // Delete existing observations first
                         sessionObservations.forEach { obs ->
                             repo20Observation.delete(obs)
                         }
 
-                        // Add Raeeb observation for all students without justification
                         val allStudents = repo19Etudiant.datasValue
                         allStudents.forEach { student ->
                             val absenceObservation = M20ObsarvationEtudion(
@@ -166,7 +161,6 @@ import java.util.Locale
                     Text("غياب للجميع (بدون تبرير)")
                 }
 
-                // Add Absence with justification
                 OutlinedButton(
                     onClick = {
                         showJustificationDialog = true
@@ -176,7 +170,6 @@ import java.util.Locale
                     Text("غياب للجميع (مع تبرير)")
                 }
 
-                // Add absence for missing students only
                 DropDownID1(
                     sessionDate = sessionDate,
                     sessionObservations = sessionObservations,
@@ -190,12 +183,17 @@ import java.util.Locale
                     sessionObservations = sessionObservations
                 )
 
+                DropDownID3(
+                    sessionDate = sessionDate,
+                    repo20Observation = repo20Observation,
+                    sessionObservations = sessionObservations
+                )
+
                 DeleteObservationsBeforeDateButton(
                     sessionDate = sessionDate,
                     repo20Observation = repo20Observation
                 )
 
-                // Add Individual Observations Button
                 if (!showIndividualInput) {
                     OutlinedButton(
                         onClick = {
@@ -206,7 +204,6 @@ import java.util.Locale
                         Text("إضافة سجلات فردية")
                     }
                 } else {
-                    // Show individual student input section
                     Column(
                         modifier = Modifier.Companion.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -217,7 +214,6 @@ import java.util.Locale
                             fontWeight = FontWeight.Companion.Bold
                         )
 
-                        // List all students with individual controls
                         val allStudents = repo19Etudiant.datasValue
                         LazyColumn(
                             modifier = Modifier.Companion
@@ -235,7 +231,6 @@ import java.util.Locale
                             }
                         }
 
-                        // Back button
                         TextButton(
                             onClick = { showIndividualInput = false },
                             modifier = Modifier.Companion.fillMaxWidth()
@@ -248,7 +243,6 @@ import java.util.Locale
                 if (sessionObservations.isNotEmpty()) {
                     Spacer(modifier = Modifier.Companion.height(8.dp))
 
-                    // Delete All Records Button
                     OutlinedButton(
                         onClick = {
                             sessionObservations.forEach { obs ->
