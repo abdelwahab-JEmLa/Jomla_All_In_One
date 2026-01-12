@@ -3,7 +3,6 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.ParentCommunicationCardData
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.PdfSaverUtility_Tahfid
 import android.content.Context
 import android.content.Intent
@@ -59,7 +58,7 @@ import java.util.Locale
  */
 @Composable
 fun DropDownItem_ID6(
-    nomFun: String = "قائمة الطلاب (PDF)",
+    nomFun: String = "قائمة متابعة الغيابات (PDF)",
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     context: Context = LocalContext.current
@@ -142,162 +141,6 @@ fun DropDownItem_ID6(
         )
     }
 }
-
-/**
- * OPTION 2: Standalone Button (Addresses TODO #1)
- * Use this as a standalone button outside of dropdown menus
- */
-@Composable
-fun AttendanceReportButton(
-    modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade = koinInject(),
-    repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
-    context: Context = LocalContext.current
-) {
-    var isLoading by remember { mutableStateOf(false) }
-    var generationStatus by remember { mutableStateOf("") }
-
-    val activeStudentsCount = remember(repo19Etudiant.datasValue) {
-        repo19Etudiant.datasValue.count { !it.exclue_de_l_affiche_au_classe }
-    }
-
-    ElevatedButton(
-        onClick = {
-            if (!isLoading && activeStudentsCount > 0) {
-                createAndOpenPdfDocument(
-                    context = context,
-                    repo19Etudiant = repo19Etudiant,
-                    onLoadingChange = { isLoading = it },
-                    onStatusChange = { generationStatus = it }
-                )
-            }
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(72.dp),
-        enabled = !isLoading && activeStudentsCount > 0,
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = if (activeStudentsCount > 0) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            }
-        )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-            } else {
-                Icon(
-                    imageVector = Icons.Default.TableChart,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Default.PictureAsPdf,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-            }
-
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = if (isLoading && generationStatus.isNotEmpty()) {
-                        generationStatus
-                    } else if (isLoading) {
-                        "جاري الإنشاء..."
-                    } else {
-                        "إنشاء تقرير الحضور"
-                    },
-                    style = MaterialTheme.typography.titleMedium
-                )
-                if (!isLoading && activeStudentsCount > 0) {
-                    Text(
-                        text = "($activeStudentsCount طالب نشط)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
- * OPTION 3: Compact Button for Toolbars
- * Smaller button suitable for app bars or toolbars
- */
-@Composable
-fun AttendanceReportCompactButton(
-    modifier: Modifier = Modifier,
-    aCentralFacade: ACentralFacade = koinInject(),
-    repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
-    context: Context = LocalContext.current
-) {
-    var isLoading by remember { mutableStateOf(false) }
-    var generationStatus by remember { mutableStateOf("") }
-
-    val activeStudentsCount = remember(repo19Etudiant.datasValue) {
-        repo19Etudiant.datasValue.count { !it.exclue_de_l_affiche_au_classe }
-    }
-
-    IconButton(
-        onClick = {
-            if (!isLoading && activeStudentsCount > 0) {
-                createAndOpenPdfDocument(
-                    context = context,
-                    repo19Etudiant = repo19Etudiant,
-                    onLoadingChange = { isLoading = it },
-                    onStatusChange = { generationStatus = it }
-                )
-            }
-        },
-        modifier = modifier,
-        enabled = !isLoading && activeStudentsCount > 0
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                strokeWidth = 2.dp
-            )
-        } else {
-            BadgedBox(
-                badge = {
-                    if (activeStudentsCount > 0) {
-                        Badge {
-                            Text(text = activeStudentsCount.toString())
-                        }
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PictureAsPdf,
-                    contentDescription = "تقرير الحضور PDF",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    }
-}
-
-/**
- * Extracted PDF generation logic - reusable across all button types
- */
 private fun createAndOpenPdfDocument(
     context: Context,
     repo19Etudiant: Repo19Etudiant,
@@ -330,7 +173,7 @@ private fun createAndOpenPdfDocument(
 
             // Step 2: Structure the data
             val cardsData = activeEtudiants.map { etudiant ->
-                ParentCommunicationCardData.fromEtudiant(etudiant)
+                ParentCommunicationCardData_But6.fromEtudiant(etudiant)
             }
 
             onStatusChange("جاري إنشاء الجدول...")

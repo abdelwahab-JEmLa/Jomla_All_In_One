@@ -2,8 +2,8 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.ParentCommunicationCardData
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -25,32 +25,37 @@ import java.util.Locale
 
 fun generatePdfDocument_6(
     context: Context,
-    cardsData: List<ParentCommunicationCardData>,
+    cardsData: List<ParentCommunicationCardData_But6>,
     etudiants: List<M19Etudiant> = emptyList(),
     observations: List<M20ObsarvationEtudion> = emptyList()
-): File? {
+): File? {                    //<--
+//TODO(1): regle les todos et reccreeec .kt
+//fait que le header est jus tpor la premier page les autre c just un tableau
+
+//fait quele tablea est de droit a gautche
     return try {
         val outputDir = context.cacheDir
-        val pdfFile = File(outputDir, "temp_parent_comm_${System.currentTimeMillis()}.pdf")
+        val pdfFile = File(outputDir, "temp_attendance_report_${System.currentTimeMillis()}.pdf")
 
-        // A4 Landscape dimensions for better table layout
+        // A4 Landscape dimensions
         val pageWidth = 842
         val pageHeight = 595
 
         val pdfDocument = PdfDocument()
 
-        // Filter out excluded students
+        // Filter and sort students by number of absences (descending)
         val filteredData = cardsData.filterIndexed { index, _ ->
             val etudiant = etudiants.getOrNull(index)
             etudiant?.exclue_de_l_affiche_au_classe != true
+        }.sortedByDescending { card ->
+            card.attendanceInfo.totalAbsences
         }
 
-        val filteredEtudiants = etudiants.filter { !it.exclue_de_l_affiche_au_classe }
+        val filteredEtudiants = etudiants
+            .filter { !it.exclue_de_l_affiche_au_classe }
+            .sortedByDescending { it.nmbr_absence_sans_justification }
 
-        // Get current month in Arabic
         val currentMonth = getCurrentMonthArabic()
-
-        // Calculate students per page (approximately 8-10 students per page)
         val studentsPerPage = 8
         val totalPages = (filteredData.size + studentsPerPage - 1) / studentsPerPage
 
@@ -61,13 +66,20 @@ fun generatePdfDocument_6(
 
             val marginLeft = 20f
             val marginRight = 20f
-            val marginTop = 30f
+            val marginTop = if (pageIndex == 0) 80f else 30f  // More space for first page
             val marginBottom = 30f
             val contentWidth = (pageWidth - marginLeft - marginRight)
 
-            var yPosition = marginTop
+            var yPosition = 20f
 
             // Paint configurations
+            val paintTitle = TextPaint().apply {
+                textSize = 22f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = "#1976D2".toColorInt()
+            }
+
             val paintHeader = TextPaint().apply {
                 textSize = 18f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -90,17 +102,24 @@ fun generatePdfDocument_6(
             }
 
             val paintTableCell = TextPaint().apply {
-                textSize = 8f
+                textSize = 9f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 isAntiAlias = true
                 color = android.graphics.Color.BLACK
             }
 
             val paintAbsenceCell = TextPaint().apply {
-                textSize = 7f
+                textSize = 8f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isAntiAlias = true
                 color = android.graphics.Color.WHITE
+            }
+
+            val paintWarning = TextPaint().apply {
+                textSize = 12f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+                color = "#F44336".toColorInt()
             }
 
             val paintBorder = Paint().apply {
@@ -120,15 +139,58 @@ fun generatePdfDocument_6(
             }
 
             val paintAbsenceBg = Paint().apply {
-                color = "#F44336".toColorInt() // Red for absence
+                color = "#F44336".toColorInt()
                 style = Paint.Style.FILL
             }
 
-            // Title - Updated with current month
+            val paintWarningBg = Paint().apply {
+                color = "#FFF3E0".toColorInt()
+                style = Paint.Style.FILL
+            }
+
+            // First page header with logo
+            if (pageIndex == 0) {
+                try {
+                    // Load logo from drawable
+                    val logoStream = context.resources.openRawResource(
+                        context.resources.getIdentifier(
+                            "ecole_logo1",
+                            "drawable",
+                            context.packageName
+                        )
+                    )
+                    val logoBitmap = BitmapFactory.decodeStream(logoStream)
+
+                    val logoSize = 60f
+                    val logoX = marginLeft + (contentWidth - logoSize) / 2
+                    canvas.drawBitmap(
+                        logoBitmap,
+                        null,
+                        android.graphics.RectF(logoX, yPosition, logoX + logoSize, yPosition + logoSize),
+                        null
+                    )
+                    yPosition += 65f
+                } catch (e: Exception) {
+                    Log.w("PDF", "Logo not found, skipping")
+                }
+
+                // School name
+                drawRTLText(
+                    canvas,
+                    "مدرسة البر",           //<--
+                    //TODO(1): //le logo soit width 200.dp enlve "مدرسة البر",
+                    marginLeft, yPosition, contentWidth.toInt(), paintTitle,
+                    Layout.Alignment.ALIGN_CENTER
+                )
+                yPosition += 30f
+            }
+
+            // Report title
             drawRTLText(
                 canvas,
                 "تقرير شهر $currentMonth لمتابعة الحضور لقسم عبدالوهاب حنيش",
-                marginLeft, yPosition, contentWidth.toInt(), paintHeader, Layout.Alignment.ALIGN_CENTER
+                marginLeft, yPosition, contentWidth.toInt(), paintHeader,
+                Layout.Alignment.ALIGN_CENTER
             )
             yPosition += 28f
 
@@ -137,49 +199,61 @@ fun generatePdfDocument_6(
             val gregorianDate = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(Date())
             drawRTLText(
                 canvas, "$hijriDate - $gregorianDate",
-                marginLeft, yPosition, contentWidth.toInt(), paintSmall, Layout.Alignment.ALIGN_CENTER
+                marginLeft, yPosition, contentWidth.toInt(), paintSmall,
+                Layout.Alignment.ALIGN_CENTER
             )
             yPosition += 25f
 
-            // Table column widths - Each student on one line with weekly columns
-            val nameColWidth = 120f
-            val ageColWidth = 30f
-            val weekColWidth = 120f // Width for each week column
-            val reportColWidth = 80f
+            // Table column widths
+            val nameColWidth = 140f
+            val weekColWidth = 120f
+            val reportColWidth = 100f
 
-            val colWidths = floatArrayOf(
-                nameColWidth,  // الاسم الكامل
-                ageColWidth,   // السن
+            val colWidths = floatArrayOf(               "السن",
+                "الأسبوع 1",         //<--
+                //TODO(1): ici c "الأسبوع 1" حصة 1 curent date dd جانفي
+                //<--
+                //TODO(1): ajoute c "الأسبوع 1" حصة 2 curent date dd جانفي
+                "الأسبوع 2",                 //<--
+                //TODO(1): ect...
+                "الأسبوع 3",
+                //<--
+                //TODO(1): pk ici il n ya pas 8 casse pour لبحصص
+                nameColWidth,  // الاسم الكامل مع السن
                 weekColWidth,  // الأسبوع 1
                 weekColWidth,  // الأسبوع 2
                 weekColWidth,  // الأسبوع 3
                 weekColWidth,  // الأسبوع 4
-                reportColWidth // تقرير شهري
+                reportColWidth // عدد الغيابات
             )
 
-            val rowHeight = 50f
-            val headerHeight = 35f
+            val rowHeight = 55f
+            val headerHeight = 60f
 
             // Draw table header
             var xPosition = marginLeft
-            canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth, yPosition + headerHeight, paintHeaderBg)
+            canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
+                yPosition + headerHeight, paintHeaderBg)
 
+            val weekDatesForHeaders = (0 until 4).map { getWeekDates(it) }
+                  //<--
+                  //TODO(1): a l interieur normalemnt si present c vide si abcet غياب غير مبرر avec icon warning et on rouge
             val headers = arrayOf(
                 "الاسم الكامل",
-                "السن",
-                "الأسبوع 1",
-                "الأسبوع 2",
-                "الأسبوع 3",
-                "الأسبوع 4",
-                "تقرير شهري"
+                formatWeekHeader(0, weekDatesForHeaders[0]),
+                formatWeekHeader(1, weekDatesForHeaders[1]),
+                formatWeekHeader(2, weekDatesForHeaders[2]),
+                formatWeekHeader(3, weekDatesForHeaders[3]),
+                "عدد الغيابات\nفي ${getCurrentMonthSessions()} حصص"
             )
 
             for (i in headers.indices) {
-                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[i], yPosition + headerHeight, paintBorder)
+                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[i],
+                    yPosition + headerHeight, paintBorder)
                 drawRTLText(
                     canvas, headers[i],
-                    xPosition + 5f, yPosition + 10f, (colWidths[i] - 10f).toInt(), paintTableHeader,
-                    Layout.Alignment.ALIGN_CENTER
+                    xPosition + 5f, yPosition + 12f, (colWidths[i] - 10f).toInt(),
+                    paintTableHeader, Layout.Alignment.ALIGN_CENTER
                 )
                 xPosition += colWidths[i]
             }
@@ -196,7 +270,8 @@ fun generatePdfDocument_6(
 
                 // Alternate row background
                 if ((i - startIndex) % 2 == 1) {
-                    canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth, yPosition + rowHeight, paintAlternateBg)
+                    canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
+                        yPosition + rowHeight, paintAlternateBg)
                 }
 
                 xPosition = marginLeft
@@ -204,78 +279,65 @@ fun generatePdfDocument_6(
                 // Get absence data for each week
                 val weeklyAbsences = getWeeklyAbsences(etudiant, observations)
 
-                // Column 1: Name
-                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[0], yPosition + rowHeight, paintBorder)
+                // Column 1: Name with age
+                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[0],
+                    yPosition + rowHeight, paintBorder)
                 drawRTLText(
                     canvas, student.studentInfo.fullName,
-                    xPosition + 5f, yPosition + 15f, (colWidths[0] - 10f).toInt(), paintTableCell,
-                    Layout.Alignment.ALIGN_NORMAL
+                    xPosition + 5f, yPosition + 20f, (colWidths[0] - 10f).toInt(),
+                    paintTableCell, Layout.Alignment.ALIGN_NORMAL
                 )
                 xPosition += colWidths[0]
 
-                // Column 2: Age
-                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[1], yPosition + rowHeight, paintBorder)
-                drawRTLText(
-                    canvas, "${student.studentInfo.age}",
-                    xPosition + 5f, yPosition + 15f, (colWidths[1] - 10f).toInt(), paintTableCell,
-                    Layout.Alignment.ALIGN_CENTER
-                )
-                xPosition += colWidths[1]
-
-                // Columns 3-6: Weekly attendance (4 weeks)
+                // Columns 2-5: Weekly attendance (4 weeks)
                 for (weekIndex in 0 until 4) {
                     val absences = weeklyAbsences[weekIndex]
-
-                    // Draw week cell with sub-cells for each day
                     val weekCellStart = xPosition
-                    val dayCellWidth = weekColWidth / 5 // 5 days per week
+                    val dayCellWidth = weekColWidth / 5
 
-                    // Draw border for the entire week cell
-                    canvas.drawRect(weekCellStart, yPosition, weekCellStart + weekColWidth, yPosition + rowHeight, paintBorder)
+                    canvas.drawRect(weekCellStart, yPosition, weekCellStart + weekColWidth,
+                        yPosition + rowHeight, paintBorder)
 
-                    // Get the actual dates for this week
                     val weekDates = getWeekDates(weekIndex)
 
                     for (dayIndex in 0 until 5) {
                         val dayCellX = weekCellStart + (dayIndex * dayCellWidth)
 
-                        // Draw vertical separator between days
                         if (dayIndex > 0) {
-                            canvas.drawLine(dayCellX, yPosition, dayCellX, yPosition + rowHeight, paintBorder)
+                            canvas.drawLine(dayCellX, yPosition, dayCellX,
+                                yPosition + rowHeight, paintBorder)
                         }
 
-                        // Get day name and date
                         val (dayName, dayDate) = weekDates[dayIndex]
-                        val currentMonthName = getCurrentMonthArabic()
                         val dateText = if (dayDate > 0) {
-                            "$dayName\n$dayDate\n$currentMonthName"
+                            "$dayName\n$dayDate\n$currentMonth"
                         } else {
                             dayName
                         }
 
-                        // Check if there's an absence for this day
-                        val hasAbsence = absences.any { it.dayOfWeek == dayIndex }
+                        // Check for absence
+                        val absenceForDay = absences.find { it.dayOfWeek == dayIndex }
 
-                        if (hasAbsence) {
-                            // Fill with red background
+                        if (absenceForDay != null) {
+                            // Red background for absence
                             canvas.drawRect(
                                 dayCellX + 1f, yPosition + 1f,
                                 dayCellX + dayCellWidth - 1f, yPosition + rowHeight - 1f,
                                 paintAbsenceBg
                             )
 
-                            // Draw "غياب غير مبرر" text
+                            // Warning icon/text
                             drawRTLText(
-                                canvas, "غياب\nغير\nمبرر",
-                                dayCellX + 2f, yPosition + 8f, (dayCellWidth - 4f).toInt(), paintAbsenceCell,
-                                Layout.Alignment.ALIGN_CENTER
+                                canvas, "⚠\nغياب\nغير\nمبرر",
+                                dayCellX + 2f, yPosition + 5f, (dayCellWidth - 4f).toInt(),
+                                paintAbsenceCell, Layout.Alignment.ALIGN_CENTER
                             )
                         } else {
-                            // Draw day name and date in normal cell
+                            // Normal cell with date
                             drawRTLText(
                                 canvas, dateText,
-                                dayCellX + 2f, yPosition + 12f, (dayCellWidth - 4f).toInt(), paintTableCell,
-                                Layout.Alignment.ALIGN_CENTER
+                                dayCellX + 2f, yPosition + 12f, (dayCellWidth - 4f).toInt(),
+                                paintTableCell, Layout.Alignment.ALIGN_CENTER
                             )
                         }
                     }
@@ -283,17 +345,20 @@ fun generatePdfDocument_6(
                     xPosition += weekColWidth
                 }
 
-                // Column 7: Monthly Report (15 غياب غير مبرر / 8 حصص)
-                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[6], yPosition + rowHeight, paintBorder)
+                // Column 6: Total absences count only
+                canvas.drawRect(xPosition, yPosition, xPosition + colWidths[5],
+                    yPosition + rowHeight, paintBorder)
+
                 val absenceCount = etudiant?.nmbr_absence_sans_justification ?: 0
-                val totalSessions = getCurrentMonthSessions()
-                val reportText = "$absenceCount غياب غير مبرر / $totalSessions حصص"
+                val countText = absenceCount.toString()
+
+                val countPaint = if (absenceCount > 0) paintWarning else paintTableCell
+
                 drawRTLText(
-                    canvas, reportText,
-                    xPosition + 5f, yPosition + 18f, (colWidths[6] - 10f).toInt(), paintTableCell,
-                    Layout.Alignment.ALIGN_CENTER
+                    canvas, countText,
+                    xPosition + 5f, yPosition + 20f, (colWidths[5] - 10f).toInt(),
+                    countPaint, Layout.Alignment.ALIGN_CENTER
                 )
-                xPosition += colWidths[6]
 
                 yPosition += rowHeight
             }
@@ -302,7 +367,8 @@ fun generatePdfDocument_6(
             yPosition = pageHeight - marginBottom - 20f
             drawRTLText(
                 canvas, "صفحة ${pageIndex + 1} من $totalPages",
-                marginLeft, yPosition, contentWidth.toInt(), paintSmall, Layout.Alignment.ALIGN_CENTER
+                marginLeft, yPosition, contentWidth.toInt(), paintSmall,
+                Layout.Alignment.ALIGN_CENTER
             )
 
             pdfDocument.finishPage(page)
@@ -314,45 +380,53 @@ fun generatePdfDocument_6(
         }
         pdfDocument.close()
 
-        Log.i("ParentCommPdf", "✅ PDF créé: ${pdfFile.absolutePath}")
+        Log.i("AttendanceReport", "✅ PDF created: ${pdfFile.absolutePath}")
         pdfFile
     } catch (e: Exception) {
-        Log.e("ParentCommPdf", "❌ Erreur lors de la création du PDF", e)
+        Log.e("AttendanceReport", "❌ Error creating PDF", e)
         null
     }
 }
 
 /**
+ * Format week header with current date
+ */
+fun formatWeekHeader(weekIndex: Int, weekDates: List<Pair<String, Int>>): String {
+    val currentMonth = getCurrentMonthArabic()
+    val firstDate = weekDates.firstOrNull()?.second ?: 0
+    val lastDate = weekDates.lastOrNull()?.second ?: 0
+
+    return if (firstDate > 0 && lastDate > 0) {
+        "الأسبوع ${weekIndex + 1}\nحصة $firstDate-$lastDate $currentMonth"
+    } else {
+        "الأسبوع ${weekIndex + 1}"
+    }
+}
+
+/**
  * Get the dates for a specific week of the month
- * Returns list of (dayName, dayNumber) pairs for Sunday-Thursday
  */
 fun getWeekDates(weekIndex: Int): List<Pair<String, Int>> {
     val calendar = Calendar.getInstance()
     val currentMonth = calendar.get(Calendar.MONTH)
     val currentYear = calendar.get(Calendar.YEAR)
 
-    // Set to first day of month
     calendar.set(Calendar.DAY_OF_MONTH, 1)
 
-    // Find first Sunday of the month
     while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
         calendar.add(Calendar.DAY_OF_MONTH, 1)
     }
 
-    // Move to the target week
     calendar.add(Calendar.WEEK_OF_YEAR, weekIndex)
 
     val dayNames = arrayOf("الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس")
     val dates = mutableListOf<Pair<String, Int>>()
 
-    // Get dates for Sunday through Thursday
     for (i in 0 until 5) {
-        // Make sure we're still in the same month
         if (calendar.get(Calendar.MONTH) == currentMonth &&
             calendar.get(Calendar.YEAR) == currentYear) {
             dates.add(Pair(dayNames[i], calendar.get(Calendar.DAY_OF_MONTH)))
         } else {
-            // If we've gone into next month, use placeholder
             dates.add(Pair(dayNames[i], 0))
         }
         calendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -365,8 +439,8 @@ fun getWeekDates(weekIndex: Int): List<Pair<String, Int>> {
  * Data class to represent absence information
  */
 data class AbsenceInfo(
-    val weekOfMonth: Int, // 0-3 for weeks 1-4
-    val dayOfWeek: Int,   // 0-4 for Sunday-Thursday
+    val weekOfMonth: Int,
+    val dayOfWeek: Int,
     val date: Date
 )
 
@@ -379,7 +453,6 @@ fun getWeeklyAbsences(
 ): List<List<AbsenceInfo>> {
     if (etudiant == null) return List(4) { emptyList() }
 
-    // Filter absence observations for this student in current month
     val calendar = Calendar.getInstance()
     val currentMonth = calendar.get(Calendar.MONTH)
     val currentYear = calendar.get(Calendar.YEAR)
@@ -389,18 +462,16 @@ fun getWeeklyAbsences(
                 obs.type == M20ObsarvationEtudion.Type.Raeeb
     }
 
-    // Group absences by week (4 weeks per month)
     val weeklyAbsences = MutableList(4) { mutableListOf<AbsenceInfo>() }
 
     absenceObservations.forEach { obs ->
         val obsDate = Date(obs.creationTimestamps)
         val obsCal = Calendar.getInstance().apply { time = obsDate }
 
-        // Check if observation is in current month
         if (obsCal.get(Calendar.MONTH) == currentMonth &&
             obsCal.get(Calendar.YEAR) == currentYear) {
 
-            val weekOfMonth = obsCal.get(Calendar.WEEK_OF_MONTH) - 1 // 0-based
+            val weekOfMonth = obsCal.get(Calendar.WEEK_OF_MONTH) - 1
             val dayOfWeek = when (obsCal.get(Calendar.DAY_OF_WEEK)) {
                 Calendar.SUNDAY -> 0
                 Calendar.MONDAY -> 1
@@ -435,7 +506,6 @@ fun getCurrentMonthArabic(): String {
 
 /**
  * Calculate total sessions for current month
- * Assumes 2 sessions per week (Sunday and Thursday)
  */
 fun getCurrentMonthSessions(): Int {
     val calendar = Calendar.getInstance()
@@ -446,7 +516,6 @@ fun getCurrentMonthSessions(): Int {
         calendar.set(Calendar.DAY_OF_MONTH, day)
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
-        // Count Sundays and Thursdays as session days
         if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.THURSDAY) {
             sessionCount++
         }
@@ -456,7 +525,7 @@ fun getCurrentMonthSessions(): Int {
 }
 
 /**
- * Helper function to draw RTL text correctly using StaticLayout
+ * Helper function to draw RTL text
  */
 fun drawRTLText(
     canvas: Canvas,
@@ -479,13 +548,14 @@ fun drawRTLText(
 }
 
 /**
- * Get formatted Hijri date using PrimeCalendar library
+ * Get formatted Hijri date
  */
 fun getHijriDate(): String {
     return try {
         val hijriCalendar = HijriCalendar()
 
-        val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
+        val dayNames = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء",
+            "الخميس", "الجمعة", "السبت")
         val dayName = dayNames[hijriCalendar.dayOfWeek - 1]
 
         val monthNames = arrayOf(
@@ -506,7 +576,3 @@ fun getHijriDate(): String {
         "التاريخ الهجري: $dayNum $hijriYear هـ"
     }
 }
-
-// Add new absence type to M20ObsarvationEtudion.Type enum
-// You'll need to update your enum to include:
-// Absence_Sans_Justification
