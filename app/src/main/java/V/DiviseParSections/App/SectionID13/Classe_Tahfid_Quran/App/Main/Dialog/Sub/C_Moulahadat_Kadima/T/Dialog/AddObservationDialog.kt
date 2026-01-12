@@ -4,6 +4,8 @@ import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.Vie
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -25,8 +27,8 @@ fun AddObservationDialog(
     onAdd: (M20ObsarvationEtudion) -> Unit
 ) {
     var tabrireInput by remember { mutableStateOf("") }
-    val currentDate = remember {
-        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+    var dateInput by remember {
+        mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()))
     }
 
     AlertDialog(
@@ -36,12 +38,19 @@ fun AddObservationDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = "التاريخ: $currentDate",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
+                // Editable date field
+                String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
+                    start_text = dateInput,
+                    placeholder = "التاريخ (dd.MM.yyyy)",
+                    icon = Icons.Default.CalendarToday,
+                    isAvailable = true,
+                    compact_taille = false,
+                    on_DonneClick_Data_Update = { newValue ->
+                        dateInput = newValue
+                    }
                 )
 
+                // Justification field
                 String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
                     start_text = tabrireInput,
                     placeholder = "تبرير الغياب (اختياري)",
@@ -63,10 +72,18 @@ fun AddObservationDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    // Parse the date or use current timestamp if parsing fails
+                    val sessionTimestamp = try {
+                        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                            .parse(dateInput)?.time ?: System.currentTimeMillis()
+                    } catch (e: Exception) {
+                        System.currentTimeMillis()
+                    }
+
                     val newObservation = M20ObsarvationEtudion(
                         type = M20ObsarvationEtudion.Type.Raeeb,
                         tabrire_riyab = tabrireInput.trim(),
-                        sessionDateTimestamp = System.currentTimeMillis(),
+                        sessionDateTimestamp = sessionTimestamp,
                         creationTimestamps = System.currentTimeMillis()
                     )
                     onAdd(newObservation)

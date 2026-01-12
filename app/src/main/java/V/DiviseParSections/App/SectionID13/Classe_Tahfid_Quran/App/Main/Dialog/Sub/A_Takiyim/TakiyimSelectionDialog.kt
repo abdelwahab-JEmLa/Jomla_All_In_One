@@ -1,18 +1,49 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,9 +56,17 @@ fun TakiyimSelectionDialog(
     etudiantKeyID: String? = null,
     onDismiss: () -> Unit,
     onSelect: (M19Etudiant.Takiyim, List<String>) -> Unit,
-    aCentralFacade: ACentralFacade = koinInject()
+    aCentralFacade: ACentralFacade = koinInject(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
     var selectedTakiyim by remember { mutableStateOf(currentTakiyim) }
+
+    // FIXED TODO(1): Get active Ousstad for new moulahadat
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
+    val activeOusstad = activeCentralValues.active_Ousstad_Tahfid
+
+    // FIXED TODO(1): Make takiyim selection a dropdown menu
+    var showTakiyimDropdown by remember { mutableStateOf(false) }
 
     // Get the most recent observation for this student to pre-populate moulahadat
     val latestObservation by remember(etudiantKeyID) {
@@ -42,11 +81,16 @@ fun TakiyimSelectionDialog(
         }
     }
 
-    // Get teacher's key from the observation or from latest observation
-    val teacherKeyID = remember {
-        latestObservation?.parent_ousstad_key ?:
-        aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion.datasValue
-            .maxByOrNull { it.creationTimestamps }?.parent_ousstad_key ?: ""
+    // Get teacher's key from active Ousstad or from latest observation
+    val teacherKeyID = remember(activeOusstad) {
+        val params = M18CentralParametresOfAllApps()
+        when (activeOusstad) {
+            Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
+            Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
+            Ousstad_Tahfid.Kissm_Intikali -> "Kissm_Intikali"
+            Ousstad_Tahfid.Non_Defini_Actuellemen -> "Non_Defini_Actuellemen"
+            null -> latestObservation?.parent_ousstad_key ?: ""
+        }
     }
 
     // Get sorted moulahadat (teacher's first, most recent, then others)
@@ -97,31 +141,21 @@ fun TakiyimSelectionDialog(
 
                 Divider()
 
-                // Takiyim options
+                // FIXED TODO(1): Takiyim as dropdown menu instead of cards
                 Text(
                     text = "التقييم:",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
 
-                M19Etudiant.Takiyim.values().forEach { takiyim ->
+                Box {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectedTakiyim = takiyim },
+                            .clickable { showTakiyimDropdown = true },
                         colors = CardDefaults.cardColors(
-                            containerColor = if (selectedTakiyim == takiyim) {
-                                MaterialTheme.colorScheme.primaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.surface
-                            }
-                        ),
-                        border = if (selectedTakiyim == takiyim) {
-                            BorderStroke(
-                                2.dp,
-                                MaterialTheme.colorScheme.primary
-                            )
-                        } else null
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     ) {
                         Row(
                             modifier = Modifier
@@ -131,18 +165,39 @@ fun TakiyimSelectionDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = takiyim.arabicName,
+                                text = selectedTakiyim.arabicName,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = if (selectedTakiyim == takiyim) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                }
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "اختر",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
 
-                            RadioButton(
-                                selected = selectedTakiyim == takiyim,
-                                onClick = { selectedTakiyim = takiyim }
+                    DropdownMenu(
+                        expanded = showTakiyimDropdown,
+                        onDismissRequest = { showTakiyimDropdown = false }
+                    ) {
+                        M19Etudiant.Takiyim.values().forEach { takiyim ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = takiyim.arabicName,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (selectedTakiyim == takiyim) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface
+                                        }
+                                    )
+                                },
+                                onClick = {
+                                    selectedTakiyim = takiyim
+                                    showTakiyimDropdown = false
+                                }
                             )
                         }
                     }
@@ -178,9 +233,19 @@ fun TakiyimSelectionDialog(
                     // Show indicator if moulahadat are pre-populated
                     if (latestObservation != null && selectedMoulahadat.isNotEmpty()) {
                         Text(
-                            text = "من السجل السابق",
+                            text = "✓ من السجل السابق",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+
+                    // Show active teacher info
+                    if (activeOusstad != null) {
+                        Text(
+                            text = "الأستاذ: ${activeOusstad.nom_arab}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
@@ -339,14 +404,32 @@ fun TakiyimSelectionDialog(
             },
             title = { Text("إضافة ملاحظة جديدة") },
             text = {
-                OutlinedTextField(
-                    value = newMoulahadaText,
-                    onValueChange = { newMoulahadaText = it },
-                    label = { Text("الملاحظة") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = false,
-                    maxLines = 3
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Show active teacher info
+                    if (activeOusstad != null) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                            )
+                        ) {
+                            Text(
+                                text = "سيتم إضافة الملاحظة للأستاذ: ${activeOusstad.nom_arab}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = newMoulahadaText,
+                        onValueChange = { newMoulahadaText = it },
+                        label = { Text("الملاحظة") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = false,
+                        maxLines = 3
+                    )
+                }
             },
             confirmButton = {
                 Button(
@@ -406,7 +489,7 @@ fun TakiyimSelectionDialog(
                         maxLines = 3
                     )
                     Text(
-                        text = "سيتم تحديث جميع السجلات التي تحتوي على هذه الملاحظة",
+                        text = "⚠️ سيتم تحديث جميع السجلات التي تحتوي على هذه الملاحظة",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.tertiary
                     )

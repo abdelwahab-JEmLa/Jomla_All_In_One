@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.S
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.processTakiyimEvaluation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
@@ -24,13 +25,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventSeat
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,9 +70,12 @@ fun EtudiantCard(
     var showIstedrakMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
     var showIstedrakTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
 
+    // FIXED TODO(1): Add Ousstad transfer dialog state
+    var showOussstadTransferDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showOussstadDropdownMenu by remember(etudiantId) { mutableStateOf(false) }
+
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
 
-    // FIXED: Calculate absences from observations
     val observations = remember(repo20Observation.datasValue) { repo20Observation.datasValue }
     val absenceCount = remember(etudiant, observations) {
         etudiant.calculateUnjustifiedAbsences(observations)
@@ -134,7 +145,6 @@ fun EtudiantCard(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // FIXED: Use calculated absence count
                 if (absenceCount > 0) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -168,7 +178,107 @@ fun EtudiantCard(
                     }
                 }
             }
+
+            // FIXED TODO(1): Add Ousstad transfer button at bottom
+            Box(modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    onClick = { showOussstadDropdownMenu = true },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SwapHoriz,
+                        contentDescription = "تحويل للأستاذ",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showOussstadDropdownMenu,
+                    onDismissRequest = { showOussstadDropdownMenu = false }
+                ) {
+                    Ousstad_Tahfid.values().forEach { ousstad ->
+                        DropdownMenuItem(
+                            text = { Text(ousstad.nom_arab) },
+                            onClick = {
+                                showOussstadDropdownMenu = false
+                                showOussstadTransferDialog = true
+                            }
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    // FIXED TODO(1): Ousstad Transfer Confirmation Dialog
+    if (showOussstadTransferDialog) {
+        var selectedOusstad by remember { mutableStateOf<Ousstad_Tahfid?>(null) }
+
+        AlertDialog(
+            onDismissRequest = { showOussstadTransferDialog = false },
+            title = { Text("تحويل الطالب للأستاذ") },
+            text = {
+                Column {
+                    Text("اختر الأستاذ الجديد:")
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Ousstad_Tahfid.values().forEach { ousstad ->
+                        TextButton(
+                            onClick = { selectedOusstad = ousstad },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(ousstad.nom_arab)
+                                if (selectedOusstad == ousstad) {
+                                    Icon(
+                                        imageVector = Icons.Default.ExpandMore,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        selectedOusstad?.let { newOusstad ->
+                            // Update student's parent_ousstad_key
+                            val updatedEtudiant = etudiant.copy(
+                                parent_ousstad_key = newOusstad.key
+                            )
+                            repo19Etudiant.upsert(updatedEtudiant)
+
+                            // Update all observations for this student
+                            observations
+                                .filter { it.etudiant_keyID == etudiant.keyID }
+                                .forEach { observation ->
+                                    val updatedObservation = observation.copy(
+                                        parent_ousstad_key = newOusstad.key
+                                    )
+                                    repo20Observation.upsert(updatedObservation)
+                                }
+                        }
+                        showOussstadTransferDialog = false
+                    },
+                    enabled = selectedOusstad != null
+                ) {
+                    Text("تأكيد")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showOussstadTransferDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
     }
 
     if (showDetailsDialog) {

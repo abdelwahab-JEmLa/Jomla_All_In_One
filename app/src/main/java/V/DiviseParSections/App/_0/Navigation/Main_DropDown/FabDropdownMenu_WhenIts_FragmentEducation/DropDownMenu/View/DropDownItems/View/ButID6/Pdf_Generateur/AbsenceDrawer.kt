@@ -26,7 +26,6 @@ object AbsenceDrawer {
     /**
      * Draw a single absence cell with icon, label, and optional justification
      */
-
     fun drawAbsenceCell(
         canvas: Canvas,
         cellX: Float,
@@ -65,14 +64,6 @@ object AbsenceDrawer {
             bgPaint
         )
         Log.d("AbsenceDrawer", "  ✅ Background drawn with color: ${if (isJustified) "orange" else "red"}")
-
-        canvas.drawRect(
-            cellX + 1f,
-            cellY + 1f,
-            cellX + cellWidth - 1f,
-            cellY + cellHeight - 1f,
-            bgPaint
-        )
 
         // Draw icon
         val iconToUse = if (isJustified && justificationIcon != null) {
@@ -185,42 +176,41 @@ object AbsenceDrawer {
 
 /**
  * FIXED: Get absences from observations (Type.Raeeb)
+ * Now uses the SELECTED MONTH from the calendar parameter instead of always using current month
  * Maps session dates to absence information including justification
- *
- * Fix: Now properly matches observations to session dates by day-of-month only.
- * Includes comprehensive logging to debug missing absences.
  */
 fun getAbsencesByDate(
     etudiant: M19Etudiant,
-    observations: List<M20ObsarvationEtudion>
+    observations: List<M20ObsarvationEtudion>,
+    selectedMonth: Calendar? = null  // FIXED: Added parameter to use selected month
 ): Map<SessionDate, ParentCommunicationCardData_But6.AbsenceDay> {
-    val calendar = Calendar.getInstance()
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentYear = calendar.get(Calendar.YEAR)
+    // FIXED: Use selected month instead of always using current month
+    val targetCalendar = selectedMonth?.clone() as? Calendar ?: Calendar.getInstance()
+    val targetMonth = targetCalendar.get(Calendar.MONTH)
+    val targetYear = targetCalendar.get(Calendar.YEAR)
+
     val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
-    // SPECIAL LOGGING: Check if this is the student "فدا" with date 04-01-2026
-    val isTargetStudent = etudiant.prenom.contains("فدا", ignoreCase = true)
-    val targetDate = Calendar.getInstance().apply {
-        set(2026, Calendar.JANUARY, 4, 0, 0, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
+    // SPECIAL LOGGING: Check if this is a target student for debugging
+    val isTargetStudent = etudiant.prenom.contains("هدى", ignoreCase = true)
 
     if (isTargetStudent) {
         Log.e("AbsenceDrawer", "")
         Log.e("AbsenceDrawer", "🔍🔍🔍 SPECIAL DEBUG FOR STUDENT: ${etudiant.prenom} 🔍🔍🔍")
         Log.e("AbsenceDrawer", "Student full name: ${etudiant.nom} ${etudiant.prenom}")
         Log.e("AbsenceDrawer", "Student KeyID: ${etudiant.keyID}")
-        Log.e("AbsenceDrawer", "Looking for absence on: 04/01/2026 (الأحد)")
+        Log.e("AbsenceDrawer", "Target Month: ${targetMonth + 1}/$targetYear")
     }
 
-    // Filter observations for this student of type Raeeb in current month
+    // FIXED: Filter observations for this student of type Raeeb in SELECTED month (not current month)
     val absenceObservations = observations.filter { obs ->
         val obsDate = Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
-        obs.etudiant_keyID == etudiant.keyID &&
-                obs.type == M20ObsarvationEtudion.Type.Raeeb &&
-                obsDate.get(Calendar.MONTH) == currentMonth &&
-                obsDate.get(Calendar.YEAR) == currentYear
+        val matchesStudent = obs.etudiant_keyID == etudiant.keyID
+        val isRaeeb = obs.type == M20ObsarvationEtudion.Type.Raeeb
+        val matchesMonth = obsDate.get(Calendar.MONTH) == targetMonth
+        val matchesYear = obsDate.get(Calendar.YEAR) == targetYear
+
+        matchesStudent && isRaeeb && matchesMonth && matchesYear
     }
 
     if (isTargetStudent) {
@@ -232,46 +222,44 @@ fun getAbsencesByDate(
             Log.e("AbsenceDrawer", "    Type: ${obs.type}")
             Log.e("AbsenceDrawer", "    Date: ${dateFormat.format(Date(obs.creationTimestamps))}")
             Log.e("AbsenceDrawer", "    Month: ${obsDate.get(Calendar.MONTH) + 1}, Year: ${obsDate.get(Calendar.YEAR)}")
+            Log.e("AbsenceDrawer", "    Target Month: ${targetMonth + 1}, Target Year: $targetYear")
             Log.e("AbsenceDrawer", "    Is Raeeb: ${obs.type == M20ObsarvationEtudion.Type.Raeeb}")
-            Log.e("AbsenceDrawer", "    In current month: ${obsDate.get(Calendar.MONTH) == currentMonth && obsDate.get(Calendar.YEAR) == currentYear}")
+            Log.e("AbsenceDrawer", "    In target month: ${obsDate.get(Calendar.MONTH) == targetMonth && obsDate.get(Calendar.YEAR) == targetYear}")
             if (obs.type == M20ObsarvationEtudion.Type.Raeeb) {
                 Log.e("AbsenceDrawer", "    Justification: '${obs.tabrire_riyab}'")
             }
         }
         Log.e("AbsenceDrawer", "")
-        Log.e("AbsenceDrawer", "✅ FILTERED Raeeb observations: ${absenceObservations.size}")
+        Log.e("AbsenceDrawer", "✅ FILTERED Raeeb observations for target month: ${absenceObservations.size}")
     }
 
-    // Get all session dates for the month
-    val sessionDates = getSessionDatesForMonth()
+    // FIXED: Get session dates for the SELECTED month (not current month)
+    val sessionDates = getSessionDatesForMonth(targetCalendar)
     val absenceMap = mutableMapOf<SessionDate, ParentCommunicationCardData_But6.AbsenceDay>()
 
     if (isTargetStudent) {
         Log.e("AbsenceDrawer", "")
-        Log.e("AbsenceDrawer", "📅 SESSION DATES IN JANUARY 2026:")
+        Log.e("AbsenceDrawer", "📅 SESSION DATES IN TARGET MONTH:")
         sessionDates.forEach { session ->
-            val isTargetDay = session.dayOfMonth == 4
-            val marker = if (isTargetDay) "👉 TARGET DAY 👈" else ""
-            Log.e("AbsenceDrawer", "  Day ${session.dayOfMonth} (${getDayName(session.dayOfWeek)}) $marker")
+            Log.e("AbsenceDrawer", "  Day ${session.dayOfMonth} (${getDayName(session.dayOfWeek)})")
         }
     }
 
-
     // Debug logging
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     Log.d("AbsenceDrawer", "Student: ${etudiant.nom} ${etudiant.prenom}")
     Log.d("AbsenceDrawer", "Student KeyID: ${etudiant.keyID}")
-    Log.d("AbsenceDrawer", "Current Month: ${currentMonth + 1}/$currentYear")
+    Log.d("AbsenceDrawer", "Target Month: ${targetMonth + 1}/$targetYear")
     Log.d("AbsenceDrawer", "Total Raeeb observations found: ${absenceObservations.size}")
     Log.d("AbsenceDrawer", "Total session dates (الأحد/الخميس): ${sessionDates.size}")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     // Log all session dates
     Log.d("AbsenceDrawer", "Session dates in month:")
     sessionDates.forEach { session ->
         Log.d("AbsenceDrawer", "  - Day ${session.dayOfMonth} (${getDayName(session.dayOfWeek)})")
     }
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     // Process each observation
     absenceObservations.forEachIndexed { index, obs ->
@@ -290,12 +278,12 @@ fun getAbsencesByDate(
             Log.d("AbsenceDrawer", "  Justification: '${obs.tabrire_riyab}'")
         }
 
-        // FIXED: Match by day-of-month to the nearest session date
+        // Match by day-of-month to the nearest session date
         val matchingSession = sessionDates.find { it.dayOfMonth == obsDayOfMonth }
 
-        if (isTargetStudent && obsDayOfMonth == 4) {
+        if (isTargetStudent) {
             Log.e("AbsenceDrawer", "")
-            Log.e("AbsenceDrawer", "🎯🎯🎯 PROCESSING TARGET OBSERVATION (04/01/2026) 🎯🎯🎯")
+            Log.e("AbsenceDrawer", "🎯 PROCESSING OBSERVATION for day $obsDayOfMonth")
             Log.e("AbsenceDrawer", "  Observation KeyID: ${obs.keyID}")
             Log.e("AbsenceDrawer", "  Full timestamp: ${obs.creationTimestamps}")
             Log.e("AbsenceDrawer", "  Date formatted: ${dateFormat.format(obsDate)}")
@@ -330,7 +318,7 @@ fun getAbsencesByDate(
                 justification = justification
             )
 
-            if (isTargetStudent && obsDayOfMonth == 4) {
+            if (isTargetStudent) {
                 Log.e("AbsenceDrawer", "  ✅✅✅ SUCCESSFULLY ADDED TO ABSENCE MAP ✅✅✅")
                 Log.e("AbsenceDrawer", "  Will display as: ${if (isJustified) "غياب مبرر" else "غياب غير مبرر"}")
             }
@@ -338,7 +326,7 @@ fun getAbsencesByDate(
             Log.d("AbsenceDrawer", "  ✅ MATCHED to session day $obsDayOfMonth")
             Log.d("AbsenceDrawer", "  Status: ${if (isJustified) "مبرر (Justified)" else "غير مبرر (Unjustified)"}")
         } else {
-            if (isTargetStudent && obsDayOfMonth == 4) {
+            if (isTargetStudent) {
                 Log.e("AbsenceDrawer", "  ❌❌❌ FAILED TO MATCH - ABSENCE WILL NOT DISPLAY ❌❌❌")
             }
             Log.w("AbsenceDrawer", "  ⚠️ NO SESSION FOUND for day $obsDayOfMonth")
@@ -349,27 +337,21 @@ fun getAbsencesByDate(
 
     if (isTargetStudent) {
         Log.e("AbsenceDrawer", "")
-        Log.e("AbsenceDrawer", "📊 FINAL RESULT FOR فدا:")
+        Log.e("AbsenceDrawer", "📊 FINAL RESULT:")
         Log.e("AbsenceDrawer", "  Total Raeeb observations: ${absenceObservations.size}")
         Log.e("AbsenceDrawer", "  Matched to sessions: ${absenceMap.size}")
-        Log.e("AbsenceDrawer", "  Has entry for day 4: ${absenceMap.keys.any { it.dayOfMonth == 4 }}")
-        if (absenceMap.keys.any { it.dayOfMonth == 4 }) {
-            val day4Entry = absenceMap.entries.find { it.key.dayOfMonth == 4 }
-            Log.e("AbsenceDrawer", "  Day 4 status: ${if (day4Entry?.value?.isJustified == true) "مبرر" else "غير مبرر"}")
-        } else {
-            Log.e("AbsenceDrawer", "  ❌ NO ENTRY FOR DAY 4 - PROBLEM CONFIRMED!")
-        }
+        Log.e("AbsenceDrawer", "  Absence map entries: ${absenceMap.entries.joinToString { "Day ${it.key.dayOfMonth}" }}")
         Log.e("AbsenceDrawer", "🔍🔍🔍 END SPECIAL DEBUG 🔍🔍🔍")
         Log.e("AbsenceDrawer", "")
     }
 
     Log.d("AbsenceDrawer", "")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     Log.d("AbsenceDrawer", "SUMMARY:")
     Log.d("AbsenceDrawer", "  Total observations: ${absenceObservations.size}")
     Log.d("AbsenceDrawer", "  Matched to sessions: ${absenceMap.size}")
     Log.d("AbsenceDrawer", "  Unmatched: ${absenceObservations.size - absenceMap.size}")
-    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    Log.d("AbsenceDrawer", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     return absenceMap
 }

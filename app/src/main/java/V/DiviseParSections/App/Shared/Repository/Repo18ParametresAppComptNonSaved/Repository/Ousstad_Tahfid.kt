@@ -20,13 +20,11 @@ enum class Ousstad_Tahfid(
         "dimanch/jeudi",
         "قسم انتقالي" ,
         "Kissm_Intikali"
-
     ),
     Amine_Madrassa(
         "dimanch/jeudi",
         "أمين" ,
-        "Amine_Madrassa"
-
+        M18CentralParametresOfAllApps.get_Default().amine_madrasa_Compt_KeyId
     )
     ;
 }

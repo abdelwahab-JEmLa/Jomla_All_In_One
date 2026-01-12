@@ -55,7 +55,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
+      //<--
+      //TODO(1): enlve header nom ousstad  
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EducationFragment(
@@ -73,11 +74,12 @@ fun EducationFragment(
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
 
     var isSearchActive by remember { mutableStateOf(searchQuery.isNotEmpty()) }
-
-    // Track selected student locally
     var selectedEtudiantForSessions by remember { mutableStateOf<M19Etudiant?>(null) }
 
-    // Show month selection dialog when needed
+ 
+    val activeOusstad = activeCentralValues.active_Ousstad_Tahfid
+    val ousstadTitle = activeOusstad?.nom_arab ?: "قسم حفظة القرآن منظم"
+
     if (activeCentralValues.displaye_dialog_mois_moinAcPlus_6_du_current) {
         MonthSelectionDialog(
             onDismiss = {
@@ -99,7 +101,6 @@ fun EducationFragment(
         )
     }
 
-    // Show sessions education dialog when month is selected
     val selectedMonth = activeCentralValues.displaye_sections_education_du_mois
     if (selectedMonth != null) {
         val repo20Observation = aCentralFacade.repositorysMainGetter.repo20ObsarvationEtudion
@@ -118,20 +119,17 @@ fun EducationFragment(
         )
     }
 
-    // Map Utilisateur to Ousstad_Tahfid before setting filter
     LaunchedEffect(currentUtilisateur) {
         val ousstad = mapUtilisateurToOusstad(currentUtilisateur)
         repo19Etudiant.setFilter(ousstad)
     }
 
-    // Use filtered data if user is Amine_Madrassa, otherwise use all data
     val baseEtudiants = if (currentUtilisateur == Utilisateur.Amine_Madrassa) {
         repo19Etudiant.filtered_datasValue
     } else {
         repo19Etudiant.datasValue
     }
 
-    // Apply name filter when search query is not blank
     val etudiants = if (searchQuery.isNotBlank()) {
         baseEtudiants.filter { etudiant ->
             etudiant.nom.contains(searchQuery, ignoreCase = true) ||
@@ -144,7 +142,6 @@ fun EducationFragment(
             .thenBy { it.positon_don_classe }
     )
 
-    // Check if any student was updated today
     val hasUpdateToday = remember(etudiants) {
         etudiants.any { etudiant ->
             val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase
@@ -152,7 +149,6 @@ fun EducationFragment(
         }
     }
 
-    // Calculate statistics
     val totalStudents = etudiants.size
     val updatedToday = etudiants.count { etudiant ->
         val updateTimestamp = etudiant.dernierTimeTampsSynchronisationAvecFireBase ?: etudiant.creationTimestamps
@@ -166,7 +162,7 @@ fun EducationFragment(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "قسم حفظة القرآن منظم",
+                            text = ousstadTitle,
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
@@ -209,7 +205,6 @@ fun EducationFragment(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
         ) {
-
             if (etudiants.isEmpty()) {
                 EmptyState(
                     modifier = Modifier.fillMaxSize(),
@@ -238,15 +233,11 @@ fun EducationFragment(
     }
 }
 
-/**
- * Maps Utilisateur enum to Ousstad_Tahfid enum
- * Returns null for users who don't have a corresponding Ousstad role
- */
 private fun mapUtilisateurToOusstad(utilisateur: Utilisateur): Ousstad_Tahfid? {
     return when (utilisateur) {
         Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
         Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
-        else -> null // For other users, no filter is applied
+        else -> null
     }
 }
 
@@ -294,6 +285,10 @@ fun EmptyState(
         )
     }
 }
+//<--
+//TODO(1): affiche au top un banner comme au qui affiche image_madarasa  et autre un text cootien وفقنا اله و اياكم لما يحب و يرضى autre    // FIXED TODO(1): Get active Ousstad name
+//<--
+//TODO(1): fait pour le nom
 
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())

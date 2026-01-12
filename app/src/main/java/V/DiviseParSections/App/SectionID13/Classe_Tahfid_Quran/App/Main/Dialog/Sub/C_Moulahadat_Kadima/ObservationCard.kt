@@ -15,6 +15,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -22,8 +25,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +48,7 @@ fun ObservationCard(
     val dateFormat = remember { SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault()) }
     val isAbsence = observation.type == M20ObsarvationEtudion.Type.Raeeb
     val moulahadatList = observation.getMoulahadatList()
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Format Aya display with null safety
     val minAyaDisplay = observation.min_soura.formatAyaDisplay(observation.min_aya)
@@ -72,7 +80,7 @@ fun ObservationCard(
                 isAbsence = isAbsence,
                 dateText = dateFormat.format(Date(observation.creationTimestamps)),
                 onEdit = { onEdit(observation) },
-                onDelete = { onDelete(observation) }
+                onDelete = { showDeleteDialog = true }
             )
 
             HorizontalDivider()
@@ -107,6 +115,33 @@ fun ObservationCard(
                 MoulahadatSection(moulahadatList = moulahadatList)
             }
         }
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("تأكيد الحذف") },
+            text = { Text("هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDelete(observation)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("حذف")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
     }
 }
 

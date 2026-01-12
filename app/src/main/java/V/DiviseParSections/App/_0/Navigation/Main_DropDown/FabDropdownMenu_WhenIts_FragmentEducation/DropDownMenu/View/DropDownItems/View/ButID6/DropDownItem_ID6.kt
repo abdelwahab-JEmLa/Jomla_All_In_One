@@ -172,7 +172,9 @@ fun DropDownItem_ID6(
                     else -> chosenTeacher!!.nom_arab
                 }
 
-                Text(
+                Text(           //<--
+                //TODO(1): creee log Spesifie pk mem si pour moi nov 25 quand je schoi moi au dialof select moi 
+                    // il ya raeeb obsrv mais au pdf ce nai pas affiche au tableau
                     text = when {
                         isLoading && generationStatus.isNotEmpty() -> generationStatus
                         isLoading -> "جاري الإنشاء..."
