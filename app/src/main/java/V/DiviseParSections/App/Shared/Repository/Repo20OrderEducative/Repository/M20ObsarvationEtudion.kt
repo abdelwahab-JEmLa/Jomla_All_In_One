@@ -260,6 +260,7 @@ data class M20ObsarvationEtudion(
     var keyID: String = generePushKey(),
 
     var type: Type = Type.Tama_Hifdoha,
+    var tabrire_riyab: String = "",
 
     var etudiant_keyID: String = "",
 
