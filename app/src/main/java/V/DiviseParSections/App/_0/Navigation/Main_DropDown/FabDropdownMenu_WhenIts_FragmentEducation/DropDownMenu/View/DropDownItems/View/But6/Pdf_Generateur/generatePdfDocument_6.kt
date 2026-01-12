@@ -346,21 +346,6 @@ fun generatePdfDocument_6(
                 val student = cardsData[i]
                 val etudiant = etudiants[i]
 
-                // ADD THIS DEBUG CODE:
-                if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
-                    Log.e("PDF_DEBUG", "")
-                    Log.e("PDF_DEBUG", "🎯 Drawing فداء حمنيش (Row ${idx + 1})")
-                    Log.e("PDF_DEBUG", "Student index in original list: $i")
-                    Log.e("PDF_DEBUG", "Student KeyID: ${etudiant.keyID}")
-                    Log.e("PDF_DEBUG", "Y Position: $yPosition")
-
-                    val absencesByDate = getAbsencesByDate(etudiant, observations)
-                    Log.e("PDF_DEBUG", "Absences map size: ${absencesByDate.size}")
-                    absencesByDate.forEach { (session, absence) ->
-                        Log.e("PDF_DEBUG", "  Session day ${session.dayOfMonth}: ${if (absence.isJustified) "مبرر" else "غير مبرر"}")
-                    }
-                }
-
                 if ((idx - startIndex) % 2 == 1) {
                     canvas.drawRect(marginLeft, yPosition, marginLeft + contentWidth,
                         yPosition + rowHeight, paintAlternateBg)
@@ -372,7 +357,6 @@ fun generatePdfDocument_6(
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[0],
                     yPosition + rowHeight, paintBorder)
 
-                // FIXED: Calculate absences from observations
                 val absenceCount = etudiant.calculateUnjustifiedAbsences(observations)
 
                 if (absenceCount == 0) {
@@ -390,9 +374,44 @@ fun generatePdfDocument_6(
                 }
                 xPosition += colWidths[0]
 
-                // FIXED: Get absences from observations
+                // ✅ FIX: Call getAbsencesByDate for THIS student
                 val absencesByDate = getAbsencesByDate(etudiant, observations)
 
+                // Enhanced debug logging
+                val isTargetStudent = etudiant.prenom.contains("هداء", ignoreCase = true)
+                if (isTargetStudent) {
+                    Log.e("PDF_DEBUG", "═══════════════════════════════════════")
+                    Log.e("PDF_DEBUG", "🎯 Drawing row for: ${etudiant.nom} ${etudiant.prenom}")
+                    Log.e("PDF_DEBUG", "Row index: ${idx + 1}, Y Position: $yPosition")
+                    Log.e("PDF_DEBUG", "Total absences map size: ${absencesByDate.size}")
+                    Log.e("PDF_DEBUG", "Session dates available: ${sessionDates.size}")
+
+                    // Log all absences
+                    absencesByDate.forEach { (session, absence) ->
+                        Log.e("PDF_DEBUG", "  📅 Day ${session.dayOfMonth}: ${if (absence.isJustified) "مبرر" else "غير مبرر"}")
+                    }
+
+                    // Check if day 4 exists in both maps
+                    val day4InSessionDates = sessionDates.find { it.dayOfMonth == 4 }
+                    val day4InAbsences = absencesByDate.keys.find { it.dayOfMonth == 4 }
+
+                    Log.e("PDF_DEBUG", "Day 4 in sessionDates: ${day4InSessionDates != null}")
+                    Log.e("PDF_DEBUG", "Day 4 in absencesByDate: ${day4InAbsences != null}")
+
+                    if (day4InSessionDates != null && day4InAbsences != null) {
+                        // Check if they're the same object (referential equality)
+                        Log.e("PDF_DEBUG", "Are they same object? ${day4InSessionDates === day4InAbsences}")
+                        Log.e("PDF_DEBUG", "SessionDate hashCode: ${day4InSessionDates.hashCode()}")
+                        Log.e("PDF_DEBUG", "AbsenceDate hashCode: ${day4InAbsences.hashCode()}")
+
+                        // Manual equality check
+                        Log.e("PDF_DEBUG", "Manual check - dayOfMonth match: ${day4InSessionDates.dayOfMonth == day4InAbsences.dayOfMonth}")
+                        Log.e("PDF_DEBUG", "Manual check - dayOfWeek match: ${day4InSessionDates.dayOfWeek == day4InAbsences.dayOfWeek}")
+                    }
+                    Log.e("PDF_DEBUG", "═══════════════════════════════════════")
+                }
+
+                // Session columns
                 for (sessionIdx in minOf(sessionsInMonth, maxSessionsToShow) - 1 downTo 0) {
                     val sessionCellStart = xPosition
 
@@ -401,25 +420,42 @@ fun generatePdfDocument_6(
 
                     if (sessionIdx < sessionDates.size) {
                         val sessionDate = sessionDates[sessionIdx]
-                        val absence = absencesByDate[sessionDate]
 
-                        // ADD THIS DEBUG:
-                        if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
-                            Log.e("PDF_DEBUG", "  Session #$sessionIdx (day ${sessionDate.dayOfMonth}):")
-                            Log.e("PDF_DEBUG", "    Cell X: $sessionCellStart, Y: $yPosition")
-                            Log.e("PDF_DEBUG", "    Absence found: ${absence != null}")
+                        // ⚠️ CRITICAL FIX: Match by dayOfMonth only, not object equality
+                        val absence = absencesByDate.entries.find {
+                            it.key.dayOfMonth == sessionDate.dayOfMonth
+                        }?.value
+
+                        if (isTargetStudent && sessionDate.dayOfMonth == 4) {
+                            Log.e("PDF_DEBUG", "")
+                            Log.e("PDF_DEBUG", "🔍 Processing Session Day 4 for هداء:")
+                            Log.e("PDF_DEBUG", "  Session index: $sessionIdx")
+                            Log.e("PDF_DEBUG", "  Looking for day: ${sessionDate.dayOfMonth}")
+                            Log.e("PDF_DEBUG", "  Absence found: ${absence != null}")
+                            Log.e("PDF_DEBUG", "  Cell position - X: $sessionCellStart, Y: $yPosition")
+                            Log.e("PDF_DEBUG", "  Cell size - Width: $sessionColWidth, Height: $rowHeight")
+
                             if (absence != null) {
-                                Log.e("PDF_DEBUG", "    Is justified: ${absence.isJustified}")
-                                Log.e("PDF_DEBUG", "    absenceIcon available: ${absenceIcon != null}")
-                                Log.e("PDF_DEBUG", "    justificationIcon available: ${justificationIcon != null}")
-                                Log.e("PDF_DEBUG", "    About to call drawAbsenceCell...")
+                                Log.e("PDF_DEBUG", "  ✅ ABSENCE DATA FOUND!")
+                                Log.e("PDF_DEBUG", "  Is justified: ${absence.isJustified}")
+                                Log.e("PDF_DEBUG", "  Justification text: '${absence.justification}'")
+                                Log.e("PDF_DEBUG", "  About to call drawAbsenceCell...")
+                            } else {
+                                Log.e("PDF_DEBUG", "  ❌ NO ABSENCE FOUND!")
+                                Log.e("PDF_DEBUG", "  Available days in absencesByDate:")
+                                absencesByDate.keys.forEach { key ->
+                                    Log.e("PDF_DEBUG", "    - Day ${key.dayOfMonth} (hashCode: ${key.hashCode()})")
+                                }
+                                Log.e("PDF_DEBUG", "  Current sessionDate hashCode: ${sessionDate.hashCode()}")
                             }
                         }
 
                         if (absence != null) {
-                            // ADD BEFORE the drawAbsenceCell call:
-                            if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
-                                Log.e("PDF_DEBUG", "    ✅ Calling drawAbsenceCell NOW!")
+                            if (isTargetStudent && sessionDate.dayOfMonth == 4) {
+                                Log.e("PDF_DEBUG", "  🎨 Calling drawAbsenceCell with:")
+                                Log.e("PDF_DEBUG", "    cellX=$sessionCellStart, cellY=$yPosition")
+                                Log.e("PDF_DEBUG", "    cellWidth=$sessionColWidth, cellHeight=$rowHeight")
+                                Log.e("PDF_DEBUG", "    isAbsent=true, isJustified=${absence.isJustified}")
                             }
 
                             AbsenceDrawer.drawAbsenceCell(
@@ -440,18 +476,14 @@ fun generatePdfDocument_6(
                                 paintBorder = paintBorder
                             )
 
-                            // ADD AFTER the drawAbsenceCell call:
-                            if (etudiant.prenom.contains("فدا", ignoreCase = true)) {
-                                Log.e("PDF_DEBUG", "    ✅ drawAbsenceCell completed!")
+                            if (isTargetStudent && sessionDate.dayOfMonth == 4) {
+                                Log.e("PDF_DEBUG", "  ✅ drawAbsenceCell COMPLETED for day 4!")
                             }
                         }
                     }
 
                     xPosition += sessionColWidth
                 }
-
-                Log.e("PDF_DEBUG", "🎨🎨🎨 FINISHED DRAWING STUDENTS 🎨🎨🎨")
-                Log.e("PDF_DEBUG", "")
 
                 // Column: Name with age
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[colWidths.size - 2],

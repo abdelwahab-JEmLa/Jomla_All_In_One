@@ -24,6 +24,7 @@ object AbsenceDrawer {
     /**
      * Draw a single absence cell with icon, label, and optional justification
      */
+
     fun drawAbsenceCell(
         canvas: Canvas,
         cellX: Float,
