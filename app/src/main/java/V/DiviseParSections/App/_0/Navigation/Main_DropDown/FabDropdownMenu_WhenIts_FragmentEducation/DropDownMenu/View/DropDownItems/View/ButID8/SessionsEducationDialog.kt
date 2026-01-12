@@ -1,33 +1,28 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SessionDate
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.getMonthDisplayName
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.getSessionDatesForMonth
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,17 +30,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-//<--
-  //TODO(1): fait que au click au add raeeb de chnge le button au String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings //<--
-  //TODO(1): on click donne si est vide add obs raeeb pour tout pour le jou 
 @Composable
 fun SessionsEducationDialog(
     selectedMonth: Calendar,
@@ -177,82 +169,18 @@ private fun SessionDateCard(
 
 
 @Composable
-private fun ObservationItem(
-    observation: M20ObsarvationEtudion,
-    onDelete: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(8.dp)
-            )
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                RoundedCornerShape(8.dp)
-            )
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = when (observation.type) {
-                    M20ObsarvationEtudion.Type.Raeeb -> "غائب"
-                    M20ObsarvationEtudion.Type.Tama_Hifdoha -> "تم حفظها"
-                    M20ObsarvationEtudion.Type.Moukarrar_Itmamouhou -> "مكرر إتمامه"
-                    M20ObsarvationEtudion.Type.Ousstad_kama_Bil_moundat -> "أستاذ قام بالمناداة"
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = if (observation.type == M20ObsarvationEtudion.Type.Raeeb) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.primary
-                }
-            )
-
-            if (observation.type != M20ObsarvationEtudion.Type.Raeeb) {
-                Text(
-                    text = "التقييم: ${observation.takyim.arabicName}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            if (observation.tabrire_riyab.isNotBlank()) {
-                Text(
-                    text = "المبرر: ${observation.tabrire_riyab}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "حذف",
-                tint = MaterialTheme.colorScheme.error
-            )
-        }
-    }
-}
-
-@Composable
 private fun SessionActionDialog(
     sessionDate: SessionDate,
     repo20Observation: Repo20ObsarvationEtudion,
     sessionObservations: List<M20ObsarvationEtudion>,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    setter: RepositorysMainSetter = koinInject(),
+    repo19Etudiant: Repo19Etudiant = koinInject()
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEEE", Locale("ar"))
     val dateString = dateFormat.format(sessionDate.date)
+
+    var showActionButtons by remember { mutableStateOf(true) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -278,59 +206,93 @@ private fun SessionActionDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = "اختر الإجراء المناسب:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                if (sessionObservations.isNotEmpty()) {
+                if (showActionButtons) {
                     Text(
-                        text = "سيتم حذف جميع السجلات الموجودة قبل إضافة الغياب",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
+                        text = "اختر الإجراء المناسب:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    // Add Absence for All Button
+                    Button(
+                        onClick = {
+                            // Delete existing observations first
+                            sessionObservations.forEach { obs ->
+                                repo20Observation.delete(obs)
+                            }
+
+                            // Add Raeeb (absence) observation for all students
+                            val allStudents = repo19Etudiant.datasValue
+                            allStudents.forEach { student ->
+                                val absenceObservation = M20ObsarvationEtudion(
+                                    etudiant_keyID = student.keyID,
+                                    sessionDateTimestamp = sessionDate.timestamp,
+                                    type = M20ObsarvationEtudion.Type.Raeeb,
+                                    creationTimestamps = System.currentTimeMillis()
+                                )
+                                setter.upsert_M20ObsarvationEtudion(absenceObservation)
+                            }
+                            onDismiss()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text("إضافة غياب للجميع")
+                    }
+
+                    // Add Individual Observations Button
+                    OutlinedButton(
+                        onClick = {
+                            // Navigate to add observations screen
+                            // You'll need to implement navigation logic here
+                            showActionButtons = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("إضافة سجلات فردية")
+                    }
+
+                    if (sessionObservations.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Delete All Records Button
+                        OutlinedButton(
+                            onClick = {
+                                sessionObservations.forEach { obs ->
+                                    repo20Observation.delete(obs)
+                                }
+                                onDismiss()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text("حذف جميع السجلات")
+                        }
+
+                        Text(
+                            text = "سيتم حذف جميع السجلات الموجودة",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "يرجى تنفيذ منطق إضافة السجلات الفردية هنا",
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    // Delete all observations for this session, then add Raeeb for all students
-                    sessionObservations.forEach { obs ->
-                        repo20Observation.delete(obs)
-                    }
-                    // Note: You'll need to implement logic to add Raeeb for all students
-                    // This requires access to the list of all students
-                    onDismiss()
-                }
-            ) {
-                Text("إضافة غياب للجميع")
+            TextButton(onClick = onDismiss) {
+                Text("إلغاء")
             }
         },
-        dismissButton = {
-            Column {
-                if (sessionObservations.isNotEmpty()) {
-                    TextButton(
-                        onClick = {
-                            // Delete all observations for this session
-                            sessionObservations.forEach { obs ->
-                                repo20Observation.delete(obs)
-                            }
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text("حذف جميع السجلات")
-                    }
-                }
-                TextButton(onClick = onDismiss) {
-                    Text("إلغاء")
-                }
-            }
-        }
+        dismissButton = null
     )
 }
 
