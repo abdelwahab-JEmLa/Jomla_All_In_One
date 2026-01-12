@@ -34,56 +34,18 @@ class Repo13TarificationInfos(
     val dataBaseCreationFactory: DataBaseCreationFactory13TarificationInfos,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
-    private val repoScope = CoroutineScope(Dispatchers.IO)
+    val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M13TarificationInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    // Add this function to Repo13TarificationInfos class
 
-    private fun cleanupDuplicateTariffs(tariffs: List<M13TarificationInfos>) {
-        repoScope.launch {
-            try {
-                // Group by TypeChoisi and parent_M1Produit_KeyId
-                val grouped = tariffs.groupBy {
-                    Pair(it.typeChoisi, it.parent_M1Produit_KeyId)
-                }
-
-                val toDelete = mutableListOf<M13TarificationInfos>()
-
-                // For each group, keep only the one with the latest timestamp
-                grouped.forEach { (_, tariffGroup) ->
-                    if (tariffGroup.size > 1) {
-                        // Sort by timestamp descending to get the most recent first
-                        val sortedByTimestamp = tariffGroup.sortedByDescending {
-                            it.dernierTimeTampsSynchronisationAvecFireBase
-                        }
-
-                        // Add all except the first (most recent) to deletion list
-                        toDelete.addAll(sortedByTimestamp.drop(1))
-                    }
-                }
-
-                // Delete duplicates from local database and Firebase
-                if (toDelete.isNotEmpty()) {
-                    // Delete from Firebase only
-                    toDelete.forEach { tariff ->
-                        dataBaseCreationFactory.delete(tariff)
-                    }
-                }
-            } catch (e: Exception) {
-                // Log error if needed
-            }
-        }
-    }
-
-    // Update the init block to:
     init {
         repoScope.launch {
             dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
                 _datas.value = newData
                 // Clean up duplicates after data is loaded
-                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
-                    cleanupDuplicateTariffs(newData)
+                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
+                    cleanupDuplicateTariffs(this@Repo13TarificationInfos, newData)
                 }
 
                 M18CentralParametresOfAllApps().time_tamp_all_tariffs.ifTrue {

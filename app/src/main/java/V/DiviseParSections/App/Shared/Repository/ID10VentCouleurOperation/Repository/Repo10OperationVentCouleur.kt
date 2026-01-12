@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import android.content.Context
@@ -21,18 +22,17 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
 class Repo10OperationVentCouleur(
     val context: Context,
-    private val dataBaseCreationFactory: DataBaseFactoryDCouleurAchatOperation,
+    val dataBaseCreationFactory: DataBaseFactoryDCouleurAchatOperation,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
     val dao = dataBaseCreationFactory.dao
-    private val repoScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val repoScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<M10OperationVentCouleur>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
@@ -58,59 +58,16 @@ class Repo10OperationVentCouleur(
                         } catch (e: Exception) {
                         }
                     }
-                  //  cleanupInvalidOperations()
-                }
-            } catch (e: Exception) {
-            }
-        }
-    }
-    fun cleanupInvalidOperations() {
-        repoScope.launch {
-            try {
-                val operationsToDelete = datasValue.filter { operation ->
-                    // Check if parent BonVent exists
-                    val parentBonVent = zAppComptRepositoryComposable.currentAppCompt
-                        ?.onVentM8BonVentKey?.let { bonVentKey ->
-                            dataBaseCreationFactory.dao.getAllFlow()
-                                .first()
-                                .find { it.parent_M8BonVent_KeyId == bonVentKey }
-                        }
-
-                    // Check if parent client is valid (not "abdelwahab")
-                    val isInvalidClient = operation.parentClientName != "abdelwahab"
-
-                    // Check if parent M18 dimension reference is valid
-                    // (You'll need to add logic here based on your M18 repository structure)
-
-                    // Delete if parent doesn't exist OR client name is invalid
-                    parentBonVent == null || isInvalidClient
-                }
-
-                // Delete invalid operations
-                operationsToDelete.forEach { operation ->
-                    delete(operation)
-                }
-
-                if (operationsToDelete.isNotEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "Cleaned up ${operationsToDelete.size} invalid operations",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    // Clean up invalid operations if M18 parameter is enabled
+                    if (_datas.value.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
+                        cleanupInvalidOperations(this@Repo10OperationVentCouleur)
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Failed to cleanup operations: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
             }
         }
     }
+
     fun refresh_Datas() {
         repoScope.launch {
             try {
@@ -247,7 +204,6 @@ class Repo10OperationVentCouleur(
         fun String?.findData(repo: Repo10OperationVentCouleur) =
             repo.datasValue.find { it.keyID == this }
     }
-    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
 
     fun add_New(data: M10OperationVentCouleur) {
         val dataUpdate =
@@ -365,6 +321,9 @@ data class M10OperationVentCouleur(
     var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
         SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
     var affiche_Unite_Au_Printing: Boolean = true,
+
+    // Adding M2Client reference for proper filtering
+    var parent_M2Client_KeyID: String = "null",
 ) {
     fun getDebugInfos(): String {
         return buildString {
@@ -436,6 +395,8 @@ data class M10OperationVentCouleur(
 
                 parent_M3CouleurProduit_KeyID = m3CouleurProduit?.keyID ?: "null",
                 parent_M3CouleurProduit_DebugInfos = m3CouleurProduit?.get_DebugsInfos() ?: "null",
+
+                parent_M2Client_KeyID = onVent_M8BonVent?.parent_M2Client_KeyID ?: "null",
             )
         }
 

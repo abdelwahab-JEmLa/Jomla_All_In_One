@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
@@ -46,7 +47,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         repositorysMainGetter.repo2Client.datasValue
     ) {
         repositorysMainGetter.getLastBonVentForClient(
-            clientKeyID = RepositorysMainGetter.Jomla_Clients.ECHATILLANTS_KEY_ID,
+            clientKeyID = Jomla_Clients.ECHATILLANTS_KEY_ID,
             etateFilter = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         )
     }

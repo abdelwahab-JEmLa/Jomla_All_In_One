@@ -35,7 +35,9 @@ fun TamaHistoryDialog(
     onDismiss: () -> Unit,
     onEdit: (M20ObsarvationEtudion) -> Unit = {},
     onDelete: (M20ObsarvationEtudion) -> Unit = {}
-) {
+) { //<--
+//TODO(1): ajout un add button au click String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings avec le current date dd.mm.yyyy au click donne  il relance String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings 
+//si entre vide il add obs type raeeb sans tabrire si exrit don il add le tabrire  et la c l entre date au 1 ere etap outlined
     var editingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
     var deletingObservation by remember { mutableStateOf<M20ObsarvationEtudion?>(null) }
 

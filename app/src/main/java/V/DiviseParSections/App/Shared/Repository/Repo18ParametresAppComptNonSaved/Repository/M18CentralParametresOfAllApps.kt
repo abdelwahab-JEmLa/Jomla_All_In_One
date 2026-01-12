@@ -85,12 +85,12 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false ,
+    val itsDevMode: Boolean = false,
     val devStartUpScree: String = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
-    val listens_on_data_change_resources_consolation: Boolean = false ,
+    val listens_on_data_change_resources_consolation: Boolean = false,
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
 
@@ -106,7 +106,8 @@ data class M18CentralParametresOfAllApps(
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
 
-    val au_Lence_DimininueDatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val au_Lence_Diminue_DatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val au_Lence_Dimininue_Datas_M8BonVents: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe!!!!!!!!!!
     //----------------------------------------------------------------------------------------------------------------------------------------------------
 

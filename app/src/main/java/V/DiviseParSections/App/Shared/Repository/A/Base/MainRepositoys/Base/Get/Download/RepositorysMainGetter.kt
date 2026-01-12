@@ -137,10 +137,6 @@ class RepositorysMainGetter(
     fun find_M10OperationVentCouleur(keyID: String): M10OperationVentCouleur? =
         repo10OperationVentCouleur.datasValue.find { it.keyID == keyID }
 
-    object Jomla_Clients {
-        const val ECHATILLANTS_KEY_ID = "-Oh4W0-igT_bXGOo-LC_"
-    }
-
     // Replace the getLastBonVentForClient function with this fixed version:
     fun getLastBonVentForClient(
         clientKeyID: String,
@@ -272,7 +268,7 @@ class RepositorysMainGetter(
     init {
         composScope.launch {
             try {
-                M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB.ifTrue {
+                M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB.ifTrue {
                     M11AchatOperation.remove_ref()
                 }
 

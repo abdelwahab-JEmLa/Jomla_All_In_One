@@ -41,7 +41,7 @@ class Repo8BonVent(
             dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
                 _datas.value = newData
 
-                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_DimininueDatasFB) {
+                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Dimininue_Datas_M8BonVents) {
                     cleanupOldBonVents(this@Repo8BonVent, newData)
                 }
             }
