@@ -102,6 +102,7 @@ fun A_OptionsControlsButtons_FragId_(
                                 Utilisateur.Admin -> Color(0xFF4CAF50) // Green for Admin
                                 Utilisateur.Abdelmoumen -> Color(0xFF2196F3) // Blue for Abdelmoumen
                                 Utilisateur.Walid -> Color(0xFF9C27B0) // Purple for Walid
+                                Utilisateur.kissm_intikali_madrasa_Compt_Osstad -> Color(0xFF9C27B0) // Purple for Walid
                                 null -> Color.Gray
                             }
                         )

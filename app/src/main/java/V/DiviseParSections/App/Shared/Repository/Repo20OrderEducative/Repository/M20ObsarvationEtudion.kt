@@ -43,6 +43,7 @@ class Repo20ObsarvationEtudion(
                 Utilisateur.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
                 Utilisateur.Abdelmoumen -> params.abdelmomen_Compt_KeyId
                 Utilisateur.Walid -> params.walid_Compt_KeyId
+                Utilisateur.kissm_intikali_madrasa_Compt_Osstad -> params.kissm_intikali_madrasa_Compt_KeyId
                 Utilisateur.Admin -> return@derivedStateOf _datas.value
             }
             _datas.value.filter { it.parent_ousstad_key == targetKeyId }

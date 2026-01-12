@@ -11,6 +11,11 @@ enum class Utilisateur(
         "dimanch/jeudi",
         "عبدالوهاب حمنيش"
     ),
+    kissm_intikali_madrasa_Compt_Osstad(
+        M18CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,
+        "dimanch/jeudi",
+        "قسم انتقالي"
+    ),
     Abdelmoumen(
         M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId,
         "dimanch/jeudi",
@@ -40,7 +45,8 @@ enum class Utilisateur(
             Abdelwahab_Osstad -> Abdelmoumen
             Abdelmoumen -> Walid
             Walid -> Amine_Madrassa
-            Amine_Madrassa -> Admin
+            Amine_Madrassa -> Utilisateur.kissm_intikali_madrasa_Compt_Osstad
+            kissm_intikali_madrasa_Compt_Osstad -> Admin
         }
     }
 
@@ -54,6 +60,7 @@ enum class Utilisateur(
             Abdelmoumen -> "Abdelmoumen"
             Amine_Madrassa -> "Amine Madrassa"
             Walid -> "Walid"
+            kissm_intikali_madrasa_Compt_Osstad -> "kissm_intikali_madrasa_Compt_Osstad"
         }
     }
 

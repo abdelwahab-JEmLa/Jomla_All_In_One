@@ -42,6 +42,7 @@ class Repo19Etudiant(
             val targetKeyId = when (currentFilter) {
                 Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
                 Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
+                Ousstad_Tahfid.Kissm_Intikali -> params.kissm_intikali_madrasa_Compt_KeyId
                 Ousstad_Tahfid.Non_Defini_Actuellemen -> return@derivedStateOf _datas.value
                 else -> {}
             }
