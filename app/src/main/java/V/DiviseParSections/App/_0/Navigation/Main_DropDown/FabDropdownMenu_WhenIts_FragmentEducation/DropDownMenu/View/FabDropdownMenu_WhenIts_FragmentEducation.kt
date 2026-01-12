@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_pdf_communication_ac_parent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.DropDownItem_Imprime_pdf_List_Talaba
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But5.DropDownItem_Imprime_pdf_Case_A_Cochet
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But6.DropDownItem_ID6
 import android.text.format.DateUtils.isToday
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -171,6 +172,7 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
 
             Divider()
 
+            DropDownItem_ID6()
             DropDownItem_Imprime_pdf_List_Talaba()
             DropDownItem_Imprime_pdf_communication_ac_parent()
             DropDownItem_Imprime_pdf_Case_A_Cochet()

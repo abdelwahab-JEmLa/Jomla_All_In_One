@@ -43,7 +43,7 @@ import java.util.Locale
 
 @Composable
 fun DropDownItem_Imprime_pdf_List_Talaba(
-    nomFun: String = "قائمة الطلبة (PDF)",  // Fixed: Changed to "قائمة الطلبة"
+    nomFun: String = "قائمة الطلبة (PDF)",
     aCentralFacade: ACentralFacade = koinInject(),
     repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
     context: Context = LocalContext.current

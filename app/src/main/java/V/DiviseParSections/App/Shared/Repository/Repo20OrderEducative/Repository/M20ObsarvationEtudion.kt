@@ -283,8 +283,7 @@ data class M20ObsarvationEtudion(
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-
-    ) {
+) {
     enum class Type {
         Raeeb,
         Tama_Hifdoha,
