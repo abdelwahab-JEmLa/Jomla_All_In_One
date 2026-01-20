@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View
 
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B6.View.DropDownItem_ThermiquePrint
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B7.View.DropDownItem_WhenIts_FragFastVent_7
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_3
@@ -42,6 +43,10 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             )
             DropDownItem_WindowsShare(
                 nomFun = "Partager PDF",
+                onDismissDropdown = onDismissDropdown
+            )
+            DropDownItem_WhenIts_FragFastVent_7(
+                nomFun = "Whatsapp test share PDF ",
                 onDismissDropdown = onDismissDropdown
             )
             DropDownItem_WindowsShare_Facture_Impots(
