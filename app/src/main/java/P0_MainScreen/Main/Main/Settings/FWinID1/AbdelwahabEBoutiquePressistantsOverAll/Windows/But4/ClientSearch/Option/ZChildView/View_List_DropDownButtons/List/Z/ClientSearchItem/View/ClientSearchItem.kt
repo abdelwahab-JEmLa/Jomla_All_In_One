@@ -105,7 +105,8 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = koinInject()
-) {
+) {   //<--
+// fait affiche le phonto de profille et pseudo si dispo pour son api truecalled cherche don leur site
     val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
