@@ -3,45 +3,38 @@ package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repos
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 fun cleanupInvalidOperations(repo10OperationVentCouleur: Repo10OperationVentCouleur) {
     repo10OperationVentCouleur.repoScope.launch {
-        try {                                                         //<--
-        //TODO(1): fait ici de delete tout sauff isJomlaClient
-            val operationsToDelete = repo10OperationVentCouleur.datasValue.filter { operation ->
-                // Check if parent BonVent exists
-                val parentBonVent = repo10OperationVentCouleur.zAppComptRepositoryComposable.currentAppCompt
-                    ?.onVentM8BonVentKey?.let { bonVentKey ->
-                        repo10OperationVentCouleur.dataBaseCreationFactory.dao.getAllFlow()
-                            .first()
-                            .find { it.parent_M8BonVent_KeyId == bonVentKey }
-                    }
+        try {
+            // Get current BonVent key from AppCompt
+            val currentBonVentKey = repo10OperationVentCouleur.zAppComptRepositoryComposable
+                .currentAppCompt?.onVentM8BonVentKey
 
-                // Check if this is a Jomla client (should NOT be deleted)
+            // Filter operations to delete: those that are NOT Jomla clients
+            val operationsToDelete = repo10OperationVentCouleur.datasValue.filter { operation ->
+                // Check if this is a Jomla client (protected from deletion)
                 val isJomlaClient = operation.parentClientName == "abdelwahab" ||
                         operation.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID ||
                         operation.parent_M2Client_KeyID == Jomla_Clients.Au_Command_KEY_ID
 
-                // Check if parent client is invalid (not one of the protected clients)
-                val isInvalidClient = !isJomlaClient
-
-                // Delete if parent doesn't exist AND client is invalid (not a Jomla client)
-                parentBonVent == null && isInvalidClient
+                // Keep Jomla clients, delete all others
+                !isJomlaClient
             }
 
-            // Delete invalid operations
+            // Delete non-Jomla operations
             operationsToDelete.forEach { operation ->
                 repo10OperationVentCouleur.delete(operation)
             }
 
+            // Show success message if any operations were deleted
             if (operationsToDelete.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         repo10OperationVentCouleur.context,
-                        "Cleaned up ${operationsToDelete.size} invalid operations",
+                        "Cleaned up ${operationsToDelete.size} invalid operations (kept Jomla clients)",
                         Toast.LENGTH_SHORT
                     ).show()
                 }

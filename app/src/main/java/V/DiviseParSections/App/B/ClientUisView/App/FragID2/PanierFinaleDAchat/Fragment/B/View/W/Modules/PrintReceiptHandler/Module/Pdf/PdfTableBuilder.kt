@@ -148,6 +148,7 @@ class PdfTableBuilder(
 
             if (includeImages) {
                 val imageCell = createImageCell(imageResult.imageFile, rowHeight)
+                    .setKeepTogether(true) // Garde l'image entière ensemble
                 table.addCell(imageCell)
             }
 
@@ -161,10 +162,18 @@ class PdfTableBuilder(
                 val textSize = if (includeImages) 9f else 11f
                 val productNameSize = if (includeImages) 10f else 13f
 
-                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, textSize, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight))
-                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, textSize, TextAlignment.RIGHT, rowHeight))
+                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, textSize, TextAlignment.CENTER, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, textSize, TextAlignment.RIGHT, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
 
                 total += subtotal
                 itemCount++
@@ -172,10 +181,18 @@ class PdfTableBuilder(
                 val textSize = if (includeImages) 9f else 11f
                 val productNameSize = if (includeImages) 10f else 13f
 
-                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight))
-                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.RIGHT, rowHeight))
+                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.CENTER, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
+                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.RIGHT, rowHeight).apply {
+                    if (includeImages) setKeepTogether(true)
+                })
                 itemCount++
             }
 
@@ -265,6 +282,7 @@ class PdfTableBuilder(
                 .setBorder(SolidBorder(0.5f))
                 .setPadding(2f)
                 .setHeight(rowHeight)
+                .setKeepTogether(true) // IMPORTANT: Empêche la division de l'image entre pages
                 .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
                 .setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
 

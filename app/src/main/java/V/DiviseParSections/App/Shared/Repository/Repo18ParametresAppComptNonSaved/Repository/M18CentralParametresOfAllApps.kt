@@ -107,7 +107,7 @@ data class M18CentralParametresOfAllApps(
     val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
 
-    val au_Lence_Diminue_DatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val au_Lence_Diminue_DatasFB: Boolean =  true,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
     //----------------------------------------------------------------------------------------------------------------------------------------------------
