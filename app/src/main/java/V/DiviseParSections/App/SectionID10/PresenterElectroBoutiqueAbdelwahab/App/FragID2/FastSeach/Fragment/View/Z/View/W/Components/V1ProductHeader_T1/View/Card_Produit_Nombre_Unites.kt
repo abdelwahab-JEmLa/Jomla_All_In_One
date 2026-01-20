@@ -59,8 +59,7 @@ fun Card_Produit_Nombre_Unites(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     onClick_PourOuvrireDialog: () -> Unit
-) {      
-    // Track toggle state for afficheUniteAuPrint
+) {
     var toggleState by remember { mutableStateOf(produit.afficheUniteAuPrint) }
 
     // Track dialog state for vent operations
