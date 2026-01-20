@@ -9,7 +9,8 @@ import kotlinx.coroutines.withContext
 
 fun cleanupInvalidOperations(repo10OperationVentCouleur: Repo10OperationVentCouleur) {
     repo10OperationVentCouleur.repoScope.launch {
-        try {
+        try {                                                         //<--
+        //TODO(1): fait ici de delete tout sauff isJomlaClient
             val operationsToDelete = repo10OperationVentCouleur.datasValue.filter { operation ->
                 // Check if parent BonVent exists
                 val parentBonVent = repo10OperationVentCouleur.zAppComptRepositoryComposable.currentAppCompt
