@@ -11,11 +11,16 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -35,7 +44,7 @@ import androidx.compose.ui.unit.sp
  * @param tariffsList List of all available tariffs
  * @param selectedTariff The currently selected tariff for this product
  * @param onTariffSelected Callback when a tariff is selected
- * @param onProgressiveTariffEdit Callback when a progressive tariff is double-clicked for editing
+ * @param onTariffPriceEdited Callback when a progressive tariff price is edited
  * @param compactMode Whether to use compact display (removes names and reduces size)
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -45,7 +54,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
     tariffsList: List<M13TarificationInfos>,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
-    onProgressiveTariffEdit: ((M13TarificationInfos) -> Unit)? = null,
+    onTariffPriceEdited: ((M13TarificationInfos, Double) -> Unit)? = null,
     compactMode: Boolean = false
 ) {
     val displayTariffs = listOf(
@@ -99,7 +108,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariff, prix) ->
-            // Use key() to ensure proper recomposition and state tracking
             key(tariff.typeChoisi, relative_M1produit.keyID) {
                 val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
                         selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -111,10 +119,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
                     isSelected = isSelected,
                     compactMode = compactMode,
                     onClick = { onTariffSelected(tariff) },
-                    onDoubleClick = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
-                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-                        { onProgressiveTariffEdit?.invoke(tariff) }
-                    } else null
+                    onPriceEdited = onTariffPriceEdited
                 )
             }
         }
@@ -173,27 +178,23 @@ private fun TariffItem(
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit,
-    onDoubleClick: (() -> Unit)? = null
+    onPriceEdited: ((M13TarificationInfos, Double) -> Unit)? = null
 ) {
-    var lastClickTime by remember { mutableStateOf(0L) }
-    val doubleClickThreshold = 500L // milliseconds
+    // Track if we're in edit mode for progressive tariff
+    var isEditMode by remember { mutableStateOf(false) }
+    var priceInput by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
 
-    fun handleClick() {
-        val currentTime = System.currentTimeMillis()
-        val isProgressiveTariff = tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
-                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client
-
-        if (isSelected && isProgressiveTariff &&
-            (currentTime - lastClickTime) < doubleClickThreshold) {
-            // Double click detected on selected progressive tariff
-            onDoubleClick?.invoke()
-        } else {
-            // Single click
-            onClick()
+    // Request focus when entering edit mode
+    LaunchedEffect(isEditMode) {
+        if (isEditMode) {
+            focusRequester.requestFocus()
         }
-
-        lastClickTime = currentTime
     }
+
+    // Check if this is a progressive tariff that can be edited
+    val isProgressiveTariff = tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client
 
     // Adjust sizes based on compact mode
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
@@ -205,56 +206,97 @@ private fun TariffItem(
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    Row(
-        modifier = Modifier
-            .clip(CircleShape)
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = CircleShape
-            )
-            .background(
-                color = tariff.typeChoisi.couleur.copy(
-                    alpha = if (isSelected) 1f else 0.9f
-                ),
-                shape = CircleShape
-            )
-            .clickable(onClick = { handleClick() })
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icon
-        tariff.typeChoisi.iconVector?.let { icon ->
-            Icon(
-                imageVector = icon,
-                contentDescription = tariff.typeChoisi.nomArabe,
-                tint = tariff.typeChoisi.couleur_Text,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clip(CircleShape)
-            )
-        }
+    // Show edit field if in edit mode
+    if (isEditMode && isProgressiveTariff && onPriceEdited != null) {
+        OutlinedTextField(
+            value = priceInput,
+            onValueChange = { newValue ->
+                if (newValue.isEmpty() || newValue.all { it.isDigit() || it == '.' }) {
+                    priceInput = newValue
+                }
+            },
+            modifier = Modifier
+                .width(100.dp)
+                .focusRequester(focusRequester),
+            label = { Text("Prix", fontSize = 8.sp) },
+            placeholder = { Text(String.format("%.0f", prix), fontSize = fontSize) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val newPrice = priceInput.toDoubleOrNull()
+                    if (newPrice != null && newPrice > 0) {
+                        onPriceEdited(tariff, newPrice)
+                    }
+                    isEditMode = false
+                    priceInput = ""
+                }
+            ),
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = fontSize)
+        )
+    } else {
+        Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = CircleShape
+                )
+                .background(
+                    color = tariff.typeChoisi.couleur.copy(
+                        alpha = if (isSelected) 1f else 0.9f
+                    ),
+                    shape = CircleShape
+                )
+                .clickable {
+                    // If already selected and is progressive tariff, enter edit mode
+                    if (isSelected && isProgressiveTariff && onPriceEdited != null) {
+                        isEditMode = true
+                        priceInput = ""
+                    } else {
+                        // Otherwise, just select this tariff
+                        onClick()
+                    }
+                }
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon
+            tariff.typeChoisi.iconVector?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
+                )
+            }
 
-        // In compact mode, only show the abbreviated name (no full name)
-        if (!compactMode) {
+            // In compact mode, only show the abbreviated name (no full name)
+            if (!compactMode) {
+                Text(
+                    text = tariff.typeChoisi.abrgNom,
+                    color = tariff.typeChoisi.couleur_Text,
+                    fontSize = fontSize
+                )
+            }
+
+            // Price (always shown)
             Text(
-                text = tariff.typeChoisi.abrgNom,
+                text = if (compactMode) {
+                    String.format("%.0f", prix)
+                } else {
+                    String.format("%.0f DA/p.u", prix)
+                },
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize
             )
         }
-
-        // Price (always shown)
-        // Format: "prix DA / p.u" or just "prix DA" if compact
-        Text(
-            text = if (compactMode) {
-                String.format("%.0f", prix)
-            } else {
-                String.format("%.0f DA/p.u", prix)
-            },
-            color = tariff.typeChoisi.couleur_Text,
-            fontSize = fontSize
-        )
     }
 }

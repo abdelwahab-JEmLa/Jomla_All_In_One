@@ -109,7 +109,7 @@ data class M18CentralParametresOfAllApps(
 
     val au_Lence_Diminue_DatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
-    val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe!!!!!!!!!!
+    val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
     //----------------------------------------------------------------------------------------------------------------------------------------------------
 
     /*     if (itsDevMode) abdelmomen_Compt_KeyId else {

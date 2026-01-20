@@ -36,8 +36,8 @@ class PdfTableBuilder(
 
     private companion object {
         const val STANDARD_ROW_HEIGHT = 20f
-        const val IMAGE_ROW_HEIGHT = 55f // Encore plus grand pour les images
-        const val IMAGE_SIZE = 50f // Augmenté à 50f pour images plus visibles
+        const val IMAGE_ROW_HEIGHT = 70f // Beaucoup plus grand pour images très visibles
+        const val IMAGE_SIZE = 65f // Images beaucoup plus grandes
         const val PNG_QUALITY = 70 // Reduced from 90 to save memory
         const val MAX_IMAGE_DIMENSION = 200 // Maximum width/height for decoded images
         const val TAG = "PDF_TABLE_BUILDER"
@@ -52,18 +52,13 @@ class PdfTableBuilder(
         boldFont: PdfFont,
         relativeBonvent: M8BonVent?
     ) {
-        android.util.Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        android.util.Log.d(TAG, "🗃️ Creating product table")
-
         val bonsWithImages = focusedValuesGetter.active_Central_Values.bons_a_imprime_avec_image_produit
         val shouldIncludeImages = relativeBonvent?.let { bonVent ->
             bonsWithImages.any { it.keyID == bonVent.keyID }
         } ?: false
 
-        android.util.Log.d(TAG, "🖼️ shouldIncludeImages = $shouldIncludeImages")
-
         val columnWidths = if (shouldIncludeImages) {
-            floatArrayOf(20f, 10f, 10f, 40f, 20f) // Image 20%, texte réduit
+            floatArrayOf(25f, 12f, 12f, 38f, 13f) // Image 25%, S-total réduit à 13%
         } else {
             floatArrayOf(15f, 20f, 45f, 20f)
         }
@@ -94,8 +89,6 @@ class PdfTableBuilder(
                 contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
             }
         }
-
-        android.util.Log.d(TAG, "✅ Product table complete")
     }
 
     private fun addTableHeaders(table: Table, boldFont: PdfFont, includeImages: Boolean) {
@@ -104,7 +97,7 @@ class PdfTableBuilder(
             table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
             table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
             table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
-            table.addCell(createHeaderCell("S-total", boldFont, 11f, TextAlignment.RIGHT))
+            table.addCell(createHeaderCell("S-tot", boldFont, 10f, TextAlignment.RIGHT))
         } else {
             table.addCell(createHeaderCell("Qté", boldFont, 13f, TextAlignment.CENTER))
             table.addCell(createHeaderCell("P.U", boldFont, 13f, TextAlignment.CENTER))
@@ -164,32 +157,37 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, 11f, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT, rowHeight))
-                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, 11f, TextAlignment.RIGHT, rowHeight))
+                // Tailles de police réduites quand images sont affichées
+                val textSize = if (includeImages) 9f else 11f
+                val productNameSize = if (includeImages) 10f else 13f
+
+                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, textSize, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight))
+                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, textSize, TextAlignment.RIGHT, rowHeight))
 
                 total += subtotal
                 itemCount++
             } else {
-                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.CENTER, rowHeight))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT, rowHeight))
-                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.RIGHT, rowHeight))
+                val textSize = if (includeImages) 9f else 11f
+                val productNameSize = if (includeImages) 10f else 13f
+
+                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight))
+                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.RIGHT, rowHeight))
                 itemCount++
             }
 
             // MEMORY OPTIMIZATION: Suggest GC every 5 images
             if (includeImages && index > 0 && index % 5 == 0) {
                 System.gc()
-                android.util.Log.d(TAG, "💾 Memory cleanup hint after $index images")
             }
         }
 
         // Final cleanup
         if (includeImages) {
             System.gc()
-            android.util.Log.d(TAG, "💾 Final memory cleanup")
         }
 
         return TableResult(total, itemCount)
@@ -238,8 +236,6 @@ class PdfTableBuilder(
      * - Lower PNG compression quality
      */
     private fun createImageCell(imageFile: File?, rowHeight: Float): Cell {
-        val logTag = "PDF_IMAGE_CELL"
-
         if (imageFile == null || !imageFile.exists()) {
             return createEmptyImageCell(rowHeight)
         }
@@ -247,18 +243,13 @@ class PdfTableBuilder(
         return try {
             val isWebP = imageFile.extension.equals("webp", ignoreCase = true)
 
-            android.util.Log.d(logTag, "📸 Image: ${imageFile.name} (WebP: $isWebP)")
-
             val imageData = if (isWebP) {
-                android.util.Log.d(logTag, "   🔄 Conversion WebP optimisée...")
                 convertImageToPNGOptimized(imageFile)
             } else {
-                android.util.Log.d(logTag, "   ✅ Chargement direct optimisé...")
                 convertImageToPNGOptimized(imageFile) // Apply same optimization for all images
             }
 
             if (imageData == null) {
-                android.util.Log.w(logTag, "   ⚠️ Échec chargement")
                 return createEmptyImageCell(rowHeight)
             }
 
@@ -269,8 +260,6 @@ class PdfTableBuilder(
 
             image.scaleToFit(IMAGE_SIZE, IMAGE_SIZE)
 
-            android.util.Log.d(logTag, "   ✅ Image ajoutée")
-
             Cell()
                 .add(image)
                 .setBorder(SolidBorder(0.5f))
@@ -280,11 +269,9 @@ class PdfTableBuilder(
                 .setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
 
         } catch (e: OutOfMemoryError) {
-            android.util.Log.e(logTag, "❌ OOM: ${e.message}")
             System.gc() // Force garbage collection
             createEmptyImageCell(rowHeight)
         } catch (e: Exception) {
-            android.util.Log.e(logTag, "❌ Erreur: ${e.message}")
             createEmptyImageCell(rowHeight)
         }
     }
@@ -307,7 +294,7 @@ class PdfTableBuilder(
         return try {
             // STEP 1: Get image dimensions without loading the full bitmap
             val boundsOptions = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true // Don't load pixels, just get dimensions
+                inJustDecodeBounds = true
             }
             BitmapFactory.decodeFile(imageFile.absolutePath, boundsOptions)
 
@@ -315,29 +302,22 @@ class PdfTableBuilder(
             val imageHeight = boundsOptions.outHeight
 
             if (imageWidth <= 0 || imageHeight <= 0) {
-                android.util.Log.e("IMAGE_CONVERT", "Invalid dimensions: ${imageWidth}x${imageHeight}")
                 return null
             }
 
             // STEP 2: Calculate optimal sample size
             val sampleSize = calculateInSampleSize(imageWidth, imageHeight, MAX_IMAGE_DIMENSION)
 
-            android.util.Log.d(
-                "IMAGE_CONVERT",
-                "Original: ${imageWidth}x${imageHeight}, Sample: $sampleSize, Final: ${imageWidth/sampleSize}x${imageHeight/sampleSize}"
-            )
-
             // STEP 3: Load downsampled bitmap with memory-efficient config
             val decodeOptions = BitmapFactory.Options().apply {
                 inSampleSize = sampleSize
-                inPreferredConfig = Bitmap.Config.RGB_565 // 2 bytes/pixel instead of 4
+                inPreferredConfig = Bitmap.Config.RGB_565
                 inJustDecodeBounds = false
             }
 
             bitmap = BitmapFactory.decodeFile(imageFile.absolutePath, decodeOptions)
 
             if (bitmap == null) {
-                android.util.Log.e("IMAGE_CONVERT", "Échec décodage: ${imageFile.name}")
                 return null
             }
 
@@ -350,25 +330,17 @@ class PdfTableBuilder(
             )
 
             if (!compressionSuccess) {
-                android.util.Log.e("IMAGE_CONVERT", "Échec compression PNG")
                 return null
             }
 
             val pngBytes = outputStream.toByteArray()
 
-            android.util.Log.d(
-                "IMAGE_CONVERT",
-                "✅ Converti: ${pngBytes.size / 1024}KB (original: ${imageFile.length() / 1024}KB)"
-            )
-
             ImageDataFactory.create(pngBytes)
 
         } catch (e: OutOfMemoryError) {
-            android.util.Log.e("IMAGE_CONVERT", "❌ OOM: ${e.message}")
-            System.gc() // Force garbage collection
+            System.gc()
             null
         } catch (e: Exception) {
-            android.util.Log.e("IMAGE_CONVERT", "❌ Erreur: ${e.message}")
             null
         } finally {
             // STEP 5: Cleanup - CRITICAL for memory management
