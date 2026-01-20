@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 class FocusedValuesGetter(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1Produit,
-    repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
+    val repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
     repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,

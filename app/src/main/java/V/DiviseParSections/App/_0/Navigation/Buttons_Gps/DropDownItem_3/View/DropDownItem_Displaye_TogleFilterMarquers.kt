@@ -46,9 +46,6 @@ fun DropDownItem_3(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     context: Context = LocalContext.current
 ) {
-    // FIXED: PDFs are now generated in parallel using async/await instead of sequentially
-    // This significantly reduces total generation time from O(n) to O(1) where n is number of PDFs
-
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
@@ -63,6 +60,7 @@ fun DropDownItem_3(
                         it.parent_M14VentPeriod_KeyId == focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
             }
         }
+
 
     val bonVents_OnCommande_ou_Leurclients_avec_confirmed =
         repositorysMainGetter.repo8BonVent.datasValue.filter { bonVent ->

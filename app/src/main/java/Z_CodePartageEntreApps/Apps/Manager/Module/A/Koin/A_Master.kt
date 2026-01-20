@@ -167,7 +167,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 
 val classesHandlersModule = module {
     single { UploadHandler() }
-    single { PrintInPdf_itextpdf_Handler(get(), get(), ) }
+    single { PrintInPdf_itextpdf_Handler(get(), get(),get(), ) }
     single { PrintReceiptHandler_Juil( get()) }
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get(), get()) }

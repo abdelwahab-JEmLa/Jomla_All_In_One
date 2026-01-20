@@ -163,7 +163,8 @@ private fun TariffItem(
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit
-) {
+) {    //<--
+//TODO(1): fait que si le teariff est du progressife et selected apre clicked 2 eme foit de utilise fast pour modifie au entre ajout un tariff du prix 
     // Adjust sizes based on compact mode
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp

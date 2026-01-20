@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
@@ -111,14 +112,14 @@ data class ActiveCentralValues(
 
     //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
 
-
-
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
     //-----------------Fragement.Achats.-------------------------------------------------------------------------------------------------------------------------
     val active_ModeEditesProduit: ModeEditesProduit? = ModeEditesProduit.PrixHanled,
     //-----------------FastSearcher-------------------------------------------------------------------------------------------------------------------------
+    val bons_a_imprime_avec_image_produit: List<M8BonVent> = emptyList(),
+
     var le_pourvoire_clike_checked_est_active: Boolean = false,
 
     val fastSearchProduitPourVent: String = "",

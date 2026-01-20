@@ -14,8 +14,9 @@ import java.util.Date
 /**
  * Handles PDF content creation and layout
  */
-class PdfContentBuilder(private val formatter: PdfFormatterUtils) {
-
+class PdfContentBuilder(
+    private val formatter: PdfFormatterUtils
+) {
     fun addHeader(
         doc: Document,
         title: String,

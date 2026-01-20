@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -17,12 +18,13 @@ import android.content.Context
 class PrintInPdf_itextpdf_Handler(
     val repositorysMainGetter: RepositorysMainGetter,
     val uploadHandler: UploadHandler,
+    focusedValuesGetter: FocusedValuesGetter
 ) {
 
     // Initialize utility classes
     private val formatter = PdfFormatterUtils(repositorysMainGetter)
     private val contentBuilder = PdfContentBuilder(formatter)
-    private val tableBuilder = PdfTableBuilder(formatter, contentBuilder)
+    private val tableBuilder = PdfTableBuilder(formatter, contentBuilder,focusedValuesGetter)
     private val pdfGenerator = PdfGeneratorCore(formatter, contentBuilder, tableBuilder)
 
     /**
