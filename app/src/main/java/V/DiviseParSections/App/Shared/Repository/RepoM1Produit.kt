@@ -295,34 +295,70 @@ data class ArticlesBasesStatsTable(
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(             //<--
-        //TODO(1): ajout les non dispo vals
+        return mapOf(
             "id" to id,
             "keyID" to keyID,
+            "creationTimestamp" to creationTimestamp,
             "bsonObjectId" to bsonObjectId,
             "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
             "dernierFireBaseUpdateTimestamps" to dernierFireBaseUpdateTimestamps,
+            "count_Don_Depot" to count_Don_Depot,
+
+            // Process positioning
             "processPositioningInFactory" to processPositioningInFactory.name,
+
+            // Category and position
             "idParentCategorie" to idParentCategorie,
             "positionDonSonCesFrereCategorieProduits" to positionDonSonCesFrereCategorieProduits,
+
+            // Names
             "nom" to nom,
             "nomMutable" to nomMutable,
+            "nomArab" to nomArab,
+            "autreNomDarticle" to autreNomDarticle,
+
+            // Fusion state
             "etateActuelleOnFusionAvecBaseDonne" to etateActuelleOnFusionAvecBaseDonne.name,
+
+            // Units and cartons
             "nombreUniteInt" to nombreUniteInt,
             "nombreProduitDonSonCarton" to nombreProduitDonSonCarton,
+            "its_Carton" to its_Carton,
+            "cartonState" to cartonState,
+            "quantite_Boit_Par_Carton" to quantite_Boit_Par_Carton,
+
+            // Priority and positions
             "heldPrioriteDemandAuGrossist" to heldPrioriteDemandAuGrossist,
+            "position_store_3jamale" to position_store_3jamale,
+            "dernier_timeTamps_position_store_3jamale" to dernier_timeTamps_position_store_3jamale,
+
+            // Pricing
+            "prixDefiniParGerant" to prixDefiniParGerant,
             "prixVent" to prixVent,
             "cachePrixVent" to cachePrixVent,
+            "pourcentage_Prix_Progressive" to pourcentage_Prix_Progressive,
             "prixAchat" to prixAchat,
             "prixAchatDernierTimeTempUpdate" to prixAchatDernierTimeTempUpdate,
             "clientPrixVentUnite" to clientPrixVentUnite,
+            "afficheUniteAuPrint" to afficheUniteAuPrint,
+
+            // Images
             "actualiseSonImage" to actualiseSonImage,
             "actualiseSonImageTest2" to actualiseSonImageTest2,
+            "articleHaveUniteImages" to articleHaveUniteImages,
+            "funChangeImagsDimention" to funChangeImagsDimention,
+            "imageDimention" to imageDimention,
+
+            // UI states
             "afficheCesDetailPourComptBsonId" to afficheCesDetailPourComptBsonId,
+
             "disponibilityEtates" to disponibilityEtates.name,
+            "disponibilityEtates_Pour_presentaion_par_Camion" to disponibilityEtates_Pour_presentaion_par_Camion.name,
+
+            // Firebase key
             "keyFireBase" to keyFireBase,
-            "nomArab" to nomArab,
-            "autreNomDarticle" to autreNomDarticle,
+
+            // Colors - all 9 colors
             "couleur1" to couleur1,
             "idcolor1" to idcolor1,
             "couleur2" to couleur2,
@@ -331,6 +367,18 @@ data class ArticlesBasesStatsTable(
             "idcolor3" to idcolor3,
             "couleur4" to couleur4,
             "idcolor4" to idcolor4,
+            "couleur5" to couleur5,
+            "idcolor5" to idcolor5,
+            "couleur6" to couleur6,
+            "idcolor6" to idcolor6,
+            "couleur7" to couleur7,
+            "idcolor7" to idcolor7,
+            "couleur8" to couleur8,
+            "idcolor8" to idcolor8,
+            "couleur9" to couleur9,
+            "idcolor9" to idcolor9,
+
+            // Additional fields
             "nomCategorie2" to nomCategorie2,
             "affichageUniteState" to affichageUniteState,
             "commmentSeVent" to commmentSeVent,
@@ -339,24 +387,24 @@ data class ArticlesBasesStatsTable(
             "monBenfice" to monBenfice,
             "neaon2" to neaon2,
             "catalogeParentID" to idParentCategorie,
-            "funChangeImagsDimention" to funChangeImagsDimention,
             "nomCategorie" to nomCategorie,
             "neaon1" to neaon1,
             "lastUpdateState" to lastUpdateState,
-            "cartonState" to cartonState,
             "dateCreationCategorie" to dateCreationCategorie,
+
+            // Financial calculations
             "prixDeVentTotaleChezClient" to prixDeVentTotaleChezClient,
             "benficeTotaleEntreMoiEtClien" to benficeTotaleEntreMoiEtClien,
             "benificeTotaleEn2" to benificeTotaleEn2,
             "monPrixAchatUniter" to monPrixAchatUniter,
             "monPrixVentUniter" to monPrixVentUniter,
-            "articleHaveUniteImages" to articleHaveUniteImages,
+
+            // Flags
             "itsNewArrivale" to itsNewArrivale,
-            "imageDimention" to imageDimention,
             "idForSearchArticles" to idForSearchArticles,
-            // Missing fields that were added to complete the schema
-            "setIN_Vent_Its_Quantity_Represent" to setIN_Vent_Its_Quantity_Represent.name,
-            "quantite_Boit_Par_Carton" to quantite_Boit_Par_Carton
+
+            // Quantity representation
+            "setIN_Vent_Its_Quantity_Represent" to setIN_Vent_Its_Quantity_Represent.name
         )
     }
 

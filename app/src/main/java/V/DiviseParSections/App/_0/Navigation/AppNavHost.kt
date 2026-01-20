@@ -83,14 +83,7 @@ fun AppNavHost(
     val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
 
     // Updated startup screen logic to handle tahfid mode
-    val startUpScreen = when {
-        ne_affiche_que_fragment -> Screen.EducationFragment
-        !itsDevMode -> Screen.Fragment_Compact_Presentoir_Echantilliants
-        else -> {
-            val devStartUpRoute = M18CentralParametresOfAllApps.get_Default().devStartUpScree
-            getScreenFromRoute(devStartUpRoute)
-        }
-    }
+    val startUpScreen =Screen.Fragment_Compact_Presentoir_Echantilliants
 
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)

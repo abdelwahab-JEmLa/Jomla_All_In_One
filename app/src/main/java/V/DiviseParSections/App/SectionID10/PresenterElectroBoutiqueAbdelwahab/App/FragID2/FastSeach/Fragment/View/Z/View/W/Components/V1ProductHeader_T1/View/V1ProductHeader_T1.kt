@@ -487,6 +487,8 @@ fun ProductHeader_T1(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    //<--
+                    //TODO(1): ajout un button au click affiche dialoge contien les operation de vent de vent de clicked produit avec key id de leur parentbon vent et quantitie
                     Card_Produit_Nombre_Unites(
                         allNonTrouve = allNonTrouve,
                         produit = relative_Produit,
