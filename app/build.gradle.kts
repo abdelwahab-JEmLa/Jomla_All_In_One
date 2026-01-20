@@ -125,6 +125,7 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.osmdroid.wms)
     implementation(libs.osmdroid.mapsforge)
+    implementation("org.apache.commons:commons-imaging:1.0-alpha3")
 
     // Animations
     implementation("com.airbnb.android:lottie-compose:6.1.0")

@@ -11,7 +11,7 @@ import com.itextpdf.layout.properties.TextAlignment
 
 /**
  * Core PDF generation logic
- * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+ * FIXED: Enhanced logging to debug image issues
  */
 class PdfGeneratorCore(
     private val formatter: PdfFormatterUtils,
@@ -20,12 +20,30 @@ class PdfGeneratorCore(
 ) {
 
     fun generateUnifiedPdf(path: String, params: PdfGenerationParams) {
+        val logTag = "PDF_GENERATOR_CORE"
+
+        android.util.Log.d(logTag, "════════════════════════════════════════")
+        android.util.Log.d(logTag, "📄 Generating unified PDF")
+        android.util.Log.d(logTag, "   Path: $path")
+        android.util.Log.d(logTag, "   Type: ${params.type}")
+        android.util.Log.d(logTag, "   Client: ${params.client?.nom ?: "null"}")
+        android.util.Log.d(logTag, "   Operations: ${params.operations.size}")
+        android.util.Log.d(logTag, "   BonVent KeyID: ${params.bonVent?.keyID}")
+        android.util.Log.d(logTag, "   relative_bonVent KeyID: ${params.relative_bonVent?.keyID}")
+        android.util.Log.d(logTag, "════════════════════════════════════════")
+
         val regularFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
         val boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
 
         PdfWriter(path).use { writer ->
+            android.util.Log.d(logTag, "✅ PdfWriter created")
+
             PdfDocument(writer).use { pdfDoc ->
+                android.util.Log.d(logTag, "✅ PdfDocument created")
+
                 Document(pdfDoc, PageSize.A5).use { doc ->
+                    android.util.Log.d(logTag, "✅ Document created with A5 size")
+
                     var currentReceiptTotal = 0.0
 
                     // Add header based on PDF type
@@ -48,13 +66,17 @@ class PdfGeneratorCore(
 
                     // Add product table if needed
                     if (params.type != PdfType.CREDIT_ONLY) {
-                        currentReceiptTotal =
-                            addProductTableIfNeeded(
-                                doc,
-                                params,
-                                regularFont,
-                                boldFont
-                            )
+                        android.util.Log.d(logTag, "➡️ Adding product table...")
+                        android.util.Log.d(logTag, "   Passing relative_bonVent: ${params.relative_bonVent?.keyID}")
+
+                        currentReceiptTotal = addProductTableIfNeeded(
+                            doc,
+                            params,
+                            regularFont,
+                            boldFont
+                        )
+
+                        android.util.Log.d(logTag, "✅ Product table added, total: $currentReceiptTotal")
                     }
 
                     addCreditSectionsIfNeeded(
@@ -64,6 +86,10 @@ class PdfGeneratorCore(
                         boldFont,
                         currentReceiptTotal
                     )
+
+                    android.util.Log.d(logTag, "════════════════════════════════════════")
+                    android.util.Log.d(logTag, "✅ PDF generation complete")
+                    android.util.Log.d(logTag, "════════════════════════════════════════")
                 }
             }
         }
@@ -100,6 +126,7 @@ class PdfGeneratorCore(
 
     /**
      * FIXED: Now checks demande_Versemet_si_Type_est_regle to determine if total should be shown
+     * ADDED: Enhanced logging
      */
     private fun addProductTableIfNeeded(
         doc: Document,
@@ -107,10 +134,14 @@ class PdfGeneratorCore(
         regularFont: com.itextpdf.kernel.font.PdfFont,
         boldFont: com.itextpdf.kernel.font.PdfFont
     ): Double {
+        val logTag = "PDF_PRODUCT_TABLE"
         var currentReceiptTotal = 0.0
 
         params.tarificationRepo?.let { tarificationRepo ->
             params.produitRepo?.let { produitRepo ->
+
+                android.util.Log.d(logTag, "🏗️ Building product table...")
+                android.util.Log.d(logTag, "   relative_bonVent: ${params.relative_bonVent?.keyID}")
 
                 // CORE FIX: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
                 val shouldShowCreditSection = params.bonVent?.demande_Versemet_si_Type_est_regle == true
@@ -120,8 +151,13 @@ class PdfGeneratorCore(
                 val shouldShowTotalSection = params.type == PdfType.RECEIPT_ONLY ||
                         (params.type == PdfType.RECEIPT_WITH_CREDIT && !hasActualCredit)
 
+                android.util.Log.d(logTag, "   shouldShowCreditSection: $shouldShowCreditSection")
+                android.util.Log.d(logTag, "   hasVersement: $hasVersement")
+                android.util.Log.d(logTag, "   shouldShowTotalSection: $shouldShowTotalSection")
+
                 if (shouldShowTotalSection) {
                     // Show table WITH "Total" section centered
+                    android.util.Log.d(logTag, "   ➡️ Creating table WITH total section")
                     tableBuilder.createProductTable(
                         doc,
                         params.operations,
@@ -133,6 +169,7 @@ class PdfGeneratorCore(
                     )
                 } else {
                     // Show table WITHOUT total section, return total for credit calculations
+                    android.util.Log.d(logTag, "   ➡️ Creating table WITHOUT total section")
                     currentReceiptTotal = tableBuilder.createProductTableAndReturnTotal(
                         doc, params.operations, tarificationRepo,
                         produitRepo, regularFont, boldFont

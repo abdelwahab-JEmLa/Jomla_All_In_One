@@ -5,6 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.layout.Document
@@ -15,17 +17,31 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
+import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.math.max
 
 /**
- * FIXED: Added support for product images in PDF receipts
- * Images are displayed in a dedicated column when bon is in bons_a_imprime_avec_image_produit
+ * FIXED: Memory-optimized image handling with proper scaling and resource management
+ * - Images are downsampled during decoding to reduce memory footprint
+ * - Bitmap recycling after each conversion
+ * - Lower quality PNG compression
+ * - Explicit garbage collection hints after processing
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
     private val contentBuilder: PdfContentBuilder,
     private val focusedValuesGetter: FocusedValuesGetter
 ) {
+
+    private companion object {
+        const val STANDARD_ROW_HEIGHT = 20f
+        const val IMAGE_ROW_HEIGHT = 55f // Encore plus grand pour les images
+        const val IMAGE_SIZE = 50f // Augmenté à 50f pour images plus visibles
+        const val PNG_QUALITY = 70 // Reduced from 90 to save memory
+        const val MAX_IMAGE_DIMENSION = 200 // Maximum width/height for decoded images
+        const val TAG = "PDF_TABLE_BUILDER"
+    }
 
     fun createProductTable(
         doc: Document,
@@ -36,17 +52,20 @@ class PdfTableBuilder(
         boldFont: PdfFont,
         relativeBonvent: M8BonVent?
     ) {
-        // FIXED: Check if this bon should include images
+        android.util.Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        android.util.Log.d(TAG, "🗃️ Creating product table")
+
+        val bonsWithImages = focusedValuesGetter.active_Central_Values.bons_a_imprime_avec_image_produit
         val shouldIncludeImages = relativeBonvent?.let { bonVent ->
-            focusedValuesGetter.active_Central_Values.bons_a_imprime_avec_image_produit
-                .any { it.keyID == bonVent.keyID }
+            bonsWithImages.any { it.keyID == bonVent.keyID }
         } ?: false
 
-        // FIXED: Create table with image column if needed
+        android.util.Log.d(TAG, "🖼️ shouldIncludeImages = $shouldIncludeImages")
+
         val columnWidths = if (shouldIncludeImages) {
-            floatArrayOf(10f, 15f, 15f, 40f, 20f) // Image, Qté, P.U, Désignation, Sous-total
+            floatArrayOf(20f, 10f, 10f, 40f, 20f) // Image 20%, texte réduit
         } else {
-            floatArrayOf(15f, 20f, 45f, 20f) // Qté, P.U, Désignation, Sous-total
+            floatArrayOf(15f, 20f, 45f, 20f)
         }
 
         val table = Table(UnitValue.createPercentArray(columnWidths))
@@ -75,24 +94,25 @@ class PdfTableBuilder(
                 contentBuilder.addTotalWithItemCount(doc, result.total, result.itemCount, boldFont)
             }
         }
+
+        android.util.Log.d(TAG, "✅ Product table complete")
     }
 
-    /**
-     * FIXED: Added image header when images are enabled
-     */
     private fun addTableHeaders(table: Table, boldFont: PdfFont, includeImages: Boolean) {
         if (includeImages) {
-            table.addCell(createHeaderCell("Img", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Img", boldFont, 10f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Qté", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("P.U", boldFont, 11f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Désignation", boldFont, 11f, TextAlignment.LEFT))
+            table.addCell(createHeaderCell("S-total", boldFont, 11f, TextAlignment.RIGHT))
+        } else {
+            table.addCell(createHeaderCell("Qté", boldFont, 13f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("P.U", boldFont, 13f, TextAlignment.CENTER))
+            table.addCell(createHeaderCell("Désignation", boldFont, 13f, TextAlignment.LEFT))
+            table.addCell(createHeaderCell("Sous-total", boldFont, 13f, TextAlignment.RIGHT))
         }
-        table.addCell(createHeaderCell("Qté", boldFont, 13f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("P.U", boldFont, 13f, TextAlignment.CENTER))
-        table.addCell(createHeaderCell("Désignation", boldFont, 13f, TextAlignment.LEFT))
-        table.addCell(createHeaderCell("Sous-total", boldFont, 13f, TextAlignment.RIGHT))
     }
 
-    /**
-     * FIXED: Added image loading and display in table rows
-     */
     private fun addTableRows(
         table: Table,
         operations: List<M10OperationVentCouleur>,
@@ -111,14 +131,13 @@ class PdfTableBuilder(
             formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")
         }
 
-        sortedGroupedOps.forEach { (produitId, ops) ->
+        sortedGroupedOps.forEachIndexed { index, (produitId, ops) ->
             val tarification = tarificationRepo.datasValue.find {
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
 
             val produit = produitRepo.datasValue.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
-
             val rawPrice = tarification?.prixCurrency ?: 0.0
             val subtotal = rawPrice * qty
             val shouldDisplayPriceAndSubtotal = rawPrice > 0.0
@@ -126,9 +145,16 @@ class PdfTableBuilder(
             val qtyDisplay = formatter.formatQuantity(qty, produit?.quantite_Boit_Par_Carton ?: 1, produit)
             val productNameWithCategory = formatter.formatProductNameWithCategory(produit)
 
-            // FIXED: Add image cell if images are enabled
+            val imageResult = if (includeImages) {
+                findProductImage(ops.first())
+            } else {
+                ImageSearchResult(null, false)
+            }
+
+            val rowHeight = if (imageResult.imageFound) IMAGE_ROW_HEIGHT else STANDARD_ROW_HEIGHT
+
             if (includeImages) {
-                val imageCell = createImageCell(ops.first())
+                val imageCell = createImageCell(imageResult.imageFile, rowHeight)
                 table.addCell(imageCell)
             }
 
@@ -138,94 +164,261 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER))
-                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, 11f, TextAlignment.CENTER))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT))
-                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, 11f, TextAlignment.RIGHT))
+                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell("${formatter.round(unitPrice)}", regularFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT, rowHeight))
+                table.addCell(createDataCell("${formatter.round(subtotal)}", regularFont, 11f, TextAlignment.RIGHT, rowHeight))
 
                 total += subtotal
                 itemCount++
             } else {
-                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER))
-                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.CENTER))
-                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT))
-                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.RIGHT))
+                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT, rowHeight))
+                table.addCell(createDataCell("", regularFont, 11f, TextAlignment.RIGHT, rowHeight))
                 itemCount++
             }
+
+            // MEMORY OPTIMIZATION: Suggest GC every 5 images
+            if (includeImages && index > 0 && index % 5 == 0) {
+                System.gc()
+                android.util.Log.d(TAG, "💾 Memory cleanup hint after $index images")
+            }
+        }
+
+        // Final cleanup
+        if (includeImages) {
+            System.gc()
+            android.util.Log.d(TAG, "💾 Final memory cleanup")
         }
 
         return TableResult(total, itemCount)
     }
 
-    /**
-     * FIXED: Create image cell for product
-     * Images are 20x20 points (approximately 20dp at standard PDF resolution)
-     */
-    private fun createImageCell(operation: M10OperationVentCouleur): Cell {
-        val imageFile = getProductImageFile(operation)
-
-        return if (imageFile != null && imageFile.exists()) {
-            try {
-                val imageData = ImageDataFactory.create(imageFile.absolutePath)
-                val image = Image(imageData)
-                    .setWidth(20f)  // 20 points width
-                    .setHeight(20f) // 20 points height
-                    .setAutoScale(true)
-
-                Cell()
-                    .add(image)
-                    .setBorder(SolidBorder(0.5f))
-                    .setPadding(2f)
-                    .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
-                    .setTextAlignment(TextAlignment.CENTER)
-            } catch (e: Exception) {
-                // If image loading fails, return empty cell
-                createEmptyImageCell()
-            }
-        } else {
-            createEmptyImageCell()
-        }
-    }
-
-    /**
-     * Get the image file for a product operation
-     * Searches in the standard image directory
-     */
-    private fun getProductImageFile(operation: M10OperationVentCouleur): File? {
+    private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
         return try {
-            // Get the main color for this operation
-            val couleurRepo = focusedValuesGetter.run {
-                focusedValuesGetter.repo3CouleurProduitInfos
-            }
-
+            val couleurRepo = focusedValuesGetter.repo3CouleurProduitInfos
             val couleur = couleurRepo.datasValue.find {
                 it.keyID == operation.parent_M3CouleurProduit_KeyID
             }
 
-            couleur?.let {
-                if (it.nomImageFichieSansEtansion != "Non Dispo") {
-                    val fileName = "${it.nomImageFichieSansEtansion}.${it.extensionDisponible}"
-                    File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
-                } else {
-                    null
+            if (couleur == null || couleur.nomImageFichieSansEtansion == "Non Dispo") {
+                return ImageSearchResult(null, false)
+            }
+
+            val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+            val baseName = couleur.nomImageFichieSansEtansion
+            val extension = couleur.extensionDisponible
+
+            val suffixesToTry = listOf("_1", "_0", "_2", "_3", "_4")
+
+            for (suffix in suffixesToTry) {
+                val cleanBaseName = baseName.replace(Regex("_[0-4]$"), "")
+                val fileName = "$cleanBaseName$suffix.$extension"
+                val imageFile = File(baseDir, fileName)
+
+                if (imageFile.exists()) {
+                    return ImageSearchResult(imageFile, true)
                 }
             }
+
+            ImageSearchResult(null, false)
+
         } catch (e: Exception) {
-            null
+            android.util.Log.e("PDF_IMAGE_SEARCH", "Erreur recherche image: ${e.message}")
+            ImageSearchResult(null, false)
         }
     }
 
     /**
-     * Create empty cell when image is not available
+     * FIXED: Memory-optimized image handling
+     * - Calculates optimal sample size to reduce memory usage
+     * - Uses inJustDecodeBounds to get dimensions without loading full image
+     * - Recycles bitmap immediately after conversion
+     * - Lower PNG compression quality
      */
-    private fun createEmptyImageCell(): Cell {
+    private fun createImageCell(imageFile: File?, rowHeight: Float): Cell {
+        val logTag = "PDF_IMAGE_CELL"
+
+        if (imageFile == null || !imageFile.exists()) {
+            return createEmptyImageCell(rowHeight)
+        }
+
+        return try {
+            val isWebP = imageFile.extension.equals("webp", ignoreCase = true)
+
+            android.util.Log.d(logTag, "📸 Image: ${imageFile.name} (WebP: $isWebP)")
+
+            val imageData = if (isWebP) {
+                android.util.Log.d(logTag, "   🔄 Conversion WebP optimisée...")
+                convertImageToPNGOptimized(imageFile)
+            } else {
+                android.util.Log.d(logTag, "   ✅ Chargement direct optimisé...")
+                convertImageToPNGOptimized(imageFile) // Apply same optimization for all images
+            }
+
+            if (imageData == null) {
+                android.util.Log.w(logTag, "   ⚠️ Échec chargement")
+                return createEmptyImageCell(rowHeight)
+            }
+
+            val image = Image(imageData)
+                .setWidth(IMAGE_SIZE)
+                .setHeight(IMAGE_SIZE)
+                .setAutoScale(true)
+
+            image.scaleToFit(IMAGE_SIZE, IMAGE_SIZE)
+
+            android.util.Log.d(logTag, "   ✅ Image ajoutée")
+
+            Cell()
+                .add(image)
+                .setBorder(SolidBorder(0.5f))
+                .setPadding(2f)
+                .setHeight(rowHeight)
+                .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+                .setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
+
+        } catch (e: OutOfMemoryError) {
+            android.util.Log.e(logTag, "❌ OOM: ${e.message}")
+            System.gc() // Force garbage collection
+            createEmptyImageCell(rowHeight)
+        } catch (e: Exception) {
+            android.util.Log.e(logTag, "❌ Erreur: ${e.message}")
+            createEmptyImageCell(rowHeight)
+        }
+    }
+
+    /**
+     * OPTIMIZED: Memory-efficient image conversion with downsampling
+     *
+     * Key improvements:
+     * 1. Calculate image dimensions WITHOUT loading the full bitmap
+     * 2. Determine optimal sample size to reduce memory usage
+     * 3. Load downsampled bitmap directly
+     * 4. Use RGB_565 for further memory reduction (2 bytes/pixel vs 4)
+     * 5. Lower PNG quality
+     * 6. Immediate bitmap recycling
+     */
+    private fun convertImageToPNGOptimized(imageFile: File): com.itextpdf.io.image.ImageData? {
+        var bitmap: Bitmap? = null
+        var outputStream: ByteArrayOutputStream? = null
+
+        return try {
+            // STEP 1: Get image dimensions without loading the full bitmap
+            val boundsOptions = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true // Don't load pixels, just get dimensions
+            }
+            BitmapFactory.decodeFile(imageFile.absolutePath, boundsOptions)
+
+            val imageWidth = boundsOptions.outWidth
+            val imageHeight = boundsOptions.outHeight
+
+            if (imageWidth <= 0 || imageHeight <= 0) {
+                android.util.Log.e("IMAGE_CONVERT", "Invalid dimensions: ${imageWidth}x${imageHeight}")
+                return null
+            }
+
+            // STEP 2: Calculate optimal sample size
+            val sampleSize = calculateInSampleSize(imageWidth, imageHeight, MAX_IMAGE_DIMENSION)
+
+            android.util.Log.d(
+                "IMAGE_CONVERT",
+                "Original: ${imageWidth}x${imageHeight}, Sample: $sampleSize, Final: ${imageWidth/sampleSize}x${imageHeight/sampleSize}"
+            )
+
+            // STEP 3: Load downsampled bitmap with memory-efficient config
+            val decodeOptions = BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
+                inPreferredConfig = Bitmap.Config.RGB_565 // 2 bytes/pixel instead of 4
+                inJustDecodeBounds = false
+            }
+
+            bitmap = BitmapFactory.decodeFile(imageFile.absolutePath, decodeOptions)
+
+            if (bitmap == null) {
+                android.util.Log.e("IMAGE_CONVERT", "Échec décodage: ${imageFile.name}")
+                return null
+            }
+
+            // STEP 4: Convert to PNG with lower quality
+            outputStream = ByteArrayOutputStream()
+            val compressionSuccess = bitmap.compress(
+                Bitmap.CompressFormat.PNG,
+                PNG_QUALITY,
+                outputStream
+            )
+
+            if (!compressionSuccess) {
+                android.util.Log.e("IMAGE_CONVERT", "Échec compression PNG")
+                return null
+            }
+
+            val pngBytes = outputStream.toByteArray()
+
+            android.util.Log.d(
+                "IMAGE_CONVERT",
+                "✅ Converti: ${pngBytes.size / 1024}KB (original: ${imageFile.length() / 1024}KB)"
+            )
+
+            ImageDataFactory.create(pngBytes)
+
+        } catch (e: OutOfMemoryError) {
+            android.util.Log.e("IMAGE_CONVERT", "❌ OOM: ${e.message}")
+            System.gc() // Force garbage collection
+            null
+        } catch (e: Exception) {
+            android.util.Log.e("IMAGE_CONVERT", "❌ Erreur: ${e.message}")
+            null
+        } finally {
+            // STEP 5: Cleanup - CRITICAL for memory management
+            bitmap?.recycle()
+            outputStream?.close()
+        }
+    }
+
+    /**
+     * Calculate optimal sample size to reduce memory usage
+     *
+     * Sample size is a power of 2 that results in an image smaller than maxDimension
+     * For example:
+     * - inSampleSize = 1: original size
+     * - inSampleSize = 2: 1/4 of original pixels
+     * - inSampleSize = 4: 1/16 of original pixels
+     */
+    private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
+        var sampleSize = 1
+        val maxOriginalDimension = max(width, height)
+
+        if (maxOriginalDimension > maxDimension) {
+            val halfWidth = width / 2
+            val halfHeight = height / 2
+
+            // Calculate the largest inSampleSize value that is a power of 2
+            // and keeps both dimensions larger than the requested size
+            while ((halfWidth / sampleSize) >= maxDimension &&
+                (halfHeight / sampleSize) >= maxDimension) {
+                sampleSize *= 2
+            }
+        }
+
+        return sampleSize
+    }
+
+    private fun createEmptyImageCell(rowHeight: Float): Cell {
         return Cell()
             .add(Paragraph("—").setFontSize(8f))
             .setBorder(SolidBorder(0.5f))
             .setPadding(2f)
+            .setHeight(rowHeight)
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
             .setTextAlignment(TextAlignment.CENTER)
     }
+
+    private data class ImageSearchResult(
+        val imageFile: File?,
+        val imageFound: Boolean
+    )
 
     enum class Titres(val text: String) {
         A("Total:"),
@@ -246,17 +439,14 @@ class PdfTableBuilder(
         val totalTable = Table(UnitValue.createPercentArray(floatArrayOf(60f, 40f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
-        val totalLabelCell = Cell()
-            .add(Paragraph(Titres.A.text).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
-            .setPadding(0f)
-
-        val totalValueCell = Cell()
-            .add(Paragraph("${formatter.round(totalBon)} Da ($itemCount items)").setFont(boldFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
-            .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
-            .setPadding(0f)
-
-        totalTable.addCell(totalLabelCell).addCell(totalValueCell)
+        totalTable.addCell(
+            Cell().add(Paragraph(Titres.A.text).setFont(regularFont).setFontSize(12f).setTextAlignment(TextAlignment.LEFT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+        )
+        totalTable.addCell(
+            Cell().add(Paragraph("${formatter.round(totalBon)} Da ($itemCount items)").setFont(boldFont).setFontSize(12f).setTextAlignment(TextAlignment.RIGHT))
+                .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0f)
+        )
         doc.add(totalTable)
         doc.add(Paragraph("\n").setFontSize(0.3f))
 
@@ -334,7 +524,6 @@ class PdfTableBuilder(
         regularFont: PdfFont,
         boldFont: PdfFont
     ): Double {
-        // Don't include images in this variant
         val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 14f, 56f, 15f)))
             .setWidth(UnitValue.createPercentValue(100f))
 
@@ -348,25 +537,26 @@ class PdfTableBuilder(
     }
 
     private fun createHeaderCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell {
-        val paragraph = Paragraph(content)
-            .setFont(font)
-            .setFontSize(size)
-            .setTextAlignment(align)
-            .setMargin(0f)
-
         return Cell()
-            .add(paragraph)
+            .add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align).setMargin(0f))
             .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
             .setPadding(5f)
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
             .setTextAlignment(align)
     }
 
-    private fun createDataCell(content: String, font: PdfFont, size: Float, align: TextAlignment): Cell =
+    private fun createDataCell(
+        content: String,
+        font: PdfFont,
+        size: Float,
+        align: TextAlignment,
+        rowHeight: Float = STANDARD_ROW_HEIGHT
+    ): Cell =
         Cell()
             .add(Paragraph(content).setFont(font).setFontSize(size).setTextAlignment(align))
             .setBorder(SolidBorder(0.5f))
             .setPadding(5f)
+            .setHeight(rowHeight)
             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
 
     private data class TableResult(val total: Double, val itemCount: Int)

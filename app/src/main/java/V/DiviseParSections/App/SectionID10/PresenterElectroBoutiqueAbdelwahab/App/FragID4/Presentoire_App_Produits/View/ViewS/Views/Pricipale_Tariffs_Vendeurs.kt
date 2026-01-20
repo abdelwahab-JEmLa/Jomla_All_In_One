@@ -16,7 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +35,7 @@ import androidx.compose.ui.unit.sp
  * @param tariffsList List of all available tariffs
  * @param selectedTariff The currently selected tariff for this product
  * @param onTariffSelected Callback when a tariff is selected
+ * @param onProgressiveTariffEdit Callback when a progressive tariff is double-clicked for editing
  * @param compactMode Whether to use compact display (removes names and reduces size)
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -40,6 +45,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
     tariffsList: List<M13TarificationInfos>,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
+    onProgressiveTariffEdit: ((M13TarificationInfos) -> Unit)? = null,
     compactMode: Boolean = false
 ) {
     val displayTariffs = listOf(
@@ -93,7 +99,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariff, prix) ->
-            // FIXED: Use key() to ensure proper recomposition and state tracking
+            // Use key() to ensure proper recomposition and state tracking
             key(tariff.typeChoisi, relative_M1produit.keyID) {
                 val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
                         selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -104,7 +110,11 @@ fun Pricipale_Tariffs_Vendeurs_FragID4(
                     prix = prix,
                     isSelected = isSelected,
                     compactMode = compactMode,
-                    onClick = { onTariffSelected(tariff) }
+                    onClick = { onTariffSelected(tariff) },
+                    onDoubleClick = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
+                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+                        { onProgressiveTariffEdit?.invoke(tariff) }
+                    } else null
                 )
             }
         }
@@ -162,16 +172,36 @@ private fun TariffItem(
     prix: Double,
     isSelected: Boolean,
     compactMode: Boolean = false,
-    onClick: () -> Unit
-) {    //<--
-//TODO(1): fait que si le teariff est du progressife et selected apre clicked 2 eme foit de utilise fast pour modifie au entre ajout un tariff du prix 
+    onClick: () -> Unit,
+    onDoubleClick: (() -> Unit)? = null
+) {
+    var lastClickTime by remember { mutableStateOf(0L) }
+    val doubleClickThreshold = 500L // milliseconds
+
+    fun handleClick() {
+        val currentTime = System.currentTimeMillis()
+        val isProgressiveTariff = tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
+                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client
+
+        if (isSelected && isProgressiveTariff &&
+            (currentTime - lastClickTime) < doubleClickThreshold) {
+            // Double click detected on selected progressive tariff
+            onDoubleClick?.invoke()
+        } else {
+            // Single click
+            onClick()
+        }
+
+        lastClickTime = currentTime
+    }
+
     // Adjust sizes based on compact mode
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 14.dp else 16.dp
     val fontSize = if (compactMode) 9.sp else 10.sp
 
-    // FIXED: Use stable border width calculation to prevent flickering
+    // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
@@ -189,7 +219,7 @@ private fun TariffItem(
                 ),
                 shape = CircleShape
             )
-            .clickable(onClick = onClick)
+            .clickable(onClick = { handleClick() })
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
