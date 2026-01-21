@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.Components
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.ColorImageCard_FragID4
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID4
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID4
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -59,7 +59,7 @@ fun Big_Principale_FragID4(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Lenceur_Vent_Handler_FragID4(
+            Lenceur_Vent_Handler_FragID3(
                 relative_M1produit = relative_M1produit,
                 relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                 selectedCouleur = selectedCouleur,
@@ -67,7 +67,7 @@ fun Big_Principale_FragID4(
                 compactMode = !isThisProductExpanded
             )
 
-            Pricipale_Tariffs_Vendeurs_FragID4(
+            Pricipale_Tariffs_Vendeurs_FragID3(
                 relative_M1produit = relative_M1produit,
                 tariffsList = datasValue,
                 selectedTariff = selectedTariff,

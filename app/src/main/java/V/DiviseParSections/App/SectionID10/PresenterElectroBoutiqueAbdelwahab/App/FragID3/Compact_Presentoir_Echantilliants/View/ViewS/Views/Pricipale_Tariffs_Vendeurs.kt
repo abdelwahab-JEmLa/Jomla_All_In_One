@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Icon_Outlined
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -140,9 +141,11 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 }
 
 /**
- * Editable Progressive Tariff Item using OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
+ * Editable Progressive Tariff Item using Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
+ * with Icon_Outlined composable
  *
  * FIXED: When price is edited, the tariff is automatically selected via onPriceUpdated callback
+ * FIXED: Now uses Icon_Outlined composable instead of passing icon directly
  */
 @Composable
 private fun EditableProgressiveTariffItem(
@@ -180,17 +183,24 @@ private fun EditableProgressiveTariffItem(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        // Price with editable component
-        OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
-            start_count = prix.toInt(),
-            standard_count = prix.toInt(),
+        // Price with editable component, now with Icon_Outlined composable
+        Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+            start_count = prix,
+            standard_count = prix,
             isAvailable = true,
             compact_taille = compactMode,
+            iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
+                {
+                    Icon_Outlined(
+                        icon = icon,
+                        size = iconSize,
+                        tint = tariff.typeChoisi.couleur_Text
+                    )
+                }
+            },
             modifier = Modifier
-        ) { newPriceInt ->
+        ) { newPrice ->
             // When user edits the price, update and auto-select this tariff
-            val newPrice = newPriceInt.toDouble()
             onPriceUpdated(newPrice)
         }
 

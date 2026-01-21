@@ -116,3 +116,16 @@ fun Big_Principale_FragID3(
         }
     }
 }
+
+fun saveEditedProgressiveTariff(
+    aCentralFacade: ACentralFacade,
+    tariff: M13TarificationInfos,
+    newPrice: Double
+) {
+    val updatedTariff = tariff.copy(
+        prixCurrency = newPrice,
+        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+    )
+
+    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+}
