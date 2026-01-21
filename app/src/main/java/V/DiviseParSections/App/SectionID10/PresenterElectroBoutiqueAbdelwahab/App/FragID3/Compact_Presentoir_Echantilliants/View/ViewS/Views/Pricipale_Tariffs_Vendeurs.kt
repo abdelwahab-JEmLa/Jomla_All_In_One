@@ -158,9 +158,10 @@ private fun EditableProgressiveTariffItem(
 ) {
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
-    val iconSize = if (compactMode) 14.dp else 16.dp
+    val iconSize = if (compactMode) 4.dp else 16.dp
     val fontSize = if (compactMode) 9.sp else 10.sp
-
+           //<--
+           //TODO(1): fait que le text soit le plus petite posible si compact
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 

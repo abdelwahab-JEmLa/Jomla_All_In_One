@@ -78,7 +78,8 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     compact_taille: Boolean = false,
     modifier: Modifier = Modifier,
     on_Data_Update: (Double) -> Unit
-) {
+) {           //<--
+//TODO(1): fait passe le text size
     var isEditMode by remember { mutableStateOf(false) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
