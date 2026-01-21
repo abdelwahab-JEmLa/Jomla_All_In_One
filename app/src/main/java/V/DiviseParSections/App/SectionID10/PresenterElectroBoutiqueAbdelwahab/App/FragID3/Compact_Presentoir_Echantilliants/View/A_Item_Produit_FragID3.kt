@@ -4,6 +4,8 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Big_Principale_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Compact_Header_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.SubColorCard_WithButton
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.updateTariffForProductOperations
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -40,6 +42,7 @@ fun Item_Produit_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    aCentralFacade: ACentralFacade= koinInject(),
     focusedValuesSetter: FocusedValuesSetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
@@ -250,6 +253,10 @@ fun Item_Produit_FragID3(
                     selectedTariff = selectedTariff,
                     onTariffSelected = { newTariff ->
                         selectedTariff = newTariff
+                        aCentralFacade.updateTariffForProductOperations(
+                            relative_M1produit.keyID,
+                            newTariff
+                        )
                     },
                     datasValue = datasValue,
                     isThisProductExpanded = isThisProductExpanded,

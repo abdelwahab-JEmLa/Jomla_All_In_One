@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
@@ -23,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 /**
  * Displays tariff information for a product with selection capability
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.sp
  * @param selectedTariff The currently selected tariff for this product
  * @param onTariffSelected Callback when a tariff is selected
  * @param compactMode Whether to use compact display (removes names and reduces size)
+ * @param aCentralFacade Central facade for repository access
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -40,7 +44,8 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     tariffsList: List<M13TarificationInfos>,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
-    compactMode: Boolean = false
+    compactMode: Boolean = false,
+    aCentralFacade: ACentralFacade = koinInject()
 ) {
     val displayTariffs = listOf(
         M13TarificationInfos.TypeChoisi.Prix_Detaille,
@@ -49,8 +54,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         M13TarificationInfos.TypeChoisi.Historique,
         M13TarificationInfos.TypeChoisi.LeMaxPrixArrive,
     )
-
-    // Filter and prepare tariffs to display
     val tariffsToDisplay = displayTariffs.mapNotNull { tariffType ->
         // Find matching tariff for this product
         val matchingTariff = tariffsList.firstOrNull {
@@ -93,67 +96,112 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         tariffsToDisplay.forEach { (tariff, prix) ->
-            // FIXED: Use key() to ensure proper recomposition and state tracking
+            // Use key() to ensure proper recomposition and state tracking
             key(tariff.typeChoisi, relative_M1produit.keyID) {
                 val isSelected = selectedTariff.typeChoisi == tariff.typeChoisi &&
                         selectedTariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                         tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
 
-                TariffItem(
-                    tariff = tariff,
-                    prix = prix,
-                    isSelected = isSelected,
-                    compactMode = compactMode,
-                    onClick = { onTariffSelected(tariff) }
-                )
+                // Special handling for Prix_Progressive_Editable
+                if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
+                    EditableProgressiveTariffItem(
+                        tariff = tariff,
+                        prix = prix,
+                        isSelected = isSelected,
+                        compactMode = compactMode,
+                        onClick = {
+                            onTariffSelected(tariff)
+                        },
+                        onPriceUpdated = { newPrice ->
+                            // Create updated tariff with new price
+                            val updatedTariff = tariff.copy(
+                                prixCurrency = newPrice,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+
+                            // Save to repository
+                            aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+
+                            onTariffSelected(updatedTariff)
+                        }
+                    )
+                } else {
+                    TariffItem(
+                        tariff = tariff,
+                        prix = prix,
+                        isSelected = isSelected,
+                        compactMode = compactMode,
+                        onClick = { onTariffSelected(tariff) }
+                    )
+                }
             }
         }
     }
 }
 
-private fun calculateProgressiveTariff(
-    tariffsList: List<M13TarificationInfos>,
-    product: ArticlesBasesStatsTable
-): M13TarificationInfos? {
-    val prixDetaille = tariffsList.find {
-        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                it.parent_M1Produit_KeyId == product.keyID
-    }
+/**
+ * Editable Progressive Tariff Item using OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
+ *
+ * FIXED: When price is edited, the tariff is automatically selected via onPriceUpdated callback
+ */
+@Composable
+private fun EditableProgressiveTariffItem(
+    tariff: M13TarificationInfos,
+    prix: Double,
+    isSelected: Boolean,
+    compactMode: Boolean = false,
+    onClick: () -> Unit,
+    onPriceUpdated: (Double) -> Unit
+) {
+    val horizontalPadding = if (compactMode) 6.dp else 8.dp
+    val verticalPadding = if (compactMode) 2.dp else 4.dp
+    val iconSize = if (compactMode) 14.dp else 16.dp
+    val fontSize = if (compactMode) 9.sp else 10.sp
 
-    val prixSupperGro = tariffsList.find {
-        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                it.parent_M1Produit_KeyId == product.keyID
-    }
+    val borderWidth = if (isSelected) 2.dp else 0.dp
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    val detaillePrice = prixDetaille?.prixCurrency ?: 0.0
-    val supperGroPrice = prixSupperGro?.prixCurrency ?: 0.0
+    Row(
+        modifier = Modifier
+            .clip(CircleShape)
+            .border(
+                width = borderWidth,
+                color = borderColor,
+                shape = CircleShape
+            )
+            .background(
+                color = tariff.typeChoisi.couleur.copy(
+                    alpha = if (isSelected) 1f else 0.9f
+                ),
+                shape = CircleShape
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
-    // Calculate progressive price based on availability
-    val progressivePrice = when {
-        // Both available: use average
-        detaillePrice > 0.0 && supperGroPrice > 0.0 -> {
-            (detaillePrice + supperGroPrice) / 2.0
+        // Price with editable component
+        OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
+            start_count = prix.toInt(),
+            standard_count = prix.toInt(),
+            isAvailable = true,
+            compact_taille = compactMode,
+            modifier = Modifier
+        ) { newPriceInt ->
+            // When user edits the price, update and auto-select this tariff
+            val newPrice = newPriceInt.toDouble()
+            onPriceUpdated(newPrice)
         }
-        // Only Detaille available: use it
-        detaillePrice > 0.0 -> detaillePrice
-        // Only SupperGro available: use it
-        supperGroPrice > 0.0 -> supperGroPrice
-        // Neither available: 0.0
-        else -> 0.0
+
+        if (!compactMode) {
+            Text(
+                text = "DA/p.u",
+                color = tariff.typeChoisi.couleur_Text,
+                fontSize = fontSize
+            )
+        }
     }
-
-    // Use the first available tariff as base, or create a new one
-    val baseTariff = prixDetaille ?: prixSupperGro ?: M13TarificationInfos(
-        parent_M1Produit_KeyId = product.keyID,
-        parent_M1Produit_DebugInfos = product.getDebugInfos()
-    )
-
-    return baseTariff.copy(
-        keyID = "progressive_${product.keyID}",
-        typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
-        prixCurrency = progressivePrice,
-        parent_M1Produit_KeyId = product.keyID
-    )
 }
 
 @Composable
@@ -170,7 +218,7 @@ private fun TariffItem(
     val iconSize = if (compactMode) 14.dp else 16.dp
     val fontSize = if (compactMode) 9.sp else 10.sp
 
-    // FIXED: Use stable border width calculation to prevent flickering
+    // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
@@ -226,4 +274,49 @@ private fun TariffItem(
             fontSize = fontSize
         )
     }
+}
+
+private fun calculateProgressiveTariff(
+    tariffsList: List<M13TarificationInfos>,
+    product: ArticlesBasesStatsTable
+): M13TarificationInfos? {
+    val prixDetaille = tariffsList.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                it.parent_M1Produit_KeyId == product.keyID
+    }
+
+    val prixSupperGro = tariffsList.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                it.parent_M1Produit_KeyId == product.keyID
+    }
+
+    val detaillePrice = prixDetaille?.prixCurrency ?: 0.0
+    val supperGroPrice = prixSupperGro?.prixCurrency ?: 0.0
+
+    // Calculate progressive price based on availability
+    val progressivePrice = when {
+        // Both available: use average
+        detaillePrice > 0.0 && supperGroPrice > 0.0 -> {
+            (detaillePrice + supperGroPrice) / 2.0
+        }
+        // Only Detaille available: use it
+        detaillePrice > 0.0 -> detaillePrice
+        // Only SupperGro available: use it
+        supperGroPrice > 0.0 -> supperGroPrice
+        // Neither available: 0.0
+        else -> 0.0
+    }
+
+    // Use the first available tariff as base, or create a new one
+    val baseTariff = prixDetaille ?: prixSupperGro ?: M13TarificationInfos(
+        parent_M1Produit_KeyId = product.keyID,
+        parent_M1Produit_DebugInfos = product.getDebugInfos()
+    )
+
+    return baseTariff.copy(
+        keyID = "progressive_${product.keyID}",
+        typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
+        prixCurrency = progressivePrice,
+        parent_M1Produit_KeyId = product.keyID
+    )
 }
