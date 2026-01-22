@@ -31,7 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Adjustable icon component that can be customized in size and color
@@ -66,6 +68,7 @@ fun Icon_Outlined(
  * @param iconComposable Optional composable for custom icon (uses Icon_Outlined internally)
  * @param isAvailable Whether the component is enabled for interaction (default: true)
  * @param compact_taille Whether to use compact sizing (reduces padding and text size)
+ * @param textSize Optional custom text size (overrides the default compact/normal size)
  * @param on_Data_Update Callback when quantity needs to be updated (returns new quantity as Double)
  * @param modifier Optional modifier for the component
  */
@@ -76,10 +79,10 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     iconComposable: @Composable (() -> Unit)? = null,
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
+    textSize: TextUnit? = null,  // FIXED: Added optional textSize parameter
     modifier: Modifier = Modifier,
     on_Data_Update: (Double) -> Unit
-) {           //<--
-//TODO(1): fait passe le text size
+) {
     var isEditMode by remember { mutableStateOf(false) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -93,11 +96,11 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     // Adjust sizes based on compact mode
     val horizontalPadding = if (compact_taille) 8.dp else 12.dp
     val verticalPadding = if (compact_taille) 4.dp else 6.dp
-    val textStyle = if (compact_taille) {
-        MaterialTheme.typography.labelMedium
-    } else {
-        MaterialTheme.typography.labelLarge
-    }
+
+    // FIXED: Use custom textSize if provided, otherwise fall back to defaults
+    val effectiveTextSize = textSize ?: if (compact_taille) 7.sp else 12.sp
+
+    val textStyle = MaterialTheme.typography.labelMedium.copy(fontSize = effectiveTextSize)
 
     if (isEditMode && start_count > 0) {
         // Edit mode: Show outlined text field
