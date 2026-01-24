@@ -6,7 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,6 +74,7 @@ fun DropDownItem_WhenIts_FragFastVent_7(
                     vent.quantity > 0
         }
 
+    // FIXED: Show phone input dialog if client has no phone number
     if (showPhoneInputDialog) {
         PhoneNumberInputDialog(
             clientName = focusedValuesGetter.activeOnVentM2ClientInfos?.nom ?: "Client",
@@ -129,7 +129,7 @@ fun DropDownItem_WhenIts_FragFastVent_7(
             return
         }
 
-        // Check if client has phone number, if not show input dialog
+        // FIXED: Check if client has phone number, if not show input dialog
         val phoneNumber = activeClient.numTelephone.trim()
         if (phoneNumber.isEmpty()) {
             showPhoneInputDialog = true
@@ -196,6 +196,9 @@ fun DropDownItem_WhenIts_FragFastVent_7(
     }
 }
 
+/**
+ * FIXED: Dialog for entering phone number when client doesn't have one
+ */
 @Composable
 private fun PhoneNumberInputDialog(
     clientName: String,
@@ -225,6 +228,7 @@ private fun PhoneNumberInputDialog(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Title
                 Text(
                     text = "Numéro de téléphone requis",
                     style = MaterialTheme.typography.titleLarge,
@@ -232,21 +236,25 @@ private fun PhoneNumberInputDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
+                // Client name
                 Text(
                     text = "Client: $clientName",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
+                // Description
                 Text(
                     text = "Ce client n'a pas de numéro de téléphone. Veuillez entrer son numéro pour partager via WhatsApp.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
+                // Phone input field
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = { newValue ->
+                        // Only allow digits and basic phone characters
                         if (newValue.isEmpty() || newValue.all { it.isDigit() || it in "+-() " }) {
                             phoneNumber = newValue
                             showError = false
@@ -283,10 +291,12 @@ private fun PhoneNumberInputDialog(
                     )
                 )
 
+                // Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
                 ) {
+                    // Cancel button
                     TextButton(
                         onClick = onDismiss,
                         colors = ButtonDefaults.textButtonColors(
@@ -296,6 +306,7 @@ private fun PhoneNumberInputDialog(
                         Text("Annuler")
                     }
 
+                    // Confirm button
                     Button(
                         onClick = {
                             val cleanedNumber = phoneNumber.trim()
@@ -317,6 +328,9 @@ private fun PhoneNumberInputDialog(
     }
 }
 
+/**
+ * Extracted share logic for reusability
+ */
 private suspend fun shareViaWhatsApp(
     context: Context,
     scope: CoroutineScope,
@@ -337,6 +351,7 @@ private suspend fun shareViaWhatsApp(
             return
         }
 
+        // FIXED: Update bons_a_imprime_avec_image_produit to include current bon
         val currentValues = focusedValuesGetter.active_Central_Values
         val currentBonsWithImages = currentValues.bons_a_imprime_avec_image_produit.toMutableList()
 
@@ -350,6 +365,7 @@ private suspend fun shareViaWhatsApp(
             )
         }
 
+        // Update bon vent to hide versement in print
         aCentralFacade.repositorysMainSetter.update_M8BonVent(
             activeBonVent.copy(
                 affiche_le_verssement_au_prochen_print = false
@@ -358,6 +374,7 @@ private suspend fun shareViaWhatsApp(
 
         delay(500)
 
+        // Generate PDF with images
         val result = (printHandler as? PrintReceiptHandler_Juil)
             ?.printPdfOnly(
                 context = context,
@@ -375,7 +392,6 @@ private suspend fun shareViaWhatsApp(
             val pdfFile = File(filePath)
 
             if (pdfFile.exists()) {
-                // FIXED: Format phone number properly for WhatsApp
                 val formattedPhone = formatPhoneNumberForWhatsApp(phoneNumber)
                 val pdfUri = FileProvider.getUriForFile(
                     context,
@@ -383,40 +399,25 @@ private suspend fun shareViaWhatsApp(
                     pdfFile
                 )
 
-                // FIXED: Launch WhatsApp with specific phone number using URI
-                val whatsappUri = Uri.parse("https://api.whatsapp.com/send?phone=$formattedPhone")
-
-                val whatsappIntent = Intent(Intent.ACTION_VIEW).apply {
-                    data = whatsappUri
+                val whatsappIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
                     setPackage("com.whatsapp")
+                    putExtra(Intent.EXTRA_STREAM, pdfUri)
+                    putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
+                    putExtra("jid", "$formattedPhone@s.whatsapp.net")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
 
                 try {
-                    // First, open WhatsApp chat with the contact
                     context.startActivity(whatsappIntent)
-
-                    // Then after a short delay, trigger the share intent
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(1000)
-
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            type = "application/pdf"
-                            setPackage("com.whatsapp")
-                            putExtra(Intent.EXTRA_STREAM, pdfUri)
-                            putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-
-                        context.startActivity(shareIntent)
-
                         Toast.makeText(
                             context,
-                            "Partage du PDF à ${activeClient.nom}",
+                            "Ouverture de WhatsApp pour ${activeClient.nom}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } catch (e: Exception) {
-                    // Fallback to general share if WhatsApp fails
                     val generalShareIntent = Intent(Intent.ACTION_SEND).apply {
                         type = "application/pdf"
                         putExtra(Intent.EXTRA_STREAM, pdfUri)
@@ -485,43 +486,16 @@ private suspend fun shareViaWhatsApp(
 }
 
 /**
- * FIXED: Formats phone number for WhatsApp
- * - Removes all non-digit characters (spaces, +, -, etc.)
- * - Handles numbers starting with 0 by removing the leading 0
- * - Handles numbers that already have country code (213)
- * - Handles numbers with extra 0 after country code (+213 0 XXX) by removing it
- *
- * Examples:
- * - "0553885037" -> "213553885037"
- * - "+213 0 553 88 50 37" -> "213553885037"
- * - "+213 553 88 50 37" -> "213553885037"
- * - "213553885037" -> "213553885037"
+ * Formats phone number for WhatsApp
+ * Removes spaces and special characters, adds country code if needed
  */
 private fun formatPhoneNumberForWhatsApp(phoneNumber: String): String {
-    // Remove all non-digit characters
     var cleaned = phoneNumber.replace(Regex("[^0-9]"), "")
 
-    // If it already starts with 213 (country code)
-    if (cleaned.startsWith("213")) {
-        // Remove the country code temporarily to check for extra 0
-        val withoutCountryCode = cleaned.substring(3)
-
-        // If there's a leading 0 after the country code, remove it
-        val finalNumber = if (withoutCountryCode.startsWith("0")) {
-            withoutCountryCode.substring(1)
-        } else {
-            withoutCountryCode
-        }
-
-        // Re-add country code
-        cleaned = "213$finalNumber"
-    } else {
-        // Number doesn't have country code
-        // If it starts with 0, remove it
+    if (!cleaned.startsWith("213")) {
         if (cleaned.startsWith("0")) {
             cleaned = cleaned.substring(1)
         }
-        // Add country code
         cleaned = "213$cleaned"
     }
 
