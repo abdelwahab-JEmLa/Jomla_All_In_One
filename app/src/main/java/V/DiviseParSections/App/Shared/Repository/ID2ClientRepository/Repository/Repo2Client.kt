@@ -215,6 +215,7 @@ class Repo2Client(
     }
     val datasState: State<List<M2Client>> = _datas
 }
+
 @Entity
 data class M2Client(
     @PrimaryKey
