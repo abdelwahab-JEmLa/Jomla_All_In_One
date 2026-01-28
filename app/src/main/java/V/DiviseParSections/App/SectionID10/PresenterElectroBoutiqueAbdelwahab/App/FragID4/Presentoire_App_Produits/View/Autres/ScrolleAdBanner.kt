@@ -106,7 +106,7 @@ fun ScrolleAdBanner(
             Card(
                 modifier = Modifier
                     .width(320.dp)
-                    .height(150.dp)
+                    .height(320.dp)
                     .clickable {
                         // Pass the banner index to the click handler
                         onBannerClick(index)
