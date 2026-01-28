@@ -109,6 +109,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                     EditableProgressiveTariffItem(
                         tariff = tariff,
                         prix = prix,
+                        nombreUnite = relative_M1produit.nombreUniteInt,
                         isSelected = isSelected,
                         compactMode = compactMode,
                         onClick = {
@@ -131,6 +132,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                     TariffItem(
                         tariff = tariff,
                         prix = prix,
+                        nombreUnite = relative_M1produit.nombreUniteInt,
                         isSelected = isSelected,
                         compactMode = compactMode,
                         onClick = { onTariffSelected(tariff) }
@@ -147,12 +149,14 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
  *
  * FIXED: When price is edited, the tariff is automatically selected via onPriceUpdated callback
  * FIXED: Now uses Icon_Outlined composable instead of passing icon directly
- * FIXED TODO(1): Text is now smallest possible size in compact mode (7.sp)
+ * FIXED: Text is now smallest possible size in compact mode (7.sp)
+ * FIXED: Calculates unit price when nombreUnite > 1
  */
 @Composable
 private fun EditableProgressiveTariffItem(
     tariff: M13TarificationInfos,
     prix: Double,
+    nombreUnite: Int,
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit,
@@ -161,70 +165,133 @@ private fun EditableProgressiveTariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 4.dp else 16.dp
-    // FIXED: Smallest possible font size in compact mode
     val fontSize = if (compactMode) 7.sp else 10.sp
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    Row(
-        modifier = Modifier
-            .clip(CircleShape)
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = CircleShape
+    // Calculate unit price if nombreUnite > 1
+    val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
+
+    // Use Column in compact mode when nombreUnite > 1, otherwise Row
+    if (compactMode && nombreUnite > 1) {
+        Column(
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = CircleShape
+                )
+                .background(
+                    color = tariff.typeChoisi.couleur.copy(
+                        alpha = if (isSelected) 1f else 0.9f
+                    ),
+                    shape = CircleShape
+                )
+                .clickable(onClick = onClick)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Price with editable component
+            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                start_count = prix,
+                standard_count = prix,
+                isAvailable = true,
+                compact_taille = compactMode,
+                iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
+                    {
+                        Icon_Outlined(
+                            icon = icon,
+                            size = iconSize,
+                            tint = tariff.typeChoisi.couleur_Text
+                        )
+                    }
+                },
+                modifier = Modifier
+            ) { newPrice ->
+                onPriceUpdated(newPrice)
+            }
+
+            // Unit price on new line
+            Text(
+                text = String.format("(%.0f/u)", prixUnitaire),
+                color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
+                fontSize = (fontSize.value - 1).sp
             )
-            .background(
-                color = tariff.typeChoisi.couleur.copy(
-                    alpha = if (isSelected) 1f else 0.9f
-                ),
-                shape = CircleShape
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Price with editable component, now with Icon_Outlined composable
-        Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-            start_count = prix,
-            standard_count = prix,
-            isAvailable = true,
-            compact_taille = compactMode,
-            iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
-                {
-                    Icon_Outlined(
-                        icon = icon,
-                        size = iconSize,
-                        tint = tariff.typeChoisi.couleur_Text
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = CircleShape
+                )
+                .background(
+                    color = tariff.typeChoisi.couleur.copy(
+                        alpha = if (isSelected) 1f else 0.9f
+                    ),
+                    shape = CircleShape
+                )
+                .clickable(onClick = onClick)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Price with editable component, now with Icon_Outlined composable
+            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                start_count = prix,
+                standard_count = prix,
+                isAvailable = true,
+                compact_taille = compactMode,
+                iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
+                    {
+                        Icon_Outlined(
+                            icon = icon,
+                            size = iconSize,
+                            tint = tariff.typeChoisi.couleur_Text
+                        )
+                    }
+                },
+                modifier = Modifier
+            ) { newPrice ->
+                // When user edits the price, update and auto-select this tariff
+                onPriceUpdated(newPrice)
+            }
+
+            if (!compactMode) {
+                // Show unit price if nombreUnite > 1
+                if (nombreUnite > 1) {
+                    Text(
+                        text = String.format("DA/p.u (%.0f/u)", prixUnitaire),
+                        color = tariff.typeChoisi.couleur_Text,
+                        fontSize = fontSize
+                    )
+                } else {
+                    Text(
+                        text = "DA/p.u",
+                        color = tariff.typeChoisi.couleur_Text,
+                        fontSize = fontSize
                     )
                 }
-            },
-            modifier = Modifier
-        ) { newPrice ->
-            // When user edits the price, update and auto-select this tariff
-            onPriceUpdated(newPrice)
-        }
-
-        if (!compactMode) {
-            Text(
-                text = "DA/p.u",
-                color = tariff.typeChoisi.couleur_Text,
-                fontSize = fontSize
-            )
+            }
         }
     }
 }
 
 /**
- * FIXED TODO(1):
+ * FIXED:
  * - Always displays price with tint color when number > 1
  * - Uses line break (Column layout) in compact mode to show price on separate line
+ * - Calculates and displays unit price when nombreUnite > 1
  */
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
     prix: Double,
+    nombreUnite: Int,
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit
@@ -233,14 +300,17 @@ private fun TariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 14.dp else 16.dp
-    // FIXED: Smallest possible font size in compact mode
     val fontSize = if (compactMode) 7.sp else 10.sp
 
     // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    // FIXED: Use Column in compact mode for line break, Row otherwise
+    // Calculate unit price if nombreUnite > 1
+    val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
+
+    // FIXED: Always show both prices when nombreUnite > 1
+    // Use Column in compact mode for line break, Row otherwise
     if (compactMode) {
         Column(
             modifier = Modifier
@@ -273,12 +343,21 @@ private fun TariffItem(
                 )
             }
 
-            // FIXED: Price on new line in compact mode with tint color
+            // Always show total price
             Text(
                 text = String.format("%.0f", prix),
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize
             )
+
+            // Always show unit price if nombreUnite > 1
+            if (nombreUnite > 1) {
+                Text(
+                    text = String.format("(%.0f/u)", prixUnitaire),
+                    color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
+                    fontSize = (fontSize.value - 1).sp
+                )
+            }
         }
     } else {
         Row(
@@ -319,12 +398,20 @@ private fun TariffItem(
                 fontSize = fontSize
             )
 
-            // Price with tint color
-            Text(
-                text = String.format("%.0f DA/p.u", prix),
-                color = tariff.typeChoisi.couleur_Text,
-                fontSize = fontSize
-            )
+            // Always show both prices if nombreUnite > 1
+            if (nombreUnite > 1) {
+                Text(
+                    text = String.format("%.0f DA/p.u (%.0f/u)", prix, prixUnitaire),
+                    color = tariff.typeChoisi.couleur_Text,
+                    fontSize = fontSize
+                )
+            } else {
+                Text(
+                    text = String.format("%.0f DA/p.u", prix),
+                    color = tariff.typeChoisi.couleur_Text,
+                    fontSize = fontSize
+                )
+            }
         }
     }
 }
