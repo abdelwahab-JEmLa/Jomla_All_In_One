@@ -151,6 +151,9 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
  * FIXED: Now uses Icon_Outlined composable instead of passing icon directly
  * FIXED: Text is now smallest possible size in compact mode (7.sp)
  * FIXED: Calculates unit price when nombreUnite > 1
+ * FIXED: Shows pack price as integer (no .00) and unit price with decimals
+ * FIXED: Increased text size in non-compact mode to 12.sp for better readability
+ * FIXED: Corrected component API usage - removed content lambda, uses proper parameters
  */
 @Composable
 private fun EditableProgressiveTariffItem(
@@ -165,7 +168,7 @@ private fun EditableProgressiveTariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 4.dp else 16.dp
-    val fontSize = if (compactMode) 7.sp else 10.sp
+    val fontSize = if (compactMode) 7.sp else 12.sp
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
@@ -193,29 +196,27 @@ private fun EditableProgressiveTariffItem(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Price with editable component
-            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                start_count = prix,
-                standard_count = prix,
-                isAvailable = true,
-                compact_taille = compactMode,
-                iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
-                    {
-                        Icon_Outlined(
-                            icon = icon,
-                            size = iconSize,
-                            tint = tariff.typeChoisi.couleur_Text
-                        )
-                    }
-                },
-                modifier = Modifier
-            ) { newPrice ->
-                onPriceUpdated(newPrice)
+            // Icon
+            tariff.typeChoisi.iconVector?.let { icon ->
+                Icon_Outlined(
+                    icon = icon,
+                    size = iconSize,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier.clip(CircleShape)
+                )
             }
 
-            // Unit price on new line
+            // Editable price field
+            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                start_count = prix,
+                compact_taille = compactMode,
+                textSize = fontSize,
+                on_Data_Update = onPriceUpdated
+            )
+
+            // Unit price with 2 decimals for precision
             Text(
-                text = String.format("(%.0f/u)", prixUnitaire),
+                text = String.format("(%.2f/u)", prixUnitaire),
                 color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
                 fontSize = (fontSize.value - 1).sp
             )
@@ -240,42 +241,38 @@ private fun EditableProgressiveTariffItem(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Price with editable component, now with Icon_Outlined composable
-            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                start_count = prix,
-                standard_count = prix,
-                isAvailable = true,
-                compact_taille = compactMode,
-                iconComposable = tariff.typeChoisi.iconVector?.let { icon ->
-                    {
-                        Icon_Outlined(
-                            icon = icon,
-                            size = iconSize,
-                            tint = tariff.typeChoisi.couleur_Text
-                        )
-                    }
-                },
-                modifier = Modifier
-            ) { newPrice ->
-                // When user edits the price, update and auto-select this tariff
-                onPriceUpdated(newPrice)
+            // Icon
+            tariff.typeChoisi.iconVector?.let { icon ->
+                Icon_Outlined(
+                    icon = icon,
+                    size = iconSize,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier.clip(CircleShape)
+                )
             }
 
-            if (!compactMode) {
-                // Show unit price if nombreUnite > 1
-                if (nombreUnite > 1) {
-                    Text(
-                        text = String.format("DA/p.u (%.0f/u)", prixUnitaire),
-                        color = tariff.typeChoisi.couleur_Text,
-                        fontSize = fontSize
-                    )
-                } else {
-                    Text(
-                        text = "DA/p.u",
-                        color = tariff.typeChoisi.couleur_Text,
-                        fontSize = fontSize
-                    )
-                }
+            // Editable price field
+            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                start_count = prix,
+                compact_taille = compactMode,
+                textSize = fontSize,
+                on_Data_Update = onPriceUpdated
+            )
+
+            // Display the label text separately
+            if (nombreUnite > 1) {
+                // Unit price with 2 decimals
+                Text(
+                    text = String.format("DA/p.u (%.2f/u)", prixUnitaire),
+                    color = tariff.typeChoisi.couleur_Text,
+                    fontSize = fontSize
+                )
+            } else {
+                Text(
+                    text = "DA/p.u",
+                    color = tariff.typeChoisi.couleur_Text,
+                    fontSize = fontSize
+                )
             }
         }
     }
@@ -286,6 +283,7 @@ private fun EditableProgressiveTariffItem(
  * - Always displays price with tint color when number > 1
  * - Uses line break (Column layout) in compact mode to show price on separate line
  * - Calculates and displays unit price when nombreUnite > 1
+ * - Increased text size in non-compact mode to 12.sp for better readability
  */
 @Composable
 private fun TariffItem(
@@ -300,7 +298,7 @@ private fun TariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 14.dp else 16.dp
-    val fontSize = if (compactMode) 7.sp else 10.sp
+    val fontSize = if (compactMode) 7.sp else 12.sp
 
     // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
