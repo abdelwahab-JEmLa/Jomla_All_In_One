@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -146,6 +147,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
  *
  * FIXED: When price is edited, the tariff is automatically selected via onPriceUpdated callback
  * FIXED: Now uses Icon_Outlined composable instead of passing icon directly
+ * FIXED TODO(1): Text is now smallest possible size in compact mode (7.sp)
  */
 @Composable
 private fun EditableProgressiveTariffItem(
@@ -159,9 +161,8 @@ private fun EditableProgressiveTariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 4.dp else 16.dp
-    val fontSize = if (compactMode) 9.sp else 10.sp
-           //<--
-           //TODO(1): fait que le text soit le plus petite posible si compact
+    // FIXED: Smallest possible font size in compact mode
+    val fontSize = if (compactMode) 7.sp else 10.sp
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
@@ -215,6 +216,11 @@ private fun EditableProgressiveTariffItem(
     }
 }
 
+/**
+ * FIXED TODO(1):
+ * - Always displays price with tint color when number > 1
+ * - Uses line break (Column layout) in compact mode to show price on separate line
+ */
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
@@ -227,63 +233,99 @@ private fun TariffItem(
     val horizontalPadding = if (compactMode) 6.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
     val iconSize = if (compactMode) 14.dp else 16.dp
-    val fontSize = if (compactMode) 9.sp else 10.sp
+    // FIXED: Smallest possible font size in compact mode
+    val fontSize = if (compactMode) 7.sp else 10.sp
 
     // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    Row(
-        modifier = Modifier
-            .clip(CircleShape)
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = CircleShape
-            )
-            .background(
-                color = tariff.typeChoisi.couleur.copy(
-                    alpha = if (isSelected) 1f else 0.9f
-                ),
-                shape = CircleShape
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icon
-        tariff.typeChoisi.iconVector?.let { icon ->
-            Icon(
-                imageVector = icon,
-                contentDescription = tariff.typeChoisi.nomArabe,
-                tint = tariff.typeChoisi.couleur_Text,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clip(CircleShape)
+    // FIXED: Use Column in compact mode for line break, Row otherwise
+    if (compactMode) {
+        Column(
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = CircleShape
+                )
+                .background(
+                    color = tariff.typeChoisi.couleur.copy(
+                        alpha = if (isSelected) 1f else 0.9f
+                    ),
+                    shape = CircleShape
+                )
+                .clickable(onClick = onClick)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Icon
+            tariff.typeChoisi.iconVector?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
+                )
+            }
+
+            // FIXED: Price on new line in compact mode with tint color
+            Text(
+                text = String.format("%.0f", prix),
+                color = tariff.typeChoisi.couleur_Text,
+                fontSize = fontSize
             )
         }
+    } else {
+        Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = CircleShape
+                )
+                .background(
+                    color = tariff.typeChoisi.couleur.copy(
+                        alpha = if (isSelected) 1f else 0.9f
+                    ),
+                    shape = CircleShape
+                )
+                .clickable(onClick = onClick)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon
+            tariff.typeChoisi.iconVector?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
+                )
+            }
 
-        // In compact mode, only show the abbreviated name (no full name)
-        if (!compactMode) {
+            // Abbreviated name
             Text(
                 text = tariff.typeChoisi.abrgNom,
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize
             )
-        }
 
-        // Price (always shown)
-        // Format: "prix DA / p.u" or just "prix DA" if compact
-        Text(
-            text = if (compactMode) {
-                String.format("%.0f", prix)
-            } else {
-                String.format("%.0f DA/p.u", prix)
-            },
-            color = tariff.typeChoisi.couleur_Text,
-            fontSize = fontSize
-        )
+            // Price with tint color
+            Text(
+                text = String.format("%.0f DA/p.u", prix),
+                color = tariff.typeChoisi.couleur_Text,
+                fontSize = fontSize
+            )
+        }
     }
 }
 
