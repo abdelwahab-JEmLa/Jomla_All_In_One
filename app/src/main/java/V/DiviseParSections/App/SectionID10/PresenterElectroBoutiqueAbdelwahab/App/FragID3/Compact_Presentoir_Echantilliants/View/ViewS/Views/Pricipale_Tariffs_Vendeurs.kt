@@ -31,13 +31,6 @@ import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 import java.util.Locale
 
-// ============================================================================
-// CONSTANTS - Text Sizes
-// ============================================================================
-
-/**
- * Text size constants for compact and normal display modes
- */
 private object TariffTextSizes {
     // Compact mode sizes
     val COMPACT_MAIN_TEXT = 15.sp
@@ -54,14 +47,6 @@ private object TariffTextSizes {
     val NORMAL_VERTICAL_PADDING = 8.dp
     val NORMAL_ICON_SIZE = 20.dp
 }
-
-// ============================================================================
-// PUBLIC INTERFACE
-// ============================================================================
-
-/**
- * Main composable for displaying tariffs with selection
- */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
@@ -73,11 +58,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
 ) {
-    // Get current app mode
     val isGrossistMode = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
-
-    // Filter tariffs based on app mode
-    // Only show tariffs that match the current app mode (its_gro_app flag)
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
     }
@@ -102,13 +83,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     }
 }
 
-// ============================================================================
-// INTERNAL COMPONENTS
-// ============================================================================
-
-/**
- * Wrapper component that handles tariff selection and delegates to appropriate display component
- */
 @Composable
 private fun TariffItemSelector(
     tariff: M13TarificationInfos,
@@ -154,9 +128,6 @@ private fun TariffItemSelector(
     }
 }
 
-/**
- * Handles the update of progressive tariff prices
- */
 private fun handleProgressivePriceUpdate(
     tariff: M13TarificationInfos,
     newPrice: Double,
@@ -197,26 +168,9 @@ private fun handleProgressivePriceUpdate(
     aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
 }
 
-/**
- * Helper function to format price display
- */
 private fun formatPrice(price: Double): String {
     return String.format(Locale.getDefault(), "%.0f", price)
 }
-
-/**
- * Helper function to format currency display
- */
-private fun formatCurrency(price: Double): String {
-    return "${formatPrice(price)} DA"
-}
-
-/**
- * Creates or retrieves a progressive tariff with the given price
- */
-// ============================================================================
-// Editable Progressive Tariff Component
-// ============================================================================
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -302,10 +256,6 @@ private fun EditableProgressiveTariffItem(
         }
     }
 }
-
-// ============================================================================
-// Regular Tariff Item Component
-// ============================================================================
 
 @Composable
 private fun TariffItem(
