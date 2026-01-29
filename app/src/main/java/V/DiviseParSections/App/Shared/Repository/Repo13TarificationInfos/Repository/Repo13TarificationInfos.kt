@@ -239,9 +239,9 @@ data class M13TarificationInfos(
 
         Tariff_ItsWorkInGrossist_Gro(
             Icons.Filled.Person,
-            Color(0xFFCDDC39),
+            Color(0xFFFF5722),
             "سعر النصف جملة",
-            Color(0xFF2196F3),
+            Color(0xFFE6E8EA),
             4,
             "نصف",
             its_gro_app = true  // Only shown in grossist app
@@ -260,7 +260,7 @@ data class M13TarificationInfos(
 
         DEFIN_OLd(
             Icons.Filled.Edit,
-            Color(0xFFFFEB3B),
+            Color(0xFF03A9F4),
             "قديم",
             Color.Black,
             0,
@@ -280,10 +280,10 @@ data class M13TarificationInfos(
 
         Historique(
             Icons.Filled.History,
-            Color(0xFF2196F3),
+            Color(0xFF9C27B0),
             "السعر الأخير",
             Color.White,
-            2,
+            5,
             "أخير",
             its_gro_app = false
         ),
@@ -293,14 +293,14 @@ data class M13TarificationInfos(
             Color(0xFF000000),
             "عرض + السوبر جملة",
             Color.Red,
-            1,
+            2,
             "عرض",
             its_gro_app = false
         ),
 
         Edited_Pour_Client(
             Icons.Filled.Edit,
-            Color(0xFFEEEEEE),
+            Color(0xFF4CAF50),
             "سعر انتقالي",
             Color.Black,
             3,
@@ -320,7 +320,7 @@ data class M13TarificationInfos(
 
         Prix_Detaille(
             Icons.Filled.Person,
-            Color(0xFFCDDC39),
+            Color(0xFFFFC107),
             "سعر التجزئة",
             Color.Black,
             4,
