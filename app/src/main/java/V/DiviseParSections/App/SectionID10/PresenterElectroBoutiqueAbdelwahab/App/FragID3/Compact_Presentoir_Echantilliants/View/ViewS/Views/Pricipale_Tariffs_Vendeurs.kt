@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -46,7 +45,12 @@ private object TariffTextSizes {
     val NORMAL_HORIZONTAL_PADDING = 12.dp
     val NORMAL_VERTICAL_PADDING = 8.dp
     val NORMAL_ICON_SIZE = 20.dp
+
+    // FIXED: Border widths for selected state
+    val SELECTED_BORDER_WIDTH = 3.dp  // Thicker border for selected items
+    val UNSELECTED_BORDER_WIDTH = 0.dp
 }
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
@@ -207,9 +211,20 @@ private fun EditableProgressiveTariffItem(
         TariffTextSizes.NORMAL_MAIN_TEXT
     }
 
-    // Use stable border width calculation to prevent flickering
-    val borderWidth = if (isSelected) 2.dp else 0.dp
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+    // FIXED: Thicker border and red color for selected items
+    val borderWidth = if (isSelected) {
+        TariffTextSizes.SELECTED_BORDER_WIDTH
+    } else {
+        TariffTextSizes.UNSELECTED_BORDER_WIDTH
+    }
+    val borderColor = if (isSelected) Color.Red else Color.Transparent
+
+    // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
+    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+    } else {
+        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+    }
 
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
@@ -223,9 +238,7 @@ private fun EditableProgressiveTariffItem(
                 shape = CircleShape
             )
             .background(
-                color = tariff.typeChoisi.couleur.copy(
-                    alpha = if (isSelected) 1f else 0.9f
-                ),
+                color = backgroundColor,
                 shape = CircleShape
             )
             .clickable(onClick = onClick)
@@ -241,7 +254,7 @@ private fun EditableProgressiveTariffItem(
             },
             compact_taille = compactMode,
             textSize = fontSize,
-            containerColor = tariff.typeChoisi.couleur,
+            containerColor = backgroundColor,
             textColor = tariff.typeChoisi.couleur_Text,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
@@ -295,9 +308,20 @@ private fun TariffItem(
         TariffTextSizes.NORMAL_SECONDARY_TEXT
     }
 
-    // Use stable border width calculation to prevent flickering
-    val borderWidth = if (isSelected) 2.dp else 0.dp
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+    // FIXED: Thicker border and red color for selected items
+    val borderWidth = if (isSelected) {
+        TariffTextSizes.SELECTED_BORDER_WIDTH
+    } else {
+        TariffTextSizes.UNSELECTED_BORDER_WIDTH
+    }
+    val borderColor = if (isSelected) Color.Red else Color.Transparent
+
+    // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
+    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+    } else {
+        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+    }
 
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
@@ -314,9 +338,7 @@ private fun TariffItem(
                     shape = CircleShape
                 )
                 .background(
-                    color = tariff.typeChoisi.couleur.copy(
-                        alpha = if (isSelected) 1f else 0.9f
-                    ),
+                    color = backgroundColor,
                     shape = CircleShape
                 )
                 .clickable(onClick = onClick)
@@ -355,9 +377,7 @@ private fun TariffItem(
                     shape = CircleShape
                 )
                 .background(
-                    color = tariff.typeChoisi.couleur.copy(
-                        alpha = if (isSelected) 1f else 0.9f
-                    ),
+                    color = backgroundColor,
                     shape = CircleShape
                 )
                 .clickable(onClick = onClick)
