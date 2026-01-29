@@ -57,7 +57,8 @@ fun Item_Produit_FragID3(
 
     val relative_list_M10operation_Vent = remember(
         relative_M1produit.keyID,
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size
+        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
+
     ) {
         derivedStateOf {
             focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent

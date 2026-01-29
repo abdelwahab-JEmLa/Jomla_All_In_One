@@ -268,7 +268,7 @@ fun ScrollableInformationBanner(
                     painter = painterResource(id = R.drawable.ecole_logo1),
                     contentDescription = "School Logo",
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(140.dp)
                         .background(
                             color = MaterialTheme.colorScheme.surface,
                             shape = RoundedCornerShape(8.dp)
@@ -277,7 +277,7 @@ fun ScrollableInformationBanner(
                     contentScale = ContentScale.Fit
                 )
 
-                Column(
+             /*   Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -291,7 +291,7 @@ fun ScrollableInformationBanner(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
-                }
+                }           */
             }
         }
 
