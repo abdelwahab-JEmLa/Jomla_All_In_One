@@ -251,7 +251,7 @@ fun A_Item_Produit_FragID4(
                                 newTariff
                             )
                         },
-                        datasValue = datasValue,
+                        list_tariffs = datasValue,
                         isThisProductExpanded = isThisProductExpanded,
                         on_pour_send_data = on_pour_send_data
                     )

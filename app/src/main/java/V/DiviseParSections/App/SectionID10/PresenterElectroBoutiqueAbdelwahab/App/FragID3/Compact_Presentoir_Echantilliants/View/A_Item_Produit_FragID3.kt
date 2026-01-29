@@ -103,7 +103,6 @@ fun Item_Produit_FragID3(
         }
     }
 
-    // Get distinct tariffs by type, keeping the most recent one for each type
     val datasValue_distinct_type = remember(repositorysMainGetter.repo13TarificationInfos.datasValue) {
         repositorysMainGetter.repo13TarificationInfos.datasValue
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
@@ -116,9 +115,7 @@ fun Item_Produit_FragID3(
             .filterNotNull()
     }
 
-    // Third priority: Based on app type
     val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-        // For retail app: try retail price, then super gro, then achat
         val retailTariff = datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -133,7 +130,6 @@ fun Item_Produit_FragID3(
 
         retailTariff ?: superGroTariff
     } else {
-        // For grossist app: try super gro
         datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -141,15 +137,7 @@ fun Item_Produit_FragID3(
         }
     }
 
-    /**
-     * Algorithm to select the best tariff for this product based on priority:
-     * 1. Active operation tariff
-     * 2. Historical tariff for current client
-     * 3. Fallback tariff based on app type
-     * 4. Default tariff if none found
-     */
     fun algoritme_choisiser_tariff(): M13TarificationInfos {
-        // First priority: Active operation tariff
         relative_list_M10operation_Vent.value?.let { operation ->
             val operationTariff = datasValue_distinct_type.find { tariff ->
                 tariff.keyID == operation.parentM13TarificationKeyID &&
@@ -279,8 +267,11 @@ fun Item_Produit_FragID3(
                     modifier = modifier
                 )
 
-                Big_Principale_FragID3(
+                val filteredAndSortedTariffs = datasValue_distinct_type
+                    .filter { it.prixCurrency != 0.0 }  // Remove tariffs with price == 0
+                    .sortedByDescending { it.prixCurrency }  // Sort by profitability score from enum
 
+                Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
                     relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
@@ -293,7 +284,7 @@ fun Item_Produit_FragID3(
                             newTariff
                         )
                     },
-                    datasValue = datasValue_distinct_type,
+                    tariffsList = filteredAndSortedTariffs,  // FIXED: Now filtered and sorted
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = isHostPhone,
                     on_pour_send_data = on_pour_send_data

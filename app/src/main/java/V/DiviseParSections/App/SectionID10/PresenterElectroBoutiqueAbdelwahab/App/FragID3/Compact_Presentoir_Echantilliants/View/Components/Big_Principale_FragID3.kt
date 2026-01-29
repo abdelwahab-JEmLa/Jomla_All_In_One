@@ -75,7 +75,7 @@ fun Big_Principale_FragID3(
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
-    datasValue: List<M13TarificationInfos>,
+    tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit,
@@ -115,7 +115,7 @@ fun Big_Principale_FragID3(
 
             Pricipale_Tariffs_Vendeurs_FragID3(
                 relative_M1produit = relative_M1produit,
-                tariffsList = datasValue,
+                tariffsList = tariffsList,
                 selectedTariff = selectedTariff,
                 onTariffSelected = onTariffSelected,
                 compactMode = !isThisProductExpanded

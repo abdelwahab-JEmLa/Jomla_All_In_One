@@ -33,7 +33,7 @@ fun Big_Principale_FragID4(
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    datasValue: List<M13TarificationInfos>,
+    list_tariffs: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier
@@ -69,7 +69,7 @@ fun Big_Principale_FragID4(
 
             Pricipale_Tariffs_Vendeurs_FragID3(
                 relative_M1produit = relative_M1produit,
-                tariffsList = datasValue,
+                tariffsList = list_tariffs,
                 selectedTariff = selectedTariff,
                 onTariffSelected = onTariffSelected,
                 compactMode = !isThisProductExpanded
