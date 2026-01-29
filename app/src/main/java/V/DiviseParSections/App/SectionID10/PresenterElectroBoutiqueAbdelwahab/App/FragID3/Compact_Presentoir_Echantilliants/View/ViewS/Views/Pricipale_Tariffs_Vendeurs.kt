@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -29,16 +30,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
+// ============================================================================
+// CONSTANTS - Text Sizes
+// ============================================================================
+
 /**
- * Displays tariff information for a product with selection capability
- *
- * @param relative_M1produit The product to display tariffs for
- * @param tariffsList List of all available tariffs
- * @param selectedTariff The currently selected tariff for this product
- * @param onTariffSelected Callback when a tariff is selected
- * @param compactMode Whether to use compact display (removes names and reduces size)
- * @param aCentralFacade Central facade for repository access
+ * Text size constants for compact and normal display modes
  */
+private object TariffTextSizes {
+    // Compact mode sizes
+    val COMPACT_MAIN_TEXT = 15.sp
+    val COMPACT_SECONDARY_TEXT = 6.sp
+    val COMPACT_ICON_SIZE = 4.dp
+    val COMPACT_ICON_SIZE_TARIFF_ITEM = 14.dp
+
+    // Normal mode sizes
+    val NORMAL_MAIN_TEXT = 12.sp
+    val NORMAL_SECONDARY_TEXT = 11.sp
+    val NORMAL_ICON_SIZE = 16.dp
+
+    // Padding constants
+    val COMPACT_HORIZONTAL_PADDING = 6.dp
+    val COMPACT_VERTICAL_PADDING = 2.dp
+    val NORMAL_HORIZONTAL_PADDING = 8.dp
+    val NORMAL_VERTICAL_PADDING = 4.dp
+
+    val COMPACT_CONTAINER_PADDING = 2.dp
+    val NORMAL_CONTAINER_PADDING = 4.dp
+}
+
+/**
+ * Helper function to format price - shows decimals only if needed
+ * FIXED: Doesn't display .00 for whole numbers
+ */
+private fun formatPrice(prix: Double): String {
+    return if (prix % 1.0 == 0.0) {
+        // Whole number - no decimals
+        prix.toInt().toString()
+    } else {
+        // Has decimals - show up to 2 decimal places, removing trailing zeros
+        String.format("%.2f", prix).trimEnd('0').trimEnd('.')
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
@@ -88,8 +122,12 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         return
     }
 
-    // Adjust padding based on compact mode
-    val containerPadding = if (compactMode) 2.dp else 4.dp
+    // Adjust padding based on compact mode - using constants
+    val containerPadding = if (compactMode) {
+        TariffTextSizes.COMPACT_CONTAINER_PADDING
+    } else {
+        TariffTextSizes.NORMAL_CONTAINER_PADDING
+    }
 
     // Use FlowRow to wrap items when space is not available
     FlowRow(
@@ -126,16 +164,20 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                             aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
 
                             onTariffSelected(updatedTariff)
-                        }
+                        },
+                        // FIXED: Added fillMaxWidth modifier in compact mode
+                        modifier = if (compactMode) Modifier.fillMaxWidth() else Modifier
                     )
                 } else {
+                    // FIXED: TODO resolved - Added fillMaxWidth modifier in compact mode
                     TariffItem(
                         tariff = tariff,
                         prix = prix,
                         nombreUnite = relative_M1produit.nombreUniteInt,
                         isSelected = isSelected,
                         compactMode = compactMode,
-                        onClick = { onTariffSelected(tariff) }
+                        onClick = { onTariffSelected(tariff) },
+                        modifier = if (compactMode) Modifier.fillMaxWidth() else Modifier
                     )
                 }
             }
@@ -151,22 +193,45 @@ private fun EditableProgressiveTariffItem(
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit,
-    onPriceUpdated: (Double) -> Unit
+    onPriceUpdated: (Double) -> Unit,
+    modifier: Modifier = Modifier  // FIXED: Added modifier parameter to accept fillMaxWidth
 ) {
-    val horizontalPadding = if (compactMode) 6.dp else 8.dp
-    val verticalPadding = if (compactMode) 2.dp else 4.dp
-    val iconSize = if (compactMode) 4.dp else 16.dp
-    val fontSize = if (compactMode) 7.sp else 12.sp
+    // Using constants for sizes
+    val horizontalPadding = if (compactMode) {
+        TariffTextSizes.COMPACT_HORIZONTAL_PADDING
+    } else {
+        TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    }
+    val verticalPadding = if (compactMode) {
+        TariffTextSizes.COMPACT_VERTICAL_PADDING
+    } else {
+        TariffTextSizes.NORMAL_VERTICAL_PADDING
+    }
+    val iconSize = if (compactMode) {
+        TariffTextSizes.COMPACT_ICON_SIZE
+    } else {
+        TariffTextSizes.NORMAL_ICON_SIZE
+    }
+    val fontSize = if (compactMode) {
+        TariffTextSizes.COMPACT_MAIN_TEXT
+    } else {
+        TariffTextSizes.NORMAL_MAIN_TEXT
+    }
+    val secondaryFontSize = if (compactMode) {
+        TariffTextSizes.COMPACT_SECONDARY_TEXT
+    } else {
+        TariffTextSizes.NORMAL_SECONDARY_TEXT
+    }
+
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
-    // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
-    // Use Column in compact mode when nombreUnite > 1, otherwise Row
-    if (compactMode && nombreUnite > 1) {
+    if (compactMode) {
         Column(
-            modifier = Modifier
+            // FIXED: Now using the passed modifier which includes fillMaxWidth() when needed
+            modifier = modifier
                 .clip(CircleShape)
                 .border(
                     width = borderWidth,
@@ -184,34 +249,46 @@ private fun EditableProgressiveTariffItem(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Icon
             tariff.typeChoisi.iconVector?.let { icon ->
-                Icon_Outlined(
-                    icon = icon,
-                    size = iconSize,
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
                     tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier.clip(CircleShape)
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
                 )
             }
 
-            // Editable price field
             Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                start_count = prix,
+                value = prix,
+                standard_count = 1.0,
+                Icon_Outlined_p0 = Icon_Outlined(
+                    icon = tariff.typeChoisi.iconVector!!,
+                    size = iconSize,
+                    color = tariff.typeChoisi.couleur_Text
+                ),
+                isAvailable = true,
                 compact_taille = compactMode,
                 textSize = fontSize,
-                on_Data_Update = onPriceUpdated
+                showDecimals = !(prix % 1.0 == 0.0),
+                decimalPlaces = 2,
+                onValueChanged = { newPrice ->
+                    onPriceUpdated(newPrice)
+                }
             )
 
-            // Unit price with 2 decimals for precision
-            Text(
-                text = String.format("(%.2f/u)", prixUnitaire),
-                color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
-                fontSize = (fontSize.value - 1).sp
-            )
+            if (nombreUnite > 1) {
+                Text(
+                    text = "(${formatPrice(prixUnitaire)}/u)",
+                    color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
+                    fontSize = secondaryFontSize
+                )
+            }
         }
     } else {
         Row(
-            modifier = Modifier
+            modifier = modifier  // FIXED: Using the passed modifier
                 .clip(CircleShape)
                 .border(
                     width = borderWidth,
@@ -229,29 +306,44 @@ private fun EditableProgressiveTariffItem(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
             tariff.typeChoisi.iconVector?.let { icon ->
-                Icon_Outlined(
-                    icon = icon,
-                    size = iconSize,
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
                     tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier.clip(CircleShape)
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
                 )
             }
 
-            // Editable price field
-            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                start_count = prix,
-                compact_taille = compactMode,
-                textSize = fontSize,
-                on_Data_Update = onPriceUpdated
+            Text(
+                text = tariff.typeChoisi.abrgNom,
+                color = tariff.typeChoisi.couleur_Text,
+                fontSize = fontSize
             )
 
-            // Display the label text separately
+            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                value = prix,
+                standard_count = 1.0,
+                Icon_Outlined_p0 = Icon_Outlined(
+                    icon = tariff.typeChoisi.iconVector!!,
+                    size = iconSize,
+                    color = tariff.typeChoisi.couleur_Text
+                ),
+                isAvailable = true,
+                compact_taille = compactMode,
+                textSize = fontSize,
+                showDecimals = !(prix % 1.0 == 0.0),
+                decimalPlaces = 2,
+                onValueChanged = { newPrice ->
+                    onPriceUpdated(newPrice)
+                }
+            )
+
             if (nombreUnite > 1) {
-                // Unit price with 2 decimals
                 Text(
-                    text = String.format("DA/p.u (%.2f/u)", prixUnitaire),
+                    text = "(${formatPrice(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )
@@ -273,13 +365,35 @@ private fun TariffItem(
     nombreUnite: Int,
     isSelected: Boolean,
     compactMode: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier  // FIXED: Added modifier parameter
 ) {
-    // Adjust sizes based on compact mode
-    val horizontalPadding = if (compactMode) 6.dp else 8.dp
-    val verticalPadding = if (compactMode) 2.dp else 4.dp
-    val iconSize = if (compactMode) 14.dp else 16.dp
-    val fontSize = if (compactMode) 7.sp else 12.sp
+    // Using constants for sizes
+    val horizontalPadding = if (compactMode) {
+        TariffTextSizes.COMPACT_HORIZONTAL_PADDING
+    } else {
+        TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    }
+    val verticalPadding = if (compactMode) {
+        TariffTextSizes.COMPACT_VERTICAL_PADDING
+    } else {
+        TariffTextSizes.NORMAL_VERTICAL_PADDING
+    }
+    val iconSize = if (compactMode) {
+        TariffTextSizes.COMPACT_ICON_SIZE_TARIFF_ITEM
+    } else {
+        TariffTextSizes.NORMAL_ICON_SIZE
+    }
+    val fontSize = if (compactMode) {
+        TariffTextSizes.COMPACT_MAIN_TEXT
+    } else {
+        TariffTextSizes.NORMAL_MAIN_TEXT
+    }
+    val secondaryFontSize = if (compactMode) {
+        TariffTextSizes.COMPACT_SECONDARY_TEXT
+    } else {
+        TariffTextSizes.NORMAL_SECONDARY_TEXT
+    }
 
     // Use stable border width calculation to prevent flickering
     val borderWidth = if (isSelected) 2.dp else 0.dp
@@ -292,7 +406,7 @@ private fun TariffItem(
     // Use Column in compact mode for line break, Row otherwise
     if (compactMode) {
         Column(
-            modifier = Modifier
+            modifier = modifier  // FIXED: Using the passed modifier which includes fillMaxWidth() in compact mode
                 .clip(CircleShape)
                 .border(
                     width = borderWidth,
@@ -312,35 +426,28 @@ private fun TariffItem(
         ) {
             // Icon
             tariff.typeChoisi.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = tariff.typeChoisi.nomArabe,
-                    tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clip(CircleShape)
-                )
+
             }
 
-            // Always show total price
+            // Always show total price - FIXED: Smart decimal formatting
             Text(
-                text = String.format("%.0f", prix),
+                text = formatPrice(prix),
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize
             )
 
-            // Always show unit price if nombreUnite > 1
+            // Always show unit price if nombreUnite > 1 - FIXED: Smart decimal formatting
             if (nombreUnite > 1) {
                 Text(
-                    text = String.format("(%.0f/u)", prixUnitaire),
+                    text = "(${formatPrice(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
-                    fontSize = (fontSize.value - 1).sp
+                    fontSize = secondaryFontSize
                 )
             }
         }
     } else {
         Row(
-            modifier = Modifier
+            modifier = modifier  // FIXED: Using the passed modifier
                 .clip(CircleShape)
                 .border(
                     width = borderWidth,
@@ -377,16 +484,16 @@ private fun TariffItem(
                 fontSize = fontSize
             )
 
-            // Always show both prices if nombreUnite > 1
+            // Always show both prices if nombreUnite > 1 - FIXED: Smart decimal formatting
             if (nombreUnite > 1) {
                 Text(
-                    text = String.format("%.0f DA/p.u (%.0f/u)", prix, prixUnitaire),
+                    text = "${formatPrice(prix)} DA/p.u (${formatPrice(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )
             } else {
                 Text(
-                    text = String.format("%.0f DA/p.u", prix),
+                    text = "${formatPrice(prix)} DA/p.u",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )

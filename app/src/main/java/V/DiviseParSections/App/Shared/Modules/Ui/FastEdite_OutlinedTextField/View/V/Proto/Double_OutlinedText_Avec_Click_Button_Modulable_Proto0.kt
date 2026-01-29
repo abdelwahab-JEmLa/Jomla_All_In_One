@@ -3,6 +3,7 @@ package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.Vi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,25 +37,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
+ * Data class for icon configuration
+ * FIXED: Renamed parameter from imageVector to icon to match function signature
+ */
+data class Icon_Outlined(
+    val icon: ImageVector,  // FIXED: Changed from imageVector to icon
+    val size: Dp = 16.dp,
+    val color: Color = Color.Unspecified
+)
+
+/**
  * Adjustable icon component that can be customized in size and color
  *
- * @param icon The icon vector to display
- * @param size The size of the icon (default: 16.dp)
- * @param tint The color tint of the icon
+ * @param iconConfig Configuration object for the icon
  * @param modifier Optional modifier
  */
 @Composable
-fun Icon_Outlined(
-    icon: ImageVector,
-    size: Dp = 16.dp,
-    tint: Color = MaterialTheme.colorScheme.onPrimary,
+fun Icon_Outlined_Display(
+    iconConfig: Icon_Outlined,
     modifier: Modifier = Modifier
 ) {
     Icon(
-        imageVector = icon,
+        imageVector = iconConfig.icon,
         contentDescription = null,
-        tint = tint,
-        modifier = modifier.size(size)
+        tint = if (iconConfig.color != Color.Unspecified) {
+            iconConfig.color
+        } else {
+            MaterialTheme.colorScheme.onPrimary
+        },
+        modifier = modifier.size(iconConfig.size)
     )
 }
 
@@ -63,28 +74,32 @@ fun Icon_Outlined(
  * - First click: Updates to standard_count and triggers on_Data_Update
  * - Second click: Enters edit mode and shows an outlined text field
  *
- * @param start_count The initial/current count to display
+ * @param value The initial/current value to display
  * @param standard_count The count to set on first click (default: 1.0)
- * @param iconComposable Optional composable for custom icon (uses Icon_Outlined internally)
+ * @param Icon_Outlined_p0 Optional icon configuration object
  * @param isAvailable Whether the component is enabled for interaction (default: true)
  * @param compact_taille Whether to use compact sizing (reduces padding and text size)
  * @param textSize Optional custom text size (overrides the default compact/normal size)
- * @param on_Data_Update Callback when quantity needs to be updated (returns new quantity as Double)
+ * @param showDecimals Whether to show decimal places (default: true)
+ * @param decimalPlaces Number of decimal places to show when showDecimals is true (default: 2)
+ * @param onValueChanged Callback when value needs to be updated (returns new value as Double)
  * @param modifier Optional modifier for the component
  */
 @Composable
 fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-    start_count: Double,
+    value: Double,
     standard_count: Double = 1.0,
-    iconComposable: @Composable (() -> Unit)? = null,
+    Icon_Outlined_p0: Icon_Outlined? = null,
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
-    textSize: TextUnit? = null,  // FIXED: Added optional textSize parameter
+    textSize: TextUnit? = null,
+    showDecimals: Boolean = true,
+    decimalPlaces: Int = 2,
     modifier: Modifier = Modifier,
-    on_Data_Update: (Double) -> Unit
+    onValueChanged: (Double) -> Unit
 ) {
     var isEditMode by remember { mutableStateOf(false) }
-    var quantityInput by remember(start_count) { mutableStateOf("") }
+    var quantityInput by remember(value) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditMode) {
@@ -97,12 +112,25 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     val horizontalPadding = if (compact_taille) 8.dp else 12.dp
     val verticalPadding = if (compact_taille) 4.dp else 6.dp
 
-    // FIXED: Use custom textSize if provided, otherwise fall back to defaults
+    // Use custom textSize if provided, otherwise fall back to defaults
     val effectiveTextSize = textSize ?: if (compact_taille) 7.sp else 12.sp
 
     val textStyle = MaterialTheme.typography.labelMedium.copy(fontSize = effectiveTextSize)
 
-    if (isEditMode && start_count > 0) {
+    // FIXED: Format the display text based on showDecimals parameter
+    val displayText = if (showDecimals) {
+        String.format("%.${decimalPlaces}f", value)
+    } else {
+        // If the number is a whole number, show without decimals
+        if (value % 1.0 == 0.0) {
+            value.toInt().toString()
+        } else {
+            // If it has decimals, show with specified decimal places
+            String.format("%.${decimalPlaces}f", value)
+        }
+    }
+
+    if (isEditMode && value > 0) {
         // Edit mode: Show outlined text field
         OutlinedTextField(
             value = quantityInput,
@@ -122,7 +150,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             keyboardActions = KeyboardActions(
                 onDone = {
                     val newQuantity = quantityInput.toDoubleOrNull() ?: 0.0
-                    on_Data_Update(newQuantity)
+                    onValueChanged(newQuantity)
                     isEditMode = false
                 }
             ),
@@ -134,7 +162,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
         // Display mode: Show clickable card
         val containerColor = if (!isAvailable) {
             MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        } else if (start_count > 0) {
+        } else if (value > 0) {
             MaterialTheme.colorScheme.tertiary
         } else {
             MaterialTheme.colorScheme.primary
@@ -147,13 +175,14 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
         }
 
         Card(
+            // FIXED: Now the Card uses the passed modifier which can include fillMaxWidth()
             modifier = modifier
                 .clickable(enabled = isAvailable) {
                     when {
-                        start_count == 0.0 -> {
-                            on_Data_Update(standard_count)
+                        value == 0.0 -> {
+                            onValueChanged(standard_count)
                         }
-                        start_count >= standard_count -> {
+                        value >= standard_count -> {
                             isEditMode = true
                         }
                     }
@@ -162,18 +191,26 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             colors = CardDefaults.cardColors(containerColor = containerColor)
         ) {
             Row(
-                modifier = Modifier.padding(
-                    horizontal = horizontalPadding,
-                    vertical = verticalPadding
-                ),
+                // FIXED: Row now fills the width of its parent Card
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = horizontalPadding,
+                        vertical = verticalPadding
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Display custom icon composable if provided
-                iconComposable?.invoke()
+                // FIXED: Display icon using the config object if provided
+                Icon_Outlined_p0?.let { iconConfig ->
+                    Icon_Outlined_Display(
+                        iconConfig = iconConfig,
+                        modifier = Modifier
+                    )
+                }
 
                 Text(
-                    text = String.format("%.2f", start_count),
+                    text = displayText,
                     style = textStyle,
                     fontWeight = FontWeight.Bold,
                     color = contentColor
