@@ -33,6 +33,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // ============================================================================
 // CONSTANTS - Text Sizes
@@ -76,6 +79,16 @@ private fun formatPrice(prix: Double): String {
         String.format("%.2f", prix).trimEnd('0').trimEnd('.')
     }
 }
+
+private fun formatTimestamp(timestamp: Long): String {
+    val dateFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
+    return dateFormat.format(Date(timestamp))
+}
+
+private data class TariffWithTimestamp(
+    val tariff: M13TarificationInfos,
+    val creationTime: String
+)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -133,13 +146,16 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         TariffTextSizes.NORMAL_CONTAINER_PADDING
     }
 
+    val detailleTariffsWithTimestamp = tariffsList
+        .filter { it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille }
+        .map { TariffWithTimestamp(it, formatTimestamp(it.creationTimestamps)) }
+        .sortedByDescending { it.tariff.creationTimestamps }  // Most recent first
+
     // Use FlowRow to wrap items when space is not available
     FlowRow(
         modifier = Modifier.padding(containerPadding)
             .semantics(mergeDescendants = true) {
-                set(value = tariffsList.filter {
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
-                }, key = SemanticsPropertyKey(""))
+                set(value = detailleTariffsWithTimestamp, key = SemanticsPropertyKey(""))
             },
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -198,8 +214,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                         nombreUnite = relative_M1produit.nombreUniteInt,
                         isSelected = isSelected,
                         compactMode = compactMode,
-                        onClick = { onTariffSelected(tariff) },
-                        modifier = if (compactMode) Modifier.fillMaxWidth() else Modifier
+                        onClick = { onTariffSelected(tariff) }
                     )
                 }
             }
@@ -208,131 +223,92 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 }
 
 // ============================================================================
-// FIXED: Helper functions to properly handle tariff selection and logging
+// Helper Functions - Tariff Selection Logic
 // ============================================================================
 
 /**
- * FIXED: Properly compare tariffs by type and product, not by keyID
- * This fixes the issue where progressive tariffs have synthetic keyIDs
- *
- * IMPORTANT: When multiple real tariffs of the same type exist for a product,
- * we must also compare by keyID to distinguish between them.
+ * FIXED: Properly determines if a tariff is selected by comparing:
+ * 1. Type (typeChoisi)
+ * 2. Parent product ID (to handle synthetic progressive tariffs)
  */
 private fun isTariffSelected(
     displayedTariff: M13TarificationInfos,
     selectedTariff: M13TarificationInfos,
     productKeyId: String
 ): Boolean {
-    // First check: must be same type and same product
-    val sameTypeAndProduct = displayedTariff.typeChoisi == selectedTariff.typeChoisi &&
-            displayedTariff.parent_M1Produit_KeyId == productKeyId &&
-            selectedTariff.parent_M1Produit_KeyId == productKeyId
-
-    if (!sameTypeAndProduct) {
+    // First check if types match
+    if (displayedTariff.typeChoisi != selectedTariff.typeChoisi) {
         return false
     }
 
-    // Second check: If both have real keyIDs (not calculated), compare by keyID
-    // This handles the case where multiple tariffs of the same type exist for one product
-    val displayedIsCalculated = displayedTariff.keyID.startsWith("progressive_")
-    val selectedIsCalculated = selectedTariff.keyID.startsWith("progressive_")
-
-    return if (!displayedIsCalculated && !selectedIsCalculated) {
-        // Both are real tariffs - must match by keyID to distinguish them
-        displayedTariff.keyID == selectedTariff.keyID
-    } else {
-        // At least one is calculated - type and product match is enough
-        true
+    // For progressive tariffs, also check parent product ID
+    // since progressive tariffs may have synthetic keyIDs
+    if (displayedTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
+        return displayedTariff.parent_M1Produit_KeyId == productKeyId &&
+                selectedTariff.parent_M1Produit_KeyId == productKeyId
     }
+
+    // For other tariffs, compare keyIDs
+    return displayedTariff.keyID == selectedTariff.keyID
 }
 
 /**
- * FIXED: Log tariff information for debugging
- * This addresses TODO(2.C): "cree log por le consernon por regle le problemme"
+ * FIXED: Logs tariff selection info for debugging
  */
 private fun logTariffSelection(
     displayedTariff: M13TarificationInfos,
     selectedTariff: M13TarificationInfos,
     isSelected: Boolean
 ) {
-    if (isSelected) {
-        Log.d(
-            "TariffSelection",
-            """
-            ============ TARIFF SELECTED ============
-            Type: ${displayedTariff.typeChoisi}
-            Displayed Tariff KeyID: ${displayedTariff.keyID}
-            Selected Tariff KeyID: ${selectedTariff.keyID}
-            Product KeyID: ${displayedTariff.parent_M1Produit_KeyId}
-            Price: ${displayedTariff.prixCurrency}
-            Is Calculated: ${displayedTariff.keyID.startsWith("progressive_")}
-            =========================================
-            """.trimIndent()
-        )
-    }
+    Log.d(
+        "TariffSelection",
+        "Displayed: ${displayedTariff.typeChoisi.nomArabe} (${displayedTariff.keyID}), " +
+                "Selected: ${selectedTariff.typeChoisi.nomArabe} (${selectedTariff.keyID}), " +
+                "IsSelected: $isSelected"
+    )
 }
 
 /**
- * FIXED: Ensure we have a real tariff with proper keyID from database
- * Converts calculated progressive tariff to real database tariff
+ * FIXED: Ensures a real tariff exists in the database for progressive tariff
+ * If the progressive tariff has a synthetic keyID (starts with "progressive_"),
+ * this creates a real tariff in the database.
  */
 private fun ensureRealTariff(
     tariff: M13TarificationInfos,
     tariffsList: List<M13TarificationInfos>,
     aCentralFacade: ACentralFacade
 ): M13TarificationInfos {
-    // If this is a calculated progressive tariff (synthetic keyID)
-    if (tariff.keyID.startsWith("progressive_")) {
-        // Try to find existing progressive tariff in database
-        val existingRealTariff = tariffsList.firstOrNull {
-            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
-                    it.parent_M1Produit_KeyId == tariff.parent_M1Produit_KeyId &&
-                    !it.keyID.startsWith("progressive_")
-        }
-
-        if (existingRealTariff != null) {
-            // Use existing real tariff, update price if different
-            if (existingRealTariff.prixCurrency != tariff.prixCurrency) {
-                val updatedTariff = existingRealTariff.copy(
-                    prixCurrency = tariff.prixCurrency,
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
-                aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
-                return updatedTariff
-            }
-            return existingRealTariff
-        } else {
-            // Create new real tariff in database
-            val newRealTariff = tariff.copy(
-                keyID = getPushFireBase(M13TarificationInfos.ref),
-                creationTimestamps = System.currentTimeMillis(),
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-            aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(newRealTariff)
-
-            Log.d(
-                "TariffCreation",
-                """
-                ============ NEW TARIFF CREATED ============
-                Old (calculated) KeyID: ${tariff.keyID}
-                New (real) KeyID: ${newRealTariff.keyID}
-                Type: ${newRealTariff.typeChoisi}
-                Product: ${newRealTariff.parent_M1Produit_KeyId}
-                Price: ${newRealTariff.prixCurrency}
-                ============================================
-                """.trimIndent()
-            )
-
-            return newRealTariff
-        }
+    // If it's already a real tariff (not synthetic), return it
+    if (!tariff.keyID.startsWith("progressive_")) {
+        return tariff
     }
 
-    // Already a real tariff
-    return tariff
+    // Check if a real progressive tariff already exists for this product
+    val existingRealTariff = tariffsList.firstOrNull {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
+                it.parent_M1Produit_KeyId == tariff.parent_M1Produit_KeyId &&
+                !it.keyID.startsWith("progressive_")
+    }
+
+    // If a real one exists, return it
+    if (existingRealTariff != null) {
+        return existingRealTariff
+    }
+
+    // Create a new real tariff with proper keyID
+    val realTariff = tariff.copy(
+        keyID = getPushFireBase(M13TarificationInfos.ref),
+        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+    )
+
+    // Save to repository
+    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(realTariff)
+
+    return realTariff
 }
 
 // ============================================================================
-// Editable Progressive Tariff Item Component
+// Editable Progressive Tariff Component
 // ============================================================================
 
 @Composable
@@ -358,7 +334,7 @@ private fun EditableProgressiveTariffItem(
         TariffTextSizes.NORMAL_VERTICAL_PADDING
     }
     val iconSize = if (compactMode) {
-        TariffTextSizes.COMPACT_ICON_SIZE_TARIFF_ITEM
+        TariffTextSizes.COMPACT_ICON_SIZE
     } else {
         TariffTextSizes.NORMAL_ICON_SIZE
     }
@@ -366,11 +342,6 @@ private fun EditableProgressiveTariffItem(
         TariffTextSizes.COMPACT_MAIN_TEXT
     } else {
         TariffTextSizes.NORMAL_MAIN_TEXT
-    }
-    val secondaryFontSize = if (compactMode) {
-        TariffTextSizes.COMPACT_SECONDARY_TEXT
-    } else {
-        TariffTextSizes.NORMAL_SECONDARY_TEXT
     }
 
     // Use stable border width calculation to prevent flickering
@@ -380,138 +351,58 @@ private fun EditableProgressiveTariffItem(
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
-    if (compactMode) {
-        Column(
-            modifier = modifier
-                .clip(CircleShape)
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = CircleShape
-                )
-                .background(
-                    color = tariff.typeChoisi.couleur.copy(
-                        alpha = if (isSelected) 1f else 0.9f
-                    ),
-                    shape = CircleShape
-                )
-                .clickable(onClick = onClick)
-                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Icon
-            tariff.typeChoisi.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = tariff.typeChoisi.nomArabe,
-                    tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clip(CircleShape)
-                )
-            }
-
-            // Editable price field
-            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                value = prix,
-                standard_count = 1.0,
-                Icon_Outlined_p0 = Icon_Outlined(
-                    icon = tariff.typeChoisi.iconVector!!,
-                    size = iconSize,
-                    color = tariff.typeChoisi.couleur_Text
-                ),
-                isAvailable = true,
-                compact_taille = true,
-                textSize = fontSize,
-                showDecimals = !(prix % 1.0 == 0.0),
-                decimalPlaces = 2,
-                onValueChanged = { newPrice ->
-                    onPriceUpdated(newPrice)
-                }
+    Row(
+        modifier = modifier
+            .clip(CircleShape)
+            .border(
+                width = borderWidth,
+                color = borderColor,
+                shape = CircleShape
             )
-
-            // Always show unit price if nombreUnite > 1
-            if (nombreUnite > 1) {
-                Text(
-                    text = "(${formatPrice(prixUnitaire)}/u)",
-                    color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
-                    fontSize = secondaryFontSize
-                )
-            }
+            .background(
+                color = tariff.typeChoisi.couleur.copy(
+                    alpha = if (isSelected) 1f else 0.9f
+                ),
+                shape = CircleShape
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Icon
+        tariff.typeChoisi.iconVector?.let { icon ->
+            Icon(
+                imageVector = icon,
+                contentDescription = tariff.typeChoisi.nomArabe,
+                tint = tariff.typeChoisi.couleur_Text,
+                modifier = Modifier
+                    .size(iconSize)
+                    .clip(CircleShape)
+            )
         }
-    } else {
-        Row(
-            modifier = modifier
-                .clip(CircleShape)
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = CircleShape
-                )
-                .background(
-                    color = tariff.typeChoisi.couleur.copy(
-                        alpha = if (isSelected) 1f else 0.9f
-                    ),
-                    shape = CircleShape
-                )
-                .clickable(onClick = onClick)
-                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Icon
-            tariff.typeChoisi.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = tariff.typeChoisi.nomArabe,
-                    tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clip(CircleShape)
-                )
-            }
 
-            // Abbreviated name
+        // Editable price field
+        Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+            value = prix,
+            onValueChanged = { newValue ->
+                onPriceUpdated(newValue)
+            },
+            Icon_Outlined_p0 = tariff.typeChoisi.iconVector?.let {
+                Icon_Outlined(icon = it, size = iconSize, color = tariff.typeChoisi.couleur_Text)
+            },
+            compact_taille = compactMode,
+            textSize = fontSize,
+            modifier = Modifier
+        )
+
+        // Show unit price if nombreUnite > 1
+        if (nombreUnite > 1) {
             Text(
-                text = tariff.typeChoisi.abrgNom,
-                color = tariff.typeChoisi.couleur_Text,
+                text = "(${formatPrice(prixUnitaire)}/u)",
+                color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
                 fontSize = fontSize
             )
-
-            // Editable price field
-            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
-                value = prix,
-                standard_count = 1.0,
-                Icon_Outlined_p0 = Icon_Outlined(
-                    icon = tariff.typeChoisi.iconVector!!,
-                    size = iconSize,
-                    color = tariff.typeChoisi.couleur_Text
-                ),
-                isAvailable = true,
-                compact_taille = false,
-                textSize = fontSize,
-                showDecimals = !(prix % 1.0 == 0.0),
-                decimalPlaces = 2,
-                onValueChanged = { newPrice ->
-                    onPriceUpdated(newPrice)
-                }
-            )
-
-            // Always show both prices if nombreUnite > 1
-            if (nombreUnite > 1) {
-                Text(
-                    text = "DA/p.u",
-                    color = tariff.typeChoisi.couleur_Text,
-                    fontSize = fontSize
-                )
-            } else {
-                Text(
-                    text = "DA/p.u",
-                    color = tariff.typeChoisi.couleur_Text,
-                    fontSize = fontSize
-                )
-            }
         }
     }
 }
