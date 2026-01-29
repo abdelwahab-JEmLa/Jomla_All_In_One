@@ -143,18 +143,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     }
 }
 
-/**
- * Editable Progressive Tariff Item using Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
- * with Icon_Outlined composable
- *
- * FIXED: When price is edited, the tariff is automatically selected via onPriceUpdated callback
- * FIXED: Now uses Icon_Outlined composable instead of passing icon directly
- * FIXED: Text is now smallest possible size in compact mode (7.sp)
- * FIXED: Calculates unit price when nombreUnite > 1
- * FIXED: Shows pack price as integer (no .00) and unit price with decimals
- * FIXED: Increased text size in non-compact mode to 12.sp for better readability
- * FIXED: Corrected component API usage - removed content lambda, uses proper parameters
- */
 @Composable
 private fun EditableProgressiveTariffItem(
     tariff: M13TarificationInfos,
@@ -278,13 +266,6 @@ private fun EditableProgressiveTariffItem(
     }
 }
 
-/**
- * FIXED:
- * - Always displays price with tint color when number > 1
- * - Uses line break (Column layout) in compact mode to show price on separate line
- * - Calculates and displays unit price when nombreUnite > 1
- * - Increased text size in non-compact mode to 12.sp for better readability
- */
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
