@@ -193,33 +193,15 @@ fun Item_Produit_FragID3(
         algoritme_choisiser_tariff()
     }
 
-    // FIXED: Add datasValue.size as dependency to detect when new tariffs are created
-    // This ensures selectedTariff updates when a new tariff of the same type is created
+    // Track the selected tariff for this product
+    // When datasValue_distinct_type changes (new tariff created), finale_Tariff will update
+    // and this will trigger a recomposition with the new tariff
     var selectedTariff by remember(
         relative_M1produit.keyID,
         finale_Tariff.keyID,
-        datasValue_distinct_type.size  // ADDED: This triggers recomposition when tariffs are added
+        datasValue_distinct_type.size
     ) {
         mutableStateOf(finale_Tariff)
-    }
-
-    // FIXED: Add LaunchedEffect to update selectedTariff when a new tariff is created
-    // This handles the case where user creates a new tariff of the same type
-    LaunchedEffect(datasValue_distinct_type.size, relative_M1produit.keyID, selectedTariff.typeChoisi) {
-        // Find the most recently created tariff of the selected type for this product
-        val latestTariffOfSameType = datasValue_distinct_type
-            .filter {
-                it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        it.typeChoisi == selectedTariff.typeChoisi
-            }
-            .maxByOrNull { it.creationTimestamps }
-
-        // If a newer tariff exists, update to it
-        if (latestTariffOfSameType != null &&
-            latestTariffOfSameType.keyID != selectedTariff.keyID &&
-            latestTariffOfSameType.creationTimestamps > selectedTariff.creationTimestamps) {
-            selectedTariff = latestTariffOfSameType
-        }
     }
 
     val developement_affiche = true
