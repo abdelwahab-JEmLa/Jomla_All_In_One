@@ -290,9 +290,9 @@ data class M13TarificationInfos(
 
         Prix_SupperGro_Et_PresentationService(
             Icons.Filled.Warning,
-            Color(0xFF000000),
+            Color(0xFFF44336),
             "عرض + السوبر جملة",
-            Color.Red,
+            Color.White,
             2,
             "عرض",
             its_gro_app = false
@@ -300,7 +300,7 @@ data class M13TarificationInfos(
 
         Edited_Pour_Client(
             Icons.Filled.Edit,
-            Color(0xFF4CAF50),
+            Color(0xFFFFEB3B),
             "سعر انتقالي",
             Color.Black,
             3,
@@ -310,7 +310,7 @@ data class M13TarificationInfos(
 
         Prix_Progressive_Editable(
             Icons.Filled.Edit,
-            Color(0xFFEEEEEE),
+            Color(0xFFFFEB3B),
             "سعر انتقالي",
             Color.Black,
             3,
@@ -320,9 +320,9 @@ data class M13TarificationInfos(
 
         Prix_Detaille(
             Icons.Filled.Person,
-            Color(0xFFFFC107),
+            Color(0xFF1A711F),
             "سعر التجزئة",
-            Color.Black,
+            Color.White,
             4,
             "تجزئة",
             its_gro_app = false

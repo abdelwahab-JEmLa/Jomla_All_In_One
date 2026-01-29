@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views
 
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Icon_Outlined
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -27,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
@@ -262,7 +259,6 @@ private fun EditableProgressiveTariffItem(
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
-    // FIXED: Changed from Row to FlowRow to allow wrapping when content is too wide
     FlowRow(
         modifier = modifier
             .clip(CircleShape)
@@ -283,30 +279,15 @@ private fun EditableProgressiveTariffItem(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         maxItemsInEachRow = Int.MAX_VALUE // Allow unlimited items per row
     ) {
-        // Icon
-        tariff.typeChoisi.iconVector?.let { icon ->
-            Icon(
-                imageVector = icon,
-                contentDescription = tariff.typeChoisi.nomArabe,
-                tint = tariff.typeChoisi.couleur_Text,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clip(CircleShape)
-                    .align(Alignment.CenterVertically)
-            )
-        }
-
-        // Editable price field
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             value = prix,
             onValueChanged = { newValue ->
                 onPriceUpdated(newValue)
             },
-            Icon_Outlined_p0 = tariff.typeChoisi.iconVector?.let {
-                Icon_Outlined(icon = it, size = iconSize, color = tariff.typeChoisi.couleur_Text)
-            },
             compact_taille = compactMode,
             textSize = fontSize,
+            containerColor = tariff.typeChoisi.couleur,
+            textColor = tariff.typeChoisi.couleur_Text,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
 
@@ -468,26 +449,4 @@ private fun TariffItem(
             }
         }
     }
-}
-
-// ============================================================================
-// Semantics Support
-// ============================================================================
-
-// Semantics keys for accessibility
-val TariffTypeKey = SemanticsPropertyKey<String>("TariffType")
-val TariffPriceKey = SemanticsPropertyKey<Double>("TariffPrice")
-val TariffSelectedKey = SemanticsPropertyKey<Boolean>("TariffSelected")
-
-/**
- * Extension to add tariff semantics
- */
-fun Modifier.tariffSemantics(
-    tariffType: String,
-    price: Double,
-    isSelected: Boolean
-): Modifier = this.semantics {
-    this[TariffTypeKey] = tariffType
-    this[TariffPriceKey] = price
-    this[TariffSelectedKey] = isSelected
 }

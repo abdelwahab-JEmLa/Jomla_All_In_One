@@ -82,6 +82,8 @@ fun Icon_Outlined_Display(
  * @param textSize Optional custom text size (overrides the default compact/normal size)
  * @param showDecimals Whether to show decimal places (default: true)
  * @param decimalPlaces Number of decimal places to show when showDecimals is true (default: 2)
+ * @param containerColor Optional custom container color (overrides default colors)
+ * @param textColor Optional custom text color (overrides default colors)
  * @param onValueChanged Callback when value needs to be updated (returns new value as Double)
  * @param modifier Optional modifier for the component
  */
@@ -95,6 +97,8 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     textSize: TextUnit? = null,
     showDecimals: Boolean = false,
     decimalPlaces: Int = 2,
+    containerColor: Color? = null,
+    textColor: Color? = null,
     modifier: Modifier = Modifier,
     onValueChanged: (Double) -> Unit
 ) {
@@ -160,7 +164,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
         )
     } else {
         // Display mode: Show clickable card
-        val containerColor = if (!isAvailable) {
+        val effectiveContainerColor = containerColor ?: if (!isAvailable) {
             MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
         } else if (value > 0) {
             MaterialTheme.colorScheme.tertiary
@@ -168,7 +172,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             MaterialTheme.colorScheme.primary
         }
 
-        val contentColor = if (!isAvailable) {
+        val effectiveContentColor = textColor ?: if (!isAvailable) {
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         } else {
             MaterialTheme.colorScheme.onPrimary
@@ -188,7 +192,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
                     }
                 },
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = containerColor)
+            colors = CardDefaults.cardColors(containerColor = effectiveContainerColor)
         ) {
             Row(
                 // FIXED: Row now fills the width of its parent Card
@@ -213,7 +217,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
                     text = displayText,
                     style = textStyle,
                     fontWeight = FontWeight.Bold,
-                    color = contentColor
+                    color = effectiveContentColor
                 )
             }
         }
