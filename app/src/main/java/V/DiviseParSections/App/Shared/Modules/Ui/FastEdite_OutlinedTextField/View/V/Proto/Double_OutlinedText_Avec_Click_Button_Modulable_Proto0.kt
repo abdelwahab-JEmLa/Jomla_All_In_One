@@ -93,7 +93,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
     textSize: TextUnit? = null,
-    showDecimals: Boolean = true,
+    showDecimals: Boolean = false,
     decimalPlaces: Int = 2,
     modifier: Modifier = Modifier,
     onValueChanged: (Double) -> Unit

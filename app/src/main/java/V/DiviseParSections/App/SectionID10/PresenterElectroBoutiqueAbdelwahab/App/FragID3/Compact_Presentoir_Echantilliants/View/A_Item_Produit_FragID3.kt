@@ -32,6 +32,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
@@ -101,7 +103,7 @@ fun Item_Produit_FragID3(
         }
     }
 
-    // FIXED TODO(1): Get distinct tariffs by type, keeping the most recent one for each type
+    // Get distinct tariffs by type, keeping the most recent one for each type
     val datasValue_distinct_type = remember(repositorysMainGetter.repo13TarificationInfos.datasValue) {
         repositorysMainGetter.repo13TarificationInfos.datasValue
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
@@ -114,6 +116,38 @@ fun Item_Produit_FragID3(
             .filterNotNull()
     }
 
+    // Third priority: Based on app type
+    val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+        // For retail app: try retail price, then super gro, then achat
+        val retailTariff = datasValue_distinct_type.find { tariff ->
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    tariff.prixCurrency != 0.0
+        }
+
+        val superGroTariff = datasValue_distinct_type.find { tariff ->
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    tariff.prixCurrency != 0.0
+        }
+
+        retailTariff ?: superGroTariff
+    } else {
+        // For grossist app: try super gro
+        datasValue_distinct_type.find { tariff ->
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    tariff.prixCurrency != 0.0
+        }
+    }
+
+    /**
+     * Algorithm to select the best tariff for this product based on priority:
+     * 1. Active operation tariff
+     * 2. Historical tariff for current client
+     * 3. Fallback tariff based on app type
+     * 4. Default tariff if none found
+     */
     fun algoritme_choisiser_tariff(): M13TarificationInfos {
         // First priority: Active operation tariff
         relative_list_M10operation_Vent.value?.let { operation ->
@@ -130,6 +164,7 @@ fun Item_Produit_FragID3(
         val historicalTariff = datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    tariff.parent_M2Client_KeyId == focusedValuesGetter.activeOnVent_M2Client?.keyID &&
                     tariff.prixCurrency != 0.0
         }
 
@@ -137,46 +172,20 @@ fun Item_Produit_FragID3(
             return historicalTariff
         }
 
-        // Third priority: Based on app type
-        val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-            // For retail app: try retail price, then super gro, then achat
-            val retailTariff = datasValue_distinct_type.find { tariff ->
-                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                        tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        tariff.prixCurrency != 0.0
-            }
-
-            val superGroTariff = datasValue_distinct_type.find { tariff ->
-                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                        tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        tariff.prixCurrency != 0.0
-            }
-
-            retailTariff ?: superGroTariff
-        } else {
-            // For grossist app: try super gro
-            datasValue_distinct_type.find { tariff ->
-                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                        tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        tariff.prixCurrency != 0.0
-            }
-        }
-
-        // If we found a tariff, return it
+        // Third priority: Fallback tariff
         if (fallbackTariff != null) {
             return fallbackTariff
         }
 
-        // FIXED TODO(2): Create default tariff if none found
-        // Last resort: Create a default tariff with achat price
-        val achatTariff = datasValue_distinct_type.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst &&
-                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID
-        }
+        // Last resort: Create default tariff
+        val prixAchat = datasValue_distinct_type
+            .find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID
+            }
 
-        val startPrice = achatTariff?.prixCurrency ?: 0.0
+        val startPrice = prixAchat?.prixCurrency ?: 0.0
 
-        // Create and save the default tariff
         val defaultTariff = M13TarificationInfos.get_default_P0(
             relative_M1produit,
             start_Prix_Depuit_Ancient = startPrice
@@ -226,6 +235,18 @@ fun Item_Produit_FragID3(
 
     Column(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = fallbackTariff, key = SemanticsPropertyKey("fallbackTariff"))
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = algoritme_choisiser_tariff(),
+                    key = SemanticsPropertyKey(" algoritme_choisiser_tariff()")
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(value = selectedTariff, key = SemanticsPropertyKey("selectedTariff"))
+            }
             .fillMaxWidth()
             .padding(cardPadding)
     ) {

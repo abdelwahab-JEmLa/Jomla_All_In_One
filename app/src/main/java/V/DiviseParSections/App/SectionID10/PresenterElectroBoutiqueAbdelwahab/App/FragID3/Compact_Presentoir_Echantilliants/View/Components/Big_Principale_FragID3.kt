@@ -16,12 +16,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+
+/**
+ * Extension function to update tariff for all product operations
+ */
 fun ACentralFacade.updateTariffForProductOperations(
     productKeyId: String,
     newTariff: M13TarificationInfos
@@ -74,7 +79,7 @@ fun Big_Principale_FragID3(
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit,
-    aCentralFacade: ACentralFacade = koinInject() ,
+    aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
 ) {
     ColorImageCard_FragID3(
@@ -84,19 +89,21 @@ fun Big_Principale_FragID3(
         modifier = Modifier.fillMaxWidth()
     )
 
-    Spacer(modifier = Modifier.height(8.dp))
+    // Reduced spacing from 8.dp to 2.dp for tighter layout
+    Spacer(modifier = Modifier.height(2.dp))
 
     if (shouldShowButtons) {
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
+                .wrapContentHeight() // Added to minimize vertical space
                 .background(
                     color = Color.White.copy(alpha = 0.95f),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(8.dp),
+                .padding(4.dp), // Reduced from 8.dp to 4.dp for tighter button group
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(2.dp) // Reduced from 4.dp to 2.dp
         ) {
             Lenceur_Vent_Handler_FragID3(
                 relative_M1produit = relative_M1produit,
@@ -117,6 +124,9 @@ fun Big_Principale_FragID3(
     }
 }
 
+/**
+ * Helper function to save edited progressive tariff
+ */
 fun saveEditedProgressiveTariff(
     aCentralFacade: ACentralFacade,
     tariff: M13TarificationInfos,
