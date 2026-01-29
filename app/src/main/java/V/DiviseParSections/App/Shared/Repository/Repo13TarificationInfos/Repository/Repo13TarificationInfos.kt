@@ -205,6 +205,7 @@ data class M13TarificationInfos(
         val profitabilityScore: Int = 0,
         val abrgNom: String = "",
         val its_gro_app: Boolean = false,
+        val ignore_affiche: Boolean = false,
     ) {
         //------- Grossist App Specific Tariffs (its_gro_app = true) --------
         Tariff_ItsWorkInGrossist_Achat(
@@ -275,7 +276,8 @@ data class M13TarificationInfos(
             Color.Black,
             5,
             "أعلى",
-            its_gro_app = false
+            its_gro_app = false ,
+            ignore_affiche=true
         ),
 
         Historique(

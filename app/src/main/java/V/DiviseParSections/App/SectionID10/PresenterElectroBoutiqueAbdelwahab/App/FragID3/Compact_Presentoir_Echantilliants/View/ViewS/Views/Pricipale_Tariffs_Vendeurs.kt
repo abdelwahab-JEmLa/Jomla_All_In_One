@@ -61,6 +61,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     val isGrossistMode = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
+                && !tariff.typeChoisi.ignore_affiche
     }
 
     FlowRow(
