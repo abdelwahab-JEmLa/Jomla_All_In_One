@@ -109,8 +109,8 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
     }
 
     // Adjust sizes based on compact mode
-    val horizontalPadding = if (compact_taille) 8.dp else 12.dp
-    val verticalPadding = if (compact_taille) 4.dp else 6.dp
+    val horizontalPadding = if (compact_taille) 2.dp else 12.dp
+    val verticalPadding = if (compact_taille) 2.dp else 6.dp
 
     // Use custom textSize if provided, otherwise fall back to defaults
     val effectiveTextSize = textSize ?: if (compact_taille) 7.sp else 12.sp
@@ -199,7 +199,7 @@ fun Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
                         vertical = verticalPadding
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 // FIXED: Display icon using the config object if provided
                 Icon_Outlined_p0?.let { iconConfig ->

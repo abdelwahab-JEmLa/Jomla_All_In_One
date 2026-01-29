@@ -197,8 +197,33 @@ fun Item_Produit_FragID3(
         findTariff ?: default_Tariff.first
     }
 
-    var selectedTariff by remember(relative_M1produit.keyID, finale_Tariff.keyID) {
+    // FIXED: Add datasValue.size as dependency to detect when new tariffs are created
+    // This ensures selectedTariff updates when a new tariff of the same type is created
+    var selectedTariff by remember(
+        relative_M1produit.keyID,
+        finale_Tariff.keyID,
+        datasValue.size  // ADDED: This triggers recomposition when tariffs are added
+    ) {
         mutableStateOf(finale_Tariff)
+    }
+
+    // FIXED: Add LaunchedEffect to update selectedTariff when a new tariff is created
+    // This handles the case where user creates a new tariff of the same type
+    LaunchedEffect(datasValue.size, relative_M1produit.keyID, selectedTariff.typeChoisi) {
+        // Find the most recently created tariff of the selected type for this product
+        val latestTariffOfSameType = datasValue
+            .filter {
+                it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                        it.typeChoisi == selectedTariff.typeChoisi
+            }
+            .maxByOrNull { it.creationTimestamps }
+
+        // If a newer tariff exists, update to it
+        if (latestTariffOfSameType != null &&
+            latestTariffOfSameType.keyID != selectedTariff.keyID &&
+            latestTariffOfSameType.creationTimestamps > selectedTariff.creationTimestamps) {
+            selectedTariff = latestTariffOfSameType
+        }
     }
 
     val developement_affiche = true
@@ -243,9 +268,21 @@ fun Item_Produit_FragID3(
                 Compact_Header_FragID3(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
+                    shouldShowButtons = shouldShowButtons,
+                    onUpdateTariffContext = if (shouldShowButtons) {
+                        {
+                            focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
+                                aCentralFacade.repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                                    relative_M1produit,
+                                    appCompt
+                                )
+                            }
+                        }
+                    } else null,
                     modifier = modifier
                 )
-
+                //<--
+                //TODO(1): keyID	-Ok89T4TJ_PStlkMmEEo
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
@@ -253,6 +290,7 @@ fun Item_Produit_FragID3(
                     selectedTariff = selectedTariff,
                     onTariffSelected = { newTariff ->
                         selectedTariff = newTariff
+                        // Update all product operations with new tariff
                         aCentralFacade.updateTariffForProductOperations(
                             relative_M1produit.keyID,
                             newTariff

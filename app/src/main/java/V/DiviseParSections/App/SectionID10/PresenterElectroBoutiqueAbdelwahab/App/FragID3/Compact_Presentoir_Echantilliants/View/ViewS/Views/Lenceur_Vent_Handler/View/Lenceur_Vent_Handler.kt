@@ -220,14 +220,34 @@ fun lenceVent(
             buildList { add(relative_M10OperationVentCouleur) },
             aCentralFacade
         )
+    }
+
+
+}
+
+private fun updateActiveTariffContext(
+    aCentralFacade: ACentralFacade,
+    relative_M10OperationVentCouleur: M10OperationVentCouleur,
+    relative_M3CouleurInfos: M3CouleurProduitInfos,
+    isNewOperation: Boolean
+) {
+    val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+    val repositorysMainSetter = aCentralFacade.repositorysMainSetter
+
+    // Only open dialog for existing operations (updates)
+    if (!isNewOperation) {
         focusedValuesSetter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(relative_M10OperationVentCouleur)
     }
 
+    // Update active tariff price definer for current app context
     focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
+        val parentProduit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
+            .datasValue.find { it.keyID == relative_M3CouleurInfos.parentBProduitInfosKeyID }
+            ?: return@let
+
         repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-            aCentralFacade.repositorysMainGetter.repo1ProduitInfos
-                .datasValue.find { it.keyID == relative_M3CouleurInfos.parentBProduitInfosKeyID }
-                ?: return@let,
+            parentProduit,
             appCompt
         )
     }

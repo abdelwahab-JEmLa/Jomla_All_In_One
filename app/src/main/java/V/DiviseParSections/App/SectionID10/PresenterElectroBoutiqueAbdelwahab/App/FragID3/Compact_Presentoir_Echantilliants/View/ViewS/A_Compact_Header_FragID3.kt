@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +36,8 @@ import androidx.compose.ui.unit.sp
 fun Compact_Header_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     isExpanded: Boolean,
+    shouldShowButtons: Boolean = false,
+    onUpdateTariffContext: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // Dynamic text sizes based on expansion state
@@ -109,6 +113,26 @@ fun Compact_Header_FragID3(
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
+                // FIXED: Update tariff context button as InfoCard - shown first if available
+                if (shouldShowButtons && onUpdateTariffContext != null) {
+                    ClickableInfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Sync,
+                                contentDescription = "Update Tariff",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "↻",
+                        label = "Tarif",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding,
+                        onClick = onUpdateTariffContext
+                    )
+                }
+
                 // Number of units card - only show if > 1
                 if (relative_M1produit.nombreUniteInt > 1) {
                     InfoCard(
@@ -188,6 +212,53 @@ private fun InfoCard(
                     text = value,
                     fontSize = valueTextSize,
                     color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = valueTextSize
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClickableInfoCard(
+    icon: @Composable () -> Unit,
+    value: String,
+    label: String,
+    labelTextSize: androidx.compose.ui.unit.TextUnit,
+    valueTextSize: androidx.compose.ui.unit.TextUnit,
+    itemPadding: androidx.compose.ui.unit.Dp,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = itemPadding + 2.dp, vertical = itemPadding),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon()
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = label,
+                    fontSize = labelTextSize,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f),
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = labelTextSize
+                )
+                Text(
+                    text = value,
+                    fontSize = valueTextSize,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontWeight = FontWeight.Bold,
                     lineHeight = valueTextSize
                 )
