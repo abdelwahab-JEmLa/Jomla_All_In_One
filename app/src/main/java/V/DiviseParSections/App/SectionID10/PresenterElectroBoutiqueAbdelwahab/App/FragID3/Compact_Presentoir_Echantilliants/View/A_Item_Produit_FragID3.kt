@@ -103,22 +103,18 @@ fun Item_Produit_FragID3(
         }
     }
 
-    // Get distinct tariffs by type, keeping the most recent one for each type
     val datasValue_distinct_type = remember(repositorysMainGetter.repo13TarificationInfos.datasValue) {
         repositorysMainGetter.repo13TarificationInfos.datasValue
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
             .groupBy { it.typeChoisi }
             .mapValues { (_, tariffs) ->
-                // For each type, get the one with the latest creation timestamp
                 tariffs.maxByOrNull { it.creationTimestamps }
             }
             .values
             .filterNotNull()
     }
 
-    // Third priority: Based on app type
     val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-        // For retail app: try retail price, then super gro, then achat
         val retailTariff = datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -133,7 +129,6 @@ fun Item_Produit_FragID3(
 
         retailTariff ?: superGroTariff
     } else {
-        // For grossist app: try super gro
         datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -141,15 +136,7 @@ fun Item_Produit_FragID3(
         }
     }
 
-    /**
-     * Algorithm to select the best tariff for this product based on priority:
-     * 1. Active operation tariff
-     * 2. Historical tariff for current client
-     * 3. Fallback tariff based on app type
-     * 4. Default tariff if none found
-     */
     fun algoritme_choisiser_tariff(): M13TarificationInfos {
-        // First priority: Active operation tariff
         relative_list_M10operation_Vent.value?.let { operation ->
             val operationTariff = datasValue_distinct_type.find { tariff ->
                 tariff.keyID == operation.parentM13TarificationKeyID &&
@@ -160,7 +147,6 @@ fun Item_Produit_FragID3(
             }
         }
 
-        // Second priority: Historical tariff
         val historicalTariff = datasValue_distinct_type.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
@@ -172,12 +158,10 @@ fun Item_Produit_FragID3(
             return historicalTariff
         }
 
-        // Third priority: Fallback tariff
         if (fallbackTariff != null) {
             return fallbackTariff
         }
 
-        // Last resort: Create default tariff
         val prixAchat = datasValue_distinct_type
             .find {
                 it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst &&
@@ -191,20 +175,15 @@ fun Item_Produit_FragID3(
             start_Prix_Depuit_Ancient = startPrice
         ).first
 
-        // Save the default tariff to the repository
         aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(defaultTariff)
 
         return defaultTariff
     }
 
-    // Use the algorithm to find or create the best tariff for this product
     val finale_Tariff = remember(relative_M1produit.keyID, datasValue_distinct_type.size) {
         algoritme_choisiser_tariff()
     }
 
-    // Track the selected tariff for this product
-    // When datasValue_distinct_type changes (new tariff created), finale_Tariff will update
-    // and this will trigger a recomposition with the new tariff
     var selectedTariff by remember(
         relative_M1produit.keyID,
         finale_Tariff.keyID,
