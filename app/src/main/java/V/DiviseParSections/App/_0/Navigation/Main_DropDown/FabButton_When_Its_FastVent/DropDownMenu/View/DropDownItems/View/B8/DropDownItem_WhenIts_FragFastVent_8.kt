@@ -1,11 +1,12 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B8
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -46,6 +47,9 @@ import java.io.File
  * 6. Removed phone number input dialog
  * 7. Uses proper file naming with PdfFileNamingUtils
  */
+
+private const val TAG = "DropDownItem_FragFastVent_8"
+
 @Composable
 fun DropDownItem_WhenIts_FragFastVent_8(
     nomFun: String = "Créer PDF en arrière-plan",
@@ -66,26 +70,34 @@ fun DropDownItem_WhenIts_FragFastVent_8(
         }
 
     fun initiateBackgroundPdfCreation() {
+        Log.d(TAG, "initiateBackgroundPdfCreation: Starting PDF creation process")
+
         val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
         val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
         if (activeClient == null) {
+            Log.e(TAG, "initiateBackgroundPdfCreation: No active client found")
             Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (activeBonVent == null) {
+            Log.e(TAG, "initiateBackgroundPdfCreation: No active bon de vente found")
             Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (activeVents.isEmpty()) {
+            Log.e(TAG, "initiateBackgroundPdfCreation: No active vents to process")
             Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
             return
         }
 
+        Log.i(TAG, "initiateBackgroundPdfCreation: Validated - Client: ${activeClient.nom}, BonVent: ${activeBonVent.keyID}, Items: ${activeVents.size}")
+
         // Close dropdown immediately
         onDismissDropdown()
+        Log.d(TAG, "initiateBackgroundPdfCreation: Dropdown dismissed")
 
         // Start background PDF creation
         isLoading = true
@@ -100,6 +112,7 @@ fun DropDownItem_WhenIts_FragFastVent_8(
                 onLoadingChange = { isLoading = it }
             )
         }
+        Log.d(TAG, "initiateBackgroundPdfCreation: Background task launched")
     }
 
     Card(
@@ -157,14 +170,19 @@ private suspend fun createPdfInBackground(
     activeVents: List<M10OperationVentCouleur>,
     onLoadingChange: (Boolean) -> Unit
 ) = withContext(Dispatchers.IO) {
+    Log.d(TAG, "createPdfInBackground: Starting on background thread")
+
     try {
         val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
         val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
         if (activeClient == null || activeBonVent == null) {
+            Log.e(TAG, "createPdfInBackground: Missing data - Client: ${activeClient != null}, BonVent: ${activeBonVent != null}")
             onLoadingChange(false)
             return@withContext
         }
+
+        Log.i(TAG, "createPdfInBackground: Processing - Client: ${activeClient.nom}, BonVent: ${activeBonVent.keyID}")
 
         // Update bons_a_imprime_avec_image_produit to include current bon
         val currentValues = focusedValuesGetter.active_Central_Values
@@ -178,9 +196,13 @@ private suspend fun createPdfInBackground(
                     bons_a_imprime_avec_image_produit = currentBonsWithImages
                 )
             )
+            Log.d(TAG, "createPdfInBackground: Added bon to image print list - KeyID: ${activeBonVent.keyID}")
+        } else {
+            Log.d(TAG, "createPdfInBackground: Bon already in image print list - KeyID: ${activeBonVent.keyID}")
         }
 
         delay(300)
+        Log.d(TAG, "createPdfInBackground: Starting PDF generation...")
 
         // Generate PDF with images
         val result = (printHandler as? PrintReceiptHandler_Juil)
@@ -197,10 +219,16 @@ private suspend fun createPdfInBackground(
                 versement = 0.0
             )
 
+        Log.d(TAG, "createPdfInBackground: PDF generation completed - Result: ${result != null}")
+
         result?.onSuccess { message ->
+            Log.i(TAG, "createPdfInBackground: PDF generation SUCCESS - Message: $message")
+
             // Extract the temporary PDF file path
             val tempFilePath = message.substringAfter("PDF saved: ").substringBefore("\n")
             val tempPdfFile = File(tempFilePath)
+
+            Log.d(TAG, "createPdfInBackground: Temp file path: $tempFilePath, Exists: ${tempPdfFile.exists()}")
 
             if (tempPdfFile.exists()) {
                 // Create the bons directory in downloads
@@ -208,7 +236,10 @@ private suspend fun createPdfInBackground(
                 val bonsDir = File(downloadsDir, "bons")
 
                 if (!bonsDir.exists()) {
-                    bonsDir.mkdirs()
+                    val created = bonsDir.mkdirs()
+                    Log.d(TAG, "createPdfInBackground: Bons directory created: $created - Path: ${bonsDir.absolutePath}")
+                } else {
+                    Log.d(TAG, "createPdfInBackground: Bons directory already exists - Path: ${bonsDir.absolutePath}")
                 }
 
                 // Generate filename using bon vent keyID
@@ -220,26 +251,33 @@ private suspend fun createPdfInBackground(
                 val finalFileName = "${activeBonVent.keyID}.pdf"
                 val finalPdfFile = File(bonsDir, finalFileName)
 
+                Log.i(TAG, "createPdfInBackground: Copying PDF - From: ${tempPdfFile.name} To: ${finalPdfFile.absolutePath}")
+
                 // Copy and replace if exists
                 tempPdfFile.copyTo(finalPdfFile, overwrite = true)
+
+                Log.i(TAG, "createPdfInBackground: PDF copied successfully - Size: ${finalPdfFile.length()} bytes")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "PDF créé: ${finalPdfFile.absolutePath}",
+                        "✅ PDF créé avec succès!\n${finalPdfFile.name}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
 
                 // Delete temp file if it's different from final location
                 if (tempPdfFile.absolutePath != finalPdfFile.absolutePath) {
-                    tempPdfFile.delete()
+                    val deleted = tempPdfFile.delete()
+                    Log.d(TAG, "createPdfInBackground: Temp file deleted: $deleted - Path: ${tempPdfFile.absolutePath}")
                 }
             } else {
+                Log.e(TAG, "createPdfInBackground: Temp PDF file not found - Path: $tempFilePath")
+
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "Erreur: Fichier PDF temporaire introuvable",
+                        "❌ Erreur: Fichier PDF introuvable",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -247,25 +285,31 @@ private suspend fun createPdfInBackground(
         }
 
         result?.onFailure { error ->
+            Log.e(TAG, "createPdfInBackground: PDF generation FAILED - Error: ${error.message}", error)
+
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    "Erreur lors de la génération du PDF: ${error.message}",
+                    "❌ Erreur génération PDF:\n${error.message}",
                     Toast.LENGTH_LONG
                 ).show()
             }
         }
 
     } catch (e: Exception) {
+        Log.e(TAG, "createPdfInBackground: Exception occurred", e)
+
         withContext(Dispatchers.Main) {
             Toast.makeText(
                 context,
-                "Erreur lors de la création du PDF: ${e.message}",
+                "❌ Erreur création PDF:\n${e.message}",
                 Toast.LENGTH_LONG
             ).show()
         }
         e.printStackTrace()
     } finally {
+        Log.d(TAG, "createPdfInBackground: Cleanup starting...")
+
         delay(500)
 
         // Clean up bons_a_imprime_avec_image_produit
@@ -281,10 +325,14 @@ private suspend fun createPdfInBackground(
                     bons_a_imprime_avec_image_produit = cleanedBons
                 )
             )
+
+            Log.d(TAG, "createPdfInBackground: Removed bon from image print list - KeyID: ${bon.keyID}")
         }
 
         withContext(Dispatchers.Main) {
             onLoadingChange(false)
         }
+
+        Log.d(TAG, "createPdfInBackground: Cleanup completed, loading state reset")
     }
 }
