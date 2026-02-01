@@ -62,8 +62,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
 ) {
-    val isGrossistMode =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val isGrossistMode = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
                 && !tariff.typeChoisi.ignore_affiche
@@ -149,8 +148,7 @@ private fun handleProgressivePriceUpdate(
     )
 
     if (tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
-        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive
-    ) {
+        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive) {
         Log.w(
             "PricipaleTariffsVendeurs",
             "Attempted to edit non-progressive tariff: ${tariff.typeChoisi}"
@@ -226,12 +224,11 @@ private fun EditableProgressiveTariffItem(
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
-    val backgroundColor =
-        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-            Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
-        } else {
-            tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-        }
+    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+    } else {
+        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+    }
 
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
@@ -289,33 +286,34 @@ private fun TariffItem(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
-) {  //<--
-//TODO(1): fait toujoure affiche Edited_Pour_Client 
-  
-    val effectivePrix =
-        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-            val detailleTariff = tariffsList.find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                        it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        it.prixCurrency != 0.0
-            }
-            val supperGroTariff = tariffsList.find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                        it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                        it.prixCurrency != 0.0
-            }
-
-            val recalculated =
-                M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
-                    relative_Prix_Detaille = detailleTariff?.prixCurrency,
-                    relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
-                    relative_produit = relative_M1produit
-                )
-            // Fall back to the stored price if either reference tariff is missing
-            recalculated?.prixCurrency ?: prix
-        } else {
-            prix
+) {
+    // For Edited_Pour_Client the displayed price is always recalculated live from
+    // Prix_Detaille and Prix_SupperGro via remembered_calculated_progressive_changement_tariff.
+    // This runs on every recomposition, so any add/update to tariffsList (which is
+    // derived from the repo's reactive state) immediately reflects here.
+    val effectivePrix = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+        val detailleTariff = tariffsList.find {
+            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                    it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    it.prixCurrency != 0.0
         }
+        val supperGroTariff = tariffsList.find {
+            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                    it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                    it.prixCurrency != 0.0
+        }
+
+        val recalculated = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
+            relative_Prix_Detaille = detailleTariff?.prixCurrency,
+            relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
+            relative_produit = relative_M1produit
+        )
+        // Fall back to the stored prix only if SupperGro is completely missing
+        recalculated?.prixCurrency ?: prix
+    } else {
+        prix
+    }
+
     // Using constants for sizes
     val horizontalPadding = if (compactMode) {
         TariffTextSizes.COMPACT_HORIZONTAL_PADDING
@@ -352,12 +350,11 @@ private fun TariffItem(
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
-    val backgroundColor =
-        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-            Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
-        } else {
-            tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-        }
+    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+    } else {
+        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+    }
 
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
@@ -384,7 +381,14 @@ private fun TariffItem(
         ) {
             // Icon
             tariff.typeChoisi.iconVector?.let { icon ->
-
+                Icon(
+                    imageVector = icon,
+                    contentDescription = tariff.typeChoisi.nomArabe,
+                    tint = tariff.typeChoisi.couleur_Text,
+                    modifier = Modifier
+                        .size(iconSize)
+                        .clip(CircleShape)
+                )
             }
 
             // Always show total price

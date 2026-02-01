@@ -59,7 +59,7 @@ fun Item_Produit_FragID3(
         relative_M1produit.keyID,
         focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
 
-    ) {
+        ) {
         derivedStateOf {
             focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                 .find { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
@@ -114,15 +114,41 @@ fun Item_Produit_FragID3(
             .values
             .filterNotNull()
     }
+    val supperGro = datasValue_distinct_type.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                it.prixCurrency != 0.0
+    }
+    val detaille = datasValue_distinct_type.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                it.prixCurrency != 0.0
+    }
+    val synthetic = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
+        relative_Prix_Detaille = detaille?.prixCurrency,
+        relative_Prix_SupperGro_Et_PresentationService = supperGro?.prixCurrency,
+        relative_produit = relative_M1produit
+    )
+
+    val datasValue_with_synthetic = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
+        datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client }
+    ) {
+        if (supperGro != null) {
+            if (synthetic != null) datasValue_distinct_type + synthetic
+            else datasValue_distinct_type
+        } else {
+            datasValue_distinct_type
+        }
+    } else {
+        datasValue_distinct_type
+    }
 
     val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
-        val retailTariff = datasValue_distinct_type.find { tariff ->
+        val retailTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
         }
 
-        val superGroTariff = datasValue_distinct_type.find { tariff ->
+        val superGroTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
@@ -130,7 +156,7 @@ fun Item_Produit_FragID3(
 
         retailTariff ?: superGroTariff
     } else {
-        datasValue_distinct_type.find { tariff ->
+        datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
@@ -139,7 +165,7 @@ fun Item_Produit_FragID3(
 
     fun algoritme_choisiser_tariff(): M13TarificationInfos {
         relative_list_M10operation_Vent.value?.let { operation ->
-            val operationTariff = datasValue_distinct_type.find { tariff ->
+            val operationTariff = datasValue_with_synthetic.find { tariff ->
                 tariff.keyID == operation.parentM13TarificationKeyID &&
                         tariff.prixCurrency != 0.0
             }
@@ -148,7 +174,7 @@ fun Item_Produit_FragID3(
             }
         }
 
-        val historicalTariff = datasValue_distinct_type.find { tariff ->
+        val historicalTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.parent_M2Client_KeyId == focusedValuesGetter.activeOnVent_M2Client?.keyID &&
@@ -163,7 +189,7 @@ fun Item_Produit_FragID3(
             return fallbackTariff
         }
 
-        val prixAchat = datasValue_distinct_type
+        val prixAchat = datasValue_with_synthetic
             .find {
                 it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst &&
                         it.parent_M1Produit_KeyId == relative_M1produit.keyID
@@ -181,14 +207,14 @@ fun Item_Produit_FragID3(
         return defaultTariff
     }
 
-    val finale_Tariff = remember(relative_M1produit.keyID, datasValue_distinct_type.size) {
+    val finale_Tariff = remember(relative_M1produit.keyID, datasValue_with_synthetic.size) {
         algoritme_choisiser_tariff()
     }
 
     var selectedTariff by remember(
         relative_M1produit.keyID,
         finale_Tariff.keyID,
-        datasValue_distinct_type.size
+        datasValue_with_synthetic.size
     ) {
         mutableStateOf(finale_Tariff)
     }
@@ -215,6 +241,9 @@ fun Item_Produit_FragID3(
 
     Column(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = synthetic, key = SemanticsPropertyKey("synthetic"))
+            }
             .semantics(mergeDescendants = true) {
                 set(value = fallbackTariff, key = SemanticsPropertyKey("fallbackTariff"))
             }
@@ -259,7 +288,7 @@ fun Item_Produit_FragID3(
                     modifier = modifier
                 )
 
-                val filteredAndSortedTariffs = datasValue_distinct_type
+                val filteredAndSortedTariffs = datasValue_with_synthetic
                     .filter { tariff ->
                         // Always show Edited_Pour_Client even if price is 0
                         tariff.prixCurrency != 0.0 ||

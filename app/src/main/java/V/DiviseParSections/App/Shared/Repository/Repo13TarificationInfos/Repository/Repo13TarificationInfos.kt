@@ -403,35 +403,38 @@ data class M13TarificationInfos(
         }
 
         /**
-         * Calculates the progressive ("Edited_Pour_Client") price by interpolating
-         * between Prix_SupperGro and Prix_Detaille using the product's
-         * pourcentage_Prix_Progressive as the weight toward Detaille.
+         * Calculates the Edited_Pour_Client price by interpolating between
+         * Prix_SupperGro and Prix_Detaille using pourcentage_Prix_Progressive.
          *
          *   result = SupperGro + (Detaille - SupperGro) * (pourcentage / 100)
          *
-         * - pourcentage == 0   → full SupperGro price
-         * - pourcentage == 100 → full Detaille price
-         * - pourcentage == 60  → 60 % of the way from SupperGro to Detaille (default)
+         * pourcentage == 0   → full SupperGro price
+         * pourcentage == 100 → full Detaille price
+         * pourcentage == 60  → 60 % of the way from SupperGro to Detaille (default)
          *
-         * Either price may be null (tariff not yet defined); returns null so the
-         * caller can skip rendering the chip entirely.
+         * Falls back gracefully:
+         *   - Detaille missing  → uses SupperGro alone (no interpolation)
+         *   - SupperGro missing → returns null (nothing to base the price on)
          */
         fun remembered_calculated_progressive_changement_tariff(
             relative_Prix_Detaille: Double?,
             relative_Prix_SupperGro_Et_PresentationService: Double?,
             relative_produit: ArticlesBasesStatsTable,
-        ): M13TarificationInfos? {       //<--
-        //TODO(1): fait toujoure return Edited_Pour_Client si relative_Prix_Detaille returne Edited_Pour_Client avec relative_Prix_SupperGro_Et_PresentationService //<--
-        //TODO(1): relative_Prix_SupperGro_Et_PresentationService
-            if (relative_Prix_Detaille == null || relative_Prix_SupperGro_Et_PresentationService == null) {
+        ): M13TarificationInfos? {
+            // SupperGro is the mandatory baseline — without it there is nothing to calculate
+            if (relative_Prix_SupperGro_Et_PresentationService == null) {
                 return null
             }
 
-            val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
-
-            val calculatedPrice =
+            val calculatedPrice = if (relative_Prix_Detaille != null) {
+                // Both prices available: interpolate with pourcentage_Prix_Progressive
+                val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
                 relative_Prix_SupperGro_Et_PresentationService +
                         (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
+            } else {
+                // Detaille not yet defined: use SupperGro as-is
+                relative_Prix_SupperGro_Et_PresentationService
+            }
 
             return M13TarificationInfos(
                 parent_M1Produit_KeyId = relative_produit.keyID,
