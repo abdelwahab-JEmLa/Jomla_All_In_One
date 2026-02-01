@@ -251,6 +251,11 @@ private fun EditableProgressiveTariffItem(
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             value = prix,
             onValueChanged = { newValue ->
+                // FIXED: Auto-select tariff when entering edit mode for Edited_Pour_Client
+                // This ensures the tariff is selected and vents are updated before editing
+                if (!isSelected && tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+                    onClick()
+                }
                 onPriceUpdated(newValue)
             },
             compact_taille = compactMode,

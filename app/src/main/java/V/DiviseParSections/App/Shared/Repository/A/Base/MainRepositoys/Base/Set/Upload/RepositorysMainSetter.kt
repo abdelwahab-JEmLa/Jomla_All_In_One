@@ -122,7 +122,7 @@ class RepositorysMainSetter(
         aCentralFacade: ACentralFacade
     ) {
         m13TarificationInfos_Pour_Produit?.let {
-            addOrUpdateGroAliTariff(it)
+            upsert_M13TarificationInfos(it)
 
             val listFocusedM10OpeVentCouleurParPrixDifineur =
                 m10OperationVentCouleurs.map { listVent ->
@@ -155,10 +155,6 @@ class RepositorysMainSetter(
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
         repo9AppCompt.addNew(defaultGeneratedCompt)
-    }
-
-    fun addOrUpdateGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
-        repo13TarificationInfos.upsert(latestTariffLocalData)
     }
 
 
@@ -213,8 +209,9 @@ class RepositorysMainSetter(
     fun repo11AchatOperation_update_If_Exist(data: M11AchatOperation) =
         repo11AchatOperation.update_If_Exist(data)
 
-    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
+    //------------repo_M13TarificationInfos -------------------------------------------------------------------------------------------------------------------------------------
     fun add_M13TarificationInfos(data: M13TarificationInfos) = repo13TarificationInfos.upsert(data)
+
 
     fun upsert_M13TarificationInfos(data: M13TarificationInfos) =
         repo13TarificationInfos.upsert(data)

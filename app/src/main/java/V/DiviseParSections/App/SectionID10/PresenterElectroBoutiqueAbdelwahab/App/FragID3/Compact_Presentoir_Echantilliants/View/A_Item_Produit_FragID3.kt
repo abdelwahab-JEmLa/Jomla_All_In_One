@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import kotlin.math.abs
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -122,13 +123,74 @@ fun Item_Produit_FragID3(
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                 it.prixCurrency != 0.0
     }
-    // Nullable by design: returns null when both detaille and supperGro are null.
-    // The null case is already guarded below — synthetic is only appended when non-null.
     val synthetic = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
         relative_Prix_Detaille = detaille?.prixCurrency,
         relative_Prix_SupperGro_Et_PresentationService = supperGro?.prixCurrency,
         relative_produit = relative_M1produit
     )
+
+    // FIXED: TODO - Create/Update Edited_Pour_Client tariff ONLY when:
+    // 1. A NEW bon vent is added for the same client (not when returning to old bon vent)
+    // 2. The product is currently displayed
+    LaunchedEffect(
+        focusedValuesGetter.activeOnVent_M8BonVent?.keyID,
+        focusedValuesGetter.activeOnVent_M8BonVent?.creationTimestamps
+    ) {
+        val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
+
+        // Only proceed if we have a valid bon vent and we're not in grossist mode
+        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
+            currentBonVent != null &&
+            synthetic != null) {
+
+            val currentClient = focusedValuesGetter.activeOnVent_M2Client
+
+            // Find all bon vents for this client in the current period
+            val clientBonVents = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+                .filter { it.parent_M2Client_KeyID == currentClient?.keyID }
+                .sortedByDescending { it.creationTimestamps }
+
+            // Check if current bon vent is the NEWEST one for this client
+            val isNewestBonVent = clientBonVents.firstOrNull()?.keyID == currentBonVent.keyID
+
+            // Only create/update if this is the newest bon vent
+            if (isNewestBonVent) {
+                val existingEditedTariff = datasValue_distinct_type.find {
+                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
+                            it.parent_M8BonVent_KeyId == currentBonVent.keyID
+                }
+
+                // Update or create Edited_Pour_Client tariff if:
+                // 1. It doesn't exist for this bon vent, OR
+                // 2. It exists but the price differs significantly (more than 0.01 due to floating point)
+                val shouldUpdate = existingEditedTariff == null ||
+                        abs(existingEditedTariff.prixCurrency - synthetic.prixCurrency) > 0.01
+
+                if (shouldUpdate) {
+                    val updatedTariff = if (existingEditedTariff != null) {
+                        // Update existing tariff with new calculated price
+                        existingEditedTariff.copy(
+                            prixCurrency = synthetic.prixCurrency,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                    } else {
+                        // Create new Edited_Pour_Client tariff for this NEW bon vent
+                        synthetic.copy(
+                            parent_M8BonVent_KeyId = currentBonVent.keyID,
+                            parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
+                            parent_M2Client_KeyId = currentClient?.keyID ?: "null",
+                            parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
+                            creationTimestamps = System.currentTimeMillis(),
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                    }
+
+                    // Save the updated/new tariff
+                    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+                }
+            }
+        }
+    }
 
     // Append the synthetic Edited_Pour_Client whenever it exists and none was persisted.
     // synthetic is already null when both base prices are missing — no extra gate needed.
@@ -164,50 +226,38 @@ fun Item_Produit_FragID3(
     }
 
     fun algoritme_choisiser_tariff(): M13TarificationInfos {
-        relative_list_M10operation_Vent.value?.let { operation ->
-            val operationTariff = datasValue_with_synthetic.find { tariff ->
-                tariff.keyID == operation.parentM13TarificationKeyID &&
-                        tariff.prixCurrency != 0.0
+        // Find the most recent operation for this product
+        val lastOperation = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+            .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+            .maxByOrNull { it.creationTimestamps }
+
+        // Try to use the tariff from the last operation
+        lastOperation?.parentM13TarificationKeyID?.let { tariffKeyID ->
+            datasValue_with_synthetic.find { it.keyID == tariffKeyID }?.let { operationTariff ->
+                // Verify the tariff still has a valid price
+                if (operationTariff.prixCurrency != 0.0 ||
+                    operationTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+                    return operationTariff
+                }
             }
-            if (operationTariff != null && operationTariff.prixCurrency != 0.0) {
-                return operationTariff
-            }
         }
 
-        val historicalTariff = datasValue_with_synthetic.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Historique &&
-                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    tariff.parent_M2Client_KeyId == focusedValuesGetter.activeOnVent_M2Client?.keyID &&
-                    tariff.prixCurrency != 0.0
-        }
+        // If no valid operation tariff, use the default logic:
+        // First try the highest price tariff with non-zero price
+        val highestPriceTariff = datasValue_with_synthetic
+            .filter { it.prixCurrency != 0.0 }
+            .maxByOrNull { it.prixCurrency }
 
-        if (historicalTariff != null && historicalTariff.prixCurrency != 0.0) {
-            return historicalTariff
-        }
-
-        if (fallbackTariff != null) {
-            return fallbackTariff
-        }
-
-        val prixAchat = datasValue_with_synthetic
-            .find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst &&
-                        it.parent_M1Produit_KeyId == relative_M1produit.keyID
-            }
-
-        val startPrice = prixAchat?.prixCurrency ?: 0.0
-
-        val defaultTariff = M13TarificationInfos.get_default_P0(
-            relative_M1produit,
-            start_Prix_Depuit_Ancient = startPrice
-        ).first
-
-        aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(defaultTariff)
-
-        return defaultTariff
+        return highestPriceTariff ?: fallbackTariff
+        ?: datasValue_with_synthetic.firstOrNull()
+        ?: M13TarificationInfos.get_default()
     }
 
-    val finale_Tariff = remember(relative_M1produit.keyID, datasValue_with_synthetic.size) {
+    val finale_Tariff = remember(
+        datasValue_with_synthetic,
+        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
+        fallbackTariff
+    ) {
         algoritme_choisiser_tariff()
     }
 
