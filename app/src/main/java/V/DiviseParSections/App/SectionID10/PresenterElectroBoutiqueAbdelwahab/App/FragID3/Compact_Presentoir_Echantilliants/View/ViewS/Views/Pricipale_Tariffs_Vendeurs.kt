@@ -286,9 +286,7 @@ private fun TariffItem(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
-) {          //<--
-//TODO(2.C Relative Au Todo(1): 
-        //... ici ne s affiche pas 
+) {
     // For Edited_Pour_Client the displayed price is always recalculated live from
     // Prix_Detaille and Prix_SupperGro via remembered_calculated_progressive_changement_tariff.
     // This runs on every recomposition, so any add/update to tariffsList (which is
@@ -315,6 +313,11 @@ private fun TariffItem(
     } else {
         prix
     }
+
+    // Nothing to display: the synthetic Edited_Pour_Client tariff has prixCurrency == 0
+    // and the live recalculation also returned null (both base prices are missing).
+    // Skip rendering so no empty pill appears.
+    if (effectivePrix == 0.0) return
 
     // Using constants for sizes
     val horizontalPadding = if (compactMode) {
