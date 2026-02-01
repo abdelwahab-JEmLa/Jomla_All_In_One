@@ -288,7 +288,8 @@ data class M13TarificationInfos(
             Color.White,
             5,
             "أخير",
-            its_gro_app = false
+            its_gro_app = false ,
+            ignore_affiche = true  // Only shown in grossist app
         ),
 
         Prix_SupperGro_Et_PresentationService(
