@@ -128,7 +128,6 @@ fun Item_Produit_FragID3(
         relative_produit = relative_M1produit
     )
 
-    // FIXED: TODO - Create/Update Edited_Pour_Client tariff ONLY when:
     // 1. A NEW bon vent is added for the same client (not when returning to old bon vent)
     // 2. The product is currently displayed
     // 3. The tariff doesn't already exist (prevents recreation on app restart)
@@ -348,7 +347,6 @@ fun Item_Produit_FragID3(
                     .sortedByDescending { it.typeChoisi.profitabilityScore }  // Sort by profitability score from enum
 
                 Big_Principale_FragID3(
-
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
                     relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
