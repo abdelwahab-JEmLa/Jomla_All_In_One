@@ -36,7 +36,6 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import kotlin.math.abs
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -132,6 +131,7 @@ fun Item_Produit_FragID3(
     // FIXED: TODO - Create/Update Edited_Pour_Client tariff ONLY when:
     // 1. A NEW bon vent is added for the same client (not when returning to old bon vent)
     // 2. The product is currently displayed
+    // 3. The tariff doesn't already exist (prevents recreation on app restart)
     LaunchedEffect(
         focusedValuesGetter.activeOnVent_M8BonVent?.keyID,
         focusedValuesGetter.activeOnVent_M8BonVent?.creationTimestamps
@@ -145,6 +145,18 @@ fun Item_Produit_FragID3(
 
             val currentClient = focusedValuesGetter.activeOnVent_M2Client
 
+            // Check if Edited_Pour_Client already exists for this product and bon vent
+            val existingEditedTariff = datasValue_distinct_type.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
+                        it.parent_M8BonVent_KeyId == currentBonVent.keyID &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID
+            }
+
+            // If tariff already exists, don't recreate it (prevents recreation on app restart)
+            if (existingEditedTariff != null) {
+                return@LaunchedEffect
+            }
+
             // Find all bon vents for this client in the current period
             val clientBonVents = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
                 .filter { it.parent_M2Client_KeyID == currentClient?.keyID }
@@ -153,41 +165,26 @@ fun Item_Produit_FragID3(
             // Check if current bon vent is the NEWEST one for this client
             val isNewestBonVent = clientBonVents.firstOrNull()?.keyID == currentBonVent.keyID
 
-            // Only create/update if this is the newest bon vent
-            if (isNewestBonVent) {
-                val existingEditedTariff = datasValue_distinct_type.find {
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
-                            it.parent_M8BonVent_KeyId == currentBonVent.keyID
-                }
+            // Only create tariff if:
+            // 1. This is the newest bon vent for the client
+            // 2. Tariff doesn't exist yet (already checked above)
+            // 3. Bon vent was created recently (within last 5 minutes) to avoid creating for old bon vents
+            val bonVentAge = System.currentTimeMillis() - currentBonVent.creationTimestamps
+            val isRecentlyCreated = bonVentAge < (5 * 60 * 1000) // 5 minutes
 
-                // Update or create Edited_Pour_Client tariff if:
-                // 1. It doesn't exist for this bon vent, OR
-                // 2. It exists but the price differs significantly (more than 0.01 due to floating point)
-                val shouldUpdate = existingEditedTariff == null ||
-                        abs(existingEditedTariff.prixCurrency - synthetic.prixCurrency) > 0.01
+            if (isNewestBonVent && isRecentlyCreated) {
+                // Create new Edited_Pour_Client tariff for this NEW bon vent
+                val newTariff = synthetic.copy(
+                    parent_M8BonVent_KeyId = currentBonVent.keyID,
+                    parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
+                    parent_M2Client_KeyId = currentClient?.keyID ?: "null",
+                    parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
+                    creationTimestamps = System.currentTimeMillis(),
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
 
-                if (shouldUpdate) {
-                    val updatedTariff = if (existingEditedTariff != null) {
-                        // Update existing tariff with new calculated price
-                        existingEditedTariff.copy(
-                            prixCurrency = synthetic.prixCurrency,
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                    } else {
-                        // Create new Edited_Pour_Client tariff for this NEW bon vent
-                        synthetic.copy(
-                            parent_M8BonVent_KeyId = currentBonVent.keyID,
-                            parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
-                            parent_M2Client_KeyId = currentClient?.keyID ?: "null",
-                            parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
-                            creationTimestamps = System.currentTimeMillis(),
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                    }
-
-                    // Save the updated/new tariff
-                    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
-                }
+                // Save the new tariff
+                aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
             }
         }
     }
