@@ -102,9 +102,11 @@ private fun TariffItemSelector(
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.quantite_Boit_Par_Carton
 
+    // FIXED: Added Edited_Pour_Client to the editable tariff types
     when {
         tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
-                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive -> {
+                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive ||
+                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client -> {
             EditableProgressiveTariffItem(
                 tariff = tariff,
                 prix = prix,
@@ -147,8 +149,10 @@ private fun handleProgressivePriceUpdate(
         "handleProgressivePriceUpdate - Tariff: ${tariff.keyID}, New Price: $newPrice"
     )
 
+    // FIXED: Added Edited_Pour_Client to the validation check
     if (tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
-        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive) {
+        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
+        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
         Log.w(
             "PricipaleTariffsVendeurs",
             "Attempted to edit non-progressive tariff: ${tariff.typeChoisi}"
@@ -215,7 +219,6 @@ private fun EditableProgressiveTariffItem(
         TariffTextSizes.NORMAL_MAIN_TEXT
     }
 
-    // FIXED: Thicker border and red color for selected items
     val borderWidth = if (isSelected) {
         TariffTextSizes.SELECTED_BORDER_WIDTH
     } else {
@@ -223,14 +226,8 @@ private fun EditableProgressiveTariffItem(
     }
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
-    // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
-    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
-    } else {
-        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-    }
+    val backgroundColor = tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
 
-    // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
     FlowRow(
@@ -248,7 +245,7 @@ private fun EditableProgressiveTariffItem(
             .clickable(onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        verticalArrangement = Arrangement.Center,
         maxItemsInEachRow = Int.MAX_VALUE // Allow unlimited items per row
     ) {
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
@@ -274,7 +271,9 @@ private fun EditableProgressiveTariffItem(
         }
     }
 }
-
+//<--
+// FIXED: Edited_Pour_Client tariff now uses EditableProgressiveTariffItem (see line 115)
+// This allows the click outlined text edit field to display when editing client tariff
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
@@ -287,10 +286,6 @@ private fun TariffItem(
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
 ) {
-    // For Edited_Pour_Client the displayed price is always recalculated live from
-    // Prix_Detaille and Prix_SupperGro via remembered_calculated_progressive_changement_tariff.
-    // This runs on every recomposition, so any add/update to tariffsList (which is
-    // derived from the repo's reactive state) immediately reflects here.
     val effectivePrix = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
         val detailleTariff = tariffsList.find {
             it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
