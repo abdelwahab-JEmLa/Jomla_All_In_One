@@ -286,7 +286,9 @@ private fun TariffItem(
     relative_M1produit: ArticlesBasesStatsTable,
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
-) {
+) {          //<--
+//TODO(2.C Relative Au Todo(1): 
+        //... ici ne s affiche pas 
     // For Edited_Pour_Client the displayed price is always recalculated live from
     // Prix_Detaille and Prix_SupperGro via remembered_calculated_progressive_changement_tariff.
     // This runs on every recomposition, so any add/update to tariffsList (which is

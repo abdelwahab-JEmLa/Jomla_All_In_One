@@ -412,28 +412,32 @@ data class M13TarificationInfos(
          * pourcentage == 100 → full Detaille price
          * pourcentage == 60  → 60 % of the way from SupperGro to Detaille (default)
          *
-         * Falls back gracefully:
-         *   - Detaille missing  → uses SupperGro alone (no interpolation)
-         *   - SupperGro missing → returns null (nothing to base the price on)
+         * Falls back gracefully when only one price is available:
+         *   - Only SupperGro  → uses SupperGro directly (no interpolation)
+         *   - Only Detaille   → uses Detaille directly (no interpolation)
+         *   - Both missing    → returns null
          */
         fun remembered_calculated_progressive_changement_tariff(
             relative_Prix_Detaille: Double?,
             relative_Prix_SupperGro_Et_PresentationService: Double?,
             relative_produit: ArticlesBasesStatsTable,
         ): M13TarificationInfos? {
-            // SupperGro is the mandatory baseline — without it there is nothing to calculate
-            if (relative_Prix_SupperGro_Et_PresentationService == null) {
+            // Need at least one price to produce anything
+            if (relative_Prix_SupperGro_Et_PresentationService == null && relative_Prix_Detaille == null) {
                 return null
             }
 
-            val calculatedPrice = if (relative_Prix_Detaille != null) {
-                // Both prices available: interpolate with pourcentage_Prix_Progressive
-                val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
-                relative_Prix_SupperGro_Et_PresentationService +
-                        (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
-            } else {
-                // Detaille not yet defined: use SupperGro as-is
-                relative_Prix_SupperGro_Et_PresentationService
+            val calculatedPrice = when {
+                // Both available → interpolate with pourcentage_Prix_Progressive
+                relative_Prix_SupperGro_Et_PresentationService != null && relative_Prix_Detaille != null -> {
+                    val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
+                    relative_Prix_SupperGro_Et_PresentationService +
+                            (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
+                }
+                // Only SupperGro → use it directly
+                relative_Prix_SupperGro_Et_PresentationService != null -> relative_Prix_SupperGro_Et_PresentationService
+                // Only Detaille → use it directly
+                else -> relative_Prix_Detaille!!
             }
 
             return M13TarificationInfos(

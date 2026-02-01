@@ -126,7 +126,8 @@ fun Item_Produit_FragID3(
         relative_Prix_Detaille = detaille?.prixCurrency,
         relative_Prix_SupperGro_Et_PresentationService = supperGro?.prixCurrency,
         relative_produit = relative_M1produit
-    )
+    )            //<--
+    //TODO(1): pk mem si ca n ai pas null 
 
     val datasValue_with_synthetic = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
         datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client }
@@ -241,6 +242,9 @@ fun Item_Produit_FragID3(
 
     Column(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = supperGro, key = SemanticsPropertyKey("supperGro"))
+            }
             .semantics(mergeDescendants = true) {
                 set(value = synthetic, key = SemanticsPropertyKey("synthetic"))
             }
