@@ -1,8 +1,11 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,20 +35,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 import java.util.SortedMap
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun PrixVentAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     relative_Produit: ArticlesBasesStatsTable,
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean) -> Unit,
-    currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean
+    currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean,
+    aCentralFacade: ACentralFacade= koinInject()
 ) {
+    val context = LocalContext.current
+
     val prixAchatTariff =
         allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
             ?.maxByOrNull { it.creationTimestamps }
@@ -188,7 +197,49 @@ fun PrixVentAdjustmentButtons(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { handleTotalPriceEditDone() }
+                            onDone = {
+                                if  (relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService)
+                                {
+                                    val tariff_Prix_SupperGro_Et_PresentationService =   aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+                                        .sortedByDescending {
+                                            it.creationTimestamps
+                                        }
+                                        .findLast {
+                                            it.typeChoisi ==M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+                                                    && it.parent_M1Produit_KeyId == relative_Produit.keyID
+                                        }
+                                    val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
+
+                                    val toastMsg: String
+                                    if (tariff_Prix_SupperGro_Et_PresentationService != null) {
+                                        aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
+                                            tariff_Prix_SupperGro_Et_PresentationService.copy(
+                                                prixCurrency = newPrice,
+                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                            )
+                                        )
+                                        toastMsg = "تم تحديث سعر السوبر جملة"
+                                    } else {
+                                        aCentralFacade.repositorysMainSetter.add_M13TarificationInfos(
+                                            M13TarificationInfos(
+                                                parent_M1Produit_KeyId = relative_Produit.keyID,
+                                                parent_M1Produit_DebugInfos = relative_Produit.getDebugInfos(),
+                                                typeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                                                prixCurrency = newPrice,
+                                                creationTimestamps = System.currentTimeMillis(),
+                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                            )
+                                        )
+                                        toastMsg = "تم إضافة سعر السوبر جملة جديد"
+                                    }
+                                    Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
+                                    isEditingTotalPrice = false
+                                } else {
+                                    handleTotalPriceEditDone()
+
+                                }
+
+                            }
                         ),
                         singleLine = true
                     )
