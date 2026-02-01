@@ -206,7 +206,8 @@ data class M13TarificationInfos(
         val abrgNom: String = "",
         val its_gro_app: Boolean = false,
         val ignore_affiche: Boolean = false,
-    ) {
+
+        ) {
         //------- Grossist App Specific Tariffs (its_gro_app = true) --------
         Tariff_ItsWorkInGrossist_Achat(
             Icons.Filled.History,
@@ -317,7 +318,8 @@ data class M13TarificationInfos(
             Color.Black,
             3,
             "انتقالي",
-            its_gro_app = false
+            its_gro_app = false,
+            ignore_affiche = true
         ),
 
         Prix_Detaille(
@@ -398,6 +400,47 @@ data class M13TarificationInfos(
 
         fun get_default(): M13TarificationInfos {
             return M13TarificationInfos()
+        }
+
+        /**
+         * Calculates the progressive ("Edited_Pour_Client") price by interpolating
+         * between Prix_SupperGro and Prix_Detaille using the product's
+         * pourcentage_Prix_Progressive as the weight toward Detaille.
+         *
+         *   result = SupperGro + (Detaille - SupperGro) * (pourcentage / 100)
+         *
+         * - pourcentage == 0   → full SupperGro price
+         * - pourcentage == 100 → full Detaille price
+         * - pourcentage == 60  → 60 % of the way from SupperGro to Detaille (default)
+         *
+         * Either price may be null (tariff not yet defined); returns null so the
+         * caller can skip rendering the chip entirely.
+         */
+        fun remembered_calculated_progressive_changement_tariff(
+            relative_Prix_Detaille: Double?,
+            relative_Prix_SupperGro_Et_PresentationService: Double?,
+            relative_produit: ArticlesBasesStatsTable,
+        ): M13TarificationInfos? {       //<--
+        //TODO(1): fait toujoure return Edited_Pour_Client si relative_Prix_Detaille returne Edited_Pour_Client avec relative_Prix_SupperGro_Et_PresentationService //<--
+        //TODO(1): relative_Prix_SupperGro_Et_PresentationService
+            if (relative_Prix_Detaille == null || relative_Prix_SupperGro_Et_PresentationService == null) {
+                return null
+            }
+
+            val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
+
+            val calculatedPrice =
+                relative_Prix_SupperGro_Et_PresentationService +
+                        (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
+
+            return M13TarificationInfos(
+                parent_M1Produit_KeyId = relative_produit.keyID,
+                parent_M1Produit_DebugInfos = relative_produit.getDebugInfos(),
+                typeChoisi = TypeChoisi.Edited_Pour_Client,
+                prixCurrency = calculatedPrice,
+                creationTimestamps = System.currentTimeMillis(),
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
         }
 
 
