@@ -24,7 +24,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacad
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -46,7 +45,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Paid
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -494,7 +492,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
                 }
 
-                (activeDialogSearchM1Produit == true || itsFragmentProduitFastSearchDialog).ifFalse {
+           /*     (activeDialogSearchM1Produit == true || itsFragmentProduitFastSearchDialog).ifFalse {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -526,7 +524,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             )
                         }
                     }
-                }
+                }      */
 
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
