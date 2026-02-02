@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.OutlinedText_Avec_Init_Click_Button_Modulable_Proto3
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.FastInit_Outlined_Int_Edite_Modulable_Proto3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -46,6 +46,7 @@ fun Lenceur_Vent_Handler_FragID3(
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier,
 ) {
+    // FIXED: Added spacing parameter to prevent accidental clicks between depot and sale button
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
@@ -79,6 +80,24 @@ fun Lenceur_Vent_Handler_FragID3(
         derivedStateOf {
             au_depot > 0 || focusedValuesGetter.currentApp_ItsWorkChezGrossisst
         }
+    }
+
+    // Check if user is admin
+    val isAdmin = remember { focusedValuesGetter.currentApp_Est_Admin }
+
+    fun handleDepotUpdate(newDepotCount: Int) {
+        val updatedCouleur = selectedCouleur.copy(
+            count_Don_Depot = newDepotCount,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+        aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(updatedCouleur)
+
+        // Show success toast
+        Toast.makeText(
+            context,
+            "✓ Dépôt mis à jour: $newDepotCount unité(s)",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     fun handleLenceVent(quantity: Int) {
@@ -152,9 +171,10 @@ fun Lenceur_Vent_Handler_FragID3(
             .fillMaxWidth()
             .clip(shape)
             .background(containerColor.copy(alpha = 0.15f))
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+        contentAlignment = Alignment.CenterEnd
     ) {
-        OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
+        FastInit_Outlined_Int_Edite_Modulable_Proto3(
             start_count = currentQuantity,
             au_depot = au_depot,
             standard_count = standardCount,
@@ -162,7 +182,13 @@ fun Lenceur_Vent_Handler_FragID3(
             icon = Icons.Default.ShoppingCart,
             isAvailable = isAvailable,
             compact_taille = compactMode,
-            modifier = Modifier.align(Alignment.CenterEnd)
+            show_depot_card_on_top_in_flow_row = true,
+            is_admin = isAdmin,
+            // FIXED: Add spacing between depot and sale button for admin to prevent accidental clicks
+            add_spacing_between_depot_and_sale = isAdmin,
+            on_admin_depot_update = { newDepotCount ->
+                handleDepotUpdate(newDepotCount)
+            }
         ) { newQuantity ->
             handleLenceVent(newQuantity)
         }
