@@ -12,6 +12,6 @@ object NavigationItems {
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.EducationFragment,
         Screen.FragmentProduitFastSearchDialog,
-        Screen.Screen1PanieVentsFinale
+     //   Screen.Screen1PanieVentsFinale
     )
 }

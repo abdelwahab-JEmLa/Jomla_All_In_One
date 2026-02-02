@@ -1,11 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.Autres.ScrolleAdBanner
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -41,6 +43,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> } ,
@@ -113,6 +116,9 @@ fun Compact_Presentoire_App_Produits_FragID4(
         on_pour_send_data = on_pour_send_data,
         onClickImageToShowControles = onClickImageToShowControles
     )
+    focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
+        Dialog_Fast_Affiche_Panie()
+    }
 }
 
 @Composable

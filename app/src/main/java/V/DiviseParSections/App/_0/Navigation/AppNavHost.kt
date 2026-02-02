@@ -71,7 +71,8 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
-) {
+) {       //<--
+//TODO(1): fait disable click de Compact_Presentoire_App_Produits_FragID4 si non admine 
     val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
