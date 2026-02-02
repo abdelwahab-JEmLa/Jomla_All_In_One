@@ -41,7 +41,6 @@ fun Lenceur_Vent_Handler_FragID3(
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
-    au_depot: Int = 0,
     compactMode: Boolean = false,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
@@ -50,6 +49,13 @@ fun Lenceur_Vent_Handler_FragID3(
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+
+    // FIXED: Make depot count reactive to selectedCouleur changes
+    val au_depot by remember(selectedCouleur.keyID, selectedCouleur.count_Don_Depot) {
+        derivedStateOf {
+            selectedCouleur.count_Don_Depot
+        }
+    }
 
     val currentQuantity by remember(relative_M10OperationVentCouleur?.keyID, relative_M10OperationVentCouleur?.quantity) {
         derivedStateOf {
@@ -150,6 +156,7 @@ fun Lenceur_Vent_Handler_FragID3(
             start_count = currentQuantity,
             au_depot = au_depot,
             standard_count = standardCount,
+            start_au_premier_click_par_add_outlined = false,
             icon = Icons.Default.ShoppingCart,
             isAvailable = isAvailable,
             compact_taille = compactMode,
@@ -237,18 +244,27 @@ fun lenceVent(
             }
         }
     } else {
+        // Get the previous quantity to calculate the difference
+        val existingOperation = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+            .find { it.keyID == relative_M10OperationVentCouleur.keyID }
+        val previousQuantity = existingOperation?.quantity ?: 0
+        val quantityDifference = relative_M10OperationVentCouleur.quantity - previousQuantity
+
+        // Update the operation
+        focusedValuesSetter.ajoute_New_M10OperationVentCouleur(relative_M10OperationVentCouleur)
+
         repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
             selectedTariff,
             buildList { add(relative_M10OperationVentCouleur) },
             aCentralFacade
         )
 
-        // Handle depot update for existing operations
-        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+        // Handle depot update for existing operations - only update the difference
+        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst && quantityDifference != 0) {
             val result = update_countDepot(
                 aCentralFacade,
                 relative_M3CouleurInfos,
-                -relative_M10OperationVentCouleur.quantity,
+                -quantityDifference,
                 active = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
             )
             if (!result.success) {
