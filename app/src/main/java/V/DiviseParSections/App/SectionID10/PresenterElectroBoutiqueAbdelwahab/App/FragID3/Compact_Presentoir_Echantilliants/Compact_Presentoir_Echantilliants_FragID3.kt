@@ -2,10 +2,14 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -28,7 +32,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,8 +50,37 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     FragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
+    // FIXED: Create ViewModel locally if not provided
+    val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
+
+    // LOG: Initial state check
+    android.util.Log.e("CategoryDialog", "=== Compact_Presentoir_Echantilliants_FragID3 COMPOSED ===")
+    android.util.Log.e("CategoryDialog", "categoryViewModel provided: ${categoryViewModel != null}")
+    android.util.Log.e("CategoryDialog", "viewModelToUse is available: ${viewModelToUse != null}")
+
+    // State for category dialog management
+    var selectedProductForCategoryChange by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+
+    // LOG: Track state changes
+    LaunchedEffect(selectedProductForCategoryChange) {
+        android.util.Log.d("CategoryDialog", "selectedProductForCategoryChange changed: ${selectedProductForCategoryChange?.nom ?: "null"}")
+        android.util.Log.d("CategoryDialog", "viewModelToUse is null: ${viewModelToUse == null}")
+    }
+
+    // Get all categories for the dialog
+    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
+        repositorysMainGetter.repoM16CategorieProduit.datasValue
+    }
+
+    val categoryMap = remember(allCategories) {
+        allCategories.associateBy { it.id }
+    }
+
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
+
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
         repositorysMainGetter.repo2Client.datasValue
@@ -114,12 +151,61 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         modifier = modifier,
         categoriesWithProducts = groupe_Par_Categorie,
         fragmentNavigationHandler = FragmentNavigationHandler,
+        catalogues = catalogues,
+        categoryMap = categoryMap,
+        onProductCategoryClick = { product ->
+            android.util.Log.d("CategoryDialog", "onProductCategoryClick called for: ${product.nom}")
+            android.util.Log.d("CategoryDialog", "Product keyID: ${product.keyID}")
+            android.util.Log.d("CategoryDialog", "Product current category: ${product.idParentCategorie}")
+            selectedProductForCategoryChange = product
+            android.util.Log.d("CategoryDialog", "State updated, selectedProductForCategoryChange is now: ${selectedProductForCategoryChange?.nom}")
+        },
         on_pour_send_data = on_pour_send_data
     )
+
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
         Dialog_Fast_Affiche_Panie()
     }
 
+    // Category Selection Dialog - handles category changes from child items
+    selectedProductForCategoryChange?.let { product ->
+        android.util.Log.d("CategoryDialog", "Entering dialog block for product: ${product.nom}")
+        android.util.Log.d("CategoryDialog", "viewModelToUse available: ${viewModelToUse != null}")
+
+        android.util.Log.d("CategoryDialog", "Displaying CategorySelectionDialog")
+        CategorySelectionDialog(
+            viewModel = viewModelToUse,
+            product = product,
+            onCategorySelected = { newCategoryId ->
+                android.util.Log.d("CategoryDialog", "onCategorySelected called with: $newCategoryId")
+                // Update the product's category
+                val updatedProduct = newCategoryId?.let {
+                    product.copy(idParentCategorie = it)
+                }
+                updatedProduct?.let {
+                    repositorysMainGetter.repo1ProduitInfos.upsert(it)
+                }
+                selectedProductForCategoryChange = null
+            },
+            onDismiss = {
+                android.util.Log.d("CategoryDialog", "Dialog dismissed")
+                selectedProductForCategoryChange = null
+            },
+            onUpdateCategory = { categoryId, newName ->
+                android.util.Log.d("CategoryDialog", "onUpdateCategory called: $categoryId -> $newName")
+                // Update category name if needed
+                val categoryToUpdate = categoryMap[categoryId]
+                categoryToUpdate?.let {
+                    val updated = it.copy(nom = newName)
+                    viewModelToUse.addOrUpdateCategorie(updated)
+                }
+            },
+            categoriesMap = categoryMap,
+            availableCategories = allCategories.map { it.id }
+        )
+    } ?: run {
+        android.util.Log.d("CategoryDialog", "selectedProductForCategoryChange is null - no dialog shown")
+    }
 }
 
 @Composable
@@ -128,6 +214,9 @@ fun Etager_LazyColumn_FragID3(
     categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    catalogues: List<CataloguesCaegorie>,
+    categoryMap: Map<Long, CategoriesTabelle>,
+    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
     on_pour_send_data: (String, String) -> Unit
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -162,9 +251,12 @@ fun Etager_LazyColumn_FragID3(
                         StaggeredGridItemSpan.SingleLane
                     }
                 ) {
-                    LazyStigerList_Produits_FragID3(
+                    ProductItemWithCategory(
                         product = product,
                         colors = colors,
+                        categoryMap = categoryMap,
+                        catalogues = catalogues,
+                        onProductCategoryClick = onProductCategoryClick,
                         on_pour_send_data = on_pour_send_data
                     )
                 }
@@ -207,6 +299,43 @@ fun Etager_LazyColumn_FragID3(
     }
 }
 
+/**
+ * Extracted component to properly use remember in @Composable context
+ * Displays product item with category badge
+ */
+@Composable
+private fun ProductItemWithCategory(
+    product: ArticlesBasesStatsTable,
+    colors: List<M3CouleurProduitInfos>,
+    categoryMap: Map<Long, CategoriesTabelle>,
+    catalogues: List<CataloguesCaegorie>,
+    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
+    on_pour_send_data: (String, String) -> Unit
+) {
+    val currentCategory = remember(product.idParentCategorie, categoryMap) {
+        product.idParentCategorie?.let { categoryMap[it] }
+    }
+
+    val currentCatalogue = remember(currentCategory, catalogues) {
+        currentCategory?.catalogueParentId?.let { catalogueId ->
+            catalogues.find { it.id.toLong() == catalogueId }
+        }
+    }
+
+    android.util.Log.d("CategoryDialog", "ProductItemWithCategory rendering for: ${product.nom}")
+
+    // FIXED: Remove duplicate CategoryBadge - only show it in Item_Produit_FragID3
+    LazyStigerList_Produits_FragID3(
+        product = product,
+        colors = colors,
+        on_pour_send_data = on_pour_send_data,
+        onCategoryClick = {
+            android.util.Log.d("CategoryDialog", "ProductItemWithCategory - onCategoryClick called for: ${product.nom}")
+            onProductCategoryClick(product)
+        }
+    )
+}
+
 @Composable
 fun CategoryStickyHeader(
     category: CategoriesTabelle,
@@ -233,14 +362,18 @@ fun LazyStigerList_Produits_FragID3(
     product: ArticlesBasesStatsTable,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    onCategoryClick: (() -> Unit)? = null // Callback to notify parent about category click
 ) {
     val isExpanded = focusedValuesGetter.active_Central_Values
         .expanded_M1Produit?.keyID == product.keyID
 
+    android.util.Log.d("CategoryDialog", "LazyStigerList_Produits_FragID3 - onCategoryClick null: ${onCategoryClick == null}")
+
     Item_Produit_FragID3(
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
+        onCategoryClick = onCategoryClick, // FIXED: Pass the callback to child
         modifier = modifier
     )
 }

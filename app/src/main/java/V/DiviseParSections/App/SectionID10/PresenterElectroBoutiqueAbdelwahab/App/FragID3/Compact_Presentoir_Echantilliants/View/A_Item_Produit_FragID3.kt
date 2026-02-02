@@ -10,20 +10,33 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -31,10 +44,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -44,12 +62,33 @@ fun Item_Produit_FragID3(
     relative_M1produit: ArticlesBasesStatsTable,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesSetter: FocusedValuesSetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    wifiTransferDatas: WifiTransferDatas = koinInject()
+    wifiTransferDatas: WifiTransferDatas = koinInject(),
+    onCategoryClick: (() -> Unit)? = null, // FIXED: New parameter to delegate category dialog to parent
 ) {
+    // Get categories and catalogues for display
+    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
+        repositorysMainGetter.repoM16CategorieProduit.datasValue
+    }
+
+    val categoryMap = remember(allCategories) {
+        allCategories.associateBy { it.id }
+    }
+
+    val currentCategory = remember(relative_M1produit.idParentCategorie, allCategories) {
+        relative_M1produit.idParentCategorie?.let { categoryMap[it] }
+    }
+
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
+
+    val currentCatalogue = remember(currentCategory, catalogues) {
+        currentCategory?.catalogueParentId?.let { catalogueId ->
+            catalogues.find { it.id.toLong() == catalogueId }
+        }
+    }
 
     val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
         repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
@@ -212,49 +251,38 @@ fun Item_Produit_FragID3(
                     tariff.prixCurrency != 0.0
         }
 
-        retailTariff ?: superGroTariff
+        // Use retail price, fallback to superGro, then to product's base price
+        retailTariff ?: superGroTariff ?: M13TarificationInfos(
+            prixCurrency = relative_M1produit.prixVent,
+            parent_M1Produit_KeyId = relative_M1produit.keyID,
+            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Detaille
+        )
     } else {
-        datasValue_with_synthetic.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+        // For grossist mode, use superGro price as fallback
+        val superGroTariff = datasValue_with_synthetic.find { tariff ->
+            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
         }
+
+        superGroTariff ?: M13TarificationInfos(
+            prixCurrency = relative_M1produit.prixAchat,
+            parent_M1Produit_KeyId = relative_M1produit.keyID,
+            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+        )
     }
 
-    fun algoritme_choisiser_tariff(): M13TarificationInfos {
-        // Find the most recent operation for this product
-        val lastOperation = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-            .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
-            .maxByOrNull { it.creationTimestamps }
-
-        // Try to use the tariff from the last operation
-        lastOperation?.parentM13TarificationKeyID?.let { tariffKeyID ->
-            datasValue_with_synthetic.find { it.keyID == tariffKeyID }?.let { operationTariff ->
-                // Verify the tariff still has a valid price
-                if (operationTariff.prixCurrency != 0.0 ||
-                    operationTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-                    return operationTariff
-                }
-            }
+    val algoritme_choisiser_tariff = remember(datasValue_with_synthetic) {
+        val algorithm: () -> M13TarificationInfos? = {
+            datasValue_with_synthetic
+                .filter { it.prixCurrency != 0.0 }
+                .maxByOrNull { it.typeChoisi.profitabilityScore }
         }
-
-        // If no valid operation tariff, use the default logic:
-        // First try the highest price tariff with non-zero price
-        val highestPriceTariff = datasValue_with_synthetic
-            .filter { it.prixCurrency != 0.0 }
-            .maxByOrNull { it.prixCurrency }
-
-        return highestPriceTariff ?: fallbackTariff
-        ?: datasValue_with_synthetic.firstOrNull()
-        ?: M13TarificationInfos.get_default()
+        algorithm
     }
 
-    val finale_Tariff = remember(
-        datasValue_with_synthetic,
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
-        fallbackTariff
-    ) {
-        algoritme_choisiser_tariff()
+    val finale_Tariff = remember(algoritme_choisiser_tariff(), fallbackTariff) {
+        algoritme_choisiser_tariff() ?: fallbackTariff
     }
 
     var selectedTariff by remember(
@@ -320,6 +348,23 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
+                // FIXED: Category/Catalogue Display Badge - now delegates to parent
+                if (isHostPhone && (currentCatalogue != null || currentCategory != null)) {
+                    Log.d("CategoryDialog_Item", "Rendering CategoryBadge - isHostPhone: $isHostPhone, onCategoryClick null: ${onCategoryClick == null}")
+                    CategoryBadge(
+                        catalogueName = currentCatalogue?.nom,
+                        categoryName = currentCategory?.nom,
+                        onClick = {
+                            Log.d("CategoryDialog_Item", "CategoryBadge onClick triggered")
+                            onCategoryClick?.invoke()
+                                ?: Log.e("CategoryDialog_Item", "onCategoryClick is NULL!")
+                        },
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                } else {
+                    Log.d("CategoryDialog_Item", "CategoryBadge NOT rendered - isHostPhone: $isHostPhone, catalogue: $currentCatalogue, category: $currentCategory")
+                }
+
                 Compact_Header_FragID3(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
@@ -359,7 +404,7 @@ fun Item_Produit_FragID3(
                             newTariff
                         )
                     },
-                    tariffsList = filteredAndSortedTariffs,  // FIXED: Now filtered and sorted
+                    tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = isHostPhone,
                     on_pour_send_data = on_pour_send_data
@@ -413,6 +458,76 @@ fun Item_Produit_FragID3(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Clickable badge displaying the current category and catalogue
+ */
+@Composable
+private fun CategoryBadge(
+    catalogueName: String?,
+    categoryName: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Log.d("CategoryDialog_Item", "CategoryBadge composed in Item_Produit - catalogue: $catalogueName, category: $categoryName")
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f))
+            .clickable {
+                Log.d("CategoryDialog_Item", "CategoryBadge CLICKED in Item_Produit!")
+                onClick()
+            }
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Category,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(16.dp)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                if (catalogueName != null) {
+                    Text(
+                        text = catalogueName,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Text(
+                    text = categoryName ?: "Sans Catégorie",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Changer catégorie",
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(14.dp)
+            )
         }
     }
 }

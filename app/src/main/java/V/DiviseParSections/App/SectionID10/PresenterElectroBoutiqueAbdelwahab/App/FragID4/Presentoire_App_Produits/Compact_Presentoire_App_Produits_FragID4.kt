@@ -5,6 +5,8 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.Autres.ScrolleAdBanner
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -13,6 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -46,9 +51,30 @@ fun Compact_Presentoire_App_Produits_FragID4(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
-    on_pour_send_data: (String, String) -> Unit = { _, _ -> } ,
+    categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null, // ADDED: Support for category dialog
+    on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit
 ) {
+    // ADDED: Create ViewModel locally if not provided
+    val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
+
+    // ADDED: State for category dialog management
+    var selectedProductForCategoryChange by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+
+    // LOG: Initial state check
+    Log.d("CategoryDialog_FragID4", "=== Compact_Presentoire_App_Produits_FragID4 COMPOSED ===")
+    Log.d("CategoryDialog_FragID4", "categoryViewModel provided: ${categoryViewModel != null}")
+    Log.d("CategoryDialog_FragID4", "viewModelToUse available: ${viewModelToUse != null}")
+
+    // ADDED: Get all categories for the dialog
+    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
+        repositorysMainGetter.repoM16CategorieProduit.datasValue
+    }
+
+    val categoryMap = remember(allCategories) {
+        allCategories.associateBy { it.id }
+    }
+
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
         repositorysMainGetter.repo2Client.datasValue
@@ -114,10 +140,49 @@ fun Compact_Presentoire_App_Produits_FragID4(
         categoriesWithProducts = groupe_Par_Categorie,
         viewModelHeadViewModel = viewModelHeadViewModel,
         on_pour_send_data = on_pour_send_data,
-        onClickImageToShowControles = onClickImageToShowControles
+        onClickImageToShowControles = onClickImageToShowControles,
+        onProductCategoryClick = { product -> // ADDED: Callback for category clicks
+            Log.d("CategoryDialog_FragID4", "onProductCategoryClick called for: ${product.nom}")
+            selectedProductForCategoryChange = product
+        }
     )
+
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
         Dialog_Fast_Affiche_Panie()
+    }
+
+    // ADDED: Category Selection Dialog
+    selectedProductForCategoryChange?.let { product ->
+        Log.d("CategoryDialog_FragID4", "Displaying CategorySelectionDialog for: ${product.nom}")
+        CategorySelectionDialog(
+            viewModel = viewModelToUse,
+            product = product,
+            onCategorySelected = { newCategoryId ->
+                Log.d("CategoryDialog_FragID4", "Category selected: $newCategoryId")
+                // Update the product's category
+                val updatedProduct = newCategoryId?.let {
+                    product.copy(idParentCategorie = it)
+                }
+                updatedProduct?.let {
+                    repositorysMainGetter.repo1ProduitInfos.upsert(it)
+                }
+                selectedProductForCategoryChange = null
+            },
+            onDismiss = {
+                Log.d("CategoryDialog_FragID4", "Dialog dismissed")
+                selectedProductForCategoryChange = null
+            },
+            onUpdateCategory = { categoryId, newName ->
+                Log.d("CategoryDialog_FragID4", "Updating category: $categoryId -> $newName")
+                val categoryToUpdate = categoryMap[categoryId]
+                categoryToUpdate?.let {
+                    val updated = it.copy(nom = newName)
+                    viewModelToUse.addOrUpdateCategorie(updated)
+                }
+            },
+            categoriesMap = categoryMap,
+            availableCategories = allCategories.map { it.id }
+        )
     }
 }
 
@@ -128,7 +193,8 @@ fun Etager_LazyColumn_FragID4(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
+    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit = {} // ADDED: Callback for category clicks
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -241,7 +307,11 @@ fun Etager_LazyColumn_FragID4(
                     LazyStigerList_Produits_FragID4(
                         product = product,
                         colors = colors,
-                        on_pour_send_data = on_pour_send_data
+                        on_pour_send_data = on_pour_send_data,
+                        onCategoryClick = { // ADDED: Pass callback to child
+                            Log.d("CategoryDialog_FragID4", "Category click from product: ${product.nom}")
+                            onProductCategoryClick(product)
+                        }
                     )
                 }
             }
@@ -275,11 +345,15 @@ fun LazyStigerList_Produits_FragID4(
     product: ArticlesBasesStatsTable,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    onCategoryClick: (() -> Unit)? = null // ADDED: Callback for category clicks
 ) {
+    Log.d("CategoryDialog_FragID4", "LazyStigerList_Produits_FragID4 - onCategoryClick null: ${onCategoryClick == null}")
+
     Item_Produit_FragID3(
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
+        onCategoryClick = onCategoryClick, // ADDED: Pass callback to Item_Produit_FragID3
         modifier = modifier
     )
 }
