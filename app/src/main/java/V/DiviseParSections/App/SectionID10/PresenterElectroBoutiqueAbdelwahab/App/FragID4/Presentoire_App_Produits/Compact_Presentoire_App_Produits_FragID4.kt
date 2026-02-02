@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs.CategorySelectionDialog_FragID4
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.View.Autres.ScrolleAdBanner
@@ -16,6 +17,12 @@ import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +33,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -51,23 +60,37 @@ fun Compact_Presentoire_App_Produits_FragID4(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
-    categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null, // ADDED: Support for category dialog
+    categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit
 ) {
-    // ADDED: Create ViewModel locally if not provided
+    // FIXED TODO(1): The recomposition issue when a product is moved to a different category
+    // is now resolved by using proper keys in remember() blocks and ensuring
+    // repoM16CategorieProduit.datasValue triggers recomposition when categories change
+
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
 
-    // ADDED: State for category dialog management
     var selectedProductForCategoryChange by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var justMovedProductKeyID by remember { mutableStateOf<String?>(null) }
 
-    // LOG: Initial state check
     Log.d("CategoryDialog_FragID4", "=== Compact_Presentoire_App_Produits_FragID4 COMPOSED ===")
     Log.d("CategoryDialog_FragID4", "categoryViewModel provided: ${categoryViewModel != null}")
     Log.d("CategoryDialog_FragID4", "viewModelToUse available: ${viewModelToUse != null}")
 
-    // ADDED: Get all categories for the dialog
-    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
+    LaunchedEffect(justMovedProductKeyID) {
+        justMovedProductKeyID?.let {
+            Log.d("CategoryAnimation_FragID4", "Product moved, will animate: $it")
+            delay(1500)
+            justMovedProductKeyID = null
+        }
+    }
+
+    // FIXED: Added repoM1Produit.datasValue as a dependency to trigger recomposition
+    // when products change categories
+    val allCategories = remember(
+        repositorysMainGetter.repoM16CategorieProduit.datasValue,
+        repositorysMainGetter.repoM1Produit.datasValue
+    ) {
         repositorysMainGetter.repoM16CategorieProduit.datasValue
     }
 
@@ -115,7 +138,12 @@ fun Compact_Presentoire_App_Produits_FragID4(
         }
     }
 
-    val groupe_Couleur_Par_Produit = remember(list_M3couleur) {
+    // FIXED: Added repoM1Produit.datasValue dependency to ensure recomposition
+    // when products are updated (including category changes)
+    val groupe_Couleur_Par_Produit = remember(
+        list_M3couleur,
+        repositorysMainGetter.repoM1Produit.datasValue
+    ) {
         list_M3couleur.groupBy { it.parentBProduitInfosKeyID }
             .mapNotNull { (productKeyID, colors) ->
                 repositorysMainGetter.repoM1Produit.datasValue.find {
@@ -125,7 +153,12 @@ fun Compact_Presentoire_App_Produits_FragID4(
             .sortedBy { (product, _) -> product.nom }
     }
 
-    val groupe_Par_Categorie = remember(groupe_Couleur_Par_Produit) {
+    // FIXED: Added repoM16CategorieProduit.datasValue dependency to trigger recomposition
+    // when categories are reordered or modified
+    val groupe_Par_Categorie = remember(
+        groupe_Couleur_Par_Produit,
+        repositorysMainGetter.repoM16CategorieProduit.datasValue
+    ) {
         groupe_Couleur_Par_Produit.groupBy { (product, _) -> product.idParentCategorie }
             .mapNotNull { (categoryId, productColorPairs) ->
                 repositorysMainGetter.repoM16CategorieProduit.datasValue.find {
@@ -141,47 +174,41 @@ fun Compact_Presentoire_App_Produits_FragID4(
         viewModelHeadViewModel = viewModelHeadViewModel,
         on_pour_send_data = on_pour_send_data,
         onClickImageToShowControles = onClickImageToShowControles,
-        onProductCategoryClick = { product -> // ADDED: Callback for category clicks
+        onProductCategoryClick = { product ->
             Log.d("CategoryDialog_FragID4", "onProductCategoryClick called for: ${product.nom}")
             selectedProductForCategoryChange = product
-        }
+        },
+        justMovedProductKeyID = justMovedProductKeyID
     )
 
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
         Dialog_Fast_Affiche_Panie()
     }
 
-    // ADDED: Category Selection Dialog
     selectedProductForCategoryChange?.let { product ->
         Log.d("CategoryDialog_FragID4", "Displaying CategorySelectionDialog for: ${product.nom}")
-        CategorySelectionDialog(
+        CategorySelectionDialog_FragID4(
             viewModel = viewModelToUse,
             product = product,
             onCategorySelected = { newCategoryId ->
                 Log.d("CategoryDialog_FragID4", "Category selected: $newCategoryId")
-                // Update the product's category
                 val updatedProduct = newCategoryId?.let {
-                    product.copy(idParentCategorie = it)
-                }
-                updatedProduct?.let {
-                    repositorysMainGetter.repo1ProduitInfos.upsert(it)
-                }
+                    product.copy(
+                        idParentCategorie = it,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                } ?: product
+
+                repositorysMainGetter.repoM1Produit.update(updatedProduct)
+
+                justMovedProductKeyID = product.keyID
+
                 selectedProductForCategoryChange = null
             },
             onDismiss = {
-                Log.d("CategoryDialog_FragID4", "Dialog dismissed")
+                Log.d("CategoryDialog_FragID4", "CategorySelectionDialog dismissed")
                 selectedProductForCategoryChange = null
-            },
-            onUpdateCategory = { categoryId, newName ->
-                Log.d("CategoryDialog_FragID4", "Updating category: $categoryId -> $newName")
-                val categoryToUpdate = categoryMap[categoryId]
-                categoryToUpdate?.let {
-                    val updated = it.copy(nom = newName)
-                    viewModelToUse.addOrUpdateCategorie(updated)
-                }
-            },
-            categoriesMap = categoryMap,
-            availableCategories = allCategories.map { it.id }
+            }
         )
     }
 }
@@ -190,12 +217,15 @@ fun Compact_Presentoire_App_Produits_FragID4(
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier,
     categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel,
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
-    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit = {} // ADDED: Callback for category clicks
+    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit = {},
+    justMovedProductKeyID: String? = null
 ) {
+    val tag = "Etager_LazyColumn_FragID4"
+
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -204,25 +234,21 @@ fun Etager_LazyColumn_FragID4(
     val isConnected = uiState.productDisplayController.isConnected
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
-    val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
-    val isScrollEnabled = isHostPhone || !isConnected
 
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // Handle expanded item scroll to position WITHOUT lock
+    var isScrollEnabled by remember { mutableStateOf(true) }
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            // Only scroll if we're the host phone
             if (!isHostPhone) return@LaunchedEffect
 
             var currentIndex = 0
             var foundIndex = -1
 
-            // Account for banner at the top (index 0)
             currentIndex = 1
 
             for ((category, productColorPairs) in categoriesWithProducts) {
-                // Category header takes one slot
                 currentIndex++
 
                 val productIndex = productColorPairs.indexOfFirst { (product, _) ->
@@ -271,14 +297,12 @@ fun Etager_LazyColumn_FragID4(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-        // Add banner at the top
         item(
             key = "ad_banner_header",
             span = StaggeredGridItemSpan.FullLine
         ) {
             ScrolleAdBanner(
                 onBannerClick = { bannerIndex ->
-                    // Handle banner click if needed
                 },
                 onClickImageToShowControles = onClickImageToShowControles
             )
@@ -296,6 +320,8 @@ fun Etager_LazyColumn_FragID4(
                 val isExpanded = focusedValuesGetter.active_Central_Values
                     .expanded_M1Produit?.keyID == product.keyID
 
+                val justMoved = product.keyID == justMovedProductKeyID
+
                 item(
                     key = "product_${product.keyID}",
                     span = if (isExpanded) {
@@ -308,10 +334,11 @@ fun Etager_LazyColumn_FragID4(
                         product = product,
                         colors = colors,
                         on_pour_send_data = on_pour_send_data,
-                        onCategoryClick = { // ADDED: Pass callback to child
+                        onCategoryClick = {
                             Log.d("CategoryDialog_FragID4", "Category click from product: ${product.nom}")
                             onProductCategoryClick(product)
-                        }
+                        },
+                        justMoved = justMoved
                     )
                 }
             }
@@ -346,14 +373,46 @@ fun LazyStigerList_Produits_FragID4(
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
-    onCategoryClick: (() -> Unit)? = null // ADDED: Callback for category clicks
+    onCategoryClick: (() -> Unit)? = null,
+    justMoved: Boolean = false
 ) {
     Log.d("CategoryDialog_FragID4", "LazyStigerList_Produits_FragID4 - onCategoryClick null: ${onCategoryClick == null}")
 
-    Item_Produit_FragID3(
-        relative_M1produit = product,
-        on_pour_send_data = on_pour_send_data,
-        onCategoryClick = onCategoryClick, // ADDED: Pass callback to Item_Produit_FragID3
-        modifier = modifier
+    val backgroundColor by animateColorAsState(
+        targetValue = if (justMoved) {
+            Color(0xFF4CAF50).copy(alpha = 0.3f)
+        } else {
+            Color.Transparent
+        },
+        animationSpec = tween(
+            durationMillis = 500,
+            easing = FastOutSlowInEasing
+        ),
+        label = "backgroundColorAnimation"
     )
+
+    val scale by animateFloatAsState(
+        targetValue = if (justMoved) 1.05f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "scaleAnimation"
+    )
+
+    Box(
+        modifier = Modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .background(backgroundColor, RoundedCornerShape(12.dp))
+    ) {
+        Item_Produit_FragID3(
+            relative_M1produit = product,
+            on_pour_send_data = on_pour_send_data,
+            onCategoryClick = onCategoryClick,
+            modifier = modifier
+        )
+    }
 }
