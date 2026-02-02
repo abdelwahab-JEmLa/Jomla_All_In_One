@@ -70,6 +70,7 @@ fun SubColorCard_WithButton(
             selectedCouleur = couleur,
             selectedTariff = selectedTariff,
             compactMode = !isExpanded,
+            au_depot = couleur.count_Don_Depot,
             modifier = Modifier.fillMaxWidth()
         )
     }

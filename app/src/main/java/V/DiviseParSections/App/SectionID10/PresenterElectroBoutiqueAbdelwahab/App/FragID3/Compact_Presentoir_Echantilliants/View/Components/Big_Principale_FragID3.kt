@@ -105,11 +105,13 @@ fun Big_Principale_FragID3(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp) // Reduced from 4.dp to 2.dp
         ) {
+            // FIXED: Now passing count_Don_Depot to Lenceur_Vent_Handler_FragID3
             Lenceur_Vent_Handler_FragID3(
                 relative_M1produit = relative_M1produit,
                 relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                 selectedCouleur = selectedCouleur,
                 selectedTariff = selectedTariff,
+                au_depot = selectedCouleur.count_Don_Depot,
                 compactMode = !isThisProductExpanded
             )
 
@@ -122,20 +124,4 @@ fun Big_Principale_FragID3(
             )
         }
     }
-}
-
-/**
- * Helper function to save edited progressive tariff
- */
-fun saveEditedProgressiveTariff(
-    aCentralFacade: ACentralFacade,
-    tariff: M13TarificationInfos,
-    newPrice: Double
-) {
-    val updatedTariff = tariff.copy(
-        prixCurrency = newPrice,
-        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-    )
-
-    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
 }

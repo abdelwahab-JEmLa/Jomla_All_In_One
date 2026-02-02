@@ -25,29 +25,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-/**
- * A reusable component that displays a quantity button with two-click behavior:
- * - First click: Updates to standard_count and triggers on_Data_Update
- * - Second click: Enters edit mode and shows an outlined text field
- *
- * @param start_count The initial/current count to display
- * @param standard_count The count to set on first click (default: 1)
- * @param icon The icon to display in the button (nullable - won't display if null)
- * @param isAvailable Whether the component is enabled for interaction (default: true)
- * @param compact_taille Whether to use compact sizing (reduces padding and text size)
- * @param on_Data_Update Callback when quantity needs to be updated (returns new quantity)
- * @param modifier Optional modifier for the component
- */
 @Composable
 fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
     start_count: Int,
+    au_depot: Int = 0,
     standard_count: Int = 1,
+    start_au_premier_click_par_add_outlined: Boolean = false,
     icon: ImageVector? = null,
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
@@ -74,7 +64,8 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
         MaterialTheme.typography.labelLarge
     }
 
-    if (isEditMode && start_count > 0) {
+    // FIXED: When start==0, first click shows outlined text field for keyboard input
+    if (isEditMode) {
         // Edit mode: Show outlined text field
         OutlinedTextField(
             value = quantityInput,
@@ -99,7 +90,11 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
             ),
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
-            enabled = isAvailable
+            enabled = isAvailable,
+            // FIXED: Display depot count as hint when available
+            placeholder = if (au_depot > 0) {
+                { Text("Dépôt: $au_depot", style = textStyle.copy(fontWeight = FontWeight.Normal)) }
+            } else null
         )
     } else {
         // Display mode: Show clickable card
@@ -117,46 +112,85 @@ fun OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
             MaterialTheme.colorScheme.onPrimary
         }
 
-        Card(
-            modifier = modifier
-
-                .clickable(enabled = isAvailable) {
-                when {
-                    start_count == 0 -> {
-                        on_Data_Update(standard_count)
-                    }
-                    start_count >= standard_count -> {
-                        isEditMode = true
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // FIXED: Depot count card shown before the icon - red background, black text, 30% smaller
+            if (au_depot > 0) {
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = horizontalPadding * 0.7f,
+                            vertical = verticalPadding * 0.7f
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = au_depot.toString(),
+                            style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
                     }
                 }
-            },
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = containerColor)
-        ) {
-            Row(
-                modifier = Modifier.padding(
-                    horizontal = horizontalPadding,
-                    vertical = verticalPadding
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            }
+
+            // Main quantity card
+            Card(
+                modifier = Modifier
+                    .clickable(enabled = isAvailable) {
+                        // Click behavior based on start_au_premier_click_par_add_outlined parameter
+                        when {
+                            start_count == 0 -> {
+                                if (start_au_premier_click_par_add_outlined) {
+                                    // Show outlined text field on first click
+                                    isEditMode = true
+                                } else {
+                                    // Add standard_count directly
+                                    on_Data_Update(standard_count)
+                                }
+                            }
+                            start_count >= standard_count -> {
+                                isEditMode = true
+                            }
+                        }
+                    },
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = containerColor)
             ) {
-                // Only show icon if not null
-                icon?.let {
-                    Icon(
-                        imageVector = it,
-                        contentDescription = "Quantity",
-                        tint = contentColor,
-                        modifier = Modifier.size(iconSize)
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = horizontalPadding,
+                        vertical = verticalPadding
+                    ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // Only show icon if not null
+                    icon?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = "Quantity",
+                            tint = contentColor,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    }
+
+                    Text(
+                        text = start_count.toString(),
+                        style = textStyle,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor
                     )
                 }
-
-                Text(
-                    text = start_count.toString(),
-                    style = textStyle,
-                    fontWeight = FontWeight.Bold,
-                    color = contentColor
-                )
             }
         }
     }

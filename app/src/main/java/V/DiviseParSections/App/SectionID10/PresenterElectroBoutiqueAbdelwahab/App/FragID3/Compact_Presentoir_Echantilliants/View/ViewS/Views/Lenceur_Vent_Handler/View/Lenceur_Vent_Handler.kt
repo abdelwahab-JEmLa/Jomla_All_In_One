@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -39,6 +41,7 @@ fun Lenceur_Vent_Handler_FragID3(
     relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
+    au_depot: Int = 0,
     compactMode: Boolean = false,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
@@ -46,6 +49,7 @@ fun Lenceur_Vent_Handler_FragID3(
 ) {
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
     val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
 
     val currentQuantity by remember(relative_M10OperationVentCouleur?.keyID, relative_M10OperationVentCouleur?.quantity) {
         derivedStateOf {
@@ -70,6 +74,8 @@ fun Lenceur_Vent_Handler_FragID3(
     }
 
     fun handleLenceVent(quantity: Int) {
+        val previousQuantity = currentQuantity
+
         // Create or update the operation with the selected tariff
         val operationToUse = relative_M10OperationVentCouleur?.copy(
             quantity = quantity,
@@ -98,6 +104,17 @@ fun Lenceur_Vent_Handler_FragID3(
             aCentralFacade = aCentralFacade,
             onDepotUpdateFailed = { result ->
                 depotAlertInfo = result
+            },
+            onDepotUpdateSuccess = { result ->
+                // FIXED: Show long Toast when items are returned to depot (quantity decreased)
+                if (quantity < previousQuantity && !focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+                    val returnedQuantity = previousQuantity - quantity
+                    Toast.makeText(
+                        context,
+                        "✓ Retour au dépôt: $returnedQuantity unité(s)\nStock actuel: ${result.currentCount}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         )
 
@@ -131,6 +148,7 @@ fun Lenceur_Vent_Handler_FragID3(
     ) {
         OutlinedText_Avec_Init_Click_Button_Modulable_Proto3(
             start_count = currentQuantity,
+            au_depot = au_depot,
             standard_count = standardCount,
             icon = Icons.Default.ShoppingCart,
             isAvailable = isAvailable,
@@ -181,12 +199,14 @@ private fun DepotAlertDialog(
     )
 }
 
+// FIXED: Added onDepotUpdateSuccess callback parameter
 fun lenceVent(
     relative_M10OperationVentCouleur: M10OperationVentCouleur,
     selectedTariff: M13TarificationInfos,
     relative_M3CouleurInfos: M3CouleurProduitInfos,
     aCentralFacade: ACentralFacade,
-    onDepotUpdateFailed: (DepotUpdateResult) -> Unit
+    onDepotUpdateFailed: (DepotUpdateResult) -> Unit,
+    onDepotUpdateSuccess: (DepotUpdateResult) -> Unit = {}
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
@@ -212,6 +232,8 @@ fun lenceVent(
             )
             if (!result.success) {
                 onDepotUpdateFailed(result)
+            } else {
+                onDepotUpdateSuccess(result)
             }
         }
     } else {
@@ -220,6 +242,21 @@ fun lenceVent(
             buildList { add(relative_M10OperationVentCouleur) },
             aCentralFacade
         )
+
+        // Handle depot update for existing operations
+        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+            val result = update_countDepot(
+                aCentralFacade,
+                relative_M3CouleurInfos,
+                -relative_M10OperationVentCouleur.quantity,
+                active = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+            )
+            if (!result.success) {
+                onDepotUpdateFailed(result)
+            } else {
+                onDepotUpdateSuccess(result)
+            }
+        }
     }
 }
 
