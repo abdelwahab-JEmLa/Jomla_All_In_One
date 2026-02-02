@@ -50,10 +50,12 @@ fun Lenceur_Vent_Handler_FragID3(
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
-    // FIXED: Make depot count reactive to selectedCouleur changes
-    val au_depot by remember(selectedCouleur.keyID, selectedCouleur.count_Don_Depot) {
+    // FIXED: Observe depot count from repository for automatic recomposition
+    val au_depot by remember(selectedCouleur.keyID) {
         derivedStateOf {
-            selectedCouleur.count_Don_Depot
+            aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.datasValue
+                .find { it.keyID == selectedCouleur.keyID }
+                ?.count_Don_Depot ?: selectedCouleur.count_Don_Depot
         }
     }
 
@@ -72,11 +74,11 @@ fun Lenceur_Vent_Handler_FragID3(
             1
     }
 
-    val isAvailable = remember(
-        selectedCouleur.count_Don_Depot,
-        focusedValuesGetter.currentApp_ItsWorkChezGrossisst
-    ) {
-        selectedCouleur.count_Don_Depot > 0 || focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    // FIXED: Use the observed au_depot value for availability check
+    val isAvailable by remember(au_depot, focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+        derivedStateOf {
+            au_depot > 0 || focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+        }
     }
 
     fun handleLenceVent(quantity: Int) {
@@ -296,18 +298,23 @@ fun update_countDepot(
         )
     }
 
-    val newCount = couleur.count_Don_Depot + quantityChange
+    // FIXED: Get current depot count from repository to avoid stale data
+    val currentCouleur = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.datasValue
+        .find { it.keyID == couleur.keyID } ?: couleur
+
+    val currentDepotCount = currentCouleur.count_Don_Depot
+    val newCount = currentDepotCount + quantityChange
 
     if (newCount < 0) {
         return DepotUpdateResult(
             success = false,
             message = "Stock insuffisant au dépôt",
-            currentCount = couleur.count_Don_Depot,
+            currentCount = currentDepotCount,
             requestedChange = quantityChange
         )
     }
 
-    val updatedCouleur = couleur.copy(
+    val updatedCouleur = currentCouleur.copy(
         count_Don_Depot = newCount,
         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
     )
