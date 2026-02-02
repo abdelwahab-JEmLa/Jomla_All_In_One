@@ -121,11 +121,14 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler =
+        viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
-    val itsFragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
+    val itsFragmentProduitFastSearchDialog =
+        activeFragment == Screen.FragmentProduitFastSearchDialog
 
-    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
+    val currentM9AppCompt =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     val activeCentralValues = focusedValuesGetter.active_Central_Values
@@ -160,6 +163,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
                 }
+
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
                         recordingViewModel.onRecordingStopped()
@@ -167,6 +171,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job?.cancel()
                     job = null
                 }
+
                 else -> {}
             }
         }
@@ -209,7 +214,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    val m17Message_avec_BonVen = focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
+    val m17Message_avec_BonVen =
+        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     if (m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
@@ -236,12 +242,15 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         "t1" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
                         )
+
                         "t2" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
                         )
+
                         "t3" -> currentBonVent.copy(
                             pourcentage_AffichageDuCatalogue_tebnage = 100.0
                         )
+
                         else -> currentBonVent
                     }
                     repositorysMainSetter.repo8BonVent.upsert(updatedBonVent)
@@ -252,12 +261,15 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     "t1" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_Conficerie = 100.0,
                     )
+
                     "t2" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
                     )
+
                     "t3" -> currentActiveCentralValues.copy(
                         pourcentage_AffichageDuCatalogue_tebnage = 100.0,
                     )
+
                     else -> currentActiveCentralValues.copy()
                 }
 
@@ -276,7 +288,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     )
 
-    val activeDialogSearchM1Produit = focusedValuesGetter.currentActive_M9AppCompt?.activeDialogSearchM1Produit
+    val activeDialogSearchM1Produit =
+        focusedValuesGetter.currentActive_M9AppCompt?.activeDialogSearchM1Produit
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -393,7 +406,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     )
 
                     if (shouldShowFloatingSearcher) {
-                        FloatingSecureClickToggleFAB (
+                        FloatingSecureClickToggleFAB(
                             showLabels = showLabels
                         )
 
@@ -419,9 +432,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                         (currentFilters - ActiveCentralValues.ActiveFilter.premier_Check_Donne) +
                                                 ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
                                     }
+
                                     currentFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) -> {
                                         currentFilters - ActiveCentralValues.ActiveFilter.non_premier_Check_Donne
                                     }
+
                                     else -> {
                                         currentFilters + ActiveCentralValues.ActiveFilter.premier_Check_Donne
                                     }
@@ -437,13 +452,14 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
                 }
                 (activeFragment == Screen.A_Clients_LocationGps).ifFalse {
-                FloatingPanierToggleFAB(
-                    focusedValuesGetter = focusedValuesGetter,
-                    focusedVarsHandlerFacade = focusedVarsHandlerFacade,
-                    viewModel = viewModel,
-                    showLabels = showLabels
-                )
+                    FloatingPanierToggleFAB(
+                        focusedValuesGetter = focusedValuesGetter,
+                        focusedVarsHandlerFacade = focusedVarsHandlerFacade,
+                        viewModel = viewModel,
+                        showLabels = showLabels
+                    )
                 }
+
                 /*     (activeDialogSearchM1Produit == true || itsFragmentProduitFastSearchDialog).ifFalse {
                          Row(
                              verticalAlignment = Alignment.CenterVertically,
@@ -613,8 +629,10 @@ fun FloatingFilterToggleFAB(
     val currentFilterState = when {
         activeFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) ->
             FilterState.PREMIER_CHECK
+
         activeFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) ->
             FilterState.NON_PREMIER_CHECK
+
         else -> FilterState.AUCUN
     }
 
