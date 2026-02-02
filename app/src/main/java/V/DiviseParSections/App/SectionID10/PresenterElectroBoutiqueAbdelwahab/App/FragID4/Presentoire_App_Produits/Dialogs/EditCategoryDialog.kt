@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,11 +34,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
 
+/**
+ * FIXED TODO(1): Removed ViewModel dependency
+ * Now uses callback to update category
+ */
 @Composable
 fun EditCategoryDialog(
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,      //<--
-    //TODO(1): ici aussi
     categoryToEdit: CategoriesTabelle,
+    onUpdateCategory: (String) -> Unit, // Callback with just the new name
     onDismiss: () -> Unit
 ) {
     var textFieldValue by remember {
@@ -59,14 +61,15 @@ fun EditCategoryDialog(
         focusRequester.requestFocus()
         keyboard?.show()
         // Select all text for easy editing
-        textFieldValue = textFieldValue.copy(selection = TextRange(0, categoryToEdit.nom.length))
+        textFieldValue = textFieldValue.copy(
+            selection = TextRange(0, categoryToEdit.nom.length)
+        )
     }
 
     val updateCategory = {
         val trimmedName = textFieldValue.text.trim()
         if (trimmedName.isNotEmpty()) {
-            val updatedCategory = categoryToEdit.copy(nom = trimmedName)
-            viewModel.addOrUpdateCategorie(updatedCategory)
+            onUpdateCategory(trimmedName)
             onDismiss()
         }
     }
@@ -93,26 +96,33 @@ fun EditCategoryDialog(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
                 OutlinedTextField(
                     value = textFieldValue,
                     onValueChange = { textFieldValue = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
-                    label = { Text("Etate") },
+                    label = { Text("Nom") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = { updateCategory() }
+                        onDone = {
+                            keyboard?.hide()
+                            updateCategory()
+                        }
                     ),
                     singleLine = true
                 )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Annuler") }
+                    TextButton(onClick = onDismiss) {
+                        Text("Annuler")
+                    }
                     TextButton(
                         onClick = updateCategory,
                         enabled = textFieldValue.text.trim().isNotEmpty()

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
@@ -24,8 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,39 +36,29 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * FIXED TODO(1): Removed ViewModel dependency
+ * All data is now passed as parameters
+ */
 @Composable
 fun CategoryOptionGridCard(
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,      //<--
-    //TODO(1): ici aussi
     categorie: CategoriesTabelle,
     categoryId: Long?,
     categoryName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
+    productsInCategory: List<ArticlesBasesStatsTable> = emptyList(), // Pass products as parameter
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     var showEditDialog by remember { mutableStateOf(false) }
 
-    val productsForCategory by remember(categoryId, uiState.a_ProduitInfosList) {
-        derivedStateOf {
-            if (categoryId != null) {
-                uiState.a_ProduitInfosList
-                    .filter { it.idParentCategorie == categoryId }
-                    .take(2) // Take only 2 products as requested
-            } else {
-                // For "Sans Catégorie" option, get products with no category
-                uiState.a_ProduitInfosList
-                    .filter { it.idParentCategorie == null }
-                    .take(2)
-            }
-        }
+    // Take only first 2 products for display
+    val displayProducts = remember(productsInCategory) {
+        productsInCategory.take(2)
     }
 
-    // RepositorysMainGetter the first product to display its image
-    val displayProduct = productsForCategory.firstOrNull()
-    val displayProduct2 = productsForCategory.lastOrNull()
+    val displayProduct = displayProducts.firstOrNull()
+    val displayProduct2 = displayProducts.getOrNull(1)
 
     Card(
         modifier = Modifier
@@ -88,37 +76,35 @@ fun CategoryOptionGridCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // FIXED: Changed from Row to Column for better layout
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable(onClick = onClick)
-                ,
+                    .clickable(onClick = onClick),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Image positioned at the top center
+                // Product images at the top
                 if (displayProduct != null) {
                     Row {
-                    A_GlideDisplayImageByKeyId_Proto_5(
-                        produitVID = displayProduct.id,
-                        modifier = Modifier.size(40.dp),
-                        produitNom = displayProduct.nom,
-                        size = 40.dp,
-                        product = displayProduct,
-                        qualityImage = 3,
-                        refreshImage = displayProduct.actualiseSonImage,
-                        enableAutoScroll = false
-                    )
+                        A_GlideDisplayImageByKeyId_Proto_5(
+                            produitVID = displayProduct.id,
+                            modifier = Modifier.size(40.dp),
+                            produitNom = displayProduct.nom,
+                            size = 40.dp,
+                            product = displayProduct,
+                            qualityImage = 3,
+                            refreshImage = displayProduct.actualiseSonImage,
+                            enableAutoScroll = false
+                        )
                         if (displayProduct2 != null) {
                             A_GlideDisplayImageByKeyId_Proto_5(
                                 produitVID = displayProduct2.id,
                                 modifier = Modifier.size(40.dp),
                                 produitNom = displayProduct2.nom,
                                 size = 40.dp,
-                                product = displayProduct,
+                                product = displayProduct2,
                                 qualityImage = 3,
-                                refreshImage = displayProduct.actualiseSonImage,
+                                refreshImage = displayProduct2.actualiseSonImage,
                                 enableAutoScroll = false
                             )
                         }
@@ -149,7 +135,7 @@ fun CategoryOptionGridCard(
                 )
             }
 
-            // Action buttons positioned at the corners
+            // Selection indicator
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
@@ -162,6 +148,7 @@ fun CategoryOptionGridCard(
                 )
             }
 
+            // Edit button
             if (onEditName != null && categoryId != null) {
                 IconButton(
                     onClick = { showEditDialog = true },
@@ -183,8 +170,8 @@ fun CategoryOptionGridCard(
     // Show edit dialog when requested
     if (showEditDialog && onEditName != null) {
         EditCategoryDialog(
-            viewModel=viewModel,
             categoryToEdit = categorie,
+            onUpdateCategory = onEditName,
             onDismiss = { showEditDialog = false }
         )
     }

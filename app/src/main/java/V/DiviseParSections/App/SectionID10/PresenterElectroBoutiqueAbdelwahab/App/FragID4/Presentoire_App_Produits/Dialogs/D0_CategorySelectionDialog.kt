@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -39,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,61 +53,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.koinViewModel
 
 private const val TAG = "CategorySelectionDialog"
 
+/**
+ * COMPLETE REFACTORED VERSION - No ViewModel dependencies
+ * All data is passed as parameters, all actions through callbacks
+ */
 @Composable
 fun CategorySelectionDialog_FragID4(
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),     //<--
-    //TODO(1): enleve ca et fait que tout ce fait au composable
     product: ArticlesBasesStatsTable,
+    allCategories: List<CategoriesTabelle>,
+    allProducts: List<ArticlesBasesStatsTable>, // For calculating products per category
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
-    onUpdateCategory: ((Long, String) -> Unit)? = null,
-    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
-    availableCategories: List<Long> = emptyList(),
+    onCreateNewCategory: (String) -> Unit = {},
+    onUpdateCategoryName: (Long, String) -> Unit = { _, _ -> },
+    isFastMoveMode: Boolean = false,
 ) {
-    // FIXED: Load categories from ViewModel if not provided
-    val uiState by viewModel.uiState.collectAsState()
-
-    // FIXED: Get categories from ViewModel's repository
-    val categoriesFromViewModel = remember(viewModel.repositorysMainGetter.repoM16CategorieProduit.datasValue) {
-        viewModel.repositorysMainGetter.repoM16CategorieProduit.datasValue
-    }
-
-    // FIXED: Create categories map from ViewModel data if not provided
-    val effectiveCategoriesMap = remember(categoriesMap, categoriesFromViewModel) {
-        if (categoriesMap.isEmpty()) {
-            categoriesFromViewModel.associateBy { it.id }
-        } else {
-            categoriesMap
-        }
-    }
-
-    // FIXED: Get products to calculate which categories have products
-    val productsFromViewModel = remember(viewModel.repositorysMainGetter.repoM1Produit.datasValue) {
-        viewModel.repositorysMainGetter.repoM1Produit.datasValue
-    }
-
-    // FIXED: Calculate available categories (those that have products)
-    val effectiveAvailableCategories = remember(availableCategories, productsFromViewModel) {
-        if (availableCategories.isEmpty()) {
-            productsFromViewModel
-                .mapNotNull { it.idParentCategorie }
-                .distinct()
-        } else {
-            availableCategories
-        }
-    }
-
-    // Log for debugging
-    Log.d(TAG, "CategorySelectionDialog opened")
-    Log.d(TAG, "Categories map size: ${effectiveCategoriesMap.size}")
-    Log.d(TAG, "Available categories: ${effectiveAvailableCategories.size}")
-    Log.d(TAG, "Product: ${product.nom}, Current category: ${product.idParentCategorie}")
-
-    val isFastMoveMode = uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove
     var showSearch by remember(isFastMoveMode) { mutableStateOf(isFastMoveMode) }
     var searchText by remember { mutableStateOf("") }
     var filterWithProducts by remember { mutableStateOf(false) }
@@ -125,34 +85,54 @@ fun CategorySelectionDialog_FragID4(
         }
     }
 
+    // Log for debugging
+    Log.d(TAG, "CategorySelectionDialog opened")
+    Log.d(TAG, "All categories: ${allCategories.size}")
+    Log.d(TAG, "All products: ${allProducts.size}")
+    Log.d(TAG, "Product: ${product.nom}, Current category: ${product.idParentCategorie}")
+
     val catalogues = remember { B4CatalogueCategoriesRepository() }
 
-    // FIXED: Use effectiveCategoriesMap instead of empty categoriesMap
-    val allCategories = remember(effectiveCategoriesMap) {
-        effectiveCategoriesMap.values.sortedBy { it.position }
+    val sortedCategories = remember(allCategories) {
+        allCategories.sortedBy { it.position }
     }
 
-    Log.d(TAG, "All categories loaded: ${allCategories.size}")
-    allCategories.take(5).forEach { cat ->
-        Log.d(TAG, "Category: ${cat.nom} (ID: ${cat.id}, Position: ${cat.position})")
+    // Calculate products per category for filtering and display
+    val productsByCategory = remember(allProducts) {
+        allProducts
+            .mapNotNull { product -> product.idParentCategorie?.let { it to product } }
+            .groupBy({ it.first }, { it.second })
     }
 
-    val sansCategorieCategory =
-        remember { CategoriesTabelle(id = 0L, nom = "Sans Catégorie", position = 0) }
+    val availableCategories = remember(productsByCategory) {
+        productsByCategory.keys.toList()
+    }
 
-    val categoriesByCatalogue = remember(allCategories, catalogues) {
+    Log.d(TAG, "Available categories (with products): ${availableCategories.size}")
+
+    val sansCategorieCategory = remember {
+        CategoriesTabelle(id = 0L, nom = "Sans Catégorie", position = 0)
+    }
+
+    // Products without category
+    val productsWithoutCategory = remember(allProducts) {
+        allProducts.filter { it.idParentCategorie == null }
+    }
+
+    val categoriesByCatalogue = remember(sortedCategories, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
 
         catalogues.forEach { catalogue ->
-            val categoriesInCatalogue =
-                allCategories.filter { it.catalogueParentId == catalogue.id }
+            val categoriesInCatalogue = sortedCategories.filter {
+                it.catalogueParentId == catalogue.id
+            }
             if (categoriesInCatalogue.isNotEmpty()) {
                 grouped[catalogue] = categoriesInCatalogue.sortedBy { it.position }
                 Log.d(TAG, "Catalogue '${catalogue.nom}': ${categoriesInCatalogue.size} categories")
             }
         }
 
-        val orphanedCategories = allCategories.filter {
+        val orphanedCategories = sortedCategories.filter {
             it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
         }
 
@@ -166,19 +146,18 @@ fun CategorySelectionDialog_FragID4(
         grouped
     }
 
-    // FIXED: Use effectiveAvailableCategories
     val filteredCategoriesByCatalogue by remember(
         categoriesByCatalogue,
         searchText,
         filterWithProducts,
-        effectiveAvailableCategories
+        availableCategories
     ) {
         derivedStateOf {
-            val result = categoriesByCatalogue.mapValues { (catalogue, categories) ->
+            val result = categoriesByCatalogue.mapValues { (_, categories) ->
                 var filtered = categories
 
                 if (filterWithProducts) {
-                    filtered = filtered.filter { effectiveAvailableCategories.contains(it.id) }
+                    filtered = filtered.filter { availableCategories.contains(it.id) }
                 }
 
                 if (searchText.isNotBlank()) {
@@ -205,14 +184,10 @@ fun CategorySelectionDialog_FragID4(
 
     val createCategoryFromSearchText = {
         if (searchText.trim().isNotEmpty()) {
-            viewModel.addOrUpdateCategorie(
-                CategoriesTabelle(
-                    nom = processText(searchText.trim()),
-                    position = 0,
-                    catalogueParentId = 4
-                )
-            )
-            Log.d(TAG, "Creating new category: ${processText(searchText.trim())}")
+            val processedName = processText(searchText.trim())
+            Log.d(TAG, "Creating new category: $processedName")
+            onCreateNewCategory(processedName)
+            searchText = ""
         }
     }
 
@@ -237,6 +212,7 @@ fun CategorySelectionDialog_FragID4(
                     .fillMaxSize()
                     .padding(24.dp)
             ) {
+                // Header with title and action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -248,6 +224,7 @@ fun CategorySelectionDialog_FragID4(
                         fontWeight = FontWeight.Bold
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        // Search toggle
                         IconButton(onClick = {
                             showSearch = !showSearch
                             if (!showSearch) {
@@ -275,6 +252,8 @@ fun CategorySelectionDialog_FragID4(
                                 }
                             }
                         }
+
+                        // Filter toggle
                         IconButton(onClick = {
                             filterWithProducts = !filterWithProducts
                             Log.d(TAG, "Filter with products: $filterWithProducts")
@@ -300,6 +279,8 @@ fun CategorySelectionDialog_FragID4(
                                 }
                             }
                         }
+
+                        // Add new category
                         IconButton(onClick = createCategoryFromSearchText) {
                             Card(
                                 modifier = Modifier.size(48.dp),
@@ -323,6 +304,7 @@ fun CategorySelectionDialog_FragID4(
                     }
                 }
 
+                // Search field
                 if (showSearch) {
                     OutlinedTextField(
                         value = searchText,
@@ -333,7 +315,10 @@ fun CategorySelectionDialog_FragID4(
                             .focusRequester(focusRequester),
                         label = { Text("Rechercher") },
                         placeholder = {
-                            Text(if (isFastMoveMode) "Tapez pour voir les catégories..." else "Rechercher")
+                            Text(
+                                if (isFastMoveMode) "Tapez pour voir les catégories..."
+                                else "Rechercher"
+                            )
                         },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
@@ -356,6 +341,7 @@ fun CategorySelectionDialog_FragID4(
                     )
                 }
 
+                // Product name
                 Text(
                     text = "Produit: ${product.nom}",
                     style = MaterialTheme.typography.bodyMedium,
@@ -363,7 +349,9 @@ fun CategorySelectionDialog_FragID4(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
+                // Content area
                 if (isFastMoveMode && !shouldShowCategories) {
+                    // Fast move mode placeholder
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -395,6 +383,7 @@ fun CategorySelectionDialog_FragID4(
                         }
                     }
                 } else if (shouldShowCategories) {
+                    // Categories grid
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(4),
                         modifier = Modifier
@@ -417,7 +406,6 @@ fun CategorySelectionDialog_FragID4(
                             }
                             item {
                                 CategoryOptionGridCard(
-                                    viewModel = viewModel,
                                     categorie = sansCategorieCategory,
                                     categoryId = null,
                                     categoryName = "Sans Catégorie",
@@ -426,7 +414,8 @@ fun CategorySelectionDialog_FragID4(
                                         Log.d(TAG, "Selected 'Sans Catégorie' for product: ${product.nom}")
                                         onCategorySelected(null)
                                     },
-                                    onEditName = null
+                                    onEditName = null,
+                                    productsInCategory = productsWithoutCategory
                                 )
                             }
                         }
@@ -440,25 +429,31 @@ fun CategorySelectionDialog_FragID4(
                                 )
                             }
                             items(categories) { category ->
+                                val productsInThisCategory = productsByCategory[category.id] ?: emptyList()
+
                                 CategoryOptionGridCard(
-                                    viewModel = viewModel,
                                     categorie = category,
                                     categoryId = category.id,
                                     categoryName = category.nom,
                                     isSelected = product.idParentCategorie == category.id,
                                     onClick = {
-                                        Log.d(TAG, "Selected category '${category.nom}' (ID: ${category.id}) for product: ${product.nom}")
+                                        Log.d(
+                                            TAG,
+                                            "Selected category '${category.nom}' (ID: ${category.id}) for product: ${product.nom}"
+                                        )
                                         onCategorySelected(category.id)
                                     },
-                                    onEditName = if (onUpdateCategory != null) { name ->
-                                        onUpdateCategory(category.id, name)
-                                    } else null
+                                    onEditName = { newName ->
+                                        onUpdateCategoryName(category.id, newName)
+                                    },
+                                    productsInCategory = productsInThisCategory
                                 )
                             }
                         }
                     }
                 }
 
+                // Close button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
