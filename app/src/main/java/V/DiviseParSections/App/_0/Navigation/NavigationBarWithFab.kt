@@ -16,6 +16,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabButton_When_Its_EducationFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_MainPresenter.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,7 @@ fun NavigationBarWithFab(
     var showFabDropdownAchats by remember { mutableStateOf(false) }
     var showFabDropdownFastVent by remember { mutableStateOf(false) }
     var showFabDropdownEducation by remember { mutableStateOf(false) }
+    var showFabDropdown_MainPresenterFragment by remember { mutableStateOf(false) }
 
     // Get current focused values to check floating button visibility
     val currentValues = focusedValuesGetter.active_Central_Values
@@ -228,6 +230,12 @@ fun NavigationBarWithFab(
         if (showFabDropdownEducation && its_EducationFragment) {
             FabDropdownMenu_WhenIts_FragmentEducation(
                 onDismissDropdown = { showFabDropdownEducation = false }
+            )
+        }
+
+        if (showFabDropdown_MainPresenterFragment && activeFragment == Screen.Compact_Presentoire_App_Produits_FragID4) {
+            FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
+                onDismissDropdown = { showFabDropdown_MainPresenterFragment = false }
             )
         }
 

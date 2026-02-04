@@ -27,13 +27,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -169,7 +177,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
             Log.d("CategoryDialog_FragID4", "onProductCategoryClick called for: ${product.nom}")
             selectedProductForCategoryChange = product
         },
-        justMovedProductKeyID = justMovedProductKeyID
+        justMovedProductKeyID = justMovedProductKeyID,
+        repositorysMainGetter = repositorysMainGetter
     )
 
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
@@ -195,10 +204,11 @@ fun Compact_Presentoire_App_Produits_FragID4(
 
                 repositorysMainGetter.repoM1Produit.update(updatedProduct)
                 justMovedProductKeyID = product.keyID
+
                 selectedProductForCategoryChange = null
             },
             onDismiss = {
-                Log.d("CategoryDialog_FragID4", "CategorySelectionDialog dismissed")
+                Log.d("CategoryDialog_FragID4", "Dialog dismissed")
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
@@ -212,12 +222,11 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 )
             },
             onUpdateCategoryName = { categoryId, newName ->
-                Log.d("CategoryDialog_FragID4", "Updating category $categoryId with new name: $newName")
-                val category = allCategories.find { it.id == categoryId }
-                category?.let {
-                    viewModelToUse.addOrUpdateCategorie(
-                        it.copy(nom = newName)
-                    )
+                Log.d("CategoryDialog_FragID4", "Updating category $categoryId to: $newName")
+
+                allCategories.find { it.id == categoryId }?.let { category ->
+                    val updatedCategory = category.copy(nom = newName)
+                    repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(updatedCategory)
                 }
             }
         )
@@ -227,13 +236,14 @@ fun Compact_Presentoire_App_Produits_FragID4(
 @Composable
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier,
-    categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    repositorysMainGetter: RepositorysMainGetter,
     viewModelHeadViewModel: HeadViewModel,
+    categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
-    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit = {},
-    justMovedProductKeyID: String? = null
+    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
+    justMovedProductKeyID: String?
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -324,11 +334,19 @@ fun Etager_LazyColumn_FragID4(
         }
 
         categoriesWithProducts.forEach { (category, productColorPairs) ->
-            item(
-                key = "header_${category.id}",
-                span = StaggeredGridItemSpan.FullLine
-            ) {
-                CategoryStickyHeader(category = category)
+            // Only show header if displayedHeader is true
+            if (category.displayedHeader) {
+                item(
+                    key = "header_${category.id}",
+                    span = StaggeredGridItemSpan.FullLine
+                ) {
+                    CategoryStickyHeader(
+                        category = category,
+                        onToggleHeaderVisibility = { updatedCategory ->
+                            repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(updatedCategory)
+                        }
+                    )
+                }
             }
 
             productColorPairs.forEach { (product, colors) ->
@@ -365,7 +383,8 @@ fun Etager_LazyColumn_FragID4(
 @Composable
 fun CategoryStickyHeader(
     category: CategoriesTabelle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onToggleHeaderVisibility: (CategoriesTabelle) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -373,12 +392,43 @@ fun CategoryStickyHeader(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        Text(
-            text = category.nom,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = category.nom,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.weight(1f)
+            )
+
+            IconButton(
+                onClick = {
+                    val updatedCategory = category.copy(
+                        displayedHeader = !category.displayedHeader
+                    )
+                    onToggleHeaderVisibility(updatedCategory)
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (category.displayedHeader) {
+                        Icons.Default.Visibility
+                    } else {
+                        Icons.Default.VisibilityOff
+                    },
+                    contentDescription = if (category.displayedHeader) {
+                        "Masquer l'en-tête"
+                    } else {
+                        "Afficher l'en-tête"
+                    },
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
     }
 }
 

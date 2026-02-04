@@ -36,10 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * FIXED TODO(1): Removed ViewModel dependency
- * All data is now passed as parameters
- */
+
 @Composable
 fun CategoryOptionGridCard(
     categorie: CategoriesTabelle,

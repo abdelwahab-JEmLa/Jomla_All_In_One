@@ -71,11 +71,15 @@ data class ActiveCentralValues(
     var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     val outlined_filter_searcher_floating_abouve_all: String = "",
 
-    //-----------------Facade Boutique -------------------------------------------------------------------------------------------------------------------------
+    //-----------------FacadeBoutiqueElectro -------------------------------------------------------------------------------------------------------------------------
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     var expanded_M1Produit: ArticlesBasesStatsTable? = null,
 
     var hide_prix_lence_vent_buttons: Boolean = false,
+
+    var filterStateFacadBoutique: FilterState_Facad_Boutique? = null,
+
+
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
@@ -214,6 +218,35 @@ data class ActiveCentralValues(
         data object premier_Check_Donne : ActiveFilter()
         data object non_premier_Check_Donne : ActiveFilter()
     }
+
+    enum class SortOrder_Facade_Boutique {
+        ID_DESC,
+        ID_ASC,
+        NAME_ASC,
+        NAME_DESC,
+        CATEGORY_GROUPED,
+        PRIX_ACHAT_TIME_DESC,  // Most recently updated purchase prices first
+        PRIX_ACHAT_TIME_ASC    // Oldest updated purchase prices first
+    }
+    data class FilterState_Facad_Boutique(
+        val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
+        val hideNonDispo: Boolean = false,
+        val hideDispoOnly: Boolean = false,
+        val hidePetiteProbability: Boolean = false,
+        val hidePrixAchatZero: Boolean = false,
+        val hidePrixAchatPositif: Boolean = false,
+        val hidePrixVenteZero: Boolean = false,
+        val hidePrixVentePositif: Boolean = false,
+        val hideHeldPrioriteDemandAuGrossist: Boolean = false,
+        val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
+        val searchText: String = "",
+        val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
+        val enableCategoryGrouping: Boolean = true,
+        // New time-based filter
+        val prixAchatTimeFilterDays: String = "", // User input as string
+        val enablePrixAchatTimeFilter: Boolean = false
+    )
+
 }
 
 // NEW: Sort mode enum for enhanced sorting capabilities

@@ -34,10 +34,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
 
-/**
- * FIXED TODO(1): Removed ViewModel dependency
- * Now uses callback to update category
- */
 @Composable
 fun EditCategoryDialog(
     categoryToEdit: CategoriesTabelle,

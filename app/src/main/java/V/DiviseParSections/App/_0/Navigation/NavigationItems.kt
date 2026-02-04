@@ -11,7 +11,7 @@ object NavigationItems {
         Screen.ToggleFab,
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.EducationFragment,
-        Screen.FragmentProduitFastSearchDialog,
-     //   Screen.Screen1PanieVentsFinale
+        Screen.FragmentProduitFastSearchDialog,   //<--
+        //TODO(1): fait que si ce n ai pas admine de ne pas affiche ca
     )
 }
