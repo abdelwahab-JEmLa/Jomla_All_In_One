@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client

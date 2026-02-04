@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
