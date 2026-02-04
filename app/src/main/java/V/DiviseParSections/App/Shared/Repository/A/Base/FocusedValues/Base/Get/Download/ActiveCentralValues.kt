@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.FilterState_Facad_Boutique
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -77,7 +78,7 @@ data class ActiveCentralValues(
 
     var hide_prix_lence_vent_buttons: Boolean = false,
 
-    var filterStateFacadBoutique: FilterState_Facad_Boutique? = null,
+    var filterState_Facad_Boutique: FilterState_Facad_Boutique? = null,
 
 
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
@@ -219,34 +220,6 @@ data class ActiveCentralValues(
         data object non_premier_Check_Donne : ActiveFilter()
     }
 
-    enum class SortOrder_Facade_Boutique {
-        ID_DESC,
-        ID_ASC,
-        NAME_ASC,
-        NAME_DESC,
-        CATEGORY_GROUPED,
-        PRIX_ACHAT_TIME_DESC,  // Most recently updated purchase prices first
-        PRIX_ACHAT_TIME_ASC    // Oldest updated purchase prices first
-    }
-    data class FilterState_Facad_Boutique(
-        val affiche_dialog_editeur: Boolean = false,
-        val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
-        val hideNonDispo: Boolean = false,
-        val hideDispoOnly: Boolean = false,
-        val hidePetiteProbability: Boolean = false,
-        val hidePrixAchatZero: Boolean = false,
-        val hidePrixAchatPositif: Boolean = false,
-        val hidePrixVenteZero: Boolean = false,
-        val hidePrixVentePositif: Boolean = false,
-        val hideHeldPrioriteDemandAuGrossist: Boolean = false,
-        val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
-        val searchText: String = "",
-        val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
-        val enableCategoryGrouping: Boolean = true,
-        // New time-based filter
-        val prixAchatTimeFilterDays: String = "", // User input as string
-        val enablePrixAchatTimeFilter: Boolean = false
-    )
 
 }
 

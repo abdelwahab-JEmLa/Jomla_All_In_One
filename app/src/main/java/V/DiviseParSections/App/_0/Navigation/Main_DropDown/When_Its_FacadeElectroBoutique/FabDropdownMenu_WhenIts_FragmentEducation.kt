@@ -1,8 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.FilterState_Facad_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter.FilterDropdownMenu_Its_FacadeElectroBoutique
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.FilterState_Facad_Boutique
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
@@ -25,7 +24,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
 ) {
     // FIXED: Get current FilterState from FocusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val currentFilterState = activeCentralValues.filterStateFacadBoutique ?: FilterState_Facad_Boutique()
+    val currentFilterState = activeCentralValues.filterState_Facad_Boutique ?: FilterState_Facad_Boutique()
 
     Box(modifier = modifier) {
         DropdownMenu(
@@ -53,7 +52,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                     // FIXED: Update affiche_dialog_editeur in FilterState instead of local state
                     focusedValuesGetter.update_activeCentralValues(
                         activeCentralValues.copy(
-                            filterStateFacadBoutique = currentFilterState.copy(
+                            filterState_Facad_Boutique = currentFilterState.copy(
                                 affiche_dialog_editeur = true
                             )
                         )
@@ -63,19 +62,5 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
             )
         }
 
-        // FIXED: Show dialog based on affiche_dialog_editeur from FilterState
-        if (currentFilterState.affiche_dialog_editeur) {
-            FilterDropdownMenu_Its_FacadeElectroBoutique(
-                onDismiss = {
-                    focusedValuesGetter.update_activeCentralValues(
-                        activeCentralValues.copy(
-                            filterStateFacadBoutique = currentFilterState.copy(
-                                affiche_dialog_editeur = false
-                            )
-                        )
-                    )
-                }
-            )
-        }
     }
 }

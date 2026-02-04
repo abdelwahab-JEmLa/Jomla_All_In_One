@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.FilterState_Facad_Boutique
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.SortOrder_Facade_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.FilterState_Facad_Boutique
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.SortOrder_Facade_Boutique
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,12 +44,12 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 ) {
     // FIXED: Get current FilterState from FocusedValuesGetter
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val currentFilterState = activeCentralValues.filterStateFacadBoutique ?: FilterState_Facad_Boutique()
+    val currentFilterState = activeCentralValues.filterState_Facad_Boutique ?: FilterState_Facad_Boutique()
 
     // FIXED: Update FilterState through FocusedValuesGetter
     val onFilterChanged: (FilterState_Facad_Boutique) -> Unit = { newFilterState ->
         focusedValuesGetter.update_activeCentralValues(
-            activeCentralValues.copy(filterStateFacadBoutique = newFilterState)
+            activeCentralValues.copy(filterState_Facad_Boutique = newFilterState)
         )
     }
 

@@ -164,6 +164,35 @@ class RepoM1Produit(
         }
         dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
     }
+    fun addOrUpdateData(data: ArticlesBasesStatsTable) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            repoScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        repoScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+        dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
+    }
 }
 
 @Entity
