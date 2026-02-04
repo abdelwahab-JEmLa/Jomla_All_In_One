@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.DeleteProductHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -82,12 +81,15 @@ fun Compact_Header_FragID3(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            DeleteProductHeader(
-                productName = relative_M1produit.nom,
-                onDelete = {
-                    repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
-                }
-            )
+            // Delete button - only visible for admin users
+            if (shouldShowButtons) {
+                DeleteProductHeader(
+                    productName = relative_M1produit.nom,
+                    onDelete = {
+                        repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
+                    }
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

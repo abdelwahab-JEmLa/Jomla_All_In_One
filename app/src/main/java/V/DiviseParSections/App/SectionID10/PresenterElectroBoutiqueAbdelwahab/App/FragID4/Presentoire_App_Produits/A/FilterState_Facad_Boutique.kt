@@ -17,7 +17,7 @@ data class FilterState_Facad_Boutique(
      * Image existence is determined by checking if the file exists at:
      * /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/{nomImageFichieSansEtansion}.{extensionDisponible}
      */
-    val produit_a_Une_Couleur_Ac_Image: WhatDo = WhatDo.Ne_Affiche_Aucune ,
+    val produit_a_Une_Couleur_Ac_Image: WhatDo = WhatDo.N_Affiche_Que_Lui ,
     val hide_non_couleurAuDepot: Boolean = true,
 
     val affiche_dialog_editeur: Boolean = false,
