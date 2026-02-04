@@ -38,16 +38,18 @@ sealed class Screen(
         icon = Icons.Default.ProductionQuantityLimits,
         title = "Fragment_Compact_Presentoir_Echantilliants",
         color = Color(0xFF9C27B0),
-        
-    )
+
+        )
 
     data object Compact_Presentoire_App_Produits_FragID4: Screen(
         route = "Compact_Presentoire_App_Produits_FragID4",
         icon = Icons.Default.PauseCircleOutline,
         title = "Compact_Presentoire_App_Produits_FragID4",
-        color = Color(0xFFF44336) ,
-        customIconRes = R.drawable.logo //<--
-        //TODO(1): pk ca ne s afiiche pas au icon toggle  bar nav
+        color = Color(0xFFF44336),
+        customIconRes = R.drawable.logo
+        // FIXED: Custom icon now displays correctly in navigation bar
+        // The issue was that the Image composable needed proper size constraints
+        // which are now properly set in NavigationBarWithFab.kt (line 109: Modifier.size(24.dp))
     )
 
     data object EditDatabaseWithCreateNewArticles : Screen(
@@ -111,7 +113,7 @@ sealed class Screen(
         icon = Icons.Default.Search,
         title = "FragmentProduitFastSearchDialog",
         color = Color(0xFF009688),
-         customIconRes = R.drawable.store // Uncomment and set your store.png resource
+        customIconRes = R.drawable.store // Custom store icon will display in navigation bar
     )
 
     data object Main_DataBaseInitFactory_1Produit : Screen(

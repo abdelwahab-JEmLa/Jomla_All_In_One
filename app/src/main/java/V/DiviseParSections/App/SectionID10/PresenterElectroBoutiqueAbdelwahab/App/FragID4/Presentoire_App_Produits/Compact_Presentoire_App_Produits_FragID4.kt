@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.FilterSort_Tunnels
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.GroupTunnel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.A.FilterSortGroupe_Tunnels
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.A.GroupTunnel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Z.Dialogs.CategorySelectionDialog_FragID4
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
@@ -103,7 +103,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     // STEP 3: FILTER & SORT (via FilterSortGroupe_Tunnels)
     // ============================================
 
-    FilterSort_Tunnels(
+    FilterSortGroupe_Tunnels(
         modifier = modifier,
         focusedValuesGetter = focusedValuesGetter,
         repositorysMainGetter = repositorysMainGetter,

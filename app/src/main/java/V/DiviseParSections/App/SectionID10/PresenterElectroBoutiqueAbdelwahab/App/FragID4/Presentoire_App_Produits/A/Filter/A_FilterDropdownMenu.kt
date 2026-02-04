@@ -1,8 +1,8 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.A.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.FilterState_Facad_Boutique
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.SortOrder_Facade_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.A.FilterState_Facad_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.A.SortOrder_Facade_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,18 +12,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +45,8 @@ import org.koin.compose.koinInject
  *
  * FIXED: Correct imports - FilterState and SortOrder are defined inside ActiveCentralValues
  * FIXED: Added switches for hide_non_couleurAuDepot and hide_header_categorie
+ * FIXED: Added dropdown menu for produit_a_Une_Couleur_Ac_Image filter
+ * FIXED: Moved action buttons to the top of the dialog
  */
 @Composable
 fun FilterDropdownMenu_Its_FacadeElectroBoutique(
@@ -66,6 +76,60 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // FIXED: Moved action buttons to the top
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(
+                        onClick = {
+                            onFilterChanged(FilterState_Facad_Boutique())
+                            onDismiss()
+                        }
+                    ) {
+                        Text("Réinitialiser")
+                    }
+
+                    TextButton(
+                        onClick = {
+                            onFilterChanged(
+                                FilterState_Facad_Boutique(
+                                    hideQuiNeSontPas_cUnNeveauArrivage = true,
+                                    hidePetiteProbability = true,
+                                    hidePrixAchatZero = true,
+                                    hidePrixAchatPositif = true,
+                                    hidePrixVenteZero = true,
+                                    hidePrixVentePositif = true,
+                                    hideHeldPrioriteDemandAuGrossist = true,
+                                    hideNonHeldPrioriteDemandAuGrossist = true,
+                                    hide_non_couleurAuDepot = true,
+                                    hide_header_categorie = true,
+                                    searchText = currentFilterState.searchText,
+                                    sortOrderFacadeBoutique = currentFilterState.sortOrderFacadeBoutique,
+                                    enableCategoryGrouping = currentFilterState.enableCategoryGrouping,
+                                    enablePrixAchatTimeFilter = true,
+                                    prixAchatTimeFilterDays = "1",
+                                    produit_a_Une_Couleur_Ac_Image = FilterState_Facad_Boutique.WhatDo.N_Affiche_Que_Lui
+                                )
+                            )
+                        }
+                    ) {
+                        Text("Tout Activer")
+                    }
+
+                    TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text("Fermer")
+                    }
+                }
+            }
+
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
             item {
                 Text(
                     text = "Filtres et tri",
@@ -104,6 +168,28 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
+                )
+            }
+
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            // FIXED: Added dropdown menu for produit_a_Une_Couleur_Ac_Image filter
+            item {
+                Text(
+                    text = "Filtre d'images",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                ImageFilterDropdown(
+                    currentValue = currentFilterState.produit_a_Une_Couleur_Ac_Image,
+                    onValueChange = { newValue ->
+                        onFilterChanged(currentFilterState.copy(produit_a_Une_Couleur_Ac_Image = newValue))
+                    }
                 )
             }
 
@@ -182,26 +268,9 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                     )
                 }
 
-                // Prix Achat Time Sort Options
                 item {
                     SortOption(
-                        label = "Prix achat récemment mis à jour",
-                        selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_DESC,
-                        onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_DESC)) }
-                    )
-                }
-
-                item {
-                    SortOption(
-                        label = "Prix achat anciennement mis à jour",
-                        selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_ASC,
-                        onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_ASC)) }
-                    )
-                }
-
-                item {
-                    SortOption(
-                        label = "Nom A-Z",
+                        label = "Nom (A-Z)",
                         selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.NAME_ASC,
                         onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.NAME_ASC)) }
                     )
@@ -209,9 +278,25 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 
                 item {
                     SortOption(
-                        label = "Nom Z-A",
+                        label = "Nom (Z-A)",
                         selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.NAME_DESC,
                         onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.NAME_DESC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Prix achat: plus récent en premier",
+                        selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_DESC,
+                        onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_DESC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Prix achat: plus ancien en premier",
+                        selected = currentFilterState.sortOrderFacadeBoutique == SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_ASC,
+                        onClick = { onFilterChanged(currentFilterState.copy(sortOrderFacadeBoutique = SortOrder_Facade_Boutique.PRIX_ACHAT_TIME_ASC)) }
                     )
                 }
             }
@@ -220,10 +305,9 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            // Availability filters section
             item {
                 Text(
-                    text = "Filtres de disponibilité",
+                    text = "Filtres de produit",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -231,7 +315,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 
             item {
                 FilterOption(
-                    label = "Masquer qui ne sont pas un niveau arrivage",
+                    label = "Masquer articles non nouveaux arrivages",
                     checked = currentFilterState.hideQuiNeSontPas_cUnNeveauArrivage,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = it))
@@ -239,10 +323,9 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 )
             }
 
-
             item {
                 FilterOption(
-                    label = "Masquer petite probabilité",
+                    label = "Masquer produits petite probabilité",
                     checked = currentFilterState.hidePetiteProbability,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(hidePetiteProbability = it))
@@ -254,7 +337,6 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            // Purchase price filters section
             item {
                 Text(
                     text = "Filtres de prix d'achat",
@@ -392,54 +474,74 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                     }
                 )
             }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
-                        onClick = {
-                            onFilterChanged(FilterState_Facad_Boutique())
-                            onDismiss()
-                        }
-                    ) {
-                        Text("Réinitialiser")
-                    }
-
-                    TextButton(
-                        onClick = {
-                            onFilterChanged(
-                                FilterState_Facad_Boutique(
-                                    hideQuiNeSontPas_cUnNeveauArrivage = true,
-                                    hidePetiteProbability = true,
-                                    hidePrixAchatZero = true,
-                                    hidePrixAchatPositif = true,
-                                    hidePrixVenteZero = true,
-                                    hidePrixVentePositif = true,
-                                    hideHeldPrioriteDemandAuGrossist = true,
-                                    hideNonHeldPrioriteDemandAuGrossist = true,
-                                    hide_non_couleurAuDepot = true,
-                                    hide_header_categorie = true,
-                                    searchText = currentFilterState.searchText,
-                                    sortOrderFacadeBoutique = currentFilterState.sortOrderFacadeBoutique,
-                                    enableCategoryGrouping = currentFilterState.enableCategoryGrouping,
-                                    enablePrixAchatTimeFilter = true,
-                                    prixAchatTimeFilterDays = "1"
-                                )
-                            )
-                        }
-                    ) {
-                        Text("Tout Activer")
-                    }
-
-                    TextButton(
-                        onClick = onDismiss
-                    ) {
-                        Text("Fermer")
-                    }
-                }
-            }
         }
+    }
+}
+
+/**
+ * FIXED: New composable for image filter dropdown menu
+ * Allows selection between three states: N_Affiche_Que_Lui, Ne_Affiche_Aucune, Ignore
+ */
+@Composable
+private fun ImageFilterDropdown(
+    currentValue: FilterState_Facad_Boutique.WhatDo,
+    onValueChange: (FilterState_Facad_Boutique.WhatDo) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    OutlinedButton(
+        onClick = { expanded = true },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = when (currentValue) {
+                    FilterState_Facad_Boutique.WhatDo.N_Affiche_Que_Lui -> "Afficher uniquement les produits avec images"
+                    FilterState_Facad_Boutique.WhatDo.Ne_Affiche_Aucune -> "Afficher uniquement les produits sans images"
+                    FilterState_Facad_Boutique.WhatDo.Ignore -> "Ignorer le filtre d'images"
+                },
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Ouvrir le menu"
+            )
+        }
+    }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text("Afficher uniquement les produits avec images")
+            },
+            onClick = {
+                onValueChange(FilterState_Facad_Boutique.WhatDo.N_Affiche_Que_Lui)
+                expanded = false
+            }
+        )
+        DropdownMenuItem(
+            text = {
+                Text("Afficher uniquement les produits sans images")
+            },
+            onClick = {
+                onValueChange(FilterState_Facad_Boutique.WhatDo.Ne_Affiche_Aucune)
+                expanded = false
+            }
+        )
+        DropdownMenuItem(
+            text = {
+                Text("Ignorer le filtre d'images")
+            },
+            onClick = {
+                onValueChange(FilterState_Facad_Boutique.WhatDo.Ignore)
+                expanded = false
+            }
+        )
     }
 }

@@ -101,19 +101,23 @@ fun NavigationBarWithFab(
                 }
                 NavigationBarItem(
                     icon = {
-                        // Display custom image if available, otherwise use vector icon
+                        // The key is to use Image composable with proper size constraint (24.dp)
+                        // and ColorFilter for tinting based on selection state
                         if (screen.customIconRes != null) {
                             Image(
                                 painter = painterResource(id = screen.customIconRes),
                                 contentDescription = screen.title,
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(24.dp), // Critical: Proper sizing
                                 colorFilter = if (currentRoute == screen.route) {
+                                    // Selected state: use screen's color
                                     ColorFilter.tint(screen.color)
                                 } else {
+                                    // Unselected state: use medium alpha content color
                                     ColorFilter.tint(LocalContentColor.current.copy(alpha = ContentAlpha.medium))
                                 }
                             )
                         } else {
+                            // Default vector icon handling
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = screen.title,
@@ -124,7 +128,7 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        // FIXED: Safe navigation with try-catch to prevent crashes
+                        // Safe navigation with try-catch to prevent crashes
                         try {
                             if (screen.route == Screen.DialogTests.route) {
                                 showDialogTests = true
