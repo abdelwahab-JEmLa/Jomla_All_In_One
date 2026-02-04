@@ -9,5 +9,5 @@ data class CataloguesCaegorie(
     val nom: String = "",
     val premierCategorieId: Long = 0,
     val position: Int = 0,
-    val couleur: Color = Color(0xFF9C27B0) // Default purple color
+    val couleur: Color = Color(0xFF9C27B0)
 )

@@ -1,6 +1,5 @@
     package V.DiviseParSections.App.Shared.Repository.Repo21.Repository
 
-    import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
     import androidx.compose.ui.graphics.Color
 
     // Static repository function that provides catalogues list

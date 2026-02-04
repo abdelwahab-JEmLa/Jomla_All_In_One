@@ -1,8 +1,8 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.FilterState_Facad_Boutique
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.SortOrder_Facade_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.FilterState_Facad_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.SortOrder_Facade_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -21,11 +22,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,16 +38,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
+/**
+ * UPDATED: Now displays Catalogue headers followed by Category headers
+ */
 @Composable
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier.Companion,
-    categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
+    cataloguesWithCategoriesAndProducts: List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
@@ -77,20 +86,29 @@ fun Etager_LazyColumn_FragID4(
             // Account for banner at the top (index 0)
             currentIndex = 1
 
-            for ((category, productColorPairs) in categoriesWithProducts) {
-                // Category header takes one slot
+            for ((catalogue, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
+                // Catalogue header takes one slot
                 currentIndex++
 
-                val productIndex = productColorPairs.indexOfFirst { (product, _) ->
-                    product.id == expandedColor.parentBProduitOldID
+                for ((category, productColorPairs) in categoriesWithProducts) {
+                    // Category header takes one slot (if displayed)
+                    if (category.displayedHeader) {
+                        currentIndex++
+                    }
+
+                    val productIndex = productColorPairs.indexOfFirst { (product, _) ->
+                        product.id == expandedColor.parentBProduitOldID
+                    }
+
+                    if (productIndex != -1) {
+                        foundIndex = currentIndex + productIndex
+                        break
+                    }
+
+                    currentIndex += productColorPairs.size
                 }
 
-                if (productIndex != -1) {
-                    foundIndex = currentIndex + productIndex
-                    break
-                }
-
-                currentIndex += productColorPairs.size
+                if (foundIndex != -1) break
             }
 
             if (foundIndex != -1) {
@@ -140,55 +158,89 @@ fun Etager_LazyColumn_FragID4(
             )
         }
 
-        categoriesWithProducts.forEach { (category, productColorPairs) ->
-            // Only show header if displayedHeader is true
-            if (category.displayedHeader) {
-                item(
-                    key = "header_${category.id}",
-                    span = StaggeredGridItemSpan.Companion.FullLine
-                ) {
-                    CategoryStickyHeader(
-                        category = category,
-                        onToggleHeaderVisibility = { updatedCategory ->
-                            repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(
-                                updatedCategory
-                            )
-                        }
-                    )
-                }
+        cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
+            // Add Catalogue Header
+            item(
+                key = "catalogue_header_${catalogue.id}",
+                span = StaggeredGridItemSpan.Companion.FullLine
+            ) {
+                CatalogueHeader(catalogue = catalogue)
             }
 
-            productColorPairs.forEach { (product, colors) ->
-                val isExpanded = focusedValuesGetter.active_Central_Values
-                    .expanded_M1Produit?.keyID == product.keyID
-
-                // Check if this product just moved
-                val justMoved = product.keyID == justMovedProductKeyID
-
-                item(
-                    key = "product_${product.keyID}",
-                    span = if (isExpanded) {
-                        StaggeredGridItemSpan.Companion.FullLine
-                    } else {
-                        StaggeredGridItemSpan.Companion.SingleLane
+            categoriesWithProducts.forEach { (category, productColorPairs) ->
+                // Only show category header if displayedHeader is true
+                if (category.displayedHeader) {
+                    item(
+                        key = "category_header_${category.id}",
+                        span = StaggeredGridItemSpan.Companion.FullLine
+                    ) {
+                        CategoryStickyHeader(
+                            category = category,
+                            onToggleHeaderVisibility = { updatedCategory ->
+                                repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(
+                                    updatedCategory
+                                )
+                            }
+                        )
                     }
-                ) {
-                    LazyStigerList_Produits_FragID4(
-                        product = product,
-                        colors = colors,
-                        on_pour_send_data = on_pour_send_data,
-                        onCategoryClick = {
-                            Log.d(
-                                "CategoryDialog_FragID4",
-                                "Category click from product: ${product.nom}"
-                            )
-                            onProductCategoryClick(product)
-                        },
-                        justMoved = justMoved
-                    )
+                }
+
+                productColorPairs.forEach { (product, colors) ->
+                    val isExpanded = focusedValuesGetter.active_Central_Values
+                        .expanded_M1Produit?.keyID == product.keyID
+
+                    // Check if this product just moved
+                    val justMoved = product.keyID == justMovedProductKeyID
+
+                    item(
+                        key = "product_${product.keyID}",
+                        span = if (isExpanded) {
+                            StaggeredGridItemSpan.Companion.FullLine
+                        } else {
+                            StaggeredGridItemSpan.Companion.SingleLane
+                        }
+                    ) {
+                        LazyStigerList_Produits_FragID4(
+                            product = product,
+                            colors = colors,
+                            on_pour_send_data = on_pour_send_data,
+                            onCategoryClick = {
+                                Log.d(
+                                    "CategoryDialog_FragID4",
+                                    "Category click from product: ${product.nom}"
+                                )
+                                onProductCategoryClick(product)
+                            },
+                            justMoved = justMoved
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+/**
+ * Catalogue Header - Displays the catalogue name with color
+ */
+@Composable
+fun CatalogueHeader(
+    catalogue: CataloguesCaegorie,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(catalogue.couleur.copy(alpha = 0.2f))
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = "📚 ${catalogue.nom}",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
+            color = catalogue.couleur
+        )
     }
 }
 

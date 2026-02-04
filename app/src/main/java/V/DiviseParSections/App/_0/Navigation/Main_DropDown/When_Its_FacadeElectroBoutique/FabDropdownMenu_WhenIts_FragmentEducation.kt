@@ -1,7 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.FilterState_Facad_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Filter.FilterState_Facad_Boutique
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
