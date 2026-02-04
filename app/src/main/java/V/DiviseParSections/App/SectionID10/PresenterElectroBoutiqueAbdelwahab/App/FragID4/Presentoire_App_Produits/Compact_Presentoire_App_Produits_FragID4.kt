@@ -11,7 +11,6 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter.FilterDropdownMenu_Its_FacadeElectroBoutique
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -36,44 +35,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit
 ) {
-    // FIXED: Get current app compte and catalogue information
     val currentAppCompt = focusedValuesGetter.currentActive_M9AppCompt
-
-    // Get all available catalogues
-    val allCatalogues = remember { B4CatalogueCategoriesRepository() }
-
-    // CRITICAL FIX: Extract catalogue KeyID (String) from filter, NOT the numeric ID
-    // The filter uses keyID like "t1", "t2", etc.
-    val currentCatalogueKeyID = remember(currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId) {
-        currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId?.let { filterStr ->
-            // Extract catalogue keyID from filter string (format: "catalogue:t1|hide_depot:true|...")
-            filterStr.split("|")
-                .firstOrNull { it.startsWith("catalogue:") }
-                ?.substringAfter("catalogue:")
-                ?.takeIf { it.isNotEmpty() }
-        } ?: "t4" // Default to "Sans Catalogue" (keyID = "t4")
-    }
-
-    // Get the current catalogue object
-    val currentCatalogue = remember(currentCatalogueKeyID, allCatalogues) {
-        allCatalogues.find { it.keyID == currentCatalogueKeyID }
-    }
-
-    // CRITICAL: Get the numeric ID from the catalogue
-    // CategoriesTabelle.catalogueParentId expects a Long (numeric ID)
-    val currentCatalogueNumericId = remember(currentCatalogue) {
-        currentCatalogue?.id?.toLong() ?: 4L
-    }
-
-    Log.d("CatalogueFilter_FragID4", """
-        |========================================
-        |Current Catalogue Filter:
-        |Catalogue KeyID (String): $currentCatalogueKeyID
-        |Catalogue Numeric ID (Long): $currentCatalogueNumericId
-        |Catalogue Name: ${currentCatalogue?.nom ?: "Unknown"}
-        |All Catalogues: ${allCatalogues.map { "${it.keyID} (id=${it.id}, nom=${it.nom})" }}
-        |========================================
-    """.trimMargin())
 
     // Initialize filter state from focusedValuesGetter or create default
     val filterState = focusedValuesGetter.active_Central_Values.filterState_Facad_Boutique
@@ -82,38 +44,42 @@ fun Compact_Presentoire_App_Produits_FragID4(
     // Sync filter state with app compte on mount and when app compte changes
     LaunchedEffect(currentAppCompt?.keyID) {
         currentAppCompt?.let { appCompt ->
+            // If app compte has a saved filter ID, ensure it's reflected in the filter state
             if (appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId.isNotEmpty()) {
                 Log.d("FilterSync_FragID4", """
                     |Syncing filter from app compte:
                     |App Compte KeyID: ${appCompt.keyID}
-                    |Saved Filter: ${appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId}
+                    |Saved Filter ID: ${appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId}
                 """.trimMargin())
+
+                // You can add logic here to restore filter state from the saved ID
+                // For example, if the filter ID represents a specific category or configuration
             }
         }
     }
 
     // Monitor filter changes and persist to app compte
     LaunchedEffect(
-        currentCatalogueKeyID,
         filterState.hide_non_couleurAuDepot,
         filterState.searchText,
         filterState.enableCategoryGrouping
     ) {
         currentAppCompt?.let { appCompt ->
-            // CRITICAL: Use catalogue KeyID (String) in filter, not numeric ID
+            // Create a unique filter identifier based on current filter state
             val filterIdentifier = buildString {
-                append("catalogue:$currentCatalogueKeyID")
-                append("|hide_depot:${filterState.hide_non_couleurAuDepot}")
+                append("hide_depot:${filterState.hide_non_couleurAuDepot}")
                 append("|search:${filterState.searchText}")
                 append("|grouping:${filterState.enableCategoryGrouping}")
             }
 
+            // Only update if the filter has actually changed
             if (appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId != filterIdentifier) {
                 Log.d("FilterSync_FragID4", """
                     |Saving filter state to app compte:
                     |Filter Identifier: $filterIdentifier
-                    |Catalogue KeyID: $currentCatalogueKeyID
-                    |Catalogue Numeric ID: $currentCatalogueNumericId
+                    |hide_non_couleurAuDepot: ${filterState.hide_non_couleurAuDepot}
+                    |searchText: ${filterState.searchText}
+                    |enableCategoryGrouping: ${filterState.enableCategoryGrouping}
                 """.trimMargin())
 
                 val updatedAppCompt = appCompt.copy(
@@ -138,56 +104,12 @@ fun Compact_Presentoire_App_Produits_FragID4(
         }
     }
 
-    // CRITICAL FIX: Filter categories using NUMERIC ID (catalogueParentId is Long)
-    val allCategories = remember(
-        repositorysMainGetter.repoM16CategorieProduit.datasValue,
-        currentCatalogueNumericId
-    ) {
-        val allCats = repositorysMainGetter.repoM16CategorieProduit.datasValue
-
-        // Filter categories to only show those belonging to the current catalogue
-        // IMPORTANT: catalogueParentId is Long, so we compare with numeric ID
-        val filteredCats = allCats.filter { category ->
-            category.catalogueParentId == currentCatalogueNumericId
-        }
-
-        Log.d("CatalogueFilter_FragID4", """
-            |========================================
-            |Category Filtering Details:
-            |Looking for catalogueParentId = $currentCatalogueNumericId
-            |Total categories in repo: ${allCats.size}
-            |Categories matching this catalogue: ${filteredCats.size}
-            |Sample of all categories: ${allCats.take(5).map { "id=${it.id}, nom='${it.nom}', catalogueParentId=${it.catalogueParentId}" }}
-            |Filtered categories: ${filteredCats.map { "id=${it.id}, nom='${it.nom}', catalogueParentId=${it.catalogueParentId}" }}
-            |========================================
-        """.trimMargin())
-
-        filteredCats
+    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
+        repositorysMainGetter.repoM16CategorieProduit.datasValue
     }
 
-    // Filter products that belong to categories of the current catalogue
-    val allProducts = remember(
-        repositorysMainGetter.repoM1Produit.datasValue,
-        allCategories
-    ) {
-        val categoryIds = allCategories.map { it.id }.toSet()
-        val products = repositorysMainGetter.repoM1Produit.datasValue
-
-        val filteredProducts = products.filter { product ->
-            product.idParentCategorie in categoryIds
-        }
-
-        Log.d("CatalogueFilter_FragID4", """
-            |========================================
-            |Product Filtering Details:
-            |Category IDs in current catalogue: $categoryIds
-            |Total products in repo: ${products.size}
-            |Products in categories of catalogue ${currentCatalogue?.nom}: ${filteredProducts.size}
-            |Sample products: ${filteredProducts.take(5).map { "nom='${it.nom}', categoryId=${it.idParentCategorie}" }}
-            |========================================
-        """.trimMargin())
-
-        filteredProducts
+    val allProducts = remember(repositorysMainGetter.repoM1Produit.datasValue) {
+        repositorysMainGetter.repoM1Produit.datasValue
     }
 
     val lastBonVentAbdelwahab = remember(
@@ -211,58 +133,57 @@ fun Compact_Presentoire_App_Produits_FragID4(
         } ?: emptyList()
     }
 
-    // Filter colors: first by catalogue, then by depot stock if enabled
+    // SIMPLIFIED LOGIC:
+    // hide_non_couleurAuDepot = false → Show ALL products (1882 colors)
+    // hide_non_couleurAuDepot = true  → Show only products with depot stock
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
-        filterState.hide_non_couleurAuDepot,
-        allProducts
+        filterState.hide_non_couleurAuDepot
     ) {
         val allCouleurs = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
 
-        // First filter: only colors of products in current catalogue
-        val allowedProductIds = allProducts.map { it.keyID }.toSet()
-        val couleursInCatalogue = allCouleurs.filter { couleur ->
-            couleur.parentBProduitInfosKeyID in allowedProductIds
-        }
+        Log.d("FilterDebug_FragID4", "Total colors in repo: ${allCouleurs.size}")
 
-        Log.d("FilterDebug_FragID4", "Colors in catalogue $currentCatalogueNumericId (${currentCatalogue?.nom}): ${couleursInCatalogue.size}")
-
-        // Second filter: depot stock if enabled
+        // Apply filter based on hide_non_couleurAuDepot
         val filteredCouleurs = if (filterState.hide_non_couleurAuDepot) {
-            couleursInCatalogue.filter { couleur ->
+            // When TRUE: Filter by depot stock (hide items without stock)
+            allCouleurs.filter { couleur ->
                 couleur.count_Don_Depot > 0
             }
         } else {
-            couleursInCatalogue
+            // When FALSE: Show ALL products from repo
+            allCouleurs
         }
 
         Log.d("FilterDebug_FragID4", """
             |========================================
             |Filter State Analysis:
-            |Catalogue KeyID: $currentCatalogueKeyID
-            |Catalogue Numeric ID: $currentCatalogueNumericId
-            |Catalogue Name: ${currentCatalogue?.nom}
             |hide_non_couleurAuDepot = ${filterState.hide_non_couleurAuDepot}
             |Total couleurs in repo: ${allCouleurs.size}
-            |Couleurs in catalogue: ${couleursInCatalogue.size}
             |After depot filter: ${filteredCouleurs.size}
-            |Couleurs with depot > 0: ${couleursInCatalogue.count { it.count_Don_Depot > 0 }}
-            |Couleurs with depot = 0: ${couleursInCatalogue.count { it.count_Don_Depot == 0 }}
+            |Couleurs with depot > 0: ${allCouleurs.count { it.count_Don_Depot > 0 }}
+            |Couleurs with depot = 0: ${allCouleurs.count { it.count_Don_Depot == 0 }}
+            |In operations: ${allCouleurs.count { c -> operationsFromLastBon.any { it.parent_M3CouleurProduit_KeyID == c.keyID } }}
+            |Not in operations: ${allCouleurs.count { c -> operationsFromLastBon.none { it.parent_M3CouleurProduit_KeyID == c.keyID } }}
             |========================================
         """.trimMargin())
 
+        // Sort by creation timestamp
         filteredCouleurs.sortedByDescending { it.creationTimestamp }
     }
 
     val groupe_Couleur_Par_Produit = remember(
         list_M3couleur,
-        allProducts,
+        repositorysMainGetter.repoM1Produit.datasValue,
         filterState.searchText,
     ) {
         val grouped = list_M3couleur.groupBy { it.parentBProduitInfosKeyID }
             .mapNotNull { (productKeyID, colors) ->
-                allProducts.find { it.keyID == productKeyID }?.let { product ->
+                repositorysMainGetter.repoM1Produit.datasValue.find {
+                    it.keyID == productKeyID
+                }?.let { product ->
+                    // Apply search filter (empty search shows all)
                     val matchesSearch = if (filterState.searchText.isNotEmpty()) {
                         product.nom.contains(filterState.searchText, ignoreCase = true)
                     } else {
@@ -284,27 +205,27 @@ fun Compact_Presentoire_App_Produits_FragID4(
         grouped
     }
 
+    // Category grouping logic
     val groupe_Par_Categorie = remember(
         groupe_Couleur_Par_Produit,
-        allCategories,
+        repositorysMainGetter.repoM16CategorieProduit.datasValue,
         filterState.enableCategoryGrouping
     ) {
         val result = if (filterState.enableCategoryGrouping) {
             groupe_Couleur_Par_Produit.groupBy { (product, _) -> product.idParentCategorie }
                 .mapNotNull { (categoryId, productColorPairs) ->
-                    allCategories.find { it.id == categoryId }?.let { category ->
-                        category to productColorPairs
-                    }
+                    repositorysMainGetter.repoM16CategorieProduit.datasValue.find {
+                        it.id == categoryId
+                    }?.let { category -> category to productColorPairs }
                 }
                 .sortedBy { (category, _) -> category.positionDouble }
         } else {
             val ungroupedCategory = CategoriesTabelle(
                 id = -1,
-                nom = "Tous les produits - ${currentCatalogue?.nom ?: "Catalogue"}",
+                nom = "Tous les produits",
                 position = 0,
                 positionDouble = 0.0,
-                displayedHeader = false,
-                catalogueParentId = currentCatalogueNumericId
+                displayedHeader = false
             )
             listOf(ungroupedCategory to groupe_Couleur_Par_Produit)
         }
@@ -378,12 +299,12 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
-                Log.d("CategoryDialog_FragID4", "Creating new category: $categoryName for catalogue $currentCatalogueKeyID (numeric ID: $currentCatalogueNumericId)")
+                Log.d("CategoryDialog_FragID4", "Creating new category: $categoryName")
                 viewModelToUse.addOrUpdateCategorie(
                     CategoriesTabelle(
                         nom = categoryName,
                         position = 0,
-                        catalogueParentId = currentCatalogueNumericId // Use numeric ID
+                        catalogueParentId = 4
                     )
                 )
             },
