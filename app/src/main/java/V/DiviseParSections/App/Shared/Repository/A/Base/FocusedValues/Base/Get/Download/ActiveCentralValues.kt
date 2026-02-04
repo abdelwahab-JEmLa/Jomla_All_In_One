@@ -229,6 +229,7 @@ data class ActiveCentralValues(
         PRIX_ACHAT_TIME_ASC    // Oldest updated purchase prices first
     }
     data class FilterState_Facad_Boutique(
+        val affiche_dialog_editeur: Boolean = false,
         val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
         val hideNonDispo: Boolean = false,
         val hideDispoOnly: Boolean = false,

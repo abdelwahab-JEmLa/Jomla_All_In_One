@@ -16,7 +16,8 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabButton_When_Its_EducationFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_MainPresenter.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabButton_When_Its_FacadeElectroBoutique
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -126,6 +127,7 @@ fun NavigationBarWithFab(
         val its_Achats_Produits_Chez_Grossists = activeFragment == Screen.Achats_Produits_Chez_Grossists
         val its_FragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
         val its_EducationFragment = activeFragment == Screen.EducationFragment
+        val its_Compact_Presentoire_App_Produits_FragID4 = activeFragment == Screen.Compact_Presentoire_App_Produits_FragID4
 
         when {
             its_EditDatabaseWithCreateNewArticles -> {
@@ -147,6 +149,17 @@ fun NavigationBarWithFab(
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = {
                         showFabDropdownAchats = true
+                    }
+                )
+            }
+            its_Compact_Presentoire_App_Produits_FragID4 -> {
+                FabButton_When_Its_FacadeElectroBoutique(
+                    showWarningState = showWarningState,
+                    isFabVisible = isFabVisible,
+                    its_Targeted_Frag = true,
+                    onToggleFabVisibility = onToggleFabVisibility,
+                    onShowDropdown = {
+                        showFabDropdown_MainPresenterFragment = true
                     }
                 )
             }
@@ -233,7 +246,7 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdown_MainPresenterFragment && activeFragment == Screen.Compact_Presentoire_App_Produits_FragID4) {
+        if (showFabDropdown_MainPresenterFragment && its_Compact_Presentoire_App_Produits_FragID4) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 onDismissDropdown = { showFabDropdown_MainPresenterFragment = false }
             )

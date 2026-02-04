@@ -1,7 +1,8 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_MainPresenter
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.FilterState_Facad_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_MainPresenter.Filter.FilterDropdownMenu
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter.FilterDropdownMenu_Its_FacadeElectroBoutique
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
@@ -12,25 +13,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
-/**
- * FIXED: Now properly uses the updated FilterDropdownMenu which integrates
- * with FocusedValuesGetter automatically. No need to pass filterState manually.
- */
 @Composable
 fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    var showFilterDialog by remember { mutableStateOf(false) }
+    // FIXED: Get current FilterState from FocusedValuesGetter
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
+    val currentFilterState = activeCentralValues.filterStateFacadBoutique ?: FilterState_Facad_Boutique()
 
     Box(modifier = modifier) {
         DropdownMenu(
@@ -55,17 +50,31 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                     )
                 },
                 onClick = {
-                    showFilterDialog = true
+                    // FIXED: Update affiche_dialog_editeur in FilterState instead of local state
+                    focusedValuesGetter.update_activeCentralValues(
+                        activeCentralValues.copy(
+                            filterStateFacadBoutique = currentFilterState.copy(
+                                affiche_dialog_editeur = true
+                            )
+                        )
+                    )
                     onDismissDropdown()
                 }
             )
         }
 
-        // FIXED: Filter Dialog now automatically retrieves and updates FilterState
-        // through FocusedValuesGetter - no manual state management needed
-        if (showFilterDialog) {
-            FilterDropdownMenu(
-                onDismiss = { showFilterDialog = false }
+        // FIXED: Show dialog based on affiche_dialog_editeur from FilterState
+        if (currentFilterState.affiche_dialog_editeur) {
+            FilterDropdownMenu_Its_FacadeElectroBoutique(
+                onDismiss = {
+                    focusedValuesGetter.update_activeCentralValues(
+                        activeCentralValues.copy(
+                            filterStateFacadBoutique = currentFilterState.copy(
+                                affiche_dialog_editeur = false
+                            )
+                        )
+                    )
+                }
             )
         }
     }

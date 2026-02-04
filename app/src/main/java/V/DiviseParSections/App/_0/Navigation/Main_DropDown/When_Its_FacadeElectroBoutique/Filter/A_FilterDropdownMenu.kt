@@ -1,4 +1,4 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_MainPresenter.Filter
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.FilterState_Facad_Boutique
@@ -38,7 +38,7 @@ import org.koin.compose.koinInject
  * FIXED: Correct imports - FilterState and SortOrder are defined inside ActiveCentralValues
  */
 @Composable
-fun FilterDropdownMenu(
+fun FilterDropdownMenu_Its_FacadeElectroBoutique(
     onDismiss: () -> Unit,
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
