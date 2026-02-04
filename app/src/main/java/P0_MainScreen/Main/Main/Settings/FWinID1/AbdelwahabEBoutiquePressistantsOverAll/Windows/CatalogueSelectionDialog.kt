@@ -154,8 +154,7 @@ private fun CatalogueItem(
     catalogue: CataloguesCaegorie,
     isSelected: Boolean,
     onSelect: () -> Unit
-) {       //<--
-//TODO(1): ajout u toggele button au click il change 
+) {
     val backgroundColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
     val borderColor = if (isSelected) Color(0xFF2196F3) else Color(0xFFE0E0E0)
 

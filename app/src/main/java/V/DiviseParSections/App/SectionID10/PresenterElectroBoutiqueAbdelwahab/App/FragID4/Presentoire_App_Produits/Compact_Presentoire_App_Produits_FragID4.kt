@@ -35,13 +35,61 @@ fun Compact_Presentoire_App_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit
 ) {
-    // FIXED TODO(1): The logic now correctly shows all products when filters are false
-    // When hide_non_couleurAuDepot = false, we check depot count (original behavior)
-    // When hide_non_couleurAuDepot = true, we skip depot count check (show all)
-    // Similarly for other filters - false means apply the filter, true means ignore it
+    val currentAppCompt = focusedValuesGetter.currentActive_M9AppCompt
 
+    // Initialize filter state from focusedValuesGetter or create default
     val filterState = focusedValuesGetter.active_Central_Values.filterState_Facad_Boutique
         ?: FilterState_Facad_Boutique()
+
+    // Sync filter state with app compte on mount and when app compte changes
+    LaunchedEffect(currentAppCompt?.keyID) {
+        currentAppCompt?.let { appCompt ->
+            // If app compte has a saved filter ID, ensure it's reflected in the filter state
+            if (appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId.isNotEmpty()) {
+                Log.d("FilterSync_FragID4", """
+                    |Syncing filter from app compte:
+                    |App Compte KeyID: ${appCompt.keyID}
+                    |Saved Filter ID: ${appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId}
+                """.trimMargin())
+
+                // You can add logic here to restore filter state from the saved ID
+                // For example, if the filter ID represents a specific category or configuration
+            }
+        }
+    }
+
+    // Monitor filter changes and persist to app compte
+    LaunchedEffect(
+        filterState.hide_non_couleurAuDepot,
+        filterState.searchText,
+        filterState.enableCategoryGrouping
+    ) {
+        currentAppCompt?.let { appCompt ->
+            // Create a unique filter identifier based on current filter state
+            val filterIdentifier = buildString {
+                append("hide_depot:${filterState.hide_non_couleurAuDepot}")
+                append("|search:${filterState.searchText}")
+                append("|grouping:${filterState.enableCategoryGrouping}")
+            }
+
+            // Only update if the filter has actually changed
+            if (appCompt.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId != filterIdentifier) {
+                Log.d("FilterSync_FragID4", """
+                    |Saving filter state to app compte:
+                    |Filter Identifier: $filterIdentifier
+                    |hide_non_couleurAuDepot: ${filterState.hide_non_couleurAuDepot}
+                    |searchText: ${filterState.searchText}
+                    |enableCategoryGrouping: ${filterState.enableCategoryGrouping}
+                """.trimMargin())
+
+                val updatedAppCompt = appCompt.copy(
+                    presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = filterIdentifier,
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+                repositorysMainGetter.repo9AppCompt.update(updatedAppCompt)
+            }
+        }
+    }
 
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
     val uiState by viewModelToUse.uiState.collectAsState()
@@ -85,35 +133,52 @@ fun Compact_Presentoire_App_Produits_FragID4(
         } ?: emptyList()
     }
 
+    // SIMPLIFIED LOGIC:
+    // hide_non_couleurAuDepot = false → Show ALL products (1882 colors)
+    // hide_non_couleurAuDepot = true  → Show only products with depot stock
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
         filterState.hide_non_couleurAuDepot
     ) {
-        repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
-            val isInOperations = operationsFromLastBon.any { operation ->
-                operation.parent_M3CouleurProduit_KeyID == couleur.keyID
-            }
+        val allCouleurs = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
 
-            val passesDepotFilter = if (filterState.hide_non_couleurAuDepot) {
-                true // Skip depot count check - show all
-            } else {
-                couleur.count_Don_Depot > 0 // Apply strict check - only show with stock
-            }
+        Log.d("FilterDebug_FragID4", "Total colors in repo: ${allCouleurs.size}")
 
-            isInOperations && passesDepotFilter
-        }.sortedByDescending { couleur ->
-            operationsFromLastBon.find { operation ->
-                operation.parent_M3CouleurProduit_KeyID == couleur.keyID
-            }?.creationTimestamps ?: 0L
+        // Apply filter based on hide_non_couleurAuDepot
+        val filteredCouleurs = if (filterState.hide_non_couleurAuDepot) {
+            // When TRUE: Filter by depot stock (hide items without stock)
+            allCouleurs.filter { couleur ->
+                couleur.count_Don_Depot > 0
+            }
+        } else {
+            // When FALSE: Show ALL products from repo
+            allCouleurs
         }
+
+        Log.d("FilterDebug_FragID4", """
+            |========================================
+            |Filter State Analysis:
+            |hide_non_couleurAuDepot = ${filterState.hide_non_couleurAuDepot}
+            |Total couleurs in repo: ${allCouleurs.size}
+            |After depot filter: ${filteredCouleurs.size}
+            |Couleurs with depot > 0: ${allCouleurs.count { it.count_Don_Depot > 0 }}
+            |Couleurs with depot = 0: ${allCouleurs.count { it.count_Don_Depot == 0 }}
+            |In operations: ${allCouleurs.count { c -> operationsFromLastBon.any { it.parent_M3CouleurProduit_KeyID == c.keyID } }}
+            |Not in operations: ${allCouleurs.count { c -> operationsFromLastBon.none { it.parent_M3CouleurProduit_KeyID == c.keyID } }}
+            |========================================
+        """.trimMargin())
+
+        // Sort by creation timestamp
+        filteredCouleurs.sortedByDescending { it.creationTimestamp }
     }
+
     val groupe_Couleur_Par_Produit = remember(
         list_M3couleur,
         repositorysMainGetter.repoM1Produit.datasValue,
         filterState.searchText,
     ) {
-        list_M3couleur.groupBy { it.parentBProduitInfosKeyID }
+        val grouped = list_M3couleur.groupBy { it.parentBProduitInfosKeyID }
             .mapNotNull { (productKeyID, colors) ->
                 repositorysMainGetter.repoM1Produit.datasValue.find {
                     it.keyID == productKeyID
@@ -125,24 +190,28 @@ fun Compact_Presentoire_App_Produits_FragID4(
                         true
                     }
 
-                    val passesDispoFilter = when {
-                        else -> true
-                    }
-
-                    if (matchesSearch && passesDispoFilter) product to colors else null
+                    if (matchesSearch) product to colors else null
                 }
             }
             .filterNotNull()
             .sortedBy { (product, _) -> product.nom }
+
+        Log.d("FilterDebug_FragID4", """
+            |Products grouped by color:
+            |Total products with colors: ${grouped.size}
+            |Search text: "${filterState.searchText}"
+        """.trimMargin())
+
+        grouped
     }
 
-    // Category grouping logic remains the same
+    // Category grouping logic
     val groupe_Par_Categorie = remember(
         groupe_Couleur_Par_Produit,
         repositorysMainGetter.repoM16CategorieProduit.datasValue,
         filterState.enableCategoryGrouping
     ) {
-        if (filterState.enableCategoryGrouping) {
+        val result = if (filterState.enableCategoryGrouping) {
             groupe_Couleur_Par_Produit.groupBy { (product, _) -> product.idParentCategorie }
                 .mapNotNull { (categoryId, productColorPairs) ->
                     repositorysMainGetter.repoM16CategorieProduit.datasValue.find {
@@ -160,6 +229,15 @@ fun Compact_Presentoire_App_Produits_FragID4(
             )
             listOf(ungroupedCategory to groupe_Couleur_Par_Produit)
         }
+
+        Log.d("FilterDebug_FragID4", """
+            |Category grouping:
+            |enableCategoryGrouping = ${filterState.enableCategoryGrouping}
+            |Total categories: ${result.size}
+            |Total products across all categories: ${result.sumOf { it.second.size }}
+        """.trimMargin())
+
+        result
     }
 
     Etager_LazyColumn_FragID4(

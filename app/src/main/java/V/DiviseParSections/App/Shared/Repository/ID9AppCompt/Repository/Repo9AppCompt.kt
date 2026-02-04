@@ -140,6 +140,7 @@ data class Z_AppCompt(
     var credit_fait: Double = 0.0,
 
     // Section InfosDeBase
+
     var nom: String = "",
     var autres_Noms_SepareParComma: String = "",
 

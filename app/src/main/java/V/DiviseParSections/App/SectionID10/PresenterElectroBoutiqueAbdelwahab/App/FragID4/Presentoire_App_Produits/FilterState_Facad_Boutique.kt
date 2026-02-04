@@ -2,8 +2,9 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 data class FilterState_Facad_Boutique(
     val affiche_dialog_editeur: Boolean = false,
+
     val hide_non_couleurAuDepot: Boolean = false,
-    
+
     val hide_header_categorie: Boolean = false,
 
     val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
@@ -16,6 +17,7 @@ data class FilterState_Facad_Boutique(
 
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
+
     val searchText: String = "",
     val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true,
