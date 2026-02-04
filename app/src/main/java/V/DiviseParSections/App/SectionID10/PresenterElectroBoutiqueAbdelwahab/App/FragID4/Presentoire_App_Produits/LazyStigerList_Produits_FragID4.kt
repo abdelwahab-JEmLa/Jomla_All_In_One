@@ -202,10 +202,6 @@ fun LazyStigerList_Produits_FragID4(
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false
 ) {
-    Log.d(
-        "CategoryDialog_FragID4",
-        "LazyStigerList_Produits_FragID4 - onCategoryClick null: ${onCategoryClick == null}"
-    )
 
     // Animation state for moved products
     val backgroundColor by animateColorAsState(

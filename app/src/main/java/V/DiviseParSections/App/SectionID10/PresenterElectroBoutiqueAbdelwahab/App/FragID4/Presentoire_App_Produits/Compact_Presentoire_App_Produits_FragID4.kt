@@ -203,7 +203,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         )
     }
 
-    // FIXED: Use the refactored dialog with all required parameters
     selectedProductForCategoryChange?.let { product ->
         Log.d("CategoryDialog_FragID4", "Displaying CategorySelectionDialog for: ${product.nom}")
         CategorySelectionDialog_FragID4(
