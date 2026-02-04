@@ -12,18 +12,23 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Educatio
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -71,8 +77,7 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
-) {       //<--
-//TODO(1): fait disable click de Compact_Presentoire_App_Produits_FragID4 si non admine 
+) {
     val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -81,10 +86,9 @@ fun AppNavHost(
     val ne_affiche_que_fragment =
         focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
 
-    val itsDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
+    val isAdmin = focusedValuesGetter.currentActive_M9AppCompt?.its_Admin ?: true
 
-    // Updated startup screen logic to handle tahfid mode
-    val startUpScreen =Screen.Fragment_Compact_Presentoir_Echantilliants
+    val startUpScreen = Screen.Fragment_Compact_Presentoir_Echantilliants
 
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
@@ -92,9 +96,7 @@ fun AppNavHost(
 
     // Set startup screen when component initializes
     LaunchedEffect(startUpScreen) {
-        if (startUpScreen != null) {
-            fragmentNavigationHandler.setStartupScreen(startUpScreen)
-        }
+        fragmentNavigationHandler.setStartupScreen(startUpScreen)
     }
 
     val currentClientId = uiState.appSettingsSaverModel
@@ -134,6 +136,7 @@ fun AppNavHost(
                     startDestination = startUpScreen.route,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    // Main presenter screen - accessible to all
                     composable(
                         route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
                     ) { backStackEntry ->
@@ -153,8 +156,6 @@ fun AppNavHost(
                                         // Only show dialog/message that client needs to be selected
                                         if (currentClientId == 0L) {
                                             showClientSelection = true
-                                            // Don't set showClientSelectionWithoutCondition
-                                            // This prevents automatic navigation
                                         } else {
                                             viewModel.openWindowsNewSaleWithUpdateCurrent(
                                                 relatedArticleBaseStats!!.id.toLong(),
@@ -195,166 +196,78 @@ fun AppNavHost(
                         }
                     }
 
+                    // Compact presenter screen - admin check applied
                     composable(
                         route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-
-                        CleanupEffect {
-                        }
-
-                        LaunchedEffect(Unit) {
-                            scrollTiger++
-                        }
-
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                Compact_Presentoire_App_Produits_FragID4(
-                                    viewModelHeadViewModel=viewModel,
-                                    on_pour_send_data= on_pour_send_data,
-                                    onClickImageToShowControles = onClickImageToShowControles
-                                )
-                            }
+                    ) {
+                        if (isAdmin) {
+                            Compact_Presentoire_App_Produits_FragID4(
+                                viewModelHeadViewModel=viewModel,
+                                on_pour_send_data= on_pour_send_data,
+                                onClickImageToShowControles = onClickImageToShowControles
+                            )
+                        } else {
+                            UnauthorizedAccessScreen(
+                                onNavigateBack = { navController.navigateUp() }
+                            )
                         }
                     }
 
-                    composable(
-                        route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
+                    composable(Screen.Screen1PanieVentsFinale.route) {
+                        PanierFinaleDAchatSec1Frag3(
+                        )
+                    }
 
-                        CleanupEffect {
-                        }
+                    composable(Screen.TravailleTempRecorder.route) {
+                        A_APP3FragID1_MainScreen()
+                    }
 
-                        LaunchedEffect(Unit) {
-                            scrollTiger++
-                        }
+                    composable(Screen.Achats_Produits_Chez_Grossists.route) {
+                        Screen_GrossistAchatSec12FragID1()
+                    }
 
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                Compact_Presentoir_Echantilliants_FragID3()
-                            }
+                    // Admin-only screens
+                    composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                        if (isAdmin) {
+                            EditeBaseDonneMainScreenIdS9()
+                        } else {
+                            UnauthorizedAccessScreen(
+                                onNavigateBack = { navController.navigateUp() }
+                            )
                         }
                     }
 
-                    focusedValuesGetter.currentApp_Est_Admin.ifTrue {
-                        composable(
-                            route = Screen.FragmentProduitFastSearchDialog.route,
-                        ) { backStackEntry ->
-                            val screenKey = rememberScreenKey(backStackEntry)
-
-                            CleanupEffect {
-                            }
-
-                            LaunchedEffect(Unit) {
-                                scrollTiger++
-                            }
-
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                key(screenKey) {
-                                    MainFastSearchProduitPourVent()
-                                }
-                            }
-                        }
-                    }
-                    composable(
-                        route = Screen.Screen1PanieVentsFinale.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-
-                        CleanupEffect {
-                        }
-
-                        LaunchedEffect(Unit) {
-                            scrollTiger++
-                        }
-
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                PanierFinaleDAchatSec1Frag3()
-                            }
+                    composable(Screen.EducationFragment.route) {
+                        if (isAdmin) {
+                            EducationFragment()
+                        } else {
+                            UnauthorizedAccessScreen(
+                                onNavigateBack = { navController.navigateUp() }
+                            )
                         }
                     }
 
-                    // Work time recorder screen
-                    composable(
-                        route = Screen.TravailleTempRecorder.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-
-                        CleanupEffect {
-                            // Any cleanup needed for this screen
-                        }
-
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                A_APP3FragID1_MainScreen()
-                            }
+                    composable(Screen.FragmentProduitFastSearchDialog.route) {
+                        if (isAdmin) {
+                            MainFastSearchProduitPourVent()
+                        } else {
+                            UnauthorizedAccessScreen(
+                                onNavigateBack = { navController.navigateUp() }
+                            )
                         }
                     }
 
-                    composable(
-                        route = Screen.Achats_Produits_Chez_Grossists.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-
-                        CleanupEffect {
-                        }
-
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                Screen_GrossistAchatSec12FragID1()
-                            }
-                        }
+                    composable(Screen.Main_DataBaseInitFactory_1Produit.route) {
+                        Main_DataBaseInitFactory_1Produit()
                     }
 
-                    // Product ordering screen
-                    composable(
-                        route = Screen.EditDatabaseWithCreateNewArticles.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                EditeBaseDonneMainScreenIdS9()
-                            }
-                        }
+                    composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
+                        Compact_Presentoir_Echantilliants_FragID3(
+                                on_pour_send_data= on_pour_send_data,
+                        )
                     }
 
-                    composable(
-                        route = Screen.EducationFragment.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                EducationFragment()
-                            }
-                        }
-                    }
-
-                    // Database Init Factory screen
-                    composable(
-                        route = Screen.Main_DataBaseInitFactory_1Produit.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                Main_DataBaseInitFactory_1Produit()
-                            }
-                        }
-                    }
-
-                    // Test fragment screen (empty implementation)
-                    composable(
-                        route = Screen.NewFragTest.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
-                            }
-                        }
-                    }
-
+                    // Add client map routes
                     app2(
                         viewModelInitApp = viewModelInitApp,
                         clientEnCourDeVent = clientEnCourDeVent,
@@ -382,7 +295,6 @@ fun AppNavHost(
             }
 
             // FIXED: Only navigate when explicitly requested
-            // Don't navigate when just showing client selection dialog
             if (showClientSelectionWithoutCondition) {
                 LaunchedEffect(Unit) {
                     navController.navigate(Screen.A_Clients_LocationGps.route) {
@@ -390,24 +302,17 @@ fun AppNavHost(
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = false // Force recreation of the screen
+                        restoreState = false
                     }
-                    // Reset dialog state after navigation
                     showClientSelectionWithoutCondition = false
-
-                    // Trigger map reload when navigating to client map
                     mapReloadTrigger.intValue++
                 }
             }
 
             // FIXED: Don't navigate automatically when no client selected
-            // Just reset the flag - user must explicitly click to select client
             if (showClientSelection && currentClientId == 0L && !showClientSelectionWithoutCondition) {
                 LaunchedEffect(Unit) {
-                    // Simply reset the flag without navigating
                     showClientSelection = false
-                    // Don't set showClientSelectionWithoutCondition
-                    // This prevents any automatic navigation
                 }
             }
 
@@ -432,6 +337,38 @@ fun AppNavHost(
                         opnerSaleWindows = false
                     },
                 )
+            }
+        }
+    }
+}
+
+/**
+ * Screen shown when user tries to access admin-only content
+ */
+@Composable
+private fun UnauthorizedAccessScreen(
+    onNavigateBack: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Access Denied",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "You need admin privileges to access this screen",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onNavigateBack) {
+                Text("Go Back")
             }
         }
     }
@@ -467,12 +404,10 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_Clients_LocationGps.route,
     ) { backStackEntry ->
-        // Create a more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
             mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
 
-        // Enhanced cleanup when leaving the map screen
         CleanupEffect {
             // Clear any client selection state if necessary
         }
@@ -496,16 +431,12 @@ private fun navigateToMainScreen(
     fragmentNavigationHandler: FragmentNavigationHandler
 ) {
     navController.navigate(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
-        // Pop the current fragment off the back stack
         popUpTo(Screen.A_Clients_LocationGps.route) {
             inclusive = true
         }
         launchSingleTop = true
-        // Force recreation of destination screen
         restoreState = false
     }
-
-    // Update the fragment handler
     fragmentNavigationHandler.updateCurrentFragment(Screen.Fragment_Compact_Presentoir_Echantilliants)
 }
 

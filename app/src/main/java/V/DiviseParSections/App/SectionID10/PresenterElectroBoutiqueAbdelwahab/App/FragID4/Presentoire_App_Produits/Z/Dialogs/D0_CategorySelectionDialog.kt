@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Z.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -394,7 +395,7 @@ fun CategorySelectionDialog_FragID4(
                     ) {
                         // Sans Catégorie option
                         if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
-                            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                            item(span = { GridItemSpan(4) }) {
                                 CatalogHeaderCard(
                                     catalogue = CataloguesCaegorie(
                                         id = 0,
@@ -422,7 +423,7 @@ fun CategorySelectionDialog_FragID4(
 
                         // All other categories grouped by catalogue
                         filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                            item(span = { GridItemSpan(4) }) {
                                 CatalogHeaderCard(
                                     catalogue = catalogue,
                                     modifier = Modifier.padding(vertical = 4.dp)

@@ -20,6 +20,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectr
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -38,7 +39,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 
@@ -98,12 +101,26 @@ fun NavigationBarWithFab(
                 }
                 NavigationBarItem(
                     icon = {
-                        Icon(
-                            imageVector = screen.icon,
-                            contentDescription = screen.title,
-                            tint = if (currentRoute == screen.route) screen.color
-                            else LocalContentColor.current.copy(alpha = ContentAlpha.medium)
-                        )
+                        // Display custom image if available, otherwise use vector icon
+                        if (screen.customIconRes != null) {
+                            Image(
+                                painter = painterResource(id = screen.customIconRes),
+                                contentDescription = screen.title,
+                                modifier = Modifier.size(24.dp),
+                                colorFilter = if (currentRoute == screen.route) {
+                                    ColorFilter.tint(screen.color)
+                                } else {
+                                    ColorFilter.tint(LocalContentColor.current.copy(alpha = ContentAlpha.medium))
+                                }
+                            )
+                        } else {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = screen.title,
+                                tint = if (currentRoute == screen.route) screen.color
+                                else LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+                            )
+                        }
                     },
                     selected = currentRoute == screen.route,
                     onClick = {

@@ -1,7 +1,11 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits
 
 data class FilterState_Facad_Boutique(
     val affiche_dialog_editeur: Boolean = false,
+    val hide_non_couleurAuDepot: Boolean = false,
+    
+    val hide_header_categorie: Boolean = false,
+
     val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
@@ -15,7 +19,6 @@ data class FilterState_Facad_Boutique(
     val searchText: String = "",
     val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true,
-    // New time-based filter
     val prixAchatTimeFilterDays: String = "", // User input as string
     val enablePrixAchatTimeFilter: Boolean = false
 )

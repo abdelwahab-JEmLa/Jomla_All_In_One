@@ -1,11 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Dialogs.CategorySelectionDialog_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Z.Dialogs.CategorySelectionDialog_FragID4
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.FilterState_Facad_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -87,18 +86,25 @@ fun Compact_Presentoire_App_Produits_FragID4(
         } ?: emptyList()
     }
 
+    // FIXED: Apply hide_non_couleurAuDepot filter - when enabled, ignore depot count check
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
+        filterState.hide_non_couleurAuDepot
     ) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
-            val hasStock = couleur.count_Don_Depot > 0
+            // FIXED: When hide_non_couleurAuDepot is enabled, don't check depot count
+            val hasStock = if (filterState.hide_non_couleurAuDepot) {
+                true // Skip depot count check
+            } else {
+                couleur.count_Don_Depot > 0 // Original logic
+            }
 
-            operationsFromLastBon.any { operation ->
+            val isInOperations = operationsFromLastBon.any { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
             }
 
-            hasStock
+            hasStock && isInOperations
         }.sortedByDescending { couleur ->
             operationsFromLastBon.find { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
@@ -144,7 +150,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     val groupe_Par_Categorie = remember(
         groupe_Couleur_Par_Produit,
         repositorysMainGetter.repoM16CategorieProduit.datasValue,
-        filterState.enableCategoryGrouping // Added category grouping dependency
+        filterState.enableCategoryGrouping
     ) {
         if (filterState.enableCategoryGrouping) {
             // Group by category when enabled
@@ -247,4 +253,3 @@ fun Compact_Presentoire_App_Produits_FragID4(
         )
     }
 }
-

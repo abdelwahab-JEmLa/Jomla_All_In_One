@@ -2,8 +2,8 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElect
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.FilterState_Facad_Boutique
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.Values.SortOrder_Facade_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.FilterState_Facad_Boutique
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.SortOrder_Facade_Boutique
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +36,7 @@ import org.koin.compose.koinInject
  * updates it through the proper channel.
  *
  * FIXED: Correct imports - FilterState and SortOrder are defined inside ActiveCentralValues
+ * FIXED: Added switches for hide_non_couleurAuDepot and hide_header_categorie
  */
 @Composable
 fun FilterDropdownMenu_Its_FacadeElectroBoutique(
@@ -134,6 +135,27 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 )
             }
 
+            // FIXED: Added new filter options for hide_non_couleurAuDepot and hide_header_categorie
+            item {
+                FilterOption(
+                    label = "Masquer couleurs non disponibles au dépôt",
+                    checked = currentFilterState.hide_non_couleurAuDepot,
+                    onCheckedChange = {
+                        onFilterChanged(currentFilterState.copy(hide_non_couleurAuDepot = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer les en-têtes de catégories",
+                    checked = currentFilterState.hide_header_categorie,
+                    onCheckedChange = {
+                        onFilterChanged(currentFilterState.copy(hide_header_categorie = it))
+                    }
+                )
+            }
+
             // Sort order options (only show when not grouping by categories)
             if (!currentFilterState.enableCategoryGrouping) {
                 item {
@@ -198,28 +220,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            item {
-                Text(
-                    text = "Filtres de niveau d'arrivage",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            item {
-                FilterOption(
-                    label = "Masquer produits sans niveau d'arrivage",
-                    checked = currentFilterState.hideQuiNeSontPas_cUnNeveauArrivage,
-                    onCheckedChange = {
-                        onFilterChanged(currentFilterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = it))
-                    }
-                )
-            }
-
-            item {
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-            }
-
+            // Availability filters section
             item {
                 Text(
                     text = "Filtres de disponibilité",
@@ -230,7 +231,17 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 
             item {
                 FilterOption(
-                    label = "Masquer produits non disponibles",
+                    label = "Masquer qui ne sont pas un niveau arrivage",
+                    checked = currentFilterState.hideQuiNeSontPas_cUnNeveauArrivage,
+                    onCheckedChange = {
+                        onFilterChanged(currentFilterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer non disponibles",
                     checked = currentFilterState.hideNonDispo,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(hideNonDispo = it))
@@ -240,7 +251,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 
             item {
                 FilterOption(
-                    label = "Masquer produits disponibles",
+                    label = "Masquer disponibles uniquement",
                     checked = currentFilterState.hideDispoOnly,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(hideDispoOnly = it))
@@ -250,7 +261,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 
             item {
                 FilterOption(
-                    label = "Masquer produits possibles",
+                    label = "Masquer petite probabilité",
                     checked = currentFilterState.hidePetiteProbability,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(hidePetiteProbability = it))
@@ -262,6 +273,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
 
+            // Purchase price filters section
             item {
                 Text(
                     text = "Filtres de prix d'achat",
@@ -428,6 +440,8 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                                     hidePrixVentePositif = true,
                                     hideHeldPrioriteDemandAuGrossist = true,
                                     hideNonHeldPrioriteDemandAuGrossist = true,
+                                    hide_non_couleurAuDepot = true,
+                                    hide_header_categorie = true,
                                     searchText = currentFilterState.searchText,
                                     sortOrderFacadeBoutique = currentFilterState.sortOrderFacadeBoutique,
                                     enableCategoryGrouping = currentFilterState.enableCategoryGrouping,

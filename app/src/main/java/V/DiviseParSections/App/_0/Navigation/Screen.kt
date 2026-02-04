@@ -1,10 +1,10 @@
 package V.DiviseParSections.App._0.Navigation
 
+import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
-import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
@@ -17,12 +17,14 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.clientjetpack.R
 
 sealed class Screen(
     val route: String,
     val icon: ImageVector,
     val title: String,
-    val color: Color
+    val color: Color,
+    @DrawableRes val customIconRes: Int? = null // Support for custom PNG/WebP from drawable
 ) {
     data object A_Clients_LocationGps : Screen(
         route = "A_Clients_LocationGps",
@@ -30,12 +32,15 @@ sealed class Screen(
         title = "A_Clients_LocationGps",
         color = Color(0xFFFF5722)
     )
+
     data object Fragment_Compact_Presentoir_Echantilliants: Screen(
         route = "Fragment_Compact_Presentoir_Echantilliants",
         icon = Icons.Default.ProductionQuantityLimits,
         title = "Fragment_Compact_Presentoir_Echantilliants",
-        color = Color(0xFF9C27B0)
+        color = Color(0xFF9C27B0),
+         customIconRes = R.drawable.logo
     )
+
     data object Compact_Presentoire_App_Produits_FragID4: Screen(
         route = "Compact_Presentoire_App_Produits_FragID4",
         icon = Icons.Default.PauseCircleOutline,
@@ -103,10 +108,9 @@ sealed class Screen(
         route = "FragmentProduitFastSearchDialog",
         icon = Icons.Default.Search,
         title = "FragmentProduitFastSearchDialog",
-        color = Color(0xFF009688)
+        color = Color(0xFF009688),
+         customIconRes = R.drawable.store // Uncomment and set your store.png resource
     )
-
-
 
     data object Main_DataBaseInitFactory_1Produit : Screen(
         route = "Main_DataBaseInitFactory_1Produit",
