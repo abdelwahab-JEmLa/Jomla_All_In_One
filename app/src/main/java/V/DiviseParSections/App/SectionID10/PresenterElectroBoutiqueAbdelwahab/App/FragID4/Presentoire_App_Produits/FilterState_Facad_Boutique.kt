@@ -7,19 +7,19 @@ data class FilterState_Facad_Boutique(
     val hide_header_categorie: Boolean = false,
 
     val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
-    val hideNonDispo: Boolean = false,
-    val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,
+
     val hidePrixAchatZero: Boolean = false,
     val hidePrixAchatPositif: Boolean = false,
     val hidePrixVenteZero: Boolean = false,
     val hidePrixVentePositif: Boolean = false,
+
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
     val searchText: String = "",
     val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true,
-    val prixAchatTimeFilterDays: String = "", // User input as string
+    val prixAchatTimeFilterDays: String = "",
     val enablePrixAchatTimeFilter: Boolean = false
 )
 

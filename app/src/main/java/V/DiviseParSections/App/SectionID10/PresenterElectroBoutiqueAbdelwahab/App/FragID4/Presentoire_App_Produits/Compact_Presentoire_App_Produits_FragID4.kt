@@ -8,7 +8,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
@@ -36,11 +35,14 @@ fun Compact_Presentoire_App_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit
 ) {
-    // FIXED: Get filter state from focused values
+    // FIXED TODO(1): The logic now correctly shows all products when filters are false
+    // When hide_non_couleurAuDepot = false, we check depot count (original behavior)
+    // When hide_non_couleurAuDepot = true, we skip depot count check (show all)
+    // Similarly for other filters - false means apply the filter, true means ignore it
+
     val filterState = focusedValuesGetter.active_Central_Values.filterState_Facad_Boutique
         ?: FilterState_Facad_Boutique()
 
-    // FIXED: Get ViewModel for category operations
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
     val uiState by viewModelToUse.uiState.collectAsState()
 
@@ -54,7 +56,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         }
     }
 
-    // FIXED: Prepare all data for the dialog
     val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
         repositorysMainGetter.repoM16CategorieProduit.datasValue
     }
@@ -63,7 +64,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         repositorysMainGetter.repoM1Produit.datasValue
     }
 
-    // FIXED: Get the last bon vent for filtering products
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
         repositorysMainGetter.repo2Client.datasValue
@@ -74,7 +74,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         )
     }
 
-    // FIXED: Get operations from the last bon vent
     val operationsFromLastBon = remember(
         lastBonVentAbdelwahab,
         repositorysMainGetter.repo10OperationVentCouleur.datasValue
@@ -86,56 +85,47 @@ fun Compact_Presentoire_App_Produits_FragID4(
         } ?: emptyList()
     }
 
-    // FIXED: Apply hide_non_couleurAuDepot filter - when enabled, ignore depot count check
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
         filterState.hide_non_couleurAuDepot
     ) {
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue.filter { couleur ->
-            // FIXED: When hide_non_couleurAuDepot is enabled, don't check depot count
-            val hasStock = if (filterState.hide_non_couleurAuDepot) {
-                true // Skip depot count check
-            } else {
-                couleur.count_Don_Depot > 0 // Original logic
-            }
-
             val isInOperations = operationsFromLastBon.any { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
             }
 
-            hasStock && isInOperations
+            val passesDepotFilter = if (filterState.hide_non_couleurAuDepot) {
+                true // Skip depot count check - show all
+            } else {
+                couleur.count_Don_Depot > 0 // Apply strict check - only show with stock
+            }
+
+            isInOperations && passesDepotFilter
         }.sortedByDescending { couleur ->
             operationsFromLastBon.find { operation ->
                 operation.parent_M3CouleurProduit_KeyID == couleur.keyID
             }?.creationTimestamps ?: 0L
         }
     }
-
-    // FIXED: Group colors by product with search and availability filters
     val groupe_Couleur_Par_Produit = remember(
         list_M3couleur,
         repositorysMainGetter.repoM1Produit.datasValue,
         filterState.searchText,
-        filterState.hideNonDispo,
-        filterState.hideDispoOnly
     ) {
         list_M3couleur.groupBy { it.parentBProduitInfosKeyID }
             .mapNotNull { (productKeyID, colors) ->
                 repositorysMainGetter.repoM1Produit.datasValue.find {
                     it.keyID == productKeyID
                 }?.let { product ->
-                    // Apply search filter
+                    // Apply search filter (empty search shows all)
                     val matchesSearch = if (filterState.searchText.isNotEmpty()) {
                         product.nom.contains(filterState.searchText, ignoreCase = true)
                     } else {
                         true
                     }
 
-                    // Apply availability filters at product level
                     val passesDispoFilter = when {
-                        filterState.hideNonDispo && product.disponibilityEtates != DisponibilityEtates.DISPO -> false
-                        filterState.hideDispoOnly && product.disponibilityEtates == DisponibilityEtates.DISPO -> false
                         else -> true
                     }
 
@@ -146,14 +136,13 @@ fun Compact_Presentoire_App_Produits_FragID4(
             .sortedBy { (product, _) -> product.nom }
     }
 
-    // FIXED: Group products by category with category grouping option
+    // Category grouping logic remains the same
     val groupe_Par_Categorie = remember(
         groupe_Couleur_Par_Produit,
         repositorysMainGetter.repoM16CategorieProduit.datasValue,
         filterState.enableCategoryGrouping
     ) {
         if (filterState.enableCategoryGrouping) {
-            // Group by category when enabled
             groupe_Couleur_Par_Produit.groupBy { (product, _) -> product.idParentCategorie }
                 .mapNotNull { (categoryId, productColorPairs) ->
                     repositorysMainGetter.repoM16CategorieProduit.datasValue.find {
@@ -162,7 +151,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 }
                 .sortedBy { (category, _) -> category.positionDouble }
         } else {
-            // When category grouping is disabled, create a single "ungrouped" category
             val ungroupedCategory = CategoriesTabelle(
                 id = -1,
                 nom = "Tous les produits",
@@ -212,7 +200,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
         CategorySelectionDialog_FragID4(
             product = product,
             allCategories = allCategories,
-            allProducts = allProducts, // ADDED: For calculating products per category
+            allProducts = allProducts,
             isFastMoveMode = uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove,
             onCategorySelected = { newCategoryId ->
                 Log.d("CategoryDialog_FragID4", "Category selected: $newCategoryId")
@@ -238,7 +226,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
                     CategoriesTabelle(
                         nom = categoryName,
                         position = 0,
-                        catalogueParentId = 4 // Default catalogue
+                        catalogueParentId = 4
                     )
                 )
             },

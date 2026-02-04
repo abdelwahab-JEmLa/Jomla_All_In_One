@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.FilterState_Facad_Boutique
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.SortOrder_Facade_Boutique
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -239,25 +239,6 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                 )
             }
 
-            item {
-                FilterOption(
-                    label = "Masquer non disponibles",
-                    checked = currentFilterState.hideNonDispo,
-                    onCheckedChange = {
-                        onFilterChanged(currentFilterState.copy(hideNonDispo = it))
-                    }
-                )
-            }
-
-            item {
-                FilterOption(
-                    label = "Masquer disponibles uniquement",
-                    checked = currentFilterState.hideDispoOnly,
-                    onCheckedChange = {
-                        onFilterChanged(currentFilterState.copy(hideDispoOnly = it))
-                    }
-                )
-            }
 
             item {
                 FilterOption(
@@ -431,8 +412,6 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                             onFilterChanged(
                                 FilterState_Facad_Boutique(
                                     hideQuiNeSontPas_cUnNeveauArrivage = true,
-                                    hideNonDispo = true,
-                                    hideDispoOnly = true,
                                     hidePetiteProbability = true,
                                     hidePrixAchatZero = true,
                                     hidePrixAchatPositif = true,

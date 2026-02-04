@@ -38,14 +38,16 @@ sealed class Screen(
         icon = Icons.Default.ProductionQuantityLimits,
         title = "Fragment_Compact_Presentoir_Echantilliants",
         color = Color(0xFF9C27B0),
-         customIconRes = R.drawable.logo
+        
     )
 
     data object Compact_Presentoire_App_Produits_FragID4: Screen(
         route = "Compact_Presentoire_App_Produits_FragID4",
         icon = Icons.Default.PauseCircleOutline,
         title = "Compact_Presentoire_App_Produits_FragID4",
-        color = Color(0xFFF44336)
+        color = Color(0xFFF44336) ,
+        customIconRes = R.drawable.logo //<--
+        //TODO(1): pk ca ne s afiiche pas au icon toggle  bar nav
     )
 
     data object EditDatabaseWithCreateNewArticles : Screen(
