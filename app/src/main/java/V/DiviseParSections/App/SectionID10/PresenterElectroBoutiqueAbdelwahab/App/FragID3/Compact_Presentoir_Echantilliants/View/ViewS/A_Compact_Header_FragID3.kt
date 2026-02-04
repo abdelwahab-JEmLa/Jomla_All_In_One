@@ -1,5 +1,8 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.DeleteProductHeader
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,12 +31,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Compact_Header_FragID3(
+    repositorysMainSetter: RepositorysMainSetter= koinInject()  ,
+    repositorysMainGetter: RepositorysMainGetter= koinInject()  ,
     relative_M1produit: ArticlesBasesStatsTable,
     isExpanded: Boolean,
     shouldShowButtons: Boolean = false,
@@ -74,7 +82,12 @@ fun Compact_Header_FragID3(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // First row: Product name
+            DeleteProductHeader(
+                productName = relative_M1produit.nom,
+                onDelete = {
+                    repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
+                }
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,9 +193,9 @@ private fun InfoCard(
     icon: @Composable () -> Unit,
     value: String,
     label: String,
-    labelTextSize: androidx.compose.ui.unit.TextUnit,
-    valueTextSize: androidx.compose.ui.unit.TextUnit,
-    itemPadding: androidx.compose.ui.unit.Dp,
+    labelTextSize: TextUnit,
+    valueTextSize: TextUnit,
+    itemPadding: Dp,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -225,9 +238,9 @@ private fun ClickableInfoCard(
     icon: @Composable () -> Unit,
     value: String,
     label: String,
-    labelTextSize: androidx.compose.ui.unit.TextUnit,
-    valueTextSize: androidx.compose.ui.unit.TextUnit,
-    itemPadding: androidx.compose.ui.unit.Dp,
+    labelTextSize: TextUnit,
+    valueTextSize: TextUnit,
+    itemPadding: Dp,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
