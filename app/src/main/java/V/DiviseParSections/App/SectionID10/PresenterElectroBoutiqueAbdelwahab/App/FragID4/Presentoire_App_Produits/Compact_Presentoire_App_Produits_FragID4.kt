@@ -50,7 +50,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
 
     LaunchedEffect(justMovedProductKeyID) {
         justMovedProductKeyID?.let {
-            Log.d("CategoryAnimation_FragID4", "Product moved, will animate: $it")
             delay(1500)
             justMovedProductKeyID = null
         }
@@ -88,7 +87,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         } ?: emptyList()
     }
 
-    // FIXED: Filter colors that have stock and are in operations
     val list_M3couleur = remember(
         repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
         operationsFromLastBon,
