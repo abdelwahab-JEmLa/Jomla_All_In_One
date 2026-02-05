@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-kapt")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
     id("io.realm.kotlin")
 }
 
@@ -18,7 +18,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.11.delivery.2"
+        versionName = "1.11.delivery.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
@@ -26,6 +26,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Configuration multidex si nécessaire
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -47,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -82,9 +86,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Firebase
-    implementation(libs.firebase.database)
+    // Firebase - Utilisez le BOM pour gérer les versions
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database)
     implementation(libs.engage.core)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage.ktx)
@@ -206,5 +210,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
-apply(plugin = "com.google.gms.google-services")
