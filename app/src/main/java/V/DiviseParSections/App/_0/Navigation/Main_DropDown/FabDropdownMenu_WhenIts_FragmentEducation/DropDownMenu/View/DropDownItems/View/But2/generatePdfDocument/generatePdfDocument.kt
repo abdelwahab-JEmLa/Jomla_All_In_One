@@ -2,11 +2,10 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.A.drawHifdTable
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.A.drawIstedrakMokarrarTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.A.drawObservationHistoryTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawFooterSection
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawHeaderSection
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawIstedrakTable
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawJustificationTable
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.drawStudentHeader
 import android.content.Context
 import android.graphics.Paint
@@ -17,18 +16,12 @@ import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 
-/**
- * Generate PDF document from structured card data with proper RTL support
- * ENHANCED VERSION - Includes observation history table
- *
- * @param context Android context
- * @param cardsData List of student card data
- * @param aCentralFacade Repository facade to access observation data
- */
+
 fun generatePdfDocument(
     context: Context,
     cardsData: List<ParentCommunicationCardData_2>,
-    aCentralFacade: ACentralFacade
+    aCentralFacade: ACentralFacade,
+    compactHeightMode: Boolean = true  // ✅ FIXED: Default to compact mode
 ): File? {
     return try {
         val outputDir = context.cacheDir
@@ -101,10 +94,11 @@ fun generatePdfDocument(
                 strokeWidth = 1f
             }
 
-            // Draw all sections
+            // ✅ FIXED: Pass compactHeightMode to header section
             var yPosition = drawHeaderSection(
                 canvas, marginLeft, marginTop, pageWidth, marginRight, contentWidth,
-                paintHeaderLarge, paintSmall, paintVerySmall
+                paintHeaderLarge, paintSmall, paintVerySmall,
+                compactMode = compactHeightMode  // Use compact mode parameter
             )
 
             yPosition = drawStudentHeader(
@@ -112,37 +106,30 @@ fun generatePdfDocument(
                 paintArabicBold, paintBorder
             )
 
-            // ═══════════════════════════════════════════════════
-            // ENHANCED: Pass aCentralFacade to drawHifdTable
-            // ═══════════════════════════════════════════════════
+            // Draw Hifd table with repository access
             yPosition = drawHifdTable(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
                 paintArabicMediumBold, paintArabic, paintBorder,
-                aCentralFacade = aCentralFacade  // NEW: Pass repository access
+                aCentralFacade = aCentralFacade
             )
 
-            yPosition = drawIstedrakTable(
+            // Draw Istedrak Mokarrar table (المقرر لاستدراك القديم)
+            yPosition = drawIstedrakMokarrarTable(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
                 paintArabicMediumBold, paintArabic, paintBorder
             )
 
-            // ═══════════════════════════════════════════════════
-            // NEW: Draw observation history table (last 3 records)
-            // ═══════════════════════════════════════════════════
             yPosition = drawObservationHistoryTable(
                 canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
                 paintArabicMediumBold, paintArabic, paintSmall, paintBorder,
                 aCentralFacade = aCentralFacade
             )
 
-            yPosition = drawJustificationTable(
-                canvas, cardData, marginLeft, yPosition, pageWidth, marginRight, contentWidth,
-                paintArabicMediumBold, paintArabic, paintBorder
-            )
-
+            // ✅ FIXED: Pass compactHeightMode to footer section
             drawFooterSection(
                 canvas, cardData, marginLeft, pageHeight, pageWidth, marginRight, contentWidth,
-                paintSmall, paintVerySmall, paintBorder
+                paintSmall, paintVerySmall, paintBorder,
+                compactMode = false  // Use compact mode parameter
             )
 
             pdfDocument.finishPage(page)

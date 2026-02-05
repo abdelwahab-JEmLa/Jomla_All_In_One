@@ -11,6 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import java.util.Calendar
 
+/**
+ * Draws observation history table in ultra-compact format
+ * Shows last 4 observations with minimal height usage
+ */
 fun drawObservationHistoryTable(
     canvas: Canvas,
     cardData: ParentCommunicationCardData_2,
@@ -64,10 +68,10 @@ fun drawObservationHistoryTable(
     currentY += titleHeight
 
     // ═══════════════════════════════════════════════════
-    // Draw each observation - ULTRA COMPACT (38px)
+    // Draw each observation - ULTRA COMPACT (32px per row)
     // ═══════════════════════════════════════════════════
     last3Observations.forEach { observation ->
-        val rowHeight = 38f // ✅ ULTRA COMPACT
+        val rowHeight = 30f // ✅ ULTRA COMPACT - reduced for better fit
 
         // Alternating background
         val rowIndex = last3Observations.indexOf(observation)
@@ -106,7 +110,7 @@ fun drawObservationHistoryTable(
             paint = ultraCompactPaint,
             alignment = Layout.Alignment.ALIGN_NORMAL
         )
-        rowY += 12f
+        rowY += 10f
 
         // ─────────────────────────────────────────────────
         // Line 2: Takyim + Moulahadat (combined, colored)
@@ -148,7 +152,7 @@ fun drawObservationHistoryTable(
         currentY += rowHeight
     }
 
-    currentY += 6f
+    currentY += 4f
     return currentY
 }
 

@@ -217,8 +217,8 @@ data class M19Etudiant(
     var moulahada_3ala_soulouk: MoulahadaSoulouk = MoulahadaSoulouk.Rien,
     var moulahada_makouba: String = "",
 
-    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var istedrak_kadim_Moukarare: SOUAR = SOUAR.El_Nasse,
+    var istedrak_kadim_Akher_Soura_Wassale_Laha: SOUAR = SOUAR.El_Nasse,
     var istedrak_kadim_Takyim_hali: Takiyim = Takiyim.Maqboul,
 
     var absent: Boolean = false,
