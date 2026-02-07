@@ -98,7 +98,7 @@ fun generatePdfDocument(
             var yPosition = drawHeaderSection(
                 canvas, marginLeft, marginTop, pageWidth, marginRight, contentWidth,
                 paintHeaderLarge, paintSmall, paintVerySmall,
-                compactMode = compactHeightMode  // Use compact mode parameter
+                compactMode = false  // Use compact mode parameter
             )
 
             yPosition = drawStudentHeader(

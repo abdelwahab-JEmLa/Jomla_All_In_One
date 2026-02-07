@@ -10,10 +10,7 @@ import android.text.TextPaint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
-/**
- * Draws the "المقرر لتحضيره" (Assigned to Prepare) cell
- * ENHANCED: More appealing UI with centered, larger, colored text
- */
+// ✅ FIXED: Added logic to handle aya=0 → display "نهاية" (end of surah)
 fun drawMokarrarCell(
     canvas: Canvas,
     cardData: ParentCommunicationCardData_2,
@@ -54,11 +51,20 @@ fun drawMokarrarCell(
     val souraName = mokarrarText.substringBefore("من").trim()
     val fromAya = fromMatch?.groupValues?.get(1) ?: "1"
 
+    // ✅ FIXED: Helper function to format aya display
+    fun formatAyaDisplay(ayaNumber: String): String {
+        return when {
+            ayaNumber == "0" -> "نهاية"
+            ayaNumber.toIntOrNull() == 0 -> "نهاية"
+            else -> "الآية $ayaNumber"
+        }
+    }
+
     // ═══════════════════════════════════════════════════
     // من Section - CENTERED & COLORED
     // ═══════════════════════════════════════════════════
     val fromText = if (souraName.isNotEmpty()) {
-        "من $souraName الآية $fromAya"
+        "من $souraName ${formatAyaDisplay(fromAya)}"
     } else {
         mokarrarText
     }
@@ -102,13 +108,15 @@ fun drawMokarrarCell(
 
     // ═══════════════════════════════════════════════════
     // إلى Section - CENTERED & COLORED
+    // ✅ FIXED: Now handles aya=0 case
     // ═══════════════════════════════════════════════════
     val toText = if (souraName.isNotEmpty()) {
         when {
             toEndMatch -> "إلى نهاية $souraName"
             toMatch != null -> {
                 val toAya = toMatch.groupValues[1]
-                "إلى $souraName الآية $toAya"
+                // ✅ FIXED: Use formatAyaDisplay for "to" aya as well
+                "إلى $souraName ${formatAyaDisplay(toAya)}"
             }
             else -> "إلى $souraName"
         }

@@ -64,17 +64,33 @@ data class ParentCommunicationCardData_2(
     }
 
     companion object {
+        /**
+         * ✅ FIXED: Helper function to format aya display - handles aya=0 case
+         * Returns "نهاية" for aya=0, otherwise returns the aya number
+         */
+        private fun formatAyaForDisplay(aya: Int): String {
+            return if (aya == 0) "نهاية" else aya.toString()
+        }
+
         fun fromEtudiant(etudiant: M19Etudiant): ParentCommunicationCardData_2 {
             val dateText = SimpleDateFormat("dd/MM/yyyy", Locale("ar")).format(Date())
 
-            // Determine mokarrar details based on whether it's the same soura or different
+            // ✅ FIXED: Determine mokarrar details with proper aya=0 handling
             val mokarrarText = if (etudiant.dernier_Soura_Wassale_Laha == etudiant.mokarrare_hifde) {
+                // Same soura case
+                val fromAyaDisplay = formatAyaForDisplay(etudiant.dernier_Soura_sater)
+                val toAyaDisplay = formatAyaForDisplay(etudiant.mokarrare_hifde_sater)
+
                 """${etudiant.mokarrare_hifde.arabicName}
-من الآية ${etudiant.dernier_Soura_sater} إلى ${etudiant.mokarrare_hifde_sater}"""
+من الآية $fromAyaDisplay إلى $toAyaDisplay"""
             } else {
+                // Different souras case
+                val fromAyaDisplay = formatAyaForDisplay(etudiant.dernier_Soura_sater)
+                val toAyaDisplay = formatAyaForDisplay(etudiant.mokarrare_hifde_sater)
+
                 """${etudiant.mokarrare_hifde.arabicName}
-من الآية ${etudiant.dernier_Soura_sater} إلى
-${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية ${etudiant.mokarrare_hifde_sater}"""
+من الآية $fromAyaDisplay إلى
+${etudiant.dernier_Soura_Wassale_Laha.arabicName} الآية $toAyaDisplay"""
             }
 
             // Check if istedrak data exists and is different from default
