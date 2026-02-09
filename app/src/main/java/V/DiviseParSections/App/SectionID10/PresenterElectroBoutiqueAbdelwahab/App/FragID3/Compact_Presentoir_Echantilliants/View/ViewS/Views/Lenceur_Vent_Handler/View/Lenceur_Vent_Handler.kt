@@ -45,6 +45,7 @@ fun Lenceur_Vent_Handler_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier,
+    isWifiClientConnected: Boolean = false,
 ) {
     // FIXED: Added spacing parameter to prevent accidental clicks between depot and sale button
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }

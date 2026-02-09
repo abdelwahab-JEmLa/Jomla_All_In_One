@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.Big_Principale_FragID3
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Compact_Header_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.SubColorCard_WithButton
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Components.updateTariffForProductOperations
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Compact_Header_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
@@ -68,7 +68,8 @@ fun Item_Produit_FragID3(
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject(),
     onCategoryClick: (() -> Unit)? = null, // FIXED: New parameter to delegate category dialog to parent
-) {
+) {         //<--
+    // FIXED: Sub-colors are now visible in all modes (host and client) - see line 420
     // Get categories and catalogues for display
     val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
         repositorysMainGetter.repoM16CategorieProduit.datasValue
@@ -226,7 +227,8 @@ fun Item_Produit_FragID3(
             }
         }
     }
-
+    //<--
+    // FIXED: Screen now stays active when connected to a client (see DisposableEffect above)
     // Append the synthetic Edited_Pour_Client whenever it exists and none was persisted.
     // synthetic is already null when both base prices are missing — no extra gate needed.
     val datasValue_with_synthetic = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
@@ -293,7 +295,7 @@ fun Item_Produit_FragID3(
         mutableStateOf(finale_Tariff)
     }
 
-    val developement_affiche = true
+    val developement_affiche = false
 
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
             && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
@@ -411,7 +413,8 @@ fun Item_Produit_FragID3(
                     on_pour_send_data = on_pour_send_data
                 )
 
-                if (relative_ListM3Couleurs.size > 1 && isHostPhone) {
+                // FIXED: Sub-colors now visible in all modes (removed isHostPhone condition)
+                if (relative_ListM3Couleurs.size > 1) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (isThisProductExpanded) {

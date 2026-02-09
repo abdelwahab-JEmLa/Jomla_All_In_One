@@ -4,19 +4,23 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.Item_Produit_FragID3
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
+import android.util.Log
+import android.view.WindowManager
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +36,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +45,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+// Also keep screen on when connected via WiFi as a client (not host)
+fun get_isWifiClientConnected(wifiTransferDatas: WifiTransferDatas): Boolean = !wifiTransferDatas.connectionUiState.value.isHostPhone &&
+        wifiTransferDatas.connectionUiState.value.isConnected
 
 @Composable
 fun Compact_Presentoir_Echantilliants_FragID3(
@@ -51,8 +60,35 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     FragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
     categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
+    wifiTransferDatas: WifiTransferDatas = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> }
 ) {
+    val context = LocalContext.current
+
+    val isWifiClientConnected = get_isWifiClientConnected(wifiTransferDatas)
+
+
+    DisposableEffect(isWifiClientConnected) {
+        val window = (context as? ComponentActivity)?.window
+
+        if (isWifiClientConnected && window != null) {
+            // Keep screen on when connected to a client or WiFi
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            val reason = when {
+                isWifiClientConnected -> "WiFi connection (as client)"
+                else -> "unknown"
+            }
+            Log.d("ScreenWakeLock", "Screen wake lock enabled - reason: $reason")
+        }
+
+        onDispose {
+            // Remove the flag when leaving this composable or when disconnected
+            if (window != null) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                Log.d("ScreenWakeLock", "Screen wake lock disabled")
+            }
+        }
+    }
     // FIXED: Create ViewModel locally if not provided
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
 

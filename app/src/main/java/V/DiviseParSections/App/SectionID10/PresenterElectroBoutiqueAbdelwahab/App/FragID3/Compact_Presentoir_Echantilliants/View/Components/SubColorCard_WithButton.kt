@@ -2,10 +2,13 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.get_isWifiClientConnected
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 /**
  * A card component for displaying sub-colors (non-primary colors) with a button below.
@@ -38,6 +42,7 @@ fun SubColorCard_WithButton(
     focusedValuesGetter: FocusedValuesGetter,
     on_pour_send_data: (String, String) -> Unit,
     isExpanded: Boolean,
+    wifiTransferDatas: WifiTransferDatas = koinInject(),
     modifier: Modifier = Modifier
 ) {
     // Find the sales operation for this specific color
@@ -63,14 +68,16 @@ fun SubColorCard_WithButton(
                 .height(if (isExpanded) 80.dp else 40.dp)
         )
 
-        // Sales button directly below the image
-        Lenceur_Vent_Handler_FragID3(
-            relative_M1produit = relative_M1produit,
-            relative_M10OperationVentCouleur = colorOperation,
-            selectedCouleur = couleur,
-            selectedTariff = selectedTariff,
-            compactMode = !isExpanded,
-            modifier = Modifier.fillMaxWidth()
-        )
+        get_isWifiClientConnected(wifiTransferDatas).ifTrue {
+            Lenceur_Vent_Handler_FragID3(
+                isWifiClientConnected =get_isWifiClientConnected(wifiTransferDatas),
+                relative_M1produit = relative_M1produit,
+                relative_M10OperationVentCouleur = colorOperation,
+                selectedCouleur = couleur,
+                selectedTariff = selectedTariff,
+                compactMode = !isExpanded,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

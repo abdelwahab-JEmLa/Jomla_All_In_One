@@ -111,7 +111,7 @@ fun Big_Principale_FragID3(
                 relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                 selectedCouleur = selectedCouleur,
                 selectedTariff = selectedTariff,
-                compactMode = !isThisProductExpanded
+                compactMode = !isThisProductExpanded,
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(

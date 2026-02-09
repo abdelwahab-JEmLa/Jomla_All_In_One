@@ -29,6 +29,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -93,6 +94,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onClickAnulationButton: () -> Unit = {},
+    wifiTransferDatas: WifiTransferDatas = koinInject(),
+
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
     var searchTextForFastPanier by remember { mutableStateOf("") }
@@ -109,6 +112,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
     var offsetY by remember {
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.y.toFloat())
+    }
+
+    // Center the FAB menu when WiFi connection state changes
+    val connectionUiState by wifiTransferDatas.connectionUiState.collectAsState()
+    LaunchedEffect(connectionUiState.isConnected) {
+        offsetX = 0f
+        offsetY = 0f
     }
 
     val isRecording by recordingViewModel.isRecording.collectAsState()

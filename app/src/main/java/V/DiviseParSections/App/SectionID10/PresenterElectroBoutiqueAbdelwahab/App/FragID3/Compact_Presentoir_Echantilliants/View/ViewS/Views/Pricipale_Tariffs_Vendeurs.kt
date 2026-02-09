@@ -183,7 +183,7 @@ private fun formatPrice(price: Double): String {
 }
 
 private fun formatPriceWithDecimals(price: Double): String {
-    return String.format(Locale.getDefault(), "%.2f", price)
+    return String.format(Locale.getDefault(), "%.1f", price)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
