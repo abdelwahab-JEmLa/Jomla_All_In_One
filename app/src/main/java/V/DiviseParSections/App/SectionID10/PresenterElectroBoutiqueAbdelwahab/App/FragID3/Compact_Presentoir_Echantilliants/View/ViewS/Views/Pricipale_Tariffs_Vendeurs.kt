@@ -360,8 +360,6 @@ private fun TariffItem(
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
 
-    // FIXED TODO(1): Reduced spacing between elements
-    // Use Column in compact mode for line break, Row otherwise
     if (compactMode) {
         Column(
             modifier = modifier
@@ -385,8 +383,6 @@ private fun TariffItem(
                 lineHeight = fontSize // FIXED: Tight line height to reduce vertical spacing
             )
 
-            // FIXED TODO(1): Removed excessive spacing between text elements
-            // Always show unit price if nombreUnite > 1
             if (nombreUnite > 1) {
                 Text(
                     text = "(${formatPrice(prixUnitaire)}/u)",
@@ -419,8 +415,6 @@ private fun TariffItem(
                 fontSize = fontSize
             )
 
-            // FIXED TODO(1): Reduced spacing between text elements
-            // Always show both prices if nombreUnite > 1
             if (nombreUnite > 1) {
                 Text(
                     text = "${formatPrice(effectivePrix)} DA/p.u (${formatPrice(prixUnitaire)}/u)",
