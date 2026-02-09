@@ -182,6 +182,10 @@ private fun formatPrice(price: Double): String {
     return String.format(Locale.getDefault(), "%.0f", price)
 }
 
+private fun formatPriceWithDecimals(price: Double): String {
+    return String.format(Locale.getDefault(), "%.2f", price)
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun EditableProgressiveTariffItem(
@@ -264,7 +268,7 @@ private fun EditableProgressiveTariffItem(
         // Show unit price if nombreUnite > 1
         if (nombreUnite > 1) {
             Text(
-                text = "(${formatPrice(prixUnitaire)}/u)",
+                text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
                 color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
                 fontSize = fontSize,
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -385,7 +389,7 @@ private fun TariffItem(
 
             if (nombreUnite > 1) {
                 Text(
-                    text = "(${formatPrice(prixUnitaire)}/u)",
+                    text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
                     fontSize = secondaryFontSize,
                     lineHeight = secondaryFontSize // FIXED: Tight line height
@@ -417,7 +421,7 @@ private fun TariffItem(
 
             if (nombreUnite > 1) {
                 Text(
-                    text = "${formatPrice(effectivePrix)} DA/p.u (${formatPrice(prixUnitaire)}/u)",
+                    text = "${formatPrice(effectivePrix)} DA/p.u (${formatPriceWithDecimals(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )
