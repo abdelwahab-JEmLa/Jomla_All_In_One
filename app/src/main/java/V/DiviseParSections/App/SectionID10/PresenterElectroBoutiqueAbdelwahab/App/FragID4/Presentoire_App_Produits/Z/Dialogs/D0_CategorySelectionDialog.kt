@@ -57,10 +57,6 @@ import kotlinx.coroutines.delay
 
 private const val TAG = "CategorySelectionDialog"
 
-/**
- * COMPLETE REFACTORED VERSION - No ViewModel dependencies
- * All data is passed as parameters, all actions through callbacks
- */
 @Composable
 fun CategorySelectionDialog_FragID4(
     product: ArticlesBasesStatsTable,

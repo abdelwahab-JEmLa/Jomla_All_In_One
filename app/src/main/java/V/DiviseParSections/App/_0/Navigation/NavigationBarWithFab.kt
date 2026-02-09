@@ -73,9 +73,7 @@ fun NavigationBarWithFab(
     var showFabDropdownEducation by remember { mutableStateOf(false) }
     var showFabDropdown_MainPresenterFragment by remember { mutableStateOf(false) }
 
-    // Get current focused values to check floating button visibility
     val currentValues = focusedValuesGetter.active_Central_Values
-    val shouldShowFloatingButton = currentValues.affiche_Floating_Button_SelecteCategorieEtAddNewProduit
 
     Box(
         modifier = modifier.fillMaxWidth(),
