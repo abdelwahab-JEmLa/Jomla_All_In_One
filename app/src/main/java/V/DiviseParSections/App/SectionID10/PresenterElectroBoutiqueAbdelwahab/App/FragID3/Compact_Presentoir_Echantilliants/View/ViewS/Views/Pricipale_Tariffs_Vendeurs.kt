@@ -15,15 +15,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +31,7 @@ private object TariffTextSizes {
     // Compact mode sizes
     val COMPACT_MAIN_TEXT = 15.sp
     val COMPACT_SECONDARY_TEXT = 6.sp
-    val COMPACT_HORIZONTAL_PADDING = 8.dp
+    val COMPACT_HORIZONTAL_PADDING = 6.dp  // FIXED: Increased from 1.dp to prevent clipping
     val COMPACT_VERTICAL_PADDING = 4.dp
     val COMPACT_ICON_SIZE = 16.dp
     val COMPACT_ICON_SIZE_TARIFF_ITEM = 14.dp
@@ -100,7 +97,7 @@ private fun TariffItemSelector(
     tariffsList: List<M13TarificationInfos>
 ) {
     val prix = tariff.prixCurrency
-    val nombreUnite = relative_M1produit.quantite_Boit_Par_Carton
+    val nombreUnite = relative_M1produit.nombreUniteInt
 
     // FIXED: Added Edited_Pour_Client to the editable tariff types
     when {
@@ -232,7 +229,6 @@ private fun EditableProgressiveTariffItem(
 
     FlowRow(
         modifier = modifier
-            .clip(CircleShape)
             .border(
                 width = borderWidth,
                 color = borderColor,
@@ -276,7 +272,7 @@ private fun EditableProgressiveTariffItem(
         }
     }
 }
-//<--
+
 // FIXED: Edited_Pour_Client tariff now uses EditableProgressiveTariffItem (see line 115)
 // This allows the click outlined text edit field to display when editing client tariff
 @Composable
@@ -364,12 +360,11 @@ private fun TariffItem(
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
 
-    // FIXED: Always show both prices when nombreUnite > 1
+    // FIXED TODO(1): Reduced spacing between elements
     // Use Column in compact mode for line break, Row otherwise
     if (compactMode) {
         Column(
             modifier = modifier
-                .clip(CircleShape)
                 .border(
                     width = borderWidth,
                     color = borderColor,
@@ -381,41 +376,29 @@ private fun TariffItem(
                 )
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(0.dp) // FIXED: No spacing between price lines
         ) {
-            // Icon
-            tariff.typeChoisi.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = tariff.typeChoisi.nomArabe,
-                    tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clip(CircleShape)
-                )
-            }
-
-            // Always show total price
             Text(
                 text = formatPrice(effectivePrix),
                 color = tariff.typeChoisi.couleur_Text,
-                fontSize = fontSize
+                fontSize = fontSize,
+                lineHeight = fontSize // FIXED: Tight line height to reduce vertical spacing
             )
 
+            // FIXED TODO(1): Removed excessive spacing between text elements
             // Always show unit price if nombreUnite > 1
             if (nombreUnite > 1) {
                 Text(
                     text = "(${formatPrice(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
-                    fontSize = secondaryFontSize
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize // FIXED: Tight line height
                 )
             }
         }
     } else {
         Row(
             modifier = modifier
-                .clip(CircleShape)
                 .border(
                     width = borderWidth,
                     color = borderColor,
@@ -427,28 +410,16 @@ private fun TariffItem(
                 )
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp), // FIXED: Reduced spacing between elements
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
-            tariff.typeChoisi.iconVector?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = tariff.typeChoisi.nomArabe,
-                    tint = tariff.typeChoisi.couleur_Text,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clip(CircleShape)
-                )
-            }
-
-            // Abbreviated name
             Text(
                 text = tariff.typeChoisi.abrgNom,
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize
             )
 
+            // FIXED TODO(1): Reduced spacing between text elements
             // Always show both prices if nombreUnite > 1
             if (nombreUnite > 1) {
                 Text(

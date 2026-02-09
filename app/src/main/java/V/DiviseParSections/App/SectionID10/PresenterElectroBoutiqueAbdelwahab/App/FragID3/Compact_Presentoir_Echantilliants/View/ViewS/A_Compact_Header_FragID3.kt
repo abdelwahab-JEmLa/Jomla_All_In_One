@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.View.ViewS
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -41,6 +42,7 @@ import org.koin.compose.koinInject
 fun Compact_Header_FragID3(
     repositorysMainSetter: RepositorysMainSetter= koinInject()  ,
     repositorysMainGetter: RepositorysMainGetter= koinInject()  ,
+    focusedValuesGetter: FocusedValuesGetter= koinInject()  ,
     relative_M1produit: ArticlesBasesStatsTable,
     isExpanded: Boolean,
     shouldShowButtons: Boolean = false,
@@ -82,7 +84,7 @@ fun Compact_Header_FragID3(
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
             // Delete button - only visible for admin users
-            if (shouldShowButtons) {
+            if (shouldShowButtons && focusedValuesGetter.currentApp_Est_Admin) {
                 DeleteProductHeader(
                     productName = relative_M1produit.nom,
                     onDelete = {
@@ -129,7 +131,7 @@ fun Compact_Header_FragID3(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons && onUpdateTariffContext != null) {
+                if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin && onUpdateTariffContext != null) {
                     ClickableInfoCard(
                         icon = {
                             Icon(

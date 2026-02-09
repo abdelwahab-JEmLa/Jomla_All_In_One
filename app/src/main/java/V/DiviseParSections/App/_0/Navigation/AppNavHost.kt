@@ -200,17 +200,11 @@ fun AppNavHost(
                     composable(
                         route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                     ) {
-                        if (isAdmin) {
                             Compact_Presentoire_App_Produits_FragID4(
                                 viewModelHeadViewModel=viewModel,
                                 on_pour_send_data= on_pour_send_data,
                                 onClickImageToShowControles = onClickImageToShowControles
                             )
-                        } else {
-                            UnauthorizedAccessScreen(
-                                onNavigateBack = { navController.navigateUp() }
-                            )
-                        }
                     }
 
                     composable(Screen.Screen1PanieVentsFinale.route) {
@@ -228,33 +222,15 @@ fun AppNavHost(
 
                     // Admin-only screens
                     composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                        if (isAdmin) {
                             EditeBaseDonneMainScreenIdS9()
-                        } else {
-                            UnauthorizedAccessScreen(
-                                onNavigateBack = { navController.navigateUp() }
-                            )
-                        }
                     }
 
                     composable(Screen.EducationFragment.route) {
-                        if (isAdmin) {
                             EducationFragment()
-                        } else {
-                            UnauthorizedAccessScreen(
-                                onNavigateBack = { navController.navigateUp() }
-                            )
-                        }
                     }
 
                     composable(Screen.FragmentProduitFastSearchDialog.route) {
-                        if (isAdmin) {
                             MainFastSearchProduitPourVent()
-                        } else {
-                            UnauthorizedAccessScreen(
-                                onNavigateBack = { navController.navigateUp() }
-                            )
-                        }
                     }
 
                     composable(Screen.Main_DataBaseInitFactory_1Produit.route) {
