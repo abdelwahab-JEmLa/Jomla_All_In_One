@@ -252,30 +252,44 @@ class PdfTableBuilder(
 
     private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
         try {
-            val baseDir = File("/storage/emulated/0/Android/data/com.example.clientjetpack/files/Pictures/Produit_img")
+            val couleurProduit = operation.parent_M3CouleurProduit_KeyID?.let { keyID ->
+                focusedValuesGetter.find_M3CouleurInfos_By_KeyID(keyID)
+            }
+
+            if (couleurProduit == null) {
+                android.util.Log.d(TAG, "No color product found for operation: ${operation.keyID}")
+                return ImageSearchResult(null, false)
+            }
+
+            val imageFileName = couleurProduit.nomImageFichieSansEtansion
+            val extension = couleurProduit.extensionDisponible
+
+            if (imageFileName.isNullOrEmpty() || extension.isNullOrEmpty()) {
+                android.util.Log.d(TAG, "No image filename or extension for color product: ${couleurProduit.keyID}")
+                return ImageSearchResult(null, false)
+            }
+
+            // FIXED: Use the correct image directory path (same as ImageDisplayerGlide_FragFastVent)
+            val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+
             if (!baseDir.exists()) {
                 android.util.Log.w(TAG, "Image directory does not exist: ${baseDir.absolutePath}")
                 return ImageSearchResult(null, false)
             }
 
-            val couleurId = operation.parent_M3CouleurProduit_KeyID ?: ""
-            val produitId = operation.parent_M1Produit_KeyId ?: ""
+            // Use the decrementing function to find the actual image file (same logic as in ImageDisplayerGlide_FragFastVent)
+            val actualImageFileName = V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+                .decrementing_file_name_si_non_trouve(imageFileName, extension)
 
-            val searchPatterns = listOf(
-                "C_${couleurId}_",
-                "P_${produitId}_"
-            )
-
-            val matchingFiles = baseDir.listFiles { file ->
-                searchPatterns.any { pattern ->
-                    file.name.contains(pattern, ignoreCase = true)
-                }
+            val imageFile = actualImageFileName?.let {
+                File(baseDir, "$it.$extension")
             }
 
-            val imageFile = matchingFiles?.firstOrNull()
             return if (imageFile != null && imageFile.exists()) {
+                android.util.Log.d(TAG, "✅ Image found: ${imageFile.absolutePath}")
                 ImageSearchResult(imageFile, true)
             } else {
+                android.util.Log.d(TAG, "❌ Image not found: $imageFileName.$extension in ${baseDir.absolutePath}")
                 ImageSearchResult(null, false)
             }
 
@@ -284,6 +298,7 @@ class PdfTableBuilder(
             return ImageSearchResult(null, false)
         }
     }
+
 
     private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
         var sampleSize = 1

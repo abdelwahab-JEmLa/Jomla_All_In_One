@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -67,6 +68,9 @@ class FocusedValuesGetter(
     fun ajoute_New_M10OperationVentCouleur(operation: M10OperationVentCouleur) {
         repo10OperationVentCouleur.add_New(operation)
     }
+    fun find_M3CouleurInfos_By_KeyID(keyId: String): M3CouleurProduitInfos? =
+        repo3CouleurProduitInfos.datasValue.find { it.keyID == keyId }
+
 
     /**
      * Updates an existing M10OperationVentCouleur
