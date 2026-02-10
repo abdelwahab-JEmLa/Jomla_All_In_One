@@ -9,13 +9,20 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
 
+/**
+ * FIXED: Always uses FileProvider URIs to avoid "file exposed beyond app" errors
+ */
 class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
 ) {
+    companion object {
+        private const val TAG = "PdfPrintHandler"
+    }
+
     /**
      * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
      */
@@ -119,26 +126,48 @@ class PdfPrintHandler(
         }
     }
 
+    /**
+     * FIXED: Always uses FileProvider URI, never exposes file:// URIs
+     * This prevents "file exposed beyond app through Intent.getData()" errors
+     */
     private fun openPdfFile(context: Context, file: File) {
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
+        try {
+            // Create FileProvider URI
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
 
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            val fileIntent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(Uri.fromFile(file), "*/*")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            // Try to open with PDF viewer
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
             }
-            context.startActivity(fileIntent)
+
+            // Check if there's an app that can handle PDFs
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+                Log.i(TAG, "PDF opened successfully")
+            } else {
+                // No PDF viewer found - try with generic viewer
+                // IMPORTANT: Still use FileProvider URI, not Uri.fromFile()
+                val genericIntent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "*/*")  // ✅ Still using content:// URI
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+
+                try {
+                    context.startActivity(genericIntent)
+                    Log.i(TAG, "PDF opened with generic viewer")
+                } catch (e: Exception) {
+                    Log.e(TAG, "No app available to open PDF", e)
+                    // Could show a Toast here to inform the user
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error opening PDF file", e)
         }
     }
 
@@ -153,8 +182,10 @@ class PdfPrintHandler(
 
             val destFile = File(downloadsDir, sourceFile.name)
             sourceFile.copyTo(destFile, overwrite = true)
+            Log.i(TAG, "PDF saved to downloads: ${destFile.absolutePath}")
             destFile
         } catch (e: Exception) {
+            Log.e(TAG, "Error saving PDF to downloads", e)
             null
         }
     }

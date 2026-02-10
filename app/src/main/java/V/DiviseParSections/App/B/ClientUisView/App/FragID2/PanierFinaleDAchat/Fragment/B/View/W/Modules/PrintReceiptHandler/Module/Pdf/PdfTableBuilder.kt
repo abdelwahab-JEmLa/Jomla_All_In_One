@@ -22,11 +22,11 @@ import java.io.File
 import kotlin.math.max
 
 /**
- * FIXED: Memory-optimized image handling with proper scaling and resource management
- * - Images are downsampled during decoding to reduce memory footprint
- * - Bitmap recycling after each conversion
- * - Lower quality PNG compression
- * - Explicit garbage collection hints after processing
+ * FIXED: Proper resource management for iText PDF objects
+ * - All Bitmap objects are explicitly recycled
+ * - ByteArrayOutputStream properly closed
+ * - Image creation wrapped in try-catch with cleanup
+ * - This eliminates "A resource failed to call end" warnings
  */
 class PdfTableBuilder(
     private val formatter: PdfFormatterUtils,
@@ -36,10 +36,10 @@ class PdfTableBuilder(
 
     private companion object {
         const val STANDARD_ROW_HEIGHT = 20f
-        const val IMAGE_ROW_HEIGHT = 70f // Beaucoup plus grand pour images très visibles
-        const val IMAGE_SIZE = 65f // Images beaucoup plus grandes
-        const val PNG_QUALITY = 70 // Reduced from 90 to save memory
-        const val MAX_IMAGE_DIMENSION = 200 // Maximum width/height for decoded images
+        const val IMAGE_ROW_HEIGHT = 70f
+        const val IMAGE_SIZE = 65f
+        const val PNG_QUALITY = 70
+        const val MAX_IMAGE_DIMENSION = 200
         const val TAG = "PDF_TABLE_BUILDER"
     }
 
@@ -58,7 +58,7 @@ class PdfTableBuilder(
         } ?: false
 
         val columnWidths = if (shouldIncludeImages) {
-            floatArrayOf(25f, 12f, 12f, 38f, 13f) // Image 25%, S-total réduit à 13%
+            floatArrayOf(25f, 12f, 12f, 38f, 13f)
         } else {
             floatArrayOf(15f, 20f, 45f, 20f)
         }
@@ -148,7 +148,7 @@ class PdfTableBuilder(
 
             if (includeImages) {
                 val imageCell = createImageCell(imageResult.imageFile, rowHeight)
-                    .setKeepTogether(true) // Garde l'image entière ensemble
+                    .setKeepTogether(true)
                 table.addCell(imageCell)
             }
 
@@ -158,7 +158,6 @@ class PdfTableBuilder(
                     if (nombreUniteInt > 0) rawPrice / nombreUniteInt else rawPrice
                 } else rawPrice
 
-                // Tailles de police réduites quand images sont affichées
                 val textSize = if (includeImages) 9f else 11f
                 val productNameSize = if (includeImages) 10f else 13f
 
@@ -176,206 +175,116 @@ class PdfTableBuilder(
                 })
 
                 total += subtotal
-                itemCount++
+                itemCount += qty
             } else {
-                val textSize = if (includeImages) 9f else 11f
-                val productNameSize = if (includeImages) 10f else 13f
+                val emptyContent = ""
+                table.addCell(createDataCell(qtyDisplay, boldFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(emptyContent, regularFont, 11f, TextAlignment.CENTER, rowHeight))
+                table.addCell(createDataCell(productNameWithCategory, boldFont, 13f, TextAlignment.LEFT, rowHeight))
+                table.addCell(createDataCell(emptyContent, regularFont, 11f, TextAlignment.RIGHT, rowHeight))
 
-                table.addCell(createDataCell(qtyDisplay, boldFont, textSize, TextAlignment.CENTER, rowHeight).apply {
-                    if (includeImages) setKeepTogether(true)
-                })
-                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.CENTER, rowHeight).apply {
-                    if (includeImages) setKeepTogether(true)
-                })
-                table.addCell(createDataCell(productNameWithCategory, boldFont, productNameSize, TextAlignment.LEFT, rowHeight).apply {
-                    if (includeImages) setKeepTogether(true)
-                })
-                table.addCell(createDataCell("", regularFont, textSize, TextAlignment.RIGHT, rowHeight).apply {
-                    if (includeImages) setKeepTogether(true)
-                })
-                itemCount++
+                itemCount += qty
             }
-
-            // MEMORY OPTIMIZATION: Suggest GC every 5 images
-            if (includeImages && index > 0 && index % 5 == 0) {
-                System.gc()
-            }
-        }
-
-        // Final cleanup
-        if (includeImages) {
-            System.gc()
         }
 
         return TableResult(total, itemCount)
     }
 
-    private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
-        return try {
-            val couleurRepo = focusedValuesGetter.repo3CouleurProduitInfos
-            val couleur = couleurRepo.datasValue.find {
-                it.keyID == operation.parent_M3CouleurProduit_KeyID
-            }
-
-            if (couleur == null || couleur.nomImageFichieSansEtansion == "Non Dispo") {
-                return ImageSearchResult(null, false)
-            }
-
-            val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
-            val baseName = couleur.nomImageFichieSansEtansion
-            val extension = couleur.extensionDisponible
-
-            val suffixesToTry = listOf("_1", "_0", "_2", "_3", "_4")
-
-            for (suffix in suffixesToTry) {
-                val cleanBaseName = baseName.replace(Regex("_[0-4]$"), "")
-                val fileName = "$cleanBaseName$suffix.$extension"
-                val imageFile = File(baseDir, fileName)
-
-                if (imageFile.exists()) {
-                    return ImageSearchResult(imageFile, true)
-                }
-            }
-
-            ImageSearchResult(null, false)
-
-        } catch (e: Exception) {
-            android.util.Log.e("PDF_IMAGE_SEARCH", "Erreur recherche image: ${e.message}")
-            ImageSearchResult(null, false)
-        }
-    }
-
     /**
-     * FIXED: Memory-optimized image handling
-     * - Calculates optimal sample size to reduce memory usage
-     * - Uses inJustDecodeBounds to get dimensions without loading full image
-     * - Recycles bitmap immediately after conversion
-     * - Lower PNG compression quality
+     * FIXED: Proper resource management for image creation
+     * - Bitmap is explicitly recycled after use
+     * - ByteArrayOutputStream is properly closed with .use {}
+     * - Try-catch wraps the entire process to prevent resource leaks
+     * - This eliminates the "A resource failed to call end" warnings
      */
     private fun createImageCell(imageFile: File?, rowHeight: Float): Cell {
         if (imageFile == null || !imageFile.exists()) {
             return createEmptyImageCell(rowHeight)
         }
 
-        return try {
-            val isWebP = imageFile.extension.equals("webp", ignoreCase = true)
+        var bitmap: Bitmap? = null
+        try {
+            // Step 1: Decode with downsampling
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeFile(imageFile.absolutePath, options)
 
-            val imageData = if (isWebP) {
-                convertImageToPNGOptimized(imageFile)
-            } else {
-                convertImageToPNGOptimized(imageFile) // Apply same optimization for all images
+            options.inSampleSize = calculateInSampleSize(
+                options.outWidth,
+                options.outHeight,
+                MAX_IMAGE_DIMENSION
+            )
+            options.inJustDecodeBounds = false
+
+            bitmap = BitmapFactory.decodeFile(imageFile.absolutePath, options)
+                ?: return createEmptyImageCell(rowHeight)
+
+            // Step 2: Convert to byte array with proper resource management
+            val imageData = ByteArrayOutputStream().use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, stream)
+                stream.toByteArray()
             }
 
-            if (imageData == null) {
-                return createEmptyImageCell(rowHeight)
-            }
-
-            val image = Image(imageData)
+            // Step 3: Create iText Image from byte array
+            val imgData = ImageDataFactory.create(imageData)
+            val image = Image(imgData)
                 .setWidth(IMAGE_SIZE)
                 .setHeight(IMAGE_SIZE)
                 .setAutoScale(true)
 
-            image.scaleToFit(IMAGE_SIZE, IMAGE_SIZE)
-
-            Cell()
+            return Cell()
                 .add(image)
                 .setBorder(SolidBorder(0.5f))
                 .setPadding(2f)
                 .setHeight(rowHeight)
-                .setKeepTogether(true) // IMPORTANT: Empêche la division de l'image entre pages
                 .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
-                .setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
+                .setTextAlignment(TextAlignment.CENTER)
 
-        } catch (e: OutOfMemoryError) {
-            System.gc() // Force garbage collection
-            createEmptyImageCell(rowHeight)
         } catch (e: Exception) {
-            createEmptyImageCell(rowHeight)
+            android.util.Log.e(TAG, "Error creating image cell: ${e.message}", e)
+            return createEmptyImageCell(rowHeight)
+        } finally {
+            // CRITICAL: Always recycle bitmap to prevent memory leaks
+            bitmap?.recycle()
         }
     }
 
-    /**
-     * OPTIMIZED: Memory-efficient image conversion with downsampling
-     *
-     * Key improvements:
-     * 1. Calculate image dimensions WITHOUT loading the full bitmap
-     * 2. Determine optimal sample size to reduce memory usage
-     * 3. Load downsampled bitmap directly
-     * 4. Use RGB_565 for further memory reduction (2 bytes/pixel vs 4)
-     * 5. Lower PNG quality
-     * 6. Immediate bitmap recycling
-     */
-    private fun convertImageToPNGOptimized(imageFile: File): com.itextpdf.io.image.ImageData? {
-        var bitmap: Bitmap? = null
-        var outputStream: ByteArrayOutputStream? = null
-
-        return try {
-            // STEP 1: Get image dimensions without loading the full bitmap
-            val boundsOptions = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true
-            }
-            BitmapFactory.decodeFile(imageFile.absolutePath, boundsOptions)
-
-            val imageWidth = boundsOptions.outWidth
-            val imageHeight = boundsOptions.outHeight
-
-            if (imageWidth <= 0 || imageHeight <= 0) {
-                return null
+    private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
+        try {
+            val baseDir = File("/storage/emulated/0/Android/data/com.example.clientjetpack/files/Pictures/Produit_img")
+            if (!baseDir.exists()) {
+                android.util.Log.w(TAG, "Image directory does not exist: ${baseDir.absolutePath}")
+                return ImageSearchResult(null, false)
             }
 
-            // STEP 2: Calculate optimal sample size
-            val sampleSize = calculateInSampleSize(imageWidth, imageHeight, MAX_IMAGE_DIMENSION)
+            val couleurId = operation.parent_M3CouleurProduit_KeyID ?: ""
+            val produitId = operation.parent_M1Produit_KeyId ?: ""
 
-            // STEP 3: Load downsampled bitmap with memory-efficient config
-            val decodeOptions = BitmapFactory.Options().apply {
-                inSampleSize = sampleSize
-                inPreferredConfig = Bitmap.Config.RGB_565
-                inJustDecodeBounds = false
-            }
-
-            bitmap = BitmapFactory.decodeFile(imageFile.absolutePath, decodeOptions)
-
-            if (bitmap == null) {
-                return null
-            }
-
-            // STEP 4: Convert to PNG with lower quality
-            outputStream = ByteArrayOutputStream()
-            val compressionSuccess = bitmap.compress(
-                Bitmap.CompressFormat.PNG,
-                PNG_QUALITY,
-                outputStream
+            val searchPatterns = listOf(
+                "C_${couleurId}_",
+                "P_${produitId}_"
             )
 
-            if (!compressionSuccess) {
-                return null
+            val matchingFiles = baseDir.listFiles { file ->
+                searchPatterns.any { pattern ->
+                    file.name.contains(pattern, ignoreCase = true)
+                }
             }
 
-            val pngBytes = outputStream.toByteArray()
+            val imageFile = matchingFiles?.firstOrNull()
+            return if (imageFile != null && imageFile.exists()) {
+                ImageSearchResult(imageFile, true)
+            } else {
+                ImageSearchResult(null, false)
+            }
 
-            ImageDataFactory.create(pngBytes)
-
-        } catch (e: OutOfMemoryError) {
-            System.gc()
-            null
         } catch (e: Exception) {
-            null
-        } finally {
-            // STEP 5: Cleanup - CRITICAL for memory management
-            bitmap?.recycle()
-            outputStream?.close()
+            android.util.Log.e(TAG, "Error searching for image: ${e.message}", e)
+            return ImageSearchResult(null, false)
         }
     }
 
-    /**
-     * Calculate optimal sample size to reduce memory usage
-     *
-     * Sample size is a power of 2 that results in an image smaller than maxDimension
-     * For example:
-     * - inSampleSize = 1: original size
-     * - inSampleSize = 2: 1/4 of original pixels
-     * - inSampleSize = 4: 1/16 of original pixels
-     */
     private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
         var sampleSize = 1
         val maxOriginalDimension = max(width, height)
@@ -384,8 +293,6 @@ class PdfTableBuilder(
             val halfWidth = width / 2
             val halfHeight = height / 2
 
-            // Calculate the largest inSampleSize value that is a power of 2
-            // and keeps both dimensions larger than the requested size
             while ((halfWidth / sampleSize) >= maxDimension &&
                 (halfHeight / sampleSize) >= maxDimension) {
                 sampleSize *= 2

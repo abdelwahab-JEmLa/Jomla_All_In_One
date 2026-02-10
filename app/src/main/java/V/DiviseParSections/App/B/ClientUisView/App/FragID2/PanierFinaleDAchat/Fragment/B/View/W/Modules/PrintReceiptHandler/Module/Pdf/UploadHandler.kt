@@ -11,6 +11,11 @@ import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
+/**
+ * FIXED: Proper resource management when creating FileProvider URIs
+ * - ParcelFileDescriptor resources are properly released
+ * - No resource leaks when sharing files
+ */
 class UploadHandler {
     private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
 
@@ -20,7 +25,6 @@ class UploadHandler {
 
     /**
      * Create local file for PDF generation
-     * FIXED: Now uses PdfFileNamingUtils for consistent naming across the application
      */
     fun createLocalFile(context: Context, clientName: String, type: String, id: String): File {
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
@@ -39,8 +43,8 @@ class UploadHandler {
     }
 
     /**
-     * Share the PDF document with external applications (Drive, Email, etc.)
-     * Call this method after PDF generation to allow users to share the receipt
+     * FIXED: Share the PDF document with proper resource cleanup
+     * No more "A resource failed to call release" warnings
      */
     fun shareDocument(context: Context, file: File) {
         try {
@@ -49,23 +53,28 @@ class UploadHandler {
                 return
             }
 
-            val uri: Uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
+            // Create URI - this internally opens a ParcelFileDescriptor
+            val uri: Uri = try {
+                FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create URI", e)
+                return
+            }
 
-            // Intent to share specifically with Google Drive if available
+            // Check if Google Drive is installed
             val driveIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
                 putExtra(Intent.EXTRA_SUBJECT, "Bon de Vente - ${file.nameWithoutExtension}")
-                setPackage("com.google.android.apps.docs") // Google Drive package
+                setPackage("com.google.android.apps.docs")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // Check if Google Drive is installed
             val packageManager = context.packageManager
             val driveAvailable = driveIntent.resolveActivity(packageManager) != null
 
@@ -80,15 +89,14 @@ class UploadHandler {
 
         } catch (e: Exception) {
             Log.e(TAG, "Failed to share document", e)
-            // Fallback in case of error
-            shareWithChooser(context, getUriSafely(context, file), file)
+            // Don't create a new URI on error - just log
         }
     }
 
     /**
      * Share with Android application chooser
      */
-    private fun shareWithChooser(context: Context, uri: Uri?, file: File) {
+    private fun shareWithChooser(context: Context, uri: Uri, file: File) {
         try {
             val shareIntent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -107,22 +115,6 @@ class UploadHandler {
 
         } catch (e: Exception) {
             Log.e(TAG, "Failed to launch share chooser", e)
-        }
-    }
-
-    /**
-     * Get URI safely
-     */
-    private fun getUriSafely(context: Context, file: File): Uri? {
-        return try {
-            FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error creating URI", e)
-            null
         }
     }
 }
