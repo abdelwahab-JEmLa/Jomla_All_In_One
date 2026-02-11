@@ -84,7 +84,7 @@ fun MainScreen(
     val context = LocalContext.current
     val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
     val uiState by headViewModel.uiState.collectAsState()
-    val productDisplayController = uiState.productDisplayController
+        val productDisplayController = uiState.productDisplayController
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
