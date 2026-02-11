@@ -398,8 +398,7 @@ fun Item_Produit_FragID3(
                                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
                     }
                     .sortedByDescending { it.typeChoisi.profitabilityScore }  // Sort by profitability score from enum
-                val shouldShowButtons =
-                    get_isWifiClientConnected_by_head_vm(uiState)
+                val shouldShowButtons = get_isWifiClientConnected_by_head_vm(uiState)
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,

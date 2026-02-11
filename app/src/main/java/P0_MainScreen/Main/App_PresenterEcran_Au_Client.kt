@@ -82,7 +82,8 @@ fun App_PresenterEcran_Au_Client(
     focusedActiveValuesFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isWifiClientConnected: Boolean
 ) {
     val relative_M9AppCompt = focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt
     val productKeyID = relative_M9AppCompt?.active_ProduitKeyID_Au_DroopDown_PresenterEcran

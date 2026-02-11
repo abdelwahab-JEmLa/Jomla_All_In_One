@@ -91,6 +91,8 @@ fun MainScreen(
     var updateCountdown by remember { mutableStateOf(5) }
     var isCheckingFirebase by remember { mutableStateOf(false) }
 
+    val  isWifiClientConnected= productDisplayController.isHostPhone &&  productDisplayController.isConnected
+
     val ne_affiche_que_fragment = focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
 
     val targetedPeriodDoitEtreDon = repo14VentPeriode.datasValue.find {
@@ -452,7 +454,7 @@ fun MainScreen(
 
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
                     (!productDisplayController.isHostPhone && productDisplayController.isConnected).ifTrue {
-                        App_PresenterEcran_Au_Client()
+                        App_PresenterEcran_Au_Client(isWifiClientConnected=isWifiClientConnected)
                     }
                 }
             }

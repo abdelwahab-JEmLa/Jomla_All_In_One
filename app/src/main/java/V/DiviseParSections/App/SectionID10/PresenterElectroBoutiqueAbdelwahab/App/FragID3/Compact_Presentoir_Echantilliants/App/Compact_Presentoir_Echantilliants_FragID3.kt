@@ -18,7 +18,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCae
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -37,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,9 +51,8 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
 
-// Keep screen on when connected via WiFi as a client (not host)
 fun get_isWifiClientConnected_by_head_vm(uiState: UiState): Boolean =
-    !uiState.productDisplayController.isHostPhone
+    !uiState.productDisplayController.isHostPhone &&  uiState.productDisplayController.isConnected
 
 @Composable
 fun Compact_Presentoir_Echantilliants_FragID3(
@@ -70,46 +67,23 @@ fun Compact_Presentoir_Echantilliants_FragID3(
 ) {
     val uiState by headViewModel.uiState.collectAsState()
     val context = LocalContext.current
-
-    // Use headViewModel's uiState for WiFi connection check
     val isWifiClientConnected = get_isWifiClientConnected_by_head_vm(uiState)
 
     DisposableEffect(isWifiClientConnected) {
         val window = (context as? ComponentActivity)?.window
 
         if (isWifiClientConnected && window != null) {
-            // Keep screen on when connected to a client or WiFi
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            Log.d("ScreenWakeLock", "Screen wake lock enabled - reason: WiFi connection (as client)")
         }
 
         onDispose {
-            // Remove the flag when leaving this composable or when disconnected
-            if (window != null) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                Log.d("ScreenWakeLock", "Screen wake lock disabled")
-            }
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
-    // FIXED: Create ViewModel locally if not provided
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
-
-    // LOG: Initial state check
-    Log.e("CategoryDialog", "=== Compact_Presentoir_Echantilliants_FragID3 COMPOSED ===")
-    Log.e("CategoryDialog", "categoryViewModel provided: ${categoryViewModel != null}")
-    Log.e("CategoryDialog", "viewModelToUse is available: ${viewModelToUse != null}")
-
-    // State for category dialog management
     var selectedProductForCategoryChange by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
 
-    // LOG: Track state changes
-    LaunchedEffect(selectedProductForCategoryChange) {
-        Log.d("CategoryDialog", "selectedProductForCategoryChange changed: ${selectedProductForCategoryChange?.nom ?: "null"}")
-        Log.d("CategoryDialog", "viewModelToUse is null: ${viewModelToUse == null}")
-    }
-
-    // Get all categories for the dialog
     val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
         repositorysMainGetter.repoM16CategorieProduit.datasValue
     }
@@ -193,11 +167,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         catalogues = catalogues,
         categoryMap = categoryMap,
         onProductCategoryClick = { product ->
-            Log.d("CategoryDialog", "onProductCategoryClick called for: ${product.nom}")
-            Log.d("CategoryDialog", "Product keyID: ${product.keyID}")
-            Log.d("CategoryDialog", "Product current category: ${product.idParentCategorie}")
             selectedProductForCategoryChange = product
-            Log.d("CategoryDialog", "State updated, selectedProductForCategoryChange is now: ${selectedProductForCategoryChange?.nom}")
         },
         on_pour_send_data = on_pour_send_data
     )
@@ -206,18 +176,11 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         Dialog_Fast_Affiche_Panie()
     }
 
-    // Category Selection Dialog - handles category changes from child items
     selectedProductForCategoryChange?.let { product ->
-        Log.d("CategoryDialog", "Entering dialog block for product: ${product.nom}")
-        Log.d("CategoryDialog", "viewModelToUse available: ${viewModelToUse != null}")
-
-        Log.d("CategoryDialog", "Displaying CategorySelectionDialog")
         CategorySelectionDialog(
             viewModel = viewModelToUse,
             product = product,
             onCategorySelected = { newCategoryId ->
-                Log.d("CategoryDialog", "onCategorySelected called with: $newCategoryId")
-                // Update the product's category
                 val updatedProduct = newCategoryId?.let {
                     product.copy(idParentCategorie = it)
                 }
@@ -227,12 +190,9 @@ fun Compact_Presentoir_Echantilliants_FragID3(
                 selectedProductForCategoryChange = null
             },
             onDismiss = {
-                Log.d("CategoryDialog", "Dialog dismissed")
                 selectedProductForCategoryChange = null
             },
             onUpdateCategory = { categoryId, newName ->
-                Log.d("CategoryDialog", "onUpdateCategory called: $categoryId -> $newName")
-                // Update category name if needed
                 val categoryToUpdate = categoryMap[categoryId]
                 categoryToUpdate?.let {
                     val updated = it.copy(nom = newName)
@@ -242,8 +202,6 @@ fun Compact_Presentoir_Echantilliants_FragID3(
             categoriesMap = categoryMap,
             availableCategories = allCategories.map { it.id }
         )
-    } ?: run {
-        Log.d("CategoryDialog", "selectedProductForCategoryChange is null - no dialog shown")
     }
 }
 
@@ -271,13 +229,6 @@ fun Etager_LazyColumn_FragID3(
         verticalItemSpacing = 8.dp
     ) {
         categoriesWithProducts.forEach { (category, productColorPairs) ->
-            item(
-                key = "header_${category.id}",
-                span = StaggeredGridItemSpan.FullLine
-            ) {
-                CategoryStickyHeader(category = category)
-            }
-
             productColorPairs.forEach { (product, colors) ->
                 val isExpanded = focusedValuesGetter.active_Central_Values
                     .expanded_M1Produit?.keyID == product.keyID
@@ -302,7 +253,6 @@ fun Etager_LazyColumn_FragID3(
             }
         }
 
-        // Navigation button at the end of the list
         item(
             key = "navigation_button",
             span = StaggeredGridItemSpan.FullLine
@@ -338,10 +288,6 @@ fun Etager_LazyColumn_FragID3(
     }
 }
 
-/**
- * Extracted component to properly use remember in @Composable context
- * Displays product item with category badge
- */
 @Composable
 private fun ProductItemWithCategory(
     product: ArticlesBasesStatsTable,
@@ -361,38 +307,14 @@ private fun ProductItemWithCategory(
         }
     }
 
-    Log.d("CategoryDialog", "ProductItemWithCategory rendering for: ${product.nom}")
-
-    // FIXED: Remove duplicate CategoryBadge - only show it in Item_Produit_FragID3
     LazyStigerList_Produits_FragID3(
         product = product,
         colors = colors,
         on_pour_send_data = on_pour_send_data,
         onCategoryClick = {
-            Log.d("CategoryDialog", "ProductItemWithCategory - onCategoryClick called for: ${product.nom}")
             onProductCategoryClick(product)
         }
     )
-}
-
-@Composable
-fun CategoryStickyHeader(
-    category: CategoriesTabelle,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Text(
-            text = category.nom,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    }
 }
 
 @Composable
@@ -402,17 +324,15 @@ fun LazyStigerList_Produits_FragID3(
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
-    onCategoryClick: (() -> Unit)? = null // Callback to notify parent about category click
+    onCategoryClick: (() -> Unit)? = null
 ) {
     val isExpanded = focusedValuesGetter.active_Central_Values
         .expanded_M1Produit?.keyID == product.keyID
 
-    Log.d("CategoryDialog", "LazyStigerList_Produits_FragID3 - onCategoryClick null: ${onCategoryClick == null}")
-
     Item_Produit_FragID3(
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
-        onCategoryClick = onCategoryClick, // FIXED: Pass the callback to child
+        onCategoryClick = onCategoryClick,
         modifier = modifier
     )
 }
