@@ -40,6 +40,15 @@ import java.util.Date
 import java.util.Locale
 
 /**
+ * Finds the existing "Prix Détaillé" (retail price tariff) for a given product,
+ * by looking up all tarification records associated with the product's ID and
+ * returning the first one whose [M13TarificationInfos.TypeChoisi] corresponds to
+ * a retail / detail pricing type.
+ *
+ * @return The matching [M13TarificationInfos] entry, or `null` if none is found.
+ */
+
+/**
  * Dialog to display the list of products with their associated tariff information
  */
 @Composable
@@ -146,7 +155,7 @@ private fun ProductItemCard(
                     horizontalAlignment = Alignment.End
                 ) {
                     Text(
-                        text = "${existing_Prix_Detaille_Du_Produit?.prixCurrency}ep دج",
+                        text = "س.ت: ${existing_Prix_Detaille_Du_Produit?.prixCurrency?.toInt()?.toString() ?: "-"} دج",
                         style = MaterialTheme.typography.bodyMedium,
                         color = tariffType.couleur_Text,
                         fontWeight = FontWeight.Bold

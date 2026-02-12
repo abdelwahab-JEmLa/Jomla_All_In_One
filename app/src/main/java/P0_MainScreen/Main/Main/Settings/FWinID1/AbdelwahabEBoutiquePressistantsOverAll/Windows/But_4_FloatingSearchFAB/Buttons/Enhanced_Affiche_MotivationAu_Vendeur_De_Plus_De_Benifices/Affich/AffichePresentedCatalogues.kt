@@ -1,9 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich
 
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -38,7 +38,10 @@ fun AffichePresentedCatalogues(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier
-) {
+) {            
+
+    val affiche_animation = false        //<--
+    //TODO(1): fai que sifalse de ne pas affiche les animation
 
     val catalogues by remember {
         derivedStateOf { B4CatalogueCategoriesRepository() }
@@ -83,7 +86,8 @@ fun AffichePresentedCatalogues(
 
                         CompactCatalogueRow(
                             catalogue = catalogue,
-                            percentage = percentage
+                            percentage = percentage,
+                            affiche_animation = affiche_animation  // ← added
                         )
                     }
             }
@@ -95,12 +99,13 @@ fun AffichePresentedCatalogues(
 private fun CompactCatalogueRow(
     catalogue: CataloguesCaegorie,
     percentage: Double,
+    affiche_animation: Boolean,   // ← added parameter
     modifier: Modifier = Modifier
 ) {
     val isComplete = percentage >= 100.0
 
-    // Simplified animation - only create if needed
-    val alpha = if (!isComplete) {
+    // Only animate when affiche_animation = true AND row is not complete
+    val alpha = if (affiche_animation && !isComplete) {
         val infiniteTransition = rememberInfiniteTransition(label = "blinking")
         val animatedAlpha by infiniteTransition.animateFloat(
             initialValue = 1f,

@@ -32,7 +32,8 @@ fun FilterSortGroupe_Tunnels(
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
-    justMovedProductKeyID: String?
+    justMovedProductKeyID: String?,
+    isWifiClientConnected_1: Boolean
 ) {
     val currentAppCompt = focusedValuesGetter.currentActive_M9AppCompt
     val filterState = focusedValuesGetter.active_Central_Values.filterState_Facad_Boutique
@@ -75,7 +76,8 @@ fun FilterSortGroupe_Tunnels(
         onClickImageToShowControles = onClickImageToShowControles,
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
-        repositorysMainGetter = repositorysMainGetter
+        repositorysMainGetter = repositorysMainGetter,
+        isWifiClientConnected_1=isWifiClientConnected_1,
     )
 
     // Dialogs

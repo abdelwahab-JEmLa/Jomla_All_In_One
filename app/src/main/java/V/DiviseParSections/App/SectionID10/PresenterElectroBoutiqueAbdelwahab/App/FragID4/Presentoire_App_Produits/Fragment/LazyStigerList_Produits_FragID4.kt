@@ -59,7 +59,8 @@ fun Etager_LazyColumn_FragID4(
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
-    focusedValuesGetter: FocusedValuesGetter = koinInject()
+    focusedValuesGetter: FocusedValuesGetter = koinInject(),
+    isWifiClientConnected_1: Boolean
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -201,6 +202,7 @@ fun Etager_LazyColumn_FragID4(
                         }
                     ) {
                         LazyStigerList_Produits_FragID4(
+                            isWifiClientConnected_1=isWifiClientConnected_1,
                             product = product,
                             colors = colors,
                             on_pour_send_data = on_pour_send_data,
@@ -252,7 +254,8 @@ fun LazyStigerList_Produits_FragID4(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
-    justMoved: Boolean = false
+    justMoved: Boolean = false,
+    isWifiClientConnected_1: Boolean
 ) {
 
     // Animation state for moved products
@@ -287,6 +290,7 @@ fun LazyStigerList_Produits_FragID4(
             .background(backgroundColor, RoundedCornerShape(12.dp))
     ) {
         Item_Produit_FragID3(
+            isWifiClientConnected_1=isWifiClientConnected_1,
             relative_M1produit = product,
             on_pour_send_data = on_pour_send_data,
             onCategoryClick = onCategoryClick,

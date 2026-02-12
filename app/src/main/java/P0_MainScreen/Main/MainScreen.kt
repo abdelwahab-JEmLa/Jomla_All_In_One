@@ -84,25 +84,29 @@ fun MainScreen(
     val context = LocalContext.current
     val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
     val uiState by headViewModel.uiState.collectAsState()
-        val productDisplayController = uiState.productDisplayController
+    val productDisplayController = uiState.productDisplayController
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
     var updateCountdown by remember { mutableStateOf(5) }
     var isCheckingFirebase by remember { mutableStateOf(false) }
 
-    val  isWifiClientConnected= productDisplayController.isHostPhone &&  productDisplayController.isConnected
+    val isWifiClientConnected =
+        productDisplayController.isHostPhone && productDisplayController.isConnected
 
-    val ne_affiche_que_fragment = focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
+    val ne_affiche_que_fragment =
+        focusedValuesGetter.currentActive_M9AppCompt?.ne_affiche_que_fragment == "tahfid_classe"
 
     val targetedPeriodDoitEtreDon = repo14VentPeriode.datasValue.find {
         it.abdelmounen_Doit_Etre_Ici
     }
 
-    val shouldWarningChangePeriodVent = remember(targetedPeriodDoitEtreDon, focusedValuesGetter.currentActive_M9AppCompt) {
-        targetedPeriodDoitEtreDon != null &&
-                (focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
-    }
+    val shouldWarningChangePeriodVent =
+        remember(targetedPeriodDoitEtreDon, focusedValuesGetter.currentActive_M9AppCompt) {
+            targetedPeriodDoitEtreDon != null &&
+                    (focusedValuesGetter.currentActive_M9AppCompt?.keyID
+                        ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
+        }
 
     LaunchedEffect(repositoryProgress) {
         headViewModel.updateLoadingProgress((repositoryProgress * 100))
@@ -207,6 +211,8 @@ fun MainScreen(
             }
         }
     }
+    val isWifiClientConnected_1 =
+        !productDisplayController.isHostPhone && productDisplayController.isConnected
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -331,8 +337,18 @@ fun MainScreen(
                             navigationHandler.setNavController(navController)
                         }
 
-                        Box(modifier = Modifier.weight(1f)) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = isWifiClientConnected_1,    //<--
+                                        //TODO(1): pk ca affic isWifiClientConnected_1	deepLinkSaveState
+                                        key = SemanticsPropertyKey("isWifiClientConnected_1")
+                                    )
+                                }) {
                             AppNavHost(
+                                isWifiClientConnected_1 = isWifiClientConnected_1,
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = headViewModel,
                                 viewModelInitApp = viewModelViewModelInitApp,
@@ -340,30 +356,30 @@ fun MainScreen(
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                                 isFabVisible = isFabVisible,
                                 onClickToDisplayeConexionWifi = {
-                                    isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
+                                    isDisplayedConnexionWifiVisible =
+                                        !isDisplayedConnexionWifiVisible
                                 },
                                 onToggleLockHost = { lockHost = !lockHost },
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
                                 onClickImageToShowControles = {
                                     isControleFabVisible = !isControleFabVisible
-                                }
-                            , on_pour_send_data = {  it1,it2->
-                                      viewModel   .sendOrderToClientDisplayer(
-                                             it1 ,
-                                    it2
+                                }, on_pour_send_data = { it1, it2 ->
+                                    viewModel.sendOrderToClientDisplayer(
+                                        it1,
+                                        it2
                                     )
 
                                 }
                             )
-                                        /*
-                            if (!isHostPhone && productDisplayController.isConnected) {
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .clickable(enabled = false) { }
-                                )
-                            }      */
+                            /*
+                if (!isHostPhone && productDisplayController.isConnected) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable(enabled = false) { }
+                    )
+                }      */
                         }
                     }
                 }
@@ -452,9 +468,10 @@ fun MainScreen(
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 
+
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                    (!productDisplayController.isHostPhone && productDisplayController.isConnected).ifTrue {
-                        App_PresenterEcran_Au_Client(isWifiClientConnected=isWifiClientConnected)
+                    isWifiClientConnected_1.ifTrue {
+                        App_PresenterEcran_Au_Client(isWifiClientConnected = isWifiClientConnected)
                     }
                 }
             }
@@ -499,29 +516,30 @@ fun MainScreen(
                                     focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
                                         isProcessingUpdate = true
 
-                                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                                            try {
-                                                aCentralFacade.repositorysMainSetter.update_M9AppCompt(
-                                                    appCompt.copy(
-                                                        current_OnVent_M14VentPeriode_KeyID = period.keyID,
-                                                    )
-                                                )
-
-                                                repo14VentPeriode.datasValue.forEach { ventPeriode ->
-                                                    repositorysMainSetter.update_M14VentPeriode(
-                                                        ventPeriode.copy(
-                                                            abdelmounen_Doit_Etre_Ici = false
+                                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
+                                            .launch {
+                                                try {
+                                                    aCentralFacade.repositorysMainSetter.update_M9AppCompt(
+                                                        appCompt.copy(
+                                                            current_OnVent_M14VentPeriode_KeyID = period.keyID,
                                                         )
                                                     )
-                                                }
 
-                                                kotlinx.coroutines.delay(5000)
-                                            } finally {
-                                                isProcessingUpdate = false
-                                                showConfirmationDialog = false
-                                                isUpdating = true
+                                                    repo14VentPeriode.datasValue.forEach { ventPeriode ->
+                                                        repositorysMainSetter.update_M14VentPeriode(
+                                                            ventPeriode.copy(
+                                                                abdelmounen_Doit_Etre_Ici = false
+                                                            )
+                                                        )
+                                                    }
+
+                                                    kotlinx.coroutines.delay(5000)
+                                                } finally {
+                                                    isProcessingUpdate = false
+                                                    showConfirmationDialog = false
+                                                    isUpdating = true
+                                                }
                                             }
-                                        }
                                     }
                                 }
                             },

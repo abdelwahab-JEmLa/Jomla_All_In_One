@@ -39,7 +39,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
     viewModelHeadViewModel: HeadViewModel,
     categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
+    isWifiClientConnected_1: Boolean
 ) {
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
     val uiState by viewModelToUse.uiState.collectAsState()
@@ -104,6 +105,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     // ============================================
 
     FilterSortGroupe_Tunnels(
+        isWifiClientConnected_1=isWifiClientConnected_1,
         modifier = modifier,
         focusedValuesGetter = focusedValuesGetter,
         repositorysMainGetter = repositorysMainGetter,

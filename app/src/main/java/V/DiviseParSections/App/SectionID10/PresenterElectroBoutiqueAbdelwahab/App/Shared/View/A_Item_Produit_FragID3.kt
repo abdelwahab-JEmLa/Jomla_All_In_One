@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.App.get_isWifiClientConnected_by_head_vm
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.Big_Principale_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.SubColorCard_WithButton
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.updateTariffForProductOperations
@@ -69,10 +68,13 @@ fun Item_Produit_FragID3(
     focusedValuesSetter: FocusedValuesSetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    headViewModel: HeadViewModel =koinInject(),
+    headViewModel: HeadViewModel = koinInject(),
     wifiTransferDatas: WifiTransferDatas = koinInject(),
-    onCategoryClick: (() -> Unit)? = null, // FIXED: New parameter to delegate category dialog to parent
+    onCategoryClick: (() -> Unit)? = null,
+    isWifiClientConnected_1: Boolean,
 ) {
+    val shouldShowButtons = !isWifiClientConnected_1
+
     val uiState by headViewModel.uiState.collectAsState()
 
 
@@ -398,7 +400,6 @@ fun Item_Produit_FragID3(
                                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
                     }
                     .sortedByDescending { it.typeChoisi.profitabilityScore }  // Sort by profitability score from enum
-                val shouldShowButtons = get_isWifiClientConnected_by_head_vm(uiState)
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,

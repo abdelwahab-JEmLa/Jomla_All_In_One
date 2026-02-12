@@ -150,6 +150,9 @@ fun App_PresenterEcran_Au_Client(
                     .semantics(mergeDescendants = true) {
                         set(value = productKeyID, key = SemanticsPropertyKey("productKeyID"))
                     }
+                    .semantics(mergeDescendants = true) {
+                        set(value = isWifiClientConnected, key = SemanticsPropertyKey("isWifiClientConnected"))
+                    }
                     .fillMaxWidth()
                     .height(80.dp)
             ) {

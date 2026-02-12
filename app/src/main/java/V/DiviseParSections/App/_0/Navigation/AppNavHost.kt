@@ -77,6 +77,7 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    isWifiClientConnected_1: Boolean,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -201,6 +202,7 @@ fun AppNavHost(
                         route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                     ) {
                             Compact_Presentoire_App_Produits_FragID4(
+                                isWifiClientConnected_1=isWifiClientConnected_1,
                                 viewModelHeadViewModel=viewModel,
                                 on_pour_send_data= on_pour_send_data,
                                 onClickImageToShowControles = onClickImageToShowControles
@@ -239,6 +241,7 @@ fun AppNavHost(
 
                     composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                         Compact_Presentoir_Echantilliants_FragID3(
+                            isWifiClientConnected_1=isWifiClientConnected_1,
                                 on_pour_send_data= on_pour_send_data,
                         )
                     }

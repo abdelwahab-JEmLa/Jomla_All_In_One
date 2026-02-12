@@ -63,16 +63,16 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     wifiTransferDatas: WifiTransferDatas = koinInject(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
-    headViewModel: HeadViewModel = koinInject()
+    headViewModel: HeadViewModel = koinInject(),
+    isWifiClientConnected_1: Boolean
 ) {
     val uiState by headViewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val isWifiClientConnected = get_isWifiClientConnected_by_head_vm(uiState)
 
-    DisposableEffect(isWifiClientConnected) {
+    DisposableEffect(isWifiClientConnected_1) {
         val window = (context as? ComponentActivity)?.window
 
-        if (isWifiClientConnected && window != null) {
+        if (isWifiClientConnected_1 && window != null) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
@@ -161,6 +161,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     }
 
     Etager_LazyColumn_FragID3(
+        isWifiClientConnected_1=isWifiClientConnected_1,
         modifier = modifier,
         categoriesWithProducts = groupe_Par_Categorie,
         fragmentNavigationHandler = FragmentNavigationHandler,
@@ -169,7 +170,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         onProductCategoryClick = { product ->
             selectedProductForCategoryChange = product
         },
-        on_pour_send_data = on_pour_send_data
+        on_pour_send_data = on_pour_send_data,
     )
 
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
@@ -214,7 +215,8 @@ fun Etager_LazyColumn_FragID3(
     catalogues: List<CataloguesCaegorie>,
     categoryMap: Map<Long, CategoriesTabelle>,
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    isWifiClientConnected_1: Boolean
 ) {
     val gridState = rememberLazyStaggeredGridState()
 
@@ -242,6 +244,7 @@ fun Etager_LazyColumn_FragID3(
                     }
                 ) {
                     ProductItemWithCategory(
+                        isWifiClientConnected_1=isWifiClientConnected_1,
                         product = product,
                         colors = colors,
                         categoryMap = categoryMap,
@@ -295,7 +298,8 @@ private fun ProductItemWithCategory(
     categoryMap: Map<Long, CategoriesTabelle>,
     catalogues: List<CataloguesCaegorie>,
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    isWifiClientConnected_1: Boolean
 ) {
     val currentCategory = remember(product.idParentCategorie, categoryMap) {
         product.idParentCategorie?.let { categoryMap[it] }
@@ -308,6 +312,7 @@ private fun ProductItemWithCategory(
     }
 
     LazyStigerList_Produits_FragID3(
+        isWifiClientConnected_1=isWifiClientConnected_1,
         product = product,
         colors = colors,
         on_pour_send_data = on_pour_send_data,
@@ -324,15 +329,17 @@ fun LazyStigerList_Produits_FragID3(
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
-    onCategoryClick: (() -> Unit)? = null
+    onCategoryClick: (() -> Unit)? = null,
+    isWifiClientConnected_1: Boolean
 ) {
     val isExpanded = focusedValuesGetter.active_Central_Values
         .expanded_M1Produit?.keyID == product.keyID
 
     Item_Produit_FragID3(
+        isWifiClientConnected_1=isWifiClientConnected_1,
         relative_M1produit = product,
         on_pour_send_data = on_pour_send_data,
+        modifier = modifier,
         onCategoryClick = onCategoryClick,
-        modifier = modifier
     )
 }
