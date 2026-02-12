@@ -16,6 +16,11 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
@@ -24,6 +29,22 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Impl
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._DataBaseFactory_MVentPeriodeImpl
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
+import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_RepositoryImpl
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiConexiontLuncher
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiTransferDatas_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.ACentralFacade_app2
@@ -50,16 +71,20 @@ val centralDataBasesModule_app2 = module {
             get(),
         )
     }
-    single { RepositorysMainSetter_app2(get(),
-        get(),
-        get(),
-        get(),
-        get(), get(),
-        get(),
-        get(),
-        get(),
-        get()
-    ) }
+    single {
+        RepositorysMainSetter_app2(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
     single {
         RepositorysMainGetter_app2(
             context = androidContext(),
@@ -75,45 +100,63 @@ val centralDataBasesModule_app2 = module {
             get(),
         )
     }
-    single { ACentralFacade_app2(get()
-    ) }
+    single { ACentralFacade_app2(get()) }
 }
 
 val classesHandlersModule_app2 = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
-    viewModel { WifiConexiontLuncher(androidContext(),get(),get(), ) }
-    viewModel { WifiTransferDatas_app2(androidContext(), get(), get(),) }
+    viewModel { WifiConexiontLuncher(androidContext(), get(), get()) }
+    viewModel { WifiTransferDatas_app2(androidContext(), get(), get()) }
 }
 
 val composRepositorysModule_app2 = module {
-    single { Repo18CentralParametresOfAllApps(get(),) }
+    single { Repo18CentralParametresOfAllApps(get()) }
 
-    single { Repo14VentPeriode(get(),get(),) }
+    single { Repo14VentPeriode(get(), get()) }
     single { DataBaseInitFactory_14VentPeriode(get()) }
 
-    single { Repo13TarificationInfos(get(),get(),) }
+    single { Repo13TarificationInfos(get(), get()) }
     single { DataBaseCreationFactory13TarificationInfos(get()) }
 
-    single { Repo9AppCompt(context = androidContext(),get(),get(),) }
+    single { Repo9AppCompt(context = androidContext(), get(), get()) }
     single { DataBaseInit_Z_AppCompt(get<AppDatabase>().Z_AppComptDao()) }
 
-    single { Repo2Client(get(), get(), get(), get(), ) }
+    // Dépendances proto ancienne architecture — requises par Repo2Client
+    single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
+    single { Repo2Client(get(), get(), get(), get()) }
     single { DataBaseInitFactory_2ClientProtoJuil28(get()) }
 
-    single { RepoM16CategorieProduit(context = androidContext(), get(), ) }
+    single { RepoM16CategorieProduit(context = androidContext(), get()) }
     single { DataBaseInitFactory_16CategorieProduit(get()) }
 
-    single { RepoM1Produit(androidContext(),get(),get(),) }
-    single { A_ProduitInfosRepository(androidContext(), get(),) }
+    single { RepoM1Produit(androidContext(), get(), get()) }
+    single { A_ProduitInfosRepository(androidContext(), get()) }
+    single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().ArticlesBasesStatsModelDao()) }
+    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
+    single { C_CategorieProduitInfosRepository(androidContext(), get()) }
 
     single { Repo03CouleurProduitInfos(get()) }
     single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
 
-    single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
+    single { Repo10OperationVentCouleur(context = androidContext(), get(), get()) }
 
-    single { Repo8BonVent( androidContext(),get(), get()) }
+    single { Repo8BonVent(androidContext(), get(), get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
 
+    // Repos proto ancien (dépendances transitives de A_MasterRepositorysGrpProtoJuin3)
+    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
+    single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
+    single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
+    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
+    single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
+    single<DataBaseFactoryMVentPeriode> { _DataBaseFactory_MVentPeriodeImpl(get()) }
+
+    // Beans du centralDataBasesModule (ancienne archi) — requis par Repo2Client
+    single { E_GroupedDataBasesRepositoryNonConnue(get(), get(), get(), get()) }
+    single { A_MasterRepositorysGrpProtoJuin3(get(), get(), get(), get(), get()) }
+    single<GroupeRepositorysProtoAvJuin3> {
+        GroupeRepositorysProtoAvJuin3Impl(get(), get(), get(), get(), get(), get(), get())
+    }
 
     single {
         WDatabaseInitializationManager_app2(
@@ -128,20 +171,20 @@ val composRepositorysModule_app2 = module {
             get(),
             get(),
             get(),
-            )
+        )
     }
 }
 
 val appModule_App2 = module {
     includes(
+        centralDataBasesModule,
+        composRepositorysModule,
+        factoryDataBaseProtoAvantJuin3Module,
+        classesHandlersModule,
+        viewModelModule,
+
         centralDataBasesModule_app2,
         composRepositorysModule_app2,
         classesHandlersModule_app2,
-
-        centralDataBasesModule,
-        composRepositorysModule, // This will now be resolved
-        factoryDataBaseProtoAvantJuin3Module,
-        classesHandlersModule,
-        viewModelModule
     )
 }
