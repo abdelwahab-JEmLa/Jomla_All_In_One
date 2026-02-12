@@ -3,18 +3,16 @@ package com.example.clientjetpack.App2.App.A.Main.Base.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
 import kotlinx.coroutines.CoroutineScope
@@ -25,10 +23,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class WDatabaseInitializationManager_app2(
-    private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
+    val context: Context,
     val appComptComposeRepositoryPJ17: Repo9AppCompt,
-    val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
-    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
+    val dataBaseInitZ_AppCompt: DataBaseInit_Z_AppCompt,
+    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_M3CouleurProduitInfos,
     val dataBaseCreationFactory13TarificationInfos: DataBaseCreationFactory13TarificationInfos,
     val dataBaseInitFactory_14VentPeriode: DataBaseInitFactory_14VentPeriode,
     val dataBaseInitFactory_15Grossist: DataBaseInitFactory_15Grossist,
@@ -36,17 +34,21 @@ class WDatabaseInitializationManager_app2(
     val dataBaseInitFactory_8BonVent: DataBaseInitFactory_8BonVent,
     val dataBaseInitFactory_16CategorieProduit: DataBaseInitFactory_16CategorieProduit,
     val dataBaseInitFactory_2ClientProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
-    val dataBaseInitFactory_19Etudiant: DataBaseInitFactory_19Etudiant,
-    val dataBaseInitFactory_M_20ObsarvationEtudion: DataBaseInitFactory_M20ObsarvationEtudion,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
     private val scope = CoroutineScope(Dispatchers.Main)
+    val repoScope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        repoScope.launch {
+            initializeAllRepositories(context)
+        }
+    }
 
     enum class Repository {
-        FCouleurVentOperation,
+        M3CouleurProduitInfos_Entit,
         Z_AppComptEntity,
-        D_ACHAT_OPERATION,
         M13TarificationInfosEntity,
         A_PRODUIT_INFOS,
         M14VentPeriode_Entity,
@@ -67,7 +69,7 @@ class WDatabaseInitializationManager_app2(
         val jobs = listOf(
             scope.launch {
                 initRepo(Repository.Z_AppComptEntity.name, context) {
-                    z_AppComptRepositoryProtoJuin17.init(
+                    dataBaseInitZ_AppCompt.init(
                         isInternetAvailable = isInternetAvailable(
                             context
                         )
@@ -76,41 +78,50 @@ class WDatabaseInitializationManager_app2(
                             updateRepoProgress(name, progress)
                         }
                     }
-                    z_AppComptRepositoryProtoJuin17.triggerUpdateFbParTimestampsListener()
+                    dataBaseInitZ_AppCompt.triggerUpdateFbParTimestampsListener()
                 }
             },
             scope.launch {
-                initRepo(Repository.D_ACHAT_OPERATION.name, context) {
-                    achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                val factory =dataBaseInitFactory_2ClientProtoJuil28
+                initRepo(WDatabaseInitializationManager.Repository.Entity_2Client.name, context) {
+                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
-                        achatOperationRepository.triggerUpdateFbParTimestampsListener()
+                        factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
             } ,
             scope.launch {
-                initRepo(Repository.FCouleurVentOperation.name, context) {
-                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                initRepo(Repository.M3CouleurProduitInfos_Entit.name, context) {
+                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.init(
+                        isInternetAvailable = isInternetAvailable(
+                            context
+                        )
+                    ) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
                         dataBaseFactory_B1CouleurOuGoutProduitDataBase.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
+            },
             scope.launch {
                 initRepo(Repository.M13TarificationInfosEntity.name, context) {
-                    dataBaseCreationFactory13TarificationInfos.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                    dataBaseCreationFactory13TarificationInfos.init(
+                        isInternetAvailable = isInternetAvailable(
+                            context
+                        )
+                    ) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
                         dataBaseCreationFactory13TarificationInfos.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
+            },
             scope.launch {
-                val factory =dataBaseInitFactory_14VentPeriode
+                val factory = dataBaseInitFactory_14VentPeriode
                 initRepo(Repository.M14VentPeriode_Entity.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
@@ -118,12 +129,13 @@ class WDatabaseInitializationManager_app2(
                         }
                         M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
-                            factory.triggerUpdateFbParTimestampsListener()}
+                            factory.triggerUpdateFbParTimestampsListener()
+                        }
                     }
                 }
-            } ,
+            },
             scope.launch {
-                val factory =dataBaseInitFactory_15Grossist
+                val factory = dataBaseInitFactory_15Grossist
                 initRepo(Repository.M15Grossist_Entity.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
@@ -132,9 +144,9 @@ class WDatabaseInitializationManager_app2(
                         factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
+            },
             scope.launch {
-                val factory =dataBaseInitFactory_11AchatOperation
+                val factory = dataBaseInitFactory_11AchatOperation
                 initRepo(Repository.M11AchatOperation_Entity.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
@@ -142,12 +154,13 @@ class WDatabaseInitializationManager_app2(
                         }
                         M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
-                            factory.triggerUpdateFbParTimestampsListener()}
+                            factory.triggerUpdateFbParTimestampsListener()
+                        }
                     }
                 }
-            } ,
+            },
             scope.launch {
-                val factory =dataBaseInitFactory_8BonVent
+                val factory = dataBaseInitFactory_8BonVent
                 initRepo(Repository.Entity_8BonVent.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
@@ -156,9 +169,9 @@ class WDatabaseInitializationManager_app2(
                         //  factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
+            },
             scope.launch {
-                val factory =dataBaseInitFactory_16CategorieProduit
+                val factory = dataBaseInitFactory_16CategorieProduit
                 initRepo(Repository.Entity_16CategorieProduit.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
@@ -167,40 +180,7 @@ class WDatabaseInitializationManager_app2(
                         factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
-            scope.launch {
-                val factory =dataBaseInitFactory_2ClientProtoJuil28
-                initRepo(Repository.Entity_2Client.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
-                }
-            } ,
-            scope.launch {
-                val factory =dataBaseInitFactory_19Etudiant
-                initRepo(Repository.Entity_19Etudiant.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
-                }
-            } ,
-            scope.launch {
-                val factory =dataBaseInitFactory_M_20ObsarvationEtudion
-                initRepo(Repository.Entity_M20ObsarvationEtudion.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
-                }
-            } ,
+            },
         )
 
         jobs.joinAll()

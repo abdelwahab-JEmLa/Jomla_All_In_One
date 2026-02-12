@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DataBaseInitFactory_2ClientProtoJuil28
@@ -14,7 +14,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,8 +26,8 @@ import kotlinx.coroutines.sync.withLock
 class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
     val appComptComposeRepositoryPJ17: Repo9AppCompt,
-    val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
-    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
+    val dataBaseInitZ_AppCompt: DataBaseInit_Z_AppCompt,
+    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_M3CouleurProduitInfos,
     val dataBaseCreationFactory13TarificationInfos: DataBaseCreationFactory13TarificationInfos,
     val dataBaseInitFactory_14VentPeriode: DataBaseInitFactory_14VentPeriode,
     val dataBaseInitFactory_15Grossist: DataBaseInitFactory_15Grossist,
@@ -45,7 +45,7 @@ class WDatabaseInitializationManager(
     enum class Repository {
         FCouleurVentOperation,
         Z_AppComptEntity,
-        D_ACHAT_OPERATION,
+        M3CouleurProduitInfos_Entit,
         M13TarificationInfosEntity,
         A_PRODUIT_INFOS,
         M14VentPeriode_Entity,
@@ -66,7 +66,7 @@ class WDatabaseInitializationManager(
         val jobs = listOf(
             scope.launch {
                 initRepo(Repository.Z_AppComptEntity.name, context) {
-                    z_AppComptRepositoryProtoJuin17.init(
+                    dataBaseInitZ_AppCompt.init(
                         isInternetAvailable = isInternetAvailable(
                             context
                         )
@@ -75,11 +75,11 @@ class WDatabaseInitializationManager(
                             updateRepoProgress(name, progress)
                         }
                     }
-                    z_AppComptRepositoryProtoJuin17.triggerUpdateFbParTimestampsListener()
+                    dataBaseInitZ_AppCompt.triggerUpdateFbParTimestampsListener()
                 }
             },
             scope.launch {
-                initRepo(Repository.D_ACHAT_OPERATION.name, context) {
+                initRepo(Repository.M3CouleurProduitInfos_Entit.name, context) {
                     achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)

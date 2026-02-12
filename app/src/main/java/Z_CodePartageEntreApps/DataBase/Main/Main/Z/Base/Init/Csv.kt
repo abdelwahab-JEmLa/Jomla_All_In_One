@@ -1,10 +1,10 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import java.io.File
 
-fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
+fun DataBaseInit_Z_AppCompt.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "$repoEntityName.csv")

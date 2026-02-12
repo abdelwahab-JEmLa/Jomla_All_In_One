@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class Z_AppComptRepositoryProtoJuin17(
+class DataBaseInit_Z_AppCompt(
     val dao: Z_AppComptDao,
 ) {
     val repoEntityName ="Z_AppComptRepositoryProtoJuin17"

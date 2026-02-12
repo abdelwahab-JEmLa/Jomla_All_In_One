@@ -88,7 +88,7 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                 DeleteProductHeader(
                     productName = relative_M1produit.nom,
                     onDelete = {
-                        RepositorysMainGetter_app2.repoM1Produit.deleteData(relative_M1produit)
+                        RepositorysMainGetter_app2.repo1ProduitInfos.deleteData(relative_M1produit)
                     }
                 )
             }

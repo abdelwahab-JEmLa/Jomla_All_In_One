@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 @Stable
 class Repo9AppCompt(
     private val context: Context,
-    private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
+    private val ancienRepo: DataBaseInit_Z_AppCompt,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
     val dao = ancienRepo.dao

@@ -28,14 +28,14 @@ class DataBaseFactoryDCouleurAchatOperation(
     ) {
         if (!dao.isTableEmpty()) return
 
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.4f)
+        updateRepoProgress(Repository.M3CouleurProduitInfos_Entit.name, 0.4f)
         val data: List<M10OperationVentCouleur> = if (isInternetAvailable) {
-            updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.6f)
+            updateRepoProgress(Repository.M3CouleurProduitInfos_Entit.name, 0.6f)
             onLoadFromFireBase()
         } else {
             onLoadCategoriesFromCsvD_AchatOperation()
         }
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.8f)
+        updateRepoProgress(Repository.M3CouleurProduitInfos_Entit.name, 0.8f)
         dao.insertAll(data)
     }
 

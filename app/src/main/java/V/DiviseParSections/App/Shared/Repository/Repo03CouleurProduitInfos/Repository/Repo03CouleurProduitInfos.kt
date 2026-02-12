@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repo
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import android.annotation.SuppressLint
@@ -40,7 +40,7 @@ enum class FilterQuery {
 
 @Stable
 class Repo03CouleurProduitInfos(
-    val mainInitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
+    val mainInitDataBase: DataBaseInitFactory_M3CouleurProduitInfos,
 ) {
     val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)

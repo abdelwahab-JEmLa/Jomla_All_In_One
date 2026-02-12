@@ -11,17 +11,14 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -32,15 +29,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Stable
 class RepositorysMainGetter_app2(
     private val context: Context,
-    val databaseInitializationManager: WDatabaseInitializationManager,
-
     val repo1ProduitInfos: RepoM1Produit,
-    val repoM1Produit: RepoM1Produit,
     val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
     val repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
@@ -238,25 +231,12 @@ class RepositorysMainGetter_app2(
         }
     }
 
-// In RepositorysMainGetter_app2.kt, replace the init block with this:
-
-    init {
-        composScope.launch {
-            try {
-                M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB.ifTrue {
-                    M11AchatOperation.Companion.remove_ref()
-                }
 
 
-                databaseInitializationManager.initializeAllRepositories(context)
 
 
-            } catch (e: Exception) {
-                databaseInitializationManager.updateMainInitDataBaseProgressEtate(1.0f)
-            }
-        }
 
-    }
+
 
     companion object {
         val centralRef = Firebase.database.getReference(

@@ -30,17 +30,17 @@ class DataBaseInitFactory_16CategorieProduit(
     ) {
         if (!dao.isTableEmpty()) return
 
-        updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.4f)
+        updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.4f)
         val data: List<CategoriesTabelle> = if (isInternetAvailable) {
             updateRepoProgress(
-                WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name,
+                WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name,
                 0.6f
             )
             onLoadFromFireBase()
         } else {
             onLoadFromCsv()
         }
-        updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.8f)
+        updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.8f)
         dao.insertAll(data)
     }
     private fun onLoadFromCsv(): List<CategoriesTabelle> = emptyList()

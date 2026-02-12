@@ -48,7 +48,7 @@ fun Image_Displaye_app2(
     if (imageFile != null && imageFile.exists()) {
         // FIXED: Get the parent product for this color
         val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
-            RepositorysMainGetter_app2.repoM1Produit.datasValue.find {
+            RepositorysMainGetter_app2.repo1ProduitInfos.datasValue.find {
                 it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
             }
         }

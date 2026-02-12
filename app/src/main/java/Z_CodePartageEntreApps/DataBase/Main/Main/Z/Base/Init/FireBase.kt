@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend fun Z_AppComptRepositoryProtoJuin17.onLoadFromFireBase(): MutableList<Z_AppCompt> {
+suspend fun DataBaseInit_Z_AppCompt.onLoadFromFireBase(): MutableList<Z_AppCompt> {
     return suspendCancellableCoroutine { continuation ->
         repoRef.get()
             .addOnSuccessListener { snapshot ->

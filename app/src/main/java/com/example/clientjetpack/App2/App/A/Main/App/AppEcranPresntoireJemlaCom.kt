@@ -14,9 +14,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
+@Suppress("DEPRECATION")
 class AppEcranPresntoireJemlaCom : Application() {
-
-
     companion object {
         private const val TAG = "MyApplication"
         private const val CACHE_SIZE_MB = 100L

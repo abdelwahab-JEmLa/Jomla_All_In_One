@@ -64,8 +64,8 @@ fun Compact_Presentoire_App_Produits_App2(
         RepositorysMainGetter_app2.repoM16CategorieProduit.datasValue
     }
 
-    val allProducts = remember(RepositorysMainGetter_app2.repoM1Produit.datasValue) {
-        RepositorysMainGetter_app2.repoM1Produit.datasValue
+    val allProducts = remember(RepositorysMainGetter_app2.repo1ProduitInfos.datasValue) {
+        RepositorysMainGetter_app2.repo1ProduitInfos.datasValue
     }
 
     val allColors = remember(RepositorysMainGetter_app2.repo03CouleurProduitInfos.datasValue) {
@@ -143,7 +143,7 @@ fun Compact_Presentoire_App_Produits_App2(
                     )
                 } ?: product
 
-                RepositorysMainGetter_app2.repoM1Produit.update(updatedProduct)
+                RepositorysMainGetter_app2.repo1ProduitInfos.update(updatedProduct)
                 justMovedProductKeyID = product.keyID
 
                 selectedProductForCategoryChange = null

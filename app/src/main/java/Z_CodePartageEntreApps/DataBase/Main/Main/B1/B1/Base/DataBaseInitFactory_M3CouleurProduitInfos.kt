@@ -45,7 +45,7 @@ import org.koin.compose.koinInject
 import java.io.File
 import kotlin.coroutines.resume
 
-class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
+class DataBaseInitFactory_M3CouleurProduitInfos(
     val dao: B1CouleurOuGoutProduitDataBaseDao,
 ) {
     val repoTAG = "M3CouleurProduitInfos"
@@ -58,17 +58,17 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
     ) {
         if (!dao.isTableEmpty()) return
 
-        updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.4f)
+        updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.4f)
         val data: List<M3CouleurProduitInfos> = if (isInternetAvailable) {
             updateRepoProgress(
-                WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name,
+                WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name,
                 0.6f
             )
             onLoadFromFireBase()
         } else {
             emptyList()
         }
-        updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.8f)
+        updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.8f)
         dao.insertAll(data)
     }
 

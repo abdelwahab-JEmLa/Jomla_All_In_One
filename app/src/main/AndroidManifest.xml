@@ -55,7 +55,8 @@
             "com.example.clientjetpack.App2.App.A.Main.App.AppEcranPresntoireJemlaCom"
      -->
     <application
-        android:name=".MyApplication"
+        android:name=
+            "com.example.clientjetpack.App2.App.A.Main.App.AppEcranPresntoireJemlaCom"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -74,7 +75,8 @@
                 "com.example.clientjetpack.App2.App.A.Main.App.MainActivityAppJemla_ComEcranPresntoire"
         -->
         <activity
-            android:name=".MainActivity"
+            android:name=
+                "com.example.clientjetpack.App2.App.A.Main.App.MainActivityAppJemla_ComEcranPresntoire"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ClientJetPack">

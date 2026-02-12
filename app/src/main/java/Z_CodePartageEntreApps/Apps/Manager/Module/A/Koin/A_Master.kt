@@ -36,7 +36,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_V
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.ViewModel_DataBaseInitFactory_1Produit
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main.B1CouleurOuGoutProduitDataBaseTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.F0_FireBaseOperationsHandler
@@ -53,7 +53,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
@@ -130,6 +130,13 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { DataBaseInitFactory_11AchatOperation(get()) }
     single { DataBaseInitFactory_15Grossist(get()) }
     single { DataBaseInitFactory_14VentPeriode(get()) }
+    single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
+    single { DataBaseInit_Z_AppCompt(get<AppDatabase>().Z_AppComptDao()) }
+    single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
+    single { DataBaseCreationFactory13TarificationInfos(get()) }
+    single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
+    single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
+    single<DataBaseFactoryMVentPeriode> { _DataBaseFactory_MVentPeriodeImpl(get()) }
 
     single<_01_VentsHistoriquesDataBase_Repository> {
         _01_VentsHistoriquesDataBase_RepositoryImpl(
@@ -138,21 +145,17 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     }
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
-    single<DataBaseFactoryMVentPeriode> { _DataBaseFactory_MVentPeriodeImpl(get()) }
     single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
     single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
 
     single { A_ProduitInfosRepository(androidContext(), get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
     single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().ArticlesBasesStatsModelDao()) }
-    single { DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
 
 
-    single { DataBaseCreationFactory13TarificationInfos(get()) }
-    single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
+
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
-    single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
     single { Repo17MessageVocale(androidContext(), get()) }
     single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().D_AchatOperationDao()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
@@ -162,7 +165,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
     single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
     single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
-    single { Z_AppComptRepositoryProtoJuin17(get<AppDatabase>().Z_AppComptDao()) }
+
 }
 
 val classesHandlersModule = module {

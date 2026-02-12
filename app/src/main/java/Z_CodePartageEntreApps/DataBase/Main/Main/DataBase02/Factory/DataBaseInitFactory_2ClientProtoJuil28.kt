@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
+import android.annotation.SuppressLint
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -89,50 +90,53 @@ class DataBaseInitFactory_2ClientProtoJuil28(
                 }
         }
     }
-         //"Jamel Bel"
+
+    //"Jamel Bel"
+    @SuppressLint("SuspiciousIndentation")
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
-             M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
-        repoRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                factoryScope.launch {
-                    val localData = dao.getAll()
-                    val localDataMap = localData.associateBy { it.keyID }
-                    val firebaseKeyIds = mutableSetOf<String>()
+            repoRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    factoryScope.launch {
+                        val localData = dao.getAll()
+                        val localDataMap = localData.associateBy { it.keyID }
+                        val firebaseKeyIds = mutableSetOf<String>()
 
-                    for (child in snapshot.children) {
-                        child.getValue(M2Client::class.java)?.let { fbEntity ->
-                            val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
-                            firebaseKeyIds.add(entityWithKey.keyID)
+                        for (child in snapshot.children) {
+                            child.getValue(M2Client::class.java)?.let { fbEntity ->
+                                val entityWithKey = fbEntity.copy(keyID = child.key ?: "")
+                                firebaseKeyIds.add(entityWithKey.keyID)
 
-                            val localEntity = localDataMap[entityWithKey.keyID]
+                                val localEntity = localDataMap[entityWithKey.keyID]
 
-                            when {
-                                localEntity == null -> {
-                                    dao.upsert(entityWithKey)
-                                }
+                                when {
+                                    localEntity == null -> {
+                                        dao.upsert(entityWithKey)
+                                    }
 
-                                else -> {
-                                    dao.deleteByKeyId(entityWithKey.keyID)
-                                    dao.insert(entityWithKey)
+                                    else -> {
+                                        dao.deleteByKeyId(entityWithKey.keyID)
+                                        dao.insert(entityWithKey)
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    val itemsToDelete = localDataMap.keys - firebaseKeyIds
-                    for (keyToDelete in itemsToDelete) {
-                        dao.deleteByKeyId(keyToDelete)
+                        val itemsToDelete = localDataMap.keys - firebaseKeyIds
+                        for (keyToDelete in itemsToDelete) {
+                            dao.deleteByKeyId(keyToDelete)
+                        }
                     }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                isListenerRegistered = false
-            }
-        }) }
+                override fun onCancelled(error: DatabaseError) {
+                    isListenerRegistered = false
+                }
+            })
+        }
     }
 
     fun set(dataAvecTigerUpdate: M2Client) {
