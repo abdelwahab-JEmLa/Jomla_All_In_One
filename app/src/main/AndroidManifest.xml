@@ -62,19 +62,22 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon=
+            "@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon=
+            "@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.ClientJetPack"
         tools:targetApi="31">
+
         <!-- App1: android:icon=
         "@mipmap/ic_launcher"
         -->
         <!-- App2: android:icon=
         "@mipmap/ic_launcher_app2"
-        todo comment fait que ca soit avec 2 icon une si app 1 sinon app2
+        todo comment ajoute "@mipmap/ic_launcher_presenter_app2"
         -->
 
         <!-- Previously: android:name=
