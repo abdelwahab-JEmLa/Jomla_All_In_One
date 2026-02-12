@@ -7,7 +7,6 @@ import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
@@ -342,8 +341,7 @@ fun MainScreen(
                                 .weight(1f)
                                 .semantics(mergeDescendants = true) {
                                     set(
-                                        value = isWifiClientConnected_1,    //<--
-                                        //TODO(1): pk ca affic isWifiClientConnected_1	deepLinkSaveState
+                                        value = isWifiClientConnected_1,
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
@@ -470,9 +468,9 @@ fun MainScreen(
 
 
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                    isWifiClientConnected_1.ifTrue {
+                  /*  isWifiClientConnected_1.ifTrue {
                         App_PresenterEcran_Au_Client(isWifiClientConnected = isWifiClientConnected)
-                    }
+                    }      */
                 }
             }
 
