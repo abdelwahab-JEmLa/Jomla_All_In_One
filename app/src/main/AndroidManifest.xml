@@ -48,12 +48,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
-    <!-- Previously: android:name=
+    <!-- App1: android:name=
     ".MyApplication"
      -->
     <!-- App2: android:name=
             "com.example.clientjetpack.App2.App.A.Main.App.AppEcranPresntoireJemlaCom"
      -->
+
+
     <application
         android:name=
             ".MyApplication"
@@ -67,6 +69,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ClientJetPack"
         tools:targetApi="31">
+        <!-- App1: android:icon=
+        "@mipmap/ic_launcher"
+        -->
+        <!-- App2: android:icon=
+        "@mipmap/ic_launcher_app2"
+        todo comment fait que ca soit avec 2 icon une si app 1 sinon app2
+        -->
 
         <!-- Previously: android:name=
         ".MainActivity"
