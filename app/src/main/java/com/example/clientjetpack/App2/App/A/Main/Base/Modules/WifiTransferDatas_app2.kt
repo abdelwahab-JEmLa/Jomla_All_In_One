@@ -1,7 +1,5 @@
-package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
+package com.example.clientjetpack.App2.App.A.Main.Base.Modules
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,7 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.App2.App.A.Main.Base.Modules.ConnectionUiState
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -37,10 +36,10 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 @SuppressLint("StaticFieldLeak")
-class WifiTransferDatas(
+class WifiTransferDatas_app2(
     private val context: Context,
-    val repositorysMainGetter: RepositorysMainGetter,
-    val focusedValuesGetter: FocusedValuesGetter,
+    val repositorysMainGetter: RepositorysMainGetter_app2,
+    val focusedValuesGetter: FocusedValuesGetter_app2,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     val appComptComposeRepositoryProtoJuin17 = repositorysMainGetter.repo9AppCompt
@@ -78,7 +77,7 @@ class WifiTransferDatas(
 
         val currentValues = focusedValuesGetter.active_Central_Values
         if (currentValues.hide_prix_lence_vent_buttons != shouldHideButtons) {
-            focusedValuesGetter.update_activeCentralValues(
+            focusedValuesGetter.update_ActiveCentralValues_app2(
                 currentValues.copy(hide_prix_lence_vent_buttons = shouldHideButtons)
             )
             Log.d(TAG, "✅ Updated hide_prix_lence_vent_buttons to: $shouldHideButtons (isHost=${connectionState.isHostPhone}, isConnected=${connectionState.isConnected})")
@@ -86,7 +85,7 @@ class WifiTransferDatas(
     }
 
     fun sendOrderToClientDisplayerT(
-        orderName: WifiUpdateClientDisplayerStats, data: Any? = null
+        orderName: WifiUpdateClientDisplayerStats_app2, data: Any? = null
     ) {
         viewModelScope.launch {
             sendData("${orderName.prefix}$data")
@@ -94,9 +93,9 @@ class WifiTransferDatas(
     }
 
     private fun handlePayload(payload: String) {
-        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+        WifiUpdateClientDisplayerStats_app2.Companion.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
-               WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types -> {
+                WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types -> {
                     appComptComposeRepositoryProtoJuin17.upsert(
                         appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
                             presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
@@ -202,7 +201,7 @@ class WifiTransferDatas(
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     Log.d(TAG, "✅ Connexion établie avec succès!")
-                    this@WifiTransferDatas.endpointId = endpointId
+                    this@WifiTransferDatas_app2.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
                     retryCount = 0
@@ -559,7 +558,7 @@ class WifiTransferDatas(
     }
 
     companion object {
-        private const val TAG = "WifiTransferDatas"
+        private const val TAG = "WifiTransferDatas_app2"
     }
 }
 
@@ -572,7 +571,7 @@ data class ConnectionUiState(
     val reconnectionAttempts: Int = 0
 )
 
-enum class WifiUpdateClientDisplayerStats(val prefix: String) {
+enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
     ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
     ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
@@ -585,7 +584,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran");
 
     companion object {
-        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
+        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats_app2, String>? {
             return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
                 it to payload.removePrefix(it.prefix)
             }

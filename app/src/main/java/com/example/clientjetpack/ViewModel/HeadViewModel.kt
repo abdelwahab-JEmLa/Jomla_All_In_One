@@ -22,8 +22,6 @@ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTra
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -98,27 +96,11 @@ open class HeadViewModel(
 
     // Si vous utilisez Firestore, ajoutez des fonctions avec gestion d'erreur
 
-    /**
-     * Vérifie si Firestore est disponible
-     */
-    private fun isFirestoreAvailable(): Boolean {
-        return try {
-            // Vérifier la connectivité réseau
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            val network = connectivityManager?.activeNetwork
-            val capabilities = connectivityManager?.getNetworkCapabilities(network)
-
-            capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-        } catch (e: Exception) {
-            Log.e(tag, "Network check error: ${e.message}")
-            false
-        }
-    }
 
     private val connectionManager = WifiTransferDatas(
         context = context,
         repositorysMainGetter = getter,
-        focusedValuesGetter= aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     ) { payload -> handleRetoureDataPayload(payload) }
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {

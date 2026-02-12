@@ -35,6 +35,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
 // Enhanced UI component to use the search filter
 @Composable
 fun List_GroupeAchatProduit(

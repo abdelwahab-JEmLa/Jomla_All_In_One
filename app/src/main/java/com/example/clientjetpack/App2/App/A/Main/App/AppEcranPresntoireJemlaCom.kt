@@ -1,12 +1,11 @@
-package com.example.clientjetpack
+package com.example.clientjetpack.App2.App.A.Main.App
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import android.Manifest
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import androidx.annotation.RequiresPermission
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,15 +14,9 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
-val app = App.AppEcranPresntoireJemlaCom
+class AppEcranPresntoireJemlaCom : Application() {
 
-enum class App {
-    AppEcranPresntoireJemlaCom
-}
 
-class MyApplication : Application() {
-
-    
     companion object {
         private const val TAG = "MyApplication"
         private const val CACHE_SIZE_MB = 100L
@@ -114,7 +107,7 @@ class MyApplication : Application() {
             val firestore = FirebaseFirestore.getInstance()
 
             // Attendre un peu avant d'activer le réseau
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 firestore.enableNetwork()
                     .addOnSuccessListener {
                         Log.d(TAG, "✓ Firestore network enabled")
@@ -156,8 +149,8 @@ class MyApplication : Application() {
         try {
             startKoin {
                 androidLogger()
-                androidContext(this@MyApplication)
-                modules(appModule)
+                androidContext(this@AppEcranPresntoireJemlaCom)
+                modules(appModule_App2)
             }
             Log.d(TAG, "✓ Koin initialized")
         } catch (e: Exception) {
@@ -168,7 +161,6 @@ class MyApplication : Application() {
     /**
      * Vérifie si une connexion réseau est disponible
      */
-    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     private fun isNetworkAvailable(): Boolean {
         return try {
             val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as? ConnectivityManager
