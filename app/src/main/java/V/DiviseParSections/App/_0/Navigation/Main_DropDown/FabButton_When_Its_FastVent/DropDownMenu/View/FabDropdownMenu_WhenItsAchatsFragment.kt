@@ -23,7 +23,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FabDropdownMenu_WhenIts_FragFastVent (
     onDismissDropdown: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick_to_initiateBackgroundPdfCreation: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -57,7 +58,8 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             )
             DropDownItem_WhenIts_FragFastVent_8(
                 nomFun = "Whatsapp test share PDF ",
-                onDismissDropdown = onDismissDropdown
+                onDismissDropdown = onDismissDropdown,
+                onClick_to_initiateBackgroundPdfCreation = onClick_to_initiateBackgroundPdfCreation
             )
             DropDownItem_WindowsShare_Facture_Impots(
                 nomFun = "Partager PDF Facture_Impots ",

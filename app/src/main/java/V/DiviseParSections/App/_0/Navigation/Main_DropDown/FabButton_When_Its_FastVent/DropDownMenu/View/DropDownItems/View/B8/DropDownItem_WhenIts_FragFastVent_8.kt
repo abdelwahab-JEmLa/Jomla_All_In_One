@@ -23,12 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.compose.koinInject
@@ -40,67 +37,12 @@ private const val TAG = "DropDownItem_FragFastVent_8"
 fun DropDownItem_WhenIts_FragFastVent_8(
     nomFun: String = "Créer PDF en arrière-plan",
     onDismissDropdown: () -> Unit,
+    onClick_to_initiateBackgroundPdfCreation: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    context: Context = LocalContext.current
 ) {
     var isLoading by remember { mutableStateOf(false) }
-    val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
 
-    val activeVents = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { vent ->
-            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
-                    vent.quantity > 0
-        }
-
-    fun initiateBackgroundPdfCreation() {
-        Log.d(TAG, "initiateBackgroundPdfCreation: Starting PDF creation process")
-
-        val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
-        val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-
-        if (activeClient == null) {
-            Log.e(TAG, "initiateBackgroundPdfCreation: No active client found")
-            Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (activeBonVent == null) {
-            Log.e(TAG, "initiateBackgroundPdfCreation: No active bon de vente found")
-            Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (activeVents.isEmpty()) {
-            Log.e(TAG, "initiateBackgroundPdfCreation: No active vents to process")
-            Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        Log.i(TAG, "initiateBackgroundPdfCreation: Validated - Client: ${activeClient.nom}, BonVent: ${activeBonVent.keyID}, Items: ${activeVents.size}")
-
-        // Close dropdown immediately
-        onDismissDropdown()
-        Log.d(TAG, "initiateBackgroundPdfCreation: Dropdown dismissed")
-
-        // Start background PDF creation using GlobalScope to survive composition changes
-        isLoading = true
-
-        GlobalScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "initiateBackgroundPdfCreation: GlobalScope task started on IO dispatcher")
-
-            createPdfInBackground(
-                context = context,
-                aCentralFacade = aCentralFacade,
-                focusedValuesGetter = focusedValuesGetter,
-                printHandler = printHandler,
-                activeVents = activeVents,
-                onLoadingChange = { isLoading = it }
-            )
-        }
-        Log.d(TAG, "initiateBackgroundPdfCreation: Background task launched")
-    }
 
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -137,7 +79,7 @@ fun DropDownItem_WhenIts_FragFastVent_8(
             },
             onClick = {
                 if (!isLoading) {
-                    initiateBackgroundPdfCreation()
+                    onClick_to_initiateBackgroundPdfCreation()
                 }
             },
             enabled = !isLoading
@@ -148,7 +90,7 @@ fun DropDownItem_WhenIts_FragFastVent_8(
 /**
  * Creates PDF in background with timeout to avoid hanging
  */
-private suspend fun createPdfInBackground(
+suspend fun createPdfInBackground(
     context: Context,
     aCentralFacade: ACentralFacade,
     focusedValuesGetter: FocusedValuesGetter,

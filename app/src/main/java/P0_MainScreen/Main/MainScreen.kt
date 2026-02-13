@@ -274,7 +274,6 @@ fun MainScreen(
                             }
                         }
                     } else {
-
                         CircularProgressIndicator(
                             progress = { repositoryProgress },
                             modifier = Modifier.size(64.dp),

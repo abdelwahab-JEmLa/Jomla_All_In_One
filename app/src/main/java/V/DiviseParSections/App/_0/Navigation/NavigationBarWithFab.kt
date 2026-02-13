@@ -2,6 +2,7 @@ package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
@@ -11,6 +12,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.FabDropdownMenu_WhenItsAchatsFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B8.createPdfInBackground
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
@@ -20,6 +22,9 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectr
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,9 +46,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "NavigationBarWithFab"
 
@@ -61,6 +70,8 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current
+    ,
     showWarningState: Boolean = true
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
@@ -270,10 +281,66 @@ fun NavigationBarWithFab(
                 onDismissDropdown = { showFabDropdown_MainPresenterFragment = false }
             )
         }
+        val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
+
+        val activeVents = focusedValuesGetter
+            .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+            .filter { vent ->
+                vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                        vent.quantity > 0
+            }
+
+        // Captured here so onDismissDropdown (showFabDropdownFastVent = false) is in scope
+        // and the lambda can be passed into FabDropdownMenu_WhenIts_FragFastVent directly.
+        // isLoading is intentionally NOT touched here — DropDownItem_WhenIts_FragFastVent_8
+        // owns its own isLoading state and updates it internally via onLoadingChange.
+        val initiateBackgroundPdfCreation: () -> Unit = {     //<--
+        //TODO(1): pk je ne trouve pas le pdf au dow bons 
+            Log.d(TAG, "initiateBackgroundPdfCreation: Starting PDF creation process")
+
+            // Dismiss immediately — task runs in background, no need to keep menu open
+            showFabDropdownFastVent = false
+            Log.d(TAG, "initiateBackgroundPdfCreation: Dropdown dismissed")
+
+            val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
+            val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
+
+            if (activeClient == null) {
+                Log.e(TAG, "initiateBackgroundPdfCreation: No active client found")
+                Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
+            } else if (activeBonVent == null) {
+                Log.e(TAG, "initiateBackgroundPdfCreation: No active bon de vente found")
+                Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
+            } else if (activeVents.isEmpty()) {
+                Log.e(TAG, "initiateBackgroundPdfCreation: No active vents to process")
+                Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.i(
+                    TAG,
+                    "initiateBackgroundPdfCreation: Validated - Client: ${activeClient.nom}, BonVent: ${activeBonVent.keyID}, Items: ${activeVents.size}"
+                )
+
+                // Launch background PDF creation — GlobalScope survives composition changes
+                GlobalScope.launch(Dispatchers.IO) {
+                    Log.d(TAG, "initiateBackgroundPdfCreation: GlobalScope task started on IO dispatcher")
+
+                    createPdfInBackground(
+                        context = context,
+                        aCentralFacade = aCentralFacade,
+                        focusedValuesGetter = focusedValuesGetter,
+                        printHandler = printHandler,
+                        activeVents = activeVents,
+                        onLoadingChange = { /* isLoading is owned by DropDownItem_WhenIts_FragFastVent_8 */ }
+                    )
+                }
+                Log.d(TAG, "initiateBackgroundPdfCreation: Background task launched")
+            }
+        }
 
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu_WhenIts_FragFastVent(
-                onDismissDropdown = { showFabDropdownFastVent = false }
+                onDismissDropdown = { showFabDropdownFastVent = false },
+                onClick_to_initiateBackgroundPdfCreation = initiateBackgroundPdfCreation
             )
         }
 
