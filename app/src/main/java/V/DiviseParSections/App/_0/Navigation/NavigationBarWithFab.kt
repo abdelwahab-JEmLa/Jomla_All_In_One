@@ -1,9 +1,11 @@
 package V.DiviseParSections.App._0.Navigation
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit
@@ -12,7 +14,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.FabDropdownMenu_WhenItsAchatsFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B8.createPdfInBackground
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
@@ -52,7 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import java.io.File
 
 private const val TAG = "NavigationBarWithFab"
 
@@ -70,8 +75,7 @@ fun NavigationBarWithFab(
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current
-    ,
+    context: Context = LocalContext.current,
     showWarningState: Boolean = true
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
@@ -110,23 +114,18 @@ fun NavigationBarWithFab(
                 }
                 NavigationBarItem(
                     icon = {
-                        // The key is to use Image composable with proper size constraint (24.dp)
-                        // and ColorFilter for tinting based on selection state
                         if (screen.customIconRes != null) {
                             Image(
                                 painter = painterResource(id = screen.customIconRes),
                                 contentDescription = screen.title,
-                                modifier = Modifier.size(24.dp), // Critical: Proper sizing
+                                modifier = Modifier.size(24.dp),
                                 colorFilter = if (currentRoute == screen.route) {
-                                    // Selected state: use screen's color
                                     ColorFilter.tint(screen.color)
                                 } else {
-                                    // Unselected state: use medium alpha content color
                                     ColorFilter.tint(LocalContentColor.current.copy(alpha = ContentAlpha.medium))
                                 }
                             )
                         } else {
-                            // Default vector icon handling
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = screen.title,
@@ -137,7 +136,6 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        // Safe navigation with try-catch to prevent crashes
                         try {
                             if (screen.route == Screen.DialogTests.route) {
                                 showDialogTests = true
@@ -281,6 +279,7 @@ fun NavigationBarWithFab(
                 onDismissDropdown = { showFabDropdown_MainPresenterFragment = false }
             )
         }
+
         val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
 
         val activeVents = focusedValuesGetter
@@ -290,50 +289,198 @@ fun NavigationBarWithFab(
                         vent.quantity > 0
             }
 
-        // Captured here so onDismissDropdown (showFabDropdownFastVent = false) is in scope
-        // and the lambda can be passed into FabDropdownMenu_WhenIts_FragFastVent directly.
-        // isLoading is intentionally NOT touched here — DropDownItem_WhenIts_FragFastVent_8
-        // owns its own isLoading state and updates it internally via onLoadingChange.
-        val initiateBackgroundPdfCreation: () -> Unit = {     //<--
-        //TODO(1): pk je ne trouve pas le pdf au dow bons 
-            Log.d(TAG, "initiateBackgroundPdfCreation: Starting PDF creation process")
+        /**
+         * FIXED: Background PDF creation now uses PdfSaverUtility
+         * Saves to: Downloads/BonsWhatsApp/MM_DD/keyID.pdf via MediaStore
+         *
+         * This resolves the TODO where PDFs weren't being found because:
+         * 1. Files are now saved to public Downloads folder (MediaStore)
+         * 2. Clear naming: {bonVentKeyID}.pdf
+         * 3. Organized by date: MM_DD format (e.g., 02_14 for February 14)
+         * 4. No permissions needed (Android 10+)
+         * 5. Visible in file manager immediately
+         */
+        val initiateBackgroundPdfCreation: () -> Unit = {
+            Log.d(TAG, "═══════════════════════════════════════════════════════")
+            Log.d(TAG, "🚀 initiateBackgroundPdfCreation: Starting")
+            Log.d(TAG, "═══════════════════════════════════════════════════════")
 
-            // Dismiss immediately — task runs in background, no need to keep menu open
+            // Dismiss immediately
             showFabDropdownFastVent = false
-            Log.d(TAG, "initiateBackgroundPdfCreation: Dropdown dismissed")
+            Log.d(TAG, "✅ Dropdown dismissed")
 
             val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
             val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
             if (activeClient == null) {
-                Log.e(TAG, "initiateBackgroundPdfCreation: No active client found")
+                Log.e(TAG, "❌ No active client found")
                 Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
             } else if (activeBonVent == null) {
-                Log.e(TAG, "initiateBackgroundPdfCreation: No active bon de vente found")
+                Log.e(TAG, "❌ No active bon de vente found")
                 Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
             } else if (activeVents.isEmpty()) {
-                Log.e(TAG, "initiateBackgroundPdfCreation: No active vents to process")
+                Log.e(TAG, "❌ No active vents to process")
                 Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
             } else {
-                Log.i(
-                    TAG,
-                    "initiateBackgroundPdfCreation: Validated - Client: ${activeClient.nom}, BonVent: ${activeBonVent.keyID}, Items: ${activeVents.size}"
-                )
+                Log.i(TAG, "✅ Validation passed:")
+                Log.i(TAG, "   Client: ${activeClient.nom}")
+                Log.i(TAG, "   BonVent: ${activeBonVent.keyID}")
+                Log.i(TAG, "   Items: ${activeVents.size}")
 
-                // Launch background PDF creation — GlobalScope survives composition changes
+                // Launch background task
                 GlobalScope.launch(Dispatchers.IO) {
-                    Log.d(TAG, "initiateBackgroundPdfCreation: GlobalScope task started on IO dispatcher")
+                    Log.d(TAG, "🔄 Background task started on IO dispatcher")
 
-                    createPdfInBackground(
-                        context = context,
-                        aCentralFacade = aCentralFacade,
-                        focusedValuesGetter = focusedValuesGetter,
-                        printHandler = printHandler,
-                        activeVents = activeVents,
-                        onLoadingChange = { /* isLoading is owned by DropDownItem_WhenIts_FragFastVent_8 */ }
-                    )
+                    try {
+                        // Add bon to image list
+                        val currentValues = focusedValuesGetter.active_Central_Values
+                        val currentBonsWithImages = currentValues.bons_a_imprime_avec_image_produit.toMutableList()
+
+                        if (!currentBonsWithImages.any { it.keyID == activeBonVent.keyID }) {
+                            currentBonsWithImages.add(activeBonVent)
+                            focusedValuesGetter.update_activeCentralValues(
+                                currentValues.copy(bons_a_imprime_avec_image_produit = currentBonsWithImages)
+                            )
+                            Log.d(TAG, "📸 Added bon to image print list")
+                        }
+
+                        delay(300)
+
+                        Log.d(TAG, "───────────────────────────────────────────────────────")
+                        Log.d(TAG, "📄 Starting PDF generation (30s timeout)...")
+                        Log.d(TAG, "───────────────────────────────────────────────────────")
+
+                        // Generate PDF with timeout
+                        val pdfFilePath = withTimeout(30000L) {
+                            val handler = printHandler as? PrintReceiptHandler_Juil
+                            if (handler == null) {
+                                Log.e(TAG, "❌ PrintHandler is NULL!")
+                                null
+                            } else {
+                                Log.d(TAG, "▶️ Calling printPdfOnly with shouldOpenFile=false...")
+                                val result = handler.printPdfOnly(
+                                    context = context,
+                                    repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+                                    repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
+                                    repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
+                                    scope = null,
+                                    relative_ListM10OperationVentCouleur = activeVents,
+                                    relative_bonVent = activeBonVent,
+                                    client = activeClient,
+                                    showCreditSection = false,
+                                    versement = 0.0,
+                                    shouldOpenFile = false
+                                )
+
+                                Log.d(TAG, "◀️ printPdfOnly completed: ${if (result.isSuccess) "✅ SUCCESS" else "❌ FAILED"}")
+                                result.getOrNull()?.substringAfter("PDF saved: ")?.substringBefore("\n")
+                            }
+                        }
+
+                        Log.d(TAG, "───────────────────────────────────────────────────────")
+                        Log.d(TAG, "📦 PDF generation completed - Path: $pdfFilePath")
+                        Log.d(TAG, "───────────────────────────────────────────────────────")
+
+                        if (pdfFilePath != null) {
+                            val tempPdfFile = File(pdfFilePath)
+
+                            if (tempPdfFile.exists()) {
+                                Log.i(TAG, "✅ Temp PDF exists - Size: ${tempPdfFile.length()} bytes")
+
+                                // Generate clean filename
+                                val cleanFileName = "${activeBonVent.keyID}.pdf"
+
+                                Log.d(TAG, "───────────────────────────────────────────────────────")
+                                Log.d(TAG, "💾 Saving via MediaStore...")
+                                Log.d(TAG, "   Destination: Downloads/BonsWhatsApp/${PdfSaverUtility.getCurrentDateFolder()}/")
+                                Log.d(TAG, "   File name: $cleanFileName")
+                                Log.d(TAG, "───────────────────────────────────────────────────────")
+
+                                // Save using PdfSaverUtility
+                                val saveResult = PdfSaverUtility.savePdf(
+                                    context = context,
+                                    sourceFile = tempPdfFile,
+                                    fileName = cleanFileName,
+                                    subFolder = "BonsWhatsApp"
+                                )
+
+                                saveResult.onSuccess { savedPath ->
+                                    Log.i(TAG, "═══════════════════════════════════════════════════════")
+                                    Log.i(TAG, "✅✅✅ PDF SAVED SUCCESSFULLY! ✅✅✅")
+                                    Log.i(TAG, "   Location: $savedPath")
+                                    Log.i(TAG, "   Accessible via: Gestionnaire de fichiers → Téléchargements → BonsWhatsApp")
+                                    Log.i(TAG, "═══════════════════════════════════════════════════════")
+
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            context,
+                                            "✅ PDF créé!\n$savedPath",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }.onFailure { error ->
+                                    Log.e(TAG, "❌ Save failed: ${error.message}", error)
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            context,
+                                            "❌ Erreur: ${error.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+
+                                // Delete temp file
+                                Log.d(TAG, "🗑️ Deleting temp file...")
+                                if (tempPdfFile.delete()) {
+                                    Log.d(TAG, "✅ Temp file deleted")
+                                } else {
+                                    Log.w(TAG, "⚠️ Failed to delete temp file")
+                                }
+
+                            } else {
+                                Log.e(TAG, "❌ Temp PDF not found at: $pdfFilePath")
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "❌ Erreur: Fichier introuvable", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        } else {
+                            Log.e(TAG, "❌ PDF generation returned null")
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "❌ Génération échouée", Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                    } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+                        Log.e(TAG, "⏱️ TIMEOUT after 30s", e)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "❌ Timeout (>30s)", Toast.LENGTH_LONG).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "💥 Exception", e)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "❌ Erreur: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                        e.printStackTrace()
+                    } finally {
+                        Log.d(TAG, "🧹 Cleanup...")
+                        delay(500)
+
+                        // Clean up bons list
+                        val finalValues = focusedValuesGetter.active_Central_Values
+                        activeBonVent.let { bon ->
+                            val cleanedBons = finalValues.bons_a_imprime_avec_image_produit.filter { it.keyID != bon.keyID }
+                            focusedValuesGetter.update_activeCentralValues(
+                                finalValues.copy(bons_a_imprime_avec_image_produit = cleanedBons)
+                            )
+                            Log.d(TAG, "✅ Removed bon from image list")
+                        }
+
+                        Log.d(TAG, "✅ Cleanup completed")
+                        Log.d(TAG, "═══════════════════════════════════════════════════════")
+                    }
                 }
-                Log.d(TAG, "initiateBackgroundPdfCreation: Background task launched")
+
+                Log.d(TAG, "🚀 Background task launched")
             }
         }
 

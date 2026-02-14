@@ -16,6 +16,16 @@ import java.util.Locale
 /**
  * Utility class for saving PDFs to accessible locations
  * Provides multiple strategies depending on Android version and permissions
+ *
+ * USAGE for BonsWhatsApp:
+ * PdfSaverUtility.savePdf(
+ *     context = context,
+ *     sourceFile = tempPdfFile,
+ *     fileName = "${bonVentKeyId}.pdf",
+ *     subFolder = "BonsWhatsApp"
+ * )
+ *
+ * Result: Downloads/BonsWhatsApp/MM_DD/keyID.pdf
  */
 object PdfSaverUtility {
     private const val TAG = "PdfSaverUtility"
@@ -23,6 +33,12 @@ object PdfSaverUtility {
     /**
      * Save PDF using the best available method
      * Returns the path where the file was saved
+     *
+     * @param context Application context
+     * @param sourceFile The PDF file to save
+     * @param fileName Name for the saved file (e.g., "-OlSiYxYxkqGuoBrQ306.pdf")
+     * @param subFolder Folder name in Downloads (e.g., "BonsWhatsApp")
+     * @return Result with saved file path
      */
     fun savePdf(
         context: Context,
@@ -36,6 +52,8 @@ object PdfSaverUtility {
                 throw IllegalStateException("Source file does not exist: ${sourceFile.absolutePath}")
             }
 
+            Log.d(TAG, "📁 Saving PDF: $fileName to $subFolder")
+
             // Try MediaStore first (Android 10+) - saves to Downloads and is visible to user
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 savePdfViaMediaStore(context, sourceFile, fileName, subFolder)
@@ -44,15 +62,17 @@ object PdfSaverUtility {
                 savePdfToAppDirectory(context, sourceFile, fileName, subFolder)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error saving PDF: ${e.message}", e)
+            Log.e(TAG, "❌ Error saving PDF: ${e.message}", e)
             Result.failure(e)
         }
     }
 
     /**
      * Save PDF via MediaStore (Android 10+)
-     * Saves to Downloads folder and is immediately visible to user
+     * Saves to Downloads/BonsWhatsApp/MM_DD/ folder and is immediately visible to user
      * NO PERMISSIONS NEEDED
+     *
+     * Structure: Downloads/BonsWhatsApp/02_14/-OlSiYxYxkqGuoBrQ306.pdf
      */
     private fun savePdfViaMediaStore(
         context: Context,
@@ -65,8 +85,11 @@ object PdfSaverUtility {
                 return savePdfToAppDirectory(context, sourceFile, fileName, subFolder)
             }
 
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            // Format: MM_DD (e.g., 02_14 for February 14)
+            val currentDate = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
             val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/$subFolder/$currentDate"
+
+            Log.d(TAG, "📂 MediaStore path: $relativePath/$fileName")
 
             // Prepare content values
             val contentValues = ContentValues().apply {
@@ -98,19 +121,23 @@ object PdfSaverUtility {
             val uri = resolver.insert(collection, contentValues)
                 ?: throw IllegalStateException("Failed to create MediaStore entry")
 
+            Log.d(TAG, "📝 MediaStore URI created: $uri")
+
             // Write file content
+            var bytesCopied = 0L
             resolver.openOutputStream(uri)?.use { outputStream ->
                 FileInputStream(sourceFile).use { inputStream ->
-                    inputStream.copyTo(outputStream)
+                    bytesCopied = inputStream.copyTo(outputStream)
                 }
             } ?: throw IllegalStateException("Failed to open output stream")
 
             val savedPath = "Downloads/$subFolder/$currentDate/$fileName"
-            Log.d(TAG, "✅ PDF saved via MediaStore: $savedPath")
-            
+            Log.d(TAG, "✅ PDF saved via MediaStore ($bytesCopied bytes): $savedPath")
+
             Result.success(savedPath)
         } catch (e: Exception) {
             Log.e(TAG, "❌ MediaStore save failed, falling back to app directory: ${e.message}")
+            e.printStackTrace()
             // Fallback to app directory
             savePdfToAppDirectory(context, sourceFile, fileName, subFolder)
         }
@@ -120,6 +147,8 @@ object PdfSaverUtility {
      * Save PDF to app-specific directory
      * ALWAYS WORKS - No permissions needed
      * Located in: /Android/data/[package]/files/Documents/[subFolder]/[date]/
+     *
+     * Structure: /Android/data/.../files/Documents/BonsWhatsApp/02_14/-OlSiYxYxkqGuoBrQ306.pdf
      */
     private fun savePdfToAppDirectory(
         context: Context,
@@ -128,13 +157,16 @@ object PdfSaverUtility {
         subFolder: String
     ): Result<String> {
         return try {
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            
+            // Format: MM_DD (e.g., 02_14 for February 14)
+            val currentDate = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
+
             // Use app-specific Documents directory
             val documentsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                 ?: throw IllegalStateException("Cannot access external files directory")
-            
+
             val targetDir = File(documentsDir, "$subFolder/$currentDate")
+
+            Log.d(TAG, "📂 App directory path: ${targetDir.absolutePath}")
 
             // Create directory if needed
             if (!targetDir.exists()) {
@@ -172,10 +204,11 @@ object PdfSaverUtility {
             }
 
             Log.d(TAG, "✅ PDF saved to app directory ($bytesCopied bytes): ${destinationFile.absolutePath}")
-            
+
             Result.success(destinationFile.absolutePath)
         } catch (e: Exception) {
             Log.e(TAG, "❌ App directory save failed: ${e.message}", e)
+            e.printStackTrace()
             Result.failure(e)
         }
     }
@@ -183,11 +216,18 @@ object PdfSaverUtility {
     /**
      * Get a user-friendly description of where PDFs are saved
      */
-    fun getSaveLocationDescription(context: Context): String {
+    fun getSaveLocationDescription(context: Context, subFolder: String = "BonsDeVente"): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            "PDFs sauvegardés dans le dossier Téléchargements (accessible via Gestionnaire de fichiers)"
+            "PDFs sauvegardés dans Téléchargements/$subFolder/MM_DD/ (accessible via Gestionnaire de fichiers)"
         } else {
-            "PDFs sauvegardés dans les documents de l'application"
+            "PDFs sauvegardés dans les documents de l'application/$subFolder/MM_DD/"
         }
+    }
+
+    /**
+     * Get current date folder name (MM_DD format)
+     */
+    fun getCurrentDateFolder(): String {
+        return SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
     }
 }

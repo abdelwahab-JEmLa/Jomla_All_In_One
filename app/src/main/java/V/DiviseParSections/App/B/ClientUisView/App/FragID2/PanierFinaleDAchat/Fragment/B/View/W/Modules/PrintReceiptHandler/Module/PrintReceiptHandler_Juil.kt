@@ -12,6 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * FIXED: Added shouldOpenFile parameter to control when PDFs are opened
+ */
 class PrintReceiptHandler_Juil(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
@@ -52,9 +55,16 @@ class PrintReceiptHandler_Juil(
             companyHeader
         )
     }
+
     /**
      * Generate PDF only - Returns Result for proper error handling
      * FIXED: Now checks demande_Versemet_si_Type_est_regle
+     * FIXED: Added shouldOpenFile parameter to control when PDF is opened
+     *
+     * @param shouldOpenFile If false, PDF will be generated but not opened automatically.
+     *                       This is useful when the file will be copied to a different location
+     *                       before opening (e.g., in background PDF creation).
+     *                       Default is true for backward compatibility.
      */
     suspend fun printPdfOnly(
         context: Context,
@@ -66,11 +76,13 @@ class PrintReceiptHandler_Juil(
         repo13TarificationInfos: Repo13TarificationInfos,
         relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
-        versement: Double = 0.0
+        versement: Double = 0.0,
+        shouldOpenFile: Boolean = true
     ): Result<String> {
         return try {
             // FIXED: The pdfPrintHandler will now automatically check demande_Versemet_si_Type_est_regle
             // No need to override showCreditSection here since the handler checks the bonVent property
+            // FIXED: Pass shouldOpenFile to control when PDF is opened
             pdfPrintHandler.generateAndOpenPdf(
                 context,
                 client,
@@ -79,7 +91,8 @@ class PrintReceiptHandler_Juil(
                 repoM1Produit,
                 relative_bonVent,
                 showCreditSection,
-                versement
+                versement,
+                shouldOpenFile
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -96,6 +109,7 @@ class PrintReceiptHandler_Juil(
 
     /**
      * Print credit receipt (both Bluetooth and PDF)
+     * FIXED: Added shouldOpenFile parameter
      */
     fun print_Credit(
         context: Context,
@@ -104,7 +118,8 @@ class PrintReceiptHandler_Juil(
         scope: CoroutineScope? = null,
         generatePdf: Boolean = false,
         previousPayments: List<Double> = emptyList(),
-        showPaymentHistory: Boolean = false
+        showPaymentHistory: Boolean = false,
+        shouldOpenFile: Boolean = true
     ) {
         // Try Bluetooth printing first
         val bluetoothSuccess = bluetoothPrintHandler.printCreditBluetoothReceipt(
@@ -124,7 +139,8 @@ class PrintReceiptHandler_Juil(
                         client,
                         bonVent,
                         previousPayments,
-                        showPaymentHistory
+                        showPaymentHistory,
+                        shouldOpenFile
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -135,6 +151,7 @@ class PrintReceiptHandler_Juil(
 
     /**
      * NEW: Credit receipt with Windows app sharing option
+     * FIXED: Added shouldOpenFile parameter
      */
     fun print_CreditWithWindowsShare(
         context: Context,
@@ -143,7 +160,8 @@ class PrintReceiptHandler_Juil(
         scope: CoroutineScope? = null,
         shareWithWindows: Boolean = false,
         previousPayments: List<Double> = emptyList(),
-        showPaymentHistory: Boolean = false
+        showPaymentHistory: Boolean = false,
+        shouldOpenFile: Boolean = true
     ) {
         scope?.launch {
             try {
@@ -152,7 +170,8 @@ class PrintReceiptHandler_Juil(
                     client,
                     bonVent,
                     previousPayments,
-                    showPaymentHistory
+                    showPaymentHistory,
+                    shouldOpenFile
                 )
 
                 if (shareWithWindows) {
@@ -169,4 +188,10 @@ class PrintReceiptHandler_Juil(
             }
         }
     }
+
+    /**
+     * NEW: Public accessor to PdfPrintHandler for advanced use cases
+     * Allows direct access to openPdfFile() method for opening PDFs after custom processing
+     */
+    fun getPdfPrintHandler(): PdfPrintHandler = pdfPrintHandler
 }

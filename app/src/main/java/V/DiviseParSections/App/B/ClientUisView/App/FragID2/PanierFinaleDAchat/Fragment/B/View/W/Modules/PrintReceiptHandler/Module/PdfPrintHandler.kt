@@ -15,6 +15,7 @@ import java.io.File
 
 /**
  * FIXED: Always uses FileProvider URIs to avoid "file exposed beyond app" errors
+ * FIXED: Added shouldOpenFile parameter to control when PDF is opened
  */
 class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
@@ -25,6 +26,11 @@ class PdfPrintHandler(
 
     /**
      * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+     * FIXED: Added shouldOpenFile parameter to prevent opening temp files before they're copied
+     *
+     * @param shouldOpenFile If false, PDF will be generated but not opened.
+     *                       This is useful when the file needs to be copied to a different location first.
+     *                       Default is true for backward compatibility.
      */
     suspend fun generateAndOpenPdf(
         context: Context,
@@ -34,7 +40,8 @@ class PdfPrintHandler(
         repoM1Produit: RepoM1Produit,
         relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
-        versement: Double = 0.0
+        versement: Double = 0.0,
+        shouldOpenFile: Boolean = true
     ): Result<String> {
         if (operations.isEmpty()) {
             return Result.failure(IllegalArgumentException("No operations to print"))
@@ -77,7 +84,14 @@ class PdfPrintHandler(
 
                 if (pdfFile.exists()) {
                     savePdfToDownloads(context, pdfFile)
-                    openPdfFile(context, pdfFile)
+
+                    // FIXED: Only open file if requested
+                    if (shouldOpenFile) {
+                        openPdfFile(context, pdfFile)
+                        Log.d(TAG, "PDF opened from temp location: ${pdfFile.absolutePath}")
+                    } else {
+                        Log.d(TAG, "PDF generation complete, skipping auto-open: ${pdfFile.absolutePath}")
+                    }
                 }
             }
 
@@ -87,12 +101,16 @@ class PdfPrintHandler(
         }
     }
 
+    /**
+     * FIXED: Added shouldOpenFile parameter
+     */
     suspend fun generateCreditPdf(
         context: Context,
         client: M2Client?,
         bonVent: M8BonVent,
         previousPayments: List<Double> = emptyList(),
-        showPaymentHistory: Boolean = false
+        showPaymentHistory: Boolean = false,
+        shouldOpenFile: Boolean = true
     ): Result<String> {
         return try {
             val transactionId = bonVent.keyID.takeLast(4)
@@ -116,7 +134,14 @@ class PdfPrintHandler(
 
                 if (pdfFile.exists()) {
                     savePdfToDownloads(context, pdfFile)
-                    openPdfFile(context, pdfFile)
+
+                    // FIXED: Only open file if requested
+                    if (shouldOpenFile) {
+                        openPdfFile(context, pdfFile)
+                        Log.d(TAG, "Credit PDF opened: ${pdfFile.absolutePath}")
+                    } else {
+                        Log.d(TAG, "Credit PDF generation complete, skipping auto-open: ${pdfFile.absolutePath}")
+                    }
                 }
             }
 
@@ -129,15 +154,26 @@ class PdfPrintHandler(
     /**
      * FIXED: Always uses FileProvider URI, never exposes file:// URIs
      * This prevents "file exposed beyond app through Intent.getData()" errors
+     *
+     * PUBLIC: Made public so it can be called from createPdfInBackground after copying to final location
      */
-    private fun openPdfFile(context: Context, file: File) {
+    fun openPdfFile(context: Context, file: File) {
         try {
+            Log.d(TAG, "Opening PDF file: ${file.absolutePath}")
+
+            if (!file.exists()) {
+                Log.e(TAG, "Cannot open PDF - file does not exist: ${file.absolutePath}")
+                return
+            }
+
             // Create FileProvider URI
             val uri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
                 file
             )
+
+            Log.d(TAG, "FileProvider URI created: $uri")
 
             // Try to open with PDF viewer
             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -167,7 +203,7 @@ class PdfPrintHandler(
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error opening PDF file", e)
+            Log.e(TAG, "Error opening PDF file: ${file.absolutePath}", e)
         }
     }
 
