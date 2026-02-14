@@ -3,13 +3,15 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 enum class Utilisateur(
     val comp: String,
     val ayam_tadriss: String = "dimanch/jeudi",
-    val nom_arab: String = ""
+    val nom_arab: String = "",
+    val num_telephone : String = "",
 ) {
     Admin("", "", "المسؤول"),
     Abdelwahab_Osstad(
         M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
         "dimanch/jeudi",
-        "عبدالوهاب حمنيش"
+        "عبدالوهاب حمنيش",
+             "+213 553 88 50 37"
     ),
     kissm_intikali_madrasa_Compt_Osstad(
         M18CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,

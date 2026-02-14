@@ -2,6 +2,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.getTimeElapsedString
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.formatPhoneDisplay
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
@@ -48,6 +49,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
+
+// formatPhoneDisplay is imported from PhoneDisplayUtils.kt
+// import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Utils.formatPhoneDisplay
 
 data class return_get_Edited_M8BonVent(
     val found_M8: M8BonVent?,
@@ -105,12 +109,10 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = koinInject()
-) {   //<--
-// fait affiche le phonto de profille et pseudo si dispo pour son api truecalled cherche don leur site
+) {
     val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
     var toastData by remember { mutableStateOf<ToastData?>(null) }
 
-    // Store the latest bon vent in a remembered state that updates with repository changes
     val latestBonVent by remember(bonVentRepository.datasValue, m2Client.keyID) {
         derivedStateOf {
             bonVentRepository.datasValue
@@ -119,7 +121,6 @@ fun ClientSearchItem(
         }
     }
 
-    // Store the current period bon vent in a remembered state
     val currentPeriodKeyID = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
     val currentPeriodBonVent by remember(
         bonVentRepository.datasValue,
@@ -145,6 +146,12 @@ fun ClientSearchItem(
 
     val currentValues = focusedValuesGetter.active_Central_Values
     val isInDeletionList = currentValues.list_clients_por_suprime.any { it.keyID == m2Client.keyID }
+
+    // Build the phone suffix once — reused in both the card and the fallback card
+    val phoneDisplay = formatPhoneDisplay(
+        numTelephone = m2Client.numTelephone,
+        nomClient = m2Client.nom
+    )
 
     ModernToastMessage(
         toastData = toastData,
@@ -174,7 +181,6 @@ fun ClientSearchItem(
                                         newBonVent
                                     )
                                 }
-
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
                                     existingBonVent ?: newBonVent
                                 )
@@ -200,14 +206,14 @@ fun ClientSearchItem(
                     )
 
                     Column(modifier = Modifier.weight(1f)) {
-                        val text = m2Client.nom
                         val uppercase =
                             if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
                                 m2Client.keyID.takeLast(3).uppercase()
                             } else ""
 
+                        // ── Name + phone hint on the same line ──────────────
                         Text(
-                            text = text + uppercase,
+                            text = m2Client.nom + uppercase + phoneDisplay,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -223,10 +229,7 @@ fun ClientSearchItem(
                         if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
                             Text(
                                 text = "📍 ${
-                                    String.format(
-                                        "%.4f",
-                                        m2Client.latitude
-                                    )
+                                    String.format("%.4f", m2Client.latitude)
                                 }, ${String.format("%.4f", m2Client.longitude)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color(0xFF4CAF50)
@@ -247,7 +250,6 @@ fun ClientSearchItem(
                     .padding(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Use the remembered state for the toggle button
                 val bonVentToToggle = currentPeriodBonVent ?: latestBonVent
 
                 if (bonVentToToggle != null) {
@@ -265,10 +267,7 @@ fun ClientSearchItem(
                                 val updatedBonVent = bonVentToToggle.copy(
                                     a_etai_imprime_au_moi_ne_foit = !isPrinted
                                 )
-
-                                repositorysMainSetter.update_M8BonVent(
-                                    updatedBonVent
-                                )
+                                repositorysMainSetter.update_M8BonVent(updatedBonVent)
                                 repositorysMainSetter.repo8BonVent.refresh_Datas()
                             },
                             modifier = Modifier.size(32.dp)
@@ -340,15 +339,13 @@ fun ClientSearchItem(
                 Box(
                     modifier = Modifier
                         .size(12.dp)
-                        .background(
-                            color = Color.Gray,
-                            shape = CircleShape
-                        )
+                        .background(color = Color.Gray, shape = CircleShape)
                 )
 
                 Column(modifier = Modifier.weight(1f)) {
+                    // Fallback card also shows phone hint
                     Text(
-                        text = m2Client.nom,
+                        text = m2Client.nom + phoneDisplay,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray

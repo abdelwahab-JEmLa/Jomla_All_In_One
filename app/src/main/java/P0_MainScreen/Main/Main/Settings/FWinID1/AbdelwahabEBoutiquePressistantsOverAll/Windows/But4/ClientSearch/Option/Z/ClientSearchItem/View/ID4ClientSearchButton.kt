@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.CreateNewClientIcon
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.formatPhoneDisplay
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -61,10 +62,10 @@ fun ID4ClientSearchButton(
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
     onClientSelectedToToast: (M2Client) -> Unit = {},
-    aCentralFacade: ACentralFacade= koinInject(),
+    aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    repositorysMainGetter: RepositorysMainGetter=koinInject()
+    repositorysMainGetter: RepositorysMainGetter = koinInject()
 ) {
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
     var isTextCollapsed by remember { mutableStateOf(false) }
@@ -99,7 +100,6 @@ fun ID4ClientSearchButton(
                         filteredClients = deletionList
                         showDropdown = deletionList.isNotEmpty()
                     } else if (query.isEmpty()) {
-                        // FIXED: Recalculate clients with command bon vents for current period
                         val updatedClientsWithCommandBonVents =
                             getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
                                 .filter { !deletionKeyIds.contains(it.keyID) }
@@ -140,8 +140,7 @@ fun ID4ClientSearchButton(
     ) {
         if (!isSearchMode) {
             FloatingActionButton(
-                modifier = Modifier
-                    .size(40.dp),
+                modifier = Modifier.size(40.dp),
                 onClick = { isSearchMode = true },
                 containerColor = Color(0xFF4CAF50)
             ) {
@@ -156,17 +155,28 @@ fun ID4ClientSearchButton(
                 val nomClient = getter.activeOnVent_M2Client?.nom ?: ""
                 val onVentId8BonVent = getter.activeOnVent_M8BonVent
 
+                // TODO(1) FIXED: build phone display suffix once, reuse below
+                val phoneDisplay = formatPhoneDisplay(
+                    numTelephone = getter.activeOnVent_M2Client?.numTelephone ?: "",
+                    nomClient = nomClient
+                )
+
                 Text(
                     text = if (isTextCollapsed) {
-                        nomClient
+                        // Collapsed: just name + phone hint
+                        "$nomClient$phoneDisplay"
                     } else {
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
-
                             val (totalProducts, totalValue) = get_vents_datas(aCentralFacade)
 
-                            if (bon.parent_M2Client_DebugInfos.isNotEmpty() && bon.parent_M2Client_DebugInfos != "Non Defini") {
-                                "$nomClient - $timeElapsed - $totalProducts P - ${String.format("%.2f", totalValue)} DA"
+                            if (bon.parent_M2Client_DebugInfos.isNotEmpty() &&
+                                bon.parent_M2Client_DebugInfos != "Non Defini"
+                            ) {
+                                // Full label: Name 📞O23 - 2h 5m - 3 P - 1500.00 DA
+                                "$nomClient$phoneDisplay - $timeElapsed - $totalProducts P - ${
+                                    String.format("%.2f", totalValue)
+                                } DA"
                             } else "Rechercher Client"
                         } ?: run {
                             val count = clientsWithCommandBonVents.size
@@ -268,27 +278,20 @@ fun ID4ClientSearchButton(
                                 if (searchQuery.trim().equals("supp", ignoreCase = true)) {
                                     IconButton(
                                         onClick = {
-                                            // Delete all clients in the deletion list from repository
                                             val clientsToDelete = currentValues.list_clients_por_suprime
                                             if (clientsToDelete.isNotEmpty()) {
                                                 clientsToDelete.forEach { client ->
                                                     viewModel.aCentralFacade.repositorysMainSetter.delete_M2Client(client)
                                                 }
-
-                                                // Clear the deletion list
                                                 focusedValuesGetter.update_activeCentralValues(
                                                     currentValues.copy(list_clients_por_suprime = emptyList())
                                                 )
-
-                                                // Show confirmation toast
                                                 onClientSelectedToToast(
                                                     M2Client().copy(
                                                         nom = "${clientsToDelete.size} client(s) supprimé(s)"
                                                     )
                                                 )
                                             }
-
-                                            // Reset search mode
                                             isSearchMode = false
                                             searchQuery = ""
                                             showDropdown = false
@@ -297,7 +300,7 @@ fun ID4ClientSearchButton(
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "Supprimer les clients",
-                                            tint = Color(0xFFFF5722) // Red color for delete
+                                            tint = Color(0xFFFF5722)
                                         )
                                     }
                                 } else {
@@ -343,8 +346,10 @@ fun ID4ClientSearchButton(
     }
 }
 
+// formatPhoneDisplay is imported from PhoneDisplayUtils.kt
+// import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Utils.formatPhoneDisplay
+
 fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
-    // Get the list of vents for this bon
     val onVentList = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
@@ -354,12 +359,10 @@ fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
 
     val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
 
-    // Calculate total value (similar to CartSummarySection)
     val totalValue = ventsTrouve.sumOf { vent ->
         val provisoireMonPrix = aCentralFacade.repositorysMainGetter
             .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
             ?.prixCurrency ?: 0.0
-
         vent.quantity * provisoireMonPrix
     }
     return Pair(totalProducts, totalValue)
@@ -372,9 +375,7 @@ private fun ClientFournisseurToggleButton(
 ) {
     FloatingActionButton(
         modifier = Modifier.size(32.dp),
-        onClick = {
-            onToggle()
-        },
+        onClick = { onToggle() },
         containerColor = if (isFournisseurMode) Color(0xFFFF9800) else Color(0xFF2196F3)
     ) {
         Text(
