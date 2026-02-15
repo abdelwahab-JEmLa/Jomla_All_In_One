@@ -1,5 +1,5 @@
 package com.example.clientjetpack.App2.App.A.Main.Base.Modules
-
+        /*
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import android.annotation.SuppressLint
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
-data class UiState(
+data class UiState_WifiConexiontLuncher(
     val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
     val productDisplayController: ProductDisplayController,
     val isLoading: Boolean = false,
@@ -32,24 +32,15 @@ data class UiState(
 open class WifiConexiontLuncher(
     val context: Context,
     val focusedValuesGetter_app2: FocusedValuesGetter_app2,
-    val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
+    private val tag = "WifiConexiontLuncher"
 
-    private val tag = "HeadViewModel_App2"
-
-    private val firestore by lazy {
-        Firebase.firestore.apply {
-            Log.d(tag, "Firestore instance accessed from ViewModel")
-        }
-    }
-
-    val _uiState = MutableStateFlow(UiState(productDisplayController = ProductDisplayController()))
-    open val uiState = _uiState.asStateFlow()
+    val _uiStateWifiConexiontLuncher = MutableStateFlow(UiState_WifiConexiontLuncher(productDisplayController = ProductDisplayController()))
+    open val uiState = _uiStateWifiConexiontLuncher.asStateFlow()
 
 
     private val connectionManager = WifiTransferDatas_app2(
         context = context,
-        repositorysMainGetter = repositorysMainGetter_app2,
         focusedValuesGetter = focusedValuesGetter_app2
     ) { payload -> handleRetoureDataPayload(payload) }
 
@@ -67,7 +58,7 @@ open class WifiConexiontLuncher(
                 }
 
                 WifiUpdateClientDisplayerStats_app2.ClientWindowsDisplayedProductId -> {
-                    // Log the received product ID
+                   /* // Log the received product ID
                     Log.d("ClientWindowsDisplayedProductId", "📱 ClientWindowsDisplayedProductId reçu: $content (Long: ${content.toLong()})")
 
                     updateDisplayController {
@@ -81,7 +72,7 @@ open class WifiConexiontLuncher(
                                 active_ProduitKeyID_Au_DroopDown_PresenterEcran = content
                             )
                         )
-                    } ?: Log.e(tag, "❌ currentActive_M9AppCompt est null, impossible de mettre à jour")
+                    } ?: Log.e(tag, "❌ currentActive_M9AppCompt est null, impossible de mettre à jour")                  */
                 }
 
                 WifiUpdateClientDisplayerStats_app2.DISMISS_PRODUCT_INFO -> updateDisplayController {
@@ -122,13 +113,13 @@ open class WifiConexiontLuncher(
                     )
                 }
 
-                _uiState.update { it.copy(error = connectionState.error) }
+                _uiStateWifiConexiontLuncher.update { it.copy(error = connectionState.error) }
             }
         }
     }
 
     private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
-        _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
+        _uiStateWifiConexiontLuncher.update { it.copy(productDisplayController = update(it.productDisplayController)) }
     }
 
 
@@ -177,3 +168,4 @@ open class WifiConexiontLuncher(
 
 }
 
+                                                                           */

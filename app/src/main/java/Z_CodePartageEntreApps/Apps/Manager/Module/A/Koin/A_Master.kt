@@ -98,6 +98,7 @@ import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_Cou
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_RepositoryImpl
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import com.example.clientjetpack.App2.App.A.Main.App.appDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,7 +133,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { DataBaseInitFactory_14VentPeriode(get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
     single { DataBaseInit_Z_AppCompt(get<AppDatabase>().Z_AppComptDao()) }
-    single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
+    single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().dao_M3CouleurProduitInfos()) }
     single { DataBaseCreationFactory13TarificationInfos(get()) }
     single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
@@ -150,7 +151,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 
     single { A_ProduitInfosRepository(androidContext(), get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
-    single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().ArticlesBasesStatsModelDao()) }
+    single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().dao_M1Produit()) }
 
 
 
@@ -179,7 +180,6 @@ val classesHandlersModule = module {
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }
     single { FragmentNavigationHandler() }
-    single { AppDatabase.DatabaseModule.getDatabase(get()) }
     single { G_RoomOperationsHandler(get()) }
     single { F0_FireBaseOperationsHandler() }
     single { CalculeCouleurHandler(get()) }
@@ -237,6 +237,7 @@ val viewModelModule = module {
 
 val appModule = module {
     includes(
+        appDatabase,
         centralDataBasesModule,
         composRepositorysModule, // This will now be resolved
         factoryDataBaseProtoAvantJuin3Module,

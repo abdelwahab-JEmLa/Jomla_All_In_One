@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
 import android.util.Log
 import androidx.room.PrimaryKey
@@ -37,13 +37,13 @@ data class AncienProto(
             companion object {
                 val caRef = ref.child("ProtoB2")
 
-                private suspend fun getFireBaseProto2Datas(): List<CategoriesTabelle> {
+                private suspend fun getFireBaseProto2Datas(): List<M16CategorieProduit> {
                     return try {
                         Log.d("Test", "ProtoB2Ref=$caRef")
 
                         val snapshot = caRef.get().await()
 
-                        val result = mutableListOf<CategoriesTabelle>()
+                        val result = mutableListOf<M16CategorieProduit>()
 
                         snapshot.children.forEach { dataSnapshot ->
                             try {
@@ -57,7 +57,7 @@ data class AncienProto(
 
                                 if (protoB2Data != null) {
                                     // Convert ProtoB2 to CategoriesTabelle using the new schema
-                                    val categorieProduitInfo = CategoriesTabelle(
+                                    val categorieProduitInfo = M16CategorieProduit(
                                         id = protoB2Data.id,
                                         nom = protoB2Data.nom,
                                         position = protoB2Data.indexDonsParentList.toInt(), // Map indexDonsParentList to position
@@ -82,8 +82,8 @@ data class AncienProto(
                     }
                 }
 
-                suspend fun updateCategoriePositionDepuitProto2(categorysInit: List<CategoriesTabelle>)
-                        : List<CategoriesTabelle> {
+                suspend fun updateCategoriePositionDepuitProto2(categorysInit: List<M16CategorieProduit>)
+                        : List<M16CategorieProduit> {
                     val firebaseProto2Data = getFireBaseProto2Datas()
 
                     Log.d("firebaseProto2Data", "firebaseProto2Data=${firebaseProto2Data}")

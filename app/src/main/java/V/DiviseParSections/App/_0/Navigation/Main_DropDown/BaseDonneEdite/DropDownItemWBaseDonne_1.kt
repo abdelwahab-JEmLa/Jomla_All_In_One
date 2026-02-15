@@ -3,7 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -40,16 +40,16 @@ fun DropDownItemWBaseDonne_1(
     val  datas =repositorysMainGetter.repoM16CategorieProduit.datasValue
     var needsConfirmation by remember { mutableStateOf(false) }
 
-    fun update_return(): List<CategoriesTabelle> {
+    fun update_return(): List<M16CategorieProduit> {
         // Group categories by catalogue
         val categoriesByCatalogue = datas.groupBy { it.catalogueParentId }
 
-        val updatedCategories = mutableListOf<CategoriesTabelle>()
+        val updatedCategories = mutableListOf<M16CategorieProduit>()
 
         categoriesByCatalogue.forEach { (catalogueId, categories) ->
             // Sort categories by positionDouble, then by dernierTimeTampsSynchronisationAvecFireBase
             val sortedCategories = categories.sortedWith(
-                compareBy<CategoriesTabelle> { it.positionDouble }
+                compareBy<M16CategorieProduit> { it.positionDouble }
                     .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
             )
 

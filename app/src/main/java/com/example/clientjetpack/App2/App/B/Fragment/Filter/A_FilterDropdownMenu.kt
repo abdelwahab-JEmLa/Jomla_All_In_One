@@ -53,12 +53,12 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
 ) {
     // FIXED: Get current FilterState from FocusedValuesGetter_app2
     val ActiveCentralValues_app2 = FocusedValuesGetter_app2.active_Central_Values
-    val currentFilterState = ActiveCentralValues_app2.FilterState_Facad_Boutique_app2 ?: FilterState_Facad_Boutique_app2()
+    val currentFilterState = ActiveCentralValues_app2.filterState_Facad_Boutique_app2 ?: FilterState_Facad_Boutique_app2()
 
     // FIXED: Update FilterState through FocusedValuesGetter_app2
     val onFilterChanged: (com.example.clientjetpack.App2.App.B.Fragment.Filter.FilterState_Facad_Boutique_app2) -> Unit = { newFilterState ->
         FocusedValuesGetter_app2.update_ActiveCentralValues_app2(
-            ActiveCentralValues_app2.copy(FilterState_Facad_Boutique_app2 = newFilterState)
+            ActiveCentralValues_app2.copy(filterState_Facad_Boutique_app2 = newFilterState)
         )
     }
 

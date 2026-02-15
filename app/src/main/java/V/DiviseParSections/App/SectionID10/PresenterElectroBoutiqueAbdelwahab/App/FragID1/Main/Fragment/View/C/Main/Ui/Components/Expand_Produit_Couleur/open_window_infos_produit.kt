@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 
  fun open_window_infos_produit(
     focusedVarsHandlerFacade: FocusedActiveValuesFacade,

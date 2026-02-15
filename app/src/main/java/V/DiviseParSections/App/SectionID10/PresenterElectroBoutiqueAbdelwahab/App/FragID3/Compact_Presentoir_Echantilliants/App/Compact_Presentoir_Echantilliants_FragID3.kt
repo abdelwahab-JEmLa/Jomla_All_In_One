@@ -7,14 +7,14 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
@@ -92,7 +92,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
         allCategories.associateBy { it.id }
     }
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val catalogues = remember { get_ListM21CataloguesCategorie() }
 
     val lastBonVentAbdelwahab = remember(
         repositorysMainGetter.repo8BonVent.datasValue,
@@ -209,11 +209,11 @@ fun Compact_Presentoir_Echantilliants_FragID3(
 @Composable
 fun Etager_LazyColumn_FragID3(
     modifier: Modifier = Modifier,
-    categoriesWithProducts: List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
+    categoriesWithProducts: List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
-    catalogues: List<CataloguesCaegorie>,
-    categoryMap: Map<Long, CategoriesTabelle>,
+    catalogues: List<M21CataloguesCategorie>,
+    categoryMap: Map<Long, M16CategorieProduit>,
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     isWifiClientConnected_1: Boolean
@@ -295,8 +295,8 @@ fun Etager_LazyColumn_FragID3(
 private fun ProductItemWithCategory(
     product: ArticlesBasesStatsTable,
     colors: List<M3CouleurProduitInfos>,
-    categoryMap: Map<Long, CategoriesTabelle>,
-    catalogues: List<CataloguesCaegorie>,
+    categoryMap: Map<Long, M16CategorieProduit>,
+    catalogues: List<M21CataloguesCategorie>,
     onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     isWifiClientConnected_1: Boolean

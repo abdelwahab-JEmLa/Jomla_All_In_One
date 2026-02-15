@@ -1,6 +1,6 @@
 package com.example.clientjetpack.App2.App.B.Fragment.Z.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,13 +30,13 @@ import org.koin.compose.koinInject
  */
 @Composable
 fun CategoryStickyHeader(
-    category: CategoriesTabelle,
+    category: M16CategorieProduit,
     modifier: Modifier = Modifier,
-    onToggleHeaderVisibility: (CategoriesTabelle) -> Unit = {},
+    onToggleHeaderVisibility: (M16CategorieProduit) -> Unit = {},
     FocusedValuesGetter_app2: FocusedValuesGetter_app2 = koinInject()
 ) {
     // FIXED: Get filter state to check if headers should be hidden globally
-    val filterState = FocusedValuesGetter_app2.active_Central_Values.FilterState_Facad_Boutique_app2
+    val filterState = FocusedValuesGetter_app2.active_Central_Values.filterState_Facad_Boutique_app2
 
     // FIXED: Don't render the header at all if hide_header_categorie is enabled
     if (filterState?.hide_header_categorie == true) {

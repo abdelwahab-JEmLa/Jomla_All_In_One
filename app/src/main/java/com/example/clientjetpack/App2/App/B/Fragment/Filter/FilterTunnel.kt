@@ -1,10 +1,10 @@
 package com.example.clientjetpack.App2.App.B.Fragment.Filter
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -14,15 +14,9 @@ import java.util.concurrent.TimeUnit
  * Handles all filtering operations including the new image-based filter
  */
  fun FilterTunnel(
-    groupe_Par_Catalogue: List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
-    catalogueFilter: String?,
+    groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     filterState: FilterState_Facad_Boutique_app2
-): List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
-
-    fun matchesCatalogue(catalogue: CataloguesCaegorie, filter: String): Boolean {
-        return catalogue.keyID == filter
-    }
-
+): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
     fun hasImageFile(couleur: M3CouleurProduitInfos): Boolean {
         if (couleur.nomImageFichieSansEtansion == "Non Dispo") return false
 
@@ -84,17 +78,8 @@ import java.util.concurrent.TimeUnit
         return true
     }
 
-    // Apply catalogue filter
-    val afterCatalogue = if (!catalogueFilter.isNullOrEmpty()) {
-        groupe_Par_Catalogue.filter { (catalogue, _) ->
-            matchesCatalogue(catalogue, catalogueFilter)
-        }
-    } else {
-        groupe_Par_Catalogue
-    }
-
     // Filter products within catalogues and categories
-    return afterCatalogue.mapNotNull { (catalogue, categoriesWithProducts) ->
+    return groupe_Par_Catalogue.mapNotNull { (catalogue, categoriesWithProducts) ->
         val filteredCategories = categoriesWithProducts
             .map { (category, products) ->
                 category to products.filter { (product, colors) ->

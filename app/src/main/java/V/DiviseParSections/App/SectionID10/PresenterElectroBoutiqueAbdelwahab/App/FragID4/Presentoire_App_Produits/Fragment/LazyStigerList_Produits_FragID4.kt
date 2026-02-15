@@ -6,10 +6,10 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -52,7 +52,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier.Companion,
-    cataloguesWithCategoriesAndProducts: List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
+    cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
@@ -227,7 +227,7 @@ fun Etager_LazyColumn_FragID4(
  */
 @Composable
 fun CatalogueHeader(
-    catalogue: CataloguesCaegorie,
+    catalogue: M21CataloguesCategorie,
     modifier: Modifier = Modifier
 ) {
     Box(

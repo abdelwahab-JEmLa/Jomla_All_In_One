@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Item_2_Menu
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1.Companion.get_old_Datas

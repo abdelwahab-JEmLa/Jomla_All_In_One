@@ -2,7 +2,7 @@
 // File: RepositorysMainSetter/Helper/ProduitOperations.kt
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

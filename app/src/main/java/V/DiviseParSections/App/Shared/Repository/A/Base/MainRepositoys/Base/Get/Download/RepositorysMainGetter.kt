@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -18,7 +18,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
@@ -186,9 +186,9 @@ class RepositorysMainGetter(
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
     }
     //--------------M16----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M16CategorieProduit_By_OldID(OldID: Long): CategoriesTabelle? =
+    fun find_M16CategorieProduit_By_OldID(OldID: Long): M16CategorieProduit? =
         repoM16CategorieProduit.datasValue.find { it.id == OldID }
-    fun find_M16CategorieProduit_By_KeyId(keyID: String): CategoriesTabelle? =
+    fun find_M16CategorieProduit_By_KeyId(keyID: String): M16CategorieProduit? =
         repoM16CategorieProduit.datasValue.find { it.keyID == keyID }
 
     //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ class RepositorysMainGetter(
         val catalogueFilterId =
             repo9AppCompt.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.keyID }
+        val catalogues = get_ListM21CataloguesCategorie().associateBy { it.keyID }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
         val categoriesInCatalogue =
@@ -274,8 +274,6 @@ class RepositorysMainGetter(
 
 
                 databaseInitializationManager.initializeAllRepositories(context)
-
-
             } catch (e: Exception) {
                 databaseInitializationManager.updateMainInitDataBaseProgressEtate(1.0f)
             }

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import androidx.compose.runtime.Stable
@@ -15,7 +15,7 @@ class A_GroupeValuesA_ProduitsToB_Categories(
 ) {
     val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
+        val catalogues = get_ListM21CataloguesCategorie().associateBy { it.id }
 
         val (regularProducts, orphanProducts) = a_ProduitDataBaseComposeRepositoryPJ17.datasValue.partition { product ->
             val categoryId = product.idParentCategorie ?: 0L

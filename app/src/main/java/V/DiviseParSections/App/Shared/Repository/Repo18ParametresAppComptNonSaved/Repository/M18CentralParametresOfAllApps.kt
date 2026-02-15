@@ -83,6 +83,7 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
+    val its_App_Jemla_Com_Presentoir: Boolean = false,
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
     val itsDevMode: Boolean = false,

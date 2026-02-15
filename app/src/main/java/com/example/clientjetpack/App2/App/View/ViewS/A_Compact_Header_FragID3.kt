@@ -1,9 +1,7 @@
 package com.example.clientjetpack.App2.App.View.ViewS
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -33,20 +31,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Compact_Header_AppEcranPresntoireJemlaCom(
-    repositorysMainSetter: RepositorysMainSetter= koinInject(),
-    RepositorysMainGetter_app2: RepositorysMainGetter_app2 = koinInject(),
-    FocusedValuesGetter_app2: FocusedValuesGetter_app2 = koinInject(),
     relative_M1produit: ArticlesBasesStatsTable,
-    isExpanded: Boolean,
+    isExpanded: Boolean= false,
     shouldShowButtons: Boolean = false,
-    onUpdateTariffContext: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // Dynamic text sizes based on expansion state
@@ -83,15 +74,6 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // Delete button - only visible for admin users
-            if (shouldShowButtons && FocusedValuesGetter_app2.currentApp_Est_Admin) {
-                DeleteProductHeader(
-                    productName = relative_M1produit.nom,
-                    onDelete = {
-                        RepositorysMainGetter_app2.repo1ProduitInfos.deleteData(relative_M1produit)
-                    }
-                )
-            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -131,7 +113,7 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons  &&  FocusedValuesGetter_app2.currentApp_Est_Admin && onUpdateTariffContext != null) {
+                if (shouldShowButtons  ) {
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -146,7 +128,6 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                         labelTextSize = labelTextSize,
                         valueTextSize = valueTextSize,
                         itemPadding = itemPadding,
-                        onClick = onUpdateTariffContext
                     )
                 }
 
@@ -245,12 +226,11 @@ private fun ClickableInfoCard(
     labelTextSize: TextUnit,
     valueTextSize: TextUnit,
     itemPadding: Dp,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .clickable(onClick = onClick),
+            ,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
         ),

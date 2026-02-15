@@ -3,9 +3,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.util.Log
@@ -79,7 +79,7 @@ fun OptionsFragmentButtons(
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onShowBulkMoveDialog: () -> Unit = {},
     selectedCategories: Set<Long> = emptySet(),
-    onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
+    onCategoriesUpdated: (List<M16CategorieProduit>) -> Unit = {}
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
@@ -97,7 +97,7 @@ fun OptionsFragmentButtons(
     var showDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val catalogues = remember { get_ListM21CataloguesCategorie() }
     val lazyListState = rememberLazyListState()
 
     val onToggle = {

@@ -2,10 +2,10 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ internal fun MainList(
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val catalogues = remember { get_ListM21CataloguesCategorie() }
 
     val categoriesByCatalogue = remember(
         categoriesCompoRepository.tigerDataRecompose,
@@ -88,17 +88,17 @@ internal fun MainList(
  * including proper sorting and handling of orphan categories.
  */
 private fun groupCategoriesByCatalogue(
-    currentCategories: List<CategoriesTabelle>,
-    catalogues: List<CataloguesCaegorie>
-): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
-    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+    currentCategories: List<M16CategorieProduit>,
+    catalogues: List<M21CataloguesCategorie>
+): LinkedHashMap<M21CataloguesCategorie, List<M16CategorieProduit>> {
+    val grouped = linkedMapOf<M21CataloguesCategorie, List<M16CategorieProduit>>()
 
     // Process catalogues in order
     catalogues.forEach { catalogue ->
         val categoriesForCatalogue = currentCategories
             .filter { it.catalogueParentId == catalogue.id }
             .sortedWith(
-                compareBy<CategoriesTabelle> { it.positionDouble }
+                compareBy<M16CategorieProduit> { it.positionDouble }
                     .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
             )
 
@@ -114,12 +114,12 @@ private fun groupCategoriesByCatalogue(
                     !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
         }
         .sortedWith(
-            compareBy<CategoriesTabelle> { it.positionDouble }
+            compareBy<M16CategorieProduit> { it.positionDouble }
                 .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
         )
 
     if (orphanCategories.isNotEmpty()) {
-        val othersCatalogue = CataloguesCaegorie(
+        val othersCatalogue = M21CataloguesCategorie(
             id = 0,
             nom = "Autres",
             premierCategorieId = 0

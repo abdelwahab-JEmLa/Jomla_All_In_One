@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
@@ -46,7 +46,7 @@ import java.io.File
 import kotlin.coroutines.resume
 
 class DataBaseInitFactory_M3CouleurProduitInfos(
-    val dao: B1CouleurOuGoutProduitDataBaseDao,
+    val dao: M3CouleurProduitInfosDao,
 ) {
     val repoTAG = "M3CouleurProduitInfos"
     val repoRef = M3CouleurProduitInfos.ref

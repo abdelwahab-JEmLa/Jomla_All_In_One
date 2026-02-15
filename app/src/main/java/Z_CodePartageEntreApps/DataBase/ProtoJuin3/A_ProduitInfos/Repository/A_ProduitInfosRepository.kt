@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +24,7 @@ class A_ProduitInfosRepository(
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.ArticlesBasesStatsModelDao()
+    val dao = appDatabase.dao_M1Produit()
     val ref = ArticlesBasesStatsTable.ref
 
     init {

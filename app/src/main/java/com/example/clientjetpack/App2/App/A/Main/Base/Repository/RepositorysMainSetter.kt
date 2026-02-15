@@ -1,6 +1,6 @@
 package com.example.clientjetpack.App2.App.A.Main.Base.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -17,7 +17,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import com.google.firebase.database.DatabaseReference
@@ -158,10 +158,10 @@ class RepositorysMainSetter_app2(
 
 
     //------------R16 -------------------------------------------------------------------------------------------------------------------------------------
-    fun upsert_M16CategorieProduit(data: CategoriesTabelle) =
+    fun upsert_M16CategorieProduit(data: M16CategorieProduit) =
         repoM16CategorieProduit.addOrUpdateData(data)
 
-    fun addOrUpdateDatas_M16CategorieProduit(datas: List<CategoriesTabelle>) =
+    fun addOrUpdateDatas_M16CategorieProduit(datas: List<M16CategorieProduit>) =
         repoM16CategorieProduit.addOrUpdateDatas(datas, true)
 
 

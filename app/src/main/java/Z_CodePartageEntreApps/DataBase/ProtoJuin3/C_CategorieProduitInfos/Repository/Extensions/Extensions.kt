@@ -1,17 +1,17 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import android.util.Log
 
 // RepositorysMainGetter all Firebase data
-fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<CategoriesTabelle>) -> Unit) {
+fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<M16CategorieProduit>) -> Unit) {
     updateProgress(0.1f)
     repoRef.get()
         .addOnSuccessListener { snapshot ->
-            val dataList = mutableListOf<CategoriesTabelle>()
+            val dataList = mutableListOf<M16CategorieProduit>()
             snapshot.children.forEach { child ->
-                child.getValue(CategoriesTabelle::class.java)?.let { item ->
+                child.getValue(M16CategorieProduit::class.java)?.let { item ->
                     dataList.add(item)
                 }
             }

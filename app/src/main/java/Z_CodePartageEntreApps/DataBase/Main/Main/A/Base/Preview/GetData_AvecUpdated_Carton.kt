@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import android.util.Log
 
 // Fixed: Return the updated data instead of void, and made synchronous

@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -14,12 +14,12 @@ import java.util.concurrent.TimeUnit
  * Handles all filtering operations including the new image-based filter
  */
  fun FilterTunnel(
-    groupe_Par_Catalogue: List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
+    groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     catalogueFilter: String?,
     filterState: FilterState_Facad_Boutique
-): List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
+): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
 
-    fun matchesCatalogue(catalogue: CataloguesCaegorie, filter: String): Boolean {
+    fun matchesCatalogue(catalogue: M21CataloguesCategorie, filter: String): Boolean {
         return catalogue.keyID == filter
     }
 

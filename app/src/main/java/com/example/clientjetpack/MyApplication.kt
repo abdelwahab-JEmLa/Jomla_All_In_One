@@ -1,5 +1,7 @@
 package com.example.clientjetpack
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import android.Manifest
 import android.app.Application
@@ -7,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import com.example.clientjetpack.App2.App.A.Main.App.appModule_App2_ac_app1
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,8 +25,6 @@ enum class App {
 }
 
 class MyApplication : Application() {
-
-    
     companion object {
         private const val TAG = "MyApplication"
         private const val CACHE_SIZE_MB = 100L
@@ -35,36 +36,24 @@ class MyApplication : Application() {
 
         Log.d(TAG, "Application starting...")
 
-        // CRITIQUE: Initialiser Firebase AVANT tout le reste
-        // pour empêcher les autres composants de créer leurs propres instances
         initializeFirebase()
 
-        // Initialiser Koin après Firebase
         initializeKoin()
 
         Log.d(TAG, "Application initialized successfully")
     }
 
-    /**
-     * Initialise Firebase avec gestion d'erreur complète
-     * DOIT être appelé en premier pour éviter les problèmes de DNS
-     */
     private fun initializeFirebase() {
         try {
-            // 1. Initialiser Firebase App si nécessaire
             if (FirebaseApp.getApps(this).isEmpty()) {
                 FirebaseApp.initializeApp(this)
                 Log.d(TAG, "✓ Firebase App initialized")
             }
 
-            // 2. Configurer Firestore EN PREMIER avec mode offline
-            // Cela empêche les tentatives de connexion immédiate
             configureFirestoreOfflineFirst()
 
-            // 3. Configurer Realtime Database
             configureRealtimeDatabase()
 
-            // 4. Vérifier la connectivité et activer le réseau si disponible
             if (isNetworkAvailable()) {
                 enableFirestoreNetwork()
             } else {
@@ -76,10 +65,6 @@ class MyApplication : Application() {
         }
     }
 
-    /**
-     * Configure Firestore en mode hors ligne d'abord
-     * Cela empêche les tentatives de connexion DNS immédiates
-     */
     private fun configureFirestoreOfflineFirst() {
         try {
             val firestore = FirebaseFirestore.getInstance()
@@ -92,7 +77,6 @@ class MyApplication : Application() {
 
             firestore.firestoreSettings = settings
 
-            // DÉSACTIVER le réseau immédiatement pour éviter les tentatives de connexion
             firestore.disableNetwork()
                 .addOnSuccessListener {
                     Log.d(TAG, "✓ Firestore configured in offline mode (${CACHE_SIZE_MB}MB cache)")
@@ -158,6 +142,9 @@ class MyApplication : Application() {
                 androidLogger()
                 androidContext(this@MyApplication)
                 modules(appModule)
+                M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir.ifTrue {
+                    modules(appModule_App2_ac_app1)
+                }
             }
             Log.d(TAG, "✓ Koin initialized")
         } catch (e: Exception) {

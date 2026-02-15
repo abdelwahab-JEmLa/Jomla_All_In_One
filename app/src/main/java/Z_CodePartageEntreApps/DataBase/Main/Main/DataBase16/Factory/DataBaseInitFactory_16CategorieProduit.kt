@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
@@ -19,19 +19,17 @@ import kotlin.coroutines.resume
 class DataBaseInitFactory_16CategorieProduit(
     val appDatabase: AppDatabase
 ) {
-    val dao =appDatabase.Dao16CategorieProduit()
+    val dao =appDatabase.dao_16CategorieProduit()
     val repoTAG = "M16CategorieProduit_Entity"
-    val repoRef = CategoriesTabelle.ref
+    val repoRef = M16CategorieProduit.ref
     private val factoryScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun init(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {
-        if (!dao.isTableEmpty()) return
-
         updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.4f)
-        val data: List<CategoriesTabelle> = if (isInternetAvailable) {
+        val data: List<M16CategorieProduit> = if (isInternetAvailable) {
             updateRepoProgress(
                 WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name,
                 0.6f
@@ -43,14 +41,14 @@ class DataBaseInitFactory_16CategorieProduit(
         updateRepoProgress(WDatabaseInitializationManager.Repository.M3CouleurProduitInfos_Entit.name, 0.8f)
         dao.insertAll(data)
     }
-    private fun onLoadFromCsv(): List<CategoriesTabelle> = emptyList()
-    suspend fun onLoadFromFireBase(): MutableList<CategoriesTabelle> {
+    private fun onLoadFromCsv(): List<M16CategorieProduit> = emptyList()
+    suspend fun onLoadFromFireBase(): MutableList<M16CategorieProduit> {
         return suspendCancellableCoroutine { continuation ->
-            CategoriesTabelle.ref.get()
+            M16CategorieProduit.ref.get()
                 .addOnSuccessListener { snapshot ->
-                    val dataList = mutableListOf<CategoriesTabelle>()
+                    val dataList = mutableListOf<M16CategorieProduit>()
                     snapshot.children.forEach { child ->
-                        child.getValue(CategoriesTabelle::class.java)?.let { item ->
+                        child.getValue(M16CategorieProduit::class.java)?.let { item ->
                             dataList.add(item)
                         }
                     }
@@ -68,7 +66,7 @@ class DataBaseInitFactory_16CategorieProduit(
     // In DataBaseInitFactory_16CategorieProduit class, update the addOrUpdatedAncienRepo method:
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
-        dataAvecTigerUpdate: CategoriesTabelle,
+        dataAvecTigerUpdate: M16CategorieProduit,
         avec_BatchFireBase: Boolean = true
     ) {
         factoryScope.launch {
@@ -91,7 +89,7 @@ class DataBaseInitFactory_16CategorieProduit(
     }
 
     // Add a new method for bulk operations with transaction:
-    suspend fun bulkReplaceAll(newData: List<CategoriesTabelle>) {
+    suspend fun bulkReplaceAll(newData: List<M16CategorieProduit>) {
         try {
             dao.transaction {
                 deleteAll()
@@ -105,7 +103,7 @@ class DataBaseInitFactory_16CategorieProduit(
     }
 
     // Enhanced delete method with transaction:
-    fun delete(data: CategoriesTabelle) {
+    fun delete(data: M16CategorieProduit) {
         factoryScope.launch {
             try {
                 dao.transaction {
@@ -145,7 +143,7 @@ class DataBaseInitFactory_16CategorieProduit(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(CategoriesTabelle::class.java)
+                                child.getValue(M16CategorieProduit::class.java)
                                     ?.let { entity ->
                                         val entityWithKey = entity.copy(keyID = child.key ?: "")
                                         val shouldUpdate = try {
@@ -183,7 +181,7 @@ class DataBaseInitFactory_16CategorieProduit(
     }
 
 
-    private suspend fun batchFireBaseUpdateGBonVent(datas: List<CategoriesTabelle>) {
+    private suspend fun batchFireBaseUpdateGBonVent(datas: List<M16CategorieProduit>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.keyID] = data

@@ -3,9 +3,9 @@ package com.example.clientjetpack.ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -50,7 +50,7 @@ import java.util.Locale
 
 data class UiState(
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
-    val categories: List<CategoriesTabelle> = emptyList(),
+    val categories: List<M16CategorieProduit> = emptyList(),
 
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
@@ -358,7 +358,7 @@ open class HeadViewModel(
             refDBJetPackExport.child(newArticle.id.toString()).setValue(newArticle)
 
             // Add to Room database
-            database.ArticlesBasesStatsModelDao().insert(newArticle)
+            database.dao_M1Produit().insert(newArticle)
             newArticle
 
         } catch (exception: Exception) {
@@ -730,7 +730,7 @@ open class HeadViewModel(
         }
     }
 
-    private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
+    private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<M16CategorieProduit>) {
         val hasNewArrivale = existingCategories.any {
             it.nom == "NewArrivale"
         }
@@ -740,11 +740,11 @@ open class HeadViewModel(
                 it.id
             } ?: 0
 
-            val newArrivaleCategory = CategoriesTabelle(
+            val newArrivaleCategory = M16CategorieProduit(
                 id = maxId + 1, nom = "NewArrivale", position = 1, displayedHeader = true
             )
 
-            database.Dao16CategorieProduit().insert(newArrivaleCategory)
+            database.dao_16CategorieProduit().insert(newArrivaleCategory)
 
         }
     }
@@ -958,7 +958,7 @@ open class HeadViewModel(
 
     init {
         viewModelScope.launch {
-            if (database.ArticlesBasesStatsModelDao().getAll().size == 0) {
+            if (database.dao_M1Produit().getAll().size == 0) {
                 importFromFirebase()
             }
             loadDataCollectOfUiStateFromRoom()

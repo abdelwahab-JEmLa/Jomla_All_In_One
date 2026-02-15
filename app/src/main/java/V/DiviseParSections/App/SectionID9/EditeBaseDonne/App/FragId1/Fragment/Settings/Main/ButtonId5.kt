@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import java.io.File
 fun ButtonId5(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     list_M1Produit: List<ArticlesBasesStatsTable> = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
-    list_CategoriesTabelle: List<CategoriesTabelle> = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue,
+    list_M16CategorieProduit: List<M16CategorieProduit> = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue,
     showLabels: Boolean,
     onImportSuccess: () -> Unit = {}
 ) {
@@ -60,7 +60,7 @@ fun ButtonId5(
                 when (clickCount) {
                     0 -> clickCount++
                     1 -> coroutineScope.launch {
-                        viewModel.deleteAddMultiCategories(newDatas=list_CategoriesTabelle)
+                        viewModel.deleteAddMultiCategories(newDatas=list_M16CategorieProduit)
                         clickCount=0
                        // viewModel.deleteAddMultiProduits(list_M1Produit)
                         //  viewModel.deleteAddMultiClients()
@@ -77,7 +77,7 @@ fun ButtonId5(
 
 private suspend fun importCategoriesFromCsv(
     context: Context
-): List<CategoriesTabelle> {
+): List<M16CategorieProduit> {
     return withContext(Dispatchers.IO) {
         try {
             // Use the same path as ButtonId4
@@ -94,10 +94,10 @@ private suspend fun importCategoriesFromCsv(
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                return@withContext emptyList<CategoriesTabelle>()
+                return@withContext emptyList<M16CategorieProduit>()
             }
 
-            val categories = mutableListOf<CategoriesTabelle>()
+            val categories = mutableListOf<M16CategorieProduit>()
             var lineNumber = 0
             var isFirstLine = true
 
@@ -147,19 +147,19 @@ private suspend fun importCategoriesFromCsv(
                     Toast.LENGTH_LONG
                 ).show()
             }
-            emptyList<CategoriesTabelle>()
+            emptyList<M16CategorieProduit>()
         }
     }
 }
 
-private fun parseCsvLine(line: String): CategoriesTabelle {
+private fun parseCsvLine(line: String): M16CategorieProduit {
     val values = parseCsvValues(line)
 
     if (values.size < 8) {
         throw IllegalArgumentException("Invalid CSV format: expected 8 columns, got ${values.size}")
     }
 
-    return CategoriesTabelle(
+    return M16CategorieProduit(
         id = values[0].toLongOrNull() ?: System.currentTimeMillis(),
         catalogueParentId = values[1].toLongOrNull() ?: 0L,
         nom = values[2],

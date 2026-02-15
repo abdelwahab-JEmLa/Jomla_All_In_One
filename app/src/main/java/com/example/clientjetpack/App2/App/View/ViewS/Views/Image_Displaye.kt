@@ -1,5 +1,6 @@
 package com.example.clientjetpack.App2.App.View.ViewS.Views
 
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
@@ -16,9 +17,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
+import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
 import org.koin.compose.koinInject
 import java.io.File
 
@@ -29,8 +29,7 @@ fun Image_Displaye_app2(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     FocusedValuesGetter_app2: FocusedValuesGetter_app2 = koinInject(),
-    RepositorysMainGetter_app2: RepositorysMainGetter_app2 = koinInject(),
-    on_pour_send_data: (String, String) -> Unit
+    relative_M1ProduitToItListM3Couleur: Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>,
 ) {
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -46,11 +45,8 @@ fun Image_Displaye_app2(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        // FIXED: Get the parent product for this color
         val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
-            RepositorysMainGetter_app2.repo1ProduitInfos.datasValue.find {
-                it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
-            }
+            relative_M1ProduitToItListM3Couleur.first
         }
 
         // Build the complete modifier with click handler BEFORE passing to GlideImage
@@ -95,11 +91,6 @@ fun Image_Displaye_app2(
                         )
                     }
 
-                    // Send the data update
-                    on_pour_send_data(
-                        WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-                        relative_M3CouleurProduitInfos.keyID
-                    )
                 }
             )
 

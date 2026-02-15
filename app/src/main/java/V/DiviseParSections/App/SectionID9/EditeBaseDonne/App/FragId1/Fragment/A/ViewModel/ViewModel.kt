@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.compose.material.icons.Icons
@@ -21,9 +21,9 @@ import kotlinx.coroutines.launch
 
 data class UiStateSec9Frag1(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
-    val selectionePourDeplacement_Categorie: CategoriesTabelle? = null,
+    val selectionePourDeplacement_Categorie: M16CategorieProduit? = null,
     val mainLoadingProgressPJuin3: Float = 0f,
-    val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
+    val activeCatalogue: M21CataloguesCategorie = get_ListM21CataloguesCategorie().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
         EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
@@ -70,7 +70,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     enum class ModeAffichage { CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID }
 
-    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle? = null) {
+    fun updateCate_cSelectionePourDeplace(categorie: M16CategorieProduit? = null) {
         _uiState.value = _uiState.value.copy(
             selectionePourDeplacement_Categorie =
                 if (_uiState.value.selectionePourDeplacement_Categorie == null
@@ -88,12 +88,12 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         _uiState.value = _uiState.value.copy(clickItemMode = _uiState.value.clickItemMode.toggle())
     }
 
-    fun updateActiveCatalogue(catalogue: CataloguesCaegorie) {
+    fun updateActiveCatalogue(catalogue: M21CataloguesCategorie) {
         _uiState.value = _uiState.value.copy(activeCatalogue = catalogue)
     }
 
     fun toggleToCatalogue(catalogueId: Long) {
-        val catalogues = B4CatalogueCategoriesRepository()
+        val catalogues = get_ListM21CataloguesCategorie()
         val newCatalogue = catalogues.find { it.id == catalogueId } ?: catalogues.first()
         updateActiveCatalogue(newCatalogue)
     }
@@ -144,11 +144,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     private fun performCategoryReorder(
-        categories: List<CategoriesTabelle>,
+        categories: List<M16CategorieProduit>,
         selectedIds: Set<Long>,
         targetId: Long,
         moveBefore: Boolean
-    ): List<CategoriesTabelle> {
+    ): List<M16CategorieProduit> {
         if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
 
         val selected = categories.filter { selectedIds.contains(it.id) }
@@ -174,11 +174,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             .toSet()
     }
 
-    fun addOrUpdateCategorie(categorie: CategoriesTabelle) {
+    fun addOrUpdateCategorie(categorie: M16CategorieProduit) {
         categoriesCompoRepository.addOrUpdateData(categorie)
     }
 
-    fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
+    fun addOrUpdateCategories(categories: List<M16CategorieProduit>) {
         if (categories.size > 10) {
             categoriesCompoRepository.reorderCategories(categories)
         } else {
@@ -186,7 +186,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         }
     }
 
-    fun deleteAddMultiCategories(newDatas: List<CategoriesTabelle>) {
+    fun deleteAddMultiCategories(newDatas: List<M16CategorieProduit>) {
         categoriesCompoRepository.deleteAddMultiDatas(newDatas)
     }
 

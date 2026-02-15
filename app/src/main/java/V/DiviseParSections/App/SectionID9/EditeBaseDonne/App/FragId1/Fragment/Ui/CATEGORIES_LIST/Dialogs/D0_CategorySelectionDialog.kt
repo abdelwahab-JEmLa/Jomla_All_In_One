@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +64,7 @@ fun CategorySelectionDialog(
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
-    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
+    categoriesMap: Map<Long, M16CategorieProduit> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -84,13 +84,13 @@ fun CategorySelectionDialog(
     }
 
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val catalogues = remember { get_ListM21CataloguesCategorie() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
     val sansCategorieCategory =
-        remember { CategoriesTabelle(id = 0L, nom = "Sans Catégorie", position = 0) }
+        remember { M16CategorieProduit(id = 0L, nom = "Sans Catégorie", position = 0) }
 
     val categoriesByCatalogue = remember(allCategories, catalogues) {
-        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+        val grouped = mutableMapOf<M21CataloguesCategorie, List<M16CategorieProduit>>()
         catalogues.forEach { catalogue ->
             val categoriesInCatalogue =
                 allCategories.filter { it.catalogueParentId == catalogue.id }
@@ -102,7 +102,7 @@ fun CategorySelectionDialog(
             it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
         }
         if (orphanedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] =
+            grouped[M21CataloguesCategorie(id = 0, nom = "Autres", premierCategorieId = 0)] =
                 orphanedCategories.sortedBy { it.position }
         }
         grouped
@@ -139,7 +139,7 @@ fun CategorySelectionDialog(
     val createCategoryFromSearchText = {
         if (searchText.trim().isNotEmpty()) {
             viewModel.addOrUpdateCategorie(
-                CategoriesTabelle(
+                M16CategorieProduit(
                     nom = processText(searchText.trim()),
                     position = 0,
                     catalogueParentId = 4
@@ -314,7 +314,7 @@ fun CategorySelectionDialog(
                         if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
                             item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                                 CatalogHeaderCard(
-                                    catalogue = CataloguesCaegorie(
+                                    catalogue = M21CataloguesCategorie(
                                         id = 0,
                                         nom = "Sans Catégorie",
                                         premierCategorieId = 0

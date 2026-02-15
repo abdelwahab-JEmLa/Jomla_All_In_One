@@ -1,10 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +50,7 @@ fun CatalogueSelectionDialog(
 ) {
     val currentApp_Est_Admin = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_Est_Admin
     if (showDialog) {
-        val catalogues = B4CatalogueCategoriesRepository()
+        val catalogues = get_ListM21CataloguesCategorie()
             .filter { catalogue ->
                     catalogue.keyID == "t1"
             }
@@ -151,7 +151,7 @@ private fun CatalogueItem(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    catalogue: CataloguesCaegorie,
+    catalogue: M21CataloguesCategorie,
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {

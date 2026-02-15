@@ -16,6 +16,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
@@ -215,8 +216,10 @@ class WDatabaseInitializationManager(
             updateRepoProgress(name, 0.2f)
             initializer(context)
             markComplete(name)
+            Log.d("DBInit", "initialized ")
         } catch (e: Exception) {
             markComplete(name)
+            Log.e("DBInit", "Erreur init $name: ${e.message}", e) // ← ajouter
         }
     }
 

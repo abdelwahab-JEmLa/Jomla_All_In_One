@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +39,7 @@ fun EditeCategoriesMainList(
     }
 
     val catalogues = remember {
-        B4CatalogueCategoriesRepository().sortedBy { it.position }
+        get_ListM21CataloguesCategorie().sortedBy { it.position }
     }
 
     // Use the catalogue-based grouping logic
@@ -75,7 +75,7 @@ fun EditeCategoriesMainList(
             if (productsWithoutCategory.isNotEmpty()) {
                 item(key = "no_category_header_top") {
                     CatalogueHeader(
-                        catalogue = CataloguesCaegorie(
+                        catalogue = M21CataloguesCategorie(
                             id = -1,
                             nom = "Produits sans catégorie",
                             premierCategorieId = 0
@@ -140,7 +140,7 @@ fun EditeCategoriesMainList(
             if (uncategorizedProducts.isNotEmpty()) {
                 item(key = "uncategorized_header_bottom") {
                     CatalogueHeader(
-                        catalogue = CataloguesCaegorie(
+                        catalogue = M21CataloguesCategorie(
                             id = 0,
                             nom = "Produits non classés",
                             premierCategorieId = 0
@@ -173,17 +173,17 @@ fun EditeCategoriesMainList(
  * Extracted from A_Main.kt to maintain consistency across the application.
  */
 private fun groupCategoriesByCatalogue(
-    currentCategories: List<CategoriesTabelle>,
-    catalogues: List<CataloguesCaegorie>
-): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
-    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+    currentCategories: List<M16CategorieProduit>,
+    catalogues: List<M21CataloguesCategorie>
+): LinkedHashMap<M21CataloguesCategorie, List<M16CategorieProduit>> {
+    val grouped = linkedMapOf<M21CataloguesCategorie, List<M16CategorieProduit>>()
 
     // Process catalogues in order
     catalogues.forEach { catalogue ->
         val categoriesForCatalogue = currentCategories
             .filter { it.catalogueParentId == catalogue.id.toLong() }
             .sortedWith(
-                compareBy<CategoriesTabelle> { it.position }
+                compareBy<M16CategorieProduit> { it.position }
                     .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
             )
 
@@ -199,12 +199,12 @@ private fun groupCategoriesByCatalogue(
                     !catalogues.any { catalogue -> catalogue.id.toLong() == category.catalogueParentId }
         }
         .sortedWith(
-            compareBy<CategoriesTabelle> { it.position }
+            compareBy<M16CategorieProduit> { it.position }
                 .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
         )
 
     if (orphanCategories.isNotEmpty()) {
-        val othersCatalogue = CataloguesCaegorie(
+        val othersCatalogue = M21CataloguesCategorie(
             id = 0,
             nom = "Autres",
             premierCategorieId = 0
@@ -217,7 +217,7 @@ private fun groupCategoriesByCatalogue(
 
 @Composable
 private fun CatalogueHeader(
-    catalogue: CataloguesCaegorie,
+    catalogue: M21CataloguesCategorie,
     modifier: Modifier = Modifier
 ) {
     Box(

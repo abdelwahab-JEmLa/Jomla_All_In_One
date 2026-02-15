@@ -11,13 +11,13 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Se
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.EditeCategoriesMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.EditeInfosMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -357,10 +357,10 @@ private fun applyCategoryGroupedSortingWithPosition(
  */
 private fun applyCategoryGroupedSortingWithCatalogueLogic(
     filteredProducts: List<ArticlesBasesStatsTable>,
-    currentCategories: List<CategoriesTabelle>,
+    currentCategories: List<M16CategorieProduit>,
     categoryGroupedProducts: List<ArticlesBasesStatsTable>
 ): List<ArticlesBasesStatsTable> {
-    val catalogues = B4CatalogueCategoriesRepository()
+    val catalogues = get_ListM21CataloguesCategorie()
 
     // Group categories by catalogue using the same logic as MainList
     val categoriesByCatalogue = groupCategoriesByCatalogue(currentCategories, catalogues)
@@ -416,17 +416,17 @@ private fun applyCategoryGroupedSortingWithCatalogueLogic(
  * Extracted from MainList.kt to maintain consistency across the application.
  */
 private fun groupCategoriesByCatalogue(
-    currentCategories: List<CategoriesTabelle>,
-    catalogues: List<CataloguesCaegorie>
-): LinkedHashMap<CataloguesCaegorie, List<CategoriesTabelle>> {
-    val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+    currentCategories: List<M16CategorieProduit>,
+    catalogues: List<M21CataloguesCategorie>
+): LinkedHashMap<M21CataloguesCategorie, List<M16CategorieProduit>> {
+    val grouped = linkedMapOf<M21CataloguesCategorie, List<M16CategorieProduit>>()
 
     // Process catalogues in order
     catalogues.forEach { catalogue ->
         val categoriesForCatalogue = currentCategories
             .filter { it.catalogueParentId == catalogue.id }
             .sortedWith(
-                compareBy<CategoriesTabelle> { it.positionDouble }
+                compareBy<M16CategorieProduit> { it.positionDouble }
                     .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
             )
 
@@ -442,12 +442,12 @@ private fun groupCategoriesByCatalogue(
                     !catalogues.any { catalogue -> catalogue.id == category.catalogueParentId }
         }
         .sortedWith(
-            compareBy<CategoriesTabelle> { it.positionDouble }
+            compareBy<M16CategorieProduit> { it.positionDouble }
                 .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
         )
 
     if (orphanCategories.isNotEmpty()) {
-        val othersCatalogue = CataloguesCaegorie(
+        val othersCatalogue = M21CataloguesCategorie(
             id = 0,
             nom = "Autres",
             premierCategorieId = 0

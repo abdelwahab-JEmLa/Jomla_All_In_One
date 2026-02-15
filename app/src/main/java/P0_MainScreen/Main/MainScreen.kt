@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.clientjetpack.App2.App.B.Fragment.Compact_Presentoire_App_Produits_App2
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -344,31 +345,35 @@ fun MainScreen(
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
-                            AppNavHost(
-                                isWifiClientConnected_1 = isWifiClientConnected_1,
-                                modifier = Modifier.fillMaxSize(),
-                                viewModel = headViewModel,
-                                viewModelInitApp = viewModelViewModelInitApp,
-                                navController = navController,
-                                onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                                isFabVisible = isFabVisible,
-                                onClickToDisplayeConexionWifi = {
-                                    isDisplayedConnexionWifiVisible =
-                                        !isDisplayedConnexionWifiVisible
-                                },
-                                onToggleLockHost = { lockHost = !lockHost },
-                                targetCategoryId = targetCategoryId,
-                                lockHost = isHostPhone,
-                                onClickImageToShowControles = {
-                                    isControleFabVisible = !isControleFabVisible
-                                }, on_pour_send_data = { it1, it2 ->
-                                    viewModel.sendOrderToClientDisplayer(
-                                        it1,
-                                        it2
-                                    )
+                            if (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
+                                Compact_Presentoire_App_Produits_App2()
+                            } else {
+                                AppNavHost(
+                                    isWifiClientConnected_1 = isWifiClientConnected_1,
+                                    modifier = Modifier.fillMaxSize(),
+                                    viewModel = headViewModel,
+                                    viewModelInitApp = viewModelViewModelInitApp,
+                                    navController = navController,
+                                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                                    isFabVisible = isFabVisible,
+                                    onClickToDisplayeConexionWifi = {
+                                        isDisplayedConnexionWifiVisible =
+                                            !isDisplayedConnexionWifiVisible
+                                    },
+                                    onToggleLockHost = { lockHost = !lockHost },
+                                    targetCategoryId = targetCategoryId,
+                                    lockHost = isHostPhone,
+                                    onClickImageToShowControles = {
+                                        isControleFabVisible = !isControleFabVisible
+                                    }, on_pour_send_data = { it1, it2 ->
+                                        viewModel.sendOrderToClientDisplayer(
+                                            it1,
+                                            it2
+                                        )
 
-                                }
-                            )
+                                    }
+                                )
+                            }
                             /*
                 if (!isHostPhone && productDisplayController.isConnected) {
                     Box(
@@ -382,7 +387,8 @@ fun MainScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
+                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen
+                            && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -450,7 +456,7 @@ fun MainScreen(
                     }
                 }
 
-                if (isControleFabVisible) {
+                if (isControleFabVisible && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -461,15 +467,15 @@ fun MainScreen(
                     }
                 }
 
-                if (isHostPhone && shouldShowContent && !hideAppScreen) {
+                if (isHostPhone && shouldShowContent && !hideAppScreen && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 
 
                 focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                  /*  isWifiClientConnected_1.ifTrue {
-                        App_PresenterEcran_Au_Client(isWifiClientConnected = isWifiClientConnected)
-                    }      */
+                    /*  isWifiClientConnected_1.ifTrue {
+                          App_PresenterEcran_Au_Client(isWifiClientConnected = isWifiClientConnected)
+                      }      */
                 }
             }
 

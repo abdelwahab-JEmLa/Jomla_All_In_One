@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init.initializeDataReturn
 import android.content.Context
@@ -23,12 +23,12 @@ class C_CategorieProduitInfosRepository(
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
     data class RepoState(
-        val modelListFlow: List<CategoriesTabelle>,
+        val modelListFlow: List<M16CategorieProduit>,
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.Dao16CategorieProduit()
-    val repoRef = CategoriesTabelle.ref
+    val dao = appDatabase.dao_16CategorieProduit()
+    val repoRef = M16CategorieProduit.ref
 
     init {
 
@@ -42,7 +42,7 @@ class C_CategorieProduitInfosRepository(
 
     }
 
-    suspend fun updateRepoState(data: List<CategoriesTabelle>) {
+    suspend fun updateRepoState(data: List<M16CategorieProduit>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,

@@ -1,21 +1,6 @@
 package com.example.clientjetpack.App2.App.B.Fragment.Z.Components.Modules
 
-import android.util.Log
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiConexiontLuncher
-import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiUpdateClientDisplayerStats_app2
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
-
+/*
 private const val TAG = "FragID4GridScroll"
 
 @Composable
@@ -129,3 +114,4 @@ fun HandlePresenterClientScroll(
         }
     }
 }
+                                                        */

@@ -1,12 +1,12 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import java.io.File
 
-fun loadCategoriesFromCsv(): List<CategoriesTabelle> {
+fun loadCategoriesFromCsv(): List<M16CategorieProduit> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "CategoriesTabelle.csv")
@@ -15,7 +15,7 @@ fun loadCategoriesFromCsv(): List<CategoriesTabelle> {
         return emptyList()
     }
 
-    val categories = mutableListOf<CategoriesTabelle>()
+    val categories = mutableListOf<M16CategorieProduit>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -48,14 +48,14 @@ fun loadCategoriesFromCsv(): List<CategoriesTabelle> {
     return categories
 }
 
-fun parseCsvLine(line: String): CategoriesTabelle {
+fun parseCsvLine(line: String): M16CategorieProduit {
     val values = parseCsvValues(line)
 
     if (values.size < 8) {
         throw IllegalArgumentException("Invalid CSV format: expected 8 columns, got ${values.size}")
     }
 
-    return CategoriesTabelle(
+    return M16CategorieProduit(
         id = values[0].toLongOrNull() ?: System.currentTimeMillis(),
         catalogueParentId = values[1].toLongOrNull() ?: 0L,
         nom = values[2],

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -34,7 +34,7 @@ fun ButtonId7(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val catalogues = B4CatalogueCategoriesRepository()
+    val catalogues = get_ListM21CataloguesCategorie()
     val currentCatalogueIndex = catalogues.indexOfFirst { it.id == uiState.activeCatalogue.id }
     val nextCatalogueIndex = if (currentCatalogueIndex >= catalogues.size - 1) 0 else currentCatalogueIndex + 1
     val nextCatalogue = catalogues[nextCatalogueIndex]

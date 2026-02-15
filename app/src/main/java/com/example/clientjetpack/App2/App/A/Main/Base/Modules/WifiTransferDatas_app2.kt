@@ -1,51 +1,69 @@
 package com.example.clientjetpack.App2.App.A.Main.Base.Modules
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
-import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.AdvertisingOptions
-import com.google.android.gms.nearby.connection.ConnectionInfo
-import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
-import com.google.android.gms.nearby.connection.ConnectionResolution
-import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
-import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.DiscoveryOptions
-import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
-import com.google.android.gms.nearby.connection.Payload
-import com.google.android.gms.nearby.connection.PayloadCallback
-import com.google.android.gms.nearby.connection.PayloadTransferUpdate
-import com.google.android.gms.nearby.connection.Strategy
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
+/*
+data class ProductDisplayController(
+    val mainGridScrollPosition: Int = 0,
+    var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
+    var expanded_M1Produit: ArticlesBasesStatsTable? = null,
+
+    val newArregmentColorsJsonStruct: String = "",
+    val clientWindowsDisplayedProductId: Long? = null,
+    val searchWindowsDisplaye: String = "",
+    val clientWindowsPickerDisplayedQuantity: Int = 0,
+    val clientWindowsSelectedColorId: Long = 0,
+    val clientWindowsLazyRowSupColorsScroll: Int = 0,
+    val isConnected: Boolean = false,
+    val connectionStatus: String = "Déconnecté",
+    val isHostPhone: Boolean = true,
+    val switchRoles: Boolean = true,
+    val testMessageByWifi: String = "",
+    val error: String? = null
+)
+
+fun toggle_update_expanded_M3CouleurProduitInfos_app2(
+    focusedValuesGetter_app2: FocusedValuesGetter_app2,
+    relative_M3CouleurProduitInfos: M3CouleurProduitInfos
+) {
+    val currentExpanded = focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
+
+    // Determine new expanded color value
+    val newExpandedColor = if (currentExpanded?.keyID == relative_M3CouleurProduitInfos.keyID) {
+        null
+    } else {
+        relative_M3CouleurProduitInfos
+    }
+
+
+    val parentProduct = repositorysMainGetter.repoM1Produit.datasValue.find {
+        it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+    }
+
+    // When expanding a color, also expand its parent product
+    // When collapsing, also collapse the parent product
+    val newExpandedProduit = if (newExpandedColor != null) {
+        parentProduct
+    } else {
+        null
+    }
+
+    focusedValuesGetter_app2.update_ActiveCentralValues_app2(
+        focusedValuesGetter_app2.active_Central_Values.copy(
+            expanded_M3CouleurProduitInfos = newExpandedColor,
+            expanded_M1Produit = newExpandedProduit
+        )
+    )
+}
 
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas_app2(
     private val context: Context,
-    val repositorysMainGetter: RepositorysMainGetter_app2,
     val focusedValuesGetter: FocusedValuesGetter_app2,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
-    val appComptComposeRepositoryProtoJuin17 = repositorysMainGetter.repo9AppCompt
-
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
+    private val _productDisplayController = MutableStateFlow(ProductDisplayController())
+    val productDisplayController: StateFlow<ProductDisplayController> = _productDisplayController.asStateFlow()
 
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
@@ -95,19 +113,19 @@ class WifiTransferDatas_app2(
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats_app2.Companion.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
-                WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types -> {
-                    appComptComposeRepositoryProtoJuin17.upsert(
-                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
-                            presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
-                        )
-                    )
+                WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
+                    // Trouver la couleur correspondante
+                    val couleurInfos = repositorysMainGetter_app2.find_M3CouleurInfos_By_KeyID(content)
 
-                    val relative_Produit = repositorysMainGetter.find_M1Produit_ByKeyID(content)
-                    appComptComposeRepositoryProtoJuin17.upsert(
-                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
-                            active_ProduitKeyID_Au_DroopDown_PresenterEcran = if (relative_Produit == null) "" else relative_Produit.keyID
+                    if (couleurInfos != null) {
+                        // Utiliser la fonction toggle pour mettre à jour
+                        toggle_update_expanded_M3CouleurProduitInfos_app2(
+                            focusedValuesGetter_app2 = focusedValuesGetter_app2,
+                            relative_M3CouleurProduitInfos = couleurInfos
                         )
-                    )
+                    } else {
+                        Log.e(tag, "❌ Couleur introuvable pour keyID: $content")
+                    }
                 }
 
                 else -> {}
@@ -591,3 +609,4 @@ enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {
         }
     }
 }
+                    */

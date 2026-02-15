@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,7 +60,7 @@ private const val TAG = "CategorySelectionDialog"
 @Composable
 fun CategorySelectionDialog_FragID4(
     product: ArticlesBasesStatsTable,
-    allCategories: List<CategoriesTabelle>,
+    allCategories: List<M16CategorieProduit>,
     allProducts: List<ArticlesBasesStatsTable>, // For calculating products per category
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
@@ -88,7 +88,7 @@ fun CategorySelectionDialog_FragID4(
     Log.d(TAG, "All products: ${allProducts.size}")
     Log.d(TAG, "Product: ${product.nom}, Current category: ${product.idParentCategorie}")
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    val catalogues = remember { get_ListM21CataloguesCategorie() }
 
     val sortedCategories = remember(allCategories) {
         allCategories.sortedBy { it.position }
@@ -108,7 +108,7 @@ fun CategorySelectionDialog_FragID4(
     Log.d(TAG, "Available categories (with products): ${availableCategories.size}")
 
     val sansCategorieCategory = remember {
-        CategoriesTabelle(id = 0L, nom = "Sans Catégorie", position = 0)
+        M16CategorieProduit(id = 0L, nom = "Sans Catégorie", position = 0)
     }
 
     // Products without category
@@ -117,7 +117,7 @@ fun CategorySelectionDialog_FragID4(
     }
 
     val categoriesByCatalogue = remember(sortedCategories, catalogues) {
-        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+        val grouped = mutableMapOf<M21CataloguesCategorie, List<M16CategorieProduit>>()
 
         catalogues.forEach { catalogue ->
             val categoriesInCatalogue = sortedCategories.filter {
@@ -134,7 +134,7 @@ fun CategorySelectionDialog_FragID4(
         }
 
         if (orphanedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] =
+            grouped[M21CataloguesCategorie(id = 0, nom = "Autres", premierCategorieId = 0)] =
                 orphanedCategories.sortedBy { it.position }
             Log.d(TAG, "Orphaned categories: ${orphanedCategories.size}")
         }
@@ -393,7 +393,7 @@ fun CategorySelectionDialog_FragID4(
                         if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
                             item(span = { GridItemSpan(4) }) {
                                 CatalogHeaderCard(
-                                    catalogue = CataloguesCaegorie(
+                                    catalogue = M21CataloguesCategorie(
                                         id = 0,
                                         nom = "Sans Catégorie",
                                         premierCategorieId = 0

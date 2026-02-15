@@ -121,7 +121,7 @@ private suspend fun exportCategoriesToCsv(
     exportDir: File
 ) {
     // Get all categories from database
-    val categories = appDatabase.Dao16CategorieProduit().getAll()
+    val categories = appDatabase.dao_16CategorieProduit().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()
@@ -168,7 +168,7 @@ private suspend fun exportArticlesToCsv(
     exportDir: File
 ) {
     // Get all articles from database
-    val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
+    val articles = appDatabase.dao_M1Produit().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()

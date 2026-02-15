@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
@@ -15,11 +15,11 @@ import androidx.compose.runtime.remember
  */
 @Composable
 fun SortTunnel(
-    filteredProducts: List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
+    filteredProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     sortOrder: SortOrder_Facade_Boutique,
     enableCategoryGrouping: Boolean,
     repositorysMainGetter: RepositorysMainGetter
-): List<Pair<CataloguesCaegorie, List<Pair<CategoriesTabelle, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
+): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
 
     return remember(filteredProducts, sortOrder, enableCategoryGrouping) {
 
@@ -39,13 +39,13 @@ fun SortTunnel(
                 else -> allProducts
             }
 
-            val singleCategory = CategoriesTabelle(
+            val singleCategory = M16CategorieProduit(
                 id = -1,
                 nom = "Tous les produits",
                 displayedHeader = false
             )
 
-            val singleCatalogue = CataloguesCaegorie(
+            val singleCatalogue = M21CataloguesCategorie(
                 id = -1,
                 nom = "Tous les catalogues",
                 position = 0
@@ -93,7 +93,7 @@ fun SortTunnel(
                     .sortedBy { (category, _) -> category.positionDouble }
 
                 // Regroup by catalogue
-                val allCatalogues = B4CatalogueCategoriesRepository()
+                val allCatalogues = get_ListM21CataloguesCategorie()
 
                 allCatalogues
                     .sortedBy { it.position }

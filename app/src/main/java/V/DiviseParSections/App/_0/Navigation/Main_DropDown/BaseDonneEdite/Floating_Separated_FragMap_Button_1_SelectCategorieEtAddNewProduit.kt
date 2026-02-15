@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -68,7 +68,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 350f) }
     var showDropdown by remember { mutableStateOf(false) }
 
-    val catalogues = B4CatalogueCategoriesRepository()
+    val catalogues = get_ListM21CataloguesCategorie()
 
     val activeCatalogue = catalogues.find {
         it.keyID == (currentValues.active_Catalogue_Pour_NewAddedProduit?.keyID ?: 0)

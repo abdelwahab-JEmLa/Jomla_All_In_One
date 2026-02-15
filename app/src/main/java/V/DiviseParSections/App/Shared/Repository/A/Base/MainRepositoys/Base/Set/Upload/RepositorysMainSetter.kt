@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
@@ -27,7 +27,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
@@ -232,10 +232,10 @@ class RepositorysMainSetter(
         repo15Grossist.deleteMulti(datas)
 
     //------------R16 -------------------------------------------------------------------------------------------------------------------------------------
-    fun upsert_M16CategorieProduit(data: CategoriesTabelle) =
+    fun upsert_M16CategorieProduit(data: M16CategorieProduit) =
         repoM16CategorieProduit.addOrUpdateData(data)
 
-    fun addOrUpdateDatas_M16CategorieProduit(datas: List<CategoriesTabelle>) =
+    fun addOrUpdateDatas_M16CategorieProduit(datas: List<M16CategorieProduit>) =
         repoM16CategorieProduit.addOrUpdateDatas(datas, true)
 
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------

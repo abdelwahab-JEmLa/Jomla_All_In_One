@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs
 
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun EditCategoryDialog(
-    categoryToEdit: CategoriesTabelle,
+    categoryToEdit: M16CategorieProduit,
     onUpdateCategory: (String) -> Unit, // Callback with just the new name
     onDismiss: () -> Unit
 ) {

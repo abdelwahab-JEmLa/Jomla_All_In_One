@@ -10,7 +10,7 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface B1CouleurOuGoutProduitDataBaseDao {
+interface M3CouleurProduitInfosDao {
     @Query("SELECT * FROM M3CouleurProduitInfos")
     fun getAllFlow(): Flow<List<M3CouleurProduitInfos>>
 

@@ -33,7 +33,7 @@ import kotlinx.coroutines.delay
 fun ScrolleAdBanner(
     modifier: Modifier = Modifier,
     onBannerClick: (Int) -> Unit = {}, // Default empty handler
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit = {}, // Default empty handler
 ) {
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()

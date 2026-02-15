@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo21.Repository
 import androidx.compose.ui.graphics.Color
 import org.mongodb.kbson.BsonObjectId
 
-data class CataloguesCaegorie(
+data class M21CataloguesCategorie(
     var keyID: String = BsonObjectId().toHexString(),
     val id: Long = 0,
     val nom: String = "",

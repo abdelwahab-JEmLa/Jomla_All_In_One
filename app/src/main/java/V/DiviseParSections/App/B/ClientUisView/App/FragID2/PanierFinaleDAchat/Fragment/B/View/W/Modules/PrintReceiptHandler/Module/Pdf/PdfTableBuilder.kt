@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.graphics.Bitmap
@@ -278,7 +279,7 @@ class PdfTableBuilder(
             }
 
             // Use the decrementing function to find the actual image file (same logic as in ImageDisplayerGlide_FragFastVent)
-            val actualImageFileName = V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+            val actualImageFileName = M3CouleurProduitInfos
                 .decrementing_file_name_si_non_trouve(imageFileName, extension)
 
             val imageFile = actualImageFileName?.let {

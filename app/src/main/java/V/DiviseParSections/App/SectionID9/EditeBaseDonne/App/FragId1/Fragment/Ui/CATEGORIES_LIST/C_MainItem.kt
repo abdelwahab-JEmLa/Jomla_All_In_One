@@ -3,9 +3,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,7 +45,7 @@ fun MainItemEditeCategories(
     availableCategories: List<Long>,
     onCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
-    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
+    categoriesMap: Map<Long, M16CategorieProduit> = emptyMap(),
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
@@ -213,7 +213,7 @@ fun BulkCategorySelectionDialog(
     onDismiss: () -> Unit,
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
-    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
+    categoriesMap: Map<Long, M16CategorieProduit> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
