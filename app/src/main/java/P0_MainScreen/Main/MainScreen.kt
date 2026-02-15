@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.clientjetpack.App2.App.B.Fragment.Compact_Presentoire_App_Produits_App2
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -345,9 +344,7 @@ fun MainScreen(
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
-                            if (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
-                                Compact_Presentoire_App_Produits_App2()
-                            } else {
+
                                 AppNavHost(
                                     isWifiClientConnected_1 = isWifiClientConnected_1,
                                     modifier = Modifier.fillMaxSize(),
@@ -373,7 +370,6 @@ fun MainScreen(
 
                                     }
                                 )
-                            }
                             /*
                 if (!isHostPhone && productDisplayController.isConnected) {
                     Box(

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 data class UiState(
     val list_grouped_datas: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>  = emptyList(),
@@ -28,12 +29,16 @@ data class UiState(
 class ViewModel_MainFragment(
     private val appDatabase: AppDatabase,
 ) : ViewModel() {
+
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    // Tracks whether a Firebase seed is already in progress to avoid duplicate fetches
+    private var isSeedingFromFirebase = false
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -44,14 +49,31 @@ class ViewModel_MainFragment(
             ) { products, categories, colors ->
                 Triple(products, categories, colors)
             }.collect { (products, categories, colors) ->
+
+                // TODO(1) FIX: If any of the 3 lists is empty, seed from Firebase then let
+                // the Flow re-emit naturally once Room is populated.
+                if (!isSeedingFromFirebase &&
+                    (products.isEmpty() || categories.isEmpty() || colors.isEmpty())
+                ) {
+                    isSeedingFromFirebase = true
+                    seedEmptyTablesFromFirebase(
+                        productsEmpty   = products.isEmpty(),
+                        categoriesEmpty = categories.isEmpty(),
+                        colorsEmpty     = colors.isEmpty()
+                    )
+                    // Return early — the upserts above will trigger a new Flow emission
+                    // with the fresh data, so we don't update UiState with empty lists now.
+                    return@collect
+                }
+
                 _uiState.update {
                     it.copy(
                         list_M1Produit = products,
                         list_M16CategorieProduit = categories,
                         list_M3CouleurProduit = colors,
                         list_grouped_datas = get_grouped_datas(
-                            allColors = colors,
-                            allProducts = products,
+                            allColors    = colors,
+                            allProducts  = products,
                             allCategories = categories
                         ),
                         initDatasProgressEtate = 1f,
@@ -61,13 +83,61 @@ class ViewModel_MainFragment(
         }
     }
 
+    // ---------------------------------------------------------------------------
+    // Firebase seed — only called when a table is empty on first emit
+    // ---------------------------------------------------------------------------
+
+    private suspend fun seedEmptyTablesFromFirebase(
+        productsEmpty: Boolean,
+        categoriesEmpty: Boolean,
+        colorsEmpty: Boolean,
+    ) {
+        try {
+            if (productsEmpty) {
+                val snapshot = ArticlesBasesStatsTable.ref.get().await()
+                val items = snapshot.children.mapNotNull { child ->
+                    child.getValue(ArticlesBasesStatsTable::class.java)
+                }
+                if (items.isNotEmpty()) {
+                    dao_M1Produit.upsertAllDatas(items)
+                }
+            }
+
+            if (categoriesEmpty) {
+                val snapshot = M16CategorieProduit.ref.get().await()
+                val items = snapshot.children.mapNotNull { child ->
+                    child.getValue(M16CategorieProduit::class.java)
+                }
+                if (items.isNotEmpty()) {
+                    dao_16CategorieProduit.upsertAllDatas(items)
+                }
+            }
+
+            if (colorsEmpty) {
+                val snapshot = M3CouleurProduitInfos.ref.get().await()
+                val items = snapshot.children.mapNotNull { child ->
+                    child.getValue(M3CouleurProduitInfos::class.java)
+                }
+                if (items.isNotEmpty()) {
+                    dao_M3CouleurProduitInfos.upsertAllDatas(items)
+                }
+            }
+        } catch (e: Exception) {
+            // Seeding failed (e.g. offline). Reset the flag so it can be retried
+            // on the next Flow emission (e.g. when connectivity is restored).
+            isSeedingFromFirebase = false
+        }
+        // On success the flag stays true — no need to seed again this session.
+    }
+
+    // ---------------------------------------------------------------------------
+
     fun get_grouped_datas(
         allColors: List<M3CouleurProduitInfos>,
         allProducts: List<ArticlesBasesStatsTable>,
         allCategories: List<M16CategorieProduit>
     ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
 
-        // Get all available catalogues
         val allCatalogues = get_ListM21CataloguesCategorie()
 
         // Step 1: Group colors by product
@@ -93,16 +163,11 @@ class ViewModel_MainFragment(
             .sortedBy { it.position }
             .mapNotNull { catalogue ->
                 val categoriesInCatalogue = categoryProductPairs
-                    .filter { (category, _) ->
-                        category.catalogueParentId == catalogue.id
-                    }
+                    .filter { (category, _) -> category.catalogueParentId == catalogue.id }
                     .sortedBy { (category, _) -> category.positionDouble }
 
-                if (categoriesInCatalogue.isNotEmpty()) {
-                    catalogue to categoriesInCatalogue
-                } else {
-                    null
-                }
+                if (categoriesInCatalogue.isNotEmpty()) catalogue to categoriesInCatalogue
+                else null
             }
     }
 }

@@ -24,7 +24,6 @@ fun Compact_Presentoire_App_Produits_App2(
     val initProgress = uiState.initDatasProgressEtate
     val isInitDone = initProgress >= 1f
 
-
     if (!isInitDone) {
         Box(
             modifier = Modifier.fillMaxSize(),

@@ -1,6 +1,7 @@
 package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.StoragePermissionDialog
 import android.Manifest
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import com.example.clientjetpack.App2.App.A.Main.MainScreen.MainScreen_Jemla_Com_PresentoirApp
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -67,7 +69,11 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-                                MainScreen()
+                                if  (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
+                                    MainScreen_Jemla_Com_PresentoirApp()
+                                }  else {
+                                    MainScreen()
+                                }
                             }
 
                             if (showStorageDialog) {

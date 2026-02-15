@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
 import android.Manifest
 import android.app.Application
 import android.net.ConnectivityManager
@@ -141,10 +141,12 @@ class MyApplication : Application() {
             startKoin {
                 androidLogger()
                 androidContext(this@MyApplication)
-                modules(appModule)
-                M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir.ifTrue {
+                modules(modulesDonLesDeuAppNeceFemrePas)
+              if  (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
                     modules(appModule_App2_ac_app1)
-                }
+                }  else {
+                  modules(appModule)
+              }
             }
             Log.d(TAG, "✓ Koin initialized")
         } catch (e: Exception) {

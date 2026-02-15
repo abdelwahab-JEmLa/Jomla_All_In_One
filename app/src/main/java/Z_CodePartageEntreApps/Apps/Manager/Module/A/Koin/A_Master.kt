@@ -235,9 +235,14 @@ val viewModelModule = module {
 
 }
 
-val appModule = module {
+val modulesDonLesDeuAppNeceFemrePas = module {
     includes(
         appDatabase,
+    )
+}
+
+val appModule = module {
+    includes(
         centralDataBasesModule,
         composRepositorysModule, // This will now be resolved
         factoryDataBaseProtoAvantJuin3Module,

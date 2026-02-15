@@ -65,9 +65,9 @@ val viewModelModule_app2 = module {
 
 val appModule_App2_ac_app1 = module {
     includes(
-        viewModelModule_app2,
         composRepositorysModule_app2,
-        centralDataBasesModule_app2
+        centralDataBasesModule_app2,
+        viewModelModule_app2
     )
 }
 

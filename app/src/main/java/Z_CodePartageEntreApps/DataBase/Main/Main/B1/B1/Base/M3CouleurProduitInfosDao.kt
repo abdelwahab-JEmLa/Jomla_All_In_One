@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,6 +20,9 @@ interface M3CouleurProduitInfosDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: M3CouleurProduitInfos)
+
+    @Upsert
+    suspend fun upsertAllDatas(datas: List<M3CouleurProduitInfos>)
 
     @Delete
     suspend fun delete(article: M3CouleurProduitInfos)
