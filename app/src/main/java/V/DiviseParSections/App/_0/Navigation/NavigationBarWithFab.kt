@@ -483,7 +483,11 @@ fun NavigationBarWithFab(
                 Log.d(TAG, "🚀 Background task launched")
             }
         }
-
+                       //<--
+                       //TODO(1): fati que quand ✅ PDF saved via MediaStore (324633 bytes): Downloads/BonsWhatsApp/02_14/-OlSiYxYxkqGuoBrQ306.pdf de affiche terimne toast
+        
+        //<--
+        //TODO(1): fait que le nom du ficheie soit nom client num si dispo apre le bon vent mm_dd_HH:mm 
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu_WhenIts_FragFastVent(
                 onDismissDropdown = { showFabDropdownFastVent = false },

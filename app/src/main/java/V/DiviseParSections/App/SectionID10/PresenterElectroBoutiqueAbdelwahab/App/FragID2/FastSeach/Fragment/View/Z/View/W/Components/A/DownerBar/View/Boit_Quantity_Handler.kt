@@ -6,6 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -29,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
@@ -43,8 +47,61 @@ fun Boit_Quantity_Handler(
     produit: ArticlesBasesStatsTable,
     allNonTrouve: Boolean,
     aCentralFacade: ACentralFacade,
-    onRequestSearchFocus: () -> Unit = {}
+    onRequestSearchFocus: () -> Unit = {},
+    focusedValuesGetter: FocusedValuesGetter= koinInject(),
+    mainGetter: RepositorysMainGetter=koinInject()
 ) {
+    val its_fournisseur = focusedValuesGetter.activeOnVentM2ClientInfos?.its_Fournisseur
+    val achat_tariff = mainGetter.find_List_Tariffs_Du_Produit(produit.keyID, true)
+
+    // TODO(1) fixed: find the Achat tariff for this product (grossist only)
+    val achat_Tariff_ItsWorkInGrossist: M13TarificationInfos? = achat_tariff.find {
+        it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Achat
+    }
+
+    // TODO(1) fixed: if its_fournisseur, display Tariff_ItsWorkInGrossist_Achat
+    //   The resolved tariff to show in the price card for fournisseur clients:
+    //     - use the real Achat tariff when available
+    //     - fall back to a default 0.0 placeholder so the UI is never blank
+    val affiche_Achat_Tariff: M13TarificationInfos? = if (its_fournisseur == true) {
+        achat_Tariff_ItsWorkInGrossist ?: M13TarificationInfos(
+            typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+            prixCurrency = 0.0,
+            parent_M1Produit_KeyId = produit.keyID,
+            parent_M1Produit_DebugInfos = produit.nom
+        )
+    } else null
+
+    // TODO(2) fixed: LaunchedEffect – when its_fournisseur and no Achat tariff exists yet,
+    //   create one with prixCurrency = 0.0, persist it, then update every related vent
+    //   so they all point to the new tariff.
+    LaunchedEffect(produit.keyID, its_fournisseur) {
+        if (its_fournisseur == true && achat_Tariff_ItsWorkInGrossist == null) {
+            val newAchatTariff = M13TarificationInfos(
+                typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+                prixCurrency = 0.0,
+                parent_M1Produit_KeyId = produit.keyID,
+                parent_M1Produit_DebugInfos = produit.nom
+            )
+            // Persist the new tariff
+            mainGetter.repo13TarificationInfos.add(newAchatTariff)
+
+            // Update every vent for this product so it references the new Achat tariff
+            val relatedVents = mainGetter.repo10OperationVentCouleur.datasValue.filter {
+                it.parent_M1Produit_KeyId == produit.keyID
+            }
+            relatedVents.forEach { vent ->
+                mainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                    vent.copy(
+                        parentM13TarificationKeyID = newAchatTariff.keyID,
+                        parentM13TarificationDebugInfos = newAchatTariff.getDebugInfos(),
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                )
+            }
+        }
+    }
+
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
     val repositorysMainSetter = aCentralFacade.repositorysMainSetter
@@ -265,9 +322,17 @@ fun Boit_Quantity_Handler(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val displayText = if (currentApp_ItsWorkChezGrossisst) {
-                        superGrosTariff?.let { tariff ->
-                            "${tariff.prixCurrency} DA"
-                        } ?: "غير متوفر"
+                        when {
+                            // Fournisseur: show Achat tariff (or "0.0 DA" placeholder)
+                            its_fournisseur == true -> {
+                                val price = affiche_Achat_Tariff?.prixCurrency ?: 0.0
+                                "${price} DA"
+                            }
+                            // Regular grossist client: show SuperGros tariff as before
+                            else -> superGrosTariff?.let { tariff ->
+                                "${tariff.prixCurrency} DA"
+                            } ?: "غير متوفر"
+                        }
                     } else {
                         if (affiche_Produit_OnGrid) {
                             "${finale_Tariff.prixCurrency} DA"
