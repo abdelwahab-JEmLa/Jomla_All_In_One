@@ -97,7 +97,7 @@ data class M18CentralParametresOfAllApps(
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = telephone_de_presentation,
 
     val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
