@@ -7,8 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21Catalogues
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
-import org.koin.compose.koinInject
 
 /**
  * SortTunnel - Compact sorting and grouping logic with Catalogue support

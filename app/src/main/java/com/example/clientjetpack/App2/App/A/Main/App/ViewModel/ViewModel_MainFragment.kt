@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.B.Fragment.ViewModel
+package com.example.clientjetpack.App2.App.A.Main.App.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos

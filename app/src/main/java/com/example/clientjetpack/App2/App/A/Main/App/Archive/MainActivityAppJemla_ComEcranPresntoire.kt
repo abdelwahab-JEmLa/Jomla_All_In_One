@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.A.Main.App
+package com.example.clientjetpack.App2.App.A.Main.App.Archive
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.StoragePermissionDialog
 import android.Manifest

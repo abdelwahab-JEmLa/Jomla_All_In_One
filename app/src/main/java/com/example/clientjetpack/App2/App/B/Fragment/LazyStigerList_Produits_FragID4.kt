@@ -1,6 +1,5 @@
 package com.example.clientjetpack.App2.App.B.Fragment
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.ScrolleAdBanner
 import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
@@ -28,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
 import com.example.clientjetpack.App2.App.B.Fragment.Z.Components.CategoryStickyHeader
 import com.example.clientjetpack.App2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import kotlinx.coroutines.delay
@@ -115,10 +114,6 @@ fun Etager_LazyColumn_App2(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled,
     ) {
-        item(key = "ad_banner_header", span = StaggeredGridItemSpan.FullLine) {
-            ScrolleAdBanner()
-        }
-
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             item(key = "catalogue_header_${catalogue.id}", span = StaggeredGridItemSpan.FullLine) {
                 CatalogueHeader(catalogue = catalogue)

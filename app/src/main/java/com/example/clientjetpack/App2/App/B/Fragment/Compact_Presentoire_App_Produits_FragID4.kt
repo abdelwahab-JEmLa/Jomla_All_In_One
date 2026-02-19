@@ -20,15 +20,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.ProductDisplayController
 import com.example.clientjetpack.App2.App.B.Fragment.Filter.FilterSortGroupe_Tunnels_app2
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun Compact_Presentoire_App_Produits_App2(
     productDisplayController: ProductDisplayController,
     viewModel: ViewModel_MainFragment = koinViewModel(),
+    modifier: Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f

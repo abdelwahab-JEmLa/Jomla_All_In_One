@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.A.Main.App
+package com.example.clientjetpack.App2.App.A.Main.App.Archive
 
 import android.app.Application
 import android.net.ConnectivityManager
@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.example.clientjetpack.App2.App.A.Main.App.appModule_App2
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore

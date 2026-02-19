@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.A.Main.Base.Repository
+package com.example.clientjetpack.App2.App.A.Main.Base.Repository.Archive
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import android.content.Context
 import android.net.ConnectivityManager
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll

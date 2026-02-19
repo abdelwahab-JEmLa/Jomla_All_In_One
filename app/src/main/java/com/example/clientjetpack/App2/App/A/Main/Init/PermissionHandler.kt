@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
-import com.example.clientjetpack.App2.App.A.Main.App.MainActivityAppJemla_ComEcranPresntoire
+import com.example.clientjetpack.App2.App.A.Main.App.Archive.MainActivityAppJemla_ComEcranPresntoire
 
 class PermissionHandler_App2(private val activity: MainActivityAppJemla_ComEcranPresntoire) {
     companion object {

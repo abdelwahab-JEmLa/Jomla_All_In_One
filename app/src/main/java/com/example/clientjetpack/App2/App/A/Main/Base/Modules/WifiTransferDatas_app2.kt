@@ -45,9 +45,10 @@ data class ProductDisplayController(
     val clientWindowsPickerDisplayedQuantity: Int = 0,
     val clientWindowsSelectedColorId: Long = 0,
     val clientWindowsLazyRowSupColorsScroll: Int = 0,
+    val filterProduitsParCatalogueBsonID: String = "",
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
-    val isHostPhone: Boolean = true,
+    val isHostPhone: Boolean = false,
     val switchRoles: Boolean = true,
     val testMessageByWifi: String = "",
     val error: String? = null,
@@ -210,6 +211,12 @@ class WifiTransferDatas_app2(
 
                     WifiUpdateClientDisplayerStats_app2.ClientWindowsLazyRowSupColorsScrolle ->
                         _state.update { it.copy(clientWindowsLazyRowSupColorsScroll = content.toIntOrNull() ?: it.clientWindowsLazyRowSupColorsScroll) }
+
+                    WifiUpdateClientDisplayerStats_app2.NewArregmentColorsJsonStruct ->
+                        _state.update { it.copy(newArregmentColorsJsonStruct = content) }
+
+                    WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
+                        _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
 
                     WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
                         val couleur = list_M3CouleurProduit.find { it.keyID == content }

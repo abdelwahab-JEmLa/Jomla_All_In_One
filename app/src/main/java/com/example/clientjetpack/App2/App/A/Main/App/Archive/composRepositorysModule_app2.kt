@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.A.Main.App
+package com.example.clientjetpack.App2.App.A.Main.App.Archive
 
 import org.koin.dsl.module
 

@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
 import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -43,6 +43,8 @@ fun ConnexionCard_App2(
     var messageText by remember { mutableStateOf("") }
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
     val errorColor = MaterialTheme.colorScheme.error
+    val connectedColor = MaterialTheme.colorScheme.primary
+    val pendingColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Card(
         modifier = Modifier
@@ -128,7 +130,12 @@ fun ConnexionCard_App2(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Canvas(modifier = Modifier.padding(horizontal = 8.dp).height(8.dp).weight(0.1f)) {
-                    drawCircle(color = errorColor, radius = size.minDimension / 2)
+                    val dotColor = when {
+                        state.isConnected   -> connectedColor
+                        state.error != null -> errorColor
+                        else                -> pendingColor
+                    }
+                    drawCircle(color = dotColor, radius = size.minDimension / 2)
                 }
                 Text("Connexion", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(0.9f))
             }

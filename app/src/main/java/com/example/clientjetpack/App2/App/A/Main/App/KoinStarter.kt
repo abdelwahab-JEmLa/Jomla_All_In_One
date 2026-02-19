@@ -6,9 +6,10 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.ACentralFacade_app2
+import com.example.clientjetpack.App2.App.A.Main.App.Archive.composRepositorysModule_app2
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.Archive.ACentralFacade_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import com.example.clientjetpack.App2.App.B.Fragment.Etager_LazyColumn_App2
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.UiState
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.UiState
+import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
 import org.koin.compose.koinInject
 
 /**
