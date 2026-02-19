@@ -348,7 +348,6 @@ fun MainScreen(
                                 }) {
                                            if (M18CentralParametresOfAllApps.get_Default().its_AppType== AppType.GrossistRealSeller){
                                                MainFastSearchProduitPourVent()
-
                                            }  else{
                                                AppNavHost(
                                                    isWifiClientConnected_1 = isWifiClientConnected_1,

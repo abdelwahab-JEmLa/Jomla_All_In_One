@@ -83,10 +83,10 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
-    val its_AppType: AppType = AppType.GrossistRealSeller,
+    val its_AppType: AppType = AppType.JomLaElectroLivreurGrossist_PresenterScreen,
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false,
+    val itsDevMode: Boolean = true,
     val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID4.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,

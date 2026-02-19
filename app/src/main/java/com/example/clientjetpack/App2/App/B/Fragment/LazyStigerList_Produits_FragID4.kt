@@ -24,9 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
 import com.example.clientjetpack.App2.App.B.Fragment.Z.Components.CategoryStickyHeader
-import com.example.clientjetpack.App2.App.View.Item_Produit_AppEcranPresntoireJemlaCom
+import com.example.clientjetpack.App2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import org.koin.compose.koinInject
 
 /**

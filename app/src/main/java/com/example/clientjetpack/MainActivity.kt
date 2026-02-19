@@ -71,8 +71,7 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
                                 when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
-                                    AppType.JomLaElectroLivreurGrossist -> MainScreen_Jemla_Com_PresentoirApp()
-
+                                    AppType.JomLaElectroLivreurGrossist_PresenterScreen -> MainScreen_Jemla_Com_PresentoirApp()
                                     else -> MainScreen()
                                 }
 

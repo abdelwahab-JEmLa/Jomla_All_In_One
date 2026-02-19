@@ -432,7 +432,6 @@ fun Item_Produit_FragID3(
                         ) {
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
-
                                     SubColorCard_WithButton(
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,

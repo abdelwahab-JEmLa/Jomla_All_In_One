@@ -1,4 +1,4 @@
-package com.example.clientjetpack.App2.App.View.ViewS
+package com.example.clientjetpack.App2.App.View.Pro0.Proto.ViewS
 
 import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background

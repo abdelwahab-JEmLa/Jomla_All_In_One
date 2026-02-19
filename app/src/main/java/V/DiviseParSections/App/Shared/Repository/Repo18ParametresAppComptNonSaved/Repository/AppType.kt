@@ -3,5 +3,5 @@ package V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSav
 enum class AppType {
     AllInOne,
     GrossistRealSeller,
-    JomLaElectroLivreurGrossist
+    JomLaElectroLivreurGrossist_PresenterScreen,
 }
