@@ -8,6 +8,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import com.google.firebase.firestore.CollectionReference
 
 @Entity
 data class ArticlesBasesStatsTable(
@@ -282,7 +283,7 @@ data class ArticlesBasesStatsTable(
 
     companion object {
         fun get_Default(): ArticlesBasesStatsTable {
-              return  ArticlesBasesStatsTable()
+            return  ArticlesBasesStatsTable()
         }
         val KeyTagModel = "IdKeyModel1"
 
@@ -296,6 +297,13 @@ data class ArticlesBasesStatsTable(
                     "/C_InfosSqlDataBases" +
                     "/A_ProduitInfos"
         )
+
+
+
+        // Firestore path: Datas/Model01Produit/Datas
+        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
+            .document("Model01Produit")
+            .collection("Datas")
 
         fun removeRef(preparedData: ArticlesBasesStatsTable) {
             ref.child(preparedData.keyFireBase).removeValue()

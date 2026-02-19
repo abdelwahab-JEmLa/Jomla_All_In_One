@@ -4,4 +4,5 @@ enum class AppType {
     AllInOne,
     GrossistRealSeller,
     JomLaElectroLivreurGrossist_PresenterScreen,
+
 }

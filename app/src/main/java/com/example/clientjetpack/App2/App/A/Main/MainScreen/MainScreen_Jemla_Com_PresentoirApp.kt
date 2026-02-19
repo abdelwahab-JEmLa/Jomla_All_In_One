@@ -27,7 +27,7 @@ fun MainScreen_Jemla_Com_PresentoirApp(
         }
 
         Compact_Presentoire_App_Produits_App2(
-            modifier = Modifier.weight(1f),   // takes all remaining space
+            modifier = Modifier.weight(1f),
             productDisplayController = wifiState,
             viewModel = vm,
         )

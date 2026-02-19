@@ -83,15 +83,6 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
-    val its_AppType: AppType = AppType.JomLaElectroLivreurGrossist_PresenterScreen,
-
-    //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = true,
-    val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID4.route,
-
-    val desactive_Animation_Pour_LayoutInspector: Boolean = false,
-
-    val listens_on_data_change_resources_consolation: Boolean = false,
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
 
@@ -104,21 +95,29 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
+    val telephone_de_presentation: String = "-OTmoNn0cljrRuhVR2sp",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String =  abdelwahabTravailleChezGros_KeyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
+
+    val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
+        AppType.JomLaElectroLivreurGrossist_PresenterScreen
+    } else {
+        AppType.AllInOne
+    },
+
+    //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
+    val itsDevMode: Boolean = true,
+    val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID4.route,
+
+    val desactive_Animation_Pour_LayoutInspector: Boolean = false,
+
+    val listens_on_data_change_resources_consolation: Boolean = false,
+
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
 
-    val au_Lence_Diminue_DatasFB: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
-    val au_Lence_Dimininue_Datas_M8BonVents: Boolean =  false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
-    val time_tamp_all_tariffs: Boolean =  false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
-    //----------------------------------------------------------------------------------------------------------------------------------------------------
-
-    /*     if (itsDevMode) abdelmomen_Compt_KeyId else {
-            if (Build.MODEL == "Redmi Note 8")
-                abdelwahabCompt_KeyId
-            else
-                abdelmomen_Compt_KeyId
-        },            */
+    val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 
     //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
     val activeWindowsSearchProduit: Boolean = false,
@@ -130,6 +129,7 @@ data class M18CentralParametresOfAllApps(
     val enableVibrationNotifications: Boolean = true,
     val notificationVolume: Float = 0.8f, // 0.0 to 1.0
 ) {
+
     companion object {
         val ref = RepositorysMainGetter.centralRef
             .child("Datas18CentralParametresOfAllApps")

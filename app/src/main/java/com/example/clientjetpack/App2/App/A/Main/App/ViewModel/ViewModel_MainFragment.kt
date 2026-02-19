@@ -74,7 +74,7 @@ class ViewModel_MainFragment(
     // Product-list state (Room + Firebase seed)
     // -----------------------------------------------------------------------
 
-    private val dao_M1Produit             = appDatabase.dao_M1Produit()
+    private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit    = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
 
@@ -132,8 +132,10 @@ class ViewModel_MainFragment(
     ) {
         try {
             if (productsEmpty) {
-                val items = ArticlesBasesStatsTable.ref.get().await()
-                    .children.mapNotNull { it.getValue(ArticlesBasesStatsTable::class.java) }
+                val snapshot = ArticlesBasesStatsTable.refFirestore.get().await()
+                val items = snapshot.documents.mapNotNull {
+                    it.toObject(ArticlesBasesStatsTable::class.java)
+                }
                 if (items.isNotEmpty()) dao_M1Produit.upsertAllDatas(items)
             }
             if (categoriesEmpty) {
