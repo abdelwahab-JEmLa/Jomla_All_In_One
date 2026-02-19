@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import com.google.firebase.firestore.CollectionReference
 import java.io.File
 
 @Entity
@@ -36,6 +37,26 @@ data class M3CouleurProduitInfos(
 
     val extensionDisponible: String = "webp", // Default extension
 ) {
+
+    fun toFirebaseMap(): Map<String, Any?> = mapOf(
+        "keyID"                                         to keyID,
+        "debugInfos"                                    to debugInfos,
+        "creationTimestamp"                             to creationTimestamp,
+        "dernierTimeTampsSynchronisationAvecFireBase"   to dernierTimeTampsSynchronisationAvecFireBase,
+        "processPositioningInFactory"                   to processPositioningInFactory.name,
+        "aAffiche"                                      to aAffiche.name,
+        "nomImageFichieSansEtansion"                    to nomImageFichieSansEtansion,
+        "telephone_Prise_depuit"                        to telephone_Prise_depuit,
+        "count_Don_Depot"                               to count_Don_Depot,
+        "a_cammende_depuit_grossist"                    to a_cammende_depuit_grossist,
+        "nomCouleurStrSiSonImageDispo"                  to nomCouleurStrSiSonImageDispo,
+        "parentBProduitInfosKeyID"                      to parentBProduitInfosKeyID,
+        "parentBProduitOldID"                           to parentBProduitOldID,
+        "parentId1ProduitInfosDebugName"                to parentId1ProduitInfosDebugName,
+        "indexCouleurDansAncienProto"                   to indexCouleurDansAncienProto,
+        "extensionDisponible"                           to extensionDisponible,
+    )
+
     fun get_DebugsInfos(): String {
         return buildString {
             append("03Coul")
@@ -56,6 +77,10 @@ data class M3CouleurProduitInfos(
         val ref =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases" +
                     "/B1CouleurOuGoutProduitDataBase")
+
+        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
+            .document("M3CouleurProduitInfos")
+            .collection("Datas")
 
         fun compareEntre(
             ancien: M3CouleurProduitInfos,

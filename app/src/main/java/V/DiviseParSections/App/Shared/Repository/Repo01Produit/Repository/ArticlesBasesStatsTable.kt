@@ -299,11 +299,6 @@ data class ArticlesBasesStatsTable(
                     "/A_ProduitInfos"
         )
 
-
-
-        //TODO(1): regle  val refFirestore = RepositorysMainGetter . firestoreCentralRefData    /Datas01Produit      //<--
-
-        // Firestore path: Datas/Model01Produit/Datas
         val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
             .document("Model01Produit")
             .collection("Datas")

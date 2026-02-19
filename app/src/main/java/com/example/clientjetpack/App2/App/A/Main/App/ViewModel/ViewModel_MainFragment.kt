@@ -49,13 +49,8 @@ class ViewModel_MainFragment(
         list_M3CouleurProduit = emptyList(),
     )
 
-    // Single wifi state flow the UI collects from
     val wifiState = wifi.state
         .stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
-
-    // -----------------------------------------------------------------------
-    // Wifi delegates
-    // -----------------------------------------------------------------------
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
@@ -70,10 +65,6 @@ class ViewModel_MainFragment(
 
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
-
-    // -----------------------------------------------------------------------
-    // Product-list state (Room + Firebase seed)
-    // -----------------------------------------------------------------------
 
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit    = appDatabase.dao_16CategorieProduit()
@@ -119,7 +110,6 @@ class ViewModel_MainFragment(
                         initDatasProgressEtate = 1f,
                     )
                 }
-                // Keep wifi's in-memory lists in sync so payload lookups stay accurate
                 wifi.list_M1Produit = products
                 wifi.list_M3CouleurProduit = colors
             }
@@ -131,70 +121,39 @@ class ViewModel_MainFragment(
         categoriesEmpty: Boolean,
         colorsEmpty: Boolean,
     ) {
-        val TAG = "SeedFromFirebase"
-
-        // Firestore s'initialise en offline puis active le réseau ~500ms après le démarrage
-        // On attend que la connexion soit établie avant de tenter la requête
-        var attempt = 0
         val maxAttempts = 5
         val retryDelayMs = 1500L
 
-        suspend fun fetchProductsWithRetry(): com.google.firebase.firestore.QuerySnapshot? {
-            while (attempt < maxAttempts) {
-                attempt++
+        suspend fun fetchWithRetry(
+            ref: com.google.firebase.firestore.CollectionReference
+        ): com.google.firebase.firestore.QuerySnapshot? {
+            repeat(maxAttempts) {
                 try {
-                    android.util.Log.d(TAG, "📡 tentative $attempt/$maxAttempts — SOURCE=SERVER")
-                    val snapshot = ArticlesBasesStatsTable.refFirestore
-                        .get(com.google.firebase.firestore.Source.SERVER)
-                        .await()
-                    android.util.Log.d(TAG, "✅ serveur répondu — ${snapshot.documents.size} docs")
-                    return snapshot
+                    return ref.get(com.google.firebase.firestore.Source.SERVER).await()
                 } catch (e: com.google.firebase.firestore.FirebaseFirestoreException) {
-                    android.util.Log.w(TAG, "⏳ serveur pas prêt (tentative $attempt) — retry dans ${retryDelayMs}ms : ${e.message}")
                     kotlinx.coroutines.delay(retryDelayMs)
                 }
             }
-            android.util.Log.e(TAG, "❌ échec après $maxAttempts tentatives")
             return null
         }
 
         try {
             if (productsEmpty) {
-                android.util.Log.d(TAG, "📦 productsEmpty=true → path: ${ArticlesBasesStatsTable.refFirestore.path}")
-
-                val snapshot = fetchProductsWithRetry() ?: return
-
-                if (snapshot.documents.isEmpty()) {
-                    android.util.Log.w(TAG, "⚠️ collection Firestore vide")
-                } else {
-                    val items = snapshot.documents.mapNotNull { doc ->
-                        doc.toArticle().also { result ->
-                            if (result == null) android.util.Log.e(TAG, "  ❌ toArticle() null id=${doc.id}")
-                            else android.util.Log.d(TAG, "  ✅ id=${doc.id} → nom='${result.nom}'")
-                        }
-                    }
-                    android.util.Log.d(TAG, "📊 ${items.size}/${snapshot.documents.size} docs mappés")
-                    if (items.isNotEmpty()) {
-                        dao_M1Produit.upsertAllDatas(items)
-                        android.util.Log.d(TAG, "✅ ${items.size} produits insérés dans Room")
-                    }
-                }
+                val items = fetchWithRetry(ArticlesBasesStatsTable.refFirestore)
+                    ?.documents?.mapNotNull { it.toArticle() } ?: return
+                if (items.isNotEmpty()) dao_M1Produit.upsertAllDatas(items)
             }
-
             if (categoriesEmpty) {
-                val items = M16CategorieProduit.ref.get().await()
-                    .children.mapNotNull { it.getValue(M16CategorieProduit::class.java) }
-                android.util.Log.d(TAG, "📂 categories: ${items.size}")
+                val items = fetchWithRetry(M16CategorieProduit.refFirestore)
+                    ?.documents?.mapNotNull { it.toObject(M16CategorieProduit::class.java) } ?: return
                 if (items.isNotEmpty()) dao_16CategorieProduit.upsertAllDatas(items)
             }
             if (colorsEmpty) {
-                val items = M3CouleurProduitInfos.ref.get().await()
-                    .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
-                android.util.Log.d(TAG, "🎨 couleurs: ${items.size}")
+                val items = fetchWithRetry(M3CouleurProduitInfos.refFirestore)
+                    ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) } ?: return
                 if (items.isNotEmpty()) dao_M3CouleurProduitInfos.upsertAllDatas(items)
             }
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "💥 seedEmptyTablesFromFirebase EXCEPTION", e)
             isSeedingFromFirebase = false
         }
     }

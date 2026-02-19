@@ -118,7 +118,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 }
             )
 
-            // Button: upload filtered products to Firestore (replaces Model01Produit/Datas)
+            // Button: upload filtered products, their colors, and their categories to Firestore
             DropdownMenuItem(
                 leadingIcon = {
                     if (isUploading) {
@@ -146,7 +146,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 onClick = {
                     coroutineScope.launch(Dispatchers.IO) {
                         isUploading = true
-                        uploadFilteredProduitsToFirestore(
+                        uploadFilteredDataToFirestore(
                             groupe_Par_Catalogue = groupe_Par_Catalogue,
                             filterState = currentFilterState,
                             catalogueFilter = focusedValuesGetter.currentActive_M9AppCompt
@@ -162,47 +162,97 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
 }
 
 /**
- * Deletes all documents in Firestore Model01Produit/Datas,
- * then uploads only the currently filtered products — using batched writes (lignes).
- * Firestore batches are limited to 500 operations each, so we chunk automatically.
+ * Deletes all documents in Firestore for products, their related colors, and their related
+ * categories, then re-uploads only the data visible after the current filters are applied.
+ *
+ * Each entity type is handled independently with batched writes (max 500 ops per batch).
+ *
+ * Collections synced:
+ *  - ArticlesBasesStatsTable.refFirestore  (products)
+ *  - M3CouleurProduitInfos.refFirestore    (colors whose parent product passes the filter)
+ *  - M16CategorieProduit.refFirestore      (categories that contain at least one filtered product)
  */
-private suspend fun uploadFilteredProduitsToFirestore(
+private suspend fun uploadFilteredDataToFirestore(
     groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
     filterState: FilterState_Facad_Boutique,
     catalogueFilter: String?,
 ) {
     val firestore = Firebase.firestore
-    val targetCollection = ArticlesBasesStatsTable.refFirestore
 
-    // Step 1: Delete all existing documents in batches of 500
-    val existingDocs = targetCollection.get().await()
-    existingDocs.documents.chunked(500).forEach { chunk ->
-        val deleteBatch = firestore.batch()
-        chunk.forEach { doc -> deleteBatch.delete(doc.reference) }
-        deleteBatch.commit().await()
-    }
-
-    // Step 2: Filter products using the same FilterTunnel as the UI
+    // ── Step 1: Apply the same filter as the UI ────────────────────────────────
     val filteredCatalogues = FilterTunnel(
         groupe_Par_Catalogue = groupe_Par_Catalogue,
         catalogueFilter = catalogueFilter,
         filterState = filterState
     )
 
-    // Step 3: Collect all filtered products
-    val allFilteredProducts = filteredCatalogues.flatMap { (_, categories) ->
-        categories.flatMap { (_, productColorPairs) ->
-            productColorPairs.map { (product, _) -> product }
+    // ── Step 2: Collect the three entity sets from the filtered hierarchy ──────
+    val filteredProducts  = mutableListOf<ArticlesBasesStatsTable>()
+    val filteredColors    = mutableListOf<M3CouleurProduitInfos>()
+    val filteredCategories = mutableListOf<M16CategorieProduit>()
+
+    filteredCatalogues.forEach { (_, categories) ->
+        categories.forEach { (category, productColorPairs) ->
+            // Each category that survives the filter is included once
+            if (filteredCategories.none { it.id == category.id }) {
+                filteredCategories += category
+            }
+            productColorPairs.forEach { (product, colors) ->
+                filteredProducts  += product
+                filteredColors    += colors   // only colors belonging to a passing product
+            }
         }
     }
 
-    // Step 4: Upload in batches of 500
-    allFilteredProducts.chunked(500).forEach { chunk ->
-        val writeBatch = firestore.batch()
-        chunk.forEach { product ->
-            val key = product.keyFireBase.ifEmpty { product.keyID }
-            writeBatch.set(targetCollection.document(key), product.toFirebaseMap())
+    // ── Step 3: Delete → re-upload helper ─────────────────────────────────────
+    suspend fun <T> syncCollection(
+        collectionRef: com.google.firebase.firestore.CollectionReference,
+        items: List<T>,
+        keyOf: (T) -> String,
+        mapOf: (T) -> Map<String, Any?>,
+    ) {
+        // Delete all existing docs
+        collectionRef.get().await().documents
+            .chunked(500)
+            .forEach { chunk ->
+                val batch = firestore.batch()
+                chunk.forEach { batch.delete(it.reference) }
+                batch.commit().await()
+            }
+
+        // Upload filtered items in batches of 500
+        items.chunked(500).forEach { chunk ->
+            val batch = firestore.batch()
+            chunk.forEach { item ->
+                batch.set(collectionRef.document(keyOf(item)), mapOf(item))
+            }
+            batch.commit().await()
         }
-        writeBatch.commit().await()
     }
+
+    // ── Step 4: Sync each collection ──────────────────────────────────────────
+
+    // Products
+    syncCollection(
+        collectionRef = ArticlesBasesStatsTable.refFirestore,
+        items = filteredProducts,
+        keyOf = { product -> product.keyFireBase.ifEmpty { product.keyID } },
+        mapOf = { product -> product.toFirebaseMap() }
+    )
+
+    // Colors  (only those whose parent product is in the filtered set)
+    syncCollection(
+        collectionRef = M3CouleurProduitInfos.refFirestore,
+        items = filteredColors,
+        keyOf = { color -> color.keyID },
+        mapOf = { color -> color.toFirebaseMap() }
+    )
+
+    // Categories  (only those that contain at least one filtered product)
+    syncCollection(
+        collectionRef = M16CategorieProduit.refFirestore,
+        items = filteredCategories,
+        keyOf = { category -> category.keyID },
+        mapOf = { category -> category.toFirebaseMap() }
+    )
 }

@@ -74,48 +74,47 @@ fun Etager_LazyColumn_FragID4(
 
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // Handle expanded item scroll to position WITHOUT lock
+    // When an item is expanded, auto-scroll so it is fully visible.
+    // KEY FIXES:
+    //  1. No phantom banner offset — the ad_banner_header item is commented out,
+    //     so currentIndex starts at 0 to match the actual grid item positions.
+    //  2. Match by product.keyID == expandedColor.parentBProduitInfosKeyID (String),
+    //     NOT product.id == parentBProduitOldID (Int/Long) which is often 0 and
+    //     always picks the first item in the list by mistake.
+    //  3. Wait 300 ms for the FullLine span recomposition to settle before scrolling,
+    //     otherwise the grid scrolls to a stale layout position and lands below the item.
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
-        expanded_M3CouleurProduitInfos?.let { expandedColor ->
-            // Only scroll if we're the host phone
-            if (!isHostPhone) return@LaunchedEffect
+        expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
+        if (!isHostPhone) return@LaunchedEffect
 
-            var currentIndex = 0
-            var foundIndex = -1
+        val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
+        if (targetKeyID.isBlank()) return@LaunchedEffect
 
-            // Account for banner at the top (index 0)
-            currentIndex = 1
+        var currentIndex = 0   // no banner — grid starts directly with catalogue_header
+        var foundIndex = -1
 
-            for ((catalogue, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
-                // Catalogue header takes one slot
-                currentIndex++
+        outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
+            currentIndex++     // catalogue_header_{catalogue.id}
 
-                for ((category, productColorPairs) in categoriesWithProducts) {
-                    // Category header takes one slot (if displayed)
-                    if (category.displayedHeader) {
-                        currentIndex++
-                    }
+            for ((category, productColorPairs) in categoriesWithProducts) {
+                if (category.displayedHeader) currentIndex++  // category_header_{category.id}
 
-                    val productIndex = productColorPairs.indexOfFirst { (product, _) ->
-                        product.id == expandedColor.parentBProduitOldID
-                    }
-
-                    if (productIndex != -1) {
-                        foundIndex = currentIndex + productIndex
-                        break
-                    }
-
-                    currentIndex += productColorPairs.size
+                val productIndex = productColorPairs.indexOfFirst { (product, _) ->
+                    product.keyID == targetKeyID
                 }
-
-                if (foundIndex != -1) break
+                if (productIndex != -1) {
+                    foundIndex = currentIndex + productIndex
+                    break@outer
+                }
+                currentIndex += productColorPairs.size
             }
+        }
 
-            if (foundIndex != -1) {
-                delay(100)
-                coroutineScope.launch {
-                    gridState.animateScrollToItem(foundIndex)
-                }
+        if (foundIndex >= 0) {
+            // Wait for the FullLine span change to recompose and lay out before scrolling.
+            delay(300)
+            coroutineScope.launch {
+                gridState.animateScrollToItem(foundIndex)
             }
         }
     }
@@ -146,17 +145,17 @@ fun Etager_LazyColumn_FragID4(
         userScrollEnabled = isScrollEnabled
     ) {
         // Add banner at the top
-      /*  item(
-            key = "ad_banner_header",
-            span = StaggeredGridItemSpan.Companion.FullLine
-        ) {
-            ScrolleAdBanner(
-                onBannerClick = { bannerIndex ->
-                    // Handle banner click if needed
-                },
-                onClickImageToShowControles = onClickImageToShowControles
-            )
-        }        */
+        /*  item(
+              key = "ad_banner_header",
+              span = StaggeredGridItemSpan.Companion.FullLine
+          ) {
+              ScrolleAdBanner(
+                  onBannerClick = { bannerIndex ->
+                      // Handle banner click if needed
+                  },
+                  onClickImageToShowControles = onClickImageToShowControles
+              )
+          }        */
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             // Add Catalogue Header

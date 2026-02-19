@@ -29,3 +29,4 @@ class FocusedValuesGetter_app2() {
         _ActiveCentralValues_app2.value = new
     }
 }
+

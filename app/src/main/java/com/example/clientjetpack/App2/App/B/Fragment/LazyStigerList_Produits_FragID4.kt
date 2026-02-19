@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import com.example.clientjetpack.App2.App.B.Fragment.Z.Components.CategoryStickyHeader
 import com.example.clientjetpack.App2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import kotlinx.coroutines.delay
@@ -57,22 +57,24 @@ fun Etager_LazyColumn_App2(
     val expanded_M3CouleurProduitInfos =
         focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // When an item is expanded on the HOST, auto-scroll to it
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
 
-        var currentIndex = 1 // account for ad_banner_header at index 0
+        val targetProductKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
+        if (targetProductKeyID.isBlank()) return@LaunchedEffect
+
+        var currentIndex = 0
         var foundIndex = -1
 
-        outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
-            currentIndex++ // catalogue header
+        outer@ for ((catalogue, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
+            currentIndex++ // catalogue_header_{catalogue.id}
 
             for ((category, productColorPairs) in categoriesWithProducts) {
-                if (category.displayedHeader) currentIndex++ // category header
+                if (category.displayedHeader) currentIndex++ // category_header_{category.id}
 
                 val productIndex = productColorPairs.indexOfFirst { (product, _) ->
-                    product.id == expanded_M3CouleurProduitInfos.parentBProduitOldID
+                    product.keyID == targetProductKeyID
                 }
                 if (productIndex != -1) {
                     foundIndex = currentIndex + productIndex
@@ -82,7 +84,7 @@ fun Etager_LazyColumn_App2(
             }
         }
 
-        if (foundIndex != -1) {
+        if (foundIndex >= 0) {
             delay(100)
             coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
         }

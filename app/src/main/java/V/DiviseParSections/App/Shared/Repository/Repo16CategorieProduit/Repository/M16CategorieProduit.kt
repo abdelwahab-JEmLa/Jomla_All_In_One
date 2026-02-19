@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import com.google.firebase.firestore.CollectionReference
 
 @Entity
 data class M16CategorieProduit(
@@ -38,9 +39,29 @@ data class M16CategorieProduit(
         )
     }
 
+    fun toFirebaseMap(): Map<String, Any?> = mapOf(
+        "id"                                            to id,
+        "bsonObjectId"                                  to bsonObjectId,
+        "keyID"                                         to keyID,
+        "creationTimestamp"                             to creationTimestamp,
+        "dernierTimeTampsSynchronisationAvecFireBase"   to dernierTimeTampsSynchronisationAvecFireBase,
+        "catalogueParentId"                             to catalogueParentId,
+        "parentCatalogueIdObject"                       to parentCatalogueIdObject,
+        "nom"                                           to nom,
+        "position"                                      to position,
+        "positionDouble"                                to positionDouble,
+        "displayedHeader"                               to displayedHeader,
+        "itsHeldPourDeplacement"                        to itsHeldPourDeplacement,
+        "cSelectionePourDeplace"                        to cSelectionePourDeplace,
+    )
+
     companion object {
         val ref =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
+
+        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
+            .document("M16CategorieProduit")
+            .collection("Datas")
 
         fun safeRemoveRef(): Unit {
             ref.removeValue()
