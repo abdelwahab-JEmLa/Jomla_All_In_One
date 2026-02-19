@@ -78,9 +78,6 @@ fun ConnexionCard_App2(
 
                 if (!state.isConnected) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        if (isHostEnabled || !lockHost) {
-                            Button(onClick = { vm.startAsHost() }) { Text("Mode Hôte") }
-                        }
                         Button(onClick = { vm.startAsClient(); onClickToStartAsClient() }) {
                             Text("Clic Conexion")
                         }

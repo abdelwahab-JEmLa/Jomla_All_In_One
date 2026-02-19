@@ -1,6 +1,7 @@
 package com.example.clientjetpack.App2.App.A.Main.App.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.toArticle
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
@@ -167,117 +168,11 @@ class ViewModel_MainFragment(
                     android.util.Log.w(TAG, "⚠️ collection Firestore vide")
                 } else {
                     val items = snapshot.documents.mapNotNull { doc ->
-                        try {
-                            val d = doc.data ?: run {
-                                android.util.Log.e(TAG, "  ❌ doc.data NULL id=${doc.id}")
-                                return@mapNotNull null
-                            }
-
-                            fun str(key: String, default: String = "") = (d[key] as? String) ?: default
-                            fun bool(key: String, default: Boolean = false) = (d[key] as? Boolean) ?: default
-                            fun long(key: String, default: Long = 0L) = (d[key] as? Long) ?: (d[key] as? Number)?.toLong() ?: default
-                            fun int(key: String, default: Int = 0) = (d[key] as? Long)?.toInt() ?: (d[key] as? Number)?.toInt() ?: default
-                            fun double(key: String, default: Double = 0.0) = (d[key] as? Double) ?: (d[key] as? Number)?.toDouble() ?: default
-
-                            ArticlesBasesStatsTable(
-                                id = long("id"),
-                                keyID = str("keyID"),
-                                creationTimestamp = long("creationTimestamp"),
-                                dernierTimeTampsSynchronisationAvecFireBase = long("dernierTimeTampsSynchronisationAvecFireBase"),
-                                bsonObjectId = str("bsonObjectId"),
-                                dernierFireBaseUpdateTimestamps = long("dernierFireBaseUpdateTimestamps"),
-                                count_Don_Depot = int("count_Don_Depot"),
-                                processPositioningInFactory = runCatching {
-                                    ArticlesBasesStatsTable.ProcessPositioningInFactoryID1.valueOf(str("processPositioningInFactory", "CreeAuGeneralHandler"))
-                                }.getOrDefault(ArticlesBasesStatsTable.ProcessPositioningInFactoryID1.CreeAuGeneralHandler),
-                                idParentCategorie = long("idParentCategorie"),
-                                positionDonSonCesFrereCategorieProduits = int("positionDonSonCesFrereCategorieProduits"),
-                                nom = str("nom"),
-                                nomMutable = str("nomMutable"),
-                                etateActuelleOnFusionAvecBaseDonne = runCatching {
-                                    ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.valueOf(str("etateActuelleOnFusionAvecBaseDonne", "CategorieOriginaleDefinie"))
-                                }.getOrDefault(ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie),
-                                nombreUniteInt = int("nombreUniteInt", 1),
-                                nombreProduitDonSonCarton = int("nombreProduitDonSonCarton", 1),
-                                its_Carton = bool("its_Carton"),
-                                cartonState = str("cartonState"),
-                                heldPrioriteDemandAuGrossist = bool("heldPrioriteDemandAuGrossist"),
-                                position_store_3jamale = int("position_store_3jamale"),
-                                dernier_timeTamps_position_store_3jamale = long("dernier_timeTamps_position_store_3jamale"),
-                                prixDefiniParGerant = double("prixDefiniParGerant"),
-                                prixVent = double("prixVent"),
-                                cachePrixVent = bool("cachePrixVent"),
-                                pourcentage_Prix_Progressive = int("pourcentage_Prix_Progressive", 60),
-                                prixAchat = double("prixAchat"),
-                                prixAchatDernierTimeTempUpdate = long("prixAchatDernierTimeTempUpdate"),
-                                clientPrixVentUnite = double("clientPrixVentUnite"),
-                                afficheUniteAuPrint = bool("afficheUniteAuPrint"),
-                                actualiseSonImage = int("actualiseSonImage"),
-                                actualiseSonImageTest2 = int("actualiseSonImageTest2"),
-                                afficheCesDetailPourComptBsonId = str("afficheCesDetailPourComptBsonId"),
-                                disponibilityEtates = runCatching {
-                                    V.DiviseParSections.App.Shared.Repository.DisponibilityEtates.valueOf(str("disponibilityEtates", "NON_DISPO"))
-                                }.getOrDefault(V.DiviseParSections.App.Shared.Repository.DisponibilityEtates.NON_DISPO),
-                                disponibilityEtates_Pour_presentaion_par_Camion = runCatching {
-                                    V.DiviseParSections.App.Shared.Repository.DisponibilityEtates.valueOf(str("disponibilityEtates_Pour_presentaion_par_Camion", "NON_DISPO"))
-                                }.getOrDefault(V.DiviseParSections.App.Shared.Repository.DisponibilityEtates.NON_DISPO),
-                                keyFireBase = str("keyFireBase"),
-                                nomArab = str("nomArab"),
-                                autreNomDarticle = d["autreNomDarticle"] as? String,
-                                couleur1 = d["couleur1"] as? String ?: "couleur1",
-                                couleur2 = d["couleur2"] as? String,
-                                couleur3 = d["couleur3"] as? String,
-                                couleur4 = d["couleur4"] as? String,
-                                couleur5 = d["couleur5"] as? String,
-                                couleur6 = d["couleur6"] as? String,
-                                couleur7 = d["couleur7"] as? String,
-                                couleur8 = d["couleur8"] as? String,
-                                couleur9 = d["couleur9"] as? String,
-                                idcolor1 = long("idcolor1", 1),
-                                idcolor2 = long("idcolor2"),
-                                idcolor3 = long("idcolor3"),
-                                idcolor4 = long("idcolor4"),
-                                idcolor5 = long("idcolor5"),
-                                idcolor6 = long("idcolor6"),
-                                idcolor7 = long("idcolor7"),
-                                idcolor8 = long("idcolor8"),
-                                idcolor9 = long("idcolor9"),
-                                nomCategorie2 = d["nomCategorie2"] as? String,
-                                affichageUniteState = bool("affichageUniteState"),
-                                commmentSeVent = d["commmentSeVent"] as? String,
-                                afficheBoitSiUniter = d["afficheBoitSiUniter"] as? String,
-                                minQuan = int("minQuan"),
-                                monBenfice = double("monBenfice"),
-                                neaon2 = str("neaon2"),
-                                funChangeImagsDimention = bool("funChangeImagsDimention"),
-                                nomCategorie = str("nomCategorie"),
-                                neaon1 = double("neaon1"),
-                                lastUpdateState = str("lastUpdateState"),
-                                dateCreationCategorie = str("dateCreationCategorie"),
-                                prixDeVentTotaleChezClient = double("prixDeVentTotaleChezClient"),
-                                benficeTotaleEntreMoiEtClien = double("benficeTotaleEntreMoiEtClien"),
-                                benificeTotaleEn2 = double("benificeTotaleEn2"),
-                                monPrixAchatUniter = double("monPrixAchatUniter"),
-                                monPrixVentUniter = double("monPrixVentUniter"),
-                                articleHaveUniteImages = bool("articleHaveUniteImages"),
-                                itsNewArrivale = bool("itsNewArrivale"),
-                                imageDimention = str("imageDimention"),
-                                idForSearchArticles = long("idForSearchArticles"),
-                                quantite_Boit_Par_Carton = int("quantite_Boit_Par_Carton", 1),
-                                setIN_Vent_Its_Quantity_Represent = runCatching {
-                                    V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.valueOf(
-                                        str("setIN_Vent_Its_Quantity_Represent", "quantity_Par_Boit")
-                                    )
-                                }.getOrDefault(V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit),
-                            ).also {
-                                android.util.Log.d(TAG, "  ✅ id=${doc.id} → nom='${it.nom}'")
-                            }
-                        } catch (e: Exception) {
-                            android.util.Log.e(TAG, "  💥 mapping THREW id=${doc.id}", e)
-                            null
+                        doc.toArticle().also { result ->
+                            if (result == null) android.util.Log.e(TAG, "  ❌ toArticle() null id=${doc.id}")
+                            else android.util.Log.d(TAG, "  ✅ id=${doc.id} → nom='${result.nom}'")
                         }
                     }
-
                     android.util.Log.d(TAG, "📊 ${items.size}/${snapshot.documents.size} docs mappés")
                     if (items.isNotEmpty()) {
                         dao_M1Produit.upsertAllDatas(items)

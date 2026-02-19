@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 
 @Entity
 data class ArticlesBasesStatsTable(
@@ -282,17 +283,6 @@ data class ArticlesBasesStatsTable(
     }
 
     companion object {
-        val ref = Firebase.database.getReference(
-            "00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases" +
-                    "/A_ProduitInfos"
-        )
-
-        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
-            .document("Model01Produit")
-            .collection("Datas")
-
         fun get_Default(): ArticlesBasesStatsTable {
             return  ArticlesBasesStatsTable()
         }
@@ -302,6 +292,21 @@ data class ArticlesBasesStatsTable(
             ref.removeValue()
         }
 
+        val ref = Firebase.database.getReference(
+            "00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases" +
+                    "/A_ProduitInfos"
+        )
+
+
+
+        //TODO(1): regle  val refFirestore = RepositorysMainGetter . firestoreCentralRefData    /Datas01Produit      //<--
+
+        // Firestore path: Datas/Model01Produit/Datas
+        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
+            .document("Model01Produit")
+            .collection("Datas")
 
         fun removeRef(preparedData: ArticlesBasesStatsTable) {
             ref.child(preparedData.keyFireBase).removeValue()
@@ -314,4 +319,109 @@ data class ArticlesBasesStatsTable(
             return ancien.id == newData.id
         }
     }
+}
+
+/**
+ * Extension Firestore → ArticlesBasesStatsTable
+ * Utilisable partout : snapshot.documents.mapNotNull { it.toArticle() }
+ * Gère tous les types (enums, Long/Int, nullable strings) sans boilerplate répété.
+ */
+fun DocumentSnapshot.toArticle(): ArticlesBasesStatsTable? {
+    val d = data ?: return null
+
+    fun str(k: String, def: String = "") = (d[k] as? String) ?: def
+    fun bool(k: String, def: Boolean = false) = (d[k] as? Boolean) ?: def
+    fun long(k: String, def: Long = 0L) = (d[k] as? Long) ?: (d[k] as? Number)?.toLong() ?: def
+    fun int(k: String, def: Int = 0) = (d[k] as? Long)?.toInt() ?: (d[k] as? Number)?.toInt() ?: def
+    fun dbl(k: String, def: Double = 0.0) = (d[k] as? Double) ?: (d[k] as? Number)?.toDouble() ?: def
+    fun <T : Enum<T>> enum(k: String, values: Array<T>, def: T): T =
+        values.firstOrNull { it.name == d[k] as? String } ?: def
+
+    return ArticlesBasesStatsTable(
+        id = long("id"),
+        keyID = str("keyID"),
+        creationTimestamp = long("creationTimestamp"),
+        dernierTimeTampsSynchronisationAvecFireBase = long("dernierTimeTampsSynchronisationAvecFireBase"),
+        bsonObjectId = str("bsonObjectId"),
+        dernierFireBaseUpdateTimestamps = long("dernierFireBaseUpdateTimestamps"),
+        count_Don_Depot = int("count_Don_Depot"),
+        processPositioningInFactory = enum("processPositioningInFactory",
+            ArticlesBasesStatsTable.ProcessPositioningInFactoryID1.values(),
+            ArticlesBasesStatsTable.ProcessPositioningInFactoryID1.CreeAuGeneralHandler),
+        idParentCategorie = long("idParentCategorie"),
+        positionDonSonCesFrereCategorieProduits = int("positionDonSonCesFrereCategorieProduits"),
+        nom = str("nom"),
+        nomMutable = str("nomMutable"),
+        etateActuelleOnFusionAvecBaseDonne = enum("etateActuelleOnFusionAvecBaseDonne",
+            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.values(),
+            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie),
+        nombreUniteInt = int("nombreUniteInt", 1),
+        nombreProduitDonSonCarton = int("nombreProduitDonSonCarton", 1),
+        its_Carton = bool("its_Carton"),
+        cartonState = str("cartonState"),
+        heldPrioriteDemandAuGrossist = bool("heldPrioriteDemandAuGrossist"),
+        position_store_3jamale = int("position_store_3jamale"),
+        dernier_timeTamps_position_store_3jamale = long("dernier_timeTamps_position_store_3jamale"),
+        prixDefiniParGerant = dbl("prixDefiniParGerant"),
+        prixVent = dbl("prixVent"),
+        cachePrixVent = bool("cachePrixVent"),
+        pourcentage_Prix_Progressive = int("pourcentage_Prix_Progressive", 60),
+        prixAchat = dbl("prixAchat"),
+        prixAchatDernierTimeTempUpdate = long("prixAchatDernierTimeTempUpdate"),
+        clientPrixVentUnite = dbl("clientPrixVentUnite"),
+        afficheUniteAuPrint = bool("afficheUniteAuPrint"),
+        actualiseSonImage = int("actualiseSonImage"),
+        actualiseSonImageTest2 = int("actualiseSonImageTest2"),
+        afficheCesDetailPourComptBsonId = str("afficheCesDetailPourComptBsonId"),
+        disponibilityEtates = enum("disponibilityEtates",
+            DisponibilityEtates.values(), DisponibilityEtates.NON_DISPO),
+        disponibilityEtates_Pour_presentaion_par_Camion = enum("disponibilityEtates_Pour_presentaion_par_Camion",
+            DisponibilityEtates.values(), DisponibilityEtates.NON_DISPO),
+        keyFireBase = str("keyFireBase"),
+        nomArab = str("nomArab"),
+        autreNomDarticle = d["autreNomDarticle"] as? String,
+        couleur1 = d["couleur1"] as? String ?: "couleur1",
+        couleur2 = d["couleur2"] as? String,
+        couleur3 = d["couleur3"] as? String,
+        couleur4 = d["couleur4"] as? String,
+        couleur5 = d["couleur5"] as? String,
+        couleur6 = d["couleur6"] as? String,
+        couleur7 = d["couleur7"] as? String,
+        couleur8 = d["couleur8"] as? String,
+        couleur9 = d["couleur9"] as? String,
+        idcolor1 = long("idcolor1", 1),
+        idcolor2 = long("idcolor2"),
+        idcolor3 = long("idcolor3"),
+        idcolor4 = long("idcolor4"),
+        idcolor5 = long("idcolor5"),
+        idcolor6 = long("idcolor6"),
+        idcolor7 = long("idcolor7"),
+        idcolor8 = long("idcolor8"),
+        idcolor9 = long("idcolor9"),
+        nomCategorie2 = d["nomCategorie2"] as? String,
+        affichageUniteState = bool("affichageUniteState"),
+        commmentSeVent = d["commmentSeVent"] as? String,
+        afficheBoitSiUniter = d["afficheBoitSiUniter"] as? String,
+        minQuan = int("minQuan"),
+        monBenfice = dbl("monBenfice"),
+        neaon2 = str("neaon2"),
+        funChangeImagsDimention = bool("funChangeImagsDimention"),
+        nomCategorie = str("nomCategorie"),
+        neaon1 = dbl("neaon1"),
+        lastUpdateState = str("lastUpdateState"),
+        dateCreationCategorie = str("dateCreationCategorie"),
+        prixDeVentTotaleChezClient = dbl("prixDeVentTotaleChezClient"),
+        benficeTotaleEntreMoiEtClien = dbl("benficeTotaleEntreMoiEtClien"),
+        benificeTotaleEn2 = dbl("benificeTotaleEn2"),
+        monPrixAchatUniter = dbl("monPrixAchatUniter"),
+        monPrixVentUniter = dbl("monPrixVentUniter"),
+        articleHaveUniteImages = bool("articleHaveUniteImages"),
+        itsNewArrivale = bool("itsNewArrivale"),
+        imageDimention = str("imageDimention"),
+        idForSearchArticles = long("idForSearchArticles"),
+        quantite_Boit_Par_Carton = int("quantite_Boit_Par_Carton", 1),
+        setIN_Vent_Its_Quantity_Represent = enum("setIN_Vent_Its_Quantity_Represent",
+            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.values(),
+            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit),
+    )
 }
