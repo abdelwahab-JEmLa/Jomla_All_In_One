@@ -282,6 +282,17 @@ data class ArticlesBasesStatsTable(
     }
 
     companion object {
+        val ref = Firebase.database.getReference(
+            "00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases" +
+                    "/A_ProduitInfos"
+        )
+
+        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
+            .document("Model01Produit")
+            .collection("Datas")
+
         fun get_Default(): ArticlesBasesStatsTable {
             return  ArticlesBasesStatsTable()
         }
@@ -291,19 +302,6 @@ data class ArticlesBasesStatsTable(
             ref.removeValue()
         }
 
-        val ref = Firebase.database.getReference(
-            "00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases" +
-                    "/A_ProduitInfos"
-        )
-
-
-
-        // Firestore path: Datas/Model01Produit/Datas
-        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
-            .document("Model01Produit")
-            .collection("Datas")
 
         fun removeRef(preparedData: ArticlesBasesStatsTable) {
             ref.child(preparedData.keyFireBase).removeValue()

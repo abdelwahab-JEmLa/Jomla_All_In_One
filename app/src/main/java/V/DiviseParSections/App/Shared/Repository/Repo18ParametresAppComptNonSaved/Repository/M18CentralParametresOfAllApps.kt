@@ -85,6 +85,7 @@ data class M18CentralParametresOfAllApps(
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
+    val telephone_de_presentation: String = "-OTmoNn0cljrRuhVR2sp",
 
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
@@ -95,9 +96,8 @@ data class M18CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
-    val telephone_de_presentation: String = "-OTmoNn0cljrRuhVR2sp",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = telephone_de_presentation,
 
     val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
