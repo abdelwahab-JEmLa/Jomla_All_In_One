@@ -11,11 +11,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -147,6 +147,13 @@ fun MainFastSearchProduitPourVent(
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
 
+    /*LaunchedEffect(Unit) {
+        if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+            runCatching {
+                GlobalContext.get().unloadModules(listOf(appModule))
+            }
+        }
+    }         */
     // DEBOUNCED SEARCH IMPLEMENTATION (300ms delay)
     LaunchedEffect(fastSearchProduitPourVent) {
         // Cancel any pending search job
@@ -343,7 +350,7 @@ fun MainFastSearchProduitPourVent(
             val markerStatusDialogActiveM2Client = currentValues.markerStatusDialogActiveM2Client
 
             val shouldShowMarkerDialog = run {
-               markerStatusDialogActiveM2Client != null
+                markerStatusDialogActiveM2Client != null
             }
 
             if (shouldShowMarkerDialog) {

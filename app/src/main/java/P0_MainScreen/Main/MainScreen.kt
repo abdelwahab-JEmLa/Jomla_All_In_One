@@ -4,12 +4,14 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.AppType
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
@@ -344,32 +346,38 @@ fun MainScreen(
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
+                                           if (M18CentralParametresOfAllApps.get_Default().its_AppType== AppType.GrossistRealSeller){
+                                               MainFastSearchProduitPourVent()
 
-                                AppNavHost(
-                                    isWifiClientConnected_1 = isWifiClientConnected_1,
-                                    modifier = Modifier.fillMaxSize(),
-                                    viewModel = headViewModel,
-                                    viewModelInitApp = viewModelViewModelInitApp,
-                                    navController = navController,
-                                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                                    isFabVisible = isFabVisible,
-                                    onClickToDisplayeConexionWifi = {
-                                        isDisplayedConnexionWifiVisible =
-                                            !isDisplayedConnexionWifiVisible
-                                    },
-                                    onToggleLockHost = { lockHost = !lockHost },
-                                    targetCategoryId = targetCategoryId,
-                                    lockHost = isHostPhone,
-                                    onClickImageToShowControles = {
-                                        isControleFabVisible = !isControleFabVisible
-                                    }, on_pour_send_data = { it1, it2 ->
-                                        viewModel.sendOrderToClientDisplayer(
-                                            it1,
-                                            it2
-                                        )
+                                           }  else{
+                                               AppNavHost(
+                                                   isWifiClientConnected_1 = isWifiClientConnected_1,
+                                                   modifier = Modifier.fillMaxSize(),
+                                                   viewModel = headViewModel,
+                                                   viewModelInitApp = viewModelViewModelInitApp,
+                                                   navController = navController,
+                                                   onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                                                   isFabVisible = isFabVisible,
+                                                   onClickToDisplayeConexionWifi = {
+                                                       isDisplayedConnexionWifiVisible =
+                                                           !isDisplayedConnexionWifiVisible
+                                                   },
+                                                   onToggleLockHost = { lockHost = !lockHost },
+                                                   targetCategoryId = targetCategoryId,
+                                                   lockHost = isHostPhone,
+                                                   onClickImageToShowControles = {
+                                                       isControleFabVisible = !isControleFabVisible
+                                                   }, on_pour_send_data = { it1, it2 ->
+                                                       viewModel.sendOrderToClientDisplayer(
+                                                           it1,
+                                                           it2
+                                                       )
 
-                                    }
-                                )
+                                                   }
+                                               )
+                                           }
+
+
                             /*
                 if (!isHostPhone && productDisplayController.isConnected) {
                     Box(
@@ -383,8 +391,7 @@ fun MainScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen
-                            && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir,
+                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -452,7 +459,7 @@ fun MainScreen(
                     }
                 }
 
-                if (isControleFabVisible && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
+                if (isControleFabVisible ) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -463,7 +470,7 @@ fun MainScreen(
                     }
                 }
 
-                if (isHostPhone && shouldShowContent && !hideAppScreen && !M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
+                if (isHostPhone && shouldShowContent && !hideAppScreen ) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 

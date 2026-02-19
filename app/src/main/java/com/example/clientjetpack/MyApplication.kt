@@ -1,5 +1,6 @@
 package com.example.clientjetpack
 
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.AppType
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
@@ -18,11 +19,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
-val app = App.AppEcranPresntoireJemlaCom
-
-enum class App {
-    AppEcranPresntoireJemlaCom
-}
 
 class MyApplication : Application() {
     companion object {
@@ -142,8 +138,8 @@ class MyApplication : Application() {
                 androidLogger()
                 androidContext(this@MyApplication)
                 modules(modulesDonLesDeuAppNeceFemrePas)
-              if  (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
-                    modules(appModule_App2_ac_app1)
+              if  (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.JomLaElectroLivreurGrossist) {
+                 modules(appModule_App2_ac_app1)
                 }  else {
                   modules(appModule)
               }

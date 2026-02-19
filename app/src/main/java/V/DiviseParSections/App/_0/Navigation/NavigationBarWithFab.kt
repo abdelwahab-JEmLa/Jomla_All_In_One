@@ -5,6 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.AppType
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
@@ -80,7 +82,13 @@ fun NavigationBarWithFab(
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
-    val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+    val _activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+    // TODO(1) fix: GrossistRealSeller always acts as FragmentProduitFastSearchDialog
+    val activeFragment = if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+        Screen.FragmentProduitFastSearchDialog
+    } else {
+        _activeFragment
+    }
     var showFabDropdown by remember { mutableStateOf(false) }
     var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
     var showFabDropdownAchats by remember { mutableStateOf(false) }
@@ -387,8 +395,14 @@ fun NavigationBarWithFab(
                             if (tempPdfFile.exists()) {
                                 Log.i(TAG, "✅ Temp PDF exists - Size: ${tempPdfFile.length()} bytes")
 
-                                // Generate clean filename
-                                val cleanFileName = "${activeBonVent.keyID}.pdf"
+                                // TODO(1) fix: filename = clientName_bonNum_MM_dd_HH:mm.pdf
+                                val timestamp = java.time.LocalDateTime.now()
+                                    .format(java.time.format.DateTimeFormatter.ofPattern("MM_dd_HH:mm"))
+                                val clientNamePart = activeClient.nom
+                                    .replace(Regex("[^A-Za-z0-9_\\-]"), "_")
+                                    .take(20)
+                                val bonNumPart = activeBonVent.keyID.takeLast(6)
+                                val cleanFileName = "${clientNamePart}_${bonNumPart}_${timestamp}.pdf"
 
                                 Log.d(TAG, "───────────────────────────────────────────────────────")
                                 Log.d(TAG, "💾 Saving via MediaStore...")
@@ -412,9 +426,10 @@ fun NavigationBarWithFab(
                                     Log.i(TAG, "═══════════════════════════════════════════════════════")
 
                                     withContext(Dispatchers.Main) {
+                                        // TODO(1) fix: show final "terminé" toast with the saved path
                                         Toast.makeText(
                                             context,
-                                            "✅ PDF créé!\n$savedPath",
+                                            "✅ PDF terminé!\n$cleanFileName\nTéléchargements/BonsWhatsApp",
                                             Toast.LENGTH_LONG
                                         ).show()
                                     }
@@ -483,11 +498,6 @@ fun NavigationBarWithFab(
                 Log.d(TAG, "🚀 Background task launched")
             }
         }
-                       //<--
-                       //TODO(1): fati que quand ✅ PDF saved via MediaStore (324633 bytes): Downloads/BonsWhatsApp/02_14/-OlSiYxYxkqGuoBrQ306.pdf de affiche terimne toast
-        
-        //<--
-        //TODO(1): fait que le nom du ficheie soit nom client num si dispo apre le bon vent mm_dd_HH:mm 
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu_WhenIts_FragFastVent(
                 onDismissDropdown = { showFabDropdownFastVent = false },

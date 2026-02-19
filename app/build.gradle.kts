@@ -1,4 +1,3 @@
-import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,7 +17,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.11.delivery.6"
+        versionName = "1.11.delivery.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

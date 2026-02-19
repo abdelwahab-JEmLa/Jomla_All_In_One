@@ -1,6 +1,7 @@
 package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
+import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.AppType
 import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.StoragePermissionDialog
@@ -69,11 +70,12 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-                                if  (M18CentralParametresOfAllApps.get_Default().its_App_Jemla_Com_Presentoir) {
-                                    MainScreen_Jemla_Com_PresentoirApp()
-                                }  else {
-                                    MainScreen()
+                                when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
+                                    AppType.JomLaElectroLivreurGrossist -> MainScreen_Jemla_Com_PresentoirApp()
+
+                                    else -> MainScreen()
                                 }
+
                             }
 
                             if (showStorageDialog) {
