@@ -415,6 +415,9 @@ fun MainScreen(
                         },
                         modifier = Modifier.padding(bottom = 2.dp),
                         viewModelInitApp = viewModelViewModelInitApp
+                        , onClickImageToShowControles = {
+                            isControleFabVisible = !isControleFabVisible
+                        }
                     )
                 }
 

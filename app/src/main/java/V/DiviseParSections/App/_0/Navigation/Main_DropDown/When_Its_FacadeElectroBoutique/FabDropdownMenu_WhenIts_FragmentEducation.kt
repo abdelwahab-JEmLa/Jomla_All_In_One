@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Construction
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -42,6 +43,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
+    onClickImageToShowControles: () -> Unit,
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val currentFilterState = activeCentralValues.filterState_Facad_Boutique ?: FilterState_Facad_Boutique()
@@ -91,6 +93,27 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                             )
                         )
                     )
+                    onDismissDropdown()
+                }
+            )
+
+            DropdownMenuItem(
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Construction,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                text = {
+                    Text(
+                        text = "onClickImageToShowControles",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                onClick = {
+                    onClickImageToShowControles()
                     onDismissDropdown()
                 }
             )

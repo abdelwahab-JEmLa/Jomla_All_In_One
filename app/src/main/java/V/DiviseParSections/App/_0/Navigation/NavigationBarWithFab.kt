@@ -78,6 +78,8 @@ fun NavigationBarWithFab(
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
+    onClickImageToShowControles: () -> Unit,
+
     showWarningState: Boolean = true
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
@@ -284,7 +286,9 @@ fun NavigationBarWithFab(
 
         if (showFabDropdown_MainPresenterFragment && its_Compact_Presentoire_App_Produits_FragID4) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
-                onDismissDropdown = { showFabDropdown_MainPresenterFragment = false }
+                onDismissDropdown = { showFabDropdown_MainPresenterFragment = false } ,
+                        onClickImageToShowControle= onClickImageToShowControle
+
             )
         }
 
