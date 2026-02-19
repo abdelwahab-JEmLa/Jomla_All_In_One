@@ -85,7 +85,6 @@ fun NavigationBarWithFab(
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
     val _activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
-    // TODO(1) fix: GrossistRealSeller always acts as FragmentProduitFastSearchDialog
     val activeFragment = if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
         Screen.FragmentProduitFastSearchDialog
     } else {
@@ -287,8 +286,7 @@ fun NavigationBarWithFab(
         if (showFabDropdown_MainPresenterFragment && its_Compact_Presentoire_App_Produits_FragID4) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 onDismissDropdown = { showFabDropdown_MainPresenterFragment = false } ,
-                        onClickImageToShowControle= onClickImageToShowControle
-
+                onClickImageToShowControles= onClickImageToShowControles
             )
         }
 
@@ -301,17 +299,6 @@ fun NavigationBarWithFab(
                         vent.quantity > 0
             }
 
-        /**
-         * FIXED: Background PDF creation now uses PdfSaverUtility
-         * Saves to: Downloads/BonsWhatsApp/MM_DD/keyID.pdf via MediaStore
-         *
-         * This resolves the TODO where PDFs weren't being found because:
-         * 1. Files are now saved to public Downloads folder (MediaStore)
-         * 2. Clear naming: {bonVentKeyID}.pdf
-         * 3. Organized by date: MM_DD format (e.g., 02_14 for February 14)
-         * 4. No permissions needed (Android 10+)
-         * 5. Visible in file manager immediately
-         */
         val initiateBackgroundPdfCreation: () -> Unit = {
             Log.d(TAG, "═══════════════════════════════════════════════════════")
             Log.d(TAG, "🚀 initiateBackgroundPdfCreation: Starting")
@@ -399,7 +386,6 @@ fun NavigationBarWithFab(
                             if (tempPdfFile.exists()) {
                                 Log.i(TAG, "✅ Temp PDF exists - Size: ${tempPdfFile.length()} bytes")
 
-                                // TODO(1) fix: filename = clientName_bonNum_MM_dd_HH:mm.pdf
                                 val timestamp = java.time.LocalDateTime.now()
                                     .format(java.time.format.DateTimeFormatter.ofPattern("MM_dd_HH:mm"))
                                 val clientNamePart = activeClient.nom
@@ -430,7 +416,6 @@ fun NavigationBarWithFab(
                                     Log.i(TAG, "═══════════════════════════════════════════════════════")
 
                                     withContext(Dispatchers.Main) {
-                                        // TODO(1) fix: show final "terminé" toast with the saved path
                                         Toast.makeText(
                                             context,
                                             "✅ PDF terminé!\n$cleanFileName\nTéléchargements/BonsWhatsApp",
