@@ -18,26 +18,91 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
+import com.example.clientjetpack.App2.App.B.Fragment.ViewModel.ViewModel_MainFragment
 import com.example.clientjetpack.App2.App.B.Fragment.Z.Components.CategoryStickyHeader
 import com.example.clientjetpack.App2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-/**
- * UPDATED: Now displays Catalogue headers followed by Category headers
- */
 @Composable
 fun Etager_LazyColumn_App2(
-    modifier: Modifier = Modifier.Companion,
-    focusedValuesGetter_app2: FocusedValuesGetter_app2 = koinInject(),
+    modifier: Modifier = Modifier,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
+    viewModel: ViewModel_MainFragment = koinViewModel(),
+    focusedValuesGetter_app2: FocusedValuesGetter_app2 = koinInject(),
 ) {
     val gridState = rememberLazyStaggeredGridState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Read connection state from the single source of truth
+    val wifiState by viewModel.wifiState.collectAsState()
+    val isHostPhone = wifiState.isHostPhone
+    val isConnected = wifiState.isConnected
+    val currentScrollPosition = wifiState.mainGridScrollPosition
+
+    // Scroll is only user-driven on the host, or when not connected at all
+    val isScrollEnabled = isHostPhone || !isConnected
+
+    val expanded_M3CouleurProduitInfos =
+        focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
+
+    // When an item is expanded on the HOST, auto-scroll to it
+    LaunchedEffect(expanded_M3CouleurProduitInfos) {
+        expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
+        if (!isHostPhone) return@LaunchedEffect
+
+        var currentIndex = 1 // account for ad_banner_header at index 0
+        var foundIndex = -1
+
+        outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
+            currentIndex++ // catalogue header
+
+            for ((category, productColorPairs) in categoriesWithProducts) {
+                if (category.displayedHeader) currentIndex++ // category header
+
+                val productIndex = productColorPairs.indexOfFirst { (product, _) ->
+                    product.id == expanded_M3CouleurProduitInfos.parentBProduitOldID
+                }
+                if (productIndex != -1) {
+                    foundIndex = currentIndex + productIndex
+                    break@outer
+                }
+                currentIndex += productColorPairs.size
+            }
+        }
+
+        if (foundIndex != -1) {
+            delay(100)
+            coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
+        }
+    }
+
+    // HOST → broadcasts scroll position to the connected client
+    HandlePresenterScrollBroadcast_app2(
+        isHostPhone = isHostPhone,
+        isConnected = isConnected,
+        gridState = gridState,
+        viewModel = viewModel,
+    )
+
+    // CLIENT → receives scroll position from host and applies it
+    HandlePresenterClientScroll_app2(
+        isHostPhone = isHostPhone,
+        scrollPosition = currentScrollPosition,
+        gridState = gridState,
+    )
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
@@ -48,37 +113,23 @@ fun Etager_LazyColumn_App2(
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
+        userScrollEnabled = isScrollEnabled,
     ) {
-        // Add banner at the top
-        item(
-            key = "ad_banner_header",
-            span = StaggeredGridItemSpan.Companion.FullLine
-        ) {
-            ScrolleAdBanner(
-            )
+        item(key = "ad_banner_header", span = StaggeredGridItemSpan.FullLine) {
+            ScrolleAdBanner()
         }
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
-            // Add Catalogue Header
-            item(
-                key = "catalogue_header_${catalogue.id}",
-                span = StaggeredGridItemSpan.Companion.FullLine
-            ) {
+            item(key = "catalogue_header_${catalogue.id}", span = StaggeredGridItemSpan.FullLine) {
                 CatalogueHeader(catalogue = catalogue)
             }
 
             categoriesWithProducts.forEach { (category, productColorPairs) ->
-                // Only show category header if displayedHeader is true
                 if (category.displayedHeader) {
-                    item(
-                        key = "category_header_${category.id}",
-                        span = StaggeredGridItemSpan.Companion.FullLine
-                    ) {
+                    item(key = "category_header_${category.id}", span = StaggeredGridItemSpan.FullLine) {
                         CategoryStickyHeader(
                             category = category,
-                            onToggleHeaderVisibility = { updatedCategory ->
-
-                            }
+                            onToggleHeaderVisibility = { /* update repo if needed */ }
                         )
                     }
                 }
@@ -89,15 +140,10 @@ fun Etager_LazyColumn_App2(
 
                     item(
                         key = "product_${product.keyID}",
-                        span = if (isExpanded) {
-                            StaggeredGridItemSpan.Companion.FullLine
-                        } else {
-                            StaggeredGridItemSpan.Companion.SingleLane
-                        }
+                        span = if (isExpanded) StaggeredGridItemSpan.FullLine
+                        else StaggeredGridItemSpan.SingleLane,
                     ) {
-                        LazyStigerList_Produits_App2(
-                            product to colors
-                        )
+                        LazyStigerList_Produits_App2(product to colors)
                     }
                 }
             }
@@ -105,14 +151,8 @@ fun Etager_LazyColumn_App2(
     }
 }
 
-/**
- * Catalogue Header - Displays the catalogue name with color
- */
 @Composable
-fun CatalogueHeader(
-    catalogue: M21CataloguesCategorie,
-    modifier: Modifier = Modifier
-) {
+fun CatalogueHeader(catalogue: M21CataloguesCategorie, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -133,9 +173,5 @@ fun CatalogueHeader(
 fun LazyStigerList_Produits_App2(
     productColorPairs: Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>,
 ) {
-    Box(
-        modifier = Modifier.Companion
-    ) {
-        Item_Produit_AppEcranPresntoireJemlaCom(productColorPairs)
-    }
+    Box { Item_Produit_AppEcranPresntoireJemlaCom(productColorPairs) }
 }

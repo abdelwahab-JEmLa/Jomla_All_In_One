@@ -138,11 +138,11 @@ class MyApplication : Application() {
                 androidLogger()
                 androidContext(this@MyApplication)
                 modules(modulesDonLesDeuAppNeceFemrePas)
-              if  (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.JomLaElectroLivreurGrossist_PresenterScreen) {
-                 modules(appModule_App2_ac_app1)
-                }  else {
-                  modules(appModule)
-              }
+                if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.JomLaElectroLivreurGrossist_PresenterScreen) {
+                    modules(appModule_App2_ac_app1)
+                } else {
+                    modules(appModule)
+                }
             }
             Log.d(TAG, "✓ Koin initialized")
         } catch (e: Exception) {
