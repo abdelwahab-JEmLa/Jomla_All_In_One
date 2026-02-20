@@ -59,7 +59,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

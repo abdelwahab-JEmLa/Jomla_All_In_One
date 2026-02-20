@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
 @Composable

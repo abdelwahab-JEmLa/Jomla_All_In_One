@@ -52,7 +52,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update

@@ -47,8 +47,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import org.koin.compose.koinInject
 
 fun get_isWifiClientConnected_by_head_vm(uiState: UiState): Boolean =

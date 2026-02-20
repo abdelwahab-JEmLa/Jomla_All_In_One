@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import java.io.File
 
 @Composable

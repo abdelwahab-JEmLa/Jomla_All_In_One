@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 
 sealed class E_ArticleLayout {
     data object DemiUno : E_ArticleLayout()

@@ -23,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.PriceRecord
-import com.example.clientjetpack.ViewModel.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.PriceRecord
+import V.DiviseParSections.App.Shared.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 
 @SuppressLint("DefaultLocale")
 @Composable

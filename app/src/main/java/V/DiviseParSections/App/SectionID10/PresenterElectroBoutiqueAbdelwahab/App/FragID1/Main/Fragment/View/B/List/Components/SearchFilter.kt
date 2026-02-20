@@ -32,8 +32,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 
 @Composable

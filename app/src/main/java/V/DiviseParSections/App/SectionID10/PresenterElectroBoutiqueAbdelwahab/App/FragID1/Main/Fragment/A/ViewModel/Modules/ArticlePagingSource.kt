@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.clientjetpack.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 

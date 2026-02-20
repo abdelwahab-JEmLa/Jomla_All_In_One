@@ -56,8 +56,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject

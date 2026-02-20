@@ -25,8 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.UiState
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
