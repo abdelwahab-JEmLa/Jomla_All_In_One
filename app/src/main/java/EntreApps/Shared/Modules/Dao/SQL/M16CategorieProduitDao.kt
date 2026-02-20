@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
+package EntreApps.Shared.Modules.Dao.SQL
 
 import EntreApps.Shared.Models.M16CategorieProduit
 import androidx.room.Dao
@@ -26,10 +26,10 @@ interface M16CategorieProduitDao {
     @Query("SELECT * FROM M16CategorieProduit ORDER BY position")
     suspend fun getAll(): MutableList<M16CategorieProduit>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(category: M16CategorieProduit)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(categories: List<M16CategorieProduit>)
 
     @Query("DELETE FROM M16CategorieProduit")

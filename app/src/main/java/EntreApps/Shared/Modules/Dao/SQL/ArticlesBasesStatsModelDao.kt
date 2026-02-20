@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao
+package EntreApps.Shared.Modules.Dao.SQL
 
 import EntreApps.Shared.Models.M01Produit
 import androidx.room.Dao
@@ -16,7 +16,7 @@ interface ArticlesBasesStatsModelDao {
     @Update
     suspend fun update(data: M01Produit)
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.Companion.ABORT)
     suspend fun insert(category: M01Produit)
 
     @Delete
@@ -30,7 +30,7 @@ interface ArticlesBasesStatsModelDao {
         block()
     }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(articlesBasesStatTabelles: List<M01Produit>)
 
     @Query("DELETE FROM M01Produit")

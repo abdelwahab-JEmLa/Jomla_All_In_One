@@ -7,9 +7,9 @@ import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.AppDatabase
-import EntreApps.Shared.Models.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.annotation.SuppressLint
 import android.content.Context
@@ -129,16 +129,19 @@ class ViewModel_MainFragment(
         allProducts: List<M01Produit>,
         allCategories: List<M16CategorieProduit>,
     ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
-        val productColorPairs = allColors
-            .groupBy { it.parentBProduitInfosKeyID }
-            .mapNotNull { (id, colors) ->
-                allProducts.find { it.keyID == id }?.let { it to colors }
-            }
-            .sortedBy { (p, _) -> p.nom }
+
+        val colorsByProductId = allColors.groupBy { it.parentBProduitInfosKeyID }
+
+        // FIX: use allProducts as the base — don't drop products that have no colors
+        val productColorPairs = allProducts
+            .sortedBy { it.nom }
+            .map { product -> product to (colorsByProductId[product.keyID] ?: emptyList()) }
 
         val categoryProductPairs = productColorPairs
             .groupBy { (p, _) -> p.idParentCategorie }
-            .mapNotNull { (id, pairs) -> allCategories.find { it.id == id }?.let { it to pairs } }
+            .mapNotNull { (id, pairs) ->
+                allCategories.find { it.id == id }?.let { it to pairs }
+            }
             .sortedBy { (c, _) -> c.positionDouble }
 
         return get_ListM21CataloguesCategorie().sortedBy { it.position }.mapNotNull { catalogue ->

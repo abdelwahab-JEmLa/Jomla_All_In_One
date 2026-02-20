@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
+package EntreApps.Shared.Modules.Dao.SQL
 
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import androidx.room.Dao
@@ -18,7 +18,7 @@ interface M3CouleurProduitInfosDao {
     @Update
     suspend fun update(data: M3CouleurProduitInfos)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(category: M3CouleurProduitInfos)
 
     @Upsert
@@ -30,7 +30,7 @@ interface M3CouleurProduitInfosDao {
     @Query("SELECT * FROM M3CouleurProduitInfos ")
     suspend fun getAll(): MutableList<M3CouleurProduitInfos>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(articlesBasesStatTabelles: List<M3CouleurProduitInfos>)
 
     @Query("DELETE FROM M3CouleurProduitInfos")

@@ -4,9 +4,9 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.toArticle
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.M3CouleurProduitInfosDao
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.M16CategorieProduitDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
 import android.content.Context
 import android.net.ConnectivityManager
 import com.dropbox.core.DbxRequestConfig
@@ -68,8 +68,6 @@ class Initializer_Funcs_app2(
         M16CategorieProduit,
         M3CouleurProduitInfos,
     }
-
-    private var isSeedingFromFirebase = false
 
     // ── Entry point ───────────────────────────────────────────────────────────
     suspend fun initializeAllRepositories() {
@@ -216,15 +214,19 @@ class Initializer_Funcs_app2(
         isOnline: Boolean,
         block: suspend () -> Unit,
     ) {
-        if (!isOnline) { markComplete(repo.name); return }
-        if (isSeedingFromFirebase) return
+        if (!isOnline) {
+            android.util.Log.d("Initializer_Funcs_app2", "${repo.name}: offline — skipping Firebase seed")
+            markComplete(repo.name)
+            return
+        }
         try {
-            isSeedingFromFirebase = true
+            android.util.Log.d("Initializer_Funcs_app2", "${repo.name}: starting seed…")
             setProgress(repo.name, 0.2f)
             block()
+            android.util.Log.d("Initializer_Funcs_app2", "${repo.name}: seed complete ✓")
             markComplete(repo.name)
         } catch (e: Exception) {
-            isSeedingFromFirebase = false
+            android.util.Log.e("Initializer_Funcs_app2", "${repo.name}: seed failed — ${e.message}", e)
             markComplete(repo.name)
         }
     }
