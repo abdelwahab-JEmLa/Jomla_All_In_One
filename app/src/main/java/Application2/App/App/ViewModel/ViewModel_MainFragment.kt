@@ -27,11 +27,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>  = emptyList(),
+    val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
+    val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
     val list_M1Produit: List<M01Produit> = emptyList(),
     val list_M16CategorieProduit: List<M16CategorieProduit> = emptyList(),
     val list_M3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
-    val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
     val initDatasProgressEtate: Float = 0f,
 )
 
@@ -42,8 +42,8 @@ class ViewModel_MainFragment(
     private val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
 
-    private val dao_M1Produit             = appDatabase.dao_M1Produit()
-    private val dao_16CategorieProduit    = appDatabase.dao_16CategorieProduit()
+    private val dao_M1Produit = appDatabase.dao_M1Produit()
+    private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
 
     private val _uiState = MutableStateFlow(UiState())
@@ -65,13 +65,13 @@ class ViewModel_MainFragment(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+    val wifiState =
+        wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() { wifi.startAsClient(); wifi.updateTypePhone(isHost = false) }
+    fun startAsClient() {
+        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+    }
 
     fun disconnect() = wifi.disconnect()
 
@@ -85,15 +85,19 @@ class ViewModel_MainFragment(
         _uiState.update { it.copy(initDatasProgressEtate = progress) }
         if (progress >= 1f) {
             viewModelScope.launch(Dispatchers.IO) {
-                val products   = dao_M1Produit.getAll()
+                val products = dao_M1Produit.getAll()
                 val categories = dao_16CategorieProduit.getAll()
-                val colors     = dao_M3CouleurProduitInfos.getAll()
+                val colors = dao_M3CouleurProduitInfos.getAll()
                 _uiState.update {
                     it.copy(
-                        list_M1Produit           = products,
-                        list_M16CategorieProduit  = categories,
-                        list_M3CouleurProduit     = colors,
-                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(colors, products, categories),
+                        list_M1Produit = products,
+                        list_M16CategorieProduit = categories,
+                        list_M3CouleurProduit = colors,
+                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
+                            colors,
+                            products,
+                            categories
+                        ),
                         active_Central_Values = repositorysMainGetter_app2.active_Central_Values,
                         initDatasProgressEtate = 1f,
                     )
@@ -115,10 +119,14 @@ class ViewModel_MainFragment(
                     if (_uiState.value.initDatasProgressEtate < 1f) return@collect
                     _uiState.update {
                         it.copy(
-                            list_M1Produit          = products,
+                            list_M1Produit = products,
                             list_M16CategorieProduit = categories,
-                            list_M3CouleurProduit    = colors,
-                            grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(colors, products, categories),
+                            list_M3CouleurProduit = colors,
+                            grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
+                                colors,
+                                products,
+                                categories
+                            ),
                         )
                     }
                     wifi.list_M1Produit = products
@@ -134,7 +142,9 @@ class ViewModel_MainFragment(
     ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
         val productColorPairs = allColors
             .groupBy { it.parentBProduitInfosKeyID }
-            .mapNotNull { (id, colors) -> allProducts.find { it.keyID == id }?.let { it to colors } }
+            .mapNotNull { (id, colors) ->
+                allProducts.find { it.keyID == id }?.let { it to colors }
+            }
             .sortedBy { (p, _) -> p.nom }
 
         val categoryProductPairs = productColorPairs
@@ -150,5 +160,7 @@ class ViewModel_MainFragment(
         }
     }
 
-    override fun onCleared() { super.onCleared(); wifi.cancel() }
+    override fun onCleared() {
+        super.onCleared(); wifi.cancel()
+    }
 }
