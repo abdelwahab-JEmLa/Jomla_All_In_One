@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,7 @@ class ViewModelsProduit_T1(
         val colorMatrix: ColorMatrix? = null
     )
     fun calculateUIState(
-        produit: ArticlesBasesStatsTable,
+        produit: M01Produit,
         existingVent: M10OperationVentCouleur?,
         uiState: UiState
     ): ViewVentUIState {
@@ -66,7 +66,7 @@ class ViewModelsProduit_T1(
         )
     }
 
-    fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: M3CouleurProduitInfos) =
+    fun calculateExistingVent(produit: M01Produit?, color: M3CouleurProduitInfos) =
         fVentCouleurOperationRepository.datasValue.find {
             it.parent_M1Produit_KeyId == produit?.keyID && it.parent_M3CouleurProduit_KeyID == color.keyID
         }

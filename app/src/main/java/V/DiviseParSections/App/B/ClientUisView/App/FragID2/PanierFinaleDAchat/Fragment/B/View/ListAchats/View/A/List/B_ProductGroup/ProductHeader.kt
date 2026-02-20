@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ fun ProductHeader(
     onToggleDelivery: () -> Unit,
     onQuantityClick: () -> Unit,
     viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?
+    relative_M1Produit: M01Produit?
 ) {
     Box(
         modifier = Modifier

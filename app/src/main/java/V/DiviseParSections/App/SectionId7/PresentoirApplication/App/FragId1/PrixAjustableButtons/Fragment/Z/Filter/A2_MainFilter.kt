@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.A3_MainList_ItsWorckChezGros
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.content.Context
@@ -19,7 +19,7 @@ fun MainFilter(
     viewModel: TariffsButtonsViewModelSec7ID2,
     list_M8BonVent: List<M8BonVent>,
     tarificationList: List<M13TarificationInfos>,
-    produitInfosList: List<ArticlesBasesStatsTable>,
+    produitInfosList: List<M01Produit>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
@@ -31,7 +31,7 @@ fun MainFilter(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
     val relative_M1Produit = remember(produitInfosList, filterProduitID) {
-        produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
+        produitInfosList.find { it.id.toInt() == filterProduitID } ?: M01Produit()
     }
 
     val relative_M8BonVent = remember(list_M8BonVent, filterBonID) {

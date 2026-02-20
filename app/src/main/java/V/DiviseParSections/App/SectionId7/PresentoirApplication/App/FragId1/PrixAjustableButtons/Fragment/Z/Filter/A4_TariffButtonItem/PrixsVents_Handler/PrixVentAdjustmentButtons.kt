@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -47,7 +47,7 @@ import java.util.SortedMap
 @Composable
 fun PrixVentAdjustmentButtons(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean) -> Unit,
     currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean,

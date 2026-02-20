@@ -2,10 +2,10 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -122,11 +122,11 @@ private fun setupProductFirebaseListener(
     appDatabase: AppDatabase,
     comptApp: Y_Model_ComptApp
 ) {
-    triggerUpdateFbParTimestampsListener<ArticlesBasesStatsTable>(
+    triggerUpdateFbParTimestampsListener<M01Produit>(
         compt = comptApp,
         scope = scope,
-        ref = ArticlesBasesStatsTable.ref,
-        upsertFunction = { product: ArticlesBasesStatsTable ->
+        ref = M01Produit.ref,
+        upsertFunction = { product: M01Produit ->
             appDatabase.dao_M1Produit().upsertData(product)
         },
         callback = {

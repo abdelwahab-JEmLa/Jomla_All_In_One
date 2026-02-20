@@ -2,7 +2,7 @@
 // File: RepositorysMainSetter/Helper/ProduitOperations.kt
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +13,12 @@ class ProduitOperations(
 ) {
     val bproduitdatabaseSubclassfunctionality = bProduitInfosRepository
 
-    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) {
+    fun deleteAddMultiDatas(list_M1Produit: List<M01Produit>) {
         CoroutineScope(Dispatchers.IO).launch {
             bproduitdatabaseSubclassfunctionality.dao.deleteAll()
             bproduitdatabaseSubclassfunctionality.dao.insertAll(list_M1Produit)
 
-            ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
+            M01Produit.safe_Remove_DataBase_Ref()
             bproduitdatabaseSubclassfunctionality.dataBaseCreationFactory.batchFireBaseUpdateArticlesBasesStatsTable(
                 list_M1Produit
             )

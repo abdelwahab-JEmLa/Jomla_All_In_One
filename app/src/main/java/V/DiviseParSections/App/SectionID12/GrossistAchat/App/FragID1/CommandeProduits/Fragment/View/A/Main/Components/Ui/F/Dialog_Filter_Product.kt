@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,7 @@ fun Dialog_Filter_Product(
     activeClient: M2Client?,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    onDismiss: (ArticlesBasesStatsTable?) -> Unit
+    onDismiss: (M01Produit?) -> Unit
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
     val activePeriod = active_Central_Values.active_M14VentPeriode_AuFilterAchats
@@ -265,9 +265,9 @@ fun Dialog_Filter_Product(
 fun LazyColumn_Product(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    products: List<ArticlesBasesStatsTable>,
+    products: List<M01Produit>,
     activeClient: M2Client?,
-    onProductSelected: (ArticlesBasesStatsTable) -> Unit
+    onProductSelected: (M01Produit) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -303,10 +303,10 @@ fun LazyColumn_Product(
 
 @Composable
 fun Item_Product(
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     activeClient: M2Client?,
-    onProductSelected: (ArticlesBasesStatsTable) -> Unit
+    onProductSelected: (M01Produit) -> Unit
 ) {
     Card(
         modifier = Modifier

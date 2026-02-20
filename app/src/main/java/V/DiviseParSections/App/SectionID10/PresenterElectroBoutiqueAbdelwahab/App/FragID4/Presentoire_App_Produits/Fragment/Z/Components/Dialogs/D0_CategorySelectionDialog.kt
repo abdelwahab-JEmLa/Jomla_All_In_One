@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import android.util.Log
@@ -59,9 +59,9 @@ private const val TAG = "CategorySelectionDialog"
 
 @Composable
 fun CategorySelectionDialog_FragID4(
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     allCategories: List<M16CategorieProduit>,
-    allProducts: List<ArticlesBasesStatsTable>, // For calculating products per category
+    allProducts: List<M01Produit>, // For calculating products per category
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
     onCreateNewCategory: (String) -> Unit = {},

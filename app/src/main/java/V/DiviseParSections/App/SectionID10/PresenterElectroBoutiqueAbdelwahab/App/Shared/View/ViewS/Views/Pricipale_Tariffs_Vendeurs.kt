@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.util.Log
 import androidx.compose.foundation.background
@@ -51,7 +51,7 @@ private object TariffTextSizes {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
-    relative_M1produit: ArticlesBasesStatsTable,
+    relative_M1produit: M01Produit,
     tariffsList: List<M13TarificationInfos>,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
@@ -89,7 +89,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 @Composable
 private fun TariffItemSelector(
     tariff: M13TarificationInfos,
-    relative_M1produit: ArticlesBasesStatsTable,
+    relative_M1produit: M01Produit,
     isSelected: Boolean,
     compactMode: Boolean,
     onClick: () -> Unit,
@@ -287,7 +287,7 @@ private fun TariffItem(
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit,
-    relative_M1produit: ArticlesBasesStatsTable,
+    relative_M1produit: M01Produit,
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
 ) {

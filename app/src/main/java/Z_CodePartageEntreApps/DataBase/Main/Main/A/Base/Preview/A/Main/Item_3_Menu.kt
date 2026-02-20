@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.util.Log
 import androidx.compose.foundation.layout.Row
@@ -40,7 +40,7 @@ import org.koin.compose.koinInject
 fun Item_3_Menu(
     title: String,
     isLoading: Boolean = false,
-    dataToExport: List<ArticlesBasesStatsTable> = emptyList(),
+    dataToExport: List<M01Produit> = emptyList(),
     aCentralFacade: ACentralFacade = koinInject(),
     repoM1Produit: RepoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
     onClick_TO_Close_Menu: () -> Unit,
@@ -122,7 +122,7 @@ fun Item_3_Menu(
     }
 }
 
-fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>, ref: String) {
+fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<M01Produit>, ref: String) {
     if (datas.isEmpty()) {
         Log.w("batchFireBaseUpdate", "No data to update")
         return

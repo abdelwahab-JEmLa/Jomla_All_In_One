@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import android.util.Log
 import com.google.firebase.database.DataSnapshot

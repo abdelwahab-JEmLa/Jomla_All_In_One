@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Modules.AppDatabase
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,12 +20,12 @@ class A_ProduitInfosRepository(
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
     data class RepoState(
-        val modelListFlow: List<ArticlesBasesStatsTable>,
+        val modelListFlow: List<M01Produit>,
         val mainProgressRepo: Float
     )
 
     val dao = appDatabase.dao_M1Produit()
-    val ref = ArticlesBasesStatsTable.ref
+    val ref = M01Produit.ref
 
     init {
         //ArticlesBasesStatsTable.securedRemoveFireBaseDB()
@@ -38,7 +38,7 @@ class A_ProduitInfosRepository(
 
     }
 
-    suspend fun updateRepoState(data: List<ArticlesBasesStatsTable>) {
+    suspend fun updateRepoState(data: List<M01Produit>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,

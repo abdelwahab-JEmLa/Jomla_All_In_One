@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 
  fun open_window_infos_produit(
-    focusedVarsHandlerFacade: FocusedActiveValuesFacade,
-    relative_M1Produit: ArticlesBasesStatsTable,
-    onClickToOpenWindow: () -> Unit
+     focusedVarsHandlerFacade: FocusedActiveValuesFacade,
+     relative_M1Produit: M01Produit,
+     onClickToOpenWindow: () -> Unit
 ) {
     focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(
         true

@@ -8,8 +8,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
@@ -17,12 +17,12 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Repo18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
@@ -83,10 +83,10 @@ class RepositorysMainGetter(
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
     //--------------M1----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M1Produit_ByKeyID(keyId: String): ArticlesBasesStatsTable? =
+    fun find_M1Produit_ByKeyID(keyId: String): M01Produit? =
         repo1ProduitInfos.datasValue.find { it.keyID == keyId }
 
-    fun find_M1Produit_By_OldId(oldId: Long?): ArticlesBasesStatsTable? =
+    fun find_M1Produit_By_OldId(oldId: Long?): M01Produit? =
         repo1ProduitInfos.datasValue.find { it.id == oldId }
 
 
@@ -119,7 +119,7 @@ class RepositorysMainGetter(
         repo03CouleurProduitInfos.datasValue.filter { it.parentBProduitInfosKeyID == parentBProduitInfosKeyID }
 
     fun find_M3Couleur_By(
-        m1Produit: ArticlesBasesStatsTable,
+        m1Produit: M01Produit,
         indexCouleurDansAncienProto: Int
     ): M3CouleurProduitInfos? {
         return repo03CouleurProduitInfos.datasValue.find {
@@ -203,13 +203,13 @@ class RepositorysMainGetter(
 
 
     fun getRelatedCouleur(
-        produit: ArticlesBasesStatsTable, colorIndex: Int
+        produit: M01Produit, colorIndex: Int
     ) = repo03CouleurProduitInfos.datasValue.find {
         it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
     }!!
 
     fun getVentForArticleAndColorInThisApp(
-        article: ArticlesBasesStatsTable, colorIndex: Int
+        article: M01Produit, colorIndex: Int
     ): M10OperationVentCouleur? {
         val relatedCouleur = relatedCouleurKeyParAncienMethod(article, colorIndex) ?: return null
         return getVent(relatedCouleur.keyID, article.id)
@@ -231,14 +231,14 @@ class RepositorysMainGetter(
         repo1ProduitInfos.datasValue.filteredParCatalogueBsonId()
     }
 
-    fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int=0): M3CouleurProduitInfos? {
+    fun relatedCouleurKeyParAncienMethod(produit: M01Produit, colorIndex: Int=0): M3CouleurProduitInfos? {
         return repo03CouleurProduitInfos.datasValue.find {
             it.parentBProduitInfosKeyID == produit.keyID &&
                     it.indexCouleurDansAncienProto == (colorIndex)
         }
     }
 
-    fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
+    fun List<M01Produit>.filteredParCatalogueBsonId(): List<M01Produit> {
         val catalogueFilterId =
             repo9AppCompt.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
@@ -346,7 +346,7 @@ class RepositorysMainGetter(
 
         fun createCouleurOnVentKey(
             compt: Z_AppCompt,
-            bProduitDataBase: ArticlesBasesStatsTable,
+            bProduitDataBase: M01Produit,
             indexCouleur: Int,
         ): String {
             return compt.current_OnVent_M14VentPeriode_KeyID + "--${compt.onVentM8BonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"

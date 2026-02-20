@@ -10,7 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.content.Context
@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     viewModel: TariffsButtonsViewModelSec7ID2,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
@@ -285,7 +285,7 @@ fun MainList(
 
 fun find_existing_PrixSuperGros(
     aCentralFacade: ACentralFacade,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
 ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     .lastOrNull { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_SupperGro_Et_PresentationService &&
@@ -294,7 +294,7 @@ fun find_existing_PrixSuperGros(
 
 fun find_existing_Prix_Detaille(
     aCentralFacade: ACentralFacade,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
 ) = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     .lastOrNull { tariff ->
         tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
@@ -302,7 +302,7 @@ fun find_existing_Prix_Detaille(
     }
 
 private fun createProgressiveTariff(
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_Tariff_Prix_Detaille: M13TarificationInfos
 ): M13TarificationInfos {
     return M13TarificationInfos.get_default().copy(

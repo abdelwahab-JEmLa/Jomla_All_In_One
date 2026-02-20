@@ -1,5 +1,5 @@
 package Views.FragId4_EStorePresentationToClient.Modules
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +17,7 @@ import java.io.File
 @Composable
 fun ImageDisplayer7(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
     sizeScreen: Dp

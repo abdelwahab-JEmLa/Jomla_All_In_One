@@ -4,9 +4,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
@@ -41,7 +41,7 @@ import java.io.FileOutputStream
 
 
 suspend fun addNew(
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     context: Context,
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
@@ -56,13 +56,13 @@ suspend fun addNew(
             focusedValuesGetter.active_Central_Values.active_Catalogue_Pour_NewAddedProduit?.premierCategorieId
                 ?: 0
         val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
-        val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
+        val keyID = getPushFireBase(M01Produit.ref)
 
         val currentValues = focusedValuesGetter.active_Central_Values
         val etateActuelle = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
-            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
+            M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie
         } else {
-            ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+            M01Produit.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
         }
 
         val disponibilityState = if (currentValues.active_EtateDispoNonDifinieAuAddNew) {
@@ -128,7 +128,7 @@ fun CameraFABProtoJuin3(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
-    var pendingProduct by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var pendingProduct by remember { mutableStateOf<M01Produit?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
 
     fun getNextColorIndexForNewProduct(): Int {
@@ -189,7 +189,7 @@ fun CameraFABProtoJuin3(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            pendingProduct = ArticlesBasesStatsTable(
+            pendingProduct = M01Produit(
                 id = a_CentralCompoRepositoryProtoJuin9.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
             )
             showCameraDialog = true

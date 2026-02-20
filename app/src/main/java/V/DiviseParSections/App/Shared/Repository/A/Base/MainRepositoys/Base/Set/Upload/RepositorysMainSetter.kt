@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
@@ -17,7 +17,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
@@ -27,7 +27,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
@@ -63,8 +63,8 @@ class RepositorysMainSetter(
 //--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
     //--------------------Repo9----------------------------------------------------------------------------------------------------------------------------
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-        produit: ArticlesBasesStatsTable,
-        currentAppCompt: Z_AppCompt
+    produit: M01Produit,
+    currentAppCompt: Z_AppCompt
     ) {
         val updatedAppCompt = currentAppCompt.copy(
             activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produit.keyID,
@@ -75,7 +75,7 @@ class RepositorysMainSetter(
     //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
     fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: M10OperationVentCouleur? = null,
-        produit: ArticlesBasesStatsTable,
+        produit: M01Produit,
         colorIndex: Int,
         quantity: Int
     ) {
@@ -90,7 +90,7 @@ class RepositorysMainSetter(
     }
 
     fun updateListRelativeVentCouleurPrixVentFacade(
-        m1produitInfos: ArticlesBasesStatsTable?,
+        m1produitInfos: M01Produit?,
         newPrix: Double
     ) {
         if (m1produitInfos != null) {
@@ -142,7 +142,7 @@ class RepositorysMainSetter(
         clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
 
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
-    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) =
+    fun deleteAddMultiDatas(list_M1Produit: List<M01Produit>) =
         produitOperations.deleteAddMultiDatas(list_M1Produit)
 
 
@@ -163,8 +163,8 @@ class RepositorysMainSetter(
     }
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
-    fun upsert_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.upsert(data)
-    fun update2_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
+    fun upsert_M1Produit(data: M01Produit) = repoM1Produit.upsert(data)
+    fun update2_M1Produit(data: M01Produit) = repoM1Produit.update(data)
 
     //------------repo2 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M2Client(data: M2Client) = repo2Client.upsert(data)

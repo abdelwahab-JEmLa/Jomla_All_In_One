@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,10 +24,10 @@ import kotlin.math.round
 fun Card_Gauche_PrixAchatEtBenVendeur(
     modifier: Modifier = Modifier,
     repositorysMainSetter: RepositorysMainSetter,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff:
     Pair<M13TarificationInfos, Boolean>,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    updateProduct: (M01Produit) -> Unit,
     onNextField: (() -> Unit)? = null,
     shouldHideQuickInfoCards: Boolean
 ) {
@@ -121,9 +121,9 @@ fun Card_Gauche_PrixAchatEtBenVendeur(
                         prixAchat = newPrix,
                         prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
                         etateActuelleOnFusionAvecBaseDonne = if (produit.prixAchat == 0.0)
-                            ArticlesBasesStatsTable
+                            M01Produit
                                 .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
-                            ArticlesBasesStatsTable
+                            M01Produit
                                 .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                     )
                     updateProduct(newPrd)

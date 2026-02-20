@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

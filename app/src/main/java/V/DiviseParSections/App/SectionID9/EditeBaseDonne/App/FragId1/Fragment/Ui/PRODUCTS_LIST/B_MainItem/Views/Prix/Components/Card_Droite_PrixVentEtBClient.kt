@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,9 +30,9 @@ import kotlin.math.round
 fun Card_Droite_PrixVentEtBClient(
     modifier: Modifier = Modifier,
     repositorysMainSetter: RepositorysMainSetter,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff: Pair<M13TarificationInfos, Boolean>,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    updateProduct: (M01Produit) -> Unit,
 ) {
     val (relative_Definie_Tariff, itsActiveTariff) = relative_M13Tariffication_DefiniParGerant_Ac_ItsActiveTariff
 

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 fun LazyListScope.categorieSection(
     keyPrefix: String, // FIXED: Added keyPrefix parameter to ensure unique keys
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
+    groupedProducts: Map<Long, List<M01Produit>>,
     availableCategories: List<Long>,
-    onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
+    onProductCategoryChanged: (M01Produit) -> Unit,
     categoryMap: Map<Long, M16CategorieProduit> = emptyMap(),
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
-    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
-    onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
+    selectedProducts: Set<M01Produit> = emptySet(),
+    onProductSelectionToggle: (M01Produit) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {},
 ) {

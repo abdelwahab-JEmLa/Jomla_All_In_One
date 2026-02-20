@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
@@ -39,8 +39,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AffichageDuMode_EditePrix(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    relative_produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    relative_produit: M01Produit,
+    updateProduct: (M01Produit) -> Unit,
     onShowDeleteDialogChange: (Boolean) -> Unit,
     onShowNameEditorChange: (Boolean) -> Unit, // Added name editor parameter
     paddingDefaulte: Dp,

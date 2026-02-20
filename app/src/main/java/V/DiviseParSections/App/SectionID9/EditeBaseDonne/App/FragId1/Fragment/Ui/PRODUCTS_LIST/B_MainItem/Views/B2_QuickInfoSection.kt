@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,8 +34,8 @@ fun formatPrice(price: Double): String {
 @Composable
 fun QuickInfoSection(
     modifier: Modifier,
-    produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    produit: M01Produit,
+    updateProduct: (M01Produit) -> Unit,
     shouldHideQuickInfoCards: Boolean,
 ) {
     Surface(

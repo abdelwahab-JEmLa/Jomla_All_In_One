@@ -4,8 +4,8 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.ColorNameDropdownTextField
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.net.Uri
@@ -64,7 +64,7 @@ import java.io.FileOutputStream
 @Composable
 fun AddNewCouleur(
     modifier: Modifier = Modifier,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     viewModel: ViewModelsProduit_T1,
     size: Dp = 120.dp,
     aCentralFacade: ACentralFacade = koinInject(),

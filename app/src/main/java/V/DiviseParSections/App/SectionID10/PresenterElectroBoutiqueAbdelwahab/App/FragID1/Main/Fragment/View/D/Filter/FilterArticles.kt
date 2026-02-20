@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 
 fun filterArticles(
-    articles: List<ArticlesBasesStatsTable>,
+    articles: List<M01Produit>,
     filterText: String,
     aCentralFacade: ACentralFacade,
-): List<ArticlesBasesStatsTable> {
+): List<M01Produit> {
     val mode_edite_dispo =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
 

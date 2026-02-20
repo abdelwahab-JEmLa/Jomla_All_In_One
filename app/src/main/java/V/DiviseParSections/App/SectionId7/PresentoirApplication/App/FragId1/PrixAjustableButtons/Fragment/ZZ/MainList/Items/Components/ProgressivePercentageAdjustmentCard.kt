@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler.BenefitDisplayRow
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,13 +43,13 @@ import java.util.SortedMap
 
 @Composable
 fun ProgressivePercentageAdjustmentCardItsWorkChezGrossisst_Handler(
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     typeTarification: M13TarificationInfos.TypeChoisi,
     repositorysMainSetter: RepositorysMainSetter,
     onPercentageChange: (Int) -> Unit,
     onPriceChange: (newPrix: Double, shouldCreateNew: Boolean) -> Unit ={_,_->},
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>> ?=null,
-    relative_Produit: ArticlesBasesStatsTable ?=null,
+    relative_Produit: M01Produit ?=null,
     currentTariffPrice: Double=0.0,
     currentApp_Est_Admin: Boolean =false
 ) {

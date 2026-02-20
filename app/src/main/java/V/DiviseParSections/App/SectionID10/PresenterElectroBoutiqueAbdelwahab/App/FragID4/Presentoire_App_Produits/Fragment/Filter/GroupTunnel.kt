@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import androidx.compose.runtime.Composable
@@ -16,9 +16,9 @@ import androidx.compose.runtime.remember
 @Composable
 fun GroupTunnel(
     allColors: List<M3CouleurProduitInfos>,
-    allProducts: List<ArticlesBasesStatsTable>,
+    allProducts: List<M01Produit>,
     allCategories: List<M16CategorieProduit>
-): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> {
+): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
 
     return remember(allColors, allProducts, allCategories) {
         // Get all available catalogues

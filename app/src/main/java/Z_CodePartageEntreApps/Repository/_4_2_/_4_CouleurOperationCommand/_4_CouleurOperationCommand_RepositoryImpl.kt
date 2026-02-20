@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.Log._4_CouleurOperationCommandRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.Update._4_CouleurOperationCommandRepositoryUpdatesOperationsExtension
 import android.util.Log

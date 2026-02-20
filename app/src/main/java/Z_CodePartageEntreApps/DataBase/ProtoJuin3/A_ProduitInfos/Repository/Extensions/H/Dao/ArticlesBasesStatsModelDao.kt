@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -14,16 +14,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ArticlesBasesStatsModelDao {
     @Update
-    suspend fun update(data: ArticlesBasesStatsTable)
+    suspend fun update(data: M01Produit)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(category: ArticlesBasesStatsTable)
+    suspend fun insert(category: M01Produit)
 
     @Delete
-    suspend fun delete(article: ArticlesBasesStatsTable)
+    suspend fun delete(article: M01Produit)
 
-    @Query("SELECT * FROM ArticlesBasesStatsTable")
-    suspend fun getAll(): MutableList<ArticlesBasesStatsTable>
+    @Query("SELECT * FROM M01Produit")
+    suspend fun getAll(): MutableList<M01Produit>
 
     @Transaction
     suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
@@ -31,39 +31,39 @@ interface ArticlesBasesStatsModelDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)
+    suspend fun insertAll(articlesBasesStatTabelles: List<M01Produit>)
 
-    @Query("DELETE FROM ArticlesBasesStatsTable")
+    @Query("DELETE FROM M01Produit")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)
-    @Query("SELECT * FROM ArticlesBasesStatsTable")
-    fun getAllFlow(): Flow<List<ArticlesBasesStatsTable>>
+    suspend fun updateAll(articlesBasesStatTabelles: List<M01Produit>)
+    @Query("SELECT * FROM M01Produit")
+    fun getAllFlow(): Flow<List<M01Produit>>
 
 
     @Insert
-    suspend fun insertData(data: ArticlesBasesStatsTable): Long
+    suspend fun insertData(data: M01Produit): Long
 
 
     @Update
-    suspend fun updateData(data: ArticlesBasesStatsTable)
+    suspend fun updateData(data: M01Produit)
 
     @Delete
-    suspend fun deleteData(data: ArticlesBasesStatsTable)
+    suspend fun deleteData(data: M01Produit)
 
 
-    @Query("SELECT COUNT(*) FROM ArticlesBasesStatsTable")
+    @Query("SELECT COUNT(*) FROM M01Produit")
     suspend fun getCount(): Int
 
     @Upsert
-    suspend fun upsertData(data: ArticlesBasesStatsTable)
+    suspend fun upsertData(data: M01Produit)
 
     @Upsert
-    suspend fun upsertAllDatas(datas: List<ArticlesBasesStatsTable>)
+    suspend fun upsertAllDatas(datas: List<M01Produit>)
 
 
-    @Query("DELETE FROM ArticlesBasesStatsTable")
+    @Query("DELETE FROM M01Produit")
     suspend fun clearTableForRestart()
 
 
@@ -89,7 +89,7 @@ interface ArticlesBasesStatsModelDao {
     /**
      * Check if table is completely empty (useful after restart)
      */
-    @Query("SELECT COUNT(*) FROM ArticlesBasesStatsTable")
+    @Query("SELECT COUNT(*) FROM M01Produit")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 
 }

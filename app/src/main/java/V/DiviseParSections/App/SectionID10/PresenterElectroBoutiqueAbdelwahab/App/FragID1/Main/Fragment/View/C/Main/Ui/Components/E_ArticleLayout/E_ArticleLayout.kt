@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Tex.InfosArticleBottom
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -40,10 +40,10 @@ sealed class E_ArticleLayout {
 
     @Composable
     fun Content(
-        article: ArticlesBasesStatsTable,
+        article: M01Produit,
         viewModelheadViewModelViewModel: HeadViewModel,
         reloadTrigger: Int,
-        onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+        onClickToOpenWindos: (M01Produit, Int) -> Unit,
         uiState: UiState,
         modifier: Modifier = Modifier,
         lockHost: Boolean,
@@ -106,10 +106,10 @@ sealed class E_ArticleLayout {
 
 @Composable
  fun DemiDisplayerDualColor(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier,
     imageSize: DpSize,
@@ -165,10 +165,10 @@ sealed class E_ArticleLayout {
 
 @Composable
  fun SmallSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier,
     imageSize: DpSize,
@@ -203,10 +203,10 @@ sealed class E_ArticleLayout {
 
 @Composable
  fun DemiSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier,
     imageSize: DpSize,

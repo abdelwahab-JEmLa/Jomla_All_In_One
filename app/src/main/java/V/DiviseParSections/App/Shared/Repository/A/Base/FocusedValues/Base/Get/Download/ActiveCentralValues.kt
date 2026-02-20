@@ -3,17 +3,17 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterState_Facad_Boutique
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Ousstad_Tahfid
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Utilisateur
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.Components.Ousstad_Tahfid
+import EntreApps.Shared.Models.Components.Utilisateur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
@@ -58,7 +58,7 @@ data class ActiveCentralValues(
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
     val active_M15Grossist_AuFilterAchats: M15Grossist? = null,
     val active_M2Client_AuFilterAchats: M2Client? = null,
-    val active_M1Produit_AuFilterAchats: ArticlesBasesStatsTable? = null,
+    val active_M1Produit_AuFilterAchats: M01Produit? = null,
 
     val show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean? = false,
     val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode? = null,
@@ -74,7 +74,7 @@ data class ActiveCentralValues(
 
     //-----------------FacadeBoutiqueElectro -------------------------------------------------------------------------------------------------------------------------
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
-    var expanded_M1Produit: ArticlesBasesStatsTable? = null,
+    var expanded_M1Produit: M01Produit? = null,
 
     var hide_prix_lence_vent_buttons: Boolean = false,
 
@@ -147,7 +147,7 @@ data class ActiveCentralValues(
 
     val activeFilters: Set<ActiveFilter> = emptySet(),
 
-    val held_Produit_Pour_Move_Au_Position_Store: ArticlesBasesStatsTable? =null,
+    val held_Produit_Pour_Move_Au_Position_Store: M01Produit? =null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
     // UPDATED: Keep backward compatibility while adding new sort mode
@@ -193,7 +193,7 @@ data class ActiveCentralValues(
 
     sealed class RoleDefinieParSourceACetteFragment {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
-        data class SearchProduit(val produit: ArticlesBasesStatsTable) :
+        data class SearchProduit(val produit: M01Produit) :
             RoleDefinieParSourceACetteFragment()
     }
 

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.Extension
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.SoldArticlesTabelle

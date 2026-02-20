@@ -7,7 +7,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -30,7 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 sealed class ItsLancedDepuit {
-    data class EditeBaseDonne(val relative_Produit: ArticlesBasesStatsTable? =null) : ItsLancedDepuit()
+    data class EditeBaseDonne(val relative_Produit: M01Produit? =null) : ItsLancedDepuit()
     data object Autres : ItsLancedDepuit()
 }
 
@@ -192,7 +192,7 @@ fun TariffsButtonsSec7ID2(
 
 @Composable
 private fun suspendFunction1(
-    produitInfosList: List<ArticlesBasesStatsTable>,
+    produitInfosList: List<M01Produit>,
     viewModel: TariffsButtonsViewModelSec7ID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +11,12 @@ class A_ProduitDataBaseProtoJuin17(
     val dao: ArticlesBasesStatsModelDao,
 ) {
     val repoTAG = "A_ProduitDataBase"
-    val repoRef = ArticlesBasesStatsTable.ref
+    val repoRef = M01Produit.ref
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
-        dataAvecTigerUpdate: ArticlesBasesStatsTable
+        dataAvecTigerUpdate: M01Produit
     ) {
         composScope.launch {
             if (existingIndex >= 0) {
@@ -29,7 +29,7 @@ class A_ProduitDataBaseProtoJuin17(
         }
     }
 
-    fun deleteDataAncienRepo(data: ArticlesBasesStatsTable) {
+    fun deleteDataAncienRepo(data: M01Produit) {
         composScope.launch {
             dao.delete(data)
             deleteFromFireBase(data)
@@ -37,17 +37,17 @@ class A_ProduitDataBaseProtoJuin17(
     }
 
     // Méthode mise à jour pour utiliser toFirebaseMap()
-    suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+    suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<M01Produit>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             // Utilise toFirebaseMap() pour éviter les caractères invalides
             updates[data.keyID] = data.toFirebaseMap()
         }
-        val firebaseRef = ArticlesBasesStatsTable.ref
+        val firebaseRef = M01Produit.ref
         firebaseRef.updateChildren(updates).await()
     }
 
-    private suspend fun deleteFromFireBase(data: ArticlesBasesStatsTable) {
+    private suspend fun deleteFromFireBase(data: M01Produit) {
         val keyToDelete = data.keyFireBase.ifEmpty {
             data.bsonObjectId
         }

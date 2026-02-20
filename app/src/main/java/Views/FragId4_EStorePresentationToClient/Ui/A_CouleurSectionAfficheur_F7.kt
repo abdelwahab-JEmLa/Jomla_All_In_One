@@ -2,7 +2,7 @@ package Views.FragId4_EStorePresentationToClient.Ui
 
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun A_CouleurSectionAfficheur_F7(
     displayController: ProductDisplayController,
-    articlesBasesStatsTable: ArticlesBasesStatsTable,
+    m01Produit: M01Produit,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
     colorsArticlesList: List<ColorsArticlesTabelle>,
@@ -51,10 +51,10 @@ fun A_CouleurSectionAfficheur_F7(
             val arrangement = displayController.getColorArrangement()
             if (arrangement.isEmpty()) {
                 listOf(
-                    articlesBasesStatsTable.idcolor1,
-                    articlesBasesStatsTable.idcolor2,
-                    articlesBasesStatsTable.idcolor3,
-                    articlesBasesStatsTable.idcolor4
+                    m01Produit.idcolor1,
+                    m01Produit.idcolor2,
+                    m01Produit.idcolor3,
+                    m01Produit.idcolor4
                 ).mapNotNull { colorId ->
                     if (colorId != 0L) {
                         colorsArticlesList.find { it.idColore == colorId }
@@ -67,10 +67,10 @@ fun A_CouleurSectionAfficheur_F7(
             }
         } catch (e: Exception) {
             listOf(
-                articlesBasesStatsTable.idcolor1,
-                articlesBasesStatsTable.idcolor2,
-                articlesBasesStatsTable.idcolor3,
-                articlesBasesStatsTable.idcolor4
+                m01Produit.idcolor1,
+                m01Produit.idcolor2,
+                m01Produit.idcolor3,
+                m01Produit.idcolor4
             ).mapNotNull { colorId ->
                 if (colorId != 0L) {
                     colorsArticlesList.find { it.idColore == colorId }
@@ -124,7 +124,7 @@ fun A_CouleurSectionAfficheur_F7(
                         ) {
                             B_CouleurAfficheur_F7(
                                 modifier = Modifier.fillMaxSize(),
-                                article = articlesBasesStatsTable,
+                                article = m01Produit,
                                 color = color,
                                 colorIndex = colorsListToDisplaye.indexOf(color),
                                 viewModelInitApp = viewModelInitApp

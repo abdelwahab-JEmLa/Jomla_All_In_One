@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repositor
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -43,7 +43,7 @@ class Repo11AchatOperation(
     fun genere_Achats_Depuit_M11AchatOperation_List(
         m14VentPeriod: M14VentPeriode?,
         filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>,
-        produits: List<ArticlesBasesStatsTable>,
+        produits: List<M01Produit>,
         bonVents: List<M8BonVent> = emptyList()
     ): List<M11AchatOperation> {
         val filteredVents = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->

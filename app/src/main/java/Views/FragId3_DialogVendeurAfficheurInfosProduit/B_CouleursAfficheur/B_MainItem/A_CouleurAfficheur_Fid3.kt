@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -74,7 +74,7 @@ fun B_CouleurAfficheur(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     color: ColorsArticlesTabelle,
     colorIndex: Int,
     modifier: Modifier = Modifier,
@@ -318,7 +318,7 @@ fun B_CouleurAfficheur(
 @Composable
  fun DebugCouleurBox(
     viewModel: VendeurAfficheurInfosProduitViewModel,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int
 ) {
     val couleur = viewModel.aCentral.repositorysMainGetter.relatedCouleurKeyParAncienMethod(

@@ -2,10 +2,10 @@ package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposi
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -383,7 +383,7 @@ data class M13TarificationInfos(
         )
 
         fun get_default_P0(
-            parentM1ProduitInfos: ArticlesBasesStatsTable,
+            parentM1ProduitInfos: M01Produit,
             start_Prix_Depuit_Ancient: Double,
         ): Pair<M13TarificationInfos, Modifier> {
             val m13TarificationInfos = M13TarificationInfos(
@@ -421,7 +421,7 @@ data class M13TarificationInfos(
         fun remembered_calculated_progressive_changement_tariff(
             relative_Prix_Detaille: Double?,
             relative_Prix_SupperGro_Et_PresentationService: Double?,
-            relative_produit: ArticlesBasesStatsTable,
+            relative_produit: M01Produit,
         ): M13TarificationInfos? {
             // Need at least one price to produce anything
             if (relative_Prix_SupperGro_Et_PresentationService == null && relative_Prix_Detaille == null) {
@@ -453,7 +453,7 @@ data class M13TarificationInfos(
 
 
         fun analyzeSalesDistribution(
-            groupedSales: List<Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>>>
+            groupedSales: List<Map.Entry<TypeChoisi, List<M01Produit>>>
         ): String {
             val totalProducts = groupedSales.sumOf { it.value.size }
             val topProfitableCount = groupedSales

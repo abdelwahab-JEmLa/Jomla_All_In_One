@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -53,7 +53,7 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
     val totalRevenue = groupedSales.sumOf { (_, pairs) -> pairs.sumOf { it.first.prixVent } }
     val profitabilityAnalysis = M13TarificationInfos.analyzeSalesDistribution(
         groupedSales.map { entry ->
-            object : Map.Entry<TypeChoisi, List<ArticlesBasesStatsTable>> {
+            object : Map.Entry<TypeChoisi, List<M01Produit>> {
                 override val key = entry.key
                 override val value = entry.value.map { it.first }
             }
@@ -77,13 +77,13 @@ fun Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
 fun getGroupedVentsByTariffType(
     aCentralFacade: ACentralFacade,
     ventOperations: List<M10OperationVentCouleur>,
-    allProducts: List<ArticlesBasesStatsTable>,
+    allProducts: List<M01Produit>,
     tariffRepo: Repo13TarificationInfos
-): List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>> {
+): List<Map.Entry<TypeChoisi, List<Pair<M01Produit, M13TarificationInfos>>>> {
     val allowedTypes =
         setOf(TypeChoisi.Prix_Detaille, TypeChoisi.Prix_SupperGro_Et_PresentationService)
     val initialGroups =
-        mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
+        mutableMapOf<TypeChoisi, MutableList<Pair<M01Produit, M13TarificationInfos>>>()
 
     ventOperations
         .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
@@ -124,7 +124,7 @@ fun getGroupedVentsByTariffType(
         }
 
     val finalGroups =
-        mutableMapOf<TypeChoisi, MutableList<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>()
+        mutableMapOf<TypeChoisi, MutableList<Pair<M01Produit, M13TarificationInfos>>>()
 
     initialGroups.filter { it.key in allowedTypes }.forEach { (type, pairs) ->
         finalGroups.getOrPut(type) { mutableListOf() }.addAll(pairs)
@@ -152,7 +152,7 @@ fun getGroupedVentsByTariffType(
 // Helper function to find existing retail price for a product
 fun find_existing_Prix_Detaille_Du_Produit(
     aCentralFacade: ACentralFacade,
-    product: ArticlesBasesStatsTable
+    product: M01Produit
 ): M13TarificationInfos? {
     return aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .lastOrNull { tariff ->
@@ -163,7 +163,7 @@ fun find_existing_Prix_Detaille_Du_Produit(
 
 @Composable
 private fun EnhancedTariffTypeSalesDisplay(
-    groupedSales: List<Map.Entry<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>>
+    groupedSales: List<Map.Entry<TypeChoisi, List<Pair<M01Produit, M13TarificationInfos>>>>
 ) {
     Card(
         modifier = Modifier
@@ -186,7 +186,7 @@ private fun EnhancedTariffTypeSalesDisplay(
 @Composable
 private fun EnhancedTariffTypeRow(
     tariffType: TypeChoisi,
-    productTariffPairs: List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>
+    productTariffPairs: List<Pair<M01Produit, M13TarificationInfos>>
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -256,7 +256,7 @@ private fun EnhancedTariffTypeRow(
 
 private fun createDefaultTariffInfo(
     ventOperation: M10OperationVentCouleur,
-    product: ArticlesBasesStatsTable
+    product: M01Produit
 ): M13TarificationInfos {
     return M13TarificationInfos(
         typeChoisi = ventOperation.typeTarificationEnumT2,
@@ -267,8 +267,8 @@ private fun createDefaultTariffInfo(
 }
 
 private fun findClosestPriceType(
-    products: List<ArticlesBasesStatsTable>,
-    allGroups: Map<TypeChoisi, List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>>
+    products: List<M01Produit>,
+    allGroups: Map<TypeChoisi, List<Pair<M01Produit, M13TarificationInfos>>>
 ): TypeChoisi {
     if (products.isEmpty()) return TypeChoisi.Prix_Detaille
 

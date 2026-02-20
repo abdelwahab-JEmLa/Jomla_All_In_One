@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide.Proto
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,7 +13,7 @@ fun SingleImageDisplay(
     onLoadComplete: () -> Unit,
     actualiseSonImage: Int = 0,
     imageRefreshKey: String? = null,
-    product: ArticlesBasesStatsTable?
+    product: M01Produit?
 ) {
     // Check if we should show color text instead of image
     if (imageInfo.shouldShowColorText && imageInfo.colorName.isNotEmpty()) {

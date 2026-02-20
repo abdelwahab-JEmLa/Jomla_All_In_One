@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,7 +44,7 @@ fun Downer_Bar_SemiModularized_Searcher(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     related_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     viewModel: ViewModelsProduit_T1,
     onShowColorsClick: (() -> Unit)? = null,
     isExpanded: Boolean = true,

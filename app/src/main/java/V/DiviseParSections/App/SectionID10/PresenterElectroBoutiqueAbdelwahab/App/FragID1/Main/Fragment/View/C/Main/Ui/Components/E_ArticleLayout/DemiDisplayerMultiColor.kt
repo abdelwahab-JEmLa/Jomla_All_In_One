@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Tex.InfosArticleBottom
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.getColorIdForIndex
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -25,17 +25,17 @@ import org.koin.compose.koinInject
 
 @Composable
  fun DemiDisplayerMultiColor(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier.Companion,
     imageSize: DpSize,
     lockHost: Boolean,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject(),
     viewModelInitApp: ViewModelInitApp,
-    expandedColorIndex: Int? = null   ,
+    expandedColorIndex: Int? = null,
     on_pour_send_data: (String, String) -> Unit,
 ) {
     Column(modifier = modifier.padding(3.dp)) {

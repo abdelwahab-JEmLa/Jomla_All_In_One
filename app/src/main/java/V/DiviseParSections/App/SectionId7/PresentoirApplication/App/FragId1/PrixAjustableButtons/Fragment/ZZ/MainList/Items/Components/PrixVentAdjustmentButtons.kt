@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ZZ.MainList.Items.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,9 +41,9 @@ import java.util.SortedMap
 @Composable
 fun PrixVentAdjustmentButtonsItsWorkChezGrossisst_Handler(
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean,) -> Unit ,
+    onPriceChange: (Double, Boolean,) -> Unit,
     executeClickLogic: () -> Unit
 ) {
     val prixAchat = relative_Produit.prixAchat

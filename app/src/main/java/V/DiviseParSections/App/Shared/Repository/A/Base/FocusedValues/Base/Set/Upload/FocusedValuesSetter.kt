@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.U
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.updateCurrentAppComptDialogProduit
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -82,7 +82,7 @@ class FocusedValuesSetter(
         )
     }
 
-    fun active_M1Produit_Pour_Choisire_TotalQuantity(produit: ArticlesBasesStatsTable) =
+    fun active_M1Produit_Pour_Choisire_TotalQuantity(produit: M01Produit) =
         updateCurrentAppComptDialogProduit(
             getterFocusedValues,
             repo9AppCompt,
@@ -90,7 +90,7 @@ class FocusedValuesSetter(
         )
 
 
-    fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
+    fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: M01Produit) {
         updateCurrentAppComptDialogProduit(getterFocusedValues, repo9AppCompt)
         setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit.keyID,
@@ -100,7 +100,7 @@ class FocusedValuesSetter(
     }
 
     //--------------------activeFocuce_TariffPrixDifineur_M1ProduitKeyID--------------------------------------------------------
-    fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit: ArticlesBasesStatsTable) {
+    fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit: M01Produit) {
         setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit.keyID,
             getterFocusedValues,

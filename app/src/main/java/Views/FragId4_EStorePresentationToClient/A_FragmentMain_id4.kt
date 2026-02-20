@@ -3,7 +3,7 @@ package Views.FragId4_EStorePresentationToClient
 import Views.FragId4_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
 import Views.FragId4_EStorePresentationToClient.Ui.ProductNameSection7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 @Composable
 fun A_FragmentMain_id4(
     displayController: ProductDisplayController,
-    articleStatsDataBase: ArticlesBasesStatsTable,
+    articleStatsDataBase: M01Produit,
     colorsArticlesList: List<ColorsArticlesTabelle>,
     reloadTrigger: Int,
     modifier: Modifier = Modifier, viewModelInitApp: ViewModelInitApp
@@ -95,7 +95,7 @@ fun A_FragmentMain_id4(
                     // Color selection cards with proper scrolling
                     A_CouleurSectionAfficheur_F7(
                         displayController = displayController,
-                        articlesBasesStatsTable = articleStatsDataBase,
+                        m01Produit = articleStatsDataBase,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp),
@@ -111,7 +111,7 @@ fun A_FragmentMain_id4(
 @Composable
 fun FragmentDisplayeInfoProductToClient7(
     displayController: ProductDisplayController,
-    articleStatsDataBase: ArticlesBasesStatsTable,
+    articleStatsDataBase: M01Produit,
     colorsArticlesList: List<ColorsArticlesTabelle>,
     reloadTrigger: Int,
     modifier: Modifier = Modifier, viewModelInitApp: ViewModelInitApp

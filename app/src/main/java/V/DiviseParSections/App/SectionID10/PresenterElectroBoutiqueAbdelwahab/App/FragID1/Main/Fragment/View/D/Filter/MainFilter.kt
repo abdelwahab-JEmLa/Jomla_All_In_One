@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Modules.ArticlePagingSource
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 
-fun ArticlePagingSource.filterArticles(): List<ArticlesBasesStatsTable> {
+fun ArticlePagingSource.filterArticles(): List<M01Produit> {
         return if (filterText.isEmpty()) {
             articles.filter { article ->
                 // Find the corresponding product model

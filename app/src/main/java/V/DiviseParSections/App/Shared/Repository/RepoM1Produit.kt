@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData_M1Produit
@@ -27,7 +27,7 @@ class RepoM1Produit(
     val dao = dataBaseCreationFactory.dao
     private val repoScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
+    private val _datas = mutableStateOf<List<M01Produit>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
 
@@ -69,9 +69,9 @@ class RepoM1Produit(
         }
     }
 
-    fun upsert(data: ArticlesBasesStatsTable) {
+    fun upsert(data: M01Produit) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            ArticlesBasesStatsTable.compareEntre(ancien = ancien, newData = data)
+            M01Produit.compareEntre(ancien = ancien, newData = data)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -86,16 +86,16 @@ class RepoM1Produit(
         addOrUpdatedAncienRepo(existingIndex, data)
     }
 
-    fun deleteData(data: ArticlesBasesStatsTable) {
+    fun deleteData(data: M01Produit) {
         _datas.value = datasValue.filter { existing ->
-            !ArticlesBasesStatsTable.compareEntre(ancien = existing, newData = data)
+            !M01Produit.compareEntre(ancien = existing, newData = data)
         }
         deleteDataAncienRepo(data)
     }
 
     private fun addOrUpdatedAncienRepo(
         existingIndex: Int,
-        data: ArticlesBasesStatsTable
+        data: M01Produit
     ) {
         repoScope.launch {
             dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
@@ -103,7 +103,7 @@ class RepoM1Produit(
     }
 
     private fun deleteDataAncienRepo(
-        data: ArticlesBasesStatsTable
+        data: M01Produit
     ) {
         repoScope.launch {
             dataBaseCreationFactory.deleteDataAncienRepo(data)
@@ -111,14 +111,14 @@ class RepoM1Produit(
     }
 
     companion object {
-        fun ArticlesBasesStatsTable?.logDebugIt(nomVale: String = "") {
+        fun M01Produit?.logDebugIt(nomVale: String = "") {
             Log.d(
                 "ArticlesBasesStatsTable",
                 infos(nomVale)
             )
         }
 
-        private fun ArticlesBasesStatsTable?.infos(
+        private fun M01Produit?.infos(
             nomVale: String
         ) = nomVale + if (this != null) {
             keyID
@@ -129,7 +129,7 @@ class RepoM1Produit(
         }
     }
 
-    fun update(data: ArticlesBasesStatsTable) {
+    fun update(data: M01Produit) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }
@@ -158,7 +158,7 @@ class RepoM1Produit(
         }
         dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
     }
-    fun addOrUpdateData(data: ArticlesBasesStatsTable) {
+    fun addOrUpdateData(data: M01Produit) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }

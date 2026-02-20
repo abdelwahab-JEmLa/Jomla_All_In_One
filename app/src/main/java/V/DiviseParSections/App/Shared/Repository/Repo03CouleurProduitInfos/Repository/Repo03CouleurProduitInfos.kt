@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository
 
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
@@ -97,7 +98,7 @@ class Repo03CouleurProduitInfos(
     companion object {
         fun getRelatedCouleur(
             aCentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
-            produit: ArticlesBasesStatsTable,
+            produit: M01Produit,
             colorIndex: Int
         ) =
             aCentralCompoRepositoryProtoJuin9.repo03CouleurProduitInfos.datasValue

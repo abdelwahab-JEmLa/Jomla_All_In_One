@@ -7,9 +7,9 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M16CategorieProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -46,14 +46,14 @@ fun MainList(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelInitApp: ViewModelInitApp,
     headViewModelViewModel: HeadViewModel,
-    produits: List<ArticlesBasesStatsTable>,
+    produits: List<M01Produit>,
     uiState: UiState,
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     currentClient: M2Client?,
     lockHost: Boolean,
     on_pour_send_data: (String, String) -> Unit,
@@ -89,7 +89,7 @@ fun MainList(
             }
 
             articlesForCategory.sortedWith(
-                compareBy<ArticlesBasesStatsTable> { article ->
+                compareBy<M01Produit> { article ->
                     article.positionDonSonCesFrereCategorieProduits
                 }.thenByDescending { article ->
                     article.creationTimestamp

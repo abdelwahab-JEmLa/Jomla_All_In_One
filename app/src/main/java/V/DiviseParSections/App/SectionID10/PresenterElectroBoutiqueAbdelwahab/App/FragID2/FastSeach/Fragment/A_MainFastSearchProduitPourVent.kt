@@ -12,9 +12,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -60,7 +60,7 @@ fun get_New_Datas(
     searchQuery: String,
     aCentralFacade: ACentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-): Pair<ArticlesBasesStatsTable?, M3CouleurProduitInfos?> {
+): Pair<M01Produit?, M3CouleurProduitInfos?> {
     val catalogues = get_ListM21CataloguesCategorie().sortedBy { it.position }
     val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
     val idParentCategorie = catalogues.find {
@@ -68,10 +68,10 @@ fun get_New_Datas(
     }?.premierCategorieId
 
     val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
-    val keyID = getPushFireBase(ArticlesBasesStatsTable.ref)
+    val keyID = getPushFireBase(M01Produit.ref)
 
     val newProduit = idParentCategorie?.let {
-        ArticlesBasesStatsTable.get_Default().copy(
+        M01Produit.get_Default().copy(
             keyID = keyID,
             id = newOldId,
             creationTimestamp = System.currentTimeMillis(),

@@ -7,9 +7,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -54,7 +54,7 @@ fun ViewVentCouleur_Module(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_M3CouleurProduit: M3CouleurProduitInfos,
     size: Dp = 200.dp
 ) {
@@ -307,7 +307,7 @@ data class ViewVentUIState(
 )
 
 fun calculateUIState(
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     existingVent: M10OperationVentCouleur?,
 ): ViewVentUIState {
     val ventKey = existingVent?.keyID ?: ""

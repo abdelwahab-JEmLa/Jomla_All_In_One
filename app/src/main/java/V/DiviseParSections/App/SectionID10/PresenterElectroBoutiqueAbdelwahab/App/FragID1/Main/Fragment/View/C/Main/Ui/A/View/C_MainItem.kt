@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.A_Expanded_Produit_Ac_Multi_Couleurs
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout.E_ArticleLayout
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +22,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun ArticleItem(
-    relative_M1produit: ArticlesBasesStatsTable,
+    relative_M1produit: M01Produit,
     repositorysMainGetter: RepositorysMainGetter= koinInject(),
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     viewModelheadViewModelViewModel: HeadViewModel,
@@ -32,7 +32,7 @@ fun ArticleItem(
     uiState: UiState,
     isFirstVisible: Boolean = false,
     lockHost: Boolean,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     isExpanded: Boolean = false,
     expandedElevation: Dp = 4.dp,
     on_pour_send_data: (String, String) -> Unit,

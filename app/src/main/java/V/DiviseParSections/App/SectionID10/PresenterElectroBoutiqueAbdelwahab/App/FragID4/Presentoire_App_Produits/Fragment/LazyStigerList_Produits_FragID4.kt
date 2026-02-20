@@ -5,9 +5,9 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
@@ -51,11 +51,11 @@ import org.koin.compose.koinInject
 @Composable
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier.Companion,
-    cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>>,
+    cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
     onClickImageToShowControles: () -> Unit,
-    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
+    onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
@@ -247,7 +247,7 @@ fun CatalogueHeader(
 @Composable
 fun LazyStigerList_Produits_FragID4(
     modifier: Modifier = Modifier.Companion,
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,

@@ -12,7 +12,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Educatio
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -106,7 +106,7 @@ fun AppNavHost(
     var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
     var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
-    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<M01Produit?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }

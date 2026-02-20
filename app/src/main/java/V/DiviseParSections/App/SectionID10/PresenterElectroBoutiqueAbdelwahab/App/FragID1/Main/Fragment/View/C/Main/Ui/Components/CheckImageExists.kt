@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File
 
 fun checkImageExists(
     viewModel: HeadViewModel,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     reloadTrigger: Int,
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos

@@ -13,12 +13,12 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M01Produit.EtateActuelleOnFusionAvecBaseDonne
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -73,7 +73,7 @@ fun EditeBaseDonneMainScreenIdS9(
     val currentMode = uiState.currentMode
     var filterState by remember { mutableStateOf(FilterState()) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
-    var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
+    var selectedProducts by remember { mutableStateOf(setOf<M01Produit>()) }
     var showBulkMoveDialog by remember { mutableStateOf(false) }
 
     // FIXED: Proper collection operation for selectedCategories
@@ -264,7 +264,7 @@ fun EditeBaseDonneMainScreenIdS9(
     }
 }
 
-private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
+private fun Set<M01Produit>.toggleProduct(product: M01Produit): Set<M01Produit> {
     return if (contains(product)) this - product else this + product
 }
 
@@ -273,9 +273,9 @@ private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesSta
  * This function handles different sort orders while maintaining category-aware positioning.
  */
 private fun applySortOrderWithCategoryPosition(
-    products: List<ArticlesBasesStatsTable>,
+    products: List<M01Produit>,
     sortOrder: SortOrder
-): List<ArticlesBasesStatsTable> {
+): List<M01Produit> {
     return when (sortOrder) {
         SortOrder.ID_DESC -> products.sortedByDescending { it.id }
         SortOrder.ID_ASC -> products.sortedBy { it.id }
@@ -297,12 +297,12 @@ private fun applySortOrderWithCategoryPosition(
  * @param products List of products to sort
  * @return List of products sorted by category and position within category
  */
-private fun applyCategoryGroupedSorting(products: List<ArticlesBasesStatsTable>): List<ArticlesBasesStatsTable> {
+private fun applyCategoryGroupedSorting(products: List<M01Produit>): List<M01Produit> {
     return products.groupBy { it.idParentCategorie }
         .toSortedMap(nullsFirst())
         .flatMap { (_, categoryProducts) ->
             categoryProducts.sortedWith(
-                compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                compareBy<M01Produit> { it.positionDonSonCesFrereCategorieProduits }
                     .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
                     .thenBy { it.id }
             )
@@ -318,9 +318,9 @@ private fun applyCategoryGroupedSorting(products: List<ArticlesBasesStatsTable>)
  * @return List of products maintaining category grouping and proper positioning
  */
 private fun applyCategoryGroupedSortingWithPosition(
-    filteredProducts: List<ArticlesBasesStatsTable>,
-    categoryGroupedProducts: List<ArticlesBasesStatsTable>
-): List<ArticlesBasesStatsTable> {
+    filteredProducts: List<M01Produit>,
+    categoryGroupedProducts: List<M01Produit>
+): List<M01Produit> {
     // Create a map for faster lookup
     val filteredProductsSet = filteredProducts.toSet()
 
@@ -356,10 +356,10 @@ private fun applyCategoryGroupedSortingWithPosition(
  * @return List of products sorted by catalogue -> category -> position
  */
 private fun applyCategoryGroupedSortingWithCatalogueLogic(
-    filteredProducts: List<ArticlesBasesStatsTable>,
+    filteredProducts: List<M01Produit>,
     currentCategories: List<M16CategorieProduit>,
-    categoryGroupedProducts: List<ArticlesBasesStatsTable>
-): List<ArticlesBasesStatsTable> {
+    categoryGroupedProducts: List<M01Produit>
+): List<M01Produit> {
     val catalogues = get_ListM21CataloguesCategorie()
 
     // Group categories by catalogue using the same logic as MainList
@@ -368,7 +368,7 @@ private fun applyCategoryGroupedSortingWithCatalogueLogic(
     // Create a map of products by category for quick lookup
     val productsByCategory = filteredProducts.groupBy { it.idParentCategorie ?: 0L }
 
-    val sortedProducts = mutableListOf<ArticlesBasesStatsTable>()
+    val sortedProducts = mutableListOf<M01Produit>()
 
     // Process each catalogue in order
     categoriesByCatalogue.forEach { (catalogue, categories) ->
@@ -385,7 +385,7 @@ private fun applyCategoryGroupedSortingWithCatalogueLogic(
 
                 // Sort products within category by position
                 val sortedProductsInCategory = productsInCategory.sortedWith(
-                    compareBy<ArticlesBasesStatsTable> { it.positionDonSonCesFrereCategorieProduits }
+                    compareBy<M01Produit> { it.positionDonSonCesFrereCategorieProduits }
                         .thenByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
                         .thenBy { it.id }
                 )

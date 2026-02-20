@@ -3,11 +3,11 @@ package com.example.clientjetpack.ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
@@ -49,7 +49,7 @@ import java.util.Date
 import java.util.Locale
 
 data class UiState(
-    val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
+    val articlesBasesStatTables: List<M01Produit> = emptyList(),
     val categories: List<M16CategorieProduit> = emptyList(),
 
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
@@ -326,7 +326,7 @@ open class HeadViewModel(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
+    suspend fun addNewEmptyArticle(nameArticleNIB: String): M01Produit? {
         return try {
             val currentState = _uiState.value
 
@@ -341,7 +341,7 @@ open class HeadViewModel(
             val maxidForSearchArticles =
                 currentState.articlesBasesStatTables.maxOfOrNull { it.idForSearchArticles } ?: 0
             // Create new article with incremented ID
-            val newArticle = ArticlesBasesStatsTable(
+            val newArticle = M01Produit(
                 id = maxIdArticle + 1,
                 nom = nameArticleNIB,
                 idcolor1 = 1,

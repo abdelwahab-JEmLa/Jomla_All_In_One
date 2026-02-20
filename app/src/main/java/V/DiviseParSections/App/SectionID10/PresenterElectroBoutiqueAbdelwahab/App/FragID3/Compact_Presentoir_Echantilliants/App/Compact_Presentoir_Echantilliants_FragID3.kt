@@ -7,12 +7,12 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Components.Jomla_Clients
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App._0.Navigation.Screen
@@ -82,7 +82,7 @@ fun Compact_Presentoir_Echantilliants_FragID3(
     }
 
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
-    var selectedProductForCategoryChange by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
 
     val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
         repositorysMainGetter.repoM16CategorieProduit.datasValue
@@ -209,12 +209,12 @@ fun Compact_Presentoir_Echantilliants_FragID3(
 @Composable
 fun Etager_LazyColumn_FragID3(
     modifier: Modifier = Modifier,
-    categoriesWithProducts: List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>,
+    categoriesWithProducts: List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
     catalogues: List<M21CataloguesCategorie>,
     categoryMap: Map<Long, M16CategorieProduit>,
-    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
+    onProductCategoryClick: (M01Produit) -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     isWifiClientConnected_1: Boolean
 ) {
@@ -293,11 +293,11 @@ fun Etager_LazyColumn_FragID3(
 
 @Composable
 private fun ProductItemWithCategory(
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
     categoryMap: Map<Long, M16CategorieProduit>,
     catalogues: List<M21CataloguesCategorie>,
-    onProductCategoryClick: (ArticlesBasesStatsTable) -> Unit,
+    onProductCategoryClick: (M01Produit) -> Unit,
     on_pour_send_data: (String, String) -> Unit,
     isWifiClientConnected_1: Boolean
 ) {
@@ -325,7 +325,7 @@ private fun ProductItemWithCategory(
 @Composable
 fun LazyStigerList_Produits_FragID3(
     modifier: Modifier = Modifier,
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,

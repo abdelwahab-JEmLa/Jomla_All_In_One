@@ -1,7 +1,7 @@
 package Views.Package_4.SoldCartScreen.Components
 
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -56,7 +56,7 @@ import java.io.File
 @Composable
 fun ImageDisplayer4(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
@@ -120,10 +120,10 @@ fun ImageDisplayer4(
 @Composable
 fun CartItem(
     soldArticle: SoldArticlesTabelle,
-    baseArticle: ArticlesBasesStatsTable,
+    baseArticle: M01Produit,
     colors: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
-    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
+    onOpenArticleStats: (M01Produit, Int) -> Unit,
     uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: M2Client
 ) {
     ElevatedCard(
@@ -253,12 +253,12 @@ fun OrderSuccessMessage() {
 
 @Composable
 private fun ColorItemWithQuantity(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     quantity: Int,
     onDelete: () -> Unit,
     viewModel: HeadViewModel,
-    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
+    onOpenArticleStats: (M01Produit, Int) -> Unit,
     uiState: UiState,
     colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier,

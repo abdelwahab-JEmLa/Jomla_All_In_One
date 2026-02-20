@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -41,7 +41,7 @@ fun SearchFilterPB(
     showFilter: Boolean,
     filterText: String,
     onFilterTextChange: (String) -> Unit,
-    onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
+    onAddNotInBaseArticle: (M01Produit, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     uiState: UiState,

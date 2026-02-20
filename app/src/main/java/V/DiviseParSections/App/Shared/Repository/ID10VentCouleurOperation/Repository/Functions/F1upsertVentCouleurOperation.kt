@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 
 fun upsertVentCouleurOperation(
     fCouleurVentOperation: M10OperationVentCouleur? = null,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     colorIndex: Int,
     quantity: Int,
     zAppComptRepositoryComposable: Repo9AppCompt,

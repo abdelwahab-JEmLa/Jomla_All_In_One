@@ -4,9 +4,9 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,15 +52,15 @@ fun ArticleImageWithOverlay(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel = koinViewModel(),
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     reloadTrigger: Int,
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
     qualityImagePourcentage: Int = 100,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindow: (M01Produit, Int) -> Unit,
     alwaysShowExpandIcon: Boolean = false,
-    its_secondary_affiche: Boolean = false  ,
+    its_secondary_affiche: Boolean = false,
     on_pour_send_data: (String, String) -> Unit,
 ) {
 
@@ -275,7 +275,7 @@ private fun DisponibilityIndicator(
 @Composable
 private fun AfficheKeyCouleurAvecVent(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
 ) {
     val couleur = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)

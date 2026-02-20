@@ -1,5 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,7 @@ import java.io.File
 @Composable
 fun ImageDisplayer3(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit

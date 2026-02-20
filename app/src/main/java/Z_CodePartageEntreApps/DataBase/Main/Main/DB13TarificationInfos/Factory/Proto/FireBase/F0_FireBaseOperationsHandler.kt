@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.ReflectionUtils.isSyntheticProperty
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.ReflectionUtils.sanitizeValue
@@ -234,7 +234,7 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    fun convertArticlesBasesToProduitInfos(ancientsListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
+    fun convertArticlesBasesToProduitInfos(ancientsListe: List<M01Produit>): List<A_ProduitInfos> {
         return ancientsListe.map { ancien ->
             parseDepuitOldAuNew(ancien)
         }

@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
@@ -72,7 +72,7 @@ private const val TAG = "ImageDisplayer"
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayerProtoAvantJuin3(
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
@@ -89,8 +89,8 @@ fun ImageDisplayerProtoAvantJuin3(
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
-    shouldShowExpandIcon: Boolean = false ,
-    its_secondary_affiche: Boolean = false ,
+    shouldShowExpandIcon: Boolean = false,
+    its_secondary_affiche: Boolean = false,
     on_pour_send_data: (String, String) -> Unit,
 
     ) {
@@ -394,7 +394,7 @@ fun AutoResizedText(
 }
 
 fun RequestBuilder<Drawable>.applyImageOptions(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     indexColor: Int,
     quality: Float,
     onResourceReady: (Boolean) -> Unit

@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Item_2_Menu
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1.Companion.get_old_Datas
@@ -111,7 +111,7 @@ fun MainScreen(
                                 if (safeCountClick == 0)
                                     safeCountClick++
                                 else {
-                                    ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
+                                    M01Produit.safe_Remove_DataBase_Ref()
                                     showMenu = false
                                     safeCountClick = 0
                                 }

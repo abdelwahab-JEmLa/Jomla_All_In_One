@@ -3,10 +3,10 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
@@ -73,7 +73,7 @@ class DataBaseInitFactory_M3CouleurProduitInfos(
     }
 
     fun initCreationDepuitOld(
-        produit: ArticlesBasesStatsTable,
+        produit: M01Produit,
     ): List<M3CouleurProduitInfos> {
 
         val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -340,7 +340,7 @@ private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
 
 @Composable
 fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     getter: RepositorysMainGetter = koinInject(),
 ) {

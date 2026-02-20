@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -89,7 +89,7 @@ fun getActiveMigration(): Boolean {
     return false
 }
 
-fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
+fun parseDepuitOldAuNew(ancien: M01Produit) =
     A_ProduitInfos(
         id = ancien.id.toLong(),
         nom = ancien.nom,

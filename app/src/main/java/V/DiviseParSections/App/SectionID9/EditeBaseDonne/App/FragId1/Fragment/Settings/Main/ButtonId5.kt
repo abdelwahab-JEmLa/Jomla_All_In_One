@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import java.io.File
 @Composable
 fun ButtonId5(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    list_M1Produit: List<ArticlesBasesStatsTable> = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
+    list_M1Produit: List<M01Produit> = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
     list_M16CategorieProduit: List<M16CategorieProduit> = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue,
     showLabels: Boolean,
     onImportSuccess: () -> Unit = {}

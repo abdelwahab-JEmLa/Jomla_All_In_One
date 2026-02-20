@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import android.util.Log
 
 // Fixed: Return the updated data instead of void, and made synchronous
 fun getData_AvecUpdated_Carton(
     oldDatas: List<OldDataBase_M1>,
     aCentralFacade: ACentralFacade
-): List<ArticlesBasesStatsTable> {
+): List<M01Produit> {
     return try {
-        val updatedProducts = mutableListOf<ArticlesBasesStatsTable>()
+        val updatedProducts = mutableListOf<M01Produit>()
 
         // Wait for the repository to have data loaded
         val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue

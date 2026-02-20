@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
@@ -32,11 +32,11 @@ fun Prix_Detailer_Section(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     repo13TarificationInfos: Repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     shouldHideQuickInfoCards: Boolean,
     showDetailsExpanded: Boolean,
     onNextField: (() -> Unit)? = null,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit
+    updateProduct: (M01Produit) -> Unit
 ) {
     // FIXED: Get selectedTypeChoisi from viewModel's uiState
     val uiState by viewModel.uiState.collectAsState()

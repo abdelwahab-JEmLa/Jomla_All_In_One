@@ -11,7 +11,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues.ModeEditesProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +42,7 @@ fun ProductItem(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier,
     mainComposRepository: RepoM1Produit,
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     uiState: Sec9FragId1ViewId2ViewModel.UiState,
     shouldHideQuickInfoCards: Boolean,
     onNextField: (() -> Unit)? = null,
@@ -55,7 +55,7 @@ fun ProductItem(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showNameEditor by remember { mutableStateOf(false) }
 
-    fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
+    fun updateProduct(updatedProduct: M01Produit) {
         mainComposRepository.upsert(updatedProduct)
     }
 

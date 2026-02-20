@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,7 @@ import java.text.DecimalFormat
 
 @Composable
 fun Header(
-    relative_produit: ArticlesBasesStatsTable,
+    relative_produit: M01Produit,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>
 ) {
@@ -162,10 +162,10 @@ fun updated_Achats(
 
 @Composable
 fun Card_StatueDuProduit(
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     repositorysMainSetter: RepositorysMainSetter = koinInject()
 ) {
-    fun update_produit(produit: ArticlesBasesStatsTable): Unit {
+    fun update_produit(produit: M01Produit): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )

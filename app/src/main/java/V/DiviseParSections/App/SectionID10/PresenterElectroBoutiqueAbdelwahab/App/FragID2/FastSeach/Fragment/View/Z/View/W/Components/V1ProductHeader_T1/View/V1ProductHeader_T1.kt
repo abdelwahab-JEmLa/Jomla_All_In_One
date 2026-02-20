@@ -12,7 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
 import android.annotation.SuppressLint
@@ -82,7 +82,7 @@ fun String.capitalizeWords(): String {
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ProductHeader_T1(
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     viewModel: ViewModelsProduit_T1,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
@@ -124,7 +124,7 @@ fun ProductHeader_T1(
         categoriesMap[categoryId]?.nom
     } ?: "Sans Catégorie"
 
-    fun update_produit(produit: ArticlesBasesStatsTable): Unit {
+    fun update_produit(produit: M01Produit): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )
@@ -714,10 +714,10 @@ fun ProductHeader_T1(
 
 @Composable
 fun Card_StatueDuProduit(
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     repositorysMainSetter: RepositorysMainSetter = koinInject()
 ) {
-    fun update_produit(produit: ArticlesBasesStatsTable): Unit {
+    fun update_produit(produit: M01Produit): Unit {
         repositorysMainSetter.upsert_M1Produit(
             produit
         )

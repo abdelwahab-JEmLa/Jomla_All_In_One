@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -40,7 +40,7 @@ fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
 fun updateCurrentAppComptDialogProduit(
     getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt,
-    produit: ArticlesBasesStatsTable? = null
+    produit: M01Produit? = null
 ) {
     val currentAppCompt = getterFocusedVars.currentActive_M9AppCompt
     if (currentAppCompt == null) {

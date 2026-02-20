@@ -7,7 +7,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -50,7 +50,7 @@ import org.koin.compose.koinInject
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ProductHeader_SemiModularized(
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     viewModel: ZViewModel_Sec1Frag3,
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
@@ -203,7 +203,7 @@ fun ProductHeader_SemiModularized(
 @Composable
 private fun Card_Produit_Nombre_Unites_Enhanced(
     allNonTrouve: Boolean,
-    relative_Produit: ArticlesBasesStatsTable,
+    relative_Produit: M01Produit,
     onClick_PourOuvrireDialog: () -> Unit,
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
@@ -289,7 +289,7 @@ private fun Card_Produit_Nombre_Unites_Enhanced(
 private fun Card_Controls_Enhanced(
     allNonTrouve: Boolean,
     hasNonTrouve: Boolean,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
     viewModel: ZViewModel_Sec1Frag3,
     onShowCartonsDialog: () -> Unit,
@@ -458,7 +458,7 @@ private fun ProductInfoSection(
 
 @Composable
 private fun ActionsSection(
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     allNonTrouve: Boolean,
     hasNonTrouve: Boolean,
     viewModel: ZViewModel_Sec1Frag3,

@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 
 // Helper function to create add_New test product
-fun createTestProduct(): ArticlesBasesStatsTable {
+fun createTestProduct(): M01Produit {
     val randomId = (1000..9999).random().toLong()
-    return ArticlesBasesStatsTable(
+    return M01Produit(
         id = randomId,
         nom = "Test Product $randomId",
         nomArab = "منتج تجريبي $randomId",

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun E_StickyHeader(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
+    groupedProducts: Map<Long, List<M01Produit>>,
     categoryId: Long?,
     category: M16CategorieProduit? = null,
 ) {

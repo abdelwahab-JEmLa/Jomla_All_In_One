@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.ViewS.Views
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs(
-    relative_M1produit: ArticlesBasesStatsTable,
+    relative_M1produit: M01Produit,
     tariffsList: List<M13TarificationInfos>
 ) {
     // Define the tariff types to display in order
@@ -113,7 +113,7 @@ private fun TariffItem(
 
 private fun shouldShowDefaultTariff(
     tariffType: M13TarificationInfos.TypeChoisi,
-    produit: ArticlesBasesStatsTable
+    produit: M01Produit
 ): Boolean {
     return when (tariffType) {
         M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
@@ -124,7 +124,7 @@ private fun shouldShowDefaultTariff(
 
 private fun getDefaultPrice(
     tariffType: M13TarificationInfos.TypeChoisi,
-    produit: ArticlesBasesStatsTable
+    produit: M01Produit
 ): Double {
     return when (tariffType) {
         M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> produit.prixVent

@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -54,7 +54,7 @@ import java.util.Locale
 @Composable
 fun ProductsListDialog(
     tariffType: M13TarificationInfos.TypeChoisi,
-    productTariffPairs: List<Pair<ArticlesBasesStatsTable, M13TarificationInfos>>,
+    productTariffPairs: List<Pair<M01Produit, M13TarificationInfos>>,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -114,7 +114,7 @@ fun ProductsListDialog(
 @Composable
 private fun ProductItemCard(
     aCentralFacade: ACentralFacade= koinInject(),
-    product: ArticlesBasesStatsTable,
+    product: M01Produit,
     tariffInfo: M13TarificationInfos,
     tariffType: M13TarificationInfos.TypeChoisi
 ) {

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.triggerUpdateFbParTimestampsListener
 import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.creeStrDate_Et_Time_Depuit_CreationTT
@@ -144,7 +144,7 @@ data class M17MessageVocale(
 
         fun createTestInstance(): List<M17MessageVocale> { return emptyList() }
 
-        fun removeRef(preparedData: M17MessageVocale) { ArticlesBasesStatsTable.ref.child(preparedData.keyID).removeValue() }
+        fun removeRef(preparedData: M17MessageVocale) { M01Produit.ref.child(preparedData.keyID).removeValue() }
 
     }
 }

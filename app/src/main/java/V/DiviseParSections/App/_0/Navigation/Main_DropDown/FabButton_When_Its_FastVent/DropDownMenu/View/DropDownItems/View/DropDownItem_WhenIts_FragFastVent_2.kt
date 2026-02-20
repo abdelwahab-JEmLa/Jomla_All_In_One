@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
@@ -51,7 +51,7 @@ fun DropDownItem_WhenIts_FragFastVent_2(
                 val currentData = repositorysMainGetter.repo1ProduitInfos.datasValue
 
                 val sortedData = currentData.sortedWith(
-                    compareBy<ArticlesBasesStatsTable> { it.position_store_3jamale }
+                    compareBy<M01Produit> { it.position_store_3jamale }
                         .thenByDescending { it.dernier_timeTamps_position_store_3jamale }
                         .thenBy { it.its_Carton }
                         .thenBy { it.cartonState }

@@ -1,7 +1,7 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -46,7 +46,7 @@ import org.koin.compose.koinInject
 @Composable
 fun B_CouleurAfficheur_F7(
     modifier: Modifier,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     color: ColorsArticlesTabelle?,
     colorIndex: Int,
     viewModelInitApp: ViewModelInitApp
@@ -222,7 +222,7 @@ fun B_CouleurAfficheur_F7(
 
 @Composable
 fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     getter: RepositorysMainGetter = koinInject(),
 ) {

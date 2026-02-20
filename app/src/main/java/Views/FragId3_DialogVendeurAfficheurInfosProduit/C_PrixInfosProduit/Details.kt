@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -31,7 +31,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 @Composable
 fun Details(
     isDetailsVisible: Boolean,
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     uiState: UiState,
     viewModel: HeadViewModel,
     lockExpandedPrices: Boolean,
@@ -88,7 +88,7 @@ fun Details(
 
 @Composable
 private fun PriceDetailsTable(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     allTimeMaxPrice: Double,
     priceHistory: List<PriceRecord>
 ) {

@@ -1,3 +1,9 @@
+import java.util.Properties
+
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) load(f.inputStream())
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -22,12 +28,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-
-        // Configuration multidex si nécessaire
+        vectorDrawables { useSupportLibrary = true }
         multiDexEnabled = true
+
+        val dropboxToken = localProps.getProperty("DROPBOX_ACCESS_TOKEN", "")
+
+        buildConfigField("String", "DROPBOX_ACCESS_TOKEN", "\"$dropboxToken\"")
     }
 
     buildTypes {
@@ -44,12 +50,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    kotlinOptions { jvmTarget = "1.8" }
+
     buildFeatures {
         compose = true
-        buildConfig = true
+        buildConfig = true   // ← génère la classe BuildConfig
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -73,7 +78,7 @@ android {
 }
 
 dependencies {
-    // Core Android dependencies
+    // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -85,14 +90,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Firebase - Utilisez le BOM pour gérer les versions
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.engage.core)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage.ktx)
 
-    // Compose additional
+    // Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.navigation.compose)
@@ -111,7 +116,7 @@ dependencies {
     implementation(libs.compose.v100beta01)
     implementation(libs.glide.transformations)
 
-    // Database
+    // Room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
@@ -123,7 +128,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
-    // Maps & Location
+    // Maps
     implementation(libs.play.services.nearby)
     implementation(libs.osmdroid.android)
     implementation(libs.osmdroid.wms)
@@ -133,11 +138,11 @@ dependencies {
     // Animations
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
-    // Dependency Injection
+    // Koin DI
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 
-    // Database - Realm
+    // Realm
     implementation("io.realm.kotlin:library-base:1.12.0")
     implementation("io.realm.kotlin:library-sync:1.12.0")
 
@@ -151,12 +156,15 @@ dependencies {
     // MongoDB
     implementation("org.mongodb:bson:4.11.1")
 
-    // PDF Generation - iText7
+    // PDF
     implementation("com.itextpdf:itext7-core:7.2.5")
     implementation("com.itextpdf:html2pdf:4.0.5")
 
-    // For coroutines with Firebase
+    // Coroutines + Firebase
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // Dropbox SDK officiel
+    implementation("com.dropbox.core:dropbox-core-sdk:7.0.0")
 
     // ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
@@ -166,17 +174,16 @@ dependencies {
     // ExifInterface
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
-    // Desugaring for Java 8+ API support on older Android versions
+    // Desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    // Apache POI for Excel
+    // Excel
     implementation("org.apache.poi:poi-ooxml:5.2.3")
 
-    // Persian/Hijri Calendar
+    // Calendar
     implementation("com.aminography:primecalendar:1.7.0")
 
-    // ================== TESTING DEPENDENCIES ==================
-    // Unit Testing
+    // Tests
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     testImplementation("org.mockito:mockito-core:4.11.0")
@@ -185,27 +192,19 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("io.mockk:mockk-android:1.13.5")
-
-    // Koin Testing
     testImplementation("io.insert-koin:koin-test:3.5.0")
     testImplementation("io.insert-koin:koin-test-junit4:3.5.0")
 
-    // Android Instrumented Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
-
-    // Compose Testing Dependencies
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.compose.ui:ui-test-manifest")
-
-    // Koin Testing for Android Tests
     androidTestImplementation("io.insert-koin:koin-test:3.5.0")
     androidTestImplementation("io.insert-koin:koin-test-junit4:3.5.0")
 
-    // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

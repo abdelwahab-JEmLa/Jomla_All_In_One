@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.Scrollbar
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -49,7 +49,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     viewModelInitApp: ViewModelInitApp,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisibleInit: Boolean,
     onClickToDisplayeConexionWifi: () -> Unit,
@@ -257,7 +257,7 @@ private data class ScrollUpdate(
 
 @Composable
 fun ArticleGridWithScrollbar(
-    produits: List<ArticlesBasesStatsTable>,
+    produits: List<M01Produit>,
     uiState: UiState,
     filterText: String,
     showFilter: Boolean,
@@ -265,7 +265,7 @@ fun ArticleGridWithScrollbar(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (M01Produit, Int) -> Unit,
     currentClient: M2Client?,
     viewModelInitApp: ViewModelInitApp,
     lockHost: Boolean,

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 
-fun ArticlesBasesStatsTable.getColorIdForIndex(index: Int): Long? {
+fun M01Produit.getColorIdForIndex(index: Int): Long? {
     return when (index) {
         0 -> idcolor1.takeIf { it != 0L }
         1 -> idcolor2.takeIf { it != 0L }

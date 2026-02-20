@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Modules
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 
 class ArticlePagingSource(
-    val articles: List<ArticlesBasesStatsTable>,
+    val articles: List<M01Produit>,
     val filterText: String,
     val currentClient: M2Client?,
     private val uiState: UiState,
     val a_ProduitRepository: A_ProduitRepository = GlobalContext.get().get()
-) : PagingSource<Int, ArticlesBasesStatsTable>() {
+) : PagingSource<Int, M01Produit>() {
     private val pageSize = 10
-    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
+    private val cachedFilteredArticles = mutableMapOf<Int, List<M01Produit>>()
 
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, M01Produit>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.let { anchorPage ->
                 anchorPage.prevKey?.plus(1) ?: anchorPage.nextKey?.minus(1)
@@ -28,7 +28,7 @@ class ArticlePagingSource(
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, M01Produit> {
         val page = params.key ?: 0
 
         // Wait until progressRepo reaches 1.0 (data fully loaded)

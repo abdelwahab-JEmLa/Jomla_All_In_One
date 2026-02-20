@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST
 
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.ProductItem
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
@@ -21,7 +21,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun EditeInfosMainList(
     modifier: Modifier = Modifier,
-    filteredAndSortedProduitList: List<ArticlesBasesStatsTable>,
+    filteredAndSortedProduitList: List<M01Produit>,
     aProduitdatabasecomposerepositorypj17: RepoM1Produit,
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
     filterState: FilterState,

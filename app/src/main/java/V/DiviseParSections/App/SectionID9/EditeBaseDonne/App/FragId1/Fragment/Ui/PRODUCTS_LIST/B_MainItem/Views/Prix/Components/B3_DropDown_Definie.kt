@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views.Prix.Components
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TypeChoisiDropdownCard(
     modifier: Modifier = Modifier,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_M13Tariffication: M13TarificationInfos,
     selectedType: M13TarificationInfos.TypeChoisi,
     onTypeSelected: (M13TarificationInfos.TypeChoisi) -> Unit
@@ -254,7 +254,7 @@ fun TypeChoisiDropdownCard(
 @Composable
 fun FloatingAlternativePriceCard(
     alternativeType: M13TarificationInfos.TypeChoisi,
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_M13Tariffication: M13TarificationInfos,
     onDismiss: () -> Unit,
     onSelect: () -> Unit
@@ -319,7 +319,7 @@ fun FloatingAlternativePriceCard(
 
 @Composable
 fun DropDownItems(
-    relative_M1Produit: ArticlesBasesStatsTable,
+    relative_M1Produit: M01Produit,
     relative_M13Tariffication: M13TarificationInfos,
     selectedType: M13TarificationInfos.TypeChoisi,
     onSelected: (M13TarificationInfos.TypeChoisi) -> Unit

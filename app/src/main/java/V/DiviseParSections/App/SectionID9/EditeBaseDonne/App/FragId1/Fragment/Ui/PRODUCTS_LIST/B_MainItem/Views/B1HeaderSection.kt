@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.Views
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
@@ -38,10 +38,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HeaderSection(
     viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
-    produit: ArticlesBasesStatsTable,
+    produit: M01Produit,
     onShowNameEditorChange: (Boolean) -> Unit,
     onShowDeleteDialogChange: (Boolean) -> Unit,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    updateProduct: (M01Produit) -> Unit,
     paddingDefaulte: Dp,
 ) {
     // FIXED: Use collectAsState() instead of collect()

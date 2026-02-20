@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import android.annotation.SuppressLint
 import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 
-fun A_ProduitInfosRepository.getFirebaseData_M1Produit(onSuccess: (List<ArticlesBasesStatsTable>) -> Unit) {
+fun A_ProduitInfosRepository.getFirebaseData_M1Produit(onSuccess: (List<M01Produit>) -> Unit) {
     updateProgress(0.1f)
     ref.get()
         .addOnSuccessListener { snapshot ->
-            val dataList = mutableListOf<ArticlesBasesStatsTable>()
+            val dataList = mutableListOf<M01Produit>()
             snapshot.children.forEach { child ->
                 try {
                     // First, get the raw data as add_New Map
@@ -23,7 +23,7 @@ fun A_ProduitInfosRepository.getFirebaseData_M1Produit(onSuccess: (List<Articles
                         dataList.add(item)
                     } else {
                         // Fallback to direct conversion if rawData is null
-                        child.getValue(ArticlesBasesStatsTable::class.java)?.let { item ->
+                        child.getValue(M01Produit::class.java)?.let { item ->
                             item.keyFireBase = child.key ?: ""
                             dataList.add(item)
                         }
@@ -44,13 +44,13 @@ fun A_ProduitInfosRepository.getFirebaseData_M1Produit(onSuccess: (List<Articles
 }
 
 @SuppressLint("RestrictedApi")
-private fun convertToArticlesBasesStatsTable(data: Map<String, Any>): ArticlesBasesStatsTable {
+private fun convertToArticlesBasesStatsTable(data: Map<String, Any>): M01Produit {
     // Create add_New base object using Firebase's automatic conversion
-    val baseItem = ArticlesBasesStatsTable()
+    val baseItem = M01Produit()
 
     // Apply Firebase's automatic deserialization for all fields
     val tempItem = try {
-        CustomClassMapper.convertToCustomClass(data, ArticlesBasesStatsTable::class.java)
+        CustomClassMapper.convertToCustomClass(data, M01Produit::class.java)
     } catch (e: Exception) {
         baseItem
     }

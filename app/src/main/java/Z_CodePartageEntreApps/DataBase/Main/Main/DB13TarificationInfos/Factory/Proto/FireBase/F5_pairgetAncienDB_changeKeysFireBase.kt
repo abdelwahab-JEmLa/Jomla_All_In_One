@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 
@@ -13,7 +13,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFrom_getAncienDB_changeKeysFir
 
         val articles = articlesSnapshot.children.mapNotNull { snapshot ->
             try {
-                snapshot.getValue(ArticlesBasesStatsTable::class.java)
+                snapshot.getValue(M01Produit::class.java)
             } catch (e: Exception) {
                 println("Error parsing article: ${e.message}")
                 null

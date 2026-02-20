@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +45,7 @@ fun CategoryOptionGridCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
-    productsInCategory: List<ArticlesBasesStatsTable> = emptyList(), // Pass products as parameter
+    productsInCategory: List<M01Produit> = emptyList(), // Pass products as parameter
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
 

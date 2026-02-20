@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.Jomla_Clients
+import EntreApps.Shared.Models.Components.Jomla_Clients
 import kotlinx.coroutines.launch
 
 fun cleanupOldBonVents(repo8BonVent: Repo8BonVent, bonVents: List<M8BonVent>) {

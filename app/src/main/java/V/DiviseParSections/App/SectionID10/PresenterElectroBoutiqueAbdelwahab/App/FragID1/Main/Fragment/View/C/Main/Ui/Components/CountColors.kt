@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 
-fun countColors(article: ArticlesBasesStatsTable): Int {
+fun countColors(article: M01Produit): Int {
     return listOf(
         article.couleur1,
         article.couleur2,

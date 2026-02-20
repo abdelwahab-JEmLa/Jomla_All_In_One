@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Patch 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.RepositorysMainGetter.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.RepositorysMainGetter.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.RepositorysMainSetter.UploadHandler.RepositorysMainSetter.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client

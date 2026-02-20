@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.Log._2_1_ProduitsDataBaseRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.Update._2_1_ProduitsDataBaseRepositoryUpdatesOperationsExtension
 import android.util.Log

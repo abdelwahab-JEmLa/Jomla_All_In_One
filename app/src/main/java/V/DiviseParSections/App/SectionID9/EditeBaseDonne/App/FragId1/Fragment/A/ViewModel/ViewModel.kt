@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A
 
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.compose.material.icons.Icons
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiStateSec9Frag1(
-    val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
+    val a_ProduitInfosList: List<M01Produit> = emptyList(),
     val selectionePourDeplacement_Categorie: M16CategorieProduit? = null,
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: M21CataloguesCategorie = get_ListM21CataloguesCategorie().first(),
@@ -190,19 +190,19 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         categoriesCompoRepository.deleteAddMultiDatas(newDatas)
     }
 
-    fun deleteAddMultiProduits(list_M1Produit: List<ArticlesBasesStatsTable>) {
+    fun deleteAddMultiProduits(list_M1Produit: List<M01Produit>) {
         setter.deleteAddMultiDatas(list_M1Produit)
     }
 
-    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
+    fun addOrUpdateProduit(data: M01Produit) {
         produitRepository.upsert(data)
     }
 
-    fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) {
+    fun addOrUpdateProduits(datas: List<M01Produit>) {
         datas.forEach { addOrUpdateProduit(it) }
     }
 
-    fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
+    fun deleteArticlesBasesStatsTable(data: M01Produit) {
         masterRepositorys.repoA_ProduitInfos.deleteData(data)
     }
 

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo18ParametresAppComptNonSaved.Repository.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._012_ComptsVendeurs
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._013_ClientTransaction
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._015_Produits

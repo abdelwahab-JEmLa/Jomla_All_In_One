@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import android.util.Log
 import com.google.firebase.database.Exclude
 import org.mongodb.kbson.BsonObjectId
@@ -91,7 +91,7 @@ data class FileCouleurInfos(
 }
 
 fun createCouleurInfosFromProduct(
-    produit: ArticlesBasesStatsTable?,
+    produit: M01Produit?,
     achats: List<M10OperationVentCouleur>
 ): CouleurInfosWithAchat {
     val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"

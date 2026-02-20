@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData_M1Produit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.isRoomEmpty
 import android.content.Context
@@ -10,7 +10,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
 
-suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<ArticlesBasesStatsTable> {
+suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<M01Produit> {
     return if (isRoomEmpty()) {
         val hasInternetConnection = isInternetAvailable(context)
 
@@ -43,7 +43,7 @@ suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<ArticlesBasesS
     }
 }
 
-private fun A_ProduitInfosRepository.loadArticlesFromCsv(): List<ArticlesBasesStatsTable> {
+private fun A_ProduitInfosRepository.loadArticlesFromCsv(): List<M01Produit> {
     val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "ArticlesBasesStatsTable.csv")
 
@@ -51,7 +51,7 @@ private fun A_ProduitInfosRepository.loadArticlesFromCsv(): List<ArticlesBasesSt
         return emptyList()
     }
 
-    val articles = mutableListOf<ArticlesBasesStatsTable>()
+    val articles = mutableListOf<M01Produit>()
     var isFirstLine = true
 
     try {
@@ -80,14 +80,14 @@ private fun A_ProduitInfosRepository.loadArticlesFromCsv(): List<ArticlesBasesSt
 
     return articles
 }
-private fun parseCsvLine(line: String): ArticlesBasesStatsTable {
+private fun parseCsvLine(line: String): M01Produit {
     val values = parseCsvValues(line)
 
     if (values.size < 44) {
         throw IllegalArgumentException("Invalid CSV format: expected 44 columns, got ${values.size}")
     }
 
-    return ArticlesBasesStatsTable(
+    return M01Produit(
     )
 }
 

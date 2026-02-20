@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide.Proto
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -21,7 +21,7 @@ fun MultipleImagesDisplay(
     onLoadComplete: () -> Unit,
     actualiseSonImage: Int = 0,
     imageRefreshKey: String? = null,
-    product: ArticlesBasesStatsTable?,
+    product: M01Produit?,
     enableAutoScroll: Boolean = true // FIXED: Add parameter to control auto-scroll
 ) {
     val pagerState = rememberPagerState(pageCount = { imageFiles.size })

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -28,7 +28,7 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
     /**
      * FIXED: Now includes category type name in parentheses if not empty
      */
-    fun formatProductNameWithCategory(produit: ArticlesBasesStatsTable?): String {
+    fun formatProductNameWithCategory(produit: M01Produit?): String {
         val productName = cleanAndCapitalizeProductName(produit?.nom ?: "Produit")
 
         val productNameWithCopyright = if (!productName.contains("©")) {
@@ -46,7 +46,7 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
         }
     }
 
-    fun formatQuantity(qty: Int, cartonSize: Int, produit: ArticlesBasesStatsTable?): String {
+    fun formatQuantity(qty: Int, cartonSize: Int, produit: M01Produit?): String {
         val shouldShowUnits = produit?.afficheUniteAuPrint == true
         val nombreUniteInt = produit?.nombreUniteInt ?: 1
 
@@ -92,7 +92,7 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
 
     fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
 
-    private fun findRelativeCategorie(rela_produit: ArticlesBasesStatsTable): M16CategorieProduit? =
+    private fun findRelativeCategorie(rela_produit: M01Produit): M16CategorieProduit? =
         rela_produit.idParentCategorie?.let {
             repositorysMainGetter.find_M16CategorieProduit_By_OldID(it)
         }

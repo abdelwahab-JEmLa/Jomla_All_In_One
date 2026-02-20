@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -88,7 +88,7 @@ fun Item_2_Menu(
     }
 }
 
-fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<M01Produit>) {
     if (datas.isEmpty()) {
         Log.w("batchFireBaseUpdate", "No data to update")
         return

@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun QuantityButton(
-    article: ArticlesBasesStatsTable,
+    article: M01Produit,
     colorIndex: Int,
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelInitApp: ViewModelInitApp,

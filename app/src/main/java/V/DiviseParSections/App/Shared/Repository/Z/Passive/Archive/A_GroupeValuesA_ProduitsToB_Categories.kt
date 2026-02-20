@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
@@ -13,7 +13,7 @@ class A_GroupeValuesA_ProduitsToB_Categories(
     val a_ProduitDataBaseComposeRepositoryPJ17: RepoM1Produit,
     val b3CategoriesCompoRepository: RepoM16CategorieProduit,
 ) {
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
+    val categoryGroupedSortedProducts: List<M01Produit> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
         val catalogues = get_ListM21CataloguesCategorie().associateBy { it.id }
 
@@ -28,7 +28,7 @@ class A_GroupeValuesA_ProduitsToB_Categories(
         }
 
         val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
+            compareBy<M01Produit> { product ->
                 val categoryId = product.idParentCategorie ?: 0L
                 val category = categoryMap[categoryId]
                 val catalogueId = category?.catalogueParentId ?: 4L
@@ -41,7 +41,7 @@ class A_GroupeValuesA_ProduitsToB_Categories(
         )
 
         val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
+            compareBy<M01Produit> { product ->
                 val categoryId = product.idParentCategorie ?: 0L
                 val category = categoryMap[categoryId]
                 category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository
 
+import EntreApps.Shared.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
 import android.content.Context
 import android.util.Log

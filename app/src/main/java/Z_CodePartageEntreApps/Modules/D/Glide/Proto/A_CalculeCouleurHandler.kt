@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide.Proto
 
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private fun getCouleurNomParIndex(
-        article: ArticlesBasesStatsTable,
+        article: M01Produit,
         indexColor: Int
     ) = when (indexColor) {
         0 -> article.couleur1.takeIf { it != "" }
@@ -25,7 +25,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         else -> null
     }
 
-    fun getProduitInfoImageParIndex(product: ArticlesBasesStatsTable): List<ProductImageInfo> {
+    fun getProduitInfoImageParIndex(product: M01Produit): List<ProductImageInfo> {
         val colors = (0..3).mapNotNull { index ->
             val colorName = getCouleurNomParIndex(product, index)?.takeIf { it.isNotBlank() }
 
@@ -57,7 +57,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         return colors
     }
 
-    private fun getAllDefinedColorsForProduct(product: ArticlesBasesStatsTable): List<ProductImageInfo> {
+    private fun getAllDefinedColorsForProduct(product: M01Produit): List<ProductImageInfo> {
         val colors = (1..4).mapNotNull { couleurId ->
             val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
 
@@ -89,7 +89,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         return colors
     }
 
-    fun findProductById(productId: Long): ArticlesBasesStatsTable? {
+    fun findProductById(productId: Long): M01Produit? {
         val product = viewModel.uiState.value.a_ProduitInfosList.find { it.id == productId }
         Log.d(TAG, "Finding product by ID $productId: ${if (product != null) "found" else "not found"}")
         return product
@@ -97,7 +97,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
 
     fun getImageFilesForDisplay(
         produitVID: Long? = null,
-        product: ArticlesBasesStatsTable? = null,
+        product: M01Produit? = null,
         produitNom: String? = null
     ): List<ProductImageInfo> {
         return try {
@@ -167,7 +167,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         }
     }
 
-    fun getColorNameById(product: ArticlesBasesStatsTable?, colorId: Int): String {
+    fun getColorNameById(product: M01Produit?, colorId: Int): String {
         val colorName = when (colorId) {
             1 -> product?.couleur1
             2 -> product?.couleur2

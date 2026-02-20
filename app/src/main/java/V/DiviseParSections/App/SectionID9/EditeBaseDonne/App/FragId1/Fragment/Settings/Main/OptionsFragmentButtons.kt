@@ -3,9 +3,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.Repo01Produit.Repository.ArticlesBasesStatsTable
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
-import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.M16CategorieProduit
+import EntreApps.Shared.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.util.Log
@@ -76,7 +76,7 @@ fun OptionsFragmentButtons(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     viewModelScope: CoroutineScope,
     onToggleMasque: (Set<AfficheElements>) -> Unit = {},
-    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
+    selectedProducts: Set<M01Produit> = emptySet(),
     onShowBulkMoveDialog: () -> Unit = {},
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<M16CategorieProduit>) -> Unit = {}
