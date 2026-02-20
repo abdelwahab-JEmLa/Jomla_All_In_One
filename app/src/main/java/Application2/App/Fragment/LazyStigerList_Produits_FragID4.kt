@@ -5,8 +5,8 @@ import Application2.App.Fragment.Z.Components.CategoryStickyHeader
 import Application2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

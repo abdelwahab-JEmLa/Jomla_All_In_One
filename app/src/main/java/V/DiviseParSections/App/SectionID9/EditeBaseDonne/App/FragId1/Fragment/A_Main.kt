@@ -11,7 +11,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Se
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.EditeCategoriesMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.EditeInfosMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M01Produit.EtateActuelleOnFusionAvecBaseDonne

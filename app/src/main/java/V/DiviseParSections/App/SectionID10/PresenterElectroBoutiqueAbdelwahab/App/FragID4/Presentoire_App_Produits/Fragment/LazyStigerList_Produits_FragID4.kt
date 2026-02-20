@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing

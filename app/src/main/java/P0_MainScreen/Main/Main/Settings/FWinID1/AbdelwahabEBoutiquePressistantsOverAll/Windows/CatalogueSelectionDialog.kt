@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter

@@ -4,7 +4,7 @@ import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import java.io.File
 import java.util.concurrent.TimeUnit
 

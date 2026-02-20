@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier

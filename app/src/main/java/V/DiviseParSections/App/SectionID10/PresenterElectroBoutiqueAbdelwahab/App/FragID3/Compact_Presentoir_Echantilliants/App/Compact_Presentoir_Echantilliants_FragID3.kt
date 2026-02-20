@@ -14,7 +14,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Components.Jomla_Clients
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.M21CataloguesCategorie
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas

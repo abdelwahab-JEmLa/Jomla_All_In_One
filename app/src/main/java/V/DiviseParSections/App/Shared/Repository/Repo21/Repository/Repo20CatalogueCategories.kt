@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo21.Repository
 
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import androidx.compose.ui.graphics.Color
 
 // Static repository function that provides catalogues list
