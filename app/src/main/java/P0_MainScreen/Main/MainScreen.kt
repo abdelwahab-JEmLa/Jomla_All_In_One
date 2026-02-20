@@ -346,45 +346,37 @@ fun MainScreen(
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
-                                           if (M18CentralParametresOfAllApps.get_Default().its_AppType== AppType.GrossistRealSeller){
-                                               MainFastSearchProduitPourVent()
-                                           }  else{
-                                               AppNavHost(
-                                                   isWifiClientConnected_1 = isWifiClientConnected_1,
-                                                   modifier = Modifier.fillMaxSize(),
-                                                   viewModel = headViewModel,
-                                                   viewModelInitApp = viewModelViewModelInitApp,
-                                                   navController = navController,
-                                                   onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                                                   isFabVisible = isFabVisible,
-                                                   onClickToDisplayeConexionWifi = {
-                                                       isDisplayedConnexionWifiVisible =
-                                                           !isDisplayedConnexionWifiVisible
-                                                   },
-                                                   onToggleLockHost = { lockHost = !lockHost },
-                                                   targetCategoryId = targetCategoryId,
-                                                   lockHost = isHostPhone,
-                                                   onClickImageToShowControles = {
-                                                       isControleFabVisible = !isControleFabVisible
-                                                   }, on_pour_send_data = { it1, it2 ->
-                                                       viewModel.sendOrderToClientDisplayer(
-                                                           it1,
-                                                           it2
-                                                       )
+                            if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    MainFastSearchProduitPourVent()
+                                }
+                            } else {
+                                AppNavHost(
+                                    isWifiClientConnected_1 = isWifiClientConnected_1,
+                                    modifier = Modifier.fillMaxSize(),
+                                    viewModel = headViewModel,
+                                    viewModelInitApp = viewModelViewModelInitApp,
+                                    navController = navController,
+                                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                                    isFabVisible = isFabVisible,
+                                    onClickToDisplayeConexionWifi = {
+                                        isDisplayedConnexionWifiVisible =
+                                            !isDisplayedConnexionWifiVisible
+                                    },
+                                    onToggleLockHost = { lockHost = !lockHost },
+                                    targetCategoryId = targetCategoryId,
+                                    lockHost = isHostPhone,
+                                    onClickImageToShowControles = {
+                                        isControleFabVisible = !isControleFabVisible
+                                    }, on_pour_send_data = { it1, it2 ->
+                                        viewModel.sendOrderToClientDisplayer(
+                                            it1,
+                                            it2
+                                        )
 
-                                                   }
-                                               )
-                                           }
-
-
-                            /*
-                if (!isHostPhone && productDisplayController.isConnected) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable(enabled = false) { }
-                    )
-                }      */
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -414,8 +406,8 @@ fun MainScreen(
                             targetCategoryId.value = it
                         },
                         modifier = Modifier.padding(bottom = 2.dp),
-                        viewModelInitApp = viewModelViewModelInitApp
-                        , onClickImageToShowControles = {
+                        viewModelInitApp = viewModelViewModelInitApp,
+                        onClickImageToShowControles = {
                             isControleFabVisible = !isControleFabVisible
                         }
                     )
@@ -461,7 +453,7 @@ fun MainScreen(
                     }
                 }
 
-                if (isControleFabVisible ) {
+                if (isControleFabVisible) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -472,7 +464,7 @@ fun MainScreen(
                     }
                 }
 
-                if (isHostPhone && shouldShowContent && !hideAppScreen ) {
+                if (isHostPhone && shouldShowContent && !hideAppScreen) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 
