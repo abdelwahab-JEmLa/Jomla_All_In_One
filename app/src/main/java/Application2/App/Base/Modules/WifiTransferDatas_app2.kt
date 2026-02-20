@@ -297,6 +297,7 @@ class WifiTransferDatas_app2(
         _state.update { it.copy(error = error, connectionStatus = "Erreur: $error") }
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requiredPermissions = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> arrayOf(
@@ -316,9 +317,9 @@ class WifiTransferDatas_app2(
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkRequiredPermissions(): Boolean =
-        requiredPermissions.filter {
+        requiredPermissions.none {
             ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
-        }.isEmpty()
+        }
 }
 
 enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {

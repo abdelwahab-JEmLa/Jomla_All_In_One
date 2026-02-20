@@ -42,31 +42,19 @@ class ViewModel_MainFragment(
     private val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
 
-    private val dao_M1Produit         = appDatabase.dao_M1Produit()
-    private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
+    private val dao_M1Produit             = appDatabase.dao_M1Produit()
+    private val dao_16CategorieProduit    = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    // -----------------------------------------------------------------------
-    // active_Central_Values — single source of truth in UiState
-    // -----------------------------------------------------------------------
+    private fun getActiveCentralValues() = _uiState.value.active_Central_Values
 
-    /** Read the current value — passed as lambda into WifiTransferDatas_app2. */
-    private fun getActiveCentralValues(): ActiveCentralValues_app2 =
-        _uiState.value.active_Central_Values
-
-    /** Write an updated value — passed as lambda into WifiTransferDatas_app2. */
     fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {
         _uiState.update { it.copy(active_Central_Values = updated) }
-        // Keep the legacy repo in sync so other parts of the app still work
         repositorysMainGetter_app2.update_ActiveCentralValues_app2(updated)
     }
-
-    // -----------------------------------------------------------------------
-    // Wifi — no repo dependency, wired via lambdas
-    // -----------------------------------------------------------------------
 
     val wifi = WifiTransferDatas_app2(
         context = context,
@@ -77,8 +65,7 @@ class ViewModel_MainFragment(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state
-        .stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
@@ -94,14 +81,6 @@ class ViewModel_MainFragment(
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
-    // -----------------------------------------------------------------------
-    // Init progress — called by Initializer_Funcs_app2
-    // -----------------------------------------------------------------------
-
-    /**
-     * Called by Initializer_Funcs_app2 to report seeding progress.
-     * When progress reaches 1f, triggers the first full DB→UI sync.
-     */
     fun updateInitProgress(progress: Float) {
         _uiState.update { it.copy(initDatasProgressEtate = progress) }
         if (progress >= 1f) {
@@ -114,11 +93,7 @@ class ViewModel_MainFragment(
                         list_M1Produit           = products,
                         list_M16CategorieProduit  = categories,
                         list_M3CouleurProduit     = colors,
-                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
-                            allColors     = colors,
-                            allProducts   = products,
-                            allCategories = categories,
-                        ),
+                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(colors, products, categories),
                         active_Central_Values = repositorysMainGetter_app2.active_Central_Values,
                         initDatasProgressEtate = 1f,
                     )
@@ -129,75 +104,51 @@ class ViewModel_MainFragment(
         }
     }
 
-    // -----------------------------------------------------------------------
-    // DB flow — only runs after loading is complete
-    // -----------------------------------------------------------------------
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             combine(
                 dao_M1Produit.getAllFlow(),
                 dao_16CategorieProduit.getAllFlow(),
                 dao_M3CouleurProduitInfos.getAllFlow()
-            ) { products, categories, colors ->
-                Triple(products, categories, colors)
-            }.collect { (products, categories, colors) ->
-                if (_uiState.value.initDatasProgressEtate < 1f) return@collect
-
-                _uiState.update {
-                    it.copy(
-                        list_M1Produit          = products,
-                        list_M16CategorieProduit = categories,
-                        list_M3CouleurProduit    = colors,
-                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
-                            allColors     = colors,
-                            allProducts   = products,
-                            allCategories = categories,
-                        ),
-                    )
+            ) { products, categories, colors -> Triple(products, categories, colors) }
+                .collect { (products, categories, colors) ->
+                    if (_uiState.value.initDatasProgressEtate < 1f) return@collect
+                    _uiState.update {
+                        it.copy(
+                            list_M1Produit          = products,
+                            list_M16CategorieProduit = categories,
+                            list_M3CouleurProduit    = colors,
+                            grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(colors, products, categories),
+                        )
+                    }
+                    wifi.list_M1Produit = products
+                    wifi.list_M3CouleurProduit = colors
                 }
-                wifi.list_M1Produit = products
-                wifi.list_M3CouleurProduit = colors
-            }
         }
     }
-
-    // -----------------------------------------------------------------------
-    // Grouping
-    // -----------------------------------------------------------------------
 
     fun get_grouped_datas(
         allColors: List<M3CouleurProduitInfos>,
         allProducts: List<M01Produit>,
-        allCategories: List<M16CategorieProduit>
+        allCategories: List<M16CategorieProduit>,
     ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
-
-        val allCatalogues = get_ListM21CataloguesCategorie()
-
         val productColorPairs = allColors
             .groupBy { it.parentBProduitInfosKeyID }
-            .mapNotNull { (productKeyID, colors) ->
-                allProducts.find { it.keyID == productKeyID }?.let { it to colors }
-            }
-            .sortedBy { (product, _) -> product.nom }
+            .mapNotNull { (id, colors) -> allProducts.find { it.keyID == id }?.let { it to colors } }
+            .sortedBy { (p, _) -> p.nom }
 
         val categoryProductPairs = productColorPairs
-            .groupBy { (product, _) -> product.idParentCategorie }
-            .mapNotNull { (categoryId, pairs) ->
-                allCategories.find { it.id == categoryId }?.let { it to pairs }
-            }
-            .sortedBy { (category, _) -> category.positionDouble }
+            .groupBy { (p, _) -> p.idParentCategorie }
+            .mapNotNull { (id, pairs) -> allCategories.find { it.id == id }?.let { it to pairs } }
+            .sortedBy { (c, _) -> c.positionDouble }
 
-        return allCatalogues.sortedBy { it.position }.mapNotNull { catalogue ->
+        return get_ListM21CataloguesCategorie().sortedBy { it.position }.mapNotNull { catalogue ->
             val cats = categoryProductPairs
-                .filter { (cat, _) -> cat.catalogueParentId == catalogue.id }
-                .sortedBy { (cat, _) -> cat.positionDouble }
+                .filter { (c, _) -> c.catalogueParentId == catalogue.id }
+                .sortedBy { (c, _) -> c.positionDouble }
             if (cats.isNotEmpty()) catalogue to cats else null
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        wifi.cancel()
-    }
+    override fun onCleared() { super.onCleared(); wifi.cancel() }
 }
