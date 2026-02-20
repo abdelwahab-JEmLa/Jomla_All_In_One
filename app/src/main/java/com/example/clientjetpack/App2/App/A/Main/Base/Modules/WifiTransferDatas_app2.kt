@@ -10,7 +10,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -61,10 +61,10 @@ data class ProductDisplayController(
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas_app2(
     private val context: Context,
-    private val focusedValuesGetter_app2: FocusedValuesGetter_app2,
     private val coroutineScope: CoroutineScope,
     var list_M1Produit: List<ArticlesBasesStatsTable>,
     var list_M3CouleurProduit: List<M3CouleurProduitInfos>,
+   val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) {
     private val _state = MutableStateFlow(ProductDisplayController())
     val state: StateFlow<ProductDisplayController> = _state.asStateFlow()
@@ -86,9 +86,9 @@ class WifiTransferDatas_app2(
         coroutineScope.launch {
             _state.collect { s ->
                 val shouldHide = !s.isHostPhone && s.isConnected
-                val cur = focusedValuesGetter_app2.active_Central_Values
+                val cur = repositorysMainGetter_app2.active_Central_Values
                 if (cur.hide_prix_lence_vent_buttons != shouldHide)
-                    focusedValuesGetter_app2.update_ActiveCentralValues_app2(
+                    repositorysMainGetter_app2.update_ActiveCentralValues_app2(
                         cur.copy(hide_prix_lence_vent_buttons = shouldHide)
                     )
             }
@@ -230,12 +230,12 @@ class WifiTransferDatas_app2(
     }
 
     fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
-        val cur = focusedValuesGetter_app2.active_Central_Values
+        val cur = repositorysMainGetter_app2.active_Central_Values
         val newColor = if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
         val newProduit = newColor?.let {
             list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID }
         }
-        focusedValuesGetter_app2.update_ActiveCentralValues_app2(
+        repositorysMainGetter_app2.update_ActiveCentralValues_app2(
             cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit)
         )
     }

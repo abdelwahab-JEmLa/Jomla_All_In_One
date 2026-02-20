@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Reposito
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.M3CouleurProduitInfosDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.M16CategorieProduitDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
+// FocusedValuesGetter_app2 removed — progress is now forwarded via on_Progress_Datas callback
 import android.content.Context
 import android.net.ConnectivityManager
 import com.google.firebase.firestore.CollectionReference
@@ -24,7 +25,7 @@ import kotlinx.coroutines.tasks.await
 
 class Initializer_Funcs_app2(
     val context: Context,
-    val focusedValuesGetter_app2: FocusedValuesGetter_app2,
+    val on_Progress_Datas: (Float) -> Unit,
     val dao_M1Produit: ArticlesBasesStatsModelDao,
     val dao_16CategorieProduit: M16CategorieProduitDao,
     val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
@@ -42,9 +43,6 @@ class Initializer_Funcs_app2(
     // ── Seeding guard — one-shot ───────────────────────────────────────────────
     private var isSeedingFromFirebase = false
 
-    init {
-        repoScope.launch { initializeAllRepositories() }
-    }
 
     // ── Entry point ───────────────────────────────────────────────────────────
     suspend fun initializeAllRepositories() {
@@ -147,11 +145,7 @@ class Initializer_Funcs_app2(
     // ── Progress sink ─────────────────────────────────────────────────────────
 
     fun updateMainInitDataBaseProgressEtate(loadingProgress: Float) {
-        focusedValuesGetter_app2.active_Central_Values.let { current ->
-            focusedValuesGetter_app2.update_ActiveCentralValues_app2(
-                current.copy(mainInitDataBaseProgressEtate = loadingProgress)
-            )
-        }
+        on_Progress_Datas(loadingProgress)
     }
 
     // ── Network check ─────────────────────────────────────────────────────────

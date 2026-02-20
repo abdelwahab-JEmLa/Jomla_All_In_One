@@ -9,23 +9,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.ProductDisplayController
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiTransferDatas_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Modules.WifiUpdateClientDisplayerStats_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.Initializer_Funcs_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 data class UiState(
     val list_grouped_datas: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
@@ -38,14 +31,10 @@ data class UiState(
 @SuppressLint("StaticFieldLeak")
 class ViewModel_MainFragment(
     private val context: Context,
-    private val focusedValuesGetter_app2: FocusedValuesGetter_app2,
     private val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
-
-    // ── Wifi ──────────────────────────────────────────────────────────────────
     val wifi = WifiTransferDatas_app2(
-        context = context,
-        focusedValuesGetter_app2 = focusedValuesGetter_app2,
+        context = context, repositorysMainGetter_app2 = repositorysMainGetter_app2,
         coroutineScope = viewModelScope,
         list_M1Produit = repositorysMainGetter_app2.datasValue_M1Produit,
         list_M3CouleurProduit = repositorysMainGetter_app2.datasValue_M3CouleurProduitInfos,
@@ -72,47 +61,25 @@ class ViewModel_MainFragment(
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
-    // ── UI state ──────────────────────────────────────────────────────────────
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-
-    // ── Seeding is fully owned by Initializer_Funcs_app2 ─────────────────────
-    @Suppress("unused")
-    private val initializer = Initializer_Funcs_app2(
-        context = context,
-        focusedValuesGetter_app2 = focusedValuesGetter_app2,
-        repositorysMainGetter_app2.dao_M1Produit,
-        repositorysMainGetter_app2.dao_16CategorieProduit,
-        repositorysMainGetter_app2.dao_M3CouleurProduitInfos
-    )
-
-    // ── Observe repo state — react when seeding completes ────────────────────
-    init {
-        viewModelScope.launch(Dispatchers.Main) {
-            combine(
-                snapshotFlow { repositorysMainGetter_app2.datasValue_M1Produit },
-                snapshotFlow { repositorysMainGetter_app2.datasValue_M16CategorieProduit },
-                snapshotFlow { repositorysMainGetter_app2.datasValue_M3CouleurProduitInfos }
-            ) { products, categories, colors ->
-                Triple(products, categories, colors)
-            }.collect { (products, categories, colors) ->
-                if (products.isEmpty() || categories.isEmpty() || colors.isEmpty()) return@collect
-
-                _uiState.update {
-                    it.copy(
-                        list_M1Produit = products,
-                        list_M16CategorieProduit = categories,
-                        list_M3CouleurProduit = colors,
-                        list_grouped_datas = get_grouped_datas(
-                            allColors = colors,
-                            allProducts = products,
-                            allCategories = categories
-                        ),
-                        initDatasProgressEtate = 1f,
-                    )
-                }
-                wifi.list_M1Produit = products
-                wifi.list_M3CouleurProduit = colors
+    val uiState by derivedStateOf {
+        val products = repositorysMainGetter_app2.datasValue_M1Produit
+        val categories = repositorysMainGetter_app2.datasValue_M16CategorieProduit
+        val colors = repositorysMainGetter_app2.datasValue_M3CouleurProduitInfos
+        val ready = products.isNotEmpty() && categories.isNotEmpty() && colors.isNotEmpty()
+        UiState(
+            list_M1Produit = products,
+            list_M16CategorieProduit = categories,
+            list_M3CouleurProduit = colors,
+            list_grouped_datas = if (ready) get_grouped_datas(
+                colors,
+                products,
+                categories
+            ) else emptyList(),
+            initDatasProgressEtate = if (ready) 1f else repositorysMainGetter_app2.active_Central_Values.mainInitDataBaseProgressEtate,
+        ).also { state ->
+            if (ready) {
+                wifi.list_M1Produit = state.list_M1Produit
+                wifi.list_M3CouleurProduit = state.list_M3CouleurProduit
             }
         }
     }

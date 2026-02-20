@@ -8,20 +8,14 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import com.example.clientjetpack.App2.App.A.Main.App.Archive.composRepositorysModule_app2
 import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val centralDataBasesModule_app2 = module {
     single {
-        FocusedValuesGetter_app2()
-    }
-
-    single {
         RepositorysMainGetter_app2(
             context = androidContext(),
-            get(),
             get(),
         )
     }
@@ -38,7 +32,6 @@ val viewModelModule_app2 = module {
     single {
         ViewModel_MainFragment(
             context = androidContext(),
-            get(),
             get(),
         )
     }
