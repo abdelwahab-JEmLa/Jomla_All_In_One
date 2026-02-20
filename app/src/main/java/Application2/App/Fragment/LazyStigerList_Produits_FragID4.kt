@@ -7,7 +7,6 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -170,14 +169,5 @@ fun CatalogueHeader(catalogue: M21CataloguesCategorie, modifier: Modifier = Modi
 fun LazyStigerList_Produits_App2(
     productColorPairs: Pair<M01Produit, List<M3CouleurProduitInfos>>,
 ) {
-    val (product, colors) = productColorPairs
-    LaunchedEffect(Unit) {
-        Log.d(
-            "LazyStigerList",
-            "Rendering product: id=${product.keyID}, nom=${product.nom}, " +
-                    "colors=${colors.size}, " +
-                    "idParentCategorie=${product.idParentCategorie}"
-        )
-    }
     Box { Item_Produit_AppEcranPresntoireJemlaCom(productColorPairs) }
 }

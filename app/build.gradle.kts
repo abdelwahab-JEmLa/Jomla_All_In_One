@@ -31,9 +31,9 @@ android {
         vectorDrawables { useSupportLibrary = true }
         multiDexEnabled = true
 
-        val dropboxToken = localProps.getProperty("DROPBOX_ACCESS_TOKEN", "")
-
-        buildConfigField("String", "DROPBOX_ACCESS_TOKEN", "\"$dropboxToken\"")
+        buildConfigField("String", "DROPBOX_APP_KEY",       "\"${localProps.getProperty("DROPBOX_APP_KEY", "")}\"")
+        buildConfigField("String", "DROPBOX_APP_SECRET",    "\"${localProps.getProperty("DROPBOX_APP_SECRET", "")}\"")
+        buildConfigField("String", "DROPBOX_REFRESH_TOKEN", "\"${localProps.getProperty("DROPBOX_REFRESH_TOKEN", "")}\"")
     }
 
     buildTypes {
