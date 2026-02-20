@@ -7,9 +7,9 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAva
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import com.example.clientjetpack.App2.App.A.Main.App.Archive.composRepositorysModule_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.Archive.ACentralFacade_app2
-import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
 import com.example.clientjetpack.App2.App.A.Main.App.ViewModel.ViewModel_MainFragment
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.FocusedValuesGetter_app2
+import com.example.clientjetpack.App2.App.A.Main.Base.Repository.RepositorysMainGetter_app2
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -17,36 +17,14 @@ val centralDataBasesModule_app2 = module {
     single {
         FocusedValuesGetter_app2()
     }
-  /*  single {
-        RepositorysMainSetter_app2(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
+
     single {
         RepositorysMainGetter_app2(
             context = androidContext(),
             get(),
             get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
         )
-    }                  */
-    single { ACentralFacade_app2(get()) }
+    }
 }
 
 val appDatabase = module {
@@ -87,6 +65,6 @@ val appModule_App2 = module {
         viewModelModule,
 
         composRepositorysModule_app2,
-     //   classesHandlersModule_app2,
+        //   classesHandlersModule_app2,
     )
 }

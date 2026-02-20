@@ -9,11 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
-enum class SortVentMode {
-    PAR_Creation_Vent,      // Sort by position_store_3jamale (warehouse position)
-    PAR_ENTREE,          // Sort alphabetically by product name
-    PAR_DERNIERE_UPDATE_LENCE  // Sort by last_update_premier_Check_Donne_TimeTamps (most recent verification)
-}
 
 @Stable
 class FocusedValuesGetter_app2() {

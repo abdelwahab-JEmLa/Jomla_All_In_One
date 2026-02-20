@@ -186,7 +186,7 @@ fun MainScreen(
     HandleFullscreenMode(productDisplayController)
 
     val navController = rememberNavController()
-    val items = NavigationItems.getItems()
+    val items = NavigationItems.getItems(isAdmin = true)
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     var isNavBarVisible by remember { mutableStateOf(true) }
