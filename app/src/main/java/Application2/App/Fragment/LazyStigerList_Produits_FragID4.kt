@@ -1,7 +1,6 @@
 package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application2.App.Fragment.Z.Components.CategoryStickyHeader
 import Application2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import EntreApps.Shared.Models.M01Produit
@@ -33,14 +32,12 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 
 @Composable
 fun Etager_LazyColumn_App2(
     modifier: Modifier = Modifier,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModel: ViewModel_MainFragment = koinViewModel(),
-    focusedValuesGetter_app2: RepositorysMainGetter_app2 = koinInject(),
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val coroutineScope = rememberCoroutineScope()
@@ -54,8 +51,10 @@ fun Etager_LazyColumn_App2(
     // Scroll is only user-driven on the host, or when not connected at all
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val expanded_M3CouleurProduitInfos =
-        focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
+    val uiState by viewModel.uiState.collectAsState()
+    val activeCentralValues = uiState.active_Central_Values
+
+    val expanded_M3CouleurProduitInfos = activeCentralValues.expanded_M3CouleurProduitInfos
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
@@ -132,7 +131,7 @@ fun Etager_LazyColumn_App2(
                 }
 
                 productColorPairs.forEach { (product, colors) ->
-                    val isExpanded = focusedValuesGetter_app2.active_Central_Values
+                    val isExpanded = activeCentralValues
                         .expanded_M1Produit?.keyID == product.keyID
 
                     item(

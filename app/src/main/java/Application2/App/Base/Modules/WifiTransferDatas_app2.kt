@@ -1,6 +1,6 @@
 package Application2.App.Base.Modules
 
-import Application2.App.Base.Repository.RepositorysMainGetter_app2
+import Application2.App.Base.Repository.ActiveCentralValues_app2
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.Manifest
@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
@@ -54,17 +53,14 @@ data class ProductDisplayController(
     val error: String? = null,
 )
 
-/**
- * Plain injectable class — NOT a ViewModel.
- * Inject into ViewModel_MainFragment and pass viewModelScope as [coroutineScope].
- */
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas_app2(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
     var list_M1Produit: List<M01Produit>,
     var list_M3CouleurProduit: List<M3CouleurProduitInfos>,
-    val repositorysMainGetter_app2: RepositorysMainGetter_app2,
+    private val onGetActiveCentralValues: () -> ActiveCentralValues_app2,
+    private val onUpdateActiveCentralValues: (ActiveCentralValues_app2) -> Unit,
 ) {
     private val _state = MutableStateFlow(ProductDisplayController())
     val state: StateFlow<ProductDisplayController> = _state.asStateFlow()
@@ -86,18 +82,12 @@ class WifiTransferDatas_app2(
         coroutineScope.launch {
             _state.collect { s ->
                 val shouldHide = !s.isHostPhone && s.isConnected
-                val cur = repositorysMainGetter_app2.active_Central_Values
+                val cur = onGetActiveCentralValues()
                 if (cur.hide_prix_lence_vent_buttons != shouldHide)
-                    repositorysMainGetter_app2.update_ActiveCentralValues_app2(
-                        cur.copy(hide_prix_lence_vent_buttons = shouldHide)
-                    )
+                    onUpdateActiveCentralValues(cur.copy(hide_prix_lence_vent_buttons = shouldHide))
             }
         }
     }
-
-    // -----------------------------------------------------------------------
-    // Public API
-    // -----------------------------------------------------------------------
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
         coroutineScope.launch { sendData("$orderName$data") }
@@ -152,7 +142,7 @@ class WifiTransferDatas_app2(
             Nearby.getConnectionsClient(context).apply {
                 stopAdvertising(); stopDiscovery(); stopAllEndpoints()
             }
-        } catch (e: Exception) { Log.e(TAG, "❌ Erreur déconnexion", e) }
+        } catch (_: Exception) {}
         endpointId = null
         lastConnectionMode = ConnectionMode.NONE
         retryCount = 0
@@ -160,32 +150,19 @@ class WifiTransferDatas_app2(
         _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté", error = null) }
     }
 
-    /** Call from ViewModel_MainFragment.onCleared() */
-    fun cancel() {
-        disconnect()
-        Log.d(TAG, "🧹 WifiTransferDatas_app2 nettoyé")
-    }
-
-    // -----------------------------------------------------------------------
-    // sendData
-    // -----------------------------------------------------------------------
+    fun cancel() = disconnect()
 
     fun sendData(data: Any) {
         endpointId?.let { ep ->
             try {
                 val payload = when (data) {
                     is String -> Payload.fromBytes(data.toByteArray())
-                    else -> { Log.e(TAG, "❌ Type non supporté: ${data.javaClass}"); return }
+                    else -> return
                 }
                 Nearby.getConnectionsClient(context).sendPayload(ep, payload)
-                    .addOnFailureListener { Log.w(TAG, "⚠️ Échec envoi: $data") }
-            } catch (e: Exception) { Log.e(TAG, "❌ Exception envoi: $data", e) }
-        } ?: Log.e(TAG, "❌ Pas de endpoint. Données perdues: $data")
+            } catch (_: Exception) {}
+        }
     }
-
-    // -----------------------------------------------------------------------
-    // Payload handling
-    // -----------------------------------------------------------------------
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats_app2.fromPayload(payload)
@@ -193,56 +170,35 @@ class WifiTransferDatas_app2(
                 when (type) {
                     WifiUpdateClientDisplayerStats_app2.ClientMainGridScrollPosition ->
                         _state.update { it.copy(mainGridScrollPosition = content.toIntOrNull() ?: it.mainGridScrollPosition) }
-
                     WifiUpdateClientDisplayerStats_app2.ClientWindowsDisplayedProductId ->
                         _state.update { it.copy(clientWindowsDisplayedProductId = content.toLongOrNull()) }
-
                     WifiUpdateClientDisplayerStats_app2.DISMISS_PRODUCT_INFO ->
                         _state.update { it.copy(clientWindowsDisplayedProductId = null, searchWindowsDisplaye = "") }
-
                     WifiUpdateClientDisplayerStats_app2.SearchWindowsDisplaye ->
                         _state.update { it.copy(searchWindowsDisplaye = content) }
-
                     WifiUpdateClientDisplayerStats_app2.WindowsPickerDisplayedQuantity ->
                         _state.update { it.copy(clientWindowsPickerDisplayedQuantity = content.toIntOrNull() ?: it.clientWindowsPickerDisplayedQuantity) }
-
                     WifiUpdateClientDisplayerStats_app2.ClientWindowsSelectedColorId ->
                         _state.update { it.copy(clientWindowsSelectedColorId = content.toLongOrNull() ?: it.clientWindowsSelectedColorId) }
-
                     WifiUpdateClientDisplayerStats_app2.ClientWindowsLazyRowSupColorsScrolle ->
                         _state.update { it.copy(clientWindowsLazyRowSupColorsScroll = content.toIntOrNull() ?: it.clientWindowsLazyRowSupColorsScroll) }
-
                     WifiUpdateClientDisplayerStats_app2.NewArregmentColorsJsonStruct ->
                         _state.update { it.copy(newArregmentColorsJsonStruct = content) }
-
                     WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
                         _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
-
-                    WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
-                        val couleur = list_M3CouleurProduit.find { it.keyID == content }
-                        if (couleur != null) toggleExpandedCouleur(couleur)
-                        else Log.e(TAG, "❌ Couleur introuvable pour keyID: $content")
-                    }
-
-                    else -> Log.d(TAG, "📩 Message non géré: $type | $payload")
+                    WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
+                        list_M3CouleurProduit.find { it.keyID == content }?.let { toggleExpandedCouleur(it) }
+                    else -> Unit
                 }
-            } ?: Log.d(TAG, "📩 Payload non reconnu: $payload")
+            }
     }
 
     fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
-        val cur = repositorysMainGetter_app2.active_Central_Values
+        val cur = onGetActiveCentralValues()
         val newColor = if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
-        val newProduit = newColor?.let {
-            list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID }
-        }
-        repositorysMainGetter_app2.update_ActiveCentralValues_app2(
-            cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit)
-        )
+        val newProduit = newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
+        onUpdateActiveCentralValues(cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit))
     }
-
-    // -----------------------------------------------------------------------
-    // Connection callbacks
-    // -----------------------------------------------------------------------
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
@@ -261,7 +217,7 @@ class WifiTransferDatas_app2(
                     sendData("Connection established")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> handleConnectionFailure("Connexion rejetée")
-                ConnectionsStatusCodes.STATUS_ERROR               -> handleConnectionFailure("Erreur de connexion")
+                ConnectionsStatusCodes.STATUS_ERROR -> handleConnectionFailure("Erreur de connexion")
                 else -> handleConnectionFailure("Code inconnu: ${result.status.statusCode}")
             }
         }
@@ -287,17 +243,11 @@ class WifiTransferDatas_app2(
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            if (payload.type == Payload.Type.BYTES) {
-                try { handlePayload(String(payload.asBytes()!!)) }
-                catch (e: Exception) { Log.e(TAG, "❌ Erreur traitement payload", e) }
-            }
+            if (payload.type == Payload.Type.BYTES)
+                try { handlePayload(String(payload.asBytes()!!)) } catch (_: Exception) {}
         }
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) = Unit
     }
-
-    // -----------------------------------------------------------------------
-    // Monitoring & reconnection
-    // -----------------------------------------------------------------------
 
     private fun startConnectionMonitoring() {
         connectionMonitorJob?.cancel()
@@ -315,13 +265,12 @@ class WifiTransferDatas_app2(
                     delay(2000 + baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5)))
                     updateConnectionStatus("Reconnexion #${retryCount + 1}…")
                     when (lastConnectionMode) {
-                        ConnectionMode.HOST   -> startAsHost()
+                        ConnectionMode.HOST -> startAsHost()
                         ConnectionMode.CLIENT -> startAsClient()
-                        ConnectionMode.NONE   -> handleFinalDisconnection()
+                        ConnectionMode.NONE -> handleFinalDisconnection()
                     }
                     retryCount++
-                } catch (e: Exception) {
-                    handleError("Échec reconnexion: ${e.message}")
+                } catch (_: Exception) {
                 } finally {
                     isReconnecting.set(false)
                 }
@@ -331,7 +280,6 @@ class WifiTransferDatas_app2(
 
     @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
-        Log.e(TAG, "⚠️ $reason")
         if (!isReconnecting.get() && retryCount < maxRetries) initiateReconnection()
         else if (retryCount >= maxRetries) handleFinalDisconnection()
     }
@@ -348,10 +296,6 @@ class WifiTransferDatas_app2(
     private fun handleError(error: String) {
         _state.update { it.copy(error = error, connectionStatus = "Erreur: $error") }
     }
-
-    // -----------------------------------------------------------------------
-    // Permissions
-    // -----------------------------------------------------------------------
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requiredPermissions = when {
@@ -371,21 +315,11 @@ class WifiTransferDatas_app2(
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun checkRequiredPermissions(): Boolean {
-        val missing = requiredPermissions.filter {
+    private fun checkRequiredPermissions(): Boolean =
+        requiredPermissions.filter {
             ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
-        }
-        return missing.isEmpty().also { ok ->
-            if (!ok) Log.e(TAG, "❌ Permissions manquantes: ${missing.joinToString()}")
-        }
-    }
-
-    companion object {
-        private const val TAG = "WifiTransferDatas_app2"
-    }
+        }.isEmpty()
 }
-
-// ---------------------------------------------------------------------------
 
 enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),

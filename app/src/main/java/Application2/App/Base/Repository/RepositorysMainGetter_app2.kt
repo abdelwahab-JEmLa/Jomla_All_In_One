@@ -1,9 +1,6 @@
 package Application2.App.Base.Repository
 
 import Application2.App.Init.Initializer_Funcs_app2
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -23,7 +20,6 @@ class RepositorysMainGetter_app2(
     appDatabase: AppDatabase,
 ) {
     val repoScope = CoroutineScope(Dispatchers.IO)
-    val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
     private val _ActiveCentralValues_app2 = mutableStateOf(
         ActiveCentralValues_app2()
     )
@@ -48,29 +44,14 @@ class RepositorysMainGetter_app2(
             val current = _ActiveCentralValues_app2.value
             _ActiveCentralValues_app2.value = current.copy(mainInitDataBaseProgressEtate = progress)
         },
-
         dao_M1Produit,
         dao_16CategorieProduit,
         dao_M3CouleurProduitInfos
     )
 
-    private val _datas_M16CategorieProduit = mutableStateOf<List<M16CategorieProduit>>(emptyList())
-    val datasValue_M16CategorieProduit by derivedStateOf { _datas_M16CategorieProduit.value }
-
-    private val _datas_M1Produit = mutableStateOf<List<M01Produit>>(emptyList())
-    val datasValue_M1Produit by derivedStateOf { _datas_M1Produit.value }
-
-    private val _datas_M3CouleurProduitInfos =
-        mutableStateOf<List<M3CouleurProduitInfos>>(emptyList())
-    val datasValue_M3CouleurProduitInfos by derivedStateOf { _datas_M3CouleurProduitInfos.value }
-
     init {
         repoScope.launch {
             initializer.initializeAllRepositories()
-            dao_16CategorieProduit.getAllFlow().collect { _datas_M16CategorieProduit.value = it }
-            dao_M1Produit.getAllFlow().collect { _datas_M1Produit.value = it }
-            dao_M3CouleurProduitInfos.getAllFlow()
-                .collect { _datas_M3CouleurProduitInfos.value = it }
         }
     }
 
@@ -78,6 +59,8 @@ class RepositorysMainGetter_app2(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
+        val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
         inline fun Long?.ifNotNullOrZero(block: () -> Unit) { if (this != null && this != 0L) block() }

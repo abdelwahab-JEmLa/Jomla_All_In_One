@@ -22,6 +22,7 @@ val viewModelModule_app2 = module {
         ViewModel_MainFragment(
             context = androidContext(),
             get(),
+            get(),
         )
     }
 }

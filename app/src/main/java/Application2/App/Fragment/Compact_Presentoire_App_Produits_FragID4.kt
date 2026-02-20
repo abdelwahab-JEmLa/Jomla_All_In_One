@@ -12,9 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,10 +30,7 @@ fun Compact_Presentoire_App_Produits_App2(
     viewModel: ViewModel_MainFragment = koinViewModel(),
     modifier: Modifier,
 ) {
-    // uiState is a Compose derivedStateOf delegate in the ViewModel (not a StateFlow),
-    // so we read it as a plain Compose State. Wrapping in remember { derivedStateOf { } }
-    // ensures this composable recomposes whenever the underlying Compose snapshot state changes.
-    val uiState by remember { derivedStateOf { viewModel.uiState } }
+    val uiState by viewModel.uiState.collectAsState()
 
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
