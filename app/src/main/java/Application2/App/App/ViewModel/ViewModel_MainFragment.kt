@@ -78,16 +78,34 @@ class ViewModel_MainFragment(
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
-        wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
 
-    fun updateInitProgress(progress: Float) {
-        _uiState.update { it.copy(initDatasProgressEtate = progress) }
-        if (progress >= 1f) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val products = dao_M1Produit.getAll()
-                val categories = dao_16CategorieProduit.getAll()
-                val colors = dao_M3CouleurProduitInfos.getAll()
+    init {
+        // Track how many of the 3 sources have emitted at least once, to drive progress (0f → 1f).
+        val productsReady   = MutableStateFlow(false)
+        val categoriesReady = MutableStateFlow(false)
+        val colorsReady     = MutableStateFlow(false)
+
+        // Update progress whenever the ready-flags change.
+        viewModelScope.launch(Dispatchers.IO) {
+            combine(productsReady, categoriesReady, colorsReady) { p, c, col ->
+                listOf(p, c, col).count { it } / 3f
+            }.collect { progress ->
+                _uiState.update { it.copy(initDatasProgressEtate = progress) }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            combine(
+                dao_M1Produit.getAllFlow(),
+                dao_16CategorieProduit.getAllFlow(),
+                dao_M3CouleurProduitInfos.getAllFlow()
+            ) { products, categories, colors ->
+                productsReady.value   = true
+                categoriesReady.value = true
+                colorsReady.value     = true
+                Triple(products, categories, colors)
+            }.collect { (products, categories, colors) ->
                 _uiState.update {
                     it.copy(
                         list_M1Produit = products,
@@ -98,40 +116,11 @@ class ViewModel_MainFragment(
                             products,
                             categories
                         ),
-                        active_Central_Values = repositorysMainGetter_app2.active_Central_Values,
-                        initDatasProgressEtate = 1f,
                     )
                 }
                 wifi.list_M1Produit = products
                 wifi.list_M3CouleurProduit = colors
             }
-        }
-    }
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            combine(
-                dao_M1Produit.getAllFlow(),
-                dao_16CategorieProduit.getAllFlow(),
-                dao_M3CouleurProduitInfos.getAllFlow()
-            ) { products, categories, colors -> Triple(products, categories, colors) }
-                .collect { (products, categories, colors) ->
-                    if (_uiState.value.initDatasProgressEtate < 1f) return@collect
-                    _uiState.update {
-                        it.copy(
-                            list_M1Produit = products,
-                            list_M16CategorieProduit = categories,
-                            list_M3CouleurProduit = colors,
-                            grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
-                                colors,
-                                products,
-                                categories
-                            ),
-                        )
-                    }
-                    wifi.list_M1Produit = products
-                    wifi.list_M3CouleurProduit = colors
-                }
         }
     }
 

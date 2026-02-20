@@ -1,10 +1,14 @@
 package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Application2.App.Base.Modules.ProductDisplayController
+import Application2.App.Base.Modules.ConnexionCard_App2
+import Application2.App.Base.Repository.RepositorysMainGetter_app2.Companion.ifTrue
 import android.app.Activity
+import android.os.Build
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,13 +28,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import org.koin.androidx.compose.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Compact_Presentoire_App_Produits_App2(
-    productDisplayController: ProductDisplayController,
-    viewModel: ViewModel_MainFragment = koinViewModel(),
+    vm: ViewModel_MainFragment = koinViewModel(),
     modifier: Modifier,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by vm.uiState.collectAsState()
+    val wifiState by vm.wifiState.collectAsState()
 
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
@@ -38,14 +43,15 @@ fun Compact_Presentoire_App_Produits_App2(
     val view = LocalView.current
     val window = (context as? Activity)?.window
 
-    LaunchedEffect(productDisplayController.isConnected) {
+    LaunchedEffect(wifiState.isConnected) {
         window?.let { w ->
-            if (productDisplayController.isConnected && !productDisplayController.isHostPhone) {
+            if (wifiState.isConnected && !wifiState.isHostPhone) {
                 WindowCompat.setDecorFitsSystemWindows(w, false)
                 w.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
                 WindowInsetsControllerCompat(w, view).apply {
                     hide(WindowInsetsCompat.Type.systemBars())
-                    systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 }
             } else {
                 WindowCompat.setDecorFitsSystemWindows(w, true)
@@ -65,9 +71,16 @@ fun Compact_Presentoire_App_Produits_App2(
             )
         }
     } else {
-        Etager_LazyColumn_App2(
-            cataloguesWithCategoriesAndProducts = uiState.grpList_cataloguesWithCategoriesAndProducts,
-            viewModel = viewModel,
-        )
+        Column(modifier = modifier.fillMaxSize()) {
+            (!wifiState.isConnected).ifTrue {
+                ConnexionCard_App2(vm = vm)
+            }
+            Etager_LazyColumn_App2(
+                cataloguesWithCategoriesAndProducts = uiState.grpList_cataloguesWithCategoriesAndProducts,
+                viewModel = vm,
+            )
+        }
     }
 }
+
+
