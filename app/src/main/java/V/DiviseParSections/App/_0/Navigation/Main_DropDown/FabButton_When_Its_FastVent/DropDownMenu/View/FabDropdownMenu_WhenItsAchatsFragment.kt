@@ -11,6 +11,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_Facture_Impots
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_WithCredit
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Fab_Stigns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -24,7 +25,8 @@ import androidx.compose.ui.unit.dp
 fun FabDropdownMenu_WhenIts_FragFastVent (
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick_to_initiateBackgroundPdfCreation: () -> Unit
+    onClick_to_initiateBackgroundPdfCreation: () -> Unit   ,
+    onClickImageToShowControles: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -35,6 +37,7 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+            Fab_Stigns(onClickImageToShowControles, onDismissDropdown )
 
             DropDownItem_ThermiquePrint(
                 nomFun = "ThermiquePrint ",

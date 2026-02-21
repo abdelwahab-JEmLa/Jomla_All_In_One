@@ -23,6 +23,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenI
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabButton_When_Its_FacadeElectroBoutique
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Fab_Stigns
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -490,7 +491,8 @@ fun NavigationBarWithFab(
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
             FabDropdownMenu_WhenIts_FragFastVent(
                 onDismissDropdown = { showFabDropdownFastVent = false },
-                onClick_to_initiateBackgroundPdfCreation = initiateBackgroundPdfCreation
+                onClick_to_initiateBackgroundPdfCreation = initiateBackgroundPdfCreation ,
+                onClickImageToShowControles= onClickImageToShowControles
             )
         }
 
@@ -501,6 +503,8 @@ fun NavigationBarWithFab(
                 focusedValuesGetter = focusedValuesGetter
             )
         }
+
+
         if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_FABsModeEditesProduit) {
             Floating_Separated_FragMap_Button_5(
                 aCentralFacade = aCentralFacade,

@@ -1,14 +1,14 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterState_Facad_Boutique
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterTunnel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.GroupTunnel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -97,26 +97,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 }
             )
 
-            DropdownMenuItem(
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Construction,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                },
-                text = {
-                    Text(
-                        text = "onClickImageToShowControles",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                onClick = {
-                    onClickImageToShowControles()
-                    onDismissDropdown()
-                }
-            )
+            Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
 
             // Button: upload filtered products, their colors, and their categories to Firestore
             DropdownMenuItem(
@@ -159,6 +140,33 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
             )
         }
     }
+}
+
+@Composable
+fun Fab_Stigns(
+    onClickImageToShowControles: () -> Unit,
+    onDismissDropdown: () -> Unit
+) {
+    DropdownMenuItem(
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Construction,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        text = {
+            Text(
+                text = "onClickImageToShowControles",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        onClick = {
+            onClickImageToShowControles()
+            onDismissDropdown()
+        }
+    )
 }
 
 /**

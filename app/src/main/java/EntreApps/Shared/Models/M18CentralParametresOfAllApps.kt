@@ -2,9 +2,9 @@ package EntreApps.Shared.Models
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Modules.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
-import EntreApps.Shared.Modules.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -99,12 +99,12 @@ data class M18CentralParametresOfAllApps(
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 
-    val au_Lence_Set_Compt_Ac_KeyId: String = telephone_de_presentation,
+    val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
 
     val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
-        AppType.AllInOne
+        AppType.GrossistRealSeller
     },
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
