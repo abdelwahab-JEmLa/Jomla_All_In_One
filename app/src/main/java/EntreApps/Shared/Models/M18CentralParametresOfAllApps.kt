@@ -102,9 +102,13 @@ data class M18CentralParametresOfAllApps(
     val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
 
     val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
+
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
+
     } else {
-        AppType.GrossistRealSeller
+
+        AppType.AllInOne
+
     },
 
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
@@ -118,6 +122,7 @@ data class M18CentralParametresOfAllApps(
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
 
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
+    val au_Lence_Dimininue_Datas_OperationVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 

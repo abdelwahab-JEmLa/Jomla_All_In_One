@@ -479,7 +479,7 @@ private fun proceedWithPrinting(
                 companyHeader = selectedHeader.displayName
             )
 
-            repositorysMainSetter.refresh_Datas_M8BonVent()
+        //   repositorysMainSetter.refresh_Datas_M8BonVent()
 
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(
