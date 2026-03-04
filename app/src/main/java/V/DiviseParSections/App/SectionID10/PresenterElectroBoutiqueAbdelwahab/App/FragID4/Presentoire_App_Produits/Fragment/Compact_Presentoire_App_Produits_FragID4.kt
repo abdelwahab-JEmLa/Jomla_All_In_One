@@ -6,8 +6,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterSortGroupe_Tunnels
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.GroupTunnel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs.CategorySelectionDialog_FragID4
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
@@ -31,7 +29,6 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-
 @Composable
 fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
@@ -39,7 +36,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
     viewModelHeadViewModel: HeadViewModel,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit,
     isWifiClientConnected_1: Boolean
@@ -47,8 +43,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
     val uiState by viewModel.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
-    val viewModel_categoryViewModel = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
-    val uiState_viewModel_categoryViewModel by viewModel_categoryViewModel.uiState.collectAsState()
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
     var justMovedProductKeyID by remember { mutableStateOf<String?>(null) }
@@ -92,6 +86,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     } else {
 
         FilterSortGroupe_Tunnels(
+            viewModel=viewModel,
             isWifiClientConnected_1=isWifiClientConnected_1,
             modifier = modifier,
             focusedValuesGetter = focusedValuesGetter,
@@ -113,7 +108,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
             product = product,
             allCategories = allCategories,
             allProducts = allProducts,
-            isFastMoveMode = uiState_viewModel_categoryViewModel.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove,
+            isFastMoveMode =  true,
             onCategorySelected = { newCategoryId ->
                 val updatedProduct = newCategoryId?.let {
                     product.copy(
@@ -131,7 +126,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
-                viewModel_categoryViewModel.addOrUpdateCategorie(
+                viewModel.repositorysMainSetter_SeparatedApps.insert_M16CategorieProduit(
                     M16CategorieProduit(
                         nom = categoryName,
                         position = 0,

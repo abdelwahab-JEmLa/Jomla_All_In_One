@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel
 
-import Application2.App.Base.Repository.ActiveCentralValues_app2
+import EntreApps.Shared.Models.Home.FocusedValues_FluidApp
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_SeparatedApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.AppDatabase
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.ActiveCentralValues
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 
 data class UiState(
     val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
-    val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
+    val active_Central_Values: ActiveCentralValues = ActiveCentralValues.get_Default(),
     val list_M1Produit: List<M01Produit> = emptyList(),
     val list_M16CategorieProduit: List<M16CategorieProduit> = emptyList(),
     val list_M3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
@@ -31,12 +32,11 @@ data class UiState(
 class ViewModel_FragID4(
     private val context: Context,
     private val appDatabase: AppDatabase,
+    val repositorysMainSetter_SeparatedApps: RepositorysMainSetter_SeparatedApps = RepositorysMainSetter_SeparatedApps(
+        appDatabase
+    ),
+    val focusedValues_FluidApp: FocusedValues_FluidApp = FocusedValues_FluidApp()
 ) : ViewModel() {
-
-    val repositorysMainSetter_SeparatedApps = RepositorysMainSetter_SeparatedApps(
-        appDatabase = appDatabase,
-    )
-
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
@@ -74,6 +74,7 @@ class ViewModel_FragID4(
                         list_M1Produit = products,
                         list_M16CategorieProduit = categories,
                         list_M3CouleurProduit = colors,
+                        active_Central_Values = focusedValues_FluidApp.active_Central_Values
                     )
                 }
             }

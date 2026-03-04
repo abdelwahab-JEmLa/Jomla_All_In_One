@@ -29,9 +29,25 @@ class RepositorysMainSetter_SeparatedApps(
         }
     }
 
-    fun update_M16CategorieProduit(
+    fun insert_M16CategorieProduit(
         data: M16CategorieProduit
     ) {
+        composScope.launch {
+            appDatabase.dao_16CategorieProduit().insert(data)
+
+            val updates = mutableMapOf<String, Any>()
+            listOf(data).forEach { data ->
+                updates[data.keyID] = data.toFirebaseMap()
+            }
+            val firebaseRef = M16CategorieProduit.ref
+            firebaseRef.updateChildren(updates).await()
+        }
+    }
+
+    fun update_M16CategorieProduit(
+        data: M16CategorieProduit
+    ) {              //<--
+    //TODO(1): affiche toest si non dispot data et n update pas 
         composScope.launch {
             appDatabase.dao_16CategorieProduit().update(data)
 

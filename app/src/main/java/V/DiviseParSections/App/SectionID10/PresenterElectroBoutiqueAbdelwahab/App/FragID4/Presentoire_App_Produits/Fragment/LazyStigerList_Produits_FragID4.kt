@@ -1,14 +1,16 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_FragID4
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -40,7 +42,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -59,7 +60,8 @@ fun Etager_LazyColumn_FragID4(
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    isWifiClientConnected_1: Boolean
+    isWifiClientConnected_1: Boolean,
+    viewModel: ViewModel_FragID4
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -179,7 +181,7 @@ fun Etager_LazyColumn_FragID4(
                                 repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(
                                     updatedCategory
                                 )
-                            }
+                            },viewModel=viewModel
                         )
                     }
                 }
