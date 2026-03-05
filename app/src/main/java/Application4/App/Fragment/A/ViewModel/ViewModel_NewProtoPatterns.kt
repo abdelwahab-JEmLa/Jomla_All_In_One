@@ -80,14 +80,15 @@ class ViewModel_NewProtoPatterns(
     private val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
 
-    val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns = FocusedValues_NewProtoPatterns(
-        list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Eagerly,
-                initialValue = null
-            )
-    )
+    val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
+        FocusedValues_NewProtoPatterns(
+            list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                )
+        )
 
     val repositorysMainGetter_NewProtoPattern: RepositorysMainGetter_NewProtoPattern =
         RepositorysMainGetter_NewProtoPattern(
@@ -100,6 +101,10 @@ class ViewModel_NewProtoPatterns(
                 ),
             on_Progress_Datas = { progress ->
                 _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = progress) }
+                update_activeCentralValues(
+                    uiState.value.active_Central_Values
+                        .copy(mainInitDataBaseProgressEtate = progress)
+                )
             }
         )
 
@@ -108,8 +113,8 @@ class ViewModel_NewProtoPatterns(
         val cv = _uiStateNewProtoPatterns.value.active_Central_Values
         return ActiveCentralValues_app2(
             expanded_M3CouleurProduitInfos = cv.expanded_M3CouleurProduitInfos,
-            expanded_M1Produit             = cv.expanded_M1Produit,
-            hide_prix_lence_vent_buttons   = cv.hide_prix_lence_vent_buttons,
+            expanded_M1Produit = cv.expanded_M1Produit,
+            hide_prix_lence_vent_buttons = cv.hide_prix_lence_vent_buttons,
         )
     }
 
@@ -117,8 +122,8 @@ class ViewModel_NewProtoPatterns(
         val current = _uiStateNewProtoPatterns.value.active_Central_Values
         val merged = current.copy(
             expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
-            expanded_M1Produit             = updated.expanded_M1Produit,
-            hide_prix_lence_vent_buttons   = updated.hide_prix_lence_vent_buttons,
+            expanded_M1Produit = updated.expanded_M1Produit,
+            hide_prix_lence_vent_buttons = updated.hide_prix_lence_vent_buttons,
         )
         update_activeCentralValues(merged)
     }
@@ -242,7 +247,8 @@ class ViewModel_NewProtoPatterns(
             ?: emptyList()
 
         val isNewestBonVent = clientBonVents.firstOrNull()?.keyID == currentBonVent.keyID
-        val isRecentlyCreated = System.currentTimeMillis() - currentBonVent.creationTimestamps < (5 * 60 * 1000)
+        val isRecentlyCreated =
+            System.currentTimeMillis() - currentBonVent.creationTimestamps < (5 * 60 * 1000)
 
         if (!isNewestBonVent || !isRecentlyCreated) return false
 
@@ -263,7 +269,10 @@ class ViewModel_NewProtoPatterns(
         produitKeyID: String,
         newTariff: M13TarificationInfos,
     ) {
-        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
+        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(
+            produitKeyID,
+            newTariff
+        )
     }
 
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) {
