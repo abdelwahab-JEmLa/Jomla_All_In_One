@@ -34,6 +34,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
 ) {
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
+            && uiState.active_Central_Values.mainInitDataBaseProgressEtate >= 1f
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
     var justMovedProductKeyID by remember { mutableStateOf<String?>(null) }
@@ -64,10 +65,12 @@ fun Compact_Presentoire_App_Produits_FragID4(
         allCategories = allCategories
     )
 
+
+
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
-                progress = { uiState.initDatasProgressEtate },
+                progress = { minOf(uiState.initDatasProgressEtate, uiState.active_Central_Values.mainInitDataBaseProgressEtate) },
                 modifier = Modifier.size(48.dp),
                 trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 color = MaterialTheme.colorScheme.primary

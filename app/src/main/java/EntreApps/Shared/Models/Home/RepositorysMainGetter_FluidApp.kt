@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Home
 
-import EntreApps.Shared.Models.Home.Init.Initializer_Funcs_NewProtoPattern
+import Application4.App.A.Start.Init.Initializer_Funcs_NewProtoPattern
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.AppDatabase
 import android.content.Context

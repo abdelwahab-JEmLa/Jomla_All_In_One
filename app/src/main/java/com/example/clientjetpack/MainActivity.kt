@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
-import Application4.App.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Application4.App.A.Start.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.PermissionHandler
@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                         MainScreen_Jemla_Com_PresentoirApp()
                                     }
                                     AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
-                                        Compact_Presentoire_App_Produits_FragID4()
+                                        MainScreen_NewProtoPattern()
                                     }
                                     else -> {
                                         MainScreen()

@@ -1,4 +1,4 @@
-package EntreApps.Shared.Models.Home.Init
+package Application4.App.A.Start.Init
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
