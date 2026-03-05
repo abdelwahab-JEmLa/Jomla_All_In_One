@@ -41,7 +41,6 @@ class FocusedValues_NewProtoPatterns(
                 ?.filter { it.parent_M14VentPeriod_KeyId == activePeriodKeyID }
                 ?: emptyList()
 
-        // Derived from the live activeCompt — single source of truth, never stored manually
         val currentApp_Est_Admin = activeCompt?.its_Admin == true
         val currentApp_ItsWorkChezGrossisst = activeCompt?.travailleChezGrossisst3Ali == true
 
