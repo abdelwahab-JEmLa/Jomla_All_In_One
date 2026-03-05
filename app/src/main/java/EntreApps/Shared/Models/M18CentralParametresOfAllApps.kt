@@ -85,6 +85,14 @@ class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
 data class M18CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
+    //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
+    val itsDevMode: Boolean = true,
+    val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID4.route,
+
+    val desactive_Animation_Pour_LayoutInspector: Boolean = false,
+
+    val listens_on_data_change_resources_consolation: Boolean = false,
+
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
     val telephone_de_presentation: String = "-OTmoNn0cljrRuhVR2sp",
@@ -101,26 +109,17 @@ data class M18CentralParametresOfAllApps(
 
     val au_Lence_Set_Compt_Ac_KeyId: String = abdelwahabTravailleChezGros_KeyId,
 
-    val its_AppType: AppType =if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
-
+    val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
-
     } else {
-
-        AppType.AllInOne
-
+        if (itsDevMode) {
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
+        } else {
+            AppType.AllInOne
+        }
     },
 
-    //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false,
-    val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID4.route,
-
-    val desactive_Animation_Pour_LayoutInspector: Boolean = false,
-
-    val listens_on_data_change_resources_consolation: Boolean = false,
-
     //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
-
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_OperationVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!

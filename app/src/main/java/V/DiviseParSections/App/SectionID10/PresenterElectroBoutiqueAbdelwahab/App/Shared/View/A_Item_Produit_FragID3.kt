@@ -59,10 +59,8 @@ fun Item_Produit_FragID3(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
-    isWifiClientConnected_1: Boolean,
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>,
 ) {
-    val shouldShowButtons = !isWifiClientConnected_1
     val (uiState, viewModel) = uiState_viewModel
 
     // -------------------------------------------------------------------------
@@ -116,6 +114,7 @@ fun Item_Produit_FragID3(
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
     }
+    val shouldShowButtons = !isThisProductExpanded
 
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->

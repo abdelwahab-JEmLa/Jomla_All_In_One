@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import EntreApps.Shared.Modules.AppDatabase
-import EntreApps.Shared.Modules.appDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -234,19 +233,6 @@ val viewModelModule = module {
     viewModel { HeadViewModel(get(), androidContext(), get(), get()) }
 }
 
-val vmModel_NewProtoPatterns = module {
-    viewModel { ViewModel_NewProtoPatterns(androidContext(), get(), get()) }
-}
-val classes_NeceFemrePas = module {
-    single { FragmentNavigationHandler() }
-}
-
-val modulesDonLesDeuAppNeceFemrePas = module {
-    includes(
-        appDatabase,
-        classes_NeceFemrePas
-    )
-}
 
 val appModule = module {
     includes(

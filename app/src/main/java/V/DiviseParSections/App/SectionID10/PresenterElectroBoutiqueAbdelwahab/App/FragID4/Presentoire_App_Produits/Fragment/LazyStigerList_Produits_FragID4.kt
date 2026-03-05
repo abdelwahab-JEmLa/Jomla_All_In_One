@@ -53,7 +53,6 @@ fun Etager_LazyColumn_FragID4(
     on_pour_send_data: (String, String) -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    isWifiClientConnected_1: Boolean,
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -190,7 +189,6 @@ fun Etager_LazyColumn_FragID4(
                     ) {
                         LazyStigerList_Produits_FragID4(
                             uiState_viewModel=uiState_viewModel,
-                            isWifiClientConnected_1=isWifiClientConnected_1,
                             product = product,
                             colors = colors,
                             on_pour_send_data = on_pour_send_data,
@@ -242,7 +240,6 @@ fun LazyStigerList_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
-    isWifiClientConnected_1: Boolean,
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
 
@@ -279,7 +276,6 @@ fun LazyStigerList_Produits_FragID4(
     ) {
         Item_Produit_FragID3(
             uiState_viewModel=uiState_viewModel,
-            isWifiClientConnected_1=isWifiClientConnected_1,
             relative_M1produit = product,
             on_pour_send_data = on_pour_send_data,
             onCategoryClick = onCategoryClick,

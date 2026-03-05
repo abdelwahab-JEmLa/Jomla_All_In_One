@@ -1,10 +1,5 @@
 package com.example.clientjetpack
 
-import Application2.App.App.appModule_App2_ac_app1
-import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
 import android.Manifest
 import android.app.Application
 import android.net.ConnectivityManager
@@ -15,9 +10,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
 
 
 class MyApplication : Application() {
@@ -33,8 +25,6 @@ class MyApplication : Application() {
         Log.d(TAG, "Application starting...")
 
         initializeFirebase()
-
-        initializeKoin()
 
         Log.d(TAG, "Application initialized successfully")
     }
@@ -129,26 +119,6 @@ class MyApplication : Application() {
         }
     }
 
-    /**
-     * Initialise Koin pour l'injection de dépendances
-     */
-    private fun initializeKoin() {
-        try {
-            startKoin {
-                androidLogger()
-                androidContext(this@MyApplication)
-                modules(modulesDonLesDeuAppNeceFemrePas)
-                if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.JomLaElectroLivreurGrossist_PresenterScreen) {
-                    modules(appModule_App2_ac_app1)
-                } else {
-                    modules(appModule)
-                }
-            }
-            Log.d(TAG, "✓ Koin initialized")
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Koin initialization error: ${e.message}", e)
-        }
-    }
 
     /**
      * Vérifie si une connexion réseau est disponible

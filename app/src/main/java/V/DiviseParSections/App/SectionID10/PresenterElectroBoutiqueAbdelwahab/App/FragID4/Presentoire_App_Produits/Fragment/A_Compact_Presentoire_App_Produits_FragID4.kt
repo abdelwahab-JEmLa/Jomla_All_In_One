@@ -31,10 +31,8 @@ fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
-    onClickImageToShowControles: () -> Unit,
-    isWifiClientConnected_1: Boolean,
+    onClickImageToShowControles: () -> Unit= {},
 ) {
-
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
@@ -80,7 +78,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         FilterSortGroupe_Tunnels(
             uiState = uiState,
             viewModel = viewModelNewProtoPatterns,
-            isWifiClientConnected_1 = isWifiClientConnected_1,
             modifier = modifier,
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             on_pour_send_data = on_pour_send_data,

@@ -1,11 +1,15 @@
 package com.example.clientjetpack
 
+import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
-import P0_MainScreen.Main.MainScreen
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.PermissionHandler
 import EntreApps.Shared.Modules.StoragePermissionDialog
+import P0_MainScreen.Main.MainScreen
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -24,8 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
     lateinit var content: () -> Unit
@@ -36,6 +43,22 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ startKoin appelé UNE SEULE FOIS ici, avant setContent
+        startKoin {
+            androidLogger()
+            androidContext(this@MainActivity)
+            modules(modulesDonLesDeuAppNeceFemrePas)
+
+            when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
+                AppType.JomLaElectroLivreurGrossist_PresenterScreen ->
+                    modules(appModule_App2_ac_app1)
+                AppType.JomLaElectroLivreurGrossist_VendeurHost -> {}
+                else ->
+                    modules(appModule)
+            }
+        }
+
         setupActivityContent()
     }
 
@@ -71,10 +94,16 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
                                 when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
-                                    AppType.JomLaElectroLivreurGrossist_PresenterScreen -> MainScreen_Jemla_Com_PresentoirApp()
-                                    else -> MainScreen()
+                                    AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
+                                        MainScreen_Jemla_Com_PresentoirApp()
+                                    }
+                                    AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
+                                        Compact_Presentoire_App_Produits_FragID4()
+                                    }
+                                    else -> {
+                                        MainScreen()
+                                    }
                                 }
-
                             }
 
                             if (showStorageDialog) {

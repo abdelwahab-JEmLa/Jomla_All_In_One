@@ -28,7 +28,6 @@ fun FilterSortGroupe_Tunnels(
     onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    isWifiClientConnected_1: Boolean,
     viewModel: ViewModel_NewProtoPatterns,
     uiState: UiState
 ) {
@@ -73,7 +72,6 @@ fun FilterSortGroupe_Tunnels(
         on_pour_send_data = on_pour_send_data,
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
-        isWifiClientConnected_1=isWifiClientConnected_1,
         uiState_viewModel=Pair(uiState,viewModel),
     )
 

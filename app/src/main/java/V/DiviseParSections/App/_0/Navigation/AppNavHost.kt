@@ -131,147 +131,144 @@ fun AppNavHost(
             .padding(bottom = bottomNavHeight + bottomPadding)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (startUpScreen != null) {
-                NavHost(
-                    navController = navController,
-                    startDestination = startUpScreen.route,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    // Main presenter screen - accessible to all
-                    composable(
-                        route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
-                    ) { backStackEntry ->
-                        val screenKey = rememberScreenKey(backStackEntry)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            key(screenKey) {
-                                PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
-                                    viewModelHeadViewModel = viewModel,
-                                    viewModelInitApp = viewModelInitApp,
-                                    onToggleNavBar = onToggleNavBar,
-                                    reloadTrigger = reloadTrigger,
-                                    onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-                                        relatedArticleBaseStats = articleDataBaseOn
-                                        pendingIndexColor = indexColor
+            NavHost(
+                navController = navController,
+                startDestination = startUpScreen.route,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Main presenter screen - accessible to all
+                composable(
+                    route = Screen.Fragment_Compact_Presentoir_Echantilliants.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
+                                viewModelHeadViewModel = viewModel,
+                                viewModelInitApp = viewModelInitApp,
+                                onToggleNavBar = onToggleNavBar,
+                                reloadTrigger = reloadTrigger,
+                                onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                                    relatedArticleBaseStats = articleDataBaseOn
+                                    pendingIndexColor = indexColor
 
-                                        // FIXED: Don't automatically navigate to client map
-                                        // Only show dialog/message that client needs to be selected
-                                        if (currentClientId == 0L) {
-                                            showClientSelection = true
-                                        } else {
-                                            viewModel.openWindowsNewSaleWithUpdateCurrent(
-                                                relatedArticleBaseStats!!.id.toLong(),
-                                                currentClientId,
-                                                pendingIndexColor
-                                            )
-                                            opnerSaleWindows = true
-                                            viewModel.sendOrderToClientDisplayer(
-                                                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
-                                                relatedArticleBaseStats!!.id.toLong()
-                                            )
-                                        }
-                                    },
-                                    onClickToOpenClientsW = {
-                                        // FIXED: Only this explicit button click should navigate
-                                        showClientSelectionWithoutCondition = true
-                                    },
-                                    isFabVisibleInit = isFabVisible,
-                                    onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                                    onToggleLockHost = onToggleLockHost,
-                                    onToggleLockExpandedPricex = {
-                                        lockExpandedPrices = !lockExpandedPrices
-                                    },
-                                    currentClient = currentClient,
-                                    targetCategoryId = targetCategoryId,
-                                    lockHost = lockHost,
-                                    onClickImageToShowControles = onClickImageToShowControles,
-                                    on_pour_send_data = on_pour_send_data
-                                )
-                            }
+                                    // FIXED: Don't automatically navigate to client map
+                                    // Only show dialog/message that client needs to be selected
+                                    if (currentClientId == 0L) {
+                                        showClientSelection = true
+                                    } else {
+                                        viewModel.openWindowsNewSaleWithUpdateCurrent(
+                                            relatedArticleBaseStats!!.id.toLong(),
+                                            currentClientId,
+                                            pendingIndexColor
+                                        )
+                                        opnerSaleWindows = true
+                                        viewModel.sendOrderToClientDisplayer(
+                                            WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
+                                            relatedArticleBaseStats!!.id.toLong()
+                                        )
+                                    }
+                                },
+                                onClickToOpenClientsW = {
+                                    // FIXED: Only this explicit button click should navigate
+                                    showClientSelectionWithoutCondition = true
+                                },
+                                isFabVisibleInit = isFabVisible,
+                                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                                onToggleLockHost = onToggleLockHost,
+                                onToggleLockExpandedPricex = {
+                                    lockExpandedPrices = !lockExpandedPrices
+                                },
+                                currentClient = currentClient,
+                                targetCategoryId = targetCategoryId,
+                                lockHost = lockHost,
+                                onClickImageToShowControles = onClickImageToShowControles,
+                                on_pour_send_data = on_pour_send_data
+                            )
+                        }
 
-                            if (uiState.isLoading) {
-                                LoadingOverlay(
-                                    progress = uiState.loadingProgress / 100f,
-                                    modifier = Modifier.matchParentSize()
-                                )
-                            }
+                        if (uiState.isLoading) {
+                            LoadingOverlay(
+                                progress = uiState.loadingProgress / 100f,
+                                modifier = Modifier.matchParentSize()
+                            )
                         }
                     }
+                }
 
-                    composable(
-                        route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
-                    ) {
+                composable(
+                    route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
+                ) {
 
-                        clearRessource_Test(activate=false)
+                    clearRessource_Test(activate=false)
 
-                        Compact_Presentoire_App_Produits_FragID4(
-                            on_pour_send_data = on_pour_send_data,
-                            onClickImageToShowControles = onClickImageToShowControles,
-                            isWifiClientConnected_1 = isWifiClientConnected_1,
-                        )
-                    }
-
-                    composable(Screen.Screen1PanieVentsFinale.route) {
-                        PanierFinaleDAchatSec1Frag3(
-                        )
-                    }
-
-                    composable(Screen.TravailleTempRecorder.route) {
-                        A_APP3FragID1_MainScreen()
-                    }
-
-                    composable(Screen.Achats_Produits_Chez_Grossists.route) {
-                        Screen_GrossistAchatSec12FragID1()
-                    }
-
-                    // Admin-only screens
-                    composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                        EditeBaseDonneMainScreenIdS9()
-                    }
-
-                    composable(Screen.EducationFragment.route) {
-                        EducationFragment()
-                    }
-
-                    composable(Screen.FragmentProduitFastSearchDialog.route) {
-                        MainFastSearchProduitPourVent()
-                    }
-
-                    composable(Screen.Main_DataBaseInitFactory_1Produit.route) {
-                        Main_DataBaseInitFactory_1Produit()
-                    }
-
-                    composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
-                        Compact_Presentoir_Echantilliants_FragID3(
-                            isWifiClientConnected_1=isWifiClientConnected_1,
-                            on_pour_send_data= on_pour_send_data,
-                        )
-                    }
-
-                    // Add client map routes
-                    app2(
-                        viewModelInitApp = viewModelInitApp,
-                        clientEnCourDeVent = clientEnCourDeVent,
-                        navController = navController,
-                        onClear = {
-                            viewModel.viewModelScope.launch {
-                                viewModel._uiState.update { currentState ->
-                                    currentState.copy(soldArticlesModel = emptyList())
-                                }
-
-                                // Clear the database in coroutine
-                                viewModel.database.soldArticlesModelDao().deleteAll()
-
-                                // Clear Firebase references
-                                val database = Firebase.database
-                                database.getReference("K_GroupeurBonCommendToSupplierRef")
-                                    .removeValue()
-                                database.getReference("O_SoldArticlesTabelle").removeValue()
-                            }
-                        },
-                        mapReloadTrigger = mapReloadTrigger.intValue,
-                        fragmentNavigationHandler = fragmentNavigationHandler
+                    Compact_Presentoire_App_Produits_FragID4(
+                        on_pour_send_data = on_pour_send_data,
+                        onClickImageToShowControles = onClickImageToShowControles,
                     )
                 }
+
+                composable(Screen.Screen1PanieVentsFinale.route) {
+                    PanierFinaleDAchatSec1Frag3(
+                    )
+                }
+
+                composable(Screen.TravailleTempRecorder.route) {
+                    A_APP3FragID1_MainScreen()
+                }
+
+                composable(Screen.Achats_Produits_Chez_Grossists.route) {
+                    Screen_GrossistAchatSec12FragID1()
+                }
+
+                // Admin-only screens
+                composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                    EditeBaseDonneMainScreenIdS9()
+                }
+
+                composable(Screen.EducationFragment.route) {
+                    EducationFragment()
+                }
+
+                composable(Screen.FragmentProduitFastSearchDialog.route) {
+                    MainFastSearchProduitPourVent()
+                }
+
+                composable(Screen.Main_DataBaseInitFactory_1Produit.route) {
+                    Main_DataBaseInitFactory_1Produit()
+                }
+
+                composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
+                    Compact_Presentoir_Echantilliants_FragID3(
+                        isWifiClientConnected_1=isWifiClientConnected_1,
+                        on_pour_send_data= on_pour_send_data,
+                    )
+                }
+
+                // Add client map routes
+                app2(
+                    viewModelInitApp = viewModelInitApp,
+                    clientEnCourDeVent = clientEnCourDeVent,
+                    navController = navController,
+                    onClear = {
+                        viewModel.viewModelScope.launch {
+                            viewModel._uiState.update { currentState ->
+                                currentState.copy(soldArticlesModel = emptyList())
+                            }
+
+                            // Clear the database in coroutine
+                            viewModel.database.soldArticlesModelDao().deleteAll()
+
+                            // Clear Firebase references
+                            val database = Firebase.database
+                            database.getReference("K_GroupeurBonCommendToSupplierRef")
+                                .removeValue()
+                            database.getReference("O_SoldArticlesTabelle").removeValue()
+                        }
+                    },
+                    mapReloadTrigger = mapReloadTrigger.intValue,
+                    fragmentNavigationHandler = fragmentNavigationHandler
+                )
             }
 
             // FIXED: Only navigate when explicitly requested
