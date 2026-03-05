@@ -5,15 +5,11 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.setValue
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 fun find_ListM3CouleurInfos_By_Parent_Produit_KeyID(datas : List<M3CouleurProduitInfos>, parentBProduitInfosKeyID: String) =
@@ -23,14 +19,9 @@ fun find_ListM3CouleurInfos_By_Parent_Produit_KeyID(datas : List<M3CouleurProdui
 class RepositorysMainGetter_NewProtoPattern(
     private val context: Context,
     appDatabase: AppDatabase,
-    active_Central_Values: StateFlow<ActiveCentralValues?>,
     on_Progress_Datas: (Float) -> Unit,
 ) {
     val repoScope = CoroutineScope(Dispatchers.IO)
-
-    var loadingProgress: Float by mutableFloatStateOf(0f)
-        private set
-
     val dao_M1Produit = appDatabase.dao_M1Produit()
     val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
@@ -45,7 +36,6 @@ class RepositorysMainGetter_NewProtoPattern(
     private val initializer = Initializer_Funcs_NewProtoPattern(
         context = context,
         on_Progress_Datas = { progress ->
-            loadingProgress = progress
             on_Progress_Datas(progress)
         },
         dao_M1Produit,
