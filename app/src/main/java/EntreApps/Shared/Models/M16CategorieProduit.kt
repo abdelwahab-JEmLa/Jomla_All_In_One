@@ -1,7 +1,6 @@
 package EntreApps.Shared.Models
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey

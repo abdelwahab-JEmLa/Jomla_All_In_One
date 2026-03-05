@@ -19,7 +19,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fra
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
@@ -133,7 +133,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { DataBaseInitFactory_15Grossist(get()) }
     single { DataBaseInitFactory_14VentPeriode(get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
-    single { DataBaseInit_Z_AppCompt(get<AppDatabase>().Z_AppComptDao()) }
+    single { DataBaseInit_Z_AppCompt(get<AppDatabase>().dao_M9AppCompt()) }
     single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().dao_M3CouleurProduitInfos()) }
     single { DataBaseCreationFactory13TarificationInfos(get()) }
     single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
@@ -159,7 +159,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
     single { Repo17MessageVocale(androidContext(), get()) }
-    single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().D_AchatOperationDao()) }
+    single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().dao_M10OperationVentCouleur()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
@@ -196,7 +196,7 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { ViewModel_FragID4(androidContext(),get(),) }
+    viewModel { ViewModel_NewProtoPatterns(androidContext(),get(),) }
     viewModel { ViewModel_M9AppCompt(get(),  ) }
     viewModel { Preview_DataBaseInitFactory_15Grossist(get(),  ) }
     viewModel { ViewModel_DataBaseInitFactory_1Produit(get(),  ) }

@@ -1,13 +1,15 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 
 /**
  * Extension function to update tariff for all product operations
@@ -79,14 +80,14 @@ fun Big_Principale_FragID3(
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit,
-    aCentralFacade: ACentralFacade = koinInject(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
         on_pour_send_data = on_pour_send_data,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),uiState_viewModel=uiState_viewModel
     )
 
     // Reduced spacing from 8.dp to 2.dp for tighter layout
@@ -105,8 +106,8 @@ fun Big_Principale_FragID3(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp) // Reduced from 4.dp to 2.dp
         ) {
-            // FIXED: count_Don_Depot is now automatically tracked inside Lenceur_Vent_Handler_FragID3
             Lenceur_Vent_Handler_FragID3(
+                uiState_viewModel=uiState_viewModel,
                 relative_M1produit = relative_M1produit,
                 relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                 selectedCouleur = selectedCouleur,

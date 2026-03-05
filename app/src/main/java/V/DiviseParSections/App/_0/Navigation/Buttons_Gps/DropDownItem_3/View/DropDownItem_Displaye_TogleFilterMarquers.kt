@@ -3,7 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_3.View
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent.EtateActuellementEst
+import EntreApps.Shared.Models.M8BonVent.EtateActuellementEst
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.savePdfToDownloads
 import android.content.Context

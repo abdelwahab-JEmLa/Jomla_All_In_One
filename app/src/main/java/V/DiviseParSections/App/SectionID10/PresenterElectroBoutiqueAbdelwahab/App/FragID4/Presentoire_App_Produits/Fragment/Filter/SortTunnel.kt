@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
@@ -18,7 +18,7 @@ fun SortTunnel(
     filteredProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     sortOrder: SortOrder_Facade_Boutique,
     enableCategoryGrouping: Boolean,
-    repositorysMainGetter: RepositorysMainGetter
+    uiState: UiState,
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
 
     return remember(filteredProducts, sortOrder, enableCategoryGrouping) {
@@ -59,7 +59,6 @@ fun SortTunnel(
         // Apply sorting with category and catalogue grouping
         when (sortOrder) {
             SortOrder_Facade_Boutique.CATEGORY_GROUPED -> {
-                // Keep catalogue and category grouping, sort by position
                 filteredProducts
                     .sortedBy { (catalogue, _) -> catalogue.position }
                     .map { (catalogue, categories) ->
@@ -67,7 +66,6 @@ fun SortTunnel(
                     }
             }
             else -> {
-                // Flatten all products, sort them, then regroup by catalogue and category
                 val allProducts = filteredProducts.flatMap { (_, categories) ->
                     categories.flatMap { it.second }
                 }
@@ -82,17 +80,18 @@ fun SortTunnel(
                     else -> allProducts
                 }
 
-                // Regroup by category
+                // FIX: was `uiState.list_M16CategorieProduit` (unresolved) — data lives inside list_Datas
+                val categories = uiState.list_Datas?.m16CategorieProduit ?: emptyList()
+
                 val categoryProductPairs = sorted
                     .groupBy { (product, _) -> product.idParentCategorie }
                     .mapNotNull { (categoryId, pairs) ->
-                        repositorysMainGetter.repoM16CategorieProduit.datasValue
+                        categories
                             .find { it.id == categoryId }
                             ?.let { it to pairs }
                     }
                     .sortedBy { (category, _) -> category.positionDouble }
 
-                // Regroup by catalogue
                 val allCatalogues = get_ListM21CataloguesCategorie()
 
                 allCatalogues

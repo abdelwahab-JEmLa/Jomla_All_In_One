@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface D_AchatOperationDao {
+interface Dao_M10OperationVentCouleur {
     @Delete
     suspend fun delete(data: M10OperationVentCouleur)
 

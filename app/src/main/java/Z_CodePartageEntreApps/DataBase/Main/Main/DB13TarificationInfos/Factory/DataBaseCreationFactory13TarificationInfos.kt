@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
@@ -19,7 +19,7 @@ import kotlin.coroutines.resume
 class DataBaseCreationFactory13TarificationInfos(
     appDatabase: AppDatabase
 ) {
-    val dao = appDatabase.Dao13TarificationInfos()
+    val dao = appDatabase.dao_M13TarificationInfos()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
 
     val repoRef = M13TarificationInfos.ref

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL
 
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import kotlinx.coroutines.Dispatchers
@@ -73,7 +73,7 @@ class G_RoomOperationsHandler(
                     database.a_ProduitInfosDao().getCount() > 0
                 }
                 M13TarificationInfos::class -> {
-                    database.Dao13TarificationInfos().getCount() > 0
+                    database.dao_M13TarificationInfos().getCount() > 0
                 }
                 else -> false
             }
@@ -85,7 +85,7 @@ class G_RoomOperationsHandler(
         try {
             onProgressUpdate(0.2f)
 
-            val count = database.Dao13TarificationInfos().getCount()
+            val count = database.dao_M13TarificationInfos().getCount()
 
             onProgressUpdate(0.8f)
 
@@ -171,11 +171,11 @@ class G_RoomOperationsHandler(
                     val existingId = dataWithDefaults.id
                     val finalId = if (existingId > 0 ) {
                         // Update existing record
-                        database.Dao13TarificationInfos().update(dataWithDefaults)
+                        database.dao_M13TarificationInfos().update(dataWithDefaults)
                         existingId
                     } else {
                         // Insert new record
-                        database.Dao13TarificationInfos().insert(dataWithDefaults)
+                        database.dao_M13TarificationInfos().insert(dataWithDefaults)
                     }
 
                     val finalData = dataWithDefaults.copy(id = finalId)
@@ -213,7 +213,7 @@ class G_RoomOperationsHandler(
                     val dataWithDefaults = tarificationData.withProperDefaults()
 
                     // Use upsert (insert or replace)
-                    val id = database.Dao13TarificationInfos().upsert(dataWithDefaults)
+                    val id = database.dao_M13TarificationInfos().upsert(dataWithDefaults)
                     val finalData = dataWithDefaults.copy(id = id)
                     Pair(id, finalData)
                 }

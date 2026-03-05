@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.Windows.g.HistoriqueWorck
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

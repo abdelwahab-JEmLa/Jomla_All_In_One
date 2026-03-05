@@ -1,9 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import EntreApps.Shared.Models.M01Produit
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,20 +35,25 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Compact_Header_FragID3(
-    repositorysMainSetter: RepositorysMainSetter= koinInject(),
-    repositorysMainGetter: RepositorysMainGetter= koinInject(),
-    focusedValuesGetter: FocusedValuesGetter= koinInject(),
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
     shouldShowButtons: Boolean = false,
     onUpdateTariffContext: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
+    val (uiState, viewModel) = uiState_viewModel
+    val centralValues = uiState.active_Central_Values
+
+    // Sourced from uiState — no koinInject needed
+    val isAdmin = remember(centralValues.currentApp_Est_Admin) {
+        centralValues.currentApp_Est_Admin
+    }
+
     // Dynamic text sizes based on expansion state
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
@@ -84,11 +89,17 @@ fun Compact_Header_FragID3(
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
             // Delete button - only visible for admin users
-            if (shouldShowButtons && focusedValuesGetter.currentApp_Est_Admin) {
+            if (shouldShowButtons && isAdmin) {
                 DeleteProductHeader(
                     productName = relative_M1produit.nom,
                     onDelete = {
-                        repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
+                        viewModel.update_m1Produit(
+                            relative_M1produit.copy(
+                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                            )
+                        )
+                        // Delegate actual deletion to ViewModel
+                        viewModel.delete_m1Produit(relative_M1produit)
                     }
                 )
             }
@@ -130,8 +141,8 @@ fun Compact_Header_FragID3(
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
-                // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin && onUpdateTariffContext != null) {
+                // Update tariff context button — shown first if available, admin only
+                if (shouldShowButtons && isAdmin && onUpdateTariffContext != null) {
                     ClickableInfoCard(
                         icon = {
                             Icon(

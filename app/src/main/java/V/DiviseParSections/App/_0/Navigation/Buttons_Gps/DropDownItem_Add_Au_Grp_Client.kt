@@ -1,7 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Buttons_Gps
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import EntreApps.Shared.Models.M8BonVent
 import android.content.Context
 import android.util.Log
 import android.widget.Toast

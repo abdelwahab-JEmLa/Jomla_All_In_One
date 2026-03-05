@@ -4,12 +4,12 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Item_Produit_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
@@ -55,13 +55,10 @@ fun Etager_LazyColumn_FragID4(
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
-    onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    repositorysMainGetter: RepositorysMainGetter,
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     isWifiClientConnected_1: Boolean,
-    viewModel: ViewModel_FragID4
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -74,17 +71,8 @@ fun Etager_LazyColumn_FragID4(
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+    val expanded_M3CouleurProduitInfos = uiState_viewModel.first.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // When an item is expanded, auto-scroll so it is fully visible.
-    // KEY FIXES:
-    //  1. No phantom banner offset — the ad_banner_header item is commented out,
-    //     so currentIndex starts at 0 to match the actual grid item positions.
-    //  2. Match by product.keyID == expandedColor.parentBProduitInfosKeyID (String),
-    //     NOT product.id == parentBProduitOldID (Int/Long) which is often 0 and
-    //     always picks the first item in the list by mistake.
-    //  3. Wait 300 ms for the FullLine span recomposition to settle before scrolling,
-    //     otherwise the grid scrolls to a stale layout position and lands below the item.
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
@@ -178,16 +166,18 @@ fun Etager_LazyColumn_FragID4(
                         CategoryStickyHeader(
                             category = category,
                             onToggleHeaderVisibility = { updatedCategory ->
-                                repositorysMainGetter.repoM16CategorieProduit.addOrUpdateData(
+                                uiState_viewModel.second.repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(
                                     updatedCategory
                                 )
-                            },viewModel=viewModel
+                            },
+                            viewModel=uiState_viewModel.second,
+                            uiState = uiState_viewModel.first
                         )
                     }
                 }
 
                 productColorPairs.forEach { (product, colors) ->
-                    val isExpanded = focusedValuesGetter.active_Central_Values
+                    val isExpanded = uiState_viewModel.first .active_Central_Values
                         .expanded_M1Produit?.keyID == product.keyID
 
                     // Check if this product just moved
@@ -202,6 +192,7 @@ fun Etager_LazyColumn_FragID4(
                         }
                     ) {
                         LazyStigerList_Produits_FragID4(
+                            uiState_viewModel=uiState_viewModel,
                             isWifiClientConnected_1=isWifiClientConnected_1,
                             product = product,
                             colors = colors,
@@ -255,7 +246,8 @@ fun LazyStigerList_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
-    isWifiClientConnected_1: Boolean
+    isWifiClientConnected_1: Boolean,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
 
     // Animation state for moved products
@@ -290,6 +282,7 @@ fun LazyStigerList_Produits_FragID4(
             .background(backgroundColor, RoundedCornerShape(12.dp))
     ) {
         Item_Produit_FragID3(
+            uiState_viewModel=uiState_viewModel,
             isWifiClientConnected_1=isWifiClientConnected_1,
             relative_M1produit = product,
             on_pour_send_data = on_pour_send_data,

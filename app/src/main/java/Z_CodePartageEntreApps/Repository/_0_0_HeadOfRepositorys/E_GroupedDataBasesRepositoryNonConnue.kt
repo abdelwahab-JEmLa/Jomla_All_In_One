@@ -4,7 +4,7 @@ import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Data.testD_TarificationInfosT2
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.F0_FireBaseOperationsHandler
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.deleteRef
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL.G_RoomOperationsHandler
@@ -118,7 +118,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
         repoCoroutineScope.launch {
             try {
                 val produitsFlow = database.a_ProduitInfosDao().getAllProduits()
-                val tarificationsFlow = database.Dao13TarificationInfos().getAllFlow()
+                val tarificationsFlow = database.dao_M13TarificationInfos().getAllFlow()
 
                 combine(
                     produitsFlow,

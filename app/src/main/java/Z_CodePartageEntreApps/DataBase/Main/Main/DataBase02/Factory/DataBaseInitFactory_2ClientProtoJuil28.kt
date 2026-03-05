@@ -19,7 +19,7 @@ import kotlin.coroutines.resume
 class DataBaseInitFactory_2ClientProtoJuil28(
     appDatabase: AppDatabase
 ) {
-    val dao = appDatabase.DaoM2Client()
+    val dao = appDatabase.dao_M2Client()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
     val repoRef = M2Client.ref
     val name = Repository.Entity_2Client.name

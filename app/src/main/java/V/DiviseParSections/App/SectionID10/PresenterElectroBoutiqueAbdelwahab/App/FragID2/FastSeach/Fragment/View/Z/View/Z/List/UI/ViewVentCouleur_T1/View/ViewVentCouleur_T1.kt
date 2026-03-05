@@ -14,8 +14,8 @@ import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.annotation.SuppressLint
 import android.net.Uri

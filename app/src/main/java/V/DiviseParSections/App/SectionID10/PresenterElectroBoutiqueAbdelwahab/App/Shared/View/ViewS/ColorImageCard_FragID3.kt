@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Image_Displaye
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Image_Displaye
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,17 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 
 @Composable
 fun ColorImageCard_FragID3(
-    repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     isSelected: Boolean,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion,
-    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp) // Default: all corners rounded
+    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp), // Default: all corners rounded
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
 
@@ -49,6 +47,7 @@ fun ColorImageCard_FragID3(
         ) {
             // Image always clickable
             Image_Displaye(
+                uiState_viewModel=uiState_viewModel,
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
                 modifier = Modifier.Companion ,

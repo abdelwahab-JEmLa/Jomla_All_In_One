@@ -2,7 +2,12 @@ package EntreApps.Shared.Modules
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
@@ -10,15 +15,13 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Repository.C_TypeTarificationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
@@ -29,19 +32,16 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.DevicesTypeManagerDao
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.DiviseurDeDisplayProductForEachClientDao
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.SoldArticlesTabelleDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
-import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DaoM2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.Dao11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
-import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.Dao19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
-import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
@@ -152,18 +152,12 @@ abstract class AppDatabase : RoomDatabase() {
 
 
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
-    abstract fun Dao13TarificationInfos(): Dao13TarificationInfos
 
     //Proto j3
 
-    abstract fun DaoM2Client(): DaoM2Client
 
-    abstract fun D_AchatOperationDao(): D_AchatOperationDao
-    abstract fun Z_AppComptDao(): Z_AppComptDao
 
-    abstract fun GBonVentDao(): GBonVentDao
     abstract fun MVentPeriodeDao(): MVentPeriodeDao
-    abstract fun Dao14VentPeriode(): Dao14VentPeriode
     abstract fun Dao15Grossist(): Dao15Grossist
     abstract fun Dao11AchatOperation(): Dao11AchatOperation
     abstract fun M17MessageVocaleDao(): M17MessageVocaleDao
@@ -175,6 +169,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dao_M1Produit(): ArticlesBasesStatsModelDao
     abstract fun dao_16CategorieProduit(): M16CategorieProduitDao
     abstract fun dao_M3CouleurProduitInfos(): M3CouleurProduitInfosDao
+    abstract fun dao_M9AppCompt(): Z_AppComptDao
+    abstract fun dao_M8BonVent(): GBonVentDao
+    abstract fun dao_M13TarificationInfos(): Dao13TarificationInfos
+    abstract fun dao_M14VentPeriode(): Dao14VentPeriode
+    abstract fun dao_M10OperationVentCouleur(): Dao_M10OperationVentCouleur
+    abstract fun dao_M2Client(): DaoM2Client
 
     object DatabaseModule {
 

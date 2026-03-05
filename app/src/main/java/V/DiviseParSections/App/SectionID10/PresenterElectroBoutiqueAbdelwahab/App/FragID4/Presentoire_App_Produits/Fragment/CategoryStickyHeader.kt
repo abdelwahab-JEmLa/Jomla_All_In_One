@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment
 
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,15 +33,15 @@ fun CategoryStickyHeader(
     category: M16CategorieProduit,
     modifier: Modifier = Modifier,
     onToggleHeaderVisibility: (M16CategorieProduit) -> Unit = {},
-    viewModel: ViewModel_FragID4
+    viewModel: ViewModel_NewProtoPatterns,
+    uiState: UiState
 ) {
-    val filterState = viewModel.focusedValues_FluidApp.active_Central_Values.filterState_Facad_Boutique
+    val filterState = uiState.active_Central_Values.filterState_Facad_Boutique
 
     if (filterState?.hide_header_categorie == true) {
-        return // Skip rendering entirely
+        return
     }
 
-    // Original header rendering logic
     Box(
         modifier = modifier
             .fillMaxWidth()

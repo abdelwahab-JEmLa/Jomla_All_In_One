@@ -1,19 +1,20 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
+package EntreApps.Shared.Models.Home
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterState_Facad_Boutique
-import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Z_AppCompt
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterState_Facad_Boutique
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
@@ -37,22 +38,39 @@ data class ActiveCentralValues(
         nom = "Confiserie",
         premierCategorieId = 1755942577975,
         position = 2,
-        couleur = Color(0xFFFF9800) // Orange for confectionery
+        couleur = Color(0xFFFF9800)
     ),
     val active_EtateDispoNonDifinieAuAddNew: Boolean = false,
 
     //-----------------Peride-------------------------------------------------------------------------------------------------------------------------
     val held_Period_Pour_copie_Leur_Vents: M14VentPeriode? = null,
 
+    //-----------------M2-----------------------------------------------------------------------------------------------------------------------------------------
+    val activeOnVent_M2Client: M2Client? = null,
+
+    //-----------------M3-----------------------------------------------------------------------------------------------------------------------------------------
+    val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent: List<M10OperationVentCouleur>? = null,
+
     //-----------------Bon8-----------------------------------------------------------------------------------------------------------------------------------------
+    val activeOnVent_M8BonVent: M8BonVent? = null,
+    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod: List<M8BonVent>? = null,
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------
+
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
 
     val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
 
-    // FIXED: Add flag to track if we're in temporary mode
     val isInTemporaryShowAllMode: Boolean = false,
+
+    //-----------------M9-----------------------------------------------------------------------------------------------------------------------------------------
+    val activeCompt_KeyID: String? = M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId,
+    val activeCompt: Z_AppCompt? = null,
+
+    // Derived from activeCompt.its_Admin — set by FocusedValues_FluidApp flow, never set manually
+    val currentApp_Est_Admin: Boolean = false,
 
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,
@@ -64,6 +82,9 @@ data class ActiveCentralValues(
     val vent_Au_Dialog_filter_AChats_Par_Client_Acheteur: M14VentPeriode? = null,
 
     val dialog_achats_ventPeriod: M14VentPeriode? = null,
+    //-----------------m14-------------------------------------------------------------------------------------------------------------------------
+    val active_M14VentPeriode: M14VentPeriode? = null,
+
     //-----------------Grossist-------------------------------------------------------------------------------------------------------------------------
     val image_Flotant: File? = null,
 
@@ -80,7 +101,6 @@ data class ActiveCentralValues(
 
     var filterState_Facad_Boutique: FilterState_Facad_Boutique? = null,
 
-
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
@@ -95,7 +115,6 @@ data class ActiveCentralValues(
             else -> Utilisateur.Admin
         }
 
-        // FIXED: Map Utilisateur to Ousstad_Tahfid
         when (utilisateur) {
             Utilisateur.Abdelwahab_Osstad -> Ousstad_Tahfid.Abdelwahab_Osstad
             Utilisateur.Amine_Madrassa -> Ousstad_Tahfid.Amine_Madrassa
@@ -116,7 +135,6 @@ data class ActiveCentralValues(
     },
 
     //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
-
     var affiche_dialoge_add_temp_travaille: Boolean = false,
     var jour_traville_ouvert_pour_add: Boolean = false,
 
@@ -133,7 +151,7 @@ data class ActiveCentralValues(
         false else
         false,
 
-    val startIntOffset_PresistantFABs: IntOffset =  IntOffset(650,-500),
+    val startIntOffset_PresistantFABs: IntOffset = IntOffset(650, -500),
     var affiche_Produit_OnGrid: Boolean = true,
 
     //-----------------Tahfide_quran -------------------------------------------------------------------------------------------------------------------------
@@ -147,12 +165,11 @@ data class ActiveCentralValues(
 
     val activeFilters: Set<ActiveFilter> = emptySet(),
 
-    val held_Produit_Pour_Move_Au_Position_Store: M01Produit? =null,
+    val held_Produit_Pour_Move_Au_Position_Store: M01Produit? = null,
     val affiche_CheckList_ChoisiseurActiveFilter: Boolean = false,
 
-    // UPDATED: Keep backward compatibility while adding new sort mode
     val sortVentsParClassment: Boolean = false,
-    val sortVentMode: SortVentMode? = null,  // New field for enhanced sorting
+    val sortVentMode: SortVentMode? = null,
 
     //-----------------Fabs.Affichage-------------------------------------------------------------------------------------------------------------------------
     val affiche_Floating_Button_TogleFilterMarquers: Boolean = true,
@@ -197,18 +214,14 @@ data class ActiveCentralValues(
             RoleDefinieParSourceACetteFragment()
     }
 
-    // Nouvelle fonction helper pour vérifier si un filtre est actif
     fun hasActiveFilter(filter: ActiveFilter): Boolean {
         return activeFilters.contains(filter)
     }
 
-    // Nouvelle fonction pour ajouter/retirer un filtre
     fun toggleFilter(filter: ActiveFilter): ActiveCentralValues {
         return if (activeFilters.contains(filter)) {
-            // Retirer le filtre
             this.copy(activeFilters = activeFilters - filter)
         } else {
-            // Ajouter le filtre
             this.copy(activeFilters = activeFilters + filter)
         }
     }
@@ -219,12 +232,10 @@ data class ActiveCentralValues(
         data object premier_Check_Donne : ActiveFilter()
         data object non_premier_Check_Donne : ActiveFilter()
     }
-
-
 }
 
 enum class SortVentMode {
-    PAR_Creation_Vent,      // Sort by position_store_3jamale (warehouse position)
-    PAR_ENTREE,          // Sort alphabetically by product name
-    PAR_DERNIERE_UPDATE_LENCE  // Sort by last_update_premier_Check_Donne_TimeTamps (most recent verification)
+    PAR_Creation_Vent,
+    PAR_ENTREE,
+    PAR_DERNIERE_UPDATE_LENCE
 }

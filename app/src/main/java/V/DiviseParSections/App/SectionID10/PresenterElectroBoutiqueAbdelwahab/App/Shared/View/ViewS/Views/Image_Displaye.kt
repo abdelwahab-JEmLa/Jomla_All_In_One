@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
@@ -19,7 +19,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import org.koin.compose.koinInject
 import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -28,10 +27,12 @@ fun Image_Displaye(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
+    val (uiState, viewModel) = uiState_viewModel
+    val centralValues = uiState.active_Central_Values
+
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
         relative_M3CouleurProduitInfos.extensionDisponible
@@ -46,29 +47,30 @@ fun Image_Displaye(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        // FIXED: Get the parent product for this color
-        val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
-            repositorysMainGetter.repoM1Produit.datasValue.find {
+        // Sourced from uiState — no direct repository injection needed
+        val parentProduct = remember(
+            relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
+            uiState.list_M1Produit
+        ) {
+            uiState.list_M1Produit.find {
                 it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
             }
         }
 
-        // Build the complete modifier with click handler BEFORE passing to GlideImage
         val completeModifier = modifier
             .fillMaxSize()
             .then(
                 Modifier.clickable {
-                    val currentExpandedProduct = focusedValuesGetter.active_Central_Values.expanded_M1Produit
-                    val currentExpandedColor = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+                    val currentExpandedProduct = centralValues.expanded_M1Produit
+                    val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
 
-                    // Check if we're clicking on a color from the SAME product that's already expanded
                     val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
                     val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
 
                     if (isSameProductExpanded && isDifferentColor) {
                         // CASE 1: Same product, different color → Update only the selected color
-                        focusedValuesGetter.update_activeCentralValues(
-                            focusedValuesGetter.active_Central_Values.copy(
+                        viewModel.update_activeCentralValues(
+                            centralValues.copy(
                                 expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
                                 // Keep expanded_M1Produit unchanged
                             )
@@ -83,8 +85,8 @@ fun Image_Displaye(
                             parentProduct
                         }
 
-                        focusedValuesGetter.update_activeCentralValues(
-                            focusedValuesGetter.active_Central_Values.copy(
+                        viewModel.update_activeCentralValues(
+                            centralValues.copy(
                                 expanded_M1Produit = newProductValue,
                                 expanded_M3CouleurProduitInfos = if (newProductValue != null) {
                                     relative_M3CouleurProduitInfos

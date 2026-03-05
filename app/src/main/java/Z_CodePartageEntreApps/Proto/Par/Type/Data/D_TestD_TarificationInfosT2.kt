@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Proto.Par.Type.Data
 
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Function.createTimestamp
 
 fun testD_TarificationInfosT2(): List<M13TarificationInfos> {

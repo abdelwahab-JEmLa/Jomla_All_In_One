@@ -1,20 +1,17 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View
 
+import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.Big_Principale_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.SubColorCard_WithButton
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.updateTariffForProductOperations
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Compact_Header_FragID3
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +50,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -62,24 +57,24 @@ import org.koin.compose.koinInject
 @Composable
 fun Item_Produit_FragID3(
     relative_M1produit: M01Produit,
-    repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesSetter: FocusedValuesSetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    headViewModel: HeadViewModel = koinInject(),
     wifiTransferDatas: WifiTransferDatas = koinInject(),
     onCategoryClick: (() -> Unit)? = null,
     isWifiClientConnected_1: Boolean,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>,
 ) {
     val shouldShowButtons = !isWifiClientConnected_1
+    val (uiState, viewModel) = uiState_viewModel
 
-    val uiState by headViewModel.uiState.collectAsState()
+    // -------------------------------------------------------------------------
+    // All data comes from uiState — no direct repository/getter injections
+    // -------------------------------------------------------------------------
 
+    val centralValues = uiState.active_Central_Values
 
-    val allCategories = remember(repositorysMainGetter.repoM16CategorieProduit.datasValue) {
-        repositorysMainGetter.repoM16CategorieProduit.datasValue
+    val allCategories = remember(uiState.list_M16CategorieProduit) {
+        uiState.list_M16CategorieProduit
     }
 
     val categoryMap = remember(allCategories) {
@@ -98,23 +93,27 @@ fun Item_Produit_FragID3(
         }
     }
 
-    val relative_ListM3Couleurs = remember(relative_M1produit.keyID) {
-        repositorysMainGetter.find_ListM3CouleurInfos_By_Parent_Produit_KeyID(relative_M1produit.keyID)
+    val relative_ListM3Couleurs = remember(uiState.list_M3CouleurProduit) {
+        find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
+            uiState.list_M3CouleurProduit,
+            relative_M1produit.keyID
+        )
     }
 
-    val relative_list_M10operation_Vent = remember(
-        relative_M1produit.keyID,
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
+    val onVentList = centralValues.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        ?: emptyList()
 
-        ) {
+    val relative_list_M10operation_Vent by remember(
+        relative_M1produit.keyID,
+        onVentList.size,
+    ) {
         derivedStateOf {
-            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                .find { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+            onVentList.find { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
         }
     }
 
-    val expanded_M1Produit = focusedValuesGetter.active_Central_Values.expanded_M1Produit
-    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+    val expanded_M1Produit = centralValues.expanded_M1Produit
+    val expanded_M3CouleurProduitInfos = centralValues.expanded_M3CouleurProduitInfos
 
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
@@ -143,7 +142,6 @@ fun Item_Produit_FragID3(
                     expandedColor = expandedColor,
                     availableColors = relative_ListM3Couleurs
                 )
-
                 if (matchingIndex != -1 && matchingIndex != big_presenter_couleur_produit) {
                     big_presenter_couleur_produit = matchingIndex
                 }
@@ -151,8 +149,12 @@ fun Item_Produit_FragID3(
         }
     }
 
-    val datasValue_distinct_type = remember(repositorysMainGetter.repo13TarificationInfos.datasValue) {
-        repositorysMainGetter.repo13TarificationInfos.datasValue
+    // -------------------------------------------------------------------------
+    // Tariff data — sourced from UiState, never from direct repository injection
+    // -------------------------------------------------------------------------
+
+    val datasValue_distinct_type = remember(uiState.list_M13TarificationInfos) {
+        uiState.list_M13TarificationInfos
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
             .groupBy { it.typeChoisi }
             .mapValues { (_, tariffs) ->
@@ -161,6 +163,7 @@ fun Item_Produit_FragID3(
             .values
             .filterNotNull()
     }
+
     val supperGro = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                 it.prixCurrency != 0.0
@@ -169,76 +172,28 @@ fun Item_Produit_FragID3(
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                 it.prixCurrency != 0.0
     }
+
     val synthetic = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
         relative_Prix_Detaille = detaille?.prixCurrency,
         relative_Prix_SupperGro_Et_PresentationService = supperGro?.prixCurrency,
         relative_produit = relative_M1produit
     )
 
-    // 1. A NEW bon vent is added for the same client (not when returning to old bon vent)
-    // 2. The product is currently displayed
-    // 3. The tariff doesn't already exist (prevents recreation on app restart)
+    // Delegate tariff creation side-effect entirely to ViewModel
     LaunchedEffect(
-        focusedValuesGetter.activeOnVent_M8BonVent?.keyID,
-        focusedValuesGetter.activeOnVent_M8BonVent?.creationTimestamps
+        centralValues.activeOnVent_M8BonVent?.keyID,
+        centralValues.activeOnVent_M8BonVent?.creationTimestamps
     ) {
-        val currentBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-
-        // Only proceed if we have a valid bon vent and we're not in grossist mode
-        if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
-            currentBonVent != null &&
-            synthetic != null) {
-
-            val currentClient = focusedValuesGetter.activeOnVent_M2Client
-
-            // Check if Edited_Pour_Client already exists for this product and bon vent
-            val existingEditedTariff = datasValue_distinct_type.find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
-                        it.parent_M8BonVent_KeyId == currentBonVent.keyID &&
-                        it.parent_M1Produit_KeyId == relative_M1produit.keyID
-            }
-
-            // If tariff already exists, don't recreate it (prevents recreation on app restart)
-            if (existingEditedTariff != null) {
-                return@LaunchedEffect
-            }
-
-            // Find all bon vents for this client in the current period
-            val clientBonVents = focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-                .filter { it.parent_M2Client_KeyID == currentClient?.keyID }
-                .sortedByDescending { it.creationTimestamps }
-
-            // Check if current bon vent is the NEWEST one for this client
-            val isNewestBonVent = clientBonVents.firstOrNull()?.keyID == currentBonVent.keyID
-
-            // Only create tariff if:
-            // 1. This is the newest bon vent for the client
-            // 2. Tariff doesn't exist yet (already checked above)
-            // 3. Bon vent was created recently (within last 5 minutes) to avoid creating for old bon vents
-            val bonVentAge = System.currentTimeMillis() - currentBonVent.creationTimestamps
-            val isRecentlyCreated = bonVentAge < (5 * 60 * 1000) // 5 minutes
-
-            if (isNewestBonVent && isRecentlyCreated) {
-                // Create new Edited_Pour_Client tariff for this NEW bon vent
-                val newTariff = synthetic.copy(
-                    parent_M8BonVent_KeyId = currentBonVent.keyID,
-                    parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
-                    parent_M2Client_KeyId = currentClient?.keyID ?: "null",
-                    parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
-                    creationTimestamps = System.currentTimeMillis(),
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
-
-                // Save the new tariff
-                aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
-            }
-        }
+        viewModel.maybeCreateEditedPourClientTariff(
+            produit = relative_M1produit,
+            synthetic = synthetic,
+            datasValue_distinct_type = datasValue_distinct_type,
+        )
     }
-    //<--
-    // FIXED: Screen now stays active when connected to a client (see DisposableEffect above)
-    // Append the synthetic Edited_Pour_Client whenever it exists and none was persisted.
-    // synthetic is already null when both base prices are missing — no extra gate needed.
-    val datasValue_with_synthetic = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
+
+    val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
+
+    val datasValue_with_synthetic = if (!isGrossist &&
         datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client } &&
         synthetic != null
     ) {
@@ -247,33 +202,28 @@ fun Item_Produit_FragID3(
         datasValue_distinct_type
     }
 
-    val fallbackTariff = if (!focusedValuesGetter.currentApp_ItsWorkChezGrossisst) {
+    val fallbackTariff = if (!isGrossist) {
         val retailTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
         }
-
         val superGroTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
         }
-
-        // Use retail price, fallback to superGro, then to product's base price
         retailTariff ?: superGroTariff ?: M13TarificationInfos(
             prixCurrency = relative_M1produit.prixVent,
             parent_M1Produit_KeyId = relative_M1produit.keyID,
             typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Detaille
         )
     } else {
-        // For grossist mode, use superGro price as fallback
         val superGroTariff = datasValue_with_synthetic.find { tariff ->
             tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                     tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                     tariff.prixCurrency != 0.0
         }
-
         superGroTariff ?: M13TarificationInfos(
             prixCurrency = relative_M1produit.prixAchat,
             parent_M1Produit_KeyId = relative_M1produit.keyID,
@@ -302,20 +252,17 @@ fun Item_Produit_FragID3(
         mutableStateOf(finale_Tariff)
     }
 
-    val developement_affiche = false
-
     val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
-            && wifiTransferDatas.connectionUiState.value.isConnected || developement_affiche
+            && wifiTransferDatas.connectionUiState.value.isConnected
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 
     val relative_M10OperationVentCouleur by remember(
         selectedCouleur.keyID,
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size
+        onVentList.size
     ) {
         derivedStateOf {
-            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                .find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+            onVentList.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
         }
     }
 
@@ -336,7 +283,7 @@ fun Item_Produit_FragID3(
             .semantics(mergeDescendants = true) {
                 set(
                     value = algoritme_choisiser_tariff(),
-                    key = SemanticsPropertyKey(" algoritme_choisiser_tariff()")
+                    key = SemanticsPropertyKey("algoritme_choisiser_tariff()")
                 )
             }
             .semantics(mergeDescendants = true) {
@@ -357,32 +304,26 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
-                // FIXED: Category/Catalogue Display Badge - now delegates to parent
-                if (isHostPhone  && focusedValuesGetter.currentApp_Est_Admin && (currentCatalogue != null || currentCategory != null)) {
-                    Log.d("CategoryDialog_Item", "Rendering CategoryBadge - isHostPhone: $isHostPhone, onCategoryClick null: ${onCategoryClick == null}")
+                if (isHostPhone && centralValues.currentApp_Est_Admin &&
+                    (currentCatalogue != null || currentCategory != null)
+                ) {
                     CategoryBadge(
                         catalogueName = currentCatalogue?.nom,
                         categoryName = currentCategory?.nom,
-                        onClick = {
-                            Log.d("CategoryDialog_Item", "CategoryBadge onClick triggered")
-                            onCategoryClick?.invoke()
-                                ?: Log.e("CategoryDialog_Item", "onCategoryClick is NULL!")
-                        },
+                        onClick = { onCategoryClick?.invoke() },
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                } else {
-                    Log.d("CategoryDialog_Item", "CategoryBadge NOT rendered - isHostPhone: $isHostPhone, catalogue: $currentCatalogue, category: $currentCategory")
                 }
 
-
                 Compact_Header_FragID3(
+                    uiState_viewModel=uiState_viewModel,
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
                     shouldShowButtons = isHostPhone,
                     onUpdateTariffContext = if (isHostPhone) {
                         {
-                            focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
-                                aCentralFacade.repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                            centralValues.activeCompt?.let { appCompt ->
+                                viewModel.setActiveFocuceTariffPrixDifineur(
                                     relative_M1produit,
                                     appCompt
                                 )
@@ -394,12 +335,12 @@ fun Item_Produit_FragID3(
 
                 val filteredAndSortedTariffs = datasValue_with_synthetic
                     .filter { tariff ->
-                        // Always show Edited_Pour_Client even if price is 0
                         tariff.prixCurrency != 0.0 ||
                                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client ||
                                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
                     }
-                    .sortedByDescending { it.typeChoisi.profitabilityScore }  // Sort by profitability score from enum
+                    .sortedByDescending { it.typeChoisi.profitabilityScore }
+
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
@@ -407,8 +348,7 @@ fun Item_Produit_FragID3(
                     selectedTariff = selectedTariff,
                     onTariffSelected = { newTariff ->
                         selectedTariff = newTariff
-                        // Update all product operations with new tariff
-                        aCentralFacade.updateTariffForProductOperations(
+                        viewModel.updateTariffForProductOperations(
                             relative_M1produit.keyID,
                             newTariff
                         )
@@ -416,10 +356,9 @@ fun Item_Produit_FragID3(
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
-                    on_pour_send_data = on_pour_send_data
+                    on_pour_send_data = on_pour_send_data , modifier = modifier,uiState_viewModel
                 )
 
-                // FIXED: Sub-colors now visible in all modes (removed isHostPhone condition)
                 if (relative_ListM3Couleurs.size > 1) {
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -433,15 +372,14 @@ fun Item_Produit_FragID3(
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
                                     SubColorCard_WithButton(
+                                        uiState_viewModel=uiState_viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
-                                        focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
-                                        shouldShowButtons = shouldShowButtons,
                                         isExpanded = true,
-                                        modifier = Modifier
-                                            .weight(1f, fill = false)
+                                        modifier = Modifier.weight(1f, fill = false),
+                                        shouldShowButtons = shouldShowButtons,
                                     )
                                 }
                             }
@@ -454,15 +392,14 @@ fun Item_Produit_FragID3(
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
                                     SubColorCard_WithButton(
+                                        uiState_viewModel=uiState_viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
-                                        focusedValuesGetter = focusedValuesGetter,
                                         on_pour_send_data = on_pour_send_data,
                                         shouldShowButtons = shouldShowButtons,
                                         isExpanded = false,
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth()
                                     )
                                 }
                             }
@@ -474,9 +411,6 @@ fun Item_Produit_FragID3(
     }
 }
 
-/**
- * Clickable badge displaying the current category and catalogue
- */
 @Composable
 private fun CategoryBadge(
     catalogueName: String?,
@@ -484,17 +418,12 @@ private fun CategoryBadge(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Log.d("CategoryDialog_Item", "CategoryBadge composed in Item_Produit - catalogue: $catalogueName, category: $categoryName")
-
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f))
-            .clickable {
-                Log.d("CategoryDialog_Item", "CategoryBadge CLICKED in Item_Produit!")
-                onClick()
-            }
+            .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Row(
@@ -508,10 +437,7 @@ private fun CategoryBadge(
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(16.dp)
             )
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 if (catalogueName != null) {
                     Text(
                         text = catalogueName,
@@ -522,7 +448,6 @@ private fun CategoryBadge(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-
                 Text(
                     text = categoryName ?: "Sans Catégorie",
                     style = MaterialTheme.typography.bodySmall,
@@ -533,7 +458,6 @@ private fun CategoryBadge(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Changer catégorie",

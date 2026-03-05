@@ -60,8 +60,8 @@ private const val TAG = "CategorySelectionDialog"
 @Composable
 fun CategorySelectionDialog_FragID4(
     product: M01Produit,
-    allCategories: List<M16CategorieProduit>,
-    allProducts: List<M01Produit>, // For calculating products per category
+    allCategories: List<M16CategorieProduit>?,
+    allProducts: List<M01Produit>?, // For calculating products per category
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
     onCreateNewCategory: (String) -> Unit = {},
@@ -84,21 +84,21 @@ fun CategorySelectionDialog_FragID4(
 
     // Log for debugging
     Log.d(TAG, "CategorySelectionDialog opened")
-    Log.d(TAG, "All categories: ${allCategories.size}")
-    Log.d(TAG, "All products: ${allProducts.size}")
+    Log.d(TAG, "All categories: ${allCategories?.size}")
+    Log.d(TAG, "All products: ${allProducts?.size}")
     Log.d(TAG, "Product: ${product.nom}, Current category: ${product.idParentCategorie}")
 
     val catalogues = remember { get_ListM21CataloguesCategorie() }
 
     val sortedCategories = remember(allCategories) {
-        allCategories.sortedBy { it.position }
+        allCategories?.sortedBy { it.position } ?: emptyList()
     }
 
     // Calculate products per category for filtering and display
     val productsByCategory = remember(allProducts) {
         allProducts
-            .mapNotNull { product -> product.idParentCategorie?.let { it to product } }
-            .groupBy({ it.first }, { it.second })
+            ?.mapNotNull { product -> product.idParentCategorie?.let { it to product } }
+            ?.groupBy({ it.first }, { it.second }) ?: error("err")
     }
 
     val availableCategories = remember(productsByCategory) {
@@ -113,7 +113,7 @@ fun CategorySelectionDialog_FragID4(
 
     // Products without category
     val productsWithoutCategory = remember(allProducts) {
-        allProducts.filter { it.idParentCategorie == null }
+        allProducts?.filter { false } ?: error("err")
     }
 
     val categoriesByCatalogue = remember(sortedCategories, catalogues) {

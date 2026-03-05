@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import EntreApps.Shared.Models.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume

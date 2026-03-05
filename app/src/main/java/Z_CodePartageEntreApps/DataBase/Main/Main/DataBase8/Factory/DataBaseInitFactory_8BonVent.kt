@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadCategoriesFromCsv
@@ -20,7 +20,7 @@ import kotlin.coroutines.resume
 class DataBaseInitFactory_8BonVent(
     appDatabase: AppDatabase
 ) {
-    val dao = appDatabase.GBonVentDao()
+    val dao = appDatabase.dao_M8BonVent()
     private val factoryScope = CoroutineScope(Dispatchers.IO)
     val repoRef = M8BonVent.ref
     val name = Repository.Entity_8BonVent.name

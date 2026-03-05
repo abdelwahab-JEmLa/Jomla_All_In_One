@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Modules.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot
@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
 class DataBaseInitFactory_14VentPeriode(
     val appDatabase: AppDatabase
 ) {
-    val dao =appDatabase.Dao14VentPeriode()
+    val dao =appDatabase.dao_M14VentPeriode()
     val repoTAG = "M14VentPeriode_Entity"
     val repoRef = M14VentPeriode.ref
     private val factoryScope = CoroutineScope(Dispatchers.IO)

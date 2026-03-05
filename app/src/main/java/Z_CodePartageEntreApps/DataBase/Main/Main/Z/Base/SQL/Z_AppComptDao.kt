@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import EntreApps.Shared.Models.Z_AppCompt
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -39,6 +38,9 @@ interface Z_AppComptDao {
 
     @Query("SELECT * FROM Z_AppCompt")
     fun getAllFlow(): Flow<List<Z_AppCompt>>
+
+    @Query("SELECT * FROM Z_AppCompt WHERE keyID = :keyId")
+    fun getByKey_Flow(keyId: String): Flow<List<Z_AppCompt>>
 
     @Query("DELETE FROM Z_AppCompt")
     suspend fun deleteAll()

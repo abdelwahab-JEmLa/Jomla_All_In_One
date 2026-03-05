@@ -30,7 +30,7 @@ class dataBaseCreationFactoryMID2ClientRepository(
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.DaoM2Client()
+    val dao = appDatabase.dao_M2Client()
     val repoRef = M2Client.ref
     var isListenerRegistered = false
 

@@ -6,7 +6,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fra
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
