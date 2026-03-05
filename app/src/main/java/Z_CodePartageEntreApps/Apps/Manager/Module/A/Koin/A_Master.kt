@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.classes_NewProtoPatterns
+import EntreApps.Shared.Modules.viewModel_NewProtoPatterns
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -80,7 +82,6 @@ import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
-import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Proto.B.Par.App.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.ViewModel.ViewModel_A4FragID1
@@ -239,9 +240,9 @@ val appModule = module {
         composRepositorysModule,
         factoryDataBaseProtoAvantJuin3Module,
         classesHandlersModule,
-        classes_NeceFemrePas,
+        classes_NewProtoPatterns,
 
         viewModelModule,
-        vmModel_NewProtoPatterns
+        viewModel_NewProtoPatterns
     )
 }

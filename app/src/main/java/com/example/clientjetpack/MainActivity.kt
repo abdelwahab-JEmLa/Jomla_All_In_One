@@ -7,9 +7,9 @@ import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.PermissionHandler
 import EntreApps.Shared.Modules.StoragePermissionDialog
+import EntreApps.Shared.Modules.modules_NewProtoPatterns
 import P0_MainScreen.Main.MainScreen
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
         startKoin {
             androidLogger()
             androidContext(this@MainActivity)
-            modules(modulesDonLesDeuAppNeceFemrePas)
+            modules(modules_NewProtoPatterns)
 
             when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
                 AppType.JomLaElectroLivreurGrossist_PresenterScreen ->

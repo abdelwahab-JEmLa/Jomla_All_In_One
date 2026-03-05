@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Home
 
-import Application4.App.Fragment.A.ViewModel.List_Datas
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.List_Datas
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @Stable
 class FocusedValues_NewProtoPatterns(
-    list_Datas: StateFlow<List_Datas?>,
+    list_Datas: StateFlow<List_Datas?>,  // Now receives the VM's flow directly — no duplicate state
 ) {
     private val _activeCentralValues = MutableStateFlow(ActiveCentralValues())
 

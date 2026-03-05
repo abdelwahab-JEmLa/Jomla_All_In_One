@@ -93,12 +93,6 @@ class ViewModel_NewProtoPatterns(
     val repositorysMainGetter_NewProtoPattern: RepositorysMainGetter_NewProtoPattern =
         RepositorysMainGetter_NewProtoPattern(
             context, appDatabase,
-            active_Central_Values = _uiStateNewProtoPatterns.map { it.active_Central_Values }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.Eagerly,
-                    initialValue = null
-                ),
             on_Progress_Datas = { progress ->
                 _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = progress) }
                 update_activeCentralValues(
