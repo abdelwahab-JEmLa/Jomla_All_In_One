@@ -54,7 +54,7 @@ data class ProductDisplayController(
 )
 
 @SuppressLint("StaticFieldLeak")
-class WifiTransferDatas_app2(
+class WifiTransferDatas(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
     var list_M1Produit: List<M01Produit>,
@@ -209,7 +209,7 @@ class WifiTransferDatas_app2(
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    this@WifiTransferDatas_app2.endpointId = endpointId
+                    this@WifiTransferDatas.endpointId = endpointId
                     _state.update { it.copy(isConnected = true) }
                     updateConnectionStatus("Connecté")
                     retryCount = 0
@@ -223,8 +223,8 @@ class WifiTransferDatas_app2(
         }
 
         override fun onDisconnected(endpointId: String) {
-            if (this@WifiTransferDatas_app2.endpointId == endpointId) {
-                this@WifiTransferDatas_app2.endpointId = null
+            if (this@WifiTransferDatas.endpointId == endpointId) {
+                this@WifiTransferDatas.endpointId = null
                 _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté") }
                 if (retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE) initiateReconnection()
                 else handleFinalDisconnection()

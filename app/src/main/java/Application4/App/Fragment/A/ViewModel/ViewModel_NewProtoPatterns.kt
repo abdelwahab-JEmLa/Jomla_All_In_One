@@ -1,12 +1,13 @@
 package Application4.App.Fragment.A.ViewModel
 
 import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas_app2
+import Application2.App.Base.Modules.WifiTransferDatas
 import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.DepotUpdateResult
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
+import EntreApps.Shared.Models.Home.RepositorysMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -88,6 +89,21 @@ class ViewModel_NewProtoPatterns(
             )
     )
 
+    val repositorysMainGetter_NewProtoPattern: RepositorysMainGetter_NewProtoPattern =
+        RepositorysMainGetter_NewProtoPattern(
+            context, appDatabase,
+            active_Central_Values = _uiStateNewProtoPatterns.map { it.active_Central_Values }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                ),
+            on_Progress_Datas = { progress ->
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = progress) }
+            }
+        )
+
+
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
         val cv = _uiStateNewProtoPatterns.value.active_Central_Values
         return ActiveCentralValues_app2(
@@ -107,7 +123,7 @@ class ViewModel_NewProtoPatterns(
         update_activeCentralValues(merged)
     }
 
-    val wifi = WifiTransferDatas_app2(
+    val wifi = WifiTransferDatas(
         context = context,
         coroutineScope = viewModelScope,
         list_M1Produit = emptyList(),
@@ -140,6 +156,9 @@ class ViewModel_NewProtoPatterns(
                 _uiStateNewProtoPatterns.update { it.copy(active_Central_Values = centralValues) }
             }
         }
+
+        repositorysMainGetter_NewProtoPattern // initialized above; progress updates flow via on_Progress_Datas callback
+
 
         viewModelScope.launch(Dispatchers.IO) {
             val products = appDatabase.dao_M1Produit().getAll()

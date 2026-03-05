@@ -31,6 +31,7 @@ data class ActiveCentralValues(
     val affiche_DeleteButtons: Boolean = false,
     val list_clients_por_suprime: List<M2Client> = emptyList(),
 
+
     //-----------------Produit-------------------------------------------------------------------------------------------------------------
     val active_Catalogue_Pour_NewAddedProduit: M21CataloguesCategorie? = M21CataloguesCategorie(
         keyID = "t1",
@@ -90,7 +91,11 @@ data class ActiveCentralValues(
     val image_Flotant: File? = null,
 
 //-----------------By.Fragments-------------------------------------------------------------------------------------------------------------------------
-    //-----------------Floating Abouve AL-------------------------------------------------------------------------------------------------------------------------
+
+    //-----------------Starte Classe -------------------------------------------------------------------------------------------------------------
+    var mainInitDataBaseProgressEtate: Float = 0f,
+
+//-----------------Floating Abouve AL-------------------------------------------------------------------------------------------------------------------------
     var afficheFloatingOutlinedSearcher_of_Achat: Boolean = false,
     val outlined_filter_searcher_floating_abouve_all: String = "",
 

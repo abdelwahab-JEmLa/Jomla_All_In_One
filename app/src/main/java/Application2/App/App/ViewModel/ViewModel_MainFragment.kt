@@ -1,7 +1,7 @@
 package Application2.App.App.ViewModel
 
 import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas_app2
+import Application2.App.Base.Modules.WifiTransferDatas
 import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
@@ -56,7 +56,7 @@ class ViewModel_MainFragment(
         repositorysMainGetter_app2.update_ActiveCentralValues_app2(updated)
     }
 
-    val wifi = WifiTransferDatas_app2(
+    val wifi = WifiTransferDatas(
         context = context,
         coroutineScope = viewModelScope,
         list_M1Produit = emptyList(),
