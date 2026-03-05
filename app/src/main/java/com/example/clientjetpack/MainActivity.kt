@@ -2,12 +2,12 @@ package com.example.clientjetpack
 
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
+import Application4.App.Fragment.Compact_Presentoire_App_Produits_FragID4
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.PermissionHandler
 import EntreApps.Shared.Modules.StoragePermissionDialog
 import P0_MainScreen.Main.MainScreen
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Compact_Presentoire_App_Produits_FragID4
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.modulesDonLesDeuAppNeceFemrePas
 import android.Manifest

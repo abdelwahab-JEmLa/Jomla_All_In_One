@@ -1,10 +1,14 @@
 package EntreApps.Shared.Modules
 
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
 import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
 import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
@@ -15,11 +19,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Repository.C_TypeTarificationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
@@ -127,9 +127,7 @@ import java.util.Date
 
 @TypeConverters(DateConverter::class, ListLongConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-
     // All DAOs
-
     abstract fun colorsArticlesDao(): ColorsArticlesDao
     abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
@@ -142,8 +140,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun _1_1_CouleurAcheteOperationDao(): _1_1_CouleurAcheteOperationDao
     abstract fun _1_2_ProduitAcheteOperationDao(): _1_2_ProduitAcheteOperationDao
-
-
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
@@ -154,8 +150,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
 
     //Proto j3
-
-
 
     abstract fun MVentPeriodeDao(): MVentPeriodeDao
     abstract fun Dao15Grossist(): Dao15Grossist

@@ -36,7 +36,6 @@ fun Compact_Presentoire_App_Produits_App2(
 ) {
     val uiState by vm.uiState.collectAsState()
     val wifiState by vm.wifiState.collectAsState()
-
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
     val context = LocalContext.current

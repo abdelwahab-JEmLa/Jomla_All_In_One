@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Modules.appDatabase
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
