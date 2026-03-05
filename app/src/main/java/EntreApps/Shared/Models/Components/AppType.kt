@@ -5,5 +5,4 @@ enum class AppType {
     GrossistRealSeller,
     JomLaElectroLivreurGrossist_PresenterScreen,
     JomLaElectroLivreurGrossist_VendeurHost,
-
 }
