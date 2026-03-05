@@ -1,5 +1,6 @@
 package EntreApps.Shared.Modules
 
+import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
@@ -97,11 +98,9 @@ import java.util.Date
         E1SecteurDeClients::class,
         PolygonGeoLimite::class,
 
-
         A_ProduitInfos::class,
         C_TypeTarificationInfos::class,
-        M13TarificationInfos::class   ,
-
+        M13TarificationInfos::class,
 
         M2Client::class,
 
@@ -119,14 +118,13 @@ import java.util.Date
 
         M01Produit::class,
         M16CategorieProduit::class,
-
     ],
-    version = 3, // Increment version number since we're adding new entities
+    version = 4, // Bumped from 3 → 4 to register the new AppTypeConverter
     exportSchema = false
 )
-
-@TypeConverters(DateConverter::class, ListLongConverter::class)
+@TypeConverters(DateConverter::class, ListLongConverter::class, AppTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
+
     // All DAOs
     abstract fun colorsArticlesDao(): ColorsArticlesDao
     abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
@@ -146,11 +144,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
     abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
 
-
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
 
-    //Proto j3
-
+    // Proto j3
     abstract fun MVentPeriodeDao(): MVentPeriodeDao
     abstract fun Dao15Grossist(): Dao15Grossist
     abstract fun Dao11AchatOperation(): Dao11AchatOperation
@@ -176,19 +172,37 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
                 )
+                    .fallbackToDestructiveMigration() // Safe for dev — replace with Migration() in production
                     .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+// Type Converters
+// -------------------------------------------------------------------------------------------------
+
+/**
+ * Converts [AppType] enum to/from String for Room storage.
+ * Uses name-based lookup so any future enum values are handled automatically
+ * without requiring a database version bump.
+ */
+class AppTypeConverter {
+    @TypeConverter
+    fun fromAppType(value: AppType?): String? = value?.name
+
+    @TypeConverter
+    fun toAppType(value: String?): AppType? =
+        value?.let { name -> AppType.entries.firstOrNull { it.name == name } }
 }
 
 class ListLongConverter {
@@ -206,7 +220,6 @@ class ListLongConverter {
     }
 }
 
-// First, let's properly upsert up the DateConverter
 class DateConverter {
     @TypeConverter
     fun toDate(timestamp: Long?): Date? {

@@ -200,8 +200,6 @@ fun AppNavHost(
                     route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                 ) {
 
-                    clearRessource_Test(activate=false)
-
                     Compact_Presentoire_App_Produits_FragID4(
                         on_pour_send_data = on_pour_send_data,
                         onClickImageToShowControles = onClickImageToShowControles,
