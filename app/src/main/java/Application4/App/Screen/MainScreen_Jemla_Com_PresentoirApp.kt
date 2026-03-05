@@ -1,4 +1,4 @@
-package Application4.App.A.Start
+package Application4.App.Screen
 
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NPP
@@ -39,7 +39,7 @@ fun MainScreen_NewProtoPattern(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             NavigationBarWithFab_NPP(
-                items = NavigationItems.getItems(),
+                items = NavigationItems.getItems(isAdmin = true),
                 currentRoute = currentRoute,
                 onNavigate = { route ->
                     fragmentNavigationHandler.navigateTo(route)
