@@ -19,11 +19,6 @@ import EntreApps.Shared.Modules.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Lenceur_Vent_Handler.View.DepotUpdateResult
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
 import android.content.Context
@@ -32,7 +27,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -135,22 +129,11 @@ class ViewModel_NewProtoPatterns(
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
+        wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
-        // TODO(1) FIXED: fragment closing + module unloading moved here from Fragment's DisposableEffect
         fragmentNavigationHandler.closeAllActiveFragments()
-        org.koin.core.context.GlobalContext.get().apply {
-            unloadModules(
-                listOf(
-                    viewModelModule,
-                    centralDataBasesModule,
-                    composRepositorysModule,
-                    factoryDataBaseProtoAvantJuin3Module,
-                    classesHandlersModule,
-                )
-            )
-        }
 
         viewModelScope.launch(Dispatchers.IO) {
             focusedValues_NewProtoPatterns.active_Central_Values.collect { centralValues ->
@@ -284,7 +267,6 @@ class ViewModel_NewProtoPatterns(
             count_Don_Depot = newDepotCount,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
-        // Mirror into UiState immediately so composables recompose without waiting for DB
         _uiState.update { state ->
             val current = state.list_Datas ?: List_Datas()
             state.copy(
@@ -317,7 +299,6 @@ class ViewModel_NewProtoPatterns(
         val quantityChange = if (isNew) operation.quantity
         else operation.quantity - previousQuantity
 
-        // Mirror operation into UiState immediately
         _uiState.update { state ->
             val current = state.list_Datas ?: List_Datas()
             val updatedOps = if (isNew) {
@@ -329,13 +310,11 @@ class ViewModel_NewProtoPatterns(
             state.copy(list_Datas = current.copy(m10OperationVentCouleur = updatedOps))
         }
 
-        // Persist operation + tariff link
         repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(
             operation = operation,
             selectedTariff = selectedTariff
         )
 
-        // Depot adjustment — skip in grossist mode or when quantity is unchanged
         if (isGrossist || quantityChange == 0) return
 
         val currentCouleur = _uiState.value.list_Datas?.m3CouleurProduit
@@ -424,15 +403,5 @@ class ViewModel_NewProtoPatterns(
 
     override fun onCleared() {
         super.onCleared()
-        org.koin.core.context.GlobalContext.get().apply {
-            loadModules(
-                listOf(
-                    centralDataBasesModule,
-                    composRepositorysModule,
-                    factoryDataBaseProtoAvantJuin3Module,
-                    classesHandlersModule,
-                )
-            )
-        }
     }
 }

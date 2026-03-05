@@ -237,20 +237,25 @@ val viewModelModule = module {
 val vmModel_NewProtoPatterns = module {
     viewModel { ViewModel_NewProtoPatterns(androidContext(), get(), get()) }
 }
+val classes_NeceFemrePas = module {
+    single { FragmentNavigationHandler() }
+}
 
 val modulesDonLesDeuAppNeceFemrePas = module {
     includes(
         appDatabase,
+        classes_NeceFemrePas
     )
-    single { FragmentNavigationHandler() }
 }
 
 val appModule = module {
     includes(
         centralDataBasesModule,
-        composRepositorysModule, // This will now be resolved
+        composRepositorysModule,
         factoryDataBaseProtoAvantJuin3Module,
         classesHandlersModule,
+        classes_NeceFemrePas,
+
         viewModelModule,
         vmModel_NewProtoPatterns
     )

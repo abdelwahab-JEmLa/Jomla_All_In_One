@@ -34,8 +34,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
     onClickImageToShowControles: () -> Unit,
     isWifiClientConnected_1: Boolean,
 ) {
-    // TODO(1) FIXED: fragmentNavigationHandler parameter removed — the VM now receives it
-    // via Koin constructor injection and calls closeAllActiveFragments() in its init block.
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
