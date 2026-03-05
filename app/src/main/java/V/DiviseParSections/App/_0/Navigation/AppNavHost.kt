@@ -15,11 +15,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -64,7 +59,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import org.koin.core.context.GlobalContext
 
 @Composable
 fun AppNavHost(
@@ -206,24 +200,9 @@ fun AppNavHost(
                     composable(
                         route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                     ) {
-                        DisposableEffect(Unit) {
-                            GlobalContext.get().unloadModules(listOf(
-                                viewModelModule,
-                                centralDataBasesModule,
-                                composRepositorysModule,
-                                factoryDataBaseProtoAvantJuin3Module,
-                                classesHandlersModule,
-                            ))
-                            onDispose {
-                                GlobalContext.get().loadModules(listOf(
-                                    centralDataBasesModule,
-                                    composRepositorysModule,
-                                    factoryDataBaseProtoAvantJuin3Module,
-                                    classesHandlersModule,
-                                    viewModelModule,
-                                ))
-                            }
-                        }
+
+                        clearRessource_Test(activate=false)
+
                         Compact_Presentoire_App_Produits_FragID4(
                             on_pour_send_data = on_pour_send_data,
                             onClickImageToShowControles = onClickImageToShowControles,
