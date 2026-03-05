@@ -180,7 +180,6 @@ val classesHandlersModule = module {
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }
-    single { FragmentNavigationHandler() }
     single { G_RoomOperationsHandler(get()) }
     single { F0_FireBaseOperationsHandler() }
     single { CalculeCouleurHandler(get()) }
@@ -196,7 +195,6 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { ViewModel_NewProtoPatterns(androidContext(),get(),) }
     viewModel { ViewModel_M9AppCompt(get(),  ) }
     viewModel { Preview_DataBaseInitFactory_15Grossist(get(),  ) }
     viewModel { ViewModel_DataBaseInitFactory_1Produit(get(),  ) }
@@ -234,13 +232,17 @@ val viewModelModule = module {
 
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { HeadViewModel(get(), androidContext(), get(), get()) }
+}
 
+val vmModel_NewProtoPatterns = module {
+    viewModel { ViewModel_NewProtoPatterns(androidContext(), get(), get()) }
 }
 
 val modulesDonLesDeuAppNeceFemrePas = module {
     includes(
         appDatabase,
     )
+    single { FragmentNavigationHandler() }
 }
 
 val appModule = module {
@@ -249,6 +251,7 @@ val appModule = module {
         composRepositorysModule, // This will now be resolved
         factoryDataBaseProtoAvantJuin3Module,
         classesHandlersModule,
-        viewModelModule
+        viewModelModule,
+        vmModel_NewProtoPatterns
     )
 }

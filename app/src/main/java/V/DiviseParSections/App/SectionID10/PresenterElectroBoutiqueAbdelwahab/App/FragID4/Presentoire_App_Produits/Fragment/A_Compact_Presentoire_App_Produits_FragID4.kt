@@ -6,7 +6,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.FilterSortGroupe_Tunnels
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Filter.GroupTunnel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Dialogs.CategorySelectionDialog_FragID4
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -29,13 +29,15 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
-    viewModel: ViewModel_NewProtoPatterns = koinViewModel(),
-    viewModelHeadViewModel: HeadViewModel,
+    viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit,
-    isWifiClientConnected_1: Boolean
+    isWifiClientConnected_1: Boolean,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    // TODO(1) FIXED: fragmentNavigationHandler parameter removed — the VM now receives it
+    // via Koin constructor injection and calls closeAllActiveFragments() in its init block.
+
+    val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
@@ -79,11 +81,10 @@ fun Compact_Presentoire_App_Produits_FragID4(
     } else {
         FilterSortGroupe_Tunnels(
             uiState = uiState,
-            viewModel = viewModel,
+            viewModel = viewModelNewProtoPatterns,
             isWifiClientConnected_1 = isWifiClientConnected_1,
             modifier = modifier,
             groupe_Par_Catalogue = groupe_Par_Catalogue,
-            viewModelHeadViewModel = viewModelHeadViewModel,
             on_pour_send_data = on_pour_send_data,
             onClickImageToShowControles = onClickImageToShowControles,
             onProductCategoryClick = { product ->
@@ -108,7 +109,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 } ?: product
 
                 // Use ViewModel method so local state stays in sync too
-                viewModel.update_m1Produit(updatedProduct)
+                viewModelNewProtoPatterns.update_m1Produit(updatedProduct)
                 justMovedProductKeyID = product.keyID
 
                 selectedProductForCategoryChange = null
@@ -117,7 +118,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
-                viewModel.repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(
+                viewModelNewProtoPatterns.repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(
                     M16CategorieProduit(
                         nom = categoryName,
                         position = 0,
@@ -128,7 +129,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
             onUpdateCategoryName = { categoryId, newName ->
                 allCategories?.find { it.id == categoryId }?.let { category ->
                     val updatedCategory = category.copy(nom = newName)
-                    viewModel.update_m16CategorieProduit(updatedCategory)
+                    viewModelNewProtoPatterns.update_m16CategorieProduit(updatedCategory)
                 }
             }
         )

@@ -71,6 +71,7 @@ data class ActiveCentralValues(
 
     // Derived from activeCompt.its_Admin — set by FocusedValues_FluidApp flow, never set manually
     val currentApp_Est_Admin: Boolean = false,
+    val currentApp_ItsWorkChezGrossisst: Boolean = false,
 
     //-----------------Repo11AchatOperation-------------------------------------------------------------------------------------------------------------------------
     val active_M14VentPeriode_AuFilterAchats: M14VentPeriode? = null,

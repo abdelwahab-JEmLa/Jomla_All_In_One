@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views
 
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.UiState
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 import java.util.Locale
 
 private object TariffTextSizes {
@@ -56,10 +56,10 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     compactMode: Boolean = false,
-    aCentralFacade: ACentralFacade = koinInject(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
-    val isGrossistMode = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val isGrossistMode = uiState_viewModel.first.active_Central_Values.currentApp_ItsWorkChezGrossisst
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
                 && !tariff.typeChoisi.ignore_affiche
@@ -73,12 +73,12 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         filteredTariffs.forEach { tariff ->
             key(tariff.keyID) {
                 TariffItemSelector(
+                    uiState_viewModel=uiState_viewModel,
                     tariff = tariff,
                     relative_M1produit = relative_M1produit,
                     isSelected = tariff.keyID == selectedTariff.keyID,
                     compactMode = compactMode,
                     onClick = { onTariffSelected(tariff) },
-                    aCentralFacade = aCentralFacade,
                     tariffsList = tariffsList
                 )
             }
@@ -93,8 +93,8 @@ private fun TariffItemSelector(
     isSelected: Boolean,
     compactMode: Boolean,
     onClick: () -> Unit,
-    aCentralFacade: ACentralFacade,
-    tariffsList: List<M13TarificationInfos>
+    tariffsList: List<M13TarificationInfos>,
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
@@ -113,9 +113,9 @@ private fun TariffItemSelector(
                 onClick = onClick,
                 onPriceUpdated = { newPrice ->
                     handleProgressivePriceUpdate(
+                        uiState_viewModel=uiState_viewModel,
                         tariff = tariff,
                         newPrice = newPrice,
-                        aCentralFacade = aCentralFacade
                     )
                 }
             )
@@ -139,7 +139,7 @@ private fun TariffItemSelector(
 private fun handleProgressivePriceUpdate(
     tariff: M13TarificationInfos,
     newPrice: Double,
-    aCentralFacade: ACentralFacade
+    uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>,
 ) {
     Log.d(
         "PricipaleTariffsVendeurs",
@@ -175,7 +175,7 @@ private fun handleProgressivePriceUpdate(
         "Saving updated tariff: ${updatedTariff.keyID} with price: ${updatedTariff.prixCurrency}"
     )
 
-    aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(updatedTariff)
+    uiState_viewModel.second.update_M13TarificationInfos(updatedTariff)
 }
 
 private fun formatPrice(price: Double): String {

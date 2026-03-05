@@ -1,5 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.A.ViewModel
 
+import Application2.App.Base.Modules.ProductDisplayController
+import Application2.App.Base.Modules.WifiTransferDatas_app2
+import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
+import Application2.App.Base.Repository.ActiveCentralValues_app2
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
@@ -15,11 +19,20 @@ import EntreApps.Shared.Modules.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Lenceur_Vent_Handler.View.DepotUpdateResult
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,12 +76,12 @@ data class List_Datas(
 class ViewModel_NewProtoPatterns(
     private val context: Context,
     private val appDatabase: AppDatabase,
+    private val fragmentNavigationHandler: FragmentNavigationHandler,
     val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
         appDatabase = appDatabase,
         context = context
     ),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
@@ -81,7 +94,64 @@ class ViewModel_NewProtoPatterns(
             )
     )
 
+    private fun getActiveCentralValues(): ActiveCentralValues_app2 {
+        val cv = _uiState.value.active_Central_Values
+        return ActiveCentralValues_app2(
+            expanded_M3CouleurProduitInfos = cv.expanded_M3CouleurProduitInfos,
+            expanded_M1Produit             = cv.expanded_M1Produit,
+            hide_prix_lence_vent_buttons   = cv.hide_prix_lence_vent_buttons,
+        )
+    }
+
+    private fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {
+        val current = _uiState.value.active_Central_Values
+        val merged = current.copy(
+            expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
+            expanded_M1Produit             = updated.expanded_M1Produit,
+            hide_prix_lence_vent_buttons   = updated.hide_prix_lence_vent_buttons,
+        )
+        update_activeCentralValues(merged)
+    }
+
+    val wifi = WifiTransferDatas_app2(
+        context = context,
+        coroutineScope = viewModelScope,
+        list_M1Produit = emptyList(),
+        list_M3CouleurProduit = emptyList(),
+        onGetActiveCentralValues = ::getActiveCentralValues,
+        onUpdateActiveCentralValues = ::updateActiveCentralValues,
+    )
+
+    val wifiState =
+        wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsClient() {
+        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+    }
+
+    fun disconnect() = wifi.disconnect()
+
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
+        wifi.sendOrderToClientDisplayer(orderName, data)
+
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+
     init {
+        // TODO(1) FIXED: fragment closing + module unloading moved here from Fragment's DisposableEffect
+        fragmentNavigationHandler.closeAllActiveFragments()
+        org.koin.core.context.GlobalContext.get().apply {
+            unloadModules(
+                listOf(
+                    viewModelModule,
+                    centralDataBasesModule,
+                    composRepositorysModule,
+                    factoryDataBaseProtoAvantJuin3Module,
+                    classesHandlersModule,
+                )
+            )
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             focusedValues_NewProtoPatterns.active_Central_Values.collect { centralValues ->
                 _uiState.update { it.copy(active_Central_Values = centralValues) }
@@ -354,5 +424,15 @@ class ViewModel_NewProtoPatterns(
 
     override fun onCleared() {
         super.onCleared()
+        org.koin.core.context.GlobalContext.get().apply {
+            loadModules(
+                listOf(
+                    centralDataBasesModule,
+                    composRepositorysModule,
+                    factoryDataBaseProtoAvantJuin3Module,
+                    classesHandlersModule,
+                )
+            )
+        }
     }
 }

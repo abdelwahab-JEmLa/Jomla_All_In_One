@@ -14,24 +14,36 @@ class FragmentNavigationHandler {
     private val _currentFragment = MutableStateFlow<Screen?>(null)
     val currentFragment: StateFlow<Screen?> = _currentFragment.asStateFlow()
 
+    // Track all screens that have been pushed as "active" overlays
+    private val _activeFragments = mutableSetOf<Screen>()
+
     fun setNavController(navController: NavController) {
         _navController = navController
     }
 
-    // Update current fragment from external sources (like AppNavHost)
     fun updateCurrentFragment(screen: Screen?) {
         _currentFragment.value = screen
+        if (screen != null) _activeFragments.add(screen)
     }
 
-    // Update current fragment by route string
     fun updateCurrentFragmentByRoute(route: String?) {
         val screen = route?.let { getAllScreens().find { it.route == route } }
         _currentFragment.value = screen
+        if (screen != null) _activeFragments.add(screen)
     }
 
-    // RepositorysMainSetter startup screen as current
     fun setStartupScreen(startupScreen: Screen) {
         _currentFragment.value = startupScreen
+        _activeFragments.add(startupScreen)
+    }
+
+    /**
+     * Clears all tracked active fragments and resets current fragment to null.
+     * Use this when entering a focused/isolated screen that should own all resources.
+     */
+    fun closeAllActiveFragments() {
+        _activeFragments.clear()
+        _currentFragment.value = null
     }
 
     data class NavigationConfig(
@@ -56,13 +68,13 @@ class FragmentNavigationHandler {
             else -> screen.toString()
         }
 
-        // Update current fragment state
         val screenEnum = when (screen) {
             is Screen -> screen
             is String -> getAllScreens().find { it.route == screen }
             else -> null
         }
         _currentFragment.value = screenEnum
+        if (screenEnum != null) _activeFragments.add(screenEnum)
 
         _navController?.navigate(route) {
             if (config.launchSingleTop) {
@@ -71,7 +83,6 @@ class FragmentNavigationHandler {
 
             if (config.popUpToStart) {
                 val startDestinationId = config.popUpToRoute?.let { customRoute ->
-                    // If custom route specified, find it in the graph
                     _navController!!.graph.findNode(customRoute)?.id
                 } ?: _navController!!.graph.findStartDestination().id
 
@@ -107,7 +118,6 @@ class FragmentNavigationHandler {
         navigateTo(Screen.EducationFragment, DEFAULT_CONFIG)
     }
 
-    // Helper function to get all screen instances
     private fun getAllScreens(): List<Screen> {
         return listOf(
             Screen.Fragment_Compact_Presentoir_Echantilliants,

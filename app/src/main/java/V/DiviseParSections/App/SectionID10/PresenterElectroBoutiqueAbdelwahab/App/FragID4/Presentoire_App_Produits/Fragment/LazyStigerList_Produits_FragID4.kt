@@ -9,8 +9,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID4.Presentoire_App_Produits.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Item_Produit_FragID3
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -44,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 
 /**
  * UPDATED: Now displays Catalogue headers followed by Category headers
@@ -53,7 +50,6 @@ import org.koin.compose.koinInject
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
-    viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
@@ -61,12 +57,13 @@ fun Etager_LazyColumn_FragID4(
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    val uiState by viewModelHeadViewModel.uiState.collectAsState()
+    val viewModel = uiState_viewModel.second
+    val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    val isHostPhone = uiState.productDisplayController.isHostPhone
-    val isConnected = uiState.productDisplayController.isConnected
-    val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
+    val isHostPhone = wifiState.isHostPhone
+    val isConnected = wifiState.isConnected
+    val currentScrollPosition = wifiState.mainGridScrollPosition
 
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     val isScrollEnabled = isHostPhone || !isConnected
@@ -113,7 +110,7 @@ fun Etager_LazyColumn_FragID4(
         isHostPhone = isHostPhone,
         isConnected = isConnected,
         gridState = gridState,
-        viewModel = viewModelHeadViewModel
+        viewModel = viewModel
     )
 
     HandlePresenterClientScroll(
@@ -242,7 +239,6 @@ fun LazyStigerList_Produits_FragID4(
     modifier: Modifier = Modifier.Companion,
     product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
-    focusedValuesGetter: FocusedValuesGetter = koinInject(),
     on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,

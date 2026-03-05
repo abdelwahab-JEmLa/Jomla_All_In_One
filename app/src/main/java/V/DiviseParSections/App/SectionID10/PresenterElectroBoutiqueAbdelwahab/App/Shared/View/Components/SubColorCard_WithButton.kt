@@ -8,8 +8,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.ColorImageCard_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 
 @Composable
 fun SubColorCard_WithButton(
@@ -31,14 +28,14 @@ fun SubColorCard_WithButton(
     selectedTariff: M13TarificationInfos,
     on_pour_send_data: (String, String) -> Unit,
     isExpanded: Boolean,
-    wifiTransferDatas: WifiTransferDatas = koinInject(),
     modifier: Modifier = Modifier,
-    headViewModel: HeadViewModel = koinInject(),
     shouldShowButtons: Boolean,
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>
 ) {
-    val uiState_headViewModel by headViewModel.uiState.collectAsState()
     val uiState = uiState_viewModel.first
+    val viewModel = uiState_viewModel.second
+
+    val wifiState by viewModel.wifiState.collectAsState()
 
     val colorOperation by remember(
         couleur.keyID,
@@ -53,25 +50,25 @@ fun SubColorCard_WithButton(
     Column(modifier = modifier
         .semantics(mergeDescendants = true) {
             set(
-                value = uiState_headViewModel.productDisplayController.isHostPhone,
+                value = wifiState.isHostPhone,
                 key = SemanticsPropertyKey("isHostPhone")
             )
         }
         .semantics(mergeDescendants = true) {
             set(
-                value = uiState_headViewModel.productDisplayController.isConnected,
+                value = wifiState.isConnected,
                 key = SemanticsPropertyKey(".isConnected")
             )
         }
         .semantics(mergeDescendants = true) {
             set(
-                value = wifiTransferDatas.connectionUiState.value.isConnected,
+                value = wifiState.isConnected,
                 key = SemanticsPropertyKey(".wifiTransferDatas")
             )
         }
     ) {
         ColorImageCard_FragID3(
-            uiState_viewModel=uiState_viewModel,
+            uiState_viewModel = uiState_viewModel,
             relative_M3CouleurProduitInfos = couleur,
             isSelected = false,
             on_pour_send_data = on_pour_send_data,
@@ -82,7 +79,7 @@ fun SubColorCard_WithButton(
 
         shouldShowButtons.ifTrue {
             Lenceur_Vent_Handler_FragID3(
-                uiState_viewModel=uiState_viewModel,
+                uiState_viewModel = uiState_viewModel,
                 isWifiClientConnected = shouldShowButtons,
                 relative_M1produit = relative_M1produit,
                 relative_M10OperationVentCouleur = colorOperation,

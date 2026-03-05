@@ -10,7 +10,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.Components.SubColorCard_WithButton
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.Shared.View.ViewS.Compact_Header_FragID3
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +50,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -59,7 +58,6 @@ fun Item_Produit_FragID3(
     relative_M1produit: M01Produit,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    wifiTransferDatas: WifiTransferDatas = koinInject(),
     onCategoryClick: (() -> Unit)? = null,
     isWifiClientConnected_1: Boolean,
     uiState_viewModel: Pair<UiState, ViewModel_NewProtoPatterns>,
@@ -252,8 +250,8 @@ fun Item_Produit_FragID3(
         mutableStateOf(finale_Tariff)
     }
 
-    val isHostPhone = wifiTransferDatas.connectionUiState.value.isHostPhone
-            && wifiTransferDatas.connectionUiState.value.isConnected
+    val wifiState by viewModel.wifiState.collectAsState()
+    val isHostPhone = wifiState.isHostPhone && wifiState.isConnected
 
     val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
 

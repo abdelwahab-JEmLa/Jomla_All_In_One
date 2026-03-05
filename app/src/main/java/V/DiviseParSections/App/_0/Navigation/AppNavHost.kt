@@ -1,5 +1,6 @@
 package V.DiviseParSections.App._0.Navigation
 
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
@@ -12,7 +13,7 @@ import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Educatio
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M01Produit
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -52,7 +53,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
@@ -197,16 +197,16 @@ fun AppNavHost(
                         }
                     }
 
-                    // Compact presenter screen - admin check applied
+                    // Compact presenter screen - focused module mode
                     composable(
                         route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                     ) {
-                            Compact_Presentoire_App_Produits_FragID4(
-                                isWifiClientConnected_1=isWifiClientConnected_1,
-                                viewModelHeadViewModel=viewModel,
-                                on_pour_send_data= on_pour_send_data,
-                                onClickImageToShowControles = onClickImageToShowControles
-                            )
+
+                        Compact_Presentoire_App_Produits_FragID4(
+                            on_pour_send_data = on_pour_send_data,
+                            onClickImageToShowControles = onClickImageToShowControles,
+                            isWifiClientConnected_1 = isWifiClientConnected_1,
+                        )
                     }
 
                     composable(Screen.Screen1PanieVentsFinale.route) {
@@ -224,15 +224,15 @@ fun AppNavHost(
 
                     // Admin-only screens
                     composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                            EditeBaseDonneMainScreenIdS9()
+                        EditeBaseDonneMainScreenIdS9()
                     }
 
                     composable(Screen.EducationFragment.route) {
-                            EducationFragment()
+                        EducationFragment()
                     }
 
                     composable(Screen.FragmentProduitFastSearchDialog.route) {
-                            MainFastSearchProduitPourVent()
+                        MainFastSearchProduitPourVent()
                     }
 
                     composable(Screen.Main_DataBaseInitFactory_1Produit.route) {
@@ -242,7 +242,7 @@ fun AppNavHost(
                     composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                         Compact_Presentoir_Echantilliants_FragID3(
                             isWifiClientConnected_1=isWifiClientConnected_1,
-                                on_pour_send_data= on_pour_send_data,
+                            on_pour_send_data= on_pour_send_data,
                         )
                     }
 

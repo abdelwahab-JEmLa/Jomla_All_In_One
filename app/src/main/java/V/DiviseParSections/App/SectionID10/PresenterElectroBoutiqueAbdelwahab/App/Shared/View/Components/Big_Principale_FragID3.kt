@@ -116,11 +116,12 @@ fun Big_Principale_FragID3(
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(
+                uiState_viewModel=uiState_viewModel,
                 relative_M1produit = relative_M1produit,
                 tariffsList = tariffsList,
                 selectedTariff = selectedTariff,
                 onTariffSelected = onTariffSelected,
-                compactMode = !isThisProductExpanded
+                compactMode = !isThisProductExpanded,
             )
         }
     }

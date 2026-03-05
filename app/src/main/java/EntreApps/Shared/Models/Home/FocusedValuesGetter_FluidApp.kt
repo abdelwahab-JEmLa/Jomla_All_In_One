@@ -43,6 +43,7 @@ class FocusedValues_NewProtoPatterns(
 
         // Derived from the live activeCompt — single source of truth, never stored manually
         val currentApp_Est_Admin = activeCompt?.its_Admin == true
+        val currentApp_ItsWorkChezGrossisst = activeCompt?.travailleChezGrossisst3Ali == true
 
         centralValues.copy(
             activeCompt = activeCompt,
@@ -51,6 +52,7 @@ class FocusedValues_NewProtoPatterns(
             activeOnVent_M2Client = activeOnVent_M2Client,
             filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod,
             currentApp_Est_Admin = currentApp_Est_Admin,
+            currentApp_ItsWorkChezGrossisst = currentApp_ItsWorkChezGrossisst,
         )
     }.stateIn(
         scope = CoroutineScope(Dispatchers.Default),
