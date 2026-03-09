@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @Stable
 class FocusedValues_NewProtoPatterns(
-    list_Datas: StateFlow<List_Datas?>,
+    list_Datas: StateFlow<List_Datas?>,  // Now receives the VM's flow directly — no duplicate state
 ) {
     private val _activeCentralValues = MutableStateFlow(ActiveCentralValues())
 

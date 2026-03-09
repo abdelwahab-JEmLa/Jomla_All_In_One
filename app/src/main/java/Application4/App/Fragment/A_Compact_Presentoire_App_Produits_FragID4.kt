@@ -1,7 +1,7 @@
 package Application4.App.Fragment
 
 import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.Filter.FilterSortGroupe_Tunnels
+import Application4.App.Fragment.Filter.Contetn
 import Application4.App.Fragment.Filter.GroupTunnel
 import Application4.App.Fragment.Z.Components.Dialogs.CategorySelectionDialog_FragID4
 import EntreApps.Shared.Models.M01Produit
@@ -30,7 +30,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
     modifier: Modifier = Modifier,
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
-    onClickImageToShowControles: () -> Unit= {},
+    onClickImageToShowControles: () -> Unit = {},
 ) {
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
@@ -65,19 +65,23 @@ fun Compact_Presentoire_App_Produits_FragID4(
         allCategories = allCategories
     )
 
-
-
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
-                progress = { minOf(uiState.initDatasProgressEtate, uiState.active_Central_Values.mainInitDataBaseProgressEtate) },
+                progress = {
+                    minOf(
+                        uiState.initDatasProgressEtate,
+                        uiState.active_Central_Values.mainInitDataBaseProgressEtate
+                    )
+                },
                 modifier = Modifier.size(48.dp),
                 trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 color = MaterialTheme.colorScheme.primary
             )
+
         }
     } else {
-        FilterSortGroupe_Tunnels(
+        Contetn(
             uiStateNewProtoPatterns = uiState,
             viewModel = viewModelNewProtoPatterns,
             modifier = modifier,
