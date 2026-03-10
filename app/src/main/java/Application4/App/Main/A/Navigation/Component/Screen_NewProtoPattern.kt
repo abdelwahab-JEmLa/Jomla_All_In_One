@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.PauseCircleOutline
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.clientjetpack.R
@@ -27,6 +28,13 @@ sealed class Screen_NewProtoPattern(
         icon = Icons.Default.PauseCircleOutline,
         title = "Compact_Presentoire_App_Produits_FragID4",
         color = Color(0xFFF44336),
+        customIconRes = R.drawable.logo
+    )
+    data object Ancien_PresenterApp_FragID5: Screen_NewProtoPattern(
+        route = "Ancien_PresenterApp_FragID5",
+        icon = Icons.Default.ShoppingBasket,
+        title = "Ancien_PresenterApp_FragID5",
+        color = Color(0xFF9C27B0),
         customIconRes = R.drawable.logo
     )
 }

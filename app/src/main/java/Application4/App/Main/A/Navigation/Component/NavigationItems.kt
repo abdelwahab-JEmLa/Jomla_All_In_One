@@ -7,6 +7,7 @@ object NavigationItems {
         return listOf(
             Screen_NewProtoPattern.A_Clients_LocationGps,
             Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4,
+            Screen_NewProtoPattern.Ancien_PresenterApp_FragID5,
         )
     }
 

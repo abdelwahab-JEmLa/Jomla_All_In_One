@@ -199,7 +199,6 @@ fun AppNavHost(
                 composable(
                     route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
                 ) {
-
                     Compact_Presentoire_App_Produits_FragID4(
                         on_pour_send_data = on_pour_send_data,
                         onClickImageToShowControles = onClickImageToShowControles,

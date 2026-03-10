@@ -11,6 +11,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
@@ -106,6 +107,7 @@ data class ActiveCentralValues(
     var hide_prix_lence_vent_buttons: Boolean = false,
 
     var filterState_Facad_Boutique: FilterState_Facad_Boutique? = null,
+    var filterState_Facad_Boutique_FragId5: FilterState_Facad_Boutique_FragId5? = null,
 
     //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
     var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
