@@ -83,13 +83,16 @@ fun MainFastSearchProduitPourVent_App4(
             )
         )
     }
+
     var cartonEditModeProductId by remember { mutableStateOf<String?>(null) }
-    var boitEditModeProductId by remember { mutableStateOf<String?>(null) }  // NEW STATE
+    var boitEditModeProductId by remember { mutableStateOf<String?>(null) }
 
     val focusRequester = remember { FocusRequester() }
     val fastSearchProduitPourVent = active_Central_Values.fastSearchProduitPourVent
 
+    // FIX: Split into two states — readiness flag and attachment flag
     var isTextFieldReady by remember { mutableStateOf(false) }
+    var isFocusRequesterAttached by remember { mutableStateOf(false) }
 
     // Debouncing implementation with proper state management
     var searchJob by remember { mutableStateOf<Job?>(null) }
@@ -97,7 +100,6 @@ fun MainFastSearchProduitPourVent_App4(
 
     val shouldShowTextField =
         sourceLenceurDeCetteFragment !is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit
-
 
     LaunchedEffect(fastSearchProduitPourVent) {
         // Cancel any pending search job
@@ -116,10 +118,10 @@ fun MainFastSearchProduitPourVent_App4(
                 viewModel.onSearchTextChange(fastSearchProduitPourVent)
             }
 
-            // For 4+ characters, apply 300ms debounce for smooth rapid typing
+            // For 4+ characters, apply 200ms debounce for smooth rapid typing
             fastSearchProduitPourVent.length >= 4 -> {
                 searchJob = launch {
-                    delay(200) // 300ms debounce delay
+                    delay(200)
                     if (fastSearchProduitPourVent != lastSearchText) {
                         lastSearchText = fastSearchProduitPourVent
                         viewModel.onSearchTextChange(fastSearchProduitPourVent)
@@ -127,10 +129,29 @@ fun MainFastSearchProduitPourVent_App4(
                 }
             }
 
-            // Less than 3 characters - clear results but keep the text
+            // Less than 3 characters — clear results but keep the text
             else -> {
                 lastSearchText = ""
                 viewModel.onSearchTextChange("")
+            }
+        }
+    }
+
+    // FIX: Step 1 — wait for child composables to compose and attach focusRequester modifier
+    LaunchedEffect(Unit) {
+        delay(150) // ensures MainFilterT1 → MainListT1 has composed and attached Modifier.focusRequester()
+        isTextFieldReady = true
+        isFocusRequesterAttached = true
+    }
+
+    // FIX: Step 2 — only request focus AFTER attachment is confirmed
+    LaunchedEffect(isFocusRequesterAttached) {
+        if (isFocusRequesterAttached && shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
+            try {
+                focusRequester.requestFocus()
+            } catch (e: IllegalStateException) {
+                // FocusRequester not yet attached to any composable — safe to ignore.
+                // The user can tap the search field manually.
             }
         }
     }
@@ -143,7 +164,7 @@ fun MainFastSearchProduitPourVent_App4(
                 Modifier
                     .fillMaxSize()
                     .padding(petitePaddine)
-            ) { //<--
+            ) {
                 if (shouldShowTextField) {
                     Text(
                         text = fastSearchProduitPourVent.ifEmpty { "Rechercher un produit... (min. 3 caractères)" },
@@ -157,14 +178,6 @@ fun MainFastSearchProduitPourVent_App4(
                             MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(Modifier.height(petitePaddine))
-
-                    LaunchedEffect(Unit) {
-                        delay(100)
-                        isTextFieldReady = true
-                        if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
-                            focusRequester.requestFocus()
-                        }
-                    }
                 }
 
                 MainFilterT1(
@@ -179,20 +192,25 @@ fun MainFastSearchProduitPourVent_App4(
                         coroutineScope.launch {
                             update_activeCentralValuesfastSearchProduitPourVent("")
                             delay(200)
-                            focusRequester.requestFocus()
-                            keyboardController?.show()
+                            try {
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
+                            } catch (e: IllegalStateException) {
+                                // FocusRequester not attached — safe to ignore
+                            }
                         }
                     },
                     cartonEditModeProductId = cartonEditModeProductId,
-                    boitEditModeProductId = boitEditModeProductId,  // NEW PARAMETER
+                    boitEditModeProductId = boitEditModeProductId,
                     on_PourEntre_CartonEditeMode = { productId ->
                         cartonEditModeProductId = productId
                     },
-                    on_PourEntre_BoitEditeMode = { productId ->  // NEW CALLBACK
+                    on_PourEntre_BoitEditeMode = { productId ->
                         boitEditModeProductId = productId
                     }
                 )
             }
+
             focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
                 Dialog_Fast_Affiche_Panie()
             }
@@ -200,15 +218,13 @@ fun MainFastSearchProduitPourVent_App4(
             val currentValues = focusedValuesGetter.active_Central_Values
             val markerStatusDialogActiveM2Client = currentValues.markerStatusDialogActiveM2Client
 
-            val shouldShowMarkerDialog = run {
-                markerStatusDialogActiveM2Client != null
-            }
+            val shouldShowMarkerDialog = markerStatusDialogActiveM2Client != null
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
                     relative_M2Client = markerStatusDialogActiveM2Client,
-                    markerStatusDialogActiveM2Client= markerStatusDialogActiveM2Client,
-                    on_dissmiss_dialog_avec_enleve_focuse_bon={
+                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
+                    on_dissmiss_dialog_avec_enleve_focuse_bon = {
                         focusedValuesGetter.update_activeCentralValues(
                             currentValues.copy(markerStatusDialogActiveM2Client = null)
                         )
