@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Modules that are only needed for the full "vendeur host" flow.
  *  They are loaded on demand when navigating to [Screen_NewProtoPattern.A_Clients_LocationGps]
@@ -35,16 +36,38 @@ private val heavyModules = listOf(
     classesHandlersModule,
 )
 
+/**
+ * Tracks whether [heavyModules] are currently loaded in the Koin context.
+ * Using AtomicBoolean ensures thread-safe reads/writes if navigation callbacks
+ * ever occur off the main thread.
+ */
+private val heavyModulesLoaded = AtomicBoolean(false)
+
 @Composable
 fun AppNavHost_NewProtoPattern(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
 ) {
+    /** Load heavy modules only if they are not already loaded. */
     @Composable
     fun AnimatedContentScope.load_heavyModules() {
         remember {
-            runCatching { GlobalContext.get().loadModules(heavyModules) }
+            if (!heavyModulesLoaded.get()) {
+                runCatching { GlobalContext.get().loadModules(heavyModules) }
+                    .onSuccess { heavyModulesLoaded.set(true) }
+            }
+        }
+    }
+
+    /** Unload heavy modules only if they were previously loaded. */
+    @Composable
+    fun AnimatedContentScope.unload_heavyModules() {
+        remember {
+            if (heavyModulesLoaded.get()) {
+                runCatching { GlobalContext.get().unloadModules(heavyModules) }
+                    .onSuccess { heavyModulesLoaded.set(false) }
+            }
         }
     }
 
@@ -55,11 +78,12 @@ fun AppNavHost_NewProtoPattern(
             modifier = Modifier.fillMaxSize()
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
-                remember {
-                    runCatching { GlobalContext.get().unloadModules(heavyModules) }
-                }
-
+                unload_heavyModules()
                 Compact_Presentoire_App_Produits_FragID4()
+            }
+            composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {
+                load_heavyModules()
+                Ancien_PresenterApp_FragID5()
             }
 
             composable(route = Screen_NewProtoPattern.A_Clients_LocationGps.route) {
@@ -72,11 +96,6 @@ fun AppNavHost_NewProtoPattern(
                     },
                     onClear = {}
                 )
-            }
-
-            composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {
-                load_heavyModules()
-                Ancien_PresenterApp_FragID5()
             }
         }
     }

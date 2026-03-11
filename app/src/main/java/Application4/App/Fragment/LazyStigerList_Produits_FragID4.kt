@@ -2,13 +2,14 @@ package Application4.App.Fragment
 
 import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.View.Item_Produit_FragID3
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
+import Application4.App.Fragment.Z.Components.ScrolleAdBanner
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import Application4.App.Fragment.View.Item_Produit_FragID3
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -131,7 +132,7 @@ fun Etager_LazyColumn_FragID4(
         userScrollEnabled = isScrollEnabled
     ) {
         // Add banner at the top
-        /*  item(
+         item(
               key = "ad_banner_header",
               span = StaggeredGridItemSpan.Companion.FullLine
           ) {
@@ -139,9 +140,8 @@ fun Etager_LazyColumn_FragID4(
                   onBannerClick = { bannerIndex ->
                       // Handle banner click if needed
                   },
-                  onClickImageToShowControles = onClickImageToShowControles
               )
-          }        */
+          }
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             // Add Catalogue Header

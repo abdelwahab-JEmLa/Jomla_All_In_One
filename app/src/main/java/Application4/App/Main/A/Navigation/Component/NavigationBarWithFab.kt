@@ -58,7 +58,8 @@ fun NavigationBarWithFab_NPP(
                             Image(
                                 painter = painterResource(id = screen.customIconRes),
                                 contentDescription = screen.title,
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(24.dp)
+                                ,
                                 colorFilter = if (currentRoute == screen.route) {
                                     ColorFilter.tint(screen.color)
                                 } else {
