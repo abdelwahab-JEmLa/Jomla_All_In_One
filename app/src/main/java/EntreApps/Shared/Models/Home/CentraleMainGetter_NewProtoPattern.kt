@@ -16,7 +16,7 @@ fun find_ListM3CouleurInfos_By_Parent_Produit_KeyID(datas : List<M3CouleurProdui
     datas.filter { it.parentBProduitInfosKeyID == parentBProduitInfosKeyID }
 
 @Stable
-class RepositorysMainGetter_NewProtoPattern(
+class CentraleMainGetter_NewProtoPattern(
     private val context: Context,
     appDatabase: AppDatabase,
     on_Progress_Datas: (Float) -> Unit,

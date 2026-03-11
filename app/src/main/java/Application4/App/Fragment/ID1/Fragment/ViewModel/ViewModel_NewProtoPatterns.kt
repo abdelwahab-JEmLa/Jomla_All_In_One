@@ -7,7 +7,7 @@ import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.DepotUpdateResult
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
-import EntreApps.Shared.Models.Home.RepositorysMainGetter_NewProtoPattern
+import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -90,8 +90,8 @@ class ViewModel_NewProtoPatterns(
                 )
         )
 
-    val repositorysMainGetter_NewProtoPattern: RepositorysMainGetter_NewProtoPattern =
-        RepositorysMainGetter_NewProtoPattern(
+    val centraleMainGetter_NewProtoPattern: CentraleMainGetter_NewProtoPattern =
+        CentraleMainGetter_NewProtoPattern(
             context, appDatabase,
             on_Progress_Datas = { progress ->
                 _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = progress) }
@@ -156,7 +156,7 @@ class ViewModel_NewProtoPatterns(
             }
         }
 
-        repositorysMainGetter_NewProtoPattern // initialized above; progress updates flow via on_Progress_Datas callback
+        centraleMainGetter_NewProtoPattern // initialized above; progress updates flow via on_Progress_Datas callback
 
 
         viewModelScope.launch(Dispatchers.IO) {

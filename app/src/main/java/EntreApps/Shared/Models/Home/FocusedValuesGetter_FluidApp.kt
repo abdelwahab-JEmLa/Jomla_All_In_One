@@ -20,7 +20,6 @@ class FocusedValues_NewProtoPatterns(
         list_Datas,
         _activeCentralValues
     ) { listDatas, centralValues ->
-
         val activeCompt = listDatas?.m9AppCompt
             ?.find { it.keyID == centralValues.activeCompt_KeyID }
 

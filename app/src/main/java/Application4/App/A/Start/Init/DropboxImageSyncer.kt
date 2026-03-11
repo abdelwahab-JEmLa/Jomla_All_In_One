@@ -1,6 +1,6 @@
 package Application4.App.A.Start.Init
 
-import EntreApps.Shared.Models.Home.RepositorysMainGetter_NewProtoPattern
+import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
 import android.util.Log
@@ -20,7 +20,7 @@ class DropboxImageSyncer(
     private val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
     private val onProgress: (Float) -> Unit,
 ) {
-    private val localImagesBaseDir = File(RepositorysMainGetter_NewProtoPattern.images_central_Local_storageLink)
+    private val localImagesBaseDir = File(CentraleMainGetter_NewProtoPattern.images_central_Local_storageLink)
     private val dropboxRootFolder = "/images"
 
     private val client: DbxClientV2 by lazy {
