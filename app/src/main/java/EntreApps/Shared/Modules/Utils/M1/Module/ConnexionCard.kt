@@ -1,4 +1,4 @@
-package Application2.App.Base.Modules
+package EntreApps.Shared.Modules.Utils.M1.Module
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
 import android.os.Build

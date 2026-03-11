@@ -1,15 +1,15 @@
 package Application2.App.App.ViewModel
 
-import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Utils.M1.Module.ProductDisplayController
+import EntreApps.Shared.Modules.Utils.M1.Module.WifiTransferDatas
+import EntreApps.Shared.Modules.Utils.M1.Module.WifiUpdateClientDisplayerStats_app2
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.annotation.SuppressLint
 import android.content.Context

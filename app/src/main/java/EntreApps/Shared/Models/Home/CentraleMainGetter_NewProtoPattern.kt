@@ -2,7 +2,7 @@ package EntreApps.Shared.Models.Home
 
 import Application4.App.A.Start.Init.Initializer_Funcs_NewProtoPattern
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable
 import com.google.firebase.Firebase

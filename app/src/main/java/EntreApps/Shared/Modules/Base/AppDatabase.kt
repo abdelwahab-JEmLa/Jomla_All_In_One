@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules
+package EntreApps.Shared.Modules.Base
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M01Produit
@@ -10,9 +10,9 @@ import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
-import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
-import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite

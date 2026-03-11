@@ -173,8 +173,8 @@ import AuthManager
 import AuthResult
 import P0_MainScreen.Main.AfficheSearchAllProduits
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import EntreApps.Shared.Modules.AppDatabase
-import EntreApps.Shared.Modules.PermissionHandler
+import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Base.PermissionHandler
 import android.content.Context
 import android.os.Build
 import android.os.Bundle

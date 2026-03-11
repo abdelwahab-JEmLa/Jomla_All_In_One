@@ -4,9 +4,9 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.toArticle
-import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
-import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
-import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log

@@ -1,10 +1,13 @@
 package Application4.App.Screen
 
 import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NPP
 import Application4.App.Main.A.Navigation.Component.NavigationItems
+import Application4.App.Modules.Wi.Module.ConnexionCard_App4
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -18,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -25,11 +29,13 @@ import org.koin.compose.koinInject
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
 ) {
     val navController = rememberNavController()
 
     // Give FragmentNavigationHandler ownership of the NavController
     fragmentNavigationHandler.setNavController(navController)
+    val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
 
     // currentRoute comes from FragmentNavigationHandler's state, not navController directly
     val currentFragment by fragmentNavigationHandler.currentFragment.collectAsState()
@@ -38,7 +44,7 @@ fun MainScreen_NewProtoPattern(
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
     if (M18CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        Compact_Presentoire_App_Produits_FragID4()
+        Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
     } else {
         Scaffold(
             modifier = modifier.fillMaxSize(),
@@ -52,9 +58,12 @@ fun MainScreen_NewProtoPattern(
                 )
             }
         ) { innerPadding ->
+            (!wifiState.isConnected).ifTrue {
+                ConnexionCard_App4(vm = viewModelNewProtoPatterns)
+            }
             AppNavHost_NewProtoPattern(
                 navController = navController,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),viewModelNewProtoPatterns=viewModelNewProtoPatterns,
             )
         }
     }

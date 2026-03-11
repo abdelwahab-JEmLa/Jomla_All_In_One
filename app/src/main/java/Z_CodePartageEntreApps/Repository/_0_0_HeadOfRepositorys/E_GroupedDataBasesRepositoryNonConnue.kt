@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Data.testD_TarificationInfosT2

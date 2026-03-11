@@ -2,7 +2,7 @@ package EntreApps.Shared.Models
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Components.Utilisateur
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
 import android.util.Log

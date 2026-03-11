@@ -1,8 +1,8 @@
 package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Application2.App.Base.Modules.ConnexionCard_App2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2.Companion.ifTrue
+import EntreApps.Shared.Modules.Utils.M1.Module.ConnexionCard_App2
 import android.app.Activity
 import android.os.Build
 import android.view.WindowManager

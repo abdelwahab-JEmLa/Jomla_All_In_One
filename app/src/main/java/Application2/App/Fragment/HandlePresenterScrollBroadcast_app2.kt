@@ -1,7 +1,7 @@
 package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
+import EntreApps.Shared.Modules.Utils.M1.Module.WifiUpdateClientDisplayerStats_app2
 import android.util.Log
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable

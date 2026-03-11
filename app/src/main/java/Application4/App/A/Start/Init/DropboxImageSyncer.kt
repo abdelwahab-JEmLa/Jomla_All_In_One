@@ -2,7 +2,7 @@ package Application4.App.A.Start.Init
 
 import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.util.Log
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential

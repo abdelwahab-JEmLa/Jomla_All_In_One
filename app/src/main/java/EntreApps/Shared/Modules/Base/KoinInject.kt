@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules
+package EntreApps.Shared.Modules.Base
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler

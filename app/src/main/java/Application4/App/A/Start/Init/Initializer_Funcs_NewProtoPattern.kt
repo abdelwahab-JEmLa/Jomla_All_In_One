@@ -7,9 +7,9 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
-import EntreApps.Shared.Modules.Dao.SQL.M16CategorieProduitDao
-import EntreApps.Shared.Modules.Dao.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur

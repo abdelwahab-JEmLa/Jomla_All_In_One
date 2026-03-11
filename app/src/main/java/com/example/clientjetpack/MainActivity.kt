@@ -5,9 +5,9 @@ import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Modules.PermissionHandler
-import EntreApps.Shared.Modules.StoragePermissionDialog
-import EntreApps.Shared.Modules.modules_NewProtoPatterns
+import EntreApps.Shared.Modules.Base.PermissionHandler
+import EntreApps.Shared.Modules.Base.StoragePermissionDialog
+import EntreApps.Shared.Modules.Base.modules_NewProtoPatterns
 import P0_MainScreen.Main.MainScreen_All
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import android.Manifest

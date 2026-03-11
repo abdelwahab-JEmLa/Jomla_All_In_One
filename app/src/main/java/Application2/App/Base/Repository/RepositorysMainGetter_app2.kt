@@ -1,7 +1,7 @@
 package Application2.App.Base.Repository
 
 import Application2.App.Init.Initializer_Funcs_app2
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf

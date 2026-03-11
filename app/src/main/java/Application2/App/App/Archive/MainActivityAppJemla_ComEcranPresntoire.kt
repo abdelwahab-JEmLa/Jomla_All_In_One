@@ -2,7 +2,7 @@ package Application2.App.App.Archive
 
 import Application2.App.Init.PermissionHandler_App2
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
-import EntreApps.Shared.Modules.StoragePermissionDialog
+import EntreApps.Shared.Modules.Base.StoragePermissionDialog
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager

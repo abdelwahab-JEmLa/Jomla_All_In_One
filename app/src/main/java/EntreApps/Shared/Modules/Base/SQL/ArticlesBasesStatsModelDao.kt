@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules.Dao.SQL
+package EntreApps.Shared.Modules.Base.SQL
 
 import EntreApps.Shared.Models.M01Produit
 import androidx.room.Dao

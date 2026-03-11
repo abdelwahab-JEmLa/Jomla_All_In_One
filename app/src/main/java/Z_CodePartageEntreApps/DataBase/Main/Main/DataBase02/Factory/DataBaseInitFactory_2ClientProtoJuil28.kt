@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Modules.AppDatabase
+import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import android.annotation.SuppressLint
 import com.google.firebase.database.DataSnapshot

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base
 
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Modules.Dao.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

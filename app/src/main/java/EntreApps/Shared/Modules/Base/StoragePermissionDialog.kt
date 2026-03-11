@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules
+package EntreApps.Shared.Modules.Base
 
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement

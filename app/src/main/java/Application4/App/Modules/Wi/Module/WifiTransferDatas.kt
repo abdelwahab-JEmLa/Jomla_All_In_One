@@ -1,4 +1,4 @@
-package Application2.App.Base.Modules
+package Application4.App.Modules.Wi.Module
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import EntreApps.Shared.Models.M01Produit

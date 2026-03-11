@@ -1,9 +1,10 @@
 package Application4.App.Main.A.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID2.Fragment.MainScreen_FragID2
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
-import Application4.App.Fragment.ID2.Fragment.MainScreen_FragID2
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
@@ -38,6 +39,7 @@ fun AppNavHost_NewProtoPattern(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
 ) {
     @Composable
     fun AnimatedContentScope.load_heavyModules() {
@@ -48,7 +50,6 @@ fun AppNavHost_NewProtoPattern(
             }
         }
     }
-
 
     @Composable
     fun AnimatedContentScope.unload_heavyModules() {
@@ -68,7 +69,7 @@ fun AppNavHost_NewProtoPattern(
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
                 unload_heavyModules()
-                Compact_Presentoire_App_Produits_FragID4()
+                Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
             }
 
             composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {

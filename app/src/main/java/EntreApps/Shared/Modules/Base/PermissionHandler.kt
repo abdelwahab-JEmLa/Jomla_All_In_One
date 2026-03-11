@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules
+package EntreApps.Shared.Modules.Base
 
 import android.Manifest
 import android.content.Context
