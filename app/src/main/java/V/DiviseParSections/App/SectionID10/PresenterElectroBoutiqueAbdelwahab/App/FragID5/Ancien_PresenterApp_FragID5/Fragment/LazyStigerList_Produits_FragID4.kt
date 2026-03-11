@@ -74,15 +74,7 @@ fun Etager_LazyColumn_FragID4(
 
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
-    // When an item is expanded, auto-scroll so it is fully visible.
-    // KEY FIXES:
-    //  1. No phantom banner offset — the ad_banner_header item is commented out,
-    //     so currentIndex starts at 0 to match the actual grid item positions.
-    //  2. Match by product.keyID == expandedColor.parentBProduitInfosKeyID (String),
-    //     NOT product.id == parentBProduitOldID (Int/Long) which is often 0 and
-    //     always picks the first item in the list by mistake.
-    //  3. Wait 300 ms for the FullLine span recomposition to settle before scrolling,
-    //     otherwise the grid scrolls to a stale layout position and lands below the item.
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect

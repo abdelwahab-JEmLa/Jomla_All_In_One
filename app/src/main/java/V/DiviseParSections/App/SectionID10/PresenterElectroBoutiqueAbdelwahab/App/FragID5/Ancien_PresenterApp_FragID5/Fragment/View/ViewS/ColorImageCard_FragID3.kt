@@ -28,7 +28,6 @@ fun ColorImageCard_FragID3(
     roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp) // Default: all corners rounded
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
-
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
