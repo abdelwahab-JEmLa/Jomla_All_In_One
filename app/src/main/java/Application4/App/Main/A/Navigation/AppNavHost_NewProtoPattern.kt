@@ -61,10 +61,6 @@ fun AppNavHost_NewProtoPattern(
 
                 Compact_Presentoire_App_Produits_FragID4()
             }
-            composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {
-                load_heavyModules()
-                Ancien_PresenterApp_FragID5()
-            }
 
             composable(route = Screen_NewProtoPattern.A_Clients_LocationGps.route) {
                 load_heavyModules()
@@ -76,6 +72,11 @@ fun AppNavHost_NewProtoPattern(
                     },
                     onClear = {}
                 )
+            }
+
+            composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {
+                load_heavyModules()
+                Ancien_PresenterApp_FragID5()
             }
         }
     }
