@@ -60,6 +60,7 @@ fun AppNavHost_NewProtoPattern(
         }
     }
 
+
     /** Unload heavy modules only if they were previously loaded. */
     @Composable
     fun AnimatedContentScope.unload_heavyModules() {

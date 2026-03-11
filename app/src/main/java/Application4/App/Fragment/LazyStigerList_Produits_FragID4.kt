@@ -5,7 +5,6 @@ import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Item_Produit_FragID3
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
-import Application4.App.Fragment.Z.Components.ScrolleAdBanner
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -48,7 +47,7 @@ import kotlinx.coroutines.launch
  * UPDATED: Now displays Catalogue headers followed by Category headers
  */
 @Composable
-fun Etager_LazyColumn_FragID4(
+fun Etager_LazyColumn(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     on_pour_send_data: (String, String) -> Unit,
@@ -131,7 +130,7 @@ fun Etager_LazyColumn_FragID4(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-        // Add banner at the top
+      /*  // Add banner at the top
          item(
               key = "ad_banner_header",
               span = StaggeredGridItemSpan.Companion.FullLine
@@ -141,7 +140,7 @@ fun Etager_LazyColumn_FragID4(
                       // Handle banner click if needed
                   },
               )
-          }
+          }      */
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             // Add Catalogue Header

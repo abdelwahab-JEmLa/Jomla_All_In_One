@@ -73,36 +73,11 @@ fun Ancien_PresenterApp_FragID5(
             .sortedByDescending { it.creationTimestamp }
     }
 
-    Log.d("Compact_Presentoire_FragID4", """
-        |=== RAW DATA FETCHED ===
-        |Categories: ${allCategories.size}
-        |Products: ${allProducts.size}
-        |Colors: ${allColors.size}
-    """.trimMargin())
-
-    // ============================================
-    // STEP 2: GROUP DATA WITH CATALOGUE HIERARCHY (via GroupTunnel)
-    // ============================================
-
     val groupe_Par_Catalogue = GroupTunnel(
         allColors = allColors,
         allProducts = allProducts,
         allCategories = allCategories
     )
-
-    Log.d("Compact_Presentoire_FragID4", """
-        |=== GROUPING COMPLETE (WITH CATALOGUE HIERARCHY) ===
-        |Catalogues with categories: ${groupe_Par_Catalogue.size}
-        |Total categories: ${groupe_Par_Catalogue.sumOf { it.second.size }}
-        |Total products: ${groupe_Par_Catalogue.sumOf { (_, categories) ->
-        categories.sumOf { it.second.size }
-    }}
-        |Delegating to FilterSortGroupe_Tunnels for filtering and sorting...
-    """.trimMargin())
-
-    // ============================================
-    // STEP 3: FILTER & SORT (via FilterSortGroupe_Tunnels)
-    // ============================================
 
     FilterSortGroupe_Tunnels(
         isWifiClientConnected_1=isWifiClientConnected_1,

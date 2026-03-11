@@ -2,7 +2,7 @@ package Application4.App.Fragment.Filter
 
 import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.Etager_LazyColumn_FragID4
+import Application4.App.Fragment.Etager_LazyColumn
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -64,7 +64,7 @@ fun Contetn(
     )
 
     // Render
-    Etager_LazyColumn_FragID4(
+    Etager_LazyColumn(
         modifier = modifier.semantics(mergeDescendants = true) {
             set(value = catalogueFilter, key = SemanticsPropertyKey("catalogueFilter"))
         },
