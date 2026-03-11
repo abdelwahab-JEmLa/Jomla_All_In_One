@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Filter
+package Application4.App.Fragment.ID1.Fragment.Filter
 
 /**
  * FilterState_Facad_Boutique - State for filtering products in the boutique facade

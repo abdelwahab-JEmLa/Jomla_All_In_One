@@ -1,6 +1,6 @@
 package EntreApps.Shared.Modules
 
-import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel

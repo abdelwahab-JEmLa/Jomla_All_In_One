@@ -1,6 +1,6 @@
-package Application4.App.Fragment.Filter
+package Application4.App.Fragment.ID1.Fragment.Filter
 
-import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie

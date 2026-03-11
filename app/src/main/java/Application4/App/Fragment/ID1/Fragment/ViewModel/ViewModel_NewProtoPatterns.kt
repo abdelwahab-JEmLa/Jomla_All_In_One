@@ -1,4 +1,4 @@
-package Application4.App.Fragment.A.ViewModel
+package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Modules.ProductDisplayController
 import Application2.App.Base.Modules.WifiTransferDatas

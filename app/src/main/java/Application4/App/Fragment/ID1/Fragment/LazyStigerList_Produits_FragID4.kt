@@ -1,7 +1,7 @@
-package Application4.App.Fragment
+package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
-import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Item_Produit_FragID3
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast

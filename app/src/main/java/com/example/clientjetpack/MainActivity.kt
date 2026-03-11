@@ -8,7 +8,7 @@ import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Modules.PermissionHandler
 import EntreApps.Shared.Modules.StoragePermissionDialog
 import EntreApps.Shared.Modules.modules_NewProtoPatterns
-import P0_MainScreen.Main.MainScreen
+import P0_MainScreen.Main.MainScreen_All
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import android.Manifest
 import android.annotation.SuppressLint
@@ -52,7 +52,9 @@ class MainActivity : ComponentActivity() {
 
             when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
                 AppType.JomLaElectroLivreurGrossist_PresenterScreen ->
-                    modules(appModule_App2_ac_app1)
+                    if (M18CentralParametresOfAllApps().load_All_modules)
+                        modules(appModule) else
+                        modules(appModule_App2_ac_app1)
                 AppType.JomLaElectroLivreurGrossist_VendeurHost -> {}
                 else ->
                     modules(appModule)
@@ -70,8 +72,14 @@ class MainActivity : ComponentActivity() {
         val hasStorageAccess = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
         } else {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
         }
 
         if (hasStorageAccess && showStorageDialog) {
@@ -97,11 +105,13 @@ class MainActivity : ComponentActivity() {
                                     AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
                                         MainScreen_Jemla_Com_PresentoirApp()
                                     }
+
                                     AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
                                         MainScreen_NewProtoPattern()
                                     }
+
                                     else -> {
-                                        MainScreen()
+                                        MainScreen_All()
                                     }
                                 }
                             }
@@ -123,7 +133,11 @@ class MainActivity : ComponentActivity() {
 
             handlePermissions()
         }.onFailure {
-            Toast.makeText(this, "Une erreur s'est produite. Veuillez redémarrer l'application.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Une erreur s'est produite. Veuillez redémarrer l'application.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -137,7 +151,11 @@ class MainActivity : ComponentActivity() {
             override fun onPermissionsGranted() {
                 permissionsChecked = true
                 showStorageDialog = false
-                Toast.makeText(this@MainActivity, "✓ جميع الأذونات ممنوحة - الصور ستظهر الآن", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "✓ جميع الأذونات ممنوحة - الصور ستظهر الآن",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onPermissionsDenied() {
@@ -154,11 +172,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showPermissionDeniedMessage() {
-        val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            "⚠ الصور لن تظهر بدون إذن الوصول للملفات. يمكنك منح الإذن من الإعدادات لاحقاً"
-        } else {
-            "⚠ بعض الوظائف محدودة بدون الأذونات الكاملة"
-        }
+        val message =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "⚠ الصور لن تظهر بدون إذن الوصول للملفات. يمكنك منح الإذن من الإعدادات لاحقاً"
+            } else {
+                "⚠ بعض الوظائف محدودة بدون الأذونات الكاملة"
+            }
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }

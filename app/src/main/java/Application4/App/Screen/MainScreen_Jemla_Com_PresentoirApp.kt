@@ -1,8 +1,10 @@
 package Application4.App.Screen
 
+import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NPP
 import Application4.App.Main.A.Navigation.Component.NavigationItems
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -35,21 +37,25 @@ fun MainScreen_NewProtoPattern(
 
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        bottomBar = {
-            NavigationBarWithFab_NPP(
-                items = NavigationItems.getItems(isAdmin = true),
-                currentRoute = currentRoute,
-                onNavigate = { route ->
-                    fragmentNavigationHandler.navigateTo(route)
-                },
+    if (M18CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
+        Compact_Presentoire_App_Produits_FragID4()
+    } else {
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            bottomBar = {
+                NavigationBarWithFab_NPP(
+                    items = NavigationItems.getItems(isAdmin = true),
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        fragmentNavigationHandler.navigateTo(route)
+                    },
+                )
+            }
+        ) { innerPadding ->
+            AppNavHost_NewProtoPattern(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
             )
         }
-    ) { innerPadding ->
-        AppNavHost_NewProtoPattern(
-            navController = navController,
-            modifier = Modifier.fillMaxSize(),
-        )
     }
 }

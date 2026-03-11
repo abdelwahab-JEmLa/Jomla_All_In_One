@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Filter
+package Application4.App.Fragment.ID1.Fragment.Filter
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit

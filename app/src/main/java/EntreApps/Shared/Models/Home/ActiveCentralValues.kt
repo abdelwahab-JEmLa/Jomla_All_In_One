@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Home
 
-import Application4.App.Fragment.Filter.FilterState_Facad_Boutique
+import Application4.App.Fragment.ID1.Fragment.Filter.FilterState_Facad_Boutique
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
 import EntreApps.Shared.Models.M01Produit

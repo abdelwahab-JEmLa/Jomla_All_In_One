@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Filter
+package Application4.App.Fragment.ID1.Fragment.Filter
 
 // FIXED: Import FilterState and SortOrder from ActiveCentralValues, not from a separate Models package
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter

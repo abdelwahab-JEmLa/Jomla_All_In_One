@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components
 
-import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
-import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
 import EntreApps.Shared.Models.M01Produit

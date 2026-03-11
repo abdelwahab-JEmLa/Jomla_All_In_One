@@ -1,8 +1,8 @@
-package Application4.App.Fragment.Filter
+package Application4.App.Fragment.ID1.Fragment.Filter
 
-import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
-import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.Etager_LazyColumn
+import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.Etager_LazyColumn
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -72,7 +72,7 @@ fun Contetn(
         on_pour_send_data = on_pour_send_data,
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
-        uiState_NewProtoPatterns_viewModel=Pair(uiStateNewProtoPatterns,viewModel),
+        uiState_NewProtoPatterns_viewModel = Pair(uiStateNewProtoPatterns, viewModel),
     )
 
     // Dialogs

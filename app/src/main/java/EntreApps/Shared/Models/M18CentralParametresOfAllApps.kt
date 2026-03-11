@@ -92,6 +92,8 @@ data class M18CentralParametresOfAllApps(
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
 
     val listens_on_data_change_resources_consolation: Boolean = false,
+    val no_loadKoin_CrachComposReglement: Boolean = false,
+    val load_All_modules: Boolean = false,
 
     //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
     val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
