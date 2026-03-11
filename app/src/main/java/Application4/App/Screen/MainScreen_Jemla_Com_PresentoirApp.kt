@@ -5,12 +5,13 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatter
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NPP
 import Application4.App.Main.A.Navigation.Component.NavigationItems
-import Application4.App.Modules.Wi.Module.ConnexionCard_App4
+import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -44,7 +45,7 @@ fun MainScreen_NewProtoPattern(
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
     if (M18CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
+        Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns = viewModelNewProtoPatterns)
     } else {
         Scaffold(
             modifier = modifier.fillMaxSize(),
@@ -58,13 +59,16 @@ fun MainScreen_NewProtoPattern(
                 )
             }
         ) { innerPadding ->
-            (!wifiState.isConnected).ifTrue {
-                ConnexionCard_App4(vm = viewModelNewProtoPatterns)
+            Column() {
+                (!wifiState.isConnected).ifTrue {
+                    ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
+                }
+                AppNavHost_NewProtoPattern(
+                    navController = navController,
+                    modifier = Modifier.fillMaxSize(),
+                    viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                )
             }
-            AppNavHost_NewProtoPattern(
-                navController = navController,
-                modifier = Modifier.fillMaxSize(),viewModelNewProtoPatterns=viewModelNewProtoPatterns,
-            )
         }
     }
 }

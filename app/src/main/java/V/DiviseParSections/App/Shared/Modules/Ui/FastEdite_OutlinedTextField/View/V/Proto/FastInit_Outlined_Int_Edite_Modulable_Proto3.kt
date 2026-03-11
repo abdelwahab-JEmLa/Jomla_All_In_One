@@ -1,5 +1,10 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -31,10 +36,29 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+
+// TODO(1) FIXED: Vibration helper — triggers a 600ms vibration on update
+private fun vibrateOnUpdate(context: Context) {
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        manager.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrator.vibrate(VibrationEffect.createOneShot(600L, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        @Suppress("DEPRECATION")
+        vibrator.vibrate(600L)
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -48,12 +72,13 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
     compact_taille: Boolean = false,
     show_depot_card_on_top_in_flow_row: Boolean = false,
     is_admin: Boolean = false,
-    // FIXED: Added parameter to control spacing between depot and sale button
     add_spacing_between_depot_and_sale: Boolean = false,
     on_admin_depot_update: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     on_Data_Update: (Int) -> Unit
 ) {
+    val context = LocalContext.current
+
     var isEditMode by remember { mutableStateOf(false) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
@@ -73,7 +98,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
         }
     }
 
-    // Adjust sizes based on compact mode
     val horizontalPadding = if (compact_taille) 8.dp else 12.dp
     val verticalPadding = if (compact_taille) 4.dp else 6.dp
     val iconSize = if (compact_taille) 14.dp else 16.dp
@@ -83,10 +107,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
         MaterialTheme.typography.labelLarge
     }
 
-    // FIXED: Calculate spacing based on parameter to prevent accidental clicks
     val spacingBetweenCards = if (add_spacing_between_depot_and_sale) 8.dp else 4.dp
 
-    // FIXED: Depot edit mode - admin can edit depot count directly
     if (isEditDepotMode) {
         OutlinedTextField(
             value = depotInput,
@@ -105,6 +127,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
             keyboardActions = KeyboardActions(
                 onDone = {
                     val newDepotCount = depotInput.toIntOrNull() ?: 0
+                    vibrateOnUpdate(context)
                     on_admin_depot_update(newDepotCount)
                     isEditDepotMode = false
                 }
@@ -114,7 +137,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
             label = { Text("Dépôt") }
         )
     } else if (isEditMode) {
-        // Edit mode: Show outlined text field
         OutlinedTextField(
             value = quantityInput,
             onValueChange = { newValue ->
@@ -132,6 +154,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
             keyboardActions = KeyboardActions(
                 onDone = {
                     val newQuantity = quantityInput.toIntOrNull() ?: 0
+                    vibrateOnUpdate(context)
                     on_Data_Update(newQuantity)
                     isEditMode = false
                 }
@@ -139,13 +162,11 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             enabled = isAvailable,
-            // FIXED: Display depot count as hint when available
             placeholder = if (au_depot > 0) {
                 { Text("Dépôt: $au_depot", style = textStyle.copy(fontWeight = FontWeight.Normal)) }
             } else null
         )
     } else {
-        // Display mode: Show clickable card
         val containerColor = if (!isAvailable) {
             MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
         } else if (start_count > 0) {
@@ -161,14 +182,12 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
         }
 
         if (show_depot_card_on_top_in_flow_row) {
-            // FIXED: FlowRow layout with increased spacing to prevent accidental clicks
             FlowRow(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End),
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
-                // Depot count card shown first (will be on top in flow)
                 if (au_depot > 0) {
                     Card(
                         modifier = Modifier
@@ -188,7 +207,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
-                            // FIXED: Added warehouse icon to depot card when in FlowRow
                             Icon(
                                 imageVector = Icons.Default.Warehouse,
                                 contentDescription = "Dépôt",
@@ -205,7 +223,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                     }
                 }
 
-                // Main quantity card
                 Card(
                     modifier = Modifier
                         .clickable(enabled = isAvailable) {
@@ -214,6 +231,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                     if (start_au_premier_click_par_add_outlined) {
                                         isEditMode = true
                                     } else {
+                                        vibrateOnUpdate(context)
                                         on_Data_Update(standard_count)
                                     }
                                 }
@@ -241,7 +259,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                 modifier = Modifier.size(iconSize)
                             )
                         }
-
                         Text(
                             text = start_count.toString(),
                             style = textStyle,
@@ -252,13 +269,11 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                 }
             }
         } else {
-            // FIXED: Original Row layout with increased spacing to prevent accidental clicks
             Row(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // FIXED: Depot count card shown before the icon - red background, black text, 30% smaller
                 if (au_depot > 0) {
                     Card(
                         modifier = Modifier
@@ -288,7 +303,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                     }
                 }
 
-                // Main quantity card
                 Card(
                     modifier = Modifier
                         .clickable(enabled = isAvailable) {
@@ -297,6 +311,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                     if (start_au_premier_click_par_add_outlined) {
                                         isEditMode = true
                                     } else {
+                                        vibrateOnUpdate(context)
                                         on_Data_Update(standard_count)
                                     }
                                 }
@@ -324,7 +339,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                 modifier = Modifier.size(iconSize)
                             )
                         }
-
                         Text(
                             text = start_count.toString(),
                             style = textStyle,

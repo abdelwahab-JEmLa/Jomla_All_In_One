@@ -139,6 +139,11 @@ class ViewModel_NewProtoPatterns(
         wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsHost() {
+        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+    }
+
     fun disconnect() = wifi.disconnect()
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =

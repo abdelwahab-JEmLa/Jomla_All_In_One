@@ -33,7 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ConnexionCard_App4(
+fun ConnexionCardHost_App4(
     vm: ViewModel_NewProtoPatterns = koinViewModel(),
     onClickToStartAsClient: () -> Unit = {},
 ) {
@@ -77,6 +77,11 @@ fun ConnexionCard_App4(
 
                 if (!state.isConnected) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        if (isHostEnabled) {
+                            Button(onClick = { vm.startAsHost() }) {
+                                Text("Mode Hôte")
+                            }
+                        }
                         Button(onClick = { vm.startAsClient(); onClickToStartAsClient() }) {
                             Text("Clic Conexion")
                         }
