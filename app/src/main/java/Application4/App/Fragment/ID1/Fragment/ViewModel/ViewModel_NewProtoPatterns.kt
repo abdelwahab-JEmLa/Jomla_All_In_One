@@ -164,30 +164,32 @@ class ViewModel_NewProtoPatterns(
 
         centraleMainGetter_NewProtoPattern // initialized above; progress updates flow via on_Progress_Datas callback
 
-
         viewModelScope.launch(Dispatchers.IO) {
             val products = appDatabase.dao_M1Produit().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 9f) }
 
             val clients = appDatabase.dao_M2Client().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
 
             val categories = appDatabase.dao_16CategorieProduit().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
 
             val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
 
             val appCompt = appDatabase.dao_M9AppCompt().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 9f) }
 
             val bonVent = appDatabase.dao_M8BonVent().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 9f) }
 
             val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 8f) }
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 9f) }
 
             val tarification = appDatabase.dao_M13TarificationInfos().getAll()
+            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
+
+            val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1f) }
 
             _uiStateNewProtoPatterns.update {
@@ -201,6 +203,7 @@ class ViewModel_NewProtoPatterns(
                         m9AppCompt = appCompt,
                         m8BonVent = bonVent,
                         m13TarificationInfos = tarification,
+                        m10OperationVentCouleur = operationVentCouleurs,
                     )
                 )
             }

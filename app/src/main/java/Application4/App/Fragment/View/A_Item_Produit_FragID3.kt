@@ -259,7 +259,11 @@ fun Item_Produit_FragID3(
         onVentList.size
     ) {
         derivedStateOf {
-            onVentList.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+            uiState.list_Datas?.m10OperationVentCouleur?.find {
+                it.parent_M8BonVent_KeyId == uiState.active_Central_Values.activeOnVent_M8BonVent?.keyID
+                        &&
+                        it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
+            }
         }
     }
 
@@ -313,7 +317,7 @@ fun Item_Produit_FragID3(
                 }
 
                 Compact_Header_FragID3(
-                    uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
                     shouldShowButtons = isHostPhone,
@@ -353,7 +357,9 @@ fun Item_Produit_FragID3(
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
-                    on_pour_send_data = on_pour_send_data , modifier = modifier,uiState_NewProtoPatterns_viewModel
+                    on_pour_send_data = on_pour_send_data,
+                    modifier = modifier,
+                    uiState_NewProtoPatterns_viewModel
                 )
 
                 if (relative_ListM3Couleurs.size > 1) {
@@ -369,7 +375,7 @@ fun Item_Produit_FragID3(
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
                                     SubColorCard_WithButton(
-                                        uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                                        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
@@ -389,7 +395,7 @@ fun Item_Produit_FragID3(
                             relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                                 if (index != big_presenter_couleur_produit) {
                                     SubColorCard_WithButton(
-                                        uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                                        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
