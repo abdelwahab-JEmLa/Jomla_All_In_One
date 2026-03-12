@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -41,12 +42,10 @@ private val heavyModulesLoaded = AtomicBoolean(false)
 @Composable
 fun AppNavHost_NewProtoPattern(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
 ) {
-    val navController = fragmentNavigationHandler.navController
-        ?: return // NavController not yet registered — nothing to render
-
     // Sync fragmentNavigationHandler whenever the back-stack destination changes
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
