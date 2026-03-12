@@ -115,7 +115,7 @@ data class M18CentralParametresOfAllApps(
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
         if (itsDevMode) {
-            AppType.AllInOne
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
             AppType.AllInOne
         }

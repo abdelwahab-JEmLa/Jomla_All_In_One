@@ -16,6 +16,9 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
@@ -193,8 +196,12 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+) {
+    //-----------------mutableStateOf lightweight vars -------------------------------------------------------------------------------------------------------------------------
 
-    ) {
+    var isControleFabVisible: Boolean by mutableStateOf(false)
+    //-------------------------------------------------------------------------------------------------------------------------------
+
     companion object {
         fun get_Default(): ActiveCentralValues {
             return ActiveCentralValues()

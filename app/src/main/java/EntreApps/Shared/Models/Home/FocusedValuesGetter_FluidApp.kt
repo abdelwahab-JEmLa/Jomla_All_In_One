@@ -61,4 +61,7 @@ class FocusedValues_NewProtoPatterns(
     fun update_activeCentralValues(new: ActiveCentralValues) {
         _activeCentralValues.value = new
     }
+    fun update_oneMutableStateLesseRessources(isControleFabVisible: Boolean) {
+        _activeCentralValues.value.isControleFabVisible = isControleFabVisible
+    }
 }

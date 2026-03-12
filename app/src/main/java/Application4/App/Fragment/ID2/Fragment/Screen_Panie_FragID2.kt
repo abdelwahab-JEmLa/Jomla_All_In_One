@@ -10,6 +10,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,7 +40,12 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
-fun MainScreen_FragID2() {
+fun Screen_Panie_FragID2(
+    panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
+    aCentralFacade: ACentralFacade = koinInject()
+) {
+    val isControleFabVisible =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -46,6 +53,16 @@ fun MainScreen_FragID2() {
         Box(modifier = Modifier.fillMaxSize()) {
             MainFastSearchProduitPourVent_App4()
             PressistatntMainActivityButtons_Sec8FWinID1()
+            isControleFabVisible.ifTrue {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(10f)
+                ) {
+                    panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
+                    panelsGroupeButtonHandler.AfficheDialogesHeadApps()
+                }
+            }
         }
     }
 }
@@ -70,9 +87,11 @@ fun MainFastSearchProduitPourVent_App4(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
+
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
+
         null -> ""
     }
 

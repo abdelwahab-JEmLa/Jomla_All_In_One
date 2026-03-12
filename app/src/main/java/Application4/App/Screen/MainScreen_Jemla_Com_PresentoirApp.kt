@@ -10,6 +10,7 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -82,6 +83,7 @@ fun MainScreen_NewProtoPattern(
                     navController = navController,
                 )
             }
+
         }
     }
 }

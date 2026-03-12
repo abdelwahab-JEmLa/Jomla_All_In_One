@@ -2,7 +2,7 @@ package Application4.App.Main.A.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID2.Fragment.MainScreen_FragID2
+import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
@@ -85,7 +85,7 @@ fun AppNavHost_NewProtoPattern(
 
             composable(route = Screen_NewProtoPattern.Panier.route) {
                 load_heavyModules()
-                MainScreen_FragID2()
+                Screen_Panie_FragID2()
             }
             composable(route = Screen_NewProtoPattern.A_Clients_LocationGps.route) {
                 load_heavyModules()
