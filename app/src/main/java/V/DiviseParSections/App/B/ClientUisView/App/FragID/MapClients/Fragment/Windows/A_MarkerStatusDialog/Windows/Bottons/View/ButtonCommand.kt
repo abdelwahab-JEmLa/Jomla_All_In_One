@@ -1,11 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
+import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -28,6 +32,7 @@ import org.koin.compose.koinInject
 @Composable
 fun CommandButton(
     aCentralFacade: ACentralFacade = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier,
     relative_M2Client: M2Client,
@@ -68,8 +73,8 @@ fun CommandButton(
                 viewModel.startRecordIfNot()
             }
 
-            viewModel.updateLongAppSetting(relative_M2Client.id)
-            onUpdateLongAppSetting()
+
+
             val currentActiveCentralValues = focusedValuesGetter.active_Central_Values
             val catalogueId =
                 focusedValuesGetter.currentActive_M9AppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
@@ -97,8 +102,17 @@ fun CommandButton(
                 else -> currentActiveCentralValues.copy()
             }
 
-            // Update the focused values with the new active central values
             focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
+
+            if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne) {
+                viewModel.updateLongAppSetting(relative_M2Client.id)
+                onUpdateLongAppSetting()
+
+            } else {
+                fragmentNavigationHandler.updateCurrentFragment(
+                    Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                )
+            }
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
