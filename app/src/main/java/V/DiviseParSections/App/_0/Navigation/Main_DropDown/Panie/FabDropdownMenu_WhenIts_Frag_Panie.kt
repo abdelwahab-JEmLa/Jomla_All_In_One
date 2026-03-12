@@ -104,8 +104,7 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
         modifier = modifier
             .offset(y = (-90).dp)
     ) {
-        DropdownMenu(      //<--
-//TODO(1): pk le click au centrale button n affiche pas le meue items de panie
+        DropdownMenu(
             expanded = true,
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)

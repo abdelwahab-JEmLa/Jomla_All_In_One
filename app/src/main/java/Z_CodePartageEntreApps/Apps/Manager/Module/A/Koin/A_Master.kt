@@ -82,6 +82,7 @@ import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Proto.B.Par.App.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.ViewModel.ViewModel_A4FragID1
@@ -170,6 +171,8 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
+    single { FragmentNavigationHandler() }
+
     single { UploadHandler() }
     single { PrintInPdf_itextpdf_Handler(get(), get(),get(), ) }
     single { PrintReceiptHandler_Juil( get()) }

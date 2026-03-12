@@ -1,10 +1,9 @@
 package Application4.App.Main.A.Navigation.Component
 
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabButton_When_Its_FacadeElectroBoutique
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -102,7 +101,7 @@ fun NavigationBarWithFab_NewProto(
         val scope = rememberCoroutineScope()
 
         when {
-            its_Compact_Presentoire -> FabButton_When_Its_FacadeElectroBoutique(
+            its_Compact_Presentoire -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
                 its_Targeted_Frag = true, onToggleFabVisibility = onToggleFabVisibility,
                 onShowDropdown = { showFabDropdown_MainPresenterFragment = true }
@@ -110,14 +109,20 @@ fun NavigationBarWithFab_NewProto(
 
             // FIX: replace onToggleFabVisibility with a lambda that unconditionally opens
             // the dropdown, so the menu appears on every FAB press on the Panier screen.
-            its_Panier -> FabButton(
+            its_Panier -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,
-                onToggleFabVisibility = { showFabDropdown_Panier = true },
-                onShowDropdown = { showFabDropdown_Panier = true }
+                onToggleFabVisibility = {
+                    Log.d("FAB_PANIER", "▶ onToggleFabVisibility called → showFabDropdown_Panier = true")
+                    showFabDropdown_Panier = true
+                },
+                onShowDropdown = {
+                    Log.d("FAB_PANIER", "▶ onShowDropdown called → showFabDropdown_Panier = true")
+                    showFabDropdown_Panier = true
+                }
             )
 
-            else -> FabButton(
+            else -> FabButton_newProto(
                 showWarningState = showWarningState,
                 isFabVisible = isFabVisible,
                 its_Targeted_Frag = its_A_Clients_LocationGps,
@@ -127,8 +132,12 @@ fun NavigationBarWithFab_NewProto(
         }
 
         if (showFabDropdown_Panier && its_Panier) {
+            Log.d("FAB_PANIER", "✅ FabDropdownMenu_WhenIts_Frag_Panie — affiché")
             FabDropdownMenu_WhenIts_Frag_Panie(
-                onDismissDropdown = { showFabDropdown_Panier = false },
+                onDismissDropdown = {
+                    Log.d("FAB_PANIER", "❌ dropdown dismissed → showFabDropdown_Panier = false")
+                    showFabDropdown_Panier = false
+                },
                 onClick_to_initiateBackgroundPdfCreation = {
                     showFabDropdown_Panier = false
                 },

@@ -3,12 +3,12 @@ package Application4.App.Screen
 import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -31,14 +30,9 @@ import org.koin.compose.koinInject
 @Composable
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
-    fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
 ) {
-    val rememberNavController = rememberNavController()
-    val navController = rememberNavController
-
-    // Give FragmentNavigationHandler ownership of the NavController
-    fragmentNavigationHandler.setNavController(navController)
     val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
 
     // currentRoute comes from FragmentNavigationHandler's state, not navController directly
@@ -72,7 +66,6 @@ fun MainScreen_NewProtoPattern(
                     ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
                 }
                 AppNavHost_NewProtoPattern(
-                    navController = navController,
                     modifier = Modifier.fillMaxSize(),
                     viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 )

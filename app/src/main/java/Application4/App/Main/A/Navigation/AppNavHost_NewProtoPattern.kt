@@ -3,6 +3,7 @@ package Application4.App.Main.A.Navigation
 import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.MainScreen_FragID2
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
@@ -10,17 +11,18 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
-import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -38,11 +40,19 @@ private val heavyModulesLoaded = AtomicBoolean(false)
 @SuppressLint("RememberReturnType")
 @Composable
 fun AppNavHost_NewProtoPattern(
-    navController: NavHostController,
     modifier: Modifier = Modifier,
-    fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
 ) {
+    val navController = fragmentNavigationHandler.navController
+        ?: return // NavController not yet registered — nothing to render
+
+    // Sync fragmentNavigationHandler whenever the back-stack destination changes
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
+    LaunchedEffect(currentRoute) {
+        fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
+    }
     @Composable
     fun AnimatedContentScope.load_heavyModules() {
         remember {
