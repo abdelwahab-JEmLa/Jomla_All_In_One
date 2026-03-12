@@ -24,6 +24,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -322,9 +323,12 @@ class ViewModel_NewProtoPatterns(
         onDepotUpdateFailed: (DepotUpdateResult) -> Unit,
         onDepotUpdateSuccess: (DepotUpdateResult) -> Unit = {}
     ) {
+        val tag = "LenceVent"
         val isNew = operation.keyID.isEmpty() || operation.keyID == "null"
         val quantityChange = if (isNew) operation.quantity
         else operation.quantity - previousQuantity
+
+        Log.d(tag, "▶ lence_vent called — keyID=${operation.keyID.takeLast(6)}, isNew=$isNew, quantity=${operation.quantity}, previousQty=$previousQuantity, quantityChange=$quantityChange, isGrossist=$isGrossist, couleur=${couleur.keyID.takeLast(6)}, tariff=${selectedTariff.keyID.takeLast(6)}")
 
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
@@ -334,21 +338,28 @@ class ViewModel_NewProtoPatterns(
                 current.m10OperationVentCouleur
                     .map { if (it.keyID == operation.keyID) operation else it }
             }
+            Log.d(tag, "  UI state updated — ops count=${updatedOps.size}, action=${if (isNew) "INSERT" else "UPDATE"}")
             state.copy(list_Datas = current.copy(m10OperationVentCouleur = updatedOps))
         }
 
+        Log.d(tag, "  Calling upsert_M10OperationVentCouleur")
         repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(
             operation = operation,
             selectedTariff = selectedTariff
         )
 
-        if (isGrossist || quantityChange == 0) return
+        if (isGrossist || quantityChange == 0) {
+            Log.d(tag, "  ⏭ Skipping depot update — isGrossist=$isGrossist, quantityChange=$quantityChange")
+            return
+        }
 
         val currentCouleur = _uiStateNewProtoPatterns.value.list_Datas?.m3CouleurProduit
             ?.find { it.keyID == couleur.keyID } ?: couleur
         val newCount = currentCouleur.count_Don_Depot - quantityChange
+        Log.d(tag, "  Depot check — currentDepot=${currentCouleur.count_Don_Depot}, quantityChange=$quantityChange, newCount=$newCount")
 
         if (newCount < 0) {
+            Log.w(tag, "  ⚠ Depot insufficient — currentDepot=${currentCouleur.count_Don_Depot}, requested=$quantityChange")
             onDepotUpdateFailed(
                 DepotUpdateResult(
                     success = false,
@@ -360,10 +371,12 @@ class ViewModel_NewProtoPatterns(
             return
         }
 
+        Log.d(tag, "  Updating depot count → $newCount")
         update_depot_count(
             couleur = currentCouleur,
             newDepotCount = newCount,
             onSuccess = {
+                Log.d(tag, "  ✓ Depot updated successfully → $newCount")
                 onDepotUpdateSuccess(
                     DepotUpdateResult(
                         success = true,

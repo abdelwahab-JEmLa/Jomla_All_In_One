@@ -12,13 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -33,9 +30,6 @@ fun SubColorCard_WithButton(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
 ) {
     val uiState = uiState_NewProtoPatterns_viewModel.first
-    val viewModel = uiState_NewProtoPatterns_viewModel.second
-
-    val wifiState by viewModel.wifiState.collectAsState()
 
     val colorOperation by remember(
         couleur.keyID,
@@ -48,24 +42,6 @@ fun SubColorCard_WithButton(
     }
 
     Column(modifier = modifier
-        .semantics(mergeDescendants = true) {
-            set(
-                value = wifiState.isHostPhone,
-                key = SemanticsPropertyKey("isHostPhone")
-            )
-        }
-        .semantics(mergeDescendants = true) {
-            set(
-                value = wifiState.isConnected,
-                key = SemanticsPropertyKey(".isConnected")
-            )
-        }
-        .semantics(mergeDescendants = true) {
-            set(
-                value = wifiState.isConnected,
-                key = SemanticsPropertyKey(".wifiTransferDatas")
-            )
-        }
     ) {
         ColorImageCard_FragID3(
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,

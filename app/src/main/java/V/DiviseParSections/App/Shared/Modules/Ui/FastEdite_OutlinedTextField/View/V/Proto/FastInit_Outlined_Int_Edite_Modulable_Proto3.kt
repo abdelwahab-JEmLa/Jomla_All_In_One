@@ -240,7 +240,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                         on_Data_Update(standard_count)
                                     }
                                 }
-                                start_count >= standard_count -> {
+                                else -> {
+                                    // Covers both start_count < standard_count and start_count >= standard_count
                                     isEditMode = true
                                 }
                             }
@@ -320,7 +321,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
                                         on_Data_Update(standard_count)
                                     }
                                 }
-                                start_count >= standard_count -> {
+                                else -> {
+                                    // Covers both start_count < standard_count and start_count >= standard_count
                                     isEditMode = true
                                 }
                             }
