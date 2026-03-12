@@ -12,6 +12,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,7 +29,11 @@ fun MainScreen_Jemla_Com_PresentoirApp(
 ) {
     val mainInitDataBaseProgressEtate =
         repositorysMainGetter_app2.active_Central_Values.mainInitDataBaseProgressEtate
-    val isInitDone = mainInitDataBaseProgressEtate >= 1f
+
+    val wifiState by vm.wifiState.collectAsState()
+    val isConnectedAsClient = wifiState.isConnected && !wifiState.isHostPhone
+
+    val isInitDone = isConnectedAsClient || mainInitDataBaseProgressEtate >= 1f
 
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

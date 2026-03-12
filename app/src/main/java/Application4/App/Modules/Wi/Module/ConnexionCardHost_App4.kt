@@ -40,7 +40,7 @@ fun ConnexionCardHost_App4(
     val state by vm.wifiState.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
-    val isHostEnabled = Build.MODEL.lowercase().contains("note")
+    val isHostEnabled = true
     val errorColor = MaterialTheme.colorScheme.error
     val connectedColor = MaterialTheme.colorScheme.primary
     val pendingColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -82,18 +82,6 @@ fun ConnexionCardHost_App4(
                                 Text("Mode Hôte")
                             }
                         }
-                        Button(onClick = { vm.startAsClient(); onClickToStartAsClient() }) {
-                            Text("Clic Conexion")
-                        }
-                    }
-                    if (!isHostEnabled) {
-                        Text(
-                            "Le mode Hôte n'est disponible que pour les appareils M200",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
                     }
                 } else {
                     OutlinedTextField(
