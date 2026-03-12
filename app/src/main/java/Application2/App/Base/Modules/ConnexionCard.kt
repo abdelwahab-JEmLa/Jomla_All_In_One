@@ -1,4 +1,4 @@
-package EntreApps.Shared.Modules.Utils.M1.Module
+package Application2.App.Base.Modules
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
 import android.os.Build
@@ -78,17 +78,8 @@ fun ConnexionCard_App2(
                 if (!state.isConnected) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Button(onClick = { vm.startAsClient(); onClickToStartAsClient() }) {
-                            Text("Clic Conexion")
+                            Text("Clic Conexion As Client")
                         }
-                    }
-                    if (!isHostEnabled) {
-                        Text(
-                            "Le mode Hôte n'est disponible que pour les appareils M200",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
                     }
                 } else {
                     OutlinedTextField(
