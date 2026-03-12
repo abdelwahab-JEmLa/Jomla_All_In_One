@@ -3,7 +3,6 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElect
 import Application4.App.Fragment.ID1.Fragment.Filter.FilterState_Facad_Boutique
 import Application4.App.Fragment.ID1.Fragment.Filter.FilterTunnel
 import Application4.App.Fragment.ID1.Fragment.Filter.GroupTunnel
-import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -147,7 +146,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
 fun Fab_Stigns(
     onClickImageToShowControles: () -> Unit,
     onDismissDropdown: () -> Unit ,
-    focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =koinInject()
+    focusedValuesGetter: FocusedValuesGetter =koinInject()
 ) {
     DropdownMenuItem(
         leadingIcon = {
@@ -167,7 +166,7 @@ fun Fab_Stigns(
         onClick = {
             onClickImageToShowControles()
             onDismissDropdown()
-            focusedValues_NewProtoPatterns.update_oneMutableStateLesseRessources(true)
+            focusedValuesGetter.update_oneMutableStateLesseRessources(true)
         }
     )
 }

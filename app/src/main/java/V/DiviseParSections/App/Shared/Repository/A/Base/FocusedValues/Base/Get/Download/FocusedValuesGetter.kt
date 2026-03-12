@@ -258,6 +258,9 @@ class FocusedValuesGetter(
     fun update_activeCentralValues(new: ActiveCentralValues) {
         _activeCentralValues.value = new
     }
+    fun update_oneMutableStateLesseRessources(isControleFabVisible: Boolean) {
+        _activeCentralValues.value.isControleFabVisible = isControleFabVisible
+    }
 
     fun removePeriodFilter() {
         val currentValues = active_Central_Values

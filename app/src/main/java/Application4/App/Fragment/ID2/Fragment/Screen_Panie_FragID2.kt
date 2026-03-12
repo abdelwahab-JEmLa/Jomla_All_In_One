@@ -42,10 +42,10 @@ import org.koin.compose.koinInject
 @Composable
 fun Screen_Panie_FragID2(
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
-    aCentralFacade: ACentralFacade = koinInject()
+    aCentralFacade: ACentralFacade=koinInject()
 ) {
-    val isControleFabVisible =
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
+    val isControleFabVisible = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -54,14 +54,14 @@ fun Screen_Panie_FragID2(
             MainFastSearchProduitPourVent_App4()
             PressistatntMainActivityButtons_Sec8FWinID1()
             isControleFabVisible.ifTrue {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zIndex(10f)
-                ) {
-                    panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
-                    panelsGroupeButtonHandler.AfficheDialogesHeadApps()
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(10f)
+            ) {
+                panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
+                panelsGroupeButtonHandler.AfficheDialogesHeadApps()
+            }
             }
         }
     }
@@ -87,11 +87,9 @@ fun MainFastSearchProduitPourVent_App4(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
-
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
-
         null -> ""
     }
 

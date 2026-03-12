@@ -198,8 +198,8 @@ data class ActiveCentralValues(
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
 ) {
     //-----------------mutableStateOf lightweight vars -------------------------------------------------------------------------------------------------------------------------
-
     var isControleFabVisible: Boolean by mutableStateOf(false)
+
     //-------------------------------------------------------------------------------------------------------------------------------
 
     companion object {
