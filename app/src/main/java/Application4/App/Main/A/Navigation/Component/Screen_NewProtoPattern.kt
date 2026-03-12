@@ -30,10 +30,10 @@ sealed class Screen_NewProtoPattern(
         color = Color(0xFFF44336),
         customIconRes = R.drawable.logo
     )
-    data object Ancien_PresenterApp_FragID5: Screen_NewProtoPattern(
-        route = "Ancien_PresenterApp_FragID5",
+    data object Panier: Screen_NewProtoPattern(
+        route = "Panier",
         icon = Icons.Default.ShoppingBasket,
-        title = "Ancien_PresenterApp_FragID5",
+        title = "Panier",
         color = Color(0xFF9C27B0),
         customIconRes = R.drawable.logo
     )

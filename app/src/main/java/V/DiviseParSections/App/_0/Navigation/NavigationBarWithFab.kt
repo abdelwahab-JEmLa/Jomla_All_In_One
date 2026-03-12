@@ -1,12 +1,12 @@
 package V.DiviseParSections.App._0.Navigation
 
+import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
-import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
@@ -23,7 +23,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenI
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabButton_When_Its_FacadeElectroBoutique
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Fab_Stigns
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -80,9 +79,9 @@ fun NavigationBarWithFab(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     onClickImageToShowControles: () -> Unit,
-
     showWarningState: Boolean = true
-) {
+) {        //<--
+//TODO(1): ajot affiche fab button de 
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
     val _activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()

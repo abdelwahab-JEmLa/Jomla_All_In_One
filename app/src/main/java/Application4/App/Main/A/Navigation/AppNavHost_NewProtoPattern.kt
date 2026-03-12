@@ -11,6 +11,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -34,6 +35,7 @@ private val heavyModules = listOf(
 
 private val heavyModulesLoaded = AtomicBoolean(false)
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun AppNavHost_NewProtoPattern(
     navController: NavHostController,
@@ -72,7 +74,7 @@ fun AppNavHost_NewProtoPattern(
                 Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
             }
 
-            composable(route = Screen_NewProtoPattern.Ancien_PresenterApp_FragID5.route) {
+            composable(route = Screen_NewProtoPattern.Panier.route) {
                 load_heavyModules()
                 MainScreen_FragID2()
             }

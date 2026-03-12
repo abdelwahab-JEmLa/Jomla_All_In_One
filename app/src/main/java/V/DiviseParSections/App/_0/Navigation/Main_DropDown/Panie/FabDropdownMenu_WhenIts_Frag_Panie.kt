@@ -1,6 +1,5 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie
 
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.initiateBackgroundPdfCreation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B10.EnvoyerPDFviaWhatsAppBusiness.View.DropDownItem_WhenIts_FragFastVent_10
@@ -8,6 +7,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B7.View.DropDownItem_WhenIts_FragFastVent_7
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B8.DropDownItem_WhenIts_FragFastVent_8
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.DropDownItem_WhenIts_FragFastVent_9
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.initiateBackgroundPdfCreation
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_3
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 // ─── Fallback number used when the active client has no phone on file ──────────
@@ -89,7 +90,7 @@ private fun shareViaWhatsAppBusiness(
 }
 
 @Composable
-fun FabDropdownMenu_WhenIts_FragFastVent (
+fun FabDropdownMenu_WhenIts_Frag_Panie(
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier,
     onClick_to_initiateBackgroundPdfCreation: () -> Unit,
@@ -103,7 +104,8 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
         modifier = modifier
             .offset(y = (-90).dp)
     ) {
-        DropdownMenu(
+        DropdownMenu(      //<--
+//TODO(1): pk le click au centrale button n affiche pas le meue items de panie
             expanded = true,
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
@@ -141,8 +143,6 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
                 }
             )
 
-            // FIX TODO(1): Share current bon-vent PDF to the active client's WhatsApp Business
-            // number via intent. Falls back to abdelwahab oustad number when unavailable.
             DropDownItem_WhenIts_FragFastVent_10(
                 nomFun = "Envoyer PDF via WhatsApp Business",
                 onDismissDropdown = {
@@ -152,7 +152,7 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
                         val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
                         if (activeClient == null || activeBonVent == null) {
-                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                            withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
                                     "Client ou bon de vente introuvable",
@@ -169,7 +169,7 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
                         val pdfUri = PdfSaverUtility.getLatestPdfUri(context, "BonsWhatsApp")
 
                         if (pdfUri == null) {
-                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                            withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
                                     "❌ PDF introuvable pour le partage",
@@ -179,7 +179,7 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
                             return@launch
                         }
 
-                        kotlinx.coroutines.withContext(Dispatchers.Main) {
+                        withContext(Dispatchers.Main) {
                             shareViaWhatsAppBusiness(
                                 context     = context,
                                 phoneNumber = activeClient.numTelephone,

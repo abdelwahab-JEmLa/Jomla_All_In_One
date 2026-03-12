@@ -32,7 +32,7 @@ fun FabDropdownMenu(
 
     showFabDropdown: Boolean,
     onDismissDropdown: () -> Unit,
-    repo8BonVent: Repo8BonVent,
+    repo8BonVent: Repo8BonVent=aCentralFacade.repositorysMainGetter.repo8BonVent,
     modifier: Modifier = Modifier
 ) {
     Box(
