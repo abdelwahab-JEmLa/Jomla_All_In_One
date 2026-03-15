@@ -109,7 +109,6 @@ fun Big_Principale_FragID3(
             Lenceur_Vent_Handler_FragID3(
                 uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
-                relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                 selectedCouleur = selectedCouleur,
                 selectedTariff = selectedTariff,
                 compactMode = !isThisProductExpanded,

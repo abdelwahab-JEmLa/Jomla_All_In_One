@@ -121,7 +121,7 @@ data class M18CentralParametresOfAllApps(
         }
     },
 
-    //---------------------------------Lence Rapid----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------Dimine Rapid----------------------------------------------------------------------------------------------------------------------------------
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_OperationVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!

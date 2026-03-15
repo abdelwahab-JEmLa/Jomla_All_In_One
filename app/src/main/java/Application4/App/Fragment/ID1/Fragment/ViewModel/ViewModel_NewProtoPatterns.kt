@@ -26,10 +26,8 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -74,9 +72,13 @@ data class List_Datas(
     val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
 )
 
-class ActiveDatasFragNewProto {
-    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? by mutableStateOf(null)
-
+// FIX: was a mutable class with `var ... by mutableStateOf(null)`.
+// Mutating a field inside the class does NOT trigger StateFlow emission —
+// Compose never saw the change, so currentQuantity stayed stale after update.
+// Must be an immutable data class updated via _uiStateNewProtoPatterns.update { state.copy(...) }.
+data class ActiveDatasFragNewProto(
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? = null
+) {
     companion object {
         suspend fun get_listM10OperationVentCouleur_By_active_Central_Values(
             dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
@@ -92,7 +94,7 @@ class ActiveDatasFragNewProto {
 @SuppressLint("StaticFieldLeak")
 class ViewModel_NewProtoPatterns(
     private val context: Context,
-     val appDatabase: AppDatabase,
+    val appDatabase: AppDatabase,
     private val fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
         appDatabase = appDatabase,
@@ -116,14 +118,19 @@ class ViewModel_NewProtoPatterns(
         CentraleMainGetter_NewProtoPattern(
             context, appDatabase,
             on_Progress_Datas = { progress ->
-                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = progress) }
-                update_activeCentralValues(
-                    uiState.value.active_Central_Values
-                        .copy(mainInitDataBaseProgressEtate = progress)
+                Log.d("InitProgress", "on_Progress_Datas called: progress=$progress | " +
+                        "current mainInit=${uiState.value.active_Central_Values.mainInitDataBaseProgressEtate} | " +
+                        "current initState=${uiState.value.initDatasProgressEtate}"
                 )
+                _uiStateNewProtoPatterns.update { state ->
+                    state.copy(
+                        initDatasProgressEtate = progress,
+                        active_Central_Values = state.active_Central_Values
+                            .copy(mainInitDataBaseProgressEtate = progress)
+                    )
+                }
             }
         )
-
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
         val cv = _uiStateNewProtoPatterns.value.active_Central_Values
@@ -211,10 +218,10 @@ class ViewModel_NewProtoPatterns(
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
 
             val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1f) }
 
             _uiStateNewProtoPatterns.update {
                 it.copy(
+                    initDatasProgressEtate = 1f,
                     list_Datas = List_Datas(
                         m1Produit = products,
                         m2Client = clients,
@@ -234,7 +241,13 @@ class ViewModel_NewProtoPatterns(
                 dao_M9AppCompt = appDatabase.dao_M9AppCompt()
             )
 
-            _uiStateNewProtoPatterns.value.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent = filtered
+            _uiStateNewProtoPatterns.update { state ->
+                state.copy(
+                    active_Datas = state.active_Datas.copy(
+                        listM10OperationVentCouleur_FilteredBy_activeM8BonVent = filtered
+                    )
+                )
+            }
         }
     }
 
@@ -316,8 +329,17 @@ class ViewModel_NewProtoPatterns(
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
         updatedList: List<M10OperationVentCouleur>?
     ) {
-        _uiStateNewProtoPatterns.value.active_Datas
-            .listM10OperationVentCouleur_FilteredBy_activeM8BonVent = updatedList
+        // FIX: was directly mutating active_Datas.listM10... which is a field on a plain class.
+        // Direct mutation never triggers StateFlow emission → Compose never recomposed →
+        // currentQuantity stayed stuck at its previous value despite the data changing.
+        Log.d("LenceurVent", "[VM] update_listM10 → taille=${updatedList?.size} | quantities=${updatedList?.map { it.quantity }}")
+        _uiStateNewProtoPatterns.update { state ->
+            state.copy(
+                active_Datas = state.active_Datas.copy(
+                    listM10OperationVentCouleur_FilteredBy_activeM8BonVent = updatedList
+                )
+            )
+        }
     }
 
     // -------------------------------------------------------------------------

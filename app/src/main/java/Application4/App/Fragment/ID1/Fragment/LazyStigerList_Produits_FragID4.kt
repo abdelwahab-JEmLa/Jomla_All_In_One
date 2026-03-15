@@ -76,7 +76,8 @@ fun Etager_LazyColumn(
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val expanded_M3CouleurProduitInfos = uiState_NewProtoPatterns_viewModel.first.active_Central_Values.expanded_M3CouleurProduitInfos
+    val expanded_M3CouleurProduitInfos =
+        uiState_NewProtoPatterns_viewModel.first.active_Central_Values.expanded_M3CouleurProduitInfos
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
@@ -128,18 +129,23 @@ fun Etager_LazyColumn(
         tag = tag
     )
     var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
-    var activeBonVentKey by remember { mutableStateOf("")}
-    var activeM9AppCompt by remember { mutableStateOf("")}
+    var all by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
+    var activeBonVentKey by remember { mutableStateOf("") }
+    var activeM9AppCompt by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val targetComptKeyId = M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            val targetComptKeyId =
+                M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
                 .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
 
-            val all = viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
-            lenceVentOperations = 
-                all.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
+            val dao_M10OperationVentCouleurall =
+                viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
+            lenceVentOperations =
+                dao_M10OperationVentCouleurall.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
+            all =
+                dao_M10OperationVentCouleurall
         }
     }
 
@@ -154,23 +160,26 @@ fun Etager_LazyColumn(
             .semantics(mergeDescendants = true) {
                 set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
             }
+            .semantics(mergeDescendants = true) {
+                set(value = all, key = SemanticsPropertyKey("all"))
+            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-      /*  // Add banner at the top
-         item(
-              key = "ad_banner_header",
-              span = StaggeredGridItemSpan.Companion.FullLine
-          ) {
-              ScrolleAdBanner(
-                  onBannerClick = { bannerIndex ->
-                      // Handle banner click if needed
-                  },
-              )
-          }      */
+        /*  // Add banner at the top
+           item(
+                key = "ad_banner_header",
+                span = StaggeredGridItemSpan.Companion.FullLine
+            ) {
+                ScrolleAdBanner(
+                    onBannerClick = { bannerIndex ->
+                        // Handle banner click if needed
+                    },
+                )
+            }      */
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             // Add Catalogue Header
@@ -195,14 +204,14 @@ fun Etager_LazyColumn(
                                     updatedCategory
                                 )
                             },
-                            viewModel=uiState_NewProtoPatterns_viewModel.second,
+                            viewModel = uiState_NewProtoPatterns_viewModel.second,
                             uiStateNewProtoPatterns = uiState_NewProtoPatterns_viewModel.first
                         )
                     }
                 }
 
                 productColorPairs.forEach { (product, colors) ->
-                    val isExpanded = uiState_NewProtoPatterns_viewModel.first .active_Central_Values
+                    val isExpanded = uiState_NewProtoPatterns_viewModel.first.active_Central_Values
                         .expanded_M1Produit?.keyID == product.keyID
 
                     // Check if this product just moved
@@ -217,7 +226,7 @@ fun Etager_LazyColumn(
                         }
                     ) {
                         LazyStigerList_Produits_FragID4(
-                            uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                            uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                             product = product,
                             colors = colors,
                             on_pour_send_data = on_pour_send_data,
@@ -304,7 +313,7 @@ fun LazyStigerList_Produits_FragID4(
             .background(backgroundColor, RoundedCornerShape(12.dp))
     ) {
         Item_Produit_FragID3(
-            uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+            uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = product,
             on_pour_send_data = on_pour_send_data,
             onCategoryClick = onCategoryClick,

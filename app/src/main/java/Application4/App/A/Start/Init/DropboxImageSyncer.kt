@@ -41,6 +41,7 @@ class DropboxImageSyncer(
 
         if (index.isEmpty()) {
             Log.e(TAG, "Index vide — token invalide ou dossier '$dropboxRootFolder' introuvable")
+            onProgress(1f) // Fix: terminer même si index vide
             return
         }
         Log.d(TAG, "Index construit: ${index.size} fichiers")
@@ -48,9 +49,10 @@ class DropboxImageSyncer(
         val colors = dao_M3CouleurProduitInfos.getAll()
         val total = colors.size.coerceAtLeast(1)
         colors.forEachIndexed { i, color ->
-            onProgress(0.2f + 0.8f * (i.toFloat() / total))
             syncImage(color, index)
+            onProgress(0.2f + 0.8f * ((i + 1).toFloat() / total)) // Fix: (i+1) et après syncImage
         }
+        onProgress(1f) // Fix: garantir 1f à la fin
     }
 
     private suspend fun buildIndex(): Map<String, String> = withContext(Dispatchers.IO) {

@@ -1,6 +1,5 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
@@ -8,6 +7,7 @@ import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.FastInit_Outlined_Int_Edite_Modulable_Proto3
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,58 +33,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.update
-
-fun return_newlistM10_et_newUpdateCouleurCount(
-    viewModel_NewProtoPatterns: ViewModel_NewProtoPatterns,
-    operation: M10OperationVentCouleur,
-    couleur: M3CouleurProduitInfos,
-    isGrossist: Boolean,
-    previousQuantity: Int,
-): Pair<List<M10OperationVentCouleur>?, M3CouleurProduitInfos?> {
-
-    val isNew = operation.keyID.isEmpty() || operation.keyID == "null"
-    val quantityChange = if (isNew) operation.quantity else operation.quantity - previousQuantity
-
-    // 1. Update the global list in uiState
-    viewModel_NewProtoPatterns._uiStateNewProtoPatterns.update { state ->
-        val current = state.list_Datas ?: List_Datas()
-        val updatedOps = if (isNew) current.m10OperationVentCouleur + operation
-        else current.m10OperationVentCouleur.map { if (it.keyID == operation.keyID) operation else it }
-        state.copy(list_Datas = current.copy(m10OperationVentCouleur = updatedOps))
-    }
-
-    // 2. Update the filtered list for the active BonVent
-    val activeBonVentKeyID = viewModel_NewProtoPatterns._uiStateNewProtoPatterns.value
-        .active_Central_Values.activeOnVent_M8BonVent?.keyID
-
-    var updatedFilteredList: List<M10OperationVentCouleur>? = null
-
-    if (operation.parent_M8BonVent_KeyId == activeBonVentKeyID) {
-        val activeDatas = viewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.active_Datas
-        val currentFiltered = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent ?: emptyList()
-        updatedFilteredList = if (isNew) currentFiltered + operation
-        else currentFiltered.map { if (it.keyID == operation.keyID) operation else it }
-        activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent = updatedFilteredList
-    }
-
-    // 3. Grossist or no quantity delta → no depot update needed
-    if (isGrossist || quantityChange == 0) return Pair(updatedFilteredList, null)
-
-    // 4. Resolve the current couleur from state (may be fresher than the parameter)
-    val currentCouleur = viewModel_NewProtoPatterns._uiStateNewProtoPatterns.value
-        .list_Datas?.m3CouleurProduit?.find { it.keyID == couleur.keyID } ?: couleur
-
-    val newCount = currentCouleur.count_Don_Depot - quantityChange
-    val updatedCouleur = currentCouleur.copy(count_Don_Depot = newCount)
-
-    return Pair(updatedFilteredList, updatedCouleur)
-}
 
 @Composable
 fun Lenceur_Vent_Handler_FragID3(
     relative_M1produit: M01Produit,
-    relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
@@ -91,8 +44,25 @@ fun Lenceur_Vent_Handler_FragID3(
     isWifiClientConnected: Boolean = false,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
 ) {
+
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val centralValues = uiState.active_Central_Values
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
+        uiState.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent
+
+    val relative_M10OperationVentCouleur by remember(
+        selectedCouleur.keyID,
+        listM10OperationVentCouleur_FilteredBy_activeM8BonVent  // FIX: was ?.size — taille inchangée
+        // quand on update quantity (ex: 1→2), donc remember ne se recalculait pas et
+        // renvoyait l'ancien objet avec l'ancienne quantity. La référence à la liste
+        // entière invalide le remember dès que StateFlow émet une nouvelle liste (via .copy()).
+    ) {
+        derivedStateOf {
+            listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.find {
+                it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
+            }
+        }
+    }
 
     val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
     val isAdmin = centralValues.currentApp_Est_Admin
@@ -112,13 +82,18 @@ fun Lenceur_Vent_Handler_FragID3(
         }
     }
 
-    val currentQuantity by remember(
-        relative_M10OperationVentCouleur?.keyID,
-        relative_M10OperationVentCouleur?.quantity
-    ) {
+    val currentQuantity by remember(relative_M10OperationVentCouleur) {
         derivedStateOf {
             relative_M10OperationVentCouleur?.quantity ?: 0
         }
+    }
+
+    // LOG: currentQuantity après chaque recompose
+    SideEffect {
+        Log.d(
+            "LenceurVent",
+            "[RECOMPOSE] currentQuantity=${currentQuantity} | couleur=${selectedCouleur.keyID.takeLast(4).uppercase()}"
+        )
     }
 
     val standardCount = remember(relative_M1produit.setIN_Vent_Its_Quantity_Represent) {
@@ -148,38 +123,55 @@ fun Lenceur_Vent_Handler_FragID3(
         )
     }
 
-    var  quantity  by remember { mutableStateOf(1) }
+    // FIX TODO(1): operationToUse must be built inside the callback with the live newQuantity.
+    // Building it at composition time and then setting qantity_when_update state means
+    // handleLenceVent() always ran with the *previous* composition's operationToUse
+    // (state changes only take effect after the next recomposition).
+    fun buildOperationToUse(newQuantity: Int): M10OperationVentCouleur =
+        relative_M10OperationVentCouleur?.copy(
+            quantity = newQuantity,
+            parentM13TarificationKeyID = selectedTariff.keyID,
+            parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
+            parent_M1Produit_DebugInfos = "par.produit ${relative_M1produit.nom}",
+            typeTarificationEnumT2 = selectedTariff.typeChoisi,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        ) ?: M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
+            activeOnVent_M8BonVent,
+            selectedCouleur
+        ).copy(
+            creationTimestamps = System.currentTimeMillis(),
+            setIN_Vent_Its_Quantity_Represent = relative_M1produit.setIN_Vent_Its_Quantity_Represent,
+            quantite_Boit_Par_Carton = relative_M1produit.quantite_Boit_Par_Carton,
+            quantity = newQuantity,
+            parentM13TarificationKeyID = selectedTariff.keyID,
+            parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
+            typeTarificationEnumT2 = selectedTariff.typeChoisi,
+            its_created_in_working_for_wholesaler = isGrossist
+        )
 
-    val previousQuantity = currentQuantity
-    val operationToUse = relative_M10OperationVentCouleur?.copy(
-        quantity = quantity,
-        parentM13TarificationKeyID = selectedTariff.keyID,
-        parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
-        typeTarificationEnumT2 = selectedTariff.typeChoisi,
-        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-    ) ?: M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-        activeOnVent_M8BonVent,
-        selectedCouleur
-    ).copy(
-        creationTimestamps = System.currentTimeMillis(),
-        setIN_Vent_Its_Quantity_Represent = relative_M1produit.setIN_Vent_Its_Quantity_Represent,
-        quantite_Boit_Par_Carton = relative_M1produit.quantite_Boit_Par_Carton,
-        quantity = quantity,
-        parentM13TarificationKeyID = selectedTariff.keyID,
-        parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
-        typeTarificationEnumT2 = selectedTariff.typeChoisi,
-        its_created_in_working_for_wholesaler = isGrossist
-    )
-    val result_newlistM10_et_newUpdateCouleurCount = return_newlistM10_et_newUpdateCouleurCount(
-        viewModel_NewProtoPatterns = viewModel,
-        operation = operationToUse,
-        couleur = selectedCouleur,
-        isGrossist = isGrossist,
-        previousQuantity = previousQuantity,
-    )
+    fun handleLenceVent(newQuantity: Int) {
+        Log.d(
+            "LenceurVent",
+            "[LENCE] newQuantity=${newQuantity} | currentQuantity=${currentQuantity} | couleur=${selectedCouleur.keyID.takeLast(4).uppercase()}"
+        )
+        val operationToUse = buildOperationToUse(newQuantity)
 
-    val (updatedFilteredList, updatedCouleur) = result_newlistM10_et_newUpdateCouleurCount
-    fun handleLenceVent() {
+        val isNew = listM10OperationVentCouleur_FilteredBy_activeM8BonVent
+            ?.none { it.keyID == operationToUse.keyID } != false
+
+        val quantityChange = if (isNew) operationToUse.quantity
+        else operationToUse.quantity - currentQuantity
+
+        val updatedFilteredList: List<M10OperationVentCouleur>? =
+            if (isNew) (listM10OperationVentCouleur_FilteredBy_activeM8BonVent ?: emptyList()) + operationToUse
+            else listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.map {
+                if (it.keyID == operationToUse.keyID) operationToUse else it
+            }
+
+        val updatedCouleur: M3CouleurProduitInfos? =
+            if (isGrossist || quantityChange == 0) null
+            else selectedCouleur.copy(count_Don_Depot = selectedCouleur.count_Don_Depot - quantityChange)
+
         viewModel.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedFilteredList)
         if (updatedCouleur != null) viewModel.update_m3couleur(updatedCouleur)
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -203,12 +195,14 @@ fun Lenceur_Vent_Handler_FragID3(
 
     Box(
         modifier = modifier
+            // FIX TODO(1): semantics nodes that captured qantity_when_update / operationToUse at
+            // composition time have been removed — they always reflected the *previous* value.
+            // Only expose the stable, already-correctly-derived list values for testing purposes.
             .semantics(mergeDescendants = true) {
-                set(value = uiState.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
-                    key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent"))
-            }
-            .semantics(mergeDescendants = true) {
-                set(value = updatedFilteredList, key = SemanticsPropertyKey("updatedFilteredList"))
+                set(
+                    value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
+                    key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent")
+                )
             }
             .fillMaxWidth()
             .clip(shape)
@@ -229,8 +223,10 @@ fun Lenceur_Vent_Handler_FragID3(
             add_spacing_between_depot_and_sale = isAdmin,
             on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) }
         ) { newQuantity ->
-            quantity=newQuantity
-            handleLenceVent()
+            // FIX TODO(1): pass newQuantity directly so handleLenceVent builds
+            // operationToUse with the correct value immediately — no intermediate
+            // mutableStateOf needed (state changes only apply after recomposition).
+            handleLenceVent(newQuantity)
         }
     }
 

@@ -58,7 +58,6 @@ fun SubColorCard_WithButton(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 isWifiClientConnected = shouldShowButtons,
                 relative_M1produit = relative_M1produit,
-                relative_M10OperationVentCouleur = colorOperation,
                 selectedCouleur = couleur,
                 selectedTariff = selectedTariff,
                 compactMode = !isExpanded,

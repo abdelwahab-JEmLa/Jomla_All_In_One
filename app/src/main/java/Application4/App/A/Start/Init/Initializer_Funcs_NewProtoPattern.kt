@@ -31,6 +31,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
+@Suppress("DEPRECATION")
 class Initializer_Funcs_NewProtoPattern(
     val context: Context,
     val on_Progress_Datas: (Float) -> Unit,
@@ -89,7 +90,10 @@ class Initializer_Funcs_NewProtoPattern(
                 ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) } ?: return
             if (items.isNotEmpty()) dao_M3CouleurProduitInfos.insertAll(items)
         }
-        if (isOnline) dropboxSyncer.syncAll()
+        // La sync Dropbox se fait en arrière-plan SANS bloquer la progression globale
+        if (isOnline) {
+            repoScope.launch { dropboxSyncer.syncAll() }
+        }
     }
 
     private suspend fun seedTarifications() {
