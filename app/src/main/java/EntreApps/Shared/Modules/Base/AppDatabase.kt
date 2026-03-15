@@ -42,7 +42,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossis
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.Dao19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
@@ -159,7 +159,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dao_M1Produit(): ArticlesBasesStatsModelDao
     abstract fun dao_16CategorieProduit(): M16CategorieProduitDao
     abstract fun dao_M3CouleurProduitInfos(): M3CouleurProduitInfosDao
-    abstract fun dao_M9AppCompt(): Z_AppComptDao
+    abstract fun dao_M9AppCompt(): Dao_M9AppCompt
     abstract fun dao_M8BonVent(): GBonVentDao
     abstract fun dao_M13TarificationInfos(): Dao13TarificationInfos
     abstract fun dao_M14VentPeriode(): Dao14VentPeriode

@@ -273,13 +273,11 @@ class RepositorysMainGetter(
             try {
                 M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB.ifTrue {
                     M11AchatOperation.remove_ref()
-
                 }
+
                 M18CentralParametresOfAllApps().au_Lence_Dimininue_Datas_OperationVents.ifTrue {
                     M10OperationVentCouleur.remove_ref()
                 }
-
-
 
                 databaseInitializationManager.initializeAllRepositories(context)
             } catch (e: Exception) {

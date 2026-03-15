@@ -6,7 +6,7 @@ import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadFromFireBase
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class DataBaseInit_Z_AppCompt(
-    val dao: Z_AppComptDao,
+    val dao: Dao_M9AppCompt,
 ) {
     val repoEntityName ="Z_AppComptRepositoryProtoJuin17"
     val repoTAG = repoEntityName

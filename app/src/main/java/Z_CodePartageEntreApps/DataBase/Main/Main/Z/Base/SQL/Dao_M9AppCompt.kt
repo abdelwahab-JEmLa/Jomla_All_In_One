@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface Z_AppComptDao {
+interface Dao_M9AppCompt {
     @Query("DELETE FROM Z_AppCompt WHERE keyID = :keyId")
     suspend fun deleteByKeyId(keyId: String)
 

@@ -7,8 +7,10 @@ import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScrol
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -33,15 +35,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * UPDATED: Now displays Catalogue headers followed by Category headers
@@ -118,12 +127,33 @@ fun Etager_LazyColumn(
         gridState = gridState,
         tag = tag
     )
+    var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
+    var activeBonVentKey by remember { mutableStateOf("")}
+    var activeM9AppCompt by remember { mutableStateOf("")}
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val targetComptKeyId = M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
+                .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
+
+            val all = viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
+            lenceVentOperations = 
+                all.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
+        }
+    }
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations"))
+            }
+            .semantics(mergeDescendants = true) {
+                set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
+            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

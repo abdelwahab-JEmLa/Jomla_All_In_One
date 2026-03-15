@@ -259,9 +259,7 @@ fun Item_Produit_FragID3(
         onVentList.size
     ) {
         derivedStateOf {
-            uiState.list_Datas?.m10OperationVentCouleur?.find {
-                it.parent_M8BonVent_KeyId == uiState.active_Central_Values.activeOnVent_M8BonVent?.keyID
-                        &&
+            uiState.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.find {
                         it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
             }
         }

@@ -15,7 +15,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.D
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
 import com.google.firebase.firestore.CollectionReference
@@ -41,7 +41,7 @@ class Initializer_Funcs_NewProtoPattern(
     val dao_M14VentPeriode: Dao14VentPeriode,
     val dao_M8BonVent: GBonVentDao,
     val dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
-    val dao_M9AppCompt: Z_AppComptDao,
+    val dao_M9AppCompt: Dao_M9AppCompt,
 ) {
     private val mutex = Mutex()
     private val progress = mutableMapOf<String, Float>()

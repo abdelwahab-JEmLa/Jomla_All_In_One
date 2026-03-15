@@ -1,7 +1,12 @@
 package EntreApps.Shared.Models.Home
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.List_Datas
+import EntreApps.Shared.Models.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,3 +70,5 @@ class FocusedValues_NewProtoPatterns(
         _activeCentralValues.value.isControleFabVisible = isControleFabVisible
     }
 }
+
+

@@ -4,7 +4,6 @@ import Application2.App.Base.Modules.ProductDisplayController
 import Application2.App.Base.Modules.WifiTransferDatas
 import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
-import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.DepotUpdateResult
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
@@ -14,6 +13,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
@@ -21,11 +21,15 @@ import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +44,8 @@ import kotlinx.coroutines.launch
 data class UiState_NewProtoPatterns(
     val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
     val active_Central_Values: ActiveCentralValues = ActiveCentralValues.get_Default(),
+    val active_Datas: ActiveDatasFragNewProto = ActiveDatasFragNewProto(),
+
     val list_Datas: List_Datas? = null,
     val initDatasProgressEtate: Float = 0f,
 ) {
@@ -68,17 +74,32 @@ data class List_Datas(
     val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
 )
 
+class ActiveDatasFragNewProto {
+    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? by mutableStateOf(null)
+
+    companion object {
+        suspend fun get_listM10OperationVentCouleur_By_active_Central_Values(
+            dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
+            dao_M9AppCompt : Dao_M9AppCompt
+        ) = dao_M10OperationVentCouleur.getAll().filter { m10 ->
+            m10.parent_M8BonVent_KeyId == dao_M9AppCompt.getAll().find {
+                it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            }?.onVentM8BonVentKey
+        }
+    }
+}
+
 @SuppressLint("StaticFieldLeak")
 class ViewModel_NewProtoPatterns(
     private val context: Context,
-    private val appDatabase: AppDatabase,
+     val appDatabase: AppDatabase,
     private val fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
         appDatabase = appDatabase,
         context = context
     ),
 ) : ViewModel() {
-    private val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
+    val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
 
     val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
@@ -207,12 +228,15 @@ class ViewModel_NewProtoPatterns(
                     )
                 )
             }
+
+            val filtered = ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
+                dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
+                dao_M9AppCompt = appDatabase.dao_M9AppCompt()
+            )
+
+            _uiStateNewProtoPatterns.value.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent = filtered
         }
     }
-
-    // -------------------------------------------------------------------------
-    // M13TarificationInfos
-    // -------------------------------------------------------------------------
 
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) {
         _uiStateNewProtoPatterns.update { state ->
@@ -286,6 +310,34 @@ class ViewModel_NewProtoPatterns(
     }
 
     // -------------------------------------------------------------------------
+    // M10OperationVentCouleur — filtered list
+    // -------------------------------------------------------------------------
+
+    fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
+        updatedList: List<M10OperationVentCouleur>?
+    ) {
+        _uiStateNewProtoPatterns.value.active_Datas
+            .listM10OperationVentCouleur_FilteredBy_activeM8BonVent = updatedList
+    }
+
+    // -------------------------------------------------------------------------
+    // M3CouleurProduitInfos — update
+    // -------------------------------------------------------------------------
+
+    fun update_m3couleur(couleur: M3CouleurProduitInfos) {
+        _uiStateNewProtoPatterns.update { state ->
+            val current = state.list_Datas ?: List_Datas()
+            state.copy(
+                list_Datas = current.copy(
+                    m3CouleurProduit = current.m3CouleurProduit
+                        .map { if (it.keyID == couleur.keyID) couleur else it }
+                )
+            )
+        }
+        repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
+    }
+
+    // -------------------------------------------------------------------------
     // M3CouleurProduitInfos — depot
     // -------------------------------------------------------------------------
 
@@ -313,84 +365,6 @@ class ViewModel_NewProtoPatterns(
         )
     }
 
-    // -------------------------------------------------------------------------
-    // M10OperationVentCouleur — vent
-    // -------------------------------------------------------------------------
-
-    fun lence_vent(
-        operation: M10OperationVentCouleur,
-        selectedTariff: M13TarificationInfos,
-        couleur: M3CouleurProduitInfos,
-        isGrossist: Boolean,
-        previousQuantity: Int,
-        onDepotUpdateFailed: (DepotUpdateResult) -> Unit,
-        onDepotUpdateSuccess: (DepotUpdateResult) -> Unit = {}
-    ) {
-        val tag = "LenceVent"
-        val isNew = operation.keyID.isEmpty() || operation.keyID == "null"
-        val quantityChange = if (isNew) operation.quantity
-        else operation.quantity - previousQuantity
-
-        Log.d(tag, "▶ lence_vent called — keyID=${operation.keyID.takeLast(6)}, isNew=$isNew, quantity=${operation.quantity}, previousQty=$previousQuantity, quantityChange=$quantityChange, isGrossist=$isGrossist, couleur=${couleur.keyID.takeLast(6)}, tariff=${selectedTariff.keyID.takeLast(6)}")
-
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            val updatedOps = if (isNew) {
-                current.m10OperationVentCouleur + operation
-            } else {
-                current.m10OperationVentCouleur
-                    .map { if (it.keyID == operation.keyID) operation else it }
-            }
-            Log.d(tag, "  UI state updated — ops count=${updatedOps.size}, action=${if (isNew) "INSERT" else "UPDATE"}")
-            state.copy(list_Datas = current.copy(m10OperationVentCouleur = updatedOps))
-        }
-
-        Log.d(tag, "  Calling upsert_M10OperationVentCouleur")
-        repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(
-            operation = operation,
-            selectedTariff = selectedTariff
-        )
-
-        if (isGrossist || quantityChange == 0) {
-            Log.d(tag, "  ⏭ Skipping depot update — isGrossist=$isGrossist, quantityChange=$quantityChange")
-            return
-        }
-
-        val currentCouleur = _uiStateNewProtoPatterns.value.list_Datas?.m3CouleurProduit
-            ?.find { it.keyID == couleur.keyID } ?: couleur
-        val newCount = currentCouleur.count_Don_Depot - quantityChange
-        Log.d(tag, "  Depot check — currentDepot=${currentCouleur.count_Don_Depot}, quantityChange=$quantityChange, newCount=$newCount")
-
-        if (newCount < 0) {
-            Log.w(tag, "  ⚠ Depot insufficient — currentDepot=${currentCouleur.count_Don_Depot}, requested=$quantityChange")
-            onDepotUpdateFailed(
-                DepotUpdateResult(
-                    success = false,
-                    message = "Stock insuffisant au dépôt",
-                    currentCount = currentCouleur.count_Don_Depot,
-                    requestedChange = -quantityChange
-                )
-            )
-            return
-        }
-
-        Log.d(tag, "  Updating depot count → $newCount")
-        update_depot_count(
-            couleur = currentCouleur,
-            newDepotCount = newCount,
-            onSuccess = {
-                Log.d(tag, "  ✓ Depot updated successfully → $newCount")
-                onDepotUpdateSuccess(
-                    DepotUpdateResult(
-                        success = true,
-                        message = "Dépôt mis à jour avec succès",
-                        currentCount = newCount,
-                        requestedChange = -quantityChange
-                    )
-                )
-            }
-        )
-    }
 
     // -------------------------------------------------------------------------
     // M16CategorieProduit
