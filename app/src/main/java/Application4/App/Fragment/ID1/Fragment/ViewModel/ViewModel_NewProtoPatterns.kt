@@ -31,6 +31,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,13 +40,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val TAG = "ViewModel_NewProto"
+
+// =============================================================================
+// UI State
+// =============================================================================
+
 data class UiState_NewProtoPatterns(
     val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
     val active_Central_Values: ActiveCentralValues = ActiveCentralValues.get_Default(),
     val active_Datas: ActiveDatasFragNewProto = ActiveDatasFragNewProto(),
-
     val list_Datas: List_Datas? = null,
     val initDatasProgressEtate: Float = 0f,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
 ) {
     val list_M1Produit: List<M01Produit>
         get() = list_Datas?.m1Produit ?: emptyList()
@@ -72,14 +80,13 @@ data class List_Datas(
     val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
 )
 
-
 data class ActiveDatasFragNewProto(
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? = null,
 ) {
     companion object {
         suspend fun get_listM10OperationVentCouleur_By_active_Central_Values(
             dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
-            dao_M9AppCompt : Dao_M9AppCompt
+            dao_M9AppCompt: Dao_M9AppCompt
         ) = dao_M10OperationVentCouleur.getAll().filter { m10 ->
             m10.parent_M8BonVent_KeyId == dao_M9AppCompt.getAll().find {
                 it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
@@ -88,22 +95,33 @@ data class ActiveDatasFragNewProto(
     }
 }
 
+// =============================================================================
+// ViewModel
+// =============================================================================
+
 @SuppressLint("StaticFieldLeak")
 class ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
     private val fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
-    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
-        appDatabase = appDatabase,
-        context = context
-    ),
+    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns =
+        RepositorysMainSetter_NewProtoPatterns(
+            appDatabase = appDatabase,
+            context = context
+        ),
 ) : ViewModel() {
+
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
 
     val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
         FocusedValues_NewProtoPatterns(
-            list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
+            list_Datas = _uiStateNewProtoPatterns
+                .map { it.list_Datas }
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.Eagerly,
@@ -115,9 +133,10 @@ class ViewModel_NewProtoPatterns(
         CentraleMainGetter_NewProtoPattern(
             context, appDatabase,
             on_Progress_Datas = { progress ->
-                Log.d("InitProgress", "on_Progress_Datas called: progress=$progress | " +
-                        "current mainInit=${uiState.value.active_Central_Values.mainInitDataBaseProgressEtate} | " +
-                        "current initState=${uiState.value.initDatasProgressEtate}"
+                Log.d(
+                    TAG, "on_Progress_Datas: progress=$progress | " +
+                            "mainInit=${uiState.value.active_Central_Values.mainInitDataBaseProgressEtate} | " +
+                            "initState=${uiState.value.initDatasProgressEtate}"
                 )
                 _uiStateNewProtoPatterns.update { state ->
                     state.copy(
@@ -128,6 +147,17 @@ class ViewModel_NewProtoPatterns(
                 }
             }
         )
+
+    // -------------------------------------------------------------------------
+    // Jobs tracking for cleanup
+    // -------------------------------------------------------------------------
+
+    private var centralValuesCollectorJob: Job? = null
+    private var dataLoadingJob: Job? = null
+
+    // -------------------------------------------------------------------------
+    // Wifi
+    // -------------------------------------------------------------------------
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
         val cv = _uiStateNewProtoPatterns.value.active_Central_Values
@@ -157,17 +187,18 @@ class ViewModel_NewProtoPatterns(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState =
-        wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
-        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+        wifi.startAsClient()
+        wifi.updateTypePhone(isHost = false)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
-        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+        wifi.startAsHost()
+        wifi.updateTypePhone(isHost = true)
     }
 
     fun disconnect() = wifi.disconnect()
@@ -178,75 +209,184 @@ class ViewModel_NewProtoPatterns(
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
+    // -------------------------------------------------------------------------
+    // init — runs on first ViewModel creation
+    // -------------------------------------------------------------------------
+
     init {
+        Log.d(TAG, "🚀 init — ViewModel créé, initialisation initiale")
         fragmentNavigationHandler.closeAllActiveFragments()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        centralValuesCollectorJob = viewModelScope.launch(Dispatchers.IO) {
             focusedValues_NewProtoPatterns.active_Central_Values.collect { centralValues ->
                 _uiStateNewProtoPatterns.update { it.copy(active_Central_Values = centralValues) }
             }
         }
 
-        centraleMainGetter_NewProtoPattern // initialized above; progress updates flow via on_Progress_Datas callback
+        // Initialize centraleMainGetter (progress flows via on_Progress_Datas callback)
+        centraleMainGetter_NewProtoPattern
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val products = appDatabase.dao_M1Produit().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 9f) }
+        // Load initial data
+        loadDataFromDatabase()
+    }
 
-            val clients = appDatabase.dao_M2Client().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
+    // -------------------------------------------------------------------------
+    // initializeData — called when ENTERING Compact_Presentoire fragment
+    // This method reloads/refreshes data from the database to ensure the
+    // fragment displays the most current information.
+    // Triggered by: fragmentNavigationHandler.onEnterCompactPresentoire callback
+    // -------------------------------------------------------------------------
 
-            val categories = appDatabase.dao_16CategorieProduit().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
+    fun initializeData() {
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "🔄 [INIT] initializeData — DÉBUT")
 
-            val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
+        _uiStateNewProtoPatterns.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val appCompt = appDatabase.dao_M9AppCompt().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 9f) }
+        // Reload data from database
+        loadDataFromDatabase()
 
-            val bonVent = appDatabase.dao_M8BonVent().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 9f) }
+        Log.d(TAG, "✅ [INIT] initializeData — rechargement des données lancé")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    }
 
-            val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 9f) }
+    // -------------------------------------------------------------------------
+    // loadDataFromDatabase — internal method to load all data
+    // Used by both init {} and initializeData()
+    // -------------------------------------------------------------------------
 
-            val tarification = appDatabase.dao_M13TarificationInfos().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
+    private fun loadDataFromDatabase() {
+        dataLoadingJob?.cancel() // Cancel any existing loading job
 
-            val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
+        dataLoadingJob = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "   ↪ chargement des produits (m1Produit)")
+                val products = appDatabase.dao_M1Produit().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 9f) }
 
-            _uiStateNewProtoPatterns.update {
-                it.copy(
-                    initDatasProgressEtate = 1f,
-                    list_Datas = List_Datas(
-                        m1Produit = products,
-                        m2Client = clients,
-                        m14VentPeriode = ventPeriodes,
-                        m16CategorieProduit = categories,
-                        m3CouleurProduit = colors,
-                        m9AppCompt = appCompt,
-                        m8BonVent = bonVent,
-                        m13TarificationInfos = tarification,
-                        m10OperationVentCouleur = operationVentCouleurs,
+                Log.d(TAG, "   ↪ chargement des clients (m2Client)")
+                val clients = appDatabase.dao_M2Client().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des catégories (m16CategorieProduit)")
+                val categories = appDatabase.dao_16CategorieProduit().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des couleurs (m3CouleurProduit)")
+                val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des comptes app (m9AppCompt)")
+                val appCompt = appDatabase.dao_M9AppCompt().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des bons de vente (m8BonVent)")
+                val bonVent = appDatabase.dao_M8BonVent().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des périodes de vente (m14VentPeriode)")
+                val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des tarifications (m13TarificationInfos)")
+                val tarification = appDatabase.dao_M13TarificationInfos().getAll()
+                _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
+
+                Log.d(TAG, "   ↪ chargement des opérations de vente (m10OperationVentCouleur)")
+                val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
+
+                _uiStateNewProtoPatterns.update {
+                    it.copy(
+                        initDatasProgressEtate = 1f,
+                        isLoading = false,
+                        list_Datas = List_Datas(
+                            m1Produit = products,
+                            m2Client = clients,
+                            m14VentPeriode = ventPeriodes,
+                            m16CategorieProduit = categories,
+                            m3CouleurProduit = colors,
+                            m9AppCompt = appCompt,
+                            m8BonVent = bonVent,
+                            m13TarificationInfos = tarification,
+                            m10OperationVentCouleur = operationVentCouleurs,
+                        )
                     )
+                }
+
+                Log.d(TAG, "   ↪ filtrage des opérations de vente actives")
+                val filtered = ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
+                    dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
+                    dao_M9AppCompt = appDatabase.dao_M9AppCompt()
                 )
-            }
 
-            val filtered = ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
-                dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
-                dao_M9AppCompt = appDatabase.dao_M9AppCompt()
-            )
-
-            _uiStateNewProtoPatterns.update { state ->
-                state.copy(
-                    active_Datas = state.active_Datas.copy(
-                        listM10OperationVentCouleur_FilteredBy_activeM8BonVent = filtered
+                _uiStateNewProtoPatterns.update { state ->
+                    state.copy(
+                        active_Datas = state.active_Datas.copy(
+                            listM10OperationVentCouleur_FilteredBy_activeM8BonVent = filtered
+                        )
                     )
-                )
+                }
+
+                Log.d(TAG, "✅ loadDataFromDatabase — TERMINÉ avec succès")
+                Log.d(TAG, "   📊 Produits: ${products.size}, Clients: ${clients.size}, Catégories: ${categories.size}")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ loadDataFromDatabase — ERREUR: ${e.message}", e)
+                _uiStateNewProtoPatterns.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Erreur inconnue lors du chargement"
+                    )
+                }
             }
         }
     }
+
+    // -------------------------------------------------------------------------
+    // releaseResources — called when LEAVING Compact_Presentoire fragment
+    // Cleans up resources to free memory and prevent leaks.
+    // Triggered by: fragmentNavigationHandler.onLeaveCompactPresentoire callback
+    // -------------------------------------------------------------------------
+
+    fun releaseResources() {
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "🧹 [CLEANUP] releaseResources — DÉBUT")
+
+        Log.d(TAG, "   ↪ déconnexion wifi")
+        wifi.disconnect()
+
+        Log.d(TAG, "   ↪ annulation des jobs en cours")
+        dataLoadingJob?.cancel()
+        dataLoadingJob = null
+
+        Log.d(TAG, "   ↪ fermeture de tous les fragments actifs")
+        fragmentNavigationHandler.closeAllActiveFragments()
+
+        Log.d(TAG, "   ↪ réinitialisation du progress à 0")
+        _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 0f, isLoading = false) }
+
+        Log.d(TAG, "✅ [CLEANUP] releaseResources — TERMINÉ")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    }
+
+    // -------------------------------------------------------------------------
+    // onCleared — called ONLY by Android framework when ViewModel is destroyed
+    // DO NOT call manually. Delegates to releaseResources() for final cleanup.
+    // -------------------------------------------------------------------------
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "💀 onCleared — framework détruit cette instance du ViewModel")
+
+        centralValuesCollectorJob?.cancel()
+        centralValuesCollectorJob = null
+
+        releaseResources()
+    }
+
+    // -------------------------------------------------------------------------
+    // M13TarificationInfos
+    // -------------------------------------------------------------------------
 
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) {
         _uiStateNewProtoPatterns.update { state ->
@@ -319,6 +459,10 @@ class ViewModel_NewProtoPatterns(
         )
     }
 
+    // -------------------------------------------------------------------------
+    // M10OperationVentCouleur
+    // -------------------------------------------------------------------------
+
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
         updatedList: List<M10OperationVentCouleur>?
     ) {
@@ -341,6 +485,10 @@ class ViewModel_NewProtoPatterns(
             repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(operation, tariff)
         }
     }
+
+    // -------------------------------------------------------------------------
+    // M3CouleurProduitInfos
+    // -------------------------------------------------------------------------
 
     fun update_m3couleur(couleur: M3CouleurProduitInfos) {
         _uiStateNewProtoPatterns.update { state ->
@@ -378,7 +526,6 @@ class ViewModel_NewProtoPatterns(
             onSuccess = onSuccess
         )
     }
-
 
     // -------------------------------------------------------------------------
     // M16CategorieProduit
@@ -430,9 +577,5 @@ class ViewModel_NewProtoPatterns(
 
     fun update_activeCentralValues(new: ActiveCentralValues) {
         focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }

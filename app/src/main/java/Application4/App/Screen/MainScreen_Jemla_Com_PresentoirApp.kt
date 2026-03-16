@@ -6,13 +6,12 @@ import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationItems
-import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +28,8 @@ import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+private const val TAG = "MainScreen_NewProto"
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -39,13 +40,34 @@ fun MainScreen_NewProtoPattern(
 ) {
     val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
 
-    // Create NavController here so it's registered BEFORE AppNavHost tries to read it
     val navController = rememberNavController()
     LaunchedEffect(navController) {
+        Log.d(TAG, "🎨 LaunchedEffect — enregistrement du NavController")
         fragmentNavigationHandler.setNavController(navController)
-        fragmentNavigationHandler.setStartupScreen_NewProtoPattern(
-            Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
-        )
+    }
+
+    // =========================================================================
+    // Register callbacks for ViewModel lifecycle management
+    // These callbacks are triggered by FragmentNavigationHandler during navigation:
+    // - onLeaveCompactPresentoire: cleanup resources BEFORE leaving the fragment
+    // - onEnterCompactPresentoire: initialize/refresh data AFTER entering the fragment
+    // =========================================================================
+    LaunchedEffect(Unit) {
+        Log.d(TAG, "🎯 LaunchedEffect — enregistrement des callbacks init/reinit du ViewModel")
+
+        // Callback invoked when LEAVING Compact_Presentoire
+        fragmentNavigationHandler.setOnLeaveCompactPresentoireCallback {
+            Log.d(TAG, "🔴 Callback LEAVE invoqué → viewModel.releaseResources()")
+            viewModelNewProtoPatterns.releaseResources()
+        }
+
+        // Callback invoked when ENTERING Compact_Presentoire
+        fragmentNavigationHandler.setOnEnterCompactPresentoireCallback {
+            Log.d(TAG, "🟢 Callback ENTER invoqué → viewModel.initializeData()")
+            viewModelNewProtoPatterns.initializeData()
+        }
+
+        Log.d(TAG, "✅ Callbacks init/reinit enregistrés avec succès")
     }
 
     val currentFragment by fragmentNavigationHandler.currentFragment.collectAsState()
@@ -72,8 +94,8 @@ fun MainScreen_NewProtoPattern(
                     onClickImageToShowControles = {},
                 )
             }
-        ) {innerPadding ->
-            Column() {
+        ) { innerPadding ->
+            Column {
                 (!wifiState.isConnected).ifTrue {
                     ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
                 }
@@ -83,7 +105,6 @@ fun MainScreen_NewProtoPattern(
                     navController = navController,
                 )
             }
-
         }
     }
 }

@@ -92,6 +92,7 @@ fun NavigationBarWithFab_NewProto(
                         try {
                             onNavigate(screen.route)
                         } catch (e: IllegalStateException) {
+                            Log.e("NavigationBar", "Navigation failed", e)
                         }
                     }
                 )
@@ -102,15 +103,17 @@ fun NavigationBarWithFab_NewProto(
 
         when {
             its_Compact_Presentoire -> FabButton_newProto(
-                showWarningState = showWarningState, isFabVisible = isFabVisible,
-                its_Targeted_Frag = true, onToggleFabVisibility = onToggleFabVisibility,
+                showWarningState = showWarningState,
+                isFabVisible = isFabVisible,
+                its_Targeted_Frag = true,
+                onToggleFabVisibility = onToggleFabVisibility,
                 onShowDropdown = { showFabDropdown_MainPresenterFragment = true }
             )
 
-            // FIX: replace onToggleFabVisibility with a lambda that unconditionally opens
-            // the dropdown, so the menu appears on every FAB press on the Panier screen.
+            // Panier screen: unconditionally open dropdown on every FAB press
             its_Panier -> FabButton_newProto(
-                showWarningState = showWarningState, isFabVisible = isFabVisible,
+                showWarningState = showWarningState,
+                isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,
                 onToggleFabVisibility = {
                     Log.d("FAB_PANIER", "▶ onToggleFabVisibility called → showFabDropdown_Panier = true")
