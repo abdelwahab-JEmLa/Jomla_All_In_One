@@ -9,7 +9,6 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -73,14 +72,12 @@ fun ACentralFacade.updateTariffForProductOperations(
 fun Big_Principale_FragID3(
     relative_M1produit: M01Produit,
     selectedCouleur: M3CouleurProduitInfos,
-    relative_M10OperationVentCouleur: M10OperationVentCouleur?,
     selectedTariff: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit,
-    modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
 ) {
     ColorImageCard_FragID3(
@@ -90,21 +87,20 @@ fun Big_Principale_FragID3(
         modifier = Modifier.fillMaxWidth(),uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel
     )
 
-    // Reduced spacing from 8.dp to 2.dp for tighter layout
     Spacer(modifier = Modifier.height(2.dp))
 
     if (shouldShowButtons) {
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight() // Added to minimize vertical space
+                .wrapContentHeight()
                 .background(
                     color = Color.White.copy(alpha = 0.95f),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(4.dp), // Reduced from 8.dp to 4.dp for tighter button group
+                .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp) // Reduced from 4.dp to 2.dp
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Lenceur_Vent_Handler_FragID3(
                 uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,

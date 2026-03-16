@@ -343,7 +343,6 @@ fun Item_Produit_FragID3(
                 Big_Principale_FragID3(
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
-                    relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
                     selectedTariff = selectedTariff,
                     onTariffSelected = { newTariff ->
                         selectedTariff = newTariff
@@ -356,7 +355,6 @@ fun Item_Produit_FragID3(
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
                     on_pour_send_data = on_pour_send_data,
-                    modifier = modifier,
                     uiState_NewProtoPatterns_viewModel
                 )
 

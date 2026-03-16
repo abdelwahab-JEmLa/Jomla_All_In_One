@@ -75,7 +75,6 @@ data class List_Datas(
 
 data class ActiveDatasFragNewProto(
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? = null,
-
 ) {
     companion object {
         suspend fun get_listM10OperationVentCouleur_By_active_Central_Values(

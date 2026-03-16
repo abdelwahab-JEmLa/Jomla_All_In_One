@@ -52,10 +52,7 @@ fun Lenceur_Vent_Handler_FragID3(
 
     val relative_M10OperationVentCouleur by remember(
         selectedCouleur.keyID,
-        listM10OperationVentCouleur_FilteredBy_activeM8BonVent  // FIX: was ?.size — taille inchangée
-        // quand on update quantity (ex: 1→2), donc remember ne se recalculait pas et
-        // renvoyait l'ancien objet avec l'ancienne quantity. La référence à la liste
-        // entière invalide le remember dès que StateFlow émet une nouvelle liste (via .copy()).
+        listM10OperationVentCouleur_FilteredBy_activeM8BonVent
     ) {
         derivedStateOf {
             listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.find {
