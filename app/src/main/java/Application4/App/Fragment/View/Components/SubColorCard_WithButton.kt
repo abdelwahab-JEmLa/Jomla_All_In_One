@@ -56,12 +56,12 @@ fun SubColorCard_WithButton(
         shouldShowButtons.ifTrue {
             Lenceur_Vent_Handler_FragID3(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                isWifiClientConnected = shouldShowButtons,
                 relative_M1produit = relative_M1produit,
                 selectedCouleur = couleur,
                 selectedTariff = selectedTariff,
                 compactMode = !isExpanded,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isWifiClientConnected = shouldShowButtons
             )
         }
     }

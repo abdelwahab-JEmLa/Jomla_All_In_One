@@ -70,6 +70,7 @@ fun ACentralFacade.updateTariffForProductOperations(
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
 fun Big_Principale_FragID3(
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
@@ -77,8 +78,7 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
-    on_pour_send_data: (String, String) -> Unit,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    on_pour_send_data: (String, String) -> Unit
 ) {
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,

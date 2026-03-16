@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import org.koin.compose.koinInject
+
+private const val TAG = "CommandButton"
 
 @Composable
 fun CommandButton(
@@ -73,8 +76,6 @@ fun CommandButton(
                 viewModel.startRecordIfNot()
             }
 
-
-
             val currentActiveCentralValues = focusedValuesGetter.active_Central_Values
             val catalogueId =
                 focusedValuesGetter.currentActive_M9AppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
@@ -90,8 +91,7 @@ fun CommandButton(
                     pourcentage_AffichageDuCatalogue_Cosmitiques = 100.0,
                     pourcentage_AffichageDuCatalogue_Conficerie = 0.0,
                     pourcentage_AffichageDuCatalogue_tebnage = 0.0,
-
-                    )
+                )
 
                 "t3" -> currentActiveCentralValues.copy(
                     pourcentage_AffichageDuCatalogue_tebnage = 100.0,
@@ -107,9 +107,13 @@ fun CommandButton(
             if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne) {
                 viewModel.updateLongAppSetting(relative_M2Client.id)
                 onUpdateLongAppSetting()
-
             } else {
-                fragmentNavigationHandler.updateCurrentFragment(
+                // FIX TODO(1): was calling updateCurrentFragment() which only updates the state
+                // flow but never invokes the NavController — so the UI state changed but the
+                // screen never actually changed. navigateTo() does both: it updates
+                // _currentFragment AND calls _navController?.navigate(...).
+                Log.d(TAG, "navigateTo Compact_Presentoire_App_Produits_FragID4")
+                fragmentNavigationHandler.navigateTo(
                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                 )
             }

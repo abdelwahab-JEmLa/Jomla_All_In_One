@@ -1,20 +1,20 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -94,6 +94,7 @@ fun get_New_Datas(
 
     return Pair(newProduit, newCouleurP)
 }
+
 @Composable
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
@@ -101,6 +102,7 @@ fun MainFastSearchProduitPourVent(
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    affiche_Dialog_Fast_Affiche_Panie: Boolean = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie,
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
     val uiState by viewModel.uiState.collectAsState()
@@ -116,9 +118,11 @@ fun MainFastSearchProduitPourVent(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
+
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
+
         null -> ""
     }
 
@@ -129,6 +133,7 @@ fun MainFastSearchProduitPourVent(
             )
         )
     }
+
     var isEditMode by remember { mutableStateOf(false) }
 
 
@@ -264,7 +269,9 @@ fun MainFastSearchProduitPourVent(
                                     val newProduit = newDatas.first
 
                                     if (newProduit != null) {
-                                        aCentralFacade.repositorysMainSetter.upsert_M1Produit(newProduit)
+                                        aCentralFacade.repositorysMainSetter.upsert_M1Produit(
+                                            newProduit
+                                        )
                                     }
 
                                     newDatas.second?.let {
@@ -342,7 +349,7 @@ fun MainFastSearchProduitPourVent(
                     }
                 )
             }
-            focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
+            affiche_Dialog_Fast_Affiche_Panie.ifTrue {
                 Dialog_Fast_Affiche_Panie()
             }
 
@@ -356,8 +363,8 @@ fun MainFastSearchProduitPourVent(
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
                     relative_M2Client = markerStatusDialogActiveM2Client,
-                    markerStatusDialogActiveM2Client= markerStatusDialogActiveM2Client,
-                    on_dissmiss_dialog_avec_enleve_focuse_bon={
+                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
+                    on_dissmiss_dialog_avec_enleve_focuse_bon = {
                         focusedValuesGetter.update_activeCentralValues(
                             currentValues.copy(markerStatusDialogActiveM2Client = null)
                         )

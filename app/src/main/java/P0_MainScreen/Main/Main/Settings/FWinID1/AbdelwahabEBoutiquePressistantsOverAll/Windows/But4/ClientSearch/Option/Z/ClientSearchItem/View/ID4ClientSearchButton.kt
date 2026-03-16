@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View
 
+import EntreApps.Shared.Models.Z_AppCompt
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.CreateNewClientIcon
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
@@ -9,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -65,8 +65,12 @@ fun ID4ClientSearchButton(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    repositorysMainGetter: RepositorysMainGetter = koinInject()
+    currentActive_M9AppCompt: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .currentActive_M9AppCompt,
+    onVentList: List<M10OperationVentCouleur> = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
 ) {
+
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
@@ -155,7 +159,6 @@ fun ID4ClientSearchButton(
                 val nomClient = getter.activeOnVent_M2Client?.nom ?: ""
                 val onVentId8BonVent = getter.activeOnVent_M8BonVent
 
-                // TODO(1) FIXED: build phone display suffix once, reuse below
                 val phoneDisplay = formatPhoneDisplay(
                     numTelephone = getter.activeOnVent_M2Client?.numTelephone ?: "",
                     nomClient = nomClient
@@ -346,8 +349,6 @@ fun ID4ClientSearchButton(
     }
 }
 
-// formatPhoneDisplay is imported from PhoneDisplayUtils.kt
-// import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Utils.formatPhoneDisplay
 
 fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
     val onVentList = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter

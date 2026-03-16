@@ -341,6 +341,7 @@ fun Item_Produit_FragID3(
                     .sortedByDescending { it.typeChoisi.profitabilityScore }
 
                 Big_Principale_FragID3(
+                    uiState_NewProtoPatterns_viewModel,
                     relative_M1produit = relative_M1produit,
                     selectedCouleur = selectedCouleur,
                     selectedTariff = selectedTariff,
@@ -354,8 +355,7 @@ fun Item_Produit_FragID3(
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
-                    on_pour_send_data = on_pour_send_data,
-                    uiState_NewProtoPatterns_viewModel
+                    on_pour_send_data = on_pour_send_data
                 )
 
                 if (relative_ListM3Couleurs.size > 1) {
