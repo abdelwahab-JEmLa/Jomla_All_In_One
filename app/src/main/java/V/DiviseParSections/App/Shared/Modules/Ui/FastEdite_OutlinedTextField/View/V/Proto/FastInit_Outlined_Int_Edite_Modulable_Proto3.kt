@@ -45,7 +45,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-// TODO(1) FIXED: Vibration helper — triggers a 600ms vibration on update
 @SuppressLint("ObsoleteSdkInt")
 @RequiresPermission(Manifest.permission.VIBRATE)
 private fun vibrateOnUpdate(context: Context) {
@@ -85,27 +84,20 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
     val context = LocalContext.current
 
     var isEditMode by remember { mutableStateOf(false) }
-    // FIX: do NOT use start_count as remember key — when on_Data_Update(newQuantity) triggers
-    // a ViewModel update, the parent recomposes with the new start_count in the same frame
-    // that isEditMode becomes false. Using start_count as key caused quantityInput to reset
-    // to "" immediately, discarding the typed value before it could ever be displayed.
-    var quantityInput by remember { mutableStateOf("") }
+    var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
-    var depotInput by remember { mutableStateOf("") }
+    var depotInput by remember(au_depot) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val depotFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditMode) {
         if (isEditMode) {
-            // Pre-fill with current value so user sees it and can edit from there
-            quantityInput = if (start_count > 0) start_count.toString() else ""
             focusRequester.requestFocus()
         }
     }
 
     LaunchedEffect(isEditDepotMode) {
         if (isEditDepotMode) {
-            depotInput = if (au_depot > 0) au_depot.toString() else ""
             depotFocusRequester.requestFocus()
         }
     }
@@ -174,7 +166,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             enabled = isAvailable,
-            label = { Text("Qté: $start_count") },
             placeholder = if (au_depot > 0) {
                 { Text("Dépôt: $au_depot", style = textStyle.copy(fontWeight = FontWeight.Normal)) }
             } else null

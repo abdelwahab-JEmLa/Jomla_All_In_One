@@ -123,10 +123,6 @@ fun Lenceur_Vent_Handler_FragID3(
         )
     }
 
-    // FIX TODO(1): operationToUse must be built inside the callback with the live newQuantity.
-    // Building it at composition time and then setting qantity_when_update state means
-    // handleLenceVent() always ran with the *previous* composition's operationToUse
-    // (state changes only take effect after the next recomposition).
     fun buildOperationToUse(newQuantity: Int): M10OperationVentCouleur =
         relative_M10OperationVentCouleur?.copy(
             quantity = newQuantity,
@@ -195,9 +191,6 @@ fun Lenceur_Vent_Handler_FragID3(
 
     Box(
         modifier = modifier
-            // FIX TODO(1): semantics nodes that captured qantity_when_update / operationToUse at
-            // composition time have been removed — they always reflected the *previous* value.
-            // Only expose the stable, already-correctly-derived list values for testing purposes.
             .semantics(mergeDescendants = true) {
                 set(
                     value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
@@ -223,9 +216,6 @@ fun Lenceur_Vent_Handler_FragID3(
             add_spacing_between_depot_and_sale = isAdmin,
             on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) }
         ) { newQuantity ->
-            // FIX TODO(1): pass newQuantity directly so handleLenceVent builds
-            // operationToUse with the correct value immediately — no intermediate
-            // mutableStateOf needed (state changes only apply after recomposition).
             handleLenceVent(newQuantity)
         }
     }

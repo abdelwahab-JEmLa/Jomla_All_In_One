@@ -72,12 +72,10 @@ data class List_Datas(
     val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
 )
 
-// FIX: was a mutable class with `var ... by mutableStateOf(null)`.
-// Mutating a field inside the class does NOT trigger StateFlow emission —
-// Compose never saw the change, so currentQuantity stayed stale after update.
-// Must be an immutable data class updated via _uiStateNewProtoPatterns.update { state.copy(...) }.
+
 data class ActiveDatasFragNewProto(
-    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? = null
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>? = null,
+
 ) {
     companion object {
         suspend fun get_listM10OperationVentCouleur_By_active_Central_Values(
@@ -322,17 +320,9 @@ class ViewModel_NewProtoPatterns(
         )
     }
 
-    // -------------------------------------------------------------------------
-    // M10OperationVentCouleur — filtered list
-    // -------------------------------------------------------------------------
-
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
         updatedList: List<M10OperationVentCouleur>?
     ) {
-        // FIX: was directly mutating active_Datas.listM10... which is a field on a plain class.
-        // Direct mutation never triggers StateFlow emission → Compose never recomposed →
-        // currentQuantity stayed stuck at its previous value despite the data changing.
-        Log.d("LenceurVent", "[VM] update_listM10 → taille=${updatedList?.size} | quantities=${updatedList?.map { it.quantity }}")
         _uiStateNewProtoPatterns.update { state ->
             state.copy(
                 active_Datas = state.active_Datas.copy(
@@ -340,11 +330,18 @@ class ViewModel_NewProtoPatterns(
                 )
             )
         }
+        upsert_M10OperationVentCouleur(updatedList)
     }
 
-    // -------------------------------------------------------------------------
-    // M3CouleurProduitInfos — update
-    // -------------------------------------------------------------------------
+    private fun upsert_M10OperationVentCouleur(updatedList: List<M10OperationVentCouleur>?) {
+        updatedList?.forEach { operation ->
+            val tariff = _uiStateNewProtoPatterns.value.list_Datas
+                ?.m13TarificationInfos
+                ?.find { it.keyID == operation.parentM13TarificationKeyID }
+                ?: return@forEach
+            repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(operation, tariff)
+        }
+    }
 
     fun update_m3couleur(couleur: M3CouleurProduitInfos) {
         _uiStateNewProtoPatterns.update { state ->
@@ -358,10 +355,6 @@ class ViewModel_NewProtoPatterns(
         }
         repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
-
-    // -------------------------------------------------------------------------
-    // M3CouleurProduitInfos — depot
-    // -------------------------------------------------------------------------
 
     fun update_depot_count(
         couleur: M3CouleurProduitInfos,
