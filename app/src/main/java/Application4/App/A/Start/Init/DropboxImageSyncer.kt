@@ -35,8 +35,7 @@ class DropboxImageSyncer(
         DbxClientV2(config, credential)
     }
 
-    suspend fun syncAll() { //<--
-    //TODO(1): fait evite de on progress suit au drop box   et ca passe directe
+    suspend fun syncAll() {
         onProgress(0.1f)
         val index = buildIndex()
 

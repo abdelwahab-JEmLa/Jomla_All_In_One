@@ -46,18 +46,12 @@ fun AppNavHost_NewProtoPattern(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
 ) {
-    // ✅ FIX: Le LaunchedEffect(Unit) qui enregistrait setOnLeaveCompactPresentoireCallback
-    // ici a été SUPPRIMÉ. Il créait un double enregistrement avec MainScreen et risquait
-    // d'écraser le callback déjà configuré depuis MainScreen_NewProtoPattern.
-    // L'enregistrement unique des callbacks est fait dans MainScreen via ses propres LaunchedEffect.
-
+    // Sync fragmentNavigationHandler whenever the back-stack destination changes
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
-
     @Composable
     fun AnimatedContentScope.load_heavyModules() {
         remember {
@@ -86,14 +80,13 @@ fun AppNavHost_NewProtoPattern(
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
                 unload_heavyModules()
-                Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns = viewModelNewProtoPatterns)
+                Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {
                 load_heavyModules()
                 Screen_Panie_FragID2()
             }
-
             composable(route = Screen_NewProtoPattern.A_Clients_LocationGps.route) {
                 load_heavyModules()
                 A_MapClients_A2FragID_1(
