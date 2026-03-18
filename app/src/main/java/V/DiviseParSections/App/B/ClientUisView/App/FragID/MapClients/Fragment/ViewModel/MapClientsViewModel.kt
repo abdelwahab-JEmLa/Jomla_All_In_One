@@ -209,7 +209,8 @@ class MapClientsViewModel(
             aCentralFacade = aCentralFacade,
             relative_M2Client = m2Client,
             etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
-        )
+        )        ?: return
+
 
         aCentralFacade.repositorysMainSetter
             .addNew_M8BonVent(

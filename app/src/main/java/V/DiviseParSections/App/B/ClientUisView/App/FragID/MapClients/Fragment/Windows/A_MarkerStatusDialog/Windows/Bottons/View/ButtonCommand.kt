@@ -46,6 +46,7 @@ fun CommandButton(
 ) {
     val found_Or_Default_M8BonVent =
         get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
+            ?: return
 
     FilledTonalButton(
         modifier = modifier

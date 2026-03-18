@@ -12,12 +12,12 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -46,31 +46,14 @@ fun AppNavHost_NewProtoPattern(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
 ) {
-    // Sync fragmentNavigationHandler whenever the back-stack destination changes
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
-    @Composable
-    fun AnimatedContentScope.load_heavyModules() {
-        remember {
-            if (!heavyModulesLoaded.get()) {
-                runCatching { GlobalContext.get().loadModules(heavyModules) }
-                    .onSuccess { heavyModulesLoaded.set(true) }
-            }
-        }
-    }
 
-    @Composable
-    fun AnimatedContentScope.unload_heavyModules() {
-        remember {
-            if (heavyModulesLoaded.get()) {
-                runCatching { GlobalContext.get().unloadModules(heavyModules) }
-                    .onSuccess { heavyModulesLoaded.set(false) }
-            }
-        }
-    }
+    // State flag: true only after heavy modules are confirmed loaded in Koin
+    val heavyReady = remember { mutableStateOf(heavyModulesLoaded.get()) }
 
     Surface(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -79,24 +62,60 @@ fun AppNavHost_NewProtoPattern(
             modifier = Modifier.fillMaxSize()
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
-                unload_heavyModules()
-                Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns=viewModelNewProtoPatterns)
+                // Unload heavy modules when returning to the light screen
+                LaunchedEffect(Unit) {
+                    if (heavyModulesLoaded.get()) {
+                        runCatching { GlobalContext.get().unloadModules(heavyModules) }
+                            .onSuccess {
+                                heavyModulesLoaded.set(false)
+                                heavyReady.value = false
+                            }
+                    }
+                }
+                Compact_Presentoire_App_Produits_FragID4(
+                    viewModelNewProtoPatterns = viewModelNewProtoPatterns
+                )
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {
-                load_heavyModules()
-                Screen_Panie_FragID2()
+                LaunchedEffect(Unit) {
+                    if (!heavyModulesLoaded.get()) {
+                        runCatching { GlobalContext.get().loadModules(heavyModules) }
+                            .onSuccess {
+                                heavyModulesLoaded.set(true)
+                                heavyReady.value = true
+                            }
+                    } else {
+                        heavyReady.value = true
+                    }
+                }
+                if (heavyReady.value) {
+                    Screen_Panie_FragID2()
+                }
             }
+
             composable(route = Screen_NewProtoPattern.A_Clients_LocationGps.route) {
-                load_heavyModules()
-                A_MapClients_A2FragID_1(
-                    onUpdateLongAppSetting = {
-                        fragmentNavigationHandler.navigateTo(
-                            Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
-                        )
-                    },
-                    onClear = {}
-                )
+                LaunchedEffect(Unit) {
+                    if (!heavyModulesLoaded.get()) {
+                        runCatching { GlobalContext.get().loadModules(heavyModules) }
+                            .onSuccess {
+                                heavyModulesLoaded.set(true)
+                                heavyReady.value = true
+                            }
+                    } else {
+                        heavyReady.value = true
+                    }
+                }
+                if (heavyReady.value) {
+                    A_MapClients_A2FragID_1(
+                        onUpdateLongAppSetting = {
+                            fragmentNavigationHandler.navigateTo(
+                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
+                            )
+                        },
+                        onClear = {}
+                    )
+                }
             }
         }
     }

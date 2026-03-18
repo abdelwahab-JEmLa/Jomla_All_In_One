@@ -133,15 +133,18 @@ fun createAndAddMarker(
 
                 // Add client to targeting list
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
-                    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+                    val found_Or_Default = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
                         relative_M2Client = m2Client,
                         etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
-                    )
+                    ) ?: run {
+                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT).show()
+                        return@setOnMarkerClickListener true
+                    }
 
                     aCentralFacade.repositorysMainSetter
                         .addNew_M8BonVent(
-                            found_Or_Default_M8BonVent.default_If_No_Found
+                            found_Or_Default.default_If_No_Found
                                 .copy(
                                     position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
                                 )
@@ -193,14 +196,11 @@ fun createAndAddMarker(
                 }
 
                 // Direct phone call to client
-// Replace the Call case in your when statement with this implementation:
-
                 ActiveCentralValues.Click_On_Marque.Call -> {
                     val phoneNumber = m2Client.numTelephone
 
                     if (phoneNumber.isNotEmpty() && phoneNumber != "null") {
                         try {
-                            // Try to open Truecaller first (package name: com.truecaller)
                             val truecallerIntent = Intent(
                                 Intent.ACTION_DIAL,
                                 Uri.fromParts("tel", phoneNumber, null)
@@ -208,9 +208,9 @@ fun createAndAddMarker(
                                 setPackage("com.truecaller")
                             }
 
-                            // Check if Truecaller is installed
                             val packageManager = context.packageManager
-                            val isTruecallerInstalled = truecallerIntent.resolveActivity(packageManager) != null
+                            val isTruecallerInstalled =
+                                truecallerIntent.resolveActivity(packageManager) != null
 
                             if (isTruecallerInstalled) {
                                 context.startActivity(truecallerIntent)
@@ -220,7 +220,6 @@ fun createAndAddMarker(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                // Fallback to default dialer if Truecaller is not installed
                                 val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
                                     data = Uri.parse("tel:$phoneNumber")
                                 }
@@ -249,14 +248,15 @@ fun createAndAddMarker(
 
                     true
                 }
+
                 // Navigate to client using Google Maps
                 ActiveCentralValues.Click_On_Marque.Navigate -> {
                     val latitude = m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE
                     val longitude = m2Client.longitude
 
                     try {
-                        // Try Google Maps first
-                        val gmmIntentUri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
+                        val gmmIntentUri =
+                            Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
                         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
                             setPackage("com.google.android.apps.maps")
                         }
@@ -269,9 +269,10 @@ fun createAndAddMarker(
                             Toast.LENGTH_SHORT
                         ).show()
                     } catch (e: Exception) {
-                        // Fallback to generic geo intent
                         try {
-                            val geoUri = Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude(${m2Client.nom})")
+                            val geoUri = Uri.parse(
+                                "geo:$latitude,$longitude?q=$latitude,$longitude(${m2Client.nom})"
+                            )
                             val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
                             context.startActivity(fallbackIntent)
                         } catch (e2: Exception) {
@@ -288,16 +289,17 @@ fun createAndAddMarker(
 
                 // Mark client as closed/fermé
                 ActiveCentralValues.Click_On_Marque.Marck_Ferme -> {
-                    val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
+                    val found_Or_Default = get_Found_Or_Default_M8BonVent(
                         aCentralFacade = aCentralFacade,
                         relative_M2Client = m2Client,
                         etateActuellementEst = M8BonVent.EtateActuellementEst.FERME,
-                    )
+                    ) ?: run {
+                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT).show()
+                        return@setOnMarkerClickListener true
+                    }
 
                     aCentralFacade.repositorysMainSetter
-                        .addNew_M8BonVent(
-                            found_Or_Default_M8BonVent.default_If_No_Found
-                        )
+                        .addNew_M8BonVent(found_Or_Default.default_If_No_Found)
 
                     Toast.makeText(
                         context,
@@ -387,7 +389,10 @@ private fun Marker.title(
                         "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
                         texy_Safe +
                         demande_Versemet_si_Type +
-                        "\n${m2Client.nom.split(" ").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }} ${if (m2Client.numTelephone.isNotEmpty()) "📞${m2Client.numTelephone.takeLast(2)}" else ""}"
+                        "\n${
+                            m2Client.nom.split(" ")
+                                .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+                        } ${if (m2Client.numTelephone.isNotEmpty()) "📞${m2Client.numTelephone.takeLast(2)}" else ""}"
             } else {
                 m2Client.nom
             }

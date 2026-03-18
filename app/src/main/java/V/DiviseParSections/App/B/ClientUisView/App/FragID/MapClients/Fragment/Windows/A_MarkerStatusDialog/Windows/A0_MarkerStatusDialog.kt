@@ -108,7 +108,8 @@ private fun CustomStatusDropdownMenu(
                             it,
                             etateActuellementEst = status,
                         )
-                    }
+                    }         ?: return@DropdownMenuItem
+
 
                     val relative_M8BonVent =
                         foundOrDefaultResult?.found ?: foundOrDefaultResult?.default_If_No_Found

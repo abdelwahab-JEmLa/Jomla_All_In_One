@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View
 
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
@@ -9,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import EntreApps.Shared.Models.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,11 +67,10 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     FilledTonalButton(
         modifier = Modifier,
         onClick = {
-            val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
-                aCentralFacade,
-                relative_M2Client,
-                etateActuellementEst = relative_Etate,
-            )
+            val found_Or_Default_M8BonVent =
+                get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
+                    ?: return@FilledTonalButton
+
 
             if (found_Or_Default_M8BonVent.found != null) {
                 aCentralFacade.repositorysMainSetter.update_M8BonVent(

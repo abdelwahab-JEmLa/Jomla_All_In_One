@@ -259,8 +259,9 @@ fun Item_Produit_FragID3(
         onVentList.size
     ) {
         derivedStateOf {
-            uiState.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.find {
-                        it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
+            // FIX: active_Datas is now a stable val on the ViewModel, not part of uiState.
+            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.find {
+                it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
             }
         }
     }

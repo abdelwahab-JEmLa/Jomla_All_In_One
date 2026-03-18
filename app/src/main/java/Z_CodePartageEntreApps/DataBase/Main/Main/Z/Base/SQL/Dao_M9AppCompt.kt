@@ -42,10 +42,15 @@ interface Dao_M9AppCompt {
     @Query("SELECT * FROM Z_AppCompt WHERE keyID = :keyId")
     fun getByKey_Flow(keyId: String): Flow<List<Z_AppCompt>>
 
+    // Used by flatMapLatest in ActiveDatasFragNewProto to reactively observe the active AppCompt.
+    // Returns Flow<Z_AppCompt?> (not a list) so flatMapLatest receives a single nullable item
+    // and can read .onVentM8BonVentKey directly without a .firstOrNull() unwrap at the call site.
+    @Query("SELECT * FROM Z_AppCompt WHERE keyID = :keyId LIMIT 1")
+    fun getFlow_ByKeyID(keyId: String): Flow<Z_AppCompt?>
+
     @Query("DELETE FROM Z_AppCompt")
     suspend fun deleteAll()
 
     @Delete
     suspend fun deleteData(data: Z_AppCompt)
-
 }

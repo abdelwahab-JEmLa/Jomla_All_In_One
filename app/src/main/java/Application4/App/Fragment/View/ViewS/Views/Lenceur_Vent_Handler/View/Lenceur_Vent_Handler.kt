@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,7 @@ import androidx.compose.ui.unit.dp
 fun Lenceur_Vent_Handler_FragID3(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
-    relative_M8BonVent: M8BonVent? = uiState_NewProtoPatterns_viewModel.first.active_Central_Values.activeOnVent_M8BonVent,
+    relative_M8BonVent: M8BonVent? = null,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
@@ -46,8 +47,11 @@ fun Lenceur_Vent_Handler_FragID3(
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val centralValues = uiState.active_Central_Values
+
+    val activeOnVent_M8BonVent by viewModel.activeOnVent_M8BonVent_flow.collectAsState()
+
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
-        uiState.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent
+        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
 
     val relative_M10OperationVentCouleur by remember(
         selectedCouleur.keyID,
@@ -62,7 +66,6 @@ fun Lenceur_Vent_Handler_FragID3(
 
     val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
     val isAdmin = centralValues.currentApp_Est_Admin
-    val activeOnVent_M8BonVent = centralValues.activeOnVent_M8BonVent
 
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
 
@@ -102,19 +105,22 @@ fun Lenceur_Vent_Handler_FragID3(
         )
     }
 
-    fun buildOperationToUse(newQuantity: Int): M10OperationVentCouleur =
-        relative_M10OperationVentCouleur?.copy(
+    fun handleLenceVent(newQuantity: Int) {
+
+        val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val currentOp   = currentList?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+
+        val operationToUse = currentOp?.copy(
             quantity = newQuantity,
             parentM13TarificationKeyID = selectedTariff.keyID,
             parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
             parent_M1Produit_DebugInfos = "par.produit ${relative_M1produit.nom}",
-            parent_M8BonVent_KeyId = relative_M8BonVent?.keyID ?: "",
-            parent_M8BonVent_DebugInfos = relative_M8BonVent?.get_DebugInfos() ?: "",
+            parent_M8BonVent_KeyId = activeOnVent_M8BonVent?.keyID ?: "",
+            parent_M8BonVent_DebugInfos = activeOnVent_M8BonVent?.get_DebugInfos() ?: "",
             typeTarificationEnumT2 = selectedTariff.typeChoisi,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         ) ?: M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-            activeOnVent_M8BonVent,
-            selectedCouleur
+            activeOnVent_M8BonVent, selectedCouleur
         ).copy(
             creationTimestamps = System.currentTimeMillis(),
             setIN_Vent_Its_Quantity_Represent = relative_M1produit.setIN_Vent_Its_Quantity_Represent,
@@ -122,33 +128,36 @@ fun Lenceur_Vent_Handler_FragID3(
             quantity = newQuantity,
             parentM13TarificationKeyID = selectedTariff.keyID,
             parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
-            parent_M8BonVent_KeyId = relative_M8BonVent?.keyID ?: "",
-            parent_M8BonVent_DebugInfos = relative_M8BonVent?.get_DebugInfos() ?: "",
+            parent_M8BonVent_KeyId = activeOnVent_M8BonVent?.keyID ?: "",
+            parent_M8BonVent_DebugInfos = activeOnVent_M8BonVent?.get_DebugInfos() ?: "",
             typeTarificationEnumT2 = selectedTariff.typeChoisi,
             its_created_in_working_for_wholesaler = isGrossist
         )
 
-    fun handleLenceVent(newQuantity: Int) {
-        val operationToUse = buildOperationToUse(newQuantity)
+        val isNew = currentList?.none { it.keyID == operationToUse.keyID } != false
+        val quantityChange = if (isNew) operationToUse.quantity else operationToUse.quantity - (currentOp?.quantity ?: 0)
 
-        val isNew = listM10OperationVentCouleur_FilteredBy_activeM8BonVent
-            ?.none { it.keyID == operationToUse.keyID } != false
+        val updatedFilteredList =
+            if (isNew) (currentList ?: emptyList()) + operationToUse
+            else currentList?.map { if (it.keyID == operationToUse.keyID) operationToUse else it }
 
-        val quantityChange = if (isNew) operationToUse.quantity
-        else operationToUse.quantity - currentQuantity
+        val sizeBefore = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.size
+        viewModel.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedFilteredList)
+        val sizeAfter  = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.size
+        val opAfter    = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+            ?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
-        val updatedFilteredList: List<M10OperationVentCouleur>? =
-            if (isNew) (listM10OperationVentCouleur_FilteredBy_activeM8BonVent ?: emptyList()) + operationToUse
-            else listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.map {
-                if (it.keyID == operationToUse.keyID) operationToUse else it
-            }
-
-        val updatedCouleur: M3CouleurProduitInfos? =
+        val updatedCouleur =
             if (isGrossist || quantityChange == 0) null
             else selectedCouleur.copy(count_Don_Depot = selectedCouleur.count_Don_Depot - quantityChange)
 
-        viewModel.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedFilteredList)
-        if (updatedCouleur != null) viewModel.update_m3couleur(updatedCouleur)
+        if (updatedCouleur != null) {
+
+            viewModel.update_m3couleur(updatedCouleur)
+        } else {
+
+        }
+
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 

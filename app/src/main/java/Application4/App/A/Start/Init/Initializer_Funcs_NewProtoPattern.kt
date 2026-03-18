@@ -14,7 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.GBonVentDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
@@ -40,7 +40,7 @@ class Initializer_Funcs_NewProtoPattern(
     val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
     val dao_M13TarificationInfos: Dao13TarificationInfos,
     val dao_M14VentPeriode: Dao14VentPeriode,
-    val dao_M8BonVent: GBonVentDao,
+    val dao_M8BonVent: Dao_M8BonVent,
     val dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
     val dao_M9AppCompt: Dao_M9AppCompt,
 ) {

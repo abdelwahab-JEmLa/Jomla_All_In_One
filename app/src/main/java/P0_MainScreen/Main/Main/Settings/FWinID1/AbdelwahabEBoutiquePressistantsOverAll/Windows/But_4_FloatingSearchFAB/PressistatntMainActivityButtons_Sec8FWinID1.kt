@@ -1,5 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M13TarificationInfos
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.ID4ClientSearchButton
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.B1CataloguesAffiche
@@ -21,13 +23,12 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M13TarificationInfos
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -72,7 +73,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -310,7 +310,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 imageFile = floatingImage,
                 onDismiss = {
                     focusedValuesGetter.update_activeCentralValues(
-                        activeCentralValues.copy(image_Flotant = null)
+                        focusedValuesGetter.active_Central_Values.copy(image_Flotant = null)
                     )
                 }
             )
@@ -425,7 +425,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             onSearchTextChange = { newText ->
                                 searchTextForFastPanier = newText
                                 focusedValuesGetter.update_activeCentralValues(
-                                    activeCentralValues.copy(
+                                    focusedValuesGetter.active_Central_Values.copy(
                                         outlined_filter_searcher_floating_abouve_all = newText
                                     )
                                 )
@@ -436,7 +436,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         FloatingFilterToggleFAB(
                             activeFilters = activeCentralValues.activeFilters,
                             onToggleFilter = {
-                                val currentFilters = activeCentralValues.activeFilters
+                                val currentFilters = focusedValuesGetter.active_Central_Values.activeFilters
                                 val newFilters = when {
                                     currentFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) -> {
                                         (currentFilters - ActiveCentralValues.ActiveFilter.premier_Check_Donne) +
@@ -453,7 +453,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 }
 
                                 focusedValuesGetter.update_activeCentralValues(
-                                    activeCentralValues.copy(activeFilters = newFilters)
+                                    focusedValuesGetter.active_Central_Values.copy(activeFilters = newFilters)
                                 )
                             },
                             showLabels = showLabels
@@ -574,17 +574,29 @@ fun FloatingPanierToggleFAB(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier.semantics(mergeDescendants = true) {
+            set(value = isPanierOpen, key = SemanticsPropertyKey("isPanierOpen"))
+        }
     ) {
         FloatingActionButton(
             modifier = Modifier
                 .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
                 .size(40.dp),
             onClick = {
+                val latestValues = focusedValuesGetter.active_Central_Values
+                val newPanierState = !latestValues.affiche_Dialog_Fast_Affiche_Panie
+                android.util.Log.d(
+                    "FloatingPanierToggleFAB",
+                    "onClick => affiche_Dialog_Fast_Affiche_Panie: ${latestValues.affiche_Dialog_Fast_Affiche_Panie} -> $newPanierState"
+                )
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = !isPanierOpen
+                    latestValues.copy(
+                        affiche_Dialog_Fast_Affiche_Panie = newPanierState
                     )
+                )
+                android.util.Log.d(
+                    "FloatingPanierToggleFAB",
+                    "after update => affiche_Dialog_Fast_Affiche_Panie: ${focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie}"
                 )
                 focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
             },

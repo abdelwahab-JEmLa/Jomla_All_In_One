@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface GBonVentDao {
+interface Dao_M8BonVent {
     @Query("DELETE FROM M8BonVent WHERE keyID = :keyId")
     suspend fun deleteByKeyId(keyId: String)
 
@@ -36,16 +36,18 @@ interface GBonVentDao {
     @Query("SELECT COUNT(*) FROM M8BonVent")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 
-    @Query("SELECT * FROM M8BonVent ")
+    @Query("SELECT * FROM M8BonVent")
     suspend fun getAll(): MutableList<M8BonVent>
 
     @Query("SELECT * FROM M8BonVent")
     fun getAllFlow(): Flow<List<M8BonVent>>
+
+    @Query("SELECT * FROM M8BonVent WHERE keyID = :keyId LIMIT 1")
+    fun getFlow_ByKeyID(keyId: String): Flow<M8BonVent?>
 
     @Query("DELETE FROM M8BonVent")
     suspend fun deleteAll()
 
     @Delete
     suspend fun deleteData(data: M8BonVent)
-
 }
