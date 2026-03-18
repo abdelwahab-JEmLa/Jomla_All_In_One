@@ -42,9 +42,10 @@ import org.koin.compose.koinInject
 @Composable
 fun Screen_Panie_FragID2(
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
-    aCentralFacade: ACentralFacade=koinInject()
+    aCentralFacade: ACentralFacade = koinInject()
 ) {
-    val isControleFabVisible = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
+    val isControleFabVisible =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -54,14 +55,14 @@ fun Screen_Panie_FragID2(
             MainFastSearchProduitPourVent_App4()
             PressistatntMainActivityButtons_Sec8FWinID1()
             isControleFabVisible.ifTrue {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zIndex(10f)
-            ) {
-                panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
-                panelsGroupeButtonHandler.AfficheDialogesHeadApps()
-            }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(10f)
+                ) {
+                    panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
+                    panelsGroupeButtonHandler.AfficheDialogesHeadApps()
+                }
             }
         }
     }
@@ -87,9 +88,11 @@ fun MainFastSearchProduitPourVent_App4(
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.SearchProduit -> {
             sourceLenceurDeCetteFragment.produit.nom
         }
+
         is ActiveCentralValues.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
             ""
         }
+
         null -> ""
     }
 
@@ -228,9 +231,14 @@ fun MainFastSearchProduitPourVent_App4(
                 )
             }
 
-            focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
-                Dialog_Fast_Affiche_Panie()
-            }
+            val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
+            val affiche_Dialog_Fast_Affiche_Panie_App4 =
+                currentActive_M9AppCompt?.affiche_Dialog_Fast_Affiche_Panie_App4
+            (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
+                    || affiche_Dialog_Fast_Affiche_Panie_App4 == true)
+                .ifTrue {
+                    Dialog_Fast_Affiche_Panie()
+                }
 
             val currentValues = focusedValuesGetter.active_Central_Values
             val markerStatusDialogActiveM2Client = currentValues.markerStatusDialogActiveM2Client

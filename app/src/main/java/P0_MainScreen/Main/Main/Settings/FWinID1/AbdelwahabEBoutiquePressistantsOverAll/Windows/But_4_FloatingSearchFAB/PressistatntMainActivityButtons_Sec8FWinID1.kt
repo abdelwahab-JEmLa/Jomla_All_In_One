@@ -47,7 +47,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -553,90 +552,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     color = Color.White
                 )
             }
-        }
-    }
-}
-
-/**
- * Extracted composable for the Panier (Cart) toggle FAB
- * Handles toggling the fast cart dialog and clearing focused tariff values
- */
-@Composable
-fun FloatingPanierToggleFAB(
-    focusedValuesGetter: FocusedValuesGetter,
-    focusedVarsHandlerFacade: FocusedActiveValuesFacade,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    showLabels: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val isPanierOpen = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.semantics(mergeDescendants = true) {
-            set(value = isPanierOpen, key = SemanticsPropertyKey("isPanierOpen"))
-        }
-    ) {
-        FloatingActionButton(
-            modifier = Modifier
-                .getSemanticsTag(focusedValuesGetter.currentActive_M9AppCompt, "")
-                .size(40.dp),
-            onClick = {
-                val latestValues = focusedValuesGetter.active_Central_Values
-                val newPanierState = !latestValues.affiche_Dialog_Fast_Affiche_Panie
-                android.util.Log.d(
-                    "FloatingPanierToggleFAB",
-                    "onClick => affiche_Dialog_Fast_Affiche_Panie: ${latestValues.affiche_Dialog_Fast_Affiche_Panie} -> $newPanierState"
-                )
-                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
-                    latestValues.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = newPanierState
-                    )
-                )
-                android.util.Log.d(
-                    "FloatingPanierToggleFAB",
-                    "after update => affiche_Dialog_Fast_Affiche_Panie: ${focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie}"
-                )
-                focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
-            },
-            containerColor = if (isPanierOpen) {
-                MaterialTheme.colorScheme.secondary
-            } else {
-                MaterialTheme.colorScheme.primary
-            },
-        ) {
-            Icon(
-                imageVector = Icons.Default.Paid,
-                contentDescription = if (isPanierOpen) {
-                    "Fermer Dialog Fast Affiche Panier"
-                } else {
-                    "Ouvrir Dialog Fast Affiche Panier"
-                },
-                tint = Color.White
-            )
-        }
-
-        if (showLabels) {
-            Text(
-                text = if (isPanierOpen) {
-                    "Fermer Panier"
-                } else {
-                    "Ouvrir Panier"
-                },
-                modifier = Modifier
-                    .background(
-                        color = if (isPanierOpen) {
-                            MaterialTheme.colorScheme.secondary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
         }
     }
 }

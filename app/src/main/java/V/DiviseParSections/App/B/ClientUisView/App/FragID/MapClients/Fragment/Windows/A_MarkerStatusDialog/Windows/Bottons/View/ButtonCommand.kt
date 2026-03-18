@@ -5,6 +5,7 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M8BonVent
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.vibrateOnUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import org.koin.compose.koinInject
@@ -47,7 +49,7 @@ fun CommandButton(
     val found_Or_Default_M8BonVent =
         get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
             ?: return
-
+    val con =LocalContext.current
     FilledTonalButton(
         modifier = modifier
             .getSemanticsTag(found_Or_Default_M8BonVent.default_If_No_Found, "")
@@ -102,6 +104,7 @@ fun CommandButton(
 
                 else -> currentActiveCentralValues.copy()
             }
+            vibrateOnUpdate(con)
 
             focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
 
@@ -118,6 +121,9 @@ fun CommandButton(
                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                 )
             }
+
+
+
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
