@@ -47,7 +47,7 @@ data class ProductDisplayController(
     val filterProduitsParCatalogueBsonID: String = "",
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
-    val isHostPhone: Boolean = false,
+    val isHostPhone: Boolean = true,
     val switchRoles: Boolean = true,
     val testMessageByWifi: String = "",
     val error: String? = null,

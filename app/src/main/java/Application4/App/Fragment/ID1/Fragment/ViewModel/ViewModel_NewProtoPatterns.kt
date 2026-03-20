@@ -5,6 +5,9 @@ import Application2.App.Base.Modules.WifiTransferDatas
 import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
+import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
@@ -162,7 +165,7 @@ class ViewModel_NewProtoPatterns(
             hide_prix_lence_vent_buttons = updated.hide_prix_lence_vent_buttons,
         ))
 
-    val wifi = WifiTransferDatas(
+    val wifi = WifiTransferDatas_NewProto(
         context = context,
         coroutineScope = viewModelScope,
         list_M1Produit = emptyList(),
@@ -171,7 +174,8 @@ class ViewModel_NewProtoPatterns(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly,
+        ProductDisplayController_NewProto())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() { wifi.startAsClient(); wifi.updateTypePhone(isHost = false) }
@@ -181,7 +185,7 @@ class ViewModel_NewProtoPatterns(
 
     fun disconnect() = wifi.disconnect()
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) = wifi.sendOrderToClientDisplayer(orderName, data)
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()

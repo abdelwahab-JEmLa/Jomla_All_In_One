@@ -259,26 +259,13 @@ fun Item_Produit_FragID3(
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
+    val wifi by viewModel.wifiState.collectAsState()
 
     Column(
         modifier = modifier
+
             .semantics(mergeDescendants = true) {
                 set(value = supperGro, key = SemanticsPropertyKey("supperGro"))
-            }
-            .semantics(mergeDescendants = true) {
-                set(value = synthetic, key = SemanticsPropertyKey("synthetic"))
-            }
-            .semantics(mergeDescendants = true) {
-                set(value = fallbackTariff, key = SemanticsPropertyKey("fallbackTariff"))
-            }
-            .semantics(mergeDescendants = true) {
-                set(
-                    value = algoritme_choisiser_tariff(),
-                    key = SemanticsPropertyKey("algoritme_choisiser_tariff()")
-                )
-            }
-            .semantics(mergeDescendants = true) {
-                set(value = selectedTariff, key = SemanticsPropertyKey("selectedTariff"))
             }
             .fillMaxWidth()
             .padding(cardPadding)
@@ -346,7 +333,7 @@ fun Item_Produit_FragID3(
                     },
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
-                    shouldShowButtons = shouldShowButtons,
+                    shouldShowButtons = true,
                     on_pour_send_data = on_pour_send_data
                 )
 
@@ -370,8 +357,7 @@ fun Item_Produit_FragID3(
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
                                         modifier = Modifier.weight(1f, fill = false),
-                                        shouldShowButtons = shouldShowButtons,   //<--
-                                        //TODO(1): cree log qui regle le probleme que normalemnt quand c expanded
+                                        shouldShowButtons = true,
                                     )
                                 }
                             }
@@ -389,7 +375,7 @@ fun Item_Produit_FragID3(
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
                                         on_pour_send_data = on_pour_send_data,
-                                        shouldShowButtons = shouldShowButtons,
+                                        shouldShowButtons = true,
                                         isExpanded = false,
                                         modifier = Modifier.fillMaxWidth()
                                     )
