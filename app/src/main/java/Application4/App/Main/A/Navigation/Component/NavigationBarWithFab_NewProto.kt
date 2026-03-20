@@ -2,7 +2,6 @@ package Application4.App.Main.A.Navigation.Component
 
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -57,7 +56,7 @@ fun NavigationBarWithFab_NewProto(
     var snoozeActive by remember { mutableStateOf(false) }
 
     var showFabDropdown_Gps by remember { mutableStateOf(false) }
-    var showFabDropdown_MainPresenterFragment by remember { mutableStateOf(false) }
+
 
     // Re-show the dialog after 30 seconds when snoozed
     val scope = rememberCoroutineScope()
@@ -120,8 +119,9 @@ fun NavigationBarWithFab_NewProto(
         when {
             its_Compact_Presentoire -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
-                its_Targeted_Frag = true, onToggleFabVisibility = onToggleFabVisibility,
-                onShowDropdown = { showFabDropdown_MainPresenterFragment = true }
+                its_Targeted_Frag = false, // TODO(1) fixed: no action on click for presenter
+                onToggleFabVisibility = {},  // no-op: affiche rien au click
+                onShowDropdown = {}          // no-op: affiche rien au click
             )
 
             its_Panier -> FabButton_newProto(
@@ -168,17 +168,6 @@ fun NavigationBarWithFab_NewProto(
             )
         }
 
-        if (showFabDropdown_MainPresenterFragment && its_Compact_Presentoire) {
-            FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
-                onDismissDropdown = { showFabDropdown_MainPresenterFragment = false },
-                onClickImageToShowControles = onClickImageToShowControles
-            )
-        }
-
-        // TODO(1) — implemented:
-        // Shows an AlertDialog when PDF generation is complete.
-        // "Snooze" hides the dialog and re-shows it after 30 seconds.
-        // "Fermer" dismisses it permanently (until the next PDF generation).
         if (affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon) {
             AlertDialog(
                 onDismissRequest = {
