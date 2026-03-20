@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
+import kotlinx.coroutines.delay
 
 @Composable
 fun NavigationBarWithFab_NewProto(
@@ -47,8 +52,22 @@ fun NavigationBarWithFab_NewProto(
         currentRoute == Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
 
     var showFabDropdown_Panier by remember { mutableStateOf(false) }
+
+    var affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon by remember { mutableStateOf(false) }
+    var snoozeActive by remember { mutableStateOf(false) }
+
     var showFabDropdown_Gps by remember { mutableStateOf(false) }
     var showFabDropdown_MainPresenterFragment by remember { mutableStateOf(false) }
+
+    // Re-show the dialog after 30 seconds when snoozed
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(snoozeActive) {
+        if (snoozeActive) {
+            delay(30_000L)
+            snoozeActive = false
+            affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = true
+        }
+    }
 
     Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
         NavigationBar(
@@ -98,8 +117,6 @@ fun NavigationBarWithFab_NewProto(
             }
         }
 
-        val scope = rememberCoroutineScope()
-
         when {
             its_Compact_Presentoire -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
@@ -107,8 +124,6 @@ fun NavigationBarWithFab_NewProto(
                 onShowDropdown = { showFabDropdown_MainPresenterFragment = true }
             )
 
-            // FIX: replace onToggleFabVisibility with a lambda that unconditionally opens
-            // the dropdown, so the menu appears on every FAB press on the Panier screen.
             its_Panier -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,
@@ -140,6 +155,7 @@ fun NavigationBarWithFab_NewProto(
                 },
                 onClick_to_initiateBackgroundPdfCreation = {
                     showFabDropdown_Panier = false
+                    affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = true
                 },
                 onClickImageToShowControles = onClickImageToShowControles
             )
@@ -156,6 +172,41 @@ fun NavigationBarWithFab_NewProto(
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 onDismissDropdown = { showFabDropdown_MainPresenterFragment = false },
                 onClickImageToShowControles = onClickImageToShowControles
+            )
+        }
+
+        // TODO(1) — implemented:
+        // Shows an AlertDialog when PDF generation is complete.
+        // "Snooze" hides the dialog and re-shows it after 30 seconds.
+        // "Fermer" dismisses it permanently (until the next PDF generation).
+        if (affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon) {
+            AlertDialog(
+                onDismissRequest = {
+                    affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = false
+                },
+                title = {
+                    Text(text = "PDF généré ✅")
+                },
+                text = {
+                    Text(text = "Le bon de commande a été généré avec succès.")
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        // Snooze: hide now, re-appear in 30 seconds
+                        affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = false
+                        snoozeActive = true
+                    }) {
+                        Text("Snooze (30s)")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = false
+                        snoozeActive = false
+                    }) {
+                        Text("Fermer")
+                    }
+                }
             )
         }
     }

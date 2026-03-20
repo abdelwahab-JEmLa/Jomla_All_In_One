@@ -131,8 +131,11 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
                 nomFun = "Partager via WhatsApp buisness ",
                 onDismissDropdown = onDismissDropdown
             )
+
+            val nom =
+                aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client?.nom
             DropDownItem_WhenIts_FragFastVent_8(
-                nomFun = "Whatsapp test share PDF ",
+                nomFun = "Generation PDF De $nom en arrière-plan",
                 onDismissDropdown = onDismissDropdown,
                 onClick_to_initiateBackgroundPdfCreation = {
                     GlobalScope.launch(Dispatchers.IO) {
@@ -143,7 +146,7 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
             )
 
             DropDownItem_WhenIts_FragFastVent_10(
-                nomFun = "Envoyer PDF via WhatsApp Business",
+                nomFun = "Envoyer Generaed PDF $nom via WhatsApp Business",
                 onDismissDropdown = {
                     onDismissDropdown()
                     GlobalScope.launch(Dispatchers.IO) {

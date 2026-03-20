@@ -99,15 +99,6 @@ fun Item_Produit_FragID3(
     val onVentList = centralValues.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         ?: emptyList()
 
-    val relative_list_M10operation_Vent by remember(
-        relative_M1produit.keyID,
-        onVentList.size,
-    ) {
-        derivedStateOf {
-            onVentList.find { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
-        }
-    }
-
     val expanded_M1Produit = centralValues.expanded_M1Produit
     val expanded_M3CouleurProduitInfos = centralValues.expanded_M3CouleurProduitInfos
 
@@ -379,7 +370,8 @@ fun Item_Produit_FragID3(
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
                                         modifier = Modifier.weight(1f, fill = false),
-                                        shouldShowButtons = shouldShowButtons,
+                                        shouldShowButtons = shouldShowButtons,   //<--
+                                        //TODO(1): cree log qui regle le probleme que normalemnt quand c expanded
                                     )
                                 }
                             }

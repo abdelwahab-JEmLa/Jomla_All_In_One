@@ -1,6 +1,9 @@
 package Application4.App.Fragment.ID2.Fragment
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Modules.Base.AppDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
@@ -74,6 +77,7 @@ fun MainFastSearchProduitPourVent_App4(
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
     aCentralFacade: ACentralFacade = koinInject(),
+    appDatabase: AppDatabase=koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
@@ -231,11 +235,13 @@ fun MainFastSearchProduitPourVent_App4(
                 )
             }
 
-            val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
-            val affiche_Dialog_Fast_Affiche_Panie_App4 =
-                currentActive_M9AppCompt?.affiche_Dialog_Fast_Affiche_Panie_App4
-            (focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
-                    || affiche_Dialog_Fast_Affiche_Panie_App4 == true)
+            val allAppCompts by appDatabase.dao_M9AppCompt().getAllFlow().collectAsState(initial = emptyList())
+            val m9: Z_AppCompt? = allAppCompts.find {
+                it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            }
+            val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean? = m9?.affiche_Dialog_Fast_Affiche_Panie_App4
+
+            (affiche_Dialog_Fast_Affiche_Panie_App4 == true)
                 .ifTrue {
                     Dialog_Fast_Affiche_Panie()
                 }

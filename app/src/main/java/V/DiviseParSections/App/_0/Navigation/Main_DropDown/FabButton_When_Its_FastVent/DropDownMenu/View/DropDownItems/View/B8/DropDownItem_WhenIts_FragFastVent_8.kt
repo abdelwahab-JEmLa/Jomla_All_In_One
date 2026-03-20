@@ -25,7 +25,7 @@ const val TAG = "DropDownItem_FragFastVent_8"
 
 @Composable
 fun DropDownItem_WhenIts_FragFastVent_8(
-    nomFun: String = "Créer PDF en arrière-plan",
+    nomFun: String = "",
     onDismissDropdown: () -> Unit,
     onClick_to_initiateBackgroundPdfCreation: () -> Unit,
     aCentralFacade: ACentralFacade = koinInject(),
