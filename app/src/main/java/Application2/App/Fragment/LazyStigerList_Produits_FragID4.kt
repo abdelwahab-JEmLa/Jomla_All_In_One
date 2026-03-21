@@ -86,6 +86,7 @@ fun Etager_LazyColumn_App2(
             }
         }
 
+
         if (foundIndex >= 0) {
             delay(100)
             coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
