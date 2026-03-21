@@ -2,8 +2,8 @@ package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -99,7 +99,7 @@ fun Image_Displaye(
                     }
 
                     viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
                         relative_M3CouleurProduitInfos.keyID
                     )
                 }

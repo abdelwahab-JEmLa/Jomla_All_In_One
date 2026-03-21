@@ -1,6 +1,6 @@
 package Application2.App.View.Pro0.Proto.ViewS.Views
 
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
@@ -31,7 +31,7 @@ fun Image_Displaye_app2(
     // NEW: pass these in so the image can broadcast the toggle over WiFi when acting as host
     isHostPhone: Boolean = false,
     isConnected: Boolean = false,
-    sendOrderToClientDisplayer: ((WifiUpdateClientDisplayerStats_app2, Any?) -> Unit)? = null,
+    sendOrderToClientDisplayer: ((WifiUpdateClientDisplayerStats, Any?) -> Unit)? = null,
 ) {
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -58,7 +58,7 @@ fun Image_Displaye_app2(
                     isHostPhone && isConnected && sendOrderToClientDisplayer != null -> {
                         expandState.onImageTap(relative_M3CouleurProduitInfos)
                         sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
                             relative_M3CouleurProduitInfos.keyID
                         )
                     }

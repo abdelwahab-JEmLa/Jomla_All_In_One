@@ -1,5 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
+import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
@@ -30,8 +32,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import V.DiviseParSections.App._0.Navigation.Screen
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -93,7 +93,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onClickAnulationButton: () -> Unit = {},
-    wifiTransferDatas: WifiTransferDatas = koinInject(),
+    wifiTransferDatas: WifiTransferDatas_NewProto = koinInject(),
 
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
@@ -113,8 +113,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.y.toFloat())
     }
 
-    // Center the FAB menu when WiFi connection state changes
-    val connectionUiState by wifiTransferDatas.connectionUiState.collectAsState()
+    val connectionUiState by wifiTransferDatas.state.collectAsState()
+
     LaunchedEffect(connectionUiState.isConnected) {
         offsetX = 0f
         offsetY = 0f
@@ -290,7 +290,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
+                    WifiUpdateClientDisplayerStats_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                     catalogueId
                 )
             }

@@ -1,7 +1,7 @@
 package Application2.App.View.Pro0.Proto
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application2.App.View.Pro0.Proto.Components.Big_Principale_AppEcranPresntoireJemlaCom
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
@@ -66,7 +66,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
         expandState.onImageTap(couleur)
         if (isHostPhone && isConnected) {
             viewModel.sendOrderToClientDisplayerT(
-                WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
                 couleur.keyID
             )
         }

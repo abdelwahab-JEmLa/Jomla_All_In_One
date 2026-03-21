@@ -1,8 +1,7 @@
 package Application2.App.App.ViewModel
 
-import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
+import Application2.App.Base.Modules.ProductDisplayController_App2
+import Application2.App.Base.Modules.WifiTransferDatas_App2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M01Produit
@@ -11,6 +10,7 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
@@ -56,7 +56,7 @@ class ViewModel_MainFragment(
         repositorysMainGetter_app2.update_ActiveCentralValues_app2(updated)
     }
 
-    val wifi = WifiTransferDatas(
+    val wifi = WifiTransferDatas_App2(
         context = context,
         coroutineScope = viewModelScope,
         list_M1Produit = emptyList(),       // ← mis à jour dans le collect ci-dessous
@@ -66,7 +66,7 @@ class ViewModel_MainFragment(
     )
 
     val wifiState =
-        wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController())
+        wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController_App2())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
@@ -78,7 +78,7 @@ class ViewModel_MainFragment(
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         // Track how many of the 3 sources have emitted at least once, to drive progress (0f → 1f).

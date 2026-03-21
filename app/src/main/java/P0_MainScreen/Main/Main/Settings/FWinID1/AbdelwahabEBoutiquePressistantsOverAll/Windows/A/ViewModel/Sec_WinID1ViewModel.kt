@@ -1,5 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
+import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
@@ -8,8 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.U
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class ViewModelPresistantButtonsSec8FWinID1(
     val  aCentralFacade: ACentralFacade,
-    val wifiTransferDatas: WifiTransferDatas,
+    val wifiTransferDatas: WifiTransferDatas_NewProto,
 ) : ViewModel() {
     val getter=aCentralFacade.repositorysMainGetter
     val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
@@ -52,7 +52,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
     }
     fun sendOrderAuPresentoireDevice(catalogueBsonID:String): Unit {
         wifiTransferDatas.sendOrderToClientDisplayerT(
-            WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct
+            WifiUpdateClientDisplayerStats_NewProto.NewArregmentColorsJsonStruct
             ,catalogueBsonID
         )
     }

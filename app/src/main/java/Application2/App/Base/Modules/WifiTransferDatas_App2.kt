@@ -34,7 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-data class ProductDisplayController(
+data class ProductDisplayController_App2(
     val mainGridScrollPosition: Int = 0,
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     var expanded_M1Produit: M01Produit? = null,
@@ -54,7 +54,7 @@ data class ProductDisplayController(
 )
 
 @SuppressLint("StaticFieldLeak")
-class WifiTransferDatas(
+class WifiTransferDatas_App2(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
     var list_M1Produit: List<M01Produit>,
@@ -62,8 +62,8 @@ class WifiTransferDatas(
     private val onGetActiveCentralValues: () -> ActiveCentralValues_app2,
     private val onUpdateActiveCentralValues: (ActiveCentralValues_app2) -> Unit,
 ) {
-    private val _state = MutableStateFlow(ProductDisplayController())
-    val state: StateFlow<ProductDisplayController> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ProductDisplayController_App2())
+    val state: StateFlow<ProductDisplayController_App2> = _state.asStateFlow()
 
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
@@ -93,7 +93,7 @@ class WifiTransferDatas(
         coroutineScope.launch { sendData("$orderName$data") }
     }
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_app2, data: Any? = null) {
+    fun sendOrderToClientDisplayerT(order: Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats, data: Any? = null) {
         coroutineScope.launch { sendData("${order.prefix}$data") }
     }
 
@@ -166,28 +166,28 @@ class WifiTransferDatas(
 
     private fun handlePayload(payload: String) {    //<--
     //TODO(1): cree moi log debog qui suit pk Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ne s active pas 
-        WifiUpdateClientDisplayerStats_app2.fromPayload(payload)
+        WifiUpdateClientDisplayerStats_App2.fromPayload(payload)
             ?.let { (type, content) ->
                 when (type) {
-                    WifiUpdateClientDisplayerStats_app2.ClientMainGridScrollPosition ->
+                    WifiUpdateClientDisplayerStats_App2.ClientMainGridScrollPosition ->
                         _state.update { it.copy(mainGridScrollPosition = content.toIntOrNull() ?: it.mainGridScrollPosition) }
-                    WifiUpdateClientDisplayerStats_app2.ClientWindowsDisplayedProductId ->
+                    WifiUpdateClientDisplayerStats_App2.ClientWindowsDisplayedProductId ->
                         _state.update { it.copy(clientWindowsDisplayedProductId = content.toLongOrNull()) }
-                    WifiUpdateClientDisplayerStats_app2.DISMISS_PRODUCT_INFO ->
+                    WifiUpdateClientDisplayerStats_App2.DISMISS_PRODUCT_INFO ->
                         _state.update { it.copy(clientWindowsDisplayedProductId = null, searchWindowsDisplaye = "") }
-                    WifiUpdateClientDisplayerStats_app2.SearchWindowsDisplaye ->
+                    WifiUpdateClientDisplayerStats_App2.SearchWindowsDisplaye ->
                         _state.update { it.copy(searchWindowsDisplaye = content) }
-                    WifiUpdateClientDisplayerStats_app2.WindowsPickerDisplayedQuantity ->
+                    WifiUpdateClientDisplayerStats_App2.WindowsPickerDisplayedQuantity ->
                         _state.update { it.copy(clientWindowsPickerDisplayedQuantity = content.toIntOrNull() ?: it.clientWindowsPickerDisplayedQuantity) }
-                    WifiUpdateClientDisplayerStats_app2.ClientWindowsSelectedColorId ->
+                    WifiUpdateClientDisplayerStats_App2.ClientWindowsSelectedColorId ->
                         _state.update { it.copy(clientWindowsSelectedColorId = content.toLongOrNull() ?: it.clientWindowsSelectedColorId) }
-                    WifiUpdateClientDisplayerStats_app2.ClientWindowsLazyRowSupColorsScrolle ->
+                    WifiUpdateClientDisplayerStats_App2.ClientWindowsLazyRowSupColorsScrolle ->
                         _state.update { it.copy(clientWindowsLazyRowSupColorsScroll = content.toIntOrNull() ?: it.clientWindowsLazyRowSupColorsScroll) }
-                    WifiUpdateClientDisplayerStats_app2.NewArregmentColorsJsonStruct ->
+                    WifiUpdateClientDisplayerStats_App2.NewArregmentColorsJsonStruct ->
                         _state.update { it.copy(newArregmentColorsJsonStruct = content) }
-                    WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
+                    WifiUpdateClientDisplayerStats_App2.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
                         _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
-                    WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
+                    WifiUpdateClientDisplayerStats_App2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
                         list_M3CouleurProduit.find { it.keyID == content }
                             ?.let { toggleExpandedCouleur(it)
                             }
@@ -214,7 +214,7 @@ class WifiTransferDatas(
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    this@WifiTransferDatas.endpointId = endpointId
+                    this@WifiTransferDatas_App2.endpointId = endpointId
                     _state.update { it.copy(isConnected = true) }
                     updateConnectionStatus("Connecté")
                     retryCount = 0
@@ -228,8 +228,8 @@ class WifiTransferDatas(
         }
 
         override fun onDisconnected(endpointId: String) {
-            if (this@WifiTransferDatas.endpointId == endpointId) {
-                this@WifiTransferDatas.endpointId = null
+            if (this@WifiTransferDatas_App2.endpointId == endpointId) {
+                this@WifiTransferDatas_App2.endpointId = null
                 _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté") }
                 if (retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE) initiateReconnection()
                 else handleFinalDisconnection()
@@ -275,6 +275,7 @@ class WifiTransferDatas(
                         ConnectionMode.HOST -> startAsHost()
                         ConnectionMode.CLIENT -> startAsClient()
                         ConnectionMode.NONE -> handleFinalDisconnection()
+                        else -> {}
                     }
                     retryCount++
                 } catch (_: Exception) {
@@ -329,7 +330,7 @@ class WifiTransferDatas(
         }
 }
 
-enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {
+enum class WifiUpdateClientDisplayerStats_App2(val prefix: String) {
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
     ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
     ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
@@ -342,7 +343,7 @@ enum class WifiUpdateClientDisplayerStats_app2(val prefix: String) {
     Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran("Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran");
 
     companion object {
-        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats_app2, String>? =
+        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats_App2, String>? =
             entries.firstOrNull { payload.startsWith(it.prefix) }
                 ?.let { it to payload.removePrefix(it.prefix) }
     }
