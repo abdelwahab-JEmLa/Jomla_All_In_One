@@ -1,5 +1,7 @@
 package Application2.App.View.Pro0.Proto
 
+import Application2.App.App.ViewModel.ViewModel_MainFragment
+import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application2.App.View.Pro0.Proto.Components.Big_Principale_AppEcranPresntoireJemlaCom
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
@@ -21,9 +23,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -32,11 +37,14 @@ import org.koin.compose.koinInject
 fun Item_Produit_AppEcranPresntoireJemlaCom(
     relative_M1ProduitToListM3Couleur: Pair<M01Produit, List<M3CouleurProduitInfos>>,
     focusedValuesGetter_app2: RepositorysMainGetter_app2 = koinInject(),
-) {             //<--
-//TODO(2.C Relative Au Todo(1): 
-        //... ca
+    viewModel: ViewModel_MainFragment = koinViewModel(),
+) {
     val relative_M1produit = relative_M1ProduitToListM3Couleur.first
     val relativeList_M3ColorsProduit = relative_M1ProduitToListM3Couleur.second
+
+    val wifiState by viewModel.wifiState.collectAsState()
+    val isHostPhone = wifiState.isHostPhone
+    val isConnected = wifiState.isConnected
 
     val expandState = remember(relative_M1produit.keyID, relativeList_M3ColorsProduit) {
         ProduitExpandState(
@@ -50,6 +58,18 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
         expandState.syncFromFocusedValues(
             focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
         )
+    }
+
+    // Single WiFi-aware tap handler for both Big_Principale and all SubColorCards.
+    // Toggles expand locally, then broadcasts to the client when this device is the host.
+    val onImageTapWithWifi: (M3CouleurProduitInfos) -> Unit = { couleur ->
+        expandState.onImageTap(couleur)
+        if (isHostPhone && isConnected) {
+            viewModel.sendOrderToClientDisplayerT(
+                WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                couleur.keyID
+            )
+        }
     }
 
     Column(
@@ -75,6 +95,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                 Big_Principale_AppEcranPresntoireJemlaCom(
                     big_presenter_couleur_produit = expandState.bigPresenterCouleur,
                     expandState = expandState,
+                    onImageTap = onImageTapWithWifi,  // FIX: was missing, caused compile error
                 )
 
                 if (relativeList_M3ColorsProduit.size > 1) {
@@ -94,6 +115,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                                         expandState = expandState,
                                         isExpanded = true,
                                         modifier = Modifier.weight(1f, fill = false),
+                                        onTap = { onImageTapWithWifi(couleur) },  // FIX: was missing
                                     )
                                 }
                             }
@@ -111,6 +133,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                                         expandState = expandState,
                                         isExpanded = false,
                                         modifier = Modifier.fillMaxWidth(),
+                                        onTap = { onImageTapWithWifi(couleur) },  // FIX: was missing
                                     )
                                 }
                             }

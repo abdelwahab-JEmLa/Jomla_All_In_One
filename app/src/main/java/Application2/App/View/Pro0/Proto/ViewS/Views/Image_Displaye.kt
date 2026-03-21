@@ -1,5 +1,6 @@
 package Application2.App.View.Pro0.Proto.ViewS.Views
 
+import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
@@ -27,6 +28,10 @@ fun Image_Displaye_app2(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     onImageClick: (() -> Unit)? = null,
+    // NEW: pass these in so the image can broadcast the toggle over WiFi when acting as host
+    isHostPhone: Boolean = false,
+    isConnected: Boolean = false,
+    sendOrderToClientDisplayer: ((WifiUpdateClientDisplayerStats_app2, Any?) -> Unit)? = null,
 ) {
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -45,8 +50,22 @@ fun Image_Displaye_app2(
             model = imageFile,
             contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
             modifier = modifier.fillMaxSize().clickable {
-                if (onImageClick != null) onImageClick()
-                else expandState.onImageTap(relative_M3CouleurProduitInfos)
+                when {
+                    // Explicit override (e.g. from a parent that already knows what to do)
+                    onImageClick != null -> onImageClick()
+
+                    // Host connected to a client → toggle locally AND broadcast so the client mirrors it
+                    isHostPhone && isConnected && sendOrderToClientDisplayer != null -> {
+                        expandState.onImageTap(relative_M3CouleurProduitInfos)
+                        sendOrderToClientDisplayer(
+                            WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                            relative_M3CouleurProduitInfos.keyID
+                        )
+                    }
+
+                    // Client connected to host OR standalone (no WiFi) → toggle locally only
+                    else -> expandState.onImageTap(relative_M3CouleurProduitInfos)
+                }
             },
             contentScale = contentScale
         ) {

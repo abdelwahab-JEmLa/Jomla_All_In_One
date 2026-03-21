@@ -51,9 +51,7 @@ class ViewModel_MainFragment(
 
     private fun getActiveCentralValues() = _uiState.value.active_Central_Values
 
-    fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {     //<--
-    //TODO(2.C Relative Au Todo(1): 
-            //... a ici 
+    fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {
         _uiState.update { it.copy(active_Central_Values = updated) }
         repositorysMainGetter_app2.update_ActiveCentralValues_app2(updated)
     }
