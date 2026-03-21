@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class ViewModelPresistantButtonsSec8FWinID1(
     val  aCentralFacade: ACentralFacade,
-    val wifiTransferDatas: WifiTransferDatas_NewProto,
 ) : ViewModel() {
     val getter=aCentralFacade.repositorysMainGetter
     val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
@@ -49,11 +48,5 @@ class ViewModelPresistantButtonsSec8FWinID1(
 
     fun update_M9(data: Z_AppCompt): Unit {
        aCentralFacade.repositorysMainSetter.update_M9AppCompt(data)
-    }
-    fun sendOrderAuPresentoireDevice(catalogueBsonID:String): Unit {
-        wifiTransferDatas.sendOrderToClientDisplayerT(
-            WifiUpdateClientDisplayerStats_NewProto.NewArregmentColorsJsonStruct
-            ,catalogueBsonID
-        )
     }
 }

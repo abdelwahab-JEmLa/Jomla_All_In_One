@@ -1,6 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
-import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -93,7 +92,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onClickAnulationButton: () -> Unit = {},
-    wifiTransferDatas: WifiTransferDatas_NewProto = koinInject(),
 
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
@@ -113,9 +111,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.y.toFloat())
     }
 
-    val connectionUiState by wifiTransferDatas.state.collectAsState()
 
-    LaunchedEffect(connectionUiState.isConnected) {
+    LaunchedEffect(Unit) {
         offsetX = 0f
         offsetY = 0f
     }

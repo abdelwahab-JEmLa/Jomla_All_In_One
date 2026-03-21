@@ -171,6 +171,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
+
     single { FragmentNavigationHandler() }
 
     single { UploadHandler() }
@@ -198,6 +199,8 @@ val classesHandlersModule = module {
 
 val viewModelModule = module {
     viewModel { ViewModel_M9AppCompt(get(),  ) }
+    viewModel { ViewModel_M9AppCompt(get(),  ) }
+
     viewModel { Preview_DataBaseInitFactory_15Grossist(get(),  ) }
     viewModel { ViewModel_DataBaseInitFactory_1Produit(get(),  ) }
     viewModel { ViewModel_M14VentPeriod(get(),  ) }
@@ -230,12 +233,11 @@ val viewModelModule = module {
     viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
-    viewModel { ViewModelPresistantButtonsSec8FWinID1(get(), get()) }
+    viewModel { ViewModelPresistantButtonsSec8FWinID1(get()) }
 
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { HeadViewModel(get(), androidContext(), get(), get()) }
 }
-
 
 val appModule = module {
     includes(
