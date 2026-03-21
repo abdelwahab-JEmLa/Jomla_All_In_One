@@ -164,7 +164,8 @@ class WifiTransferDatas(
         }
     }
 
-    private fun handlePayload(payload: String) {
+    private fun handlePayload(payload: String) {    //<--
+    //TODO(1): cree moi log debog qui suit pk Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ne s active pas 
         WifiUpdateClientDisplayerStats_app2.fromPayload(payload)
             ?.let { (type, content) ->
                 when (type) {
@@ -186,8 +187,11 @@ class WifiTransferDatas(
                         _state.update { it.copy(newArregmentColorsJsonStruct = content) }
                     WifiUpdateClientDisplayerStats_app2.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
                         _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
-                    WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
-                        list_M3CouleurProduit.find { it.keyID == content }?.let { toggleExpandedCouleur(it) }
+                    WifiUpdateClientDisplayerStats_app2.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
+                        list_M3CouleurProduit.find { it.keyID == content }
+                            ?.let { toggleExpandedCouleur(it)
+                            }
+                    }
                     else -> Unit
                 }
             }
@@ -197,6 +201,7 @@ class WifiTransferDatas(
         val cur = onGetActiveCentralValues()
         val newColor = if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
         val newProduit = newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
+        _state.update { it.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit) }
         onUpdateActiveCentralValues(cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit))
     }
 
@@ -244,7 +249,9 @@ class WifiTransferDatas(
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES)
-                try { handlePayload(String(payload.asBytes()!!)) } catch (_: Exception) {}
+                try { 
+                    handlePayload(String(payload.asBytes()!!)
+                ) } catch (_: Exception) {}
         }
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) = Unit
     }

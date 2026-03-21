@@ -61,6 +61,7 @@ fun Image_Displaye(
             .fillMaxSize()
             .then(
                 Modifier.clickable {
+
                     val currentExpandedProduct = centralValues.expanded_M1Produit
                     val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
 
@@ -97,8 +98,7 @@ fun Image_Displaye(
                         )
                     }
 
-                    // Send the data update
-                    on_pour_send_data(
+                    viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
                         relative_M3CouleurProduitInfos.keyID
                     )

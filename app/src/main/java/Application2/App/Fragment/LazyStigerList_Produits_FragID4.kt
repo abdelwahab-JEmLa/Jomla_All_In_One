@@ -26,6 +26,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,7 +56,8 @@ fun Etager_LazyColumn_App2(
     val uiState by viewModel.uiState.collectAsState()
     val activeCentralValues = uiState.active_Central_Values
 
-    val expanded_M3CouleurProduitInfos = activeCentralValues.expanded_M3CouleurProduitInfos
+    val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
+    val expanded_M1Produit = wifiState.expanded_M1Produit
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
@@ -109,6 +112,25 @@ fun Etager_LazyColumn_App2(
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = expanded_M3CouleurProduitInfos,
+                    key = SemanticsPropertyKey("expanded_M3CouleurProduitInfos")
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = expanded_M1Produit, key = SemanticsPropertyKey(
+                        "expanded_M1Produit"
+                    )
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = currentScrollPosition,
+                    key = SemanticsPropertyKey("currentScrollPosition")
+                )
+            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

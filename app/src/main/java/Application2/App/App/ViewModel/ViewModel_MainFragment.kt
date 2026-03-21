@@ -1,5 +1,8 @@
 package Application2.App.App.ViewModel
 
+import Application2.App.Base.Modules.ProductDisplayController
+import Application2.App.Base.Modules.WifiTransferDatas
+import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M01Produit
@@ -7,9 +10,6 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
-import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import android.annotation.SuppressLint
 import android.content.Context
@@ -51,7 +51,9 @@ class ViewModel_MainFragment(
 
     private fun getActiveCentralValues() = _uiState.value.active_Central_Values
 
-    fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {
+    fun updateActiveCentralValues(updated: ActiveCentralValues_app2) {     //<--
+    //TODO(2.C Relative Au Todo(1): 
+            //... a ici 
         _uiState.update { it.copy(active_Central_Values = updated) }
         repositorysMainGetter_app2.update_ActiveCentralValues_app2(updated)
     }
@@ -59,8 +61,8 @@ class ViewModel_MainFragment(
     val wifi = WifiTransferDatas(
         context = context,
         coroutineScope = viewModelScope,
-        list_M1Produit = emptyList(),
-        list_M3CouleurProduit = emptyList(),
+        list_M1Produit = emptyList(),       // ← mis à jour dans le collect ci-dessous
+        list_M3CouleurProduit = emptyList(), // ← mis à jour dans le collect ci-dessous
         onGetActiveCentralValues = ::getActiveCentralValues,
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )

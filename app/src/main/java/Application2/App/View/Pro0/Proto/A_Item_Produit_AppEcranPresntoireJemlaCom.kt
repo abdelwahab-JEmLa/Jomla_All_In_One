@@ -32,7 +32,9 @@ import org.koin.compose.koinInject
 fun Item_Produit_AppEcranPresntoireJemlaCom(
     relative_M1ProduitToListM3Couleur: Pair<M01Produit, List<M3CouleurProduitInfos>>,
     focusedValuesGetter_app2: RepositorysMainGetter_app2 = koinInject(),
-) {
+) {             //<--
+//TODO(2.C Relative Au Todo(1): 
+        //... ca
     val relative_M1produit = relative_M1ProduitToListM3Couleur.first
     val relativeList_M3ColorsProduit = relative_M1ProduitToListM3Couleur.second
 

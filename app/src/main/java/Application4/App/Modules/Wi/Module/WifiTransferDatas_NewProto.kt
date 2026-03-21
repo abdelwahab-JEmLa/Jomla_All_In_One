@@ -194,7 +194,7 @@ class WifiTransferDatas_NewProto(
     }
 
     fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
-        val cur = onGetActiveCentralValues()
+                                  val cur = onGetActiveCentralValues()
         val newColor = if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
         val newProduit = newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
         onUpdateActiveCentralValues(cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit))

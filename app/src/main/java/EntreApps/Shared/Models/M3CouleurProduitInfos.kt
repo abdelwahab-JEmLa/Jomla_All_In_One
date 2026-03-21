@@ -9,7 +9,8 @@ import com.google.firebase.firestore.CollectionReference
 import java.io.File
 
 @Entity
-data class M3CouleurProduitInfos(
+data class
+M3CouleurProduitInfos(
     @PrimaryKey
     var keyID: String = RepositorysMainGetter.Companion.getPushFireBase(ref),
     var debugInfos: String = "",

@@ -1,8 +1,5 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
-import Application2.App.Base.Modules.ProductDisplayController
-import Application2.App.Base.Modules.WifiTransferDatas
-import Application2.App.Base.Modules.WifiUpdateClientDisplayerStats_app2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
@@ -159,7 +156,9 @@ class ViewModel_NewProtoPatterns(
     }
 
     private fun updateActiveCentralValues(updated: ActiveCentralValues_app2) =
-        update_activeCentralValues(_uiStateNewProtoPatterns.value.active_Central_Values.copy(
+    // Read from focusedValues (source of truth) — not from _uiStateNewProtoPatterns,
+        // which is a collected copy and may be one coroutine tick behind.
+        update_activeCentralValues(focusedValues_NewProtoPatterns.active_Central_Values.value.copy(
             expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
             expanded_M1Produit = updated.expanded_M1Produit,
             hide_prix_lence_vent_buttons = updated.hide_prix_lence_vent_buttons,
