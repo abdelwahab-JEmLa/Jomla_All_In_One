@@ -1,9 +1,8 @@
 package Application4.App.Fragment.View.ViewS
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
-import android.util.Log
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.DeleteProductHeader
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.FastInit_Outlined_Int_Edite_Modulable_Proto4
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +24,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,23 +41,16 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Compact_Header_FragID3(
+fun Compact_Header_FragID4(
+    modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
-    shouldShowButtons: Boolean = false,
-    onUpdateTariffContext: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    shouldShowButtons: Boolean = true,
+    onUpdateTariff: () -> Unit,
+    onUpdateProduit: (M01Produit) -> Unit,
+    currentApp_Est_Admin: Boolean,
+    onDelete: (M01Produit) -> Unit
 ) {
-    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-    val centralValues = uiState.active_Central_Values
-
-    // Sourced from uiState — no koinInject needed
-    val isAdmin = remember(centralValues.currentApp_Est_Admin) {
-        centralValues.currentApp_Est_Admin
-    }
-
-    // Dynamic text sizes based on expansion state
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
     val labelTextSize = if (isExpanded) 10.sp else 7.sp
@@ -63,7 +58,6 @@ fun Compact_Header_FragID3(
     val iconSize = if (isExpanded) 14.dp else 10.dp
     val cardPadding = if (isExpanded) 6.dp else 3.dp
     val itemPadding = if (isExpanded) 4.dp else 2.dp
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -89,21 +83,7 @@ fun Compact_Header_FragID3(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // Delete button - only visible for admin users
-            if (shouldShowButtons && isAdmin) {
-                DeleteProductHeader(
-                    productName = relative_M1produit.nom,
-                    onDelete = {
-                        viewModel.update_m1Produit(
-                            relative_M1produit.copy(
-                                dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
-                            )
-                        )
-                        // Delegate actual deletion to ViewModel
-                        viewModel.delete_m1Produit(relative_M1produit)
-                    }
-                )
-            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -142,15 +122,18 @@ fun Compact_Header_FragID3(
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
-                // Update tariff context button — shown first if available, admin only
-                if (isAdmin) {
-                    if (onUpdateTariffContext == null) {
-                        Log.d(
-                            "Compact_Header_FragID3",
-                            "ClickableInfoCard 'Tarif' non affiché : onUpdateTariffContext est null " +
-                                    "(currentApp_Est_Admin=false ou activeCompt=null)"
-                        )
-                    }
+                // Delete button - only visible for admin users
+                if (shouldShowButtons && currentApp_Est_Admin) {
+                    DeleteProductHeader(
+                        productName = relative_M1produit.nom,
+                        onDelete = {
+                            onDelete(relative_M1produit)
+                        }
+                    )
+                }
+
+                // FIXED: Update tariff context button as InfoCard - shown first if available
+                if (shouldShowButtons && currentApp_Est_Admin) {
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -165,45 +148,174 @@ fun Compact_Header_FragID3(
                         labelTextSize = labelTextSize,
                         valueTextSize = valueTextSize,
                         itemPadding = itemPadding,
-                        onClick = onUpdateTariffContext
+                        onClick = onUpdateTariff
                     )
                 }
 
-                // Number of units card - only show if > 1
-                if (relative_M1produit.nombreUniteInt > 1) {
-                    InfoCard(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.ViewModule,
-                                contentDescription = "Units",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        },
-                        value = "${relative_M1produit.nombreUniteInt}",
-                        label = "U",
-                        labelTextSize = labelTextSize,
-                        valueTextSize = valueTextSize,
-                        itemPadding = itemPadding
-                    )
+                // Number of units card - admin: InfoCard pill that opens FastInit on click
+                if (relative_M1produit.nombreUniteInt > 1 || currentApp_Est_Admin) {
+                    if (currentApp_Est_Admin) {
+                        EditableInfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.ViewModule,
+                                    contentDescription = "Units",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.nombreUniteInt}",
+                            label = "U",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding,
+                            startCount = relative_M1produit.nombreUniteInt,
+                            isExpanded = isExpanded,
+                            onUpdate = { new ->
+                                onUpdateProduit(
+                                    relative_M1produit
+                                        .copy(
+                                            nombreUniteInt = new
+                                        )
+                                )
+                            }
+                        )
+                    } else {
+                        InfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.ViewModule,
+                                    contentDescription = "Units",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.nombreUniteInt}",
+                            label = "U",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding
+                        )
+                    }
                 }
 
-                // Carton quantity card - only show if > 1
-                if (relative_M1produit.quantite_Boit_Par_Carton > 1) {
-                    InfoCard(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Inventory2,
-                                contentDescription = "Carton",
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        },
-                        value = "${relative_M1produit.quantite_Boit_Par_Carton}",
-                        label = "C",
-                        labelTextSize = labelTextSize,
-                        valueTextSize = valueTextSize,
-                        itemPadding = itemPadding
+                // Carton quantity card - admin: InfoCard pill that opens FastInit on click
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || currentApp_Est_Admin) {
+                    if (currentApp_Est_Admin) {
+                        EditableInfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Inventory2,
+                                    contentDescription = "Carton",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.quantite_Boit_Par_Carton}",
+                            label = "C",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding,
+                            startCount = relative_M1produit.quantite_Boit_Par_Carton,
+                            isExpanded = isExpanded,
+                            onUpdate = { new ->
+                                onUpdateProduit(
+                                    relative_M1produit
+                                        .copy(
+                                            quantite_Boit_Par_Carton = new
+                                        )
+                                )
+                            }
+                        )
+                    } else {
+                        InfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Inventory2,
+                                    contentDescription = "Carton",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.quantite_Boit_Par_Carton}",
+                            label = "C",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Affiche une InfoCard pill normale.
+ * Au clic, se remplace directement par le OutlinedTextField de FastInit
+ * (force_edit_mode_on_start = true — pas de pill intermédiaire FastInit).
+ * Dès que l'utilisateur confirme (Done), repasse en mode pill.
+ */
+@Composable
+private fun EditableInfoCard(
+    icon: @Composable () -> Unit,
+    value: String,
+    label: String,
+    labelTextSize: TextUnit,
+    valueTextSize: TextUnit,
+    itemPadding: Dp,
+    startCount: Int,
+    isExpanded: Boolean,
+    onUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isEditing by remember { mutableStateOf(false) }
+
+    if (isEditing) {
+        FastInit_Outlined_Int_Edite_Modulable_Proto4(
+            start_count = startCount,
+            standard_count = 1,
+            force_edit_mode_on_start = true,
+            isAvailable = true,
+            compact_taille = !isExpanded,
+            is_admin = true,
+            modifier = modifier,
+            on_Data_Update = { newValue ->
+                onUpdate(newValue)
+                isEditing = false
+            }
+        )
+    } else {
+        Card(
+            modifier = modifier.clickable { isEditing = true },
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(
+                    horizontal = itemPadding + 2.dp,
+                    vertical = itemPadding
+                ),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                icon()
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = label,
+                        fontSize = labelTextSize,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = labelTextSize
+                    )
+                    Text(
+                        text = value,
+                        fontSize = valueTextSize,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = valueTextSize
                     )
                 }
             }
@@ -258,28 +370,22 @@ private fun InfoCard(
 
 @Composable
 private fun ClickableInfoCard(
-    icon: @Composable (() -> Unit),
+    icon: @Composable () -> Unit,
     value: String,
     label: String,
     labelTextSize: TextUnit,
     valueTextSize: TextUnit,
     itemPadding: Dp,
-    onClick: (() -> Unit)?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isEnabled = onClick != null
     Card(
         modifier = modifier
-            .then(if (isEnabled) Modifier.clickable(onClick = onClick!!) else Modifier),
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (isEnabled)
-                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
-            else
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isEnabled) 2.dp else 0.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = itemPadding + 2.dp, vertical = itemPadding),
@@ -293,20 +399,14 @@ private fun ClickableInfoCard(
                 Text(
                     text = label,
                     fontSize = labelTextSize,
-                    color = if (isEnabled)
-                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f)
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f),
                     fontWeight = FontWeight.Medium,
                     lineHeight = labelTextSize
                 )
                 Text(
                     text = value,
                     fontSize = valueTextSize,
-                    color = if (isEnabled)
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontWeight = FontWeight.Bold,
                     lineHeight = valueTextSize
                 )

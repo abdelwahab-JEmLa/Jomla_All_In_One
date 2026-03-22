@@ -1,9 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS
 
 import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,23 +36,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Compact_Header_FragID3(
-    repositorysMainSetter: RepositorysMainSetter= koinInject(),
-    repositorysMainGetter: RepositorysMainGetter= koinInject(),
-    focusedValuesGetter: FocusedValuesGetter= koinInject(),
+    modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
     shouldShowButtons: Boolean = true,
-    onUpdateTariffContext: () -> Unit,
-    onUpdateNombreUnite: (Int) -> Unit = {},
-    onUpdateCarton: (Int) -> Unit = {},
-    modifier: Modifier = Modifier
+    onUpdateTariff: () -> Unit,
+    onUpdateProduit: (M01Produit) -> Unit = {},
+    currentApp_Est_Admin: Boolean,
+    onDelete: (M01Produit) -> Unit
 ) {
-    // Dynamic text sizes based on expansion state
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
     val labelTextSize = if (isExpanded) 10.sp else 7.sp
@@ -63,7 +56,6 @@ fun Compact_Header_FragID3(
     val iconSize = if (isExpanded) 14.dp else 10.dp
     val cardPadding = if (isExpanded) 6.dp else 3.dp
     val itemPadding = if (isExpanded) 4.dp else 2.dp
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -129,17 +121,17 @@ fun Compact_Header_FragID3(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // Delete button - only visible for admin users
-                if (shouldShowButtons && focusedValuesGetter.currentApp_Est_Admin) {
+                if (shouldShowButtons && currentApp_Est_Admin) {
                     DeleteProductHeader(
                         productName = relative_M1produit.nom,
                         onDelete = {
-                            repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
+                            onDelete(relative_M1produit)
                         }
                     )
                 }
 
                 // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin) {
+                if (shouldShowButtons && currentApp_Est_Admin) {
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -154,13 +146,13 @@ fun Compact_Header_FragID3(
                         labelTextSize = labelTextSize,
                         valueTextSize = valueTextSize,
                         itemPadding = itemPadding,
-                        onClick = onUpdateTariffContext
+                        onClick = onUpdateTariff
                     )
                 }
 
                 // Number of units card - admin: InfoCard pill that opens FastInit on click
-                if (relative_M1produit.nombreUniteInt > 1 || focusedValuesGetter.currentApp_Est_Admin) {
-                    if (focusedValuesGetter.currentApp_Est_Admin) {
+                if (relative_M1produit.nombreUniteInt > 1 || currentApp_Est_Admin) {
+                    if (currentApp_Est_Admin) {
                         EditableInfoCard(
                             icon = {
                                 Icon(
@@ -177,11 +169,16 @@ fun Compact_Header_FragID3(
                             itemPadding = itemPadding,
                             startCount = relative_M1produit.nombreUniteInt,
                             isExpanded = isExpanded,
-                            onUpdate = { newVal ->
-                                onUpdateNombreUnite(newVal)
+                            onUpdate = { new ->
+                                onUpdateProduit(
+                                    relative_M1produit
+                                        .copy(
+                                            nombreUniteInt = new
+                                        )
+                                )
                             }
                         )
-                    } else if (relative_M1produit.nombreUniteInt > 1) {
+                    } else {
                         InfoCard(
                             icon = {
                                 Icon(
@@ -201,8 +198,8 @@ fun Compact_Header_FragID3(
                 }
 
                 // Carton quantity card - admin: InfoCard pill that opens FastInit on click
-                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || focusedValuesGetter.currentApp_Est_Admin) {
-                    if (focusedValuesGetter.currentApp_Est_Admin) {
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || currentApp_Est_Admin) {
+                    if (currentApp_Est_Admin) {
                         EditableInfoCard(
                             icon = {
                                 Icon(
@@ -219,9 +216,16 @@ fun Compact_Header_FragID3(
                             itemPadding = itemPadding,
                             startCount = relative_M1produit.quantite_Boit_Par_Carton,
                             isExpanded = isExpanded,
-                            onUpdate = onUpdateCarton
+                            onUpdate = { new ->
+                                onUpdateProduit(
+                                    relative_M1produit
+                                        .copy(
+                                            quantite_Boit_Par_Carton = new
+                                        )
+                                )
+                            }
                         )
-                    } else if (relative_M1produit.quantite_Boit_Par_Carton > 1) {
+                    } else {
                         InfoCard(
                             icon = {
                                 Icon(
@@ -288,7 +292,10 @@ private fun EditableInfoCard(
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = itemPadding + 2.dp, vertical = itemPadding),
+                modifier = Modifier.padding(
+                    horizontal = itemPadding + 2.dp,
+                    vertical = itemPadding
+                ),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

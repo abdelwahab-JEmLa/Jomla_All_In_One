@@ -8,14 +8,12 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import org.koin.compose.koinInject
 
 /**
  * FilterSortGroupe_Tunnels - Compact filtering and sorting orchestration with Catalogue support
@@ -31,38 +29,29 @@ fun Contetn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     viewModel: ViewModel_NewProtoPatterns,
-    uiStateNewProtoPatterns: UiState_NewProtoPatterns,
-    focusedValuesGetter_injected: FocusedValuesGetter= koinInject(),
-    filterState_Facad_Boutique: FilterState_Facad_Boutique= focusedValuesGetter_injected.active_Central_Values.filterState_Facad_Boutique
-        ?: FilterState_Facad_Boutique(),
-    bool: Boolean?= filterState_Facad_Boutique?.affiche_dialog_editeur
+    uiStateNewProtoPatterns: UiState_NewProtoPatterns
 ) {
 
     val active_Central_Values = uiStateNewProtoPatterns.active_Central_Values
     val currentAppCompt = active_Central_Values.activeCompt
+    val filterState = active_Central_Values.filterState_Facad_Boutique
+        ?: FilterState_Facad_Boutique()
     val catalogueFilter = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
     // Apply all filters using the new FilterTunnel (regular function, not @Composable)
     val filteredProducts = remember(
-        groupe_Par_Catalogue, catalogueFilter,
-        filterState_Facad_Boutique.hide_non_couleurAuDepot,
-        filterState_Facad_Boutique.hideQuiNeSontPas_cUnNeveauArrivage,
-        filterState_Facad_Boutique.hidePetiteProbability,
-        filterState_Facad_Boutique.hidePrixAchatZero,
-        filterState_Facad_Boutique.hidePrixAchatPositif,
-        filterState_Facad_Boutique.hidePrixVenteZero,
-        filterState_Facad_Boutique.hidePrixVentePositif,
-        filterState_Facad_Boutique.hideHeldPrioriteDemandAuGrossist,
-        filterState_Facad_Boutique.hideNonHeldPrioriteDemandAuGrossist,
-        filterState_Facad_Boutique.searchText,
-        filterState_Facad_Boutique.prixAchatTimeFilterDays,
-        filterState_Facad_Boutique.enablePrixAchatTimeFilter,
-        filterState_Facad_Boutique.produit_a_Une_Couleur_Ac_Image
+        groupe_Par_Catalogue, catalogueFilter, filterState.hide_non_couleurAuDepot,
+        filterState.hideQuiNeSontPas_cUnNeveauArrivage, filterState.hidePetiteProbability,
+        filterState.hidePrixAchatZero, filterState.hidePrixAchatPositif,
+        filterState.hidePrixVenteZero, filterState.hidePrixVentePositif,
+        filterState.hideHeldPrioriteDemandAuGrossist, filterState.hideNonHeldPrioriteDemandAuGrossist,
+        filterState.searchText, filterState.prixAchatTimeFilterDays, filterState.enablePrixAchatTimeFilter,
+        filterState.produit_a_Une_Couleur_Ac_Image
     ) {
         FilterTunnel(
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             catalogueFilter = catalogueFilter,
-            filterState = filterState_Facad_Boutique
+            filterState = filterState
         )
     }
 
@@ -70,8 +59,8 @@ fun Contetn(
     val sortedProducts = SortTunnel(
         uiStateNewProtoPatterns=uiStateNewProtoPatterns,
         filteredProducts = filteredProducts,
-        sortOrder = filterState_Facad_Boutique.sortOrderFacadeBoutique,
-        enableCategoryGrouping = filterState_Facad_Boutique.enableCategoryGrouping,
+        sortOrder = filterState.sortOrderFacadeBoutique,
+        enableCategoryGrouping = filterState.enableCategoryGrouping,
     )
 
     // Render
@@ -91,7 +80,7 @@ fun Contetn(
         Dialog_Fast_Affiche_Panie()
     }
 
-    bool?.ifTrue {
+    active_Central_Values.filterState_Facad_Boutique?.affiche_dialog_editeur?.ifTrue {
         FilterDropdownMenu_Its_FacadeElectroBoutique(
             onDismiss = {
                 viewModel.update_activeCentralValues(

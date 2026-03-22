@@ -53,9 +53,12 @@ data class UiState_NewProtoPatterns(
     val initDatasProgressEtate: Float = 0f,
 ) {
     val list_M1Produit: List<M01Produit> get() = list_Datas?.m1Produit ?: emptyList()
-    val list_M16CategorieProduit: List<M16CategorieProduit> get() = list_Datas?.m16CategorieProduit ?: emptyList()
-    val list_M3CouleurProduit: List<M3CouleurProduitInfos> get() = list_Datas?.m3CouleurProduit ?: emptyList()
-    val list_M13TarificationInfos: List<M13TarificationInfos> get() = list_Datas?.m13TarificationInfos ?: emptyList()
+    val list_M16CategorieProduit: List<M16CategorieProduit>
+        get() = list_Datas?.m16CategorieProduit ?: emptyList()
+    val list_M3CouleurProduit: List<M3CouleurProduitInfos>
+        get() = list_Datas?.m3CouleurProduit ?: emptyList()
+    val list_M13TarificationInfos: List<M13TarificationInfos>
+        get() = list_Datas?.m13TarificationInfos ?: emptyList()
 }
 
 data class List_Datas(
@@ -130,7 +133,11 @@ class ViewModel_NewProtoPatterns(
     val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
         FocusedValues_NewProtoPatterns(
             list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
-                .stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = null)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                )
         )
 
     val centraleMainGetter_NewProtoPattern: CentraleMainGetter_NewProtoPattern =
@@ -140,7 +147,9 @@ class ViewModel_NewProtoPatterns(
                 _uiStateNewProtoPatterns.update { state ->
                     state.copy(
                         initDatasProgressEtate = progress,
-                        active_Central_Values = state.active_Central_Values.copy(mainInitDataBaseProgressEtate = progress)
+                        active_Central_Values = state.active_Central_Values.copy(
+                            mainInitDataBaseProgressEtate = progress
+                        )
                     )
                 }
             }
@@ -158,11 +167,13 @@ class ViewModel_NewProtoPatterns(
     private fun updateActiveCentralValues(updated: ActiveCentralValues_app2) =
     // Read from focusedValues (source of truth) — not from _uiStateNewProtoPatterns,
         // which is a collected copy and may be one coroutine tick behind.
-        update_activeCentralValues(focusedValues_NewProtoPatterns.active_Central_Values.value.copy(
-            expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
-            expanded_M1Produit = updated.expanded_M1Produit,
-            hide_prix_lence_vent_buttons = updated.hide_prix_lence_vent_buttons,
-        ))
+        update_activeCentralValues(
+            focusedValues_NewProtoPatterns.active_Central_Values.value.copy(
+                expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
+                expanded_M1Produit = updated.expanded_M1Produit,
+                hide_prix_lence_vent_buttons = updated.hide_prix_lence_vent_buttons,
+            )
+        )
 
     val wifi = WifiTransferDatas_NewProto(
         context = context,
@@ -173,18 +184,29 @@ class ViewModel_NewProtoPatterns(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly,
-        ProductDisplayController_NewProto())
+    val wifiState = wifi.state.stateIn(
+        viewModelScope, SharingStarted.Eagerly,
+        ProductDisplayController_NewProto()
+    )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() { wifi.startAsClient(); wifi.updateTypePhone(isHost = false) }
+    fun startAsClient() {
+        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
+    fun startAsHost() {
+        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+    }
 
     fun disconnect() = wifi.disconnect()
-    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) = wifi.sendOrderToClientDisplayer(orderName, data)
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
+        wifi.sendOrderToClientDisplayer(orderName, data)
+
+    fun sendOrderToClientDisplayerT(
+        order: WifiUpdateClientDisplayerStats_NewProto,
+        data: Any? = null
+    ) = wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
@@ -198,35 +220,35 @@ class ViewModel_NewProtoPatterns(
         centraleMainGetter_NewProtoPattern
 
         viewModelScope.launch(Dispatchers.IO) {
-            val products          = appDatabase.dao_M1Produit().getAll()
+            val products = appDatabase.dao_M1Produit().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 9f) }
-            val clients           = appDatabase.dao_M2Client().getAll()
+            val clients = appDatabase.dao_M2Client().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
-            val categories        = appDatabase.dao_16CategorieProduit().getAll()
+            val categories = appDatabase.dao_16CategorieProduit().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
-            val colors            = appDatabase.dao_M3CouleurProduitInfos().getAll()
+            val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
-            val appCompt          = appDatabase.dao_M9AppCompt().getAll()
+            val appCompt = appDatabase.dao_M9AppCompt().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 9f) }
-            val bonVent           = appDatabase.dao_M8BonVent().getAll()
+            val bonVent = appDatabase.dao_M8BonVent().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 9f) }
-            val ventPeriodes      = appDatabase.dao_M14VentPeriode().getAll()
+            val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 9f) }
-            val tarification      = appDatabase.dao_M13TarificationInfos().getAll()
+            val tarification = appDatabase.dao_M13TarificationInfos().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
             val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
             _uiStateNewProtoPatterns.update {
                 it.copy(
-                    initDatasProgressEtate  = 1f,
+                    initDatasProgressEtate = 1f,
                     list_Datas = List_Datas(
-                        m1Produit               = products,
-                        m2Client                = clients,
-                        m14VentPeriode          = ventPeriodes,
-                        m16CategorieProduit     = categories,
-                        m3CouleurProduit        = colors,
-                        m9AppCompt              = appCompt,
-                        m8BonVent               = bonVent,
-                        m13TarificationInfos    = tarification,
+                        m1Produit = products,
+                        m2Client = clients,
+                        m14VentPeriode = ventPeriodes,
+                        m16CategorieProduit = categories,
+                        m3CouleurProduit = colors,
+                        m9AppCompt = appCompt,
+                        m8BonVent = bonVent,
+                        m13TarificationInfos = tarification,
                         m10OperationVentCouleur = operationVentCouleurs,
                     )
                 )
@@ -234,32 +256,26 @@ class ViewModel_NewProtoPatterns(
         }
 
         viewModelScope.launch(Dispatchers.Main) {
-
             ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
                 dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
                 dao_M9AppCompt = appDatabase.dao_M9AppCompt()
             ).collect { (emittedKey, filtered) ->
 
                 when {
-
                     filtered.isNotEmpty() -> {
                         active_Datas.lastKnownBonVentKey = emittedKey
-                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = filtered
+                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
+                            filtered
 
                     }
-
-                    emittedKey == null -> {
-
-                    }
-
+                    emittedKey == null -> {}
                     emittedKey != active_Datas.lastKnownBonVentKey -> {
                         active_Datas.lastKnownBonVentKey = emittedKey
-                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = emptyList()
+                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
+                            emptyList()
 
                     }
-
                     else -> {
-
                     }
                 }
             }
@@ -269,9 +285,10 @@ class ViewModel_NewProtoPatterns(
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
-                m13TarificationInfos = current.m13TarificationInfos.filter { it.keyID != tariff.keyID } + tariff
-            ))
+            state.copy(
+                list_Datas = current.copy(
+                    m13TarificationInfos = current.m13TarificationInfos.filter { it.keyID != tariff.keyID } + tariff
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M13TarificationInfos(tariff)
     }
@@ -281,9 +298,9 @@ class ViewModel_NewProtoPatterns(
         synthetic: M13TarificationInfos?,
         datasValue_distinct_type: List<M13TarificationInfos>,
     ): Boolean {
-        val centralValues  = _uiStateNewProtoPatterns.value.active_Central_Values
+        val centralValues = _uiStateNewProtoPatterns.value.active_Central_Values
         val currentBonVent = centralValues.activeOnVent_M8BonVent
-        val isGrossist     = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
+        val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
 
         if (isGrossist || currentBonVent == null || synthetic == null) return false
         if (datasValue_distinct_type.any {
@@ -292,7 +309,7 @@ class ViewModel_NewProtoPatterns(
                         it.parent_M1Produit_KeyId == produit.keyID
             }) return false
 
-        val currentClient  = centralValues.activeOnVent_M2Client
+        val currentClient = centralValues.activeOnVent_M2Client
         val clientBonVents = centralValues.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
             ?.filter { it.parent_M2Client_KeyID == currentClient?.keyID }
             ?.sortedByDescending { it.creationTimestamps } ?: emptyList()
@@ -300,22 +317,30 @@ class ViewModel_NewProtoPatterns(
         if (clientBonVents.firstOrNull()?.keyID != currentBonVent.keyID) return false
         if (System.currentTimeMillis() - currentBonVent.creationTimestamps >= 5 * 60 * 1000) return false
 
-        update_M13TarificationInfos(synthetic.copy(
-            parent_M8BonVent_KeyId                       = currentBonVent.keyID,
-            parent_M8BonVent_DebugInfos                  = currentBonVent.get_DebugInfos(),
-            parent_M2Client_KeyId                        = currentClient?.keyID ?: "null",
-            parent_M2Client_DebugInfos                   = currentClient?.nom ?: "null",
-            creationTimestamps                           = System.currentTimeMillis(),
-            dernierTimeTampsSynchronisationAvecFireBase  = System.currentTimeMillis()
-        ))
+        update_M13TarificationInfos(
+            synthetic.copy(
+                parent_M8BonVent_KeyId = currentBonVent.keyID,
+                parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
+                parent_M2Client_KeyId = currentClient?.keyID ?: "null",
+                parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
+                creationTimestamps = System.currentTimeMillis(),
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        )
         return true
     }
 
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
-        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
+        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(
+            produitKeyID,
+            newTariff
+        )
 
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
-        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
+        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+            produit,
+            appCompt
+        )
 
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) {
 
@@ -337,7 +362,10 @@ class ViewModel_NewProtoPatterns(
             }
             val opToSave = if (tariff.keyID != operation.parentM13TarificationKeyID) {
 
-                operation.copy(parentM13TarificationKeyID = tariff.keyID, parentM13TarificationDebugInfos = tariff.getDebugInfos())
+                operation.copy(
+                    parentM13TarificationKeyID = tariff.keyID,
+                    parentM13TarificationDebugInfos = tariff.getDebugInfos()
+                )
             } else {
 
                 operation
@@ -349,31 +377,41 @@ class ViewModel_NewProtoPatterns(
     fun update_m3couleur(couleur: M3CouleurProduitInfos) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
+            state.copy(
+                list_Datas = current.copy(
                 m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == couleur.keyID) couleur else it }
             ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
 
-    fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) {
+    fun update_depot_count(
+        couleur: M3CouleurProduitInfos,
+        newDepotCount: Int,
+        onSuccess: () -> Unit = {}
+    ) {
         val updated = couleur.copy(
             count_Don_Depot = newDepotCount,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
+            state.copy(
+                list_Datas = current.copy(
                 m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == updated.keyID) updated else it }
             ))
         }
-        repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(data = updated, onSuccess = onSuccess)
+        repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(
+            data = updated,
+            onSuccess = onSuccess
+        )
     }
 
     fun update_m16CategorieProduit(new: M16CategorieProduit) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
+            state.copy(
+                list_Datas = current.copy(
                 m16CategorieProduit = current.m16CategorieProduit.map { if (it.keyID == new.keyID) new else it }
             ))
         }
@@ -383,7 +421,8 @@ class ViewModel_NewProtoPatterns(
     fun update_m1Produit(new: M01Produit) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
+            state.copy(
+                list_Datas = current.copy(
                 m1Produit = current.m1Produit.map { if (it.keyID == new.keyID) new else it }
             ))
         }
@@ -393,7 +432,8 @@ class ViewModel_NewProtoPatterns(
     fun delete_m1Produit(produit: M01Produit) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
+            state.copy(
+                list_Datas = current.copy(
                 m1Produit = current.m1Produit.filter { it.keyID != produit.keyID }
             ))
         }

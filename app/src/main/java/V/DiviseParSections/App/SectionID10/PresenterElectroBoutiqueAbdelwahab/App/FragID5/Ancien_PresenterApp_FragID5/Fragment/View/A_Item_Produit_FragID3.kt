@@ -385,10 +385,10 @@ fun Item_Produit_FragID5(
                 }
 
                 Compact_Header_FragID3(
+                    modifier = modifier,
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
-                    shouldShowButtons = true,
-                    onUpdateTariffContext = {
+                    onUpdateTariff = {
                         focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
                             aCentralFacade.repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
                                 relative_M1produit,
@@ -396,18 +396,17 @@ fun Item_Produit_FragID5(
                             )
                         }
                     },
-                    modifier = modifier,
-                    onUpdateNombreUnite = { newUnite ->
+                    onUpdateProduit = { new ->
                         viewModel.update_m1Produit(
-                            relative_M1produit.copy(nombreUniteInt = newUnite)
+                            new
                         )
                     },
-                    onUpdateCarton = { newCarton ->
-                        viewModel.update_m1Produit(
-                            relative_M1produit.copy(quantite_Boit_Par_Carton = newCarton)
-                        )
-                    }
-                )
+                    currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
+                ) { relative_M1produit ->
+                    repositorysMainGetter.repoM1Produit.deleteData(
+                        relative_M1produit
+                    )
+                }
                 val filteredAndSortedTariffs = datasValue_with_synthetic
                     .filter { tariff ->
                         tariff.prixCurrency != 0.0 ||

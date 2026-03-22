@@ -4,7 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
-import Application4.App.Fragment.View.ViewS.Compact_Header_FragID3
+import Application4.App.Fragment.View.ViewS.Compact_Header_FragID4
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -292,13 +292,11 @@ fun Item_Produit_FragID3(
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
-
-                Compact_Header_FragID3(
-                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                Compact_Header_FragID4(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
                     shouldShowButtons = isHostPhone,
-                    onUpdateTariffContext = if (centralValues.currentApp_Est_Admin) {
+                    onUpdateTariff =
                         // Admin action — indépendant du WiFi
                         {
                             centralValues.activeCompt?.let { appCompt ->
@@ -307,8 +305,10 @@ fun Item_Produit_FragID3(
                                     appCompt
                                 )
                             }
-                        }
-                    } else null,
+                    } ,
+                    onUpdateProduit = { viewModel.update_m1Produit(it) },
+                    currentApp_Est_Admin=centralValues.currentApp_Est_Admin,
+                    onDelete = {viewModel.delete_m1Produit(it)},
                     modifier = modifier
                 )
 
