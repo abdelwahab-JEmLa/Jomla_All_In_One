@@ -118,13 +118,22 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
-                viewModelNewProtoPatterns.repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(
-                    M16CategorieProduit(
-                        nom = categoryName,
-                        position = 0,
-                        catalogueParentId = 4
-                    )
+                val newId = System.currentTimeMillis()   // unique Long, same pattern Firebase uses
+                val data = M16CategorieProduit(
+                    id = newId,
+                    nom = categoryName,
+                    position = 0,
+                    catalogueParentId = 4
                 )
+                viewModelNewProtoPatterns.insert_M16CategorieProduit(data)
+
+                val updatedProduct = product.copy(
+                    idParentCategorie = newId,
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+                viewModelNewProtoPatterns.update_m1Produit(updatedProduct)
+                justMovedProductKeyID = product.keyID
+                selectedProductForCategoryChange = null
             },
             onUpdateCategoryName = { categoryId, newName ->
                 allCategories?.find { it.id == categoryId }?.let { category ->

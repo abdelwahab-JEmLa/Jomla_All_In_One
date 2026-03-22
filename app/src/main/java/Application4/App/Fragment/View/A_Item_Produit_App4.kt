@@ -8,8 +8,8 @@ import Application4.App.Fragment.View.ViewS.Compact_Header_FragID4
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -297,9 +297,11 @@ fun A_Item_Produit_App4(
                                     appCompt
                                 )
                             }
-                    } ,
+                        },
+
                     onUpdateProduit = { viewModel.update_m1Produit(it) },
-                    currentApp_Est_Admin=centralValues.currentApp_Est_Admin,
+                    affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
+                            || centralValues.activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
                     onDelete = {viewModel.delete_m1Produit(it)},
                     modifier = modifier
                 )

@@ -65,8 +65,8 @@ fun Compact_Header_FragID4(
     isExpanded: Boolean,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
-    currentApp_Est_Admin: Boolean,
-    shouldShowButtons: Boolean = currentApp_Est_Admin,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
+    shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews,
     onDelete: (M01Produit) -> Unit
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
@@ -141,7 +141,7 @@ fun Compact_Header_FragID4(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // Delete button - only visible for admin users
-                if (shouldShowButtons && currentApp_Est_Admin) {
+                if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
                     DeleteProductHeader(
                         productName = relative_M1produit.nom,
                         onDelete = {
@@ -151,7 +151,7 @@ fun Compact_Header_FragID4(
                 }
 
                 // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons && currentApp_Est_Admin) {
+                if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -171,8 +171,8 @@ fun Compact_Header_FragID4(
                 }
 
                 // Number of units card - admin: InfoCard pill that opens FastInit on click
-                if (relative_M1produit.nombreUniteInt > 1 || currentApp_Est_Admin) {
-                    if (currentApp_Est_Admin) {
+                if (relative_M1produit.nombreUniteInt > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
+                    if (affiche_ProduitDataBaseEdites_ComposableViews) {
                         EditableInfoCard(
                             icon = {
                                 Icon(
@@ -218,8 +218,8 @@ fun Compact_Header_FragID4(
                 }
 
                 // Carton quantity card - admin: InfoCard pill that opens FastInit on click
-                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || currentApp_Est_Admin) {
-                    if (currentApp_Est_Admin) {
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
+                    if (affiche_ProduitDataBaseEdites_ComposableViews) {
                         EditableInfoCard(
                             icon = {
                                 Icon(

@@ -41,9 +41,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,11 +83,18 @@ class ActiveDatasFragNewProto {
 
     var active_M21Catalogue: M21CataloguesCategorie
             by mutableStateOf(get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: M21CataloguesCategorie())
+    var active_M9Compt: Z_AppCompt?  by mutableStateOf(null)
 
     var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>?
             by mutableStateOf(null)
 
     var lastKnownBonVentKey: String? = null
+
+    fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+        dao_M9AppCompt: Dao_M9AppCompt,
+    ): Flow<Z_AppCompt?> =
+        Companion.get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
+            .onEach { compt -> active_M9Compt = compt }
 
     companion object {
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -108,6 +117,13 @@ class ActiveDatasFragNewProto {
                         onVentKey to filtered
                     }
             }
+
+        fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+            dao_M9AppCompt: Dao_M9AppCompt,
+        ): Flow<Z_AppCompt?> =
+            dao_M9AppCompt.getFlow_ByKeyID(
+                M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            )
 
         fun get_listM16_FilteredBy_active_M21Catalogue(
             dao_M16CategorieProduit: Dao_M16CategorieProduit,
@@ -271,12 +287,17 @@ class ViewModel_NewProtoPatterns(
             }
         }
 
+        viewModelScope.launch(Dispatchers.IO) {
+            active_Datas.get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+                dao_M9AppCompt = appDatabase.dao_M9AppCompt()
+            ).collect()
+        }
+
         viewModelScope.launch(Dispatchers.Main) {
             ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
                 dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
                 dao_M9AppCompt = appDatabase.dao_M9AppCompt()
             ).collect { (emittedKey, filtered) ->
-
                 when {
                     filtered.isNotEmpty() -> {
                         active_Datas.lastKnownBonVentKey = emittedKey
@@ -425,6 +446,17 @@ class ViewModel_NewProtoPatterns(
         )
     }
 
+    fun insert_M16CategorieProduit(new: M16CategorieProduit) {
+        _uiStateNewProtoPatterns.update { state ->
+            val current = state.list_Datas ?: List_Datas()
+            state.copy(
+                list_Datas = current.copy(
+                    m16CategorieProduit = current.m16CategorieProduit + new
+                )
+            )
+        }
+        repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(new)
+    }
     fun update_m16CategorieProduit(new: M16CategorieProduit) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()

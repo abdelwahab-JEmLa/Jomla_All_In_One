@@ -73,6 +73,8 @@ data class Z_AppCompt(
     val active_CouleurKeyID_Extended_Image: String = "",
 
     val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean = false,
+
+    val affiche_ProduitDataBaseEdites_ComposableViews: Boolean = true,
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
