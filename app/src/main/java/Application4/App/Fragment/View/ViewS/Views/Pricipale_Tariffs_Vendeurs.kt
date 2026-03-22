@@ -16,10 +16,11 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,29 +60,40 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
 ) {
-    val isGrossistMode = uiState_NewProtoPatterns_viewModel.first.active_Central_Values.currentApp_ItsWorkChezGrossisst
+    val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
                 && !tariff.typeChoisi.ignore_affiche
     }
 
-    FlowRow(
+    // Sorted LTR: Prix_Detaille (left) → Progressive (middle) → Prix_SupperGro (right)
+    val sortedTariffs = filteredTariffs.sortedBy { tariff ->
+        when (tariff.typeChoisi) {
+            M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
+            M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
+            M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
+
+            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
+            else -> tariff.typeChoisi.profitabilityScore
+        }
+    }
+
+    LazyRow(
         modifier = modifier.fillMaxWidth(),
+        reverseLayout = true,  // commence à droite, scroll vers gauche
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        filteredTariffs.forEach { tariff ->
-            key(tariff.keyID) {
-                TariffItemSelector(
-                    uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
-                    tariff = tariff,
-                    relative_M1produit = relative_M1produit,
-                    isSelected = tariff.keyID == selectedTariff.keyID,
-                    compactMode = compactMode,
-                    onClick = { onTariffSelected(tariff) },
-                    tariffsList = tariffsList
-                )
-            }
+        items(sortedTariffs, key = { it.keyID }) { tariff ->
+            TariffItemSelector(
+                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                tariff = tariff,
+                relative_M1produit = relative_M1produit,
+                isSelected = tariff.keyID == selectedTariff.keyID,
+                compactMode = compactMode,
+                onClick = { onTariffSelected(tariff) },
+                tariffsList = tariffsList
+            )
         }
     }
 }
@@ -113,7 +125,7 @@ private fun TariffItemSelector(
                 onClick = onClick,
                 onPriceUpdated = { newPrice ->
                     handleProgressivePriceUpdate(
-                        uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                         tariff = tariff,
                         newPrice = newPrice,
                     )
@@ -149,7 +161,8 @@ private fun handleProgressivePriceUpdate(
     // FIXED: Added Edited_Pour_Client to the validation check
     if (tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
-        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+        tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client
+    ) {
         Log.w(
             "PricipaleTariffsVendeurs",
             "Attempted to edit non-progressive tariff: ${tariff.typeChoisi}"
@@ -291,28 +304,30 @@ private fun TariffItem(
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier
 ) {
-    val effectivePrix = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-        val detailleTariff = tariffsList.find {
-            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                    it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    it.prixCurrency != 0.0
-        }
-        val supperGroTariff = tariffsList.find {
-            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                    it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    it.prixCurrency != 0.0
-        }
+    val effectivePrix =
+        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+            val detailleTariff = tariffsList.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                        it.prixCurrency != 0.0
+            }
+            val supperGroTariff = tariffsList.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                        it.prixCurrency != 0.0
+            }
 
-        val recalculated = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
-            relative_Prix_Detaille = detailleTariff?.prixCurrency,
-            relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
-            relative_produit = relative_M1produit
-        )
-        // Fall back to the stored prix only if SupperGro is completely missing
-        recalculated?.prixCurrency ?: prix
-    } else {
-        prix
-    }
+            val recalculated =
+                M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
+                    relative_Prix_Detaille = detailleTariff?.prixCurrency,
+                    relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
+                    relative_produit = relative_M1produit
+                )
+            // Fall back to the stored prix only if SupperGro is completely missing
+            recalculated?.prixCurrency ?: prix
+        } else {
+            prix
+        }
 
     // Nothing to display: the synthetic Edited_Pour_Client tariff has prixCurrency == 0
     // and the live recalculation also returned null (both base prices are missing).
@@ -355,11 +370,12 @@ private fun TariffItem(
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
-    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-        Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
-    } else {
-        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-    }
+    val backgroundColor =
+        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+            Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+        } else {
+            tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+        }
 
     // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
@@ -421,7 +437,11 @@ private fun TariffItem(
 
             if (nombreUnite > 1) {
                 Text(
-                    text = "${formatPrice(effectivePrix)} DA/p.u (${formatPriceWithDecimals(prixUnitaire)}/u)",
+                    text = "${formatPrice(effectivePrix)} DA/p.u (${
+                        formatPriceWithDecimals(
+                            prixUnitaire
+                        )
+                    }/u)",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )
