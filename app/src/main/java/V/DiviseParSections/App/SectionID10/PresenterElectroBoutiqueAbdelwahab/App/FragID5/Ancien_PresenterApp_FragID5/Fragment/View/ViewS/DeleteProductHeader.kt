@@ -55,16 +55,17 @@ import kotlinx.coroutines.delay
 fun DeleteProductHeader(
     productName: String,
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cont_t: Int = 6
 ) {
     var isCountdownActive by remember { mutableStateOf(false) }
-    var countdownSeconds by remember { mutableIntStateOf(4) }
+    var countdownSeconds by remember { mutableIntStateOf(cont_t) }
     var progress by remember { mutableFloatStateOf(1f) }
 
     // Smooth countdown animation
     LaunchedEffect(isCountdownActive) {
         if (isCountdownActive) {
-            countdownSeconds = 4
+            countdownSeconds = cont_t
             progress = 1f
             val totalMillis = 4000f
             val step = 50L // Update every 50ms for smooth animation
@@ -97,10 +98,8 @@ fun DeleteProductHeader(
             )
             .clickable {
                 if (!isCountdownActive) {
-                    // First click: Start countdown
                     isCountdownActive = true
                 } else {
-                    // Second click during countdown: Execute deletion
                     isCountdownActive = false
                     onDelete()
                 }
@@ -133,7 +132,7 @@ fun DeleteProductHeader(
                     modifier = Modifier
                         .size(40.dp)
                         .drawBehind {
-                            val strokeWidth = 4.dp.toPx()
+                            val strokeWidth = cont_t.dp.toPx()
                             // Background circle
                             drawCircle(
                                 color = Color.White.copy(alpha = 0.3f),

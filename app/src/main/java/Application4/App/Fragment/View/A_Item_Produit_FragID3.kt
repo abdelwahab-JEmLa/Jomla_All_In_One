@@ -295,9 +295,7 @@ fun Item_Produit_FragID3(
                 Compact_Header_FragID4(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
-                    shouldShowButtons = isHostPhone,
                     onUpdateTariff =
-                        // Admin action — indépendant du WiFi
                         {
                             centralValues.activeCompt?.let { appCompt ->
                                 viewModel.setActiveFocuceTariffPrixDifineur(

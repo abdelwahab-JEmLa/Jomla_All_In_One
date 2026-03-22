@@ -45,10 +45,10 @@ fun Compact_Header_FragID4(
     modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
-    shouldShowButtons: Boolean = true,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
     currentApp_Est_Admin: Boolean,
+    shouldShowButtons: Boolean = currentApp_Est_Admin,
     onDelete: (M01Produit) -> Unit
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
