@@ -59,7 +59,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
 ) {
-    val isGrossistMode = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode
                 && !tariff.typeChoisi.ignore_affiche

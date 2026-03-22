@@ -45,8 +45,8 @@ fun Compact_Header_FragID3(
     focusedValuesGetter: FocusedValuesGetter= koinInject(),
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
-    shouldShowButtons: Boolean = false,
-    onUpdateTariffContext: (() -> Unit)? = null,
+    shouldShowButtons: Boolean = true,
+    onUpdateTariffContext: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Dynamic text sizes based on expansion state
@@ -132,7 +132,7 @@ fun Compact_Header_FragID3(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // FIXED: Update tariff context button as InfoCard - shown first if available
-                if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin && onUpdateTariffContext != null) {
+                if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin) {
                     ClickableInfoCard(
                         icon = {
                             Icon(

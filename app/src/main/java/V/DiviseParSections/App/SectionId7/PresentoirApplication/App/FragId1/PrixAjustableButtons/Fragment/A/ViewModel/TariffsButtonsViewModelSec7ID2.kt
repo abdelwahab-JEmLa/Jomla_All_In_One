@@ -1,8 +1,13 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Modules.Base.AppDatabase
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App._0.Navigation.Screen
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel
@@ -16,34 +21,37 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class UiState(
-
     val loadingProgress: Float = 0f,
     val error: String? = null,
     val isDataSyncing: Boolean = false,
     val isInitializing: Boolean = true,
+    val affiche_toujoure_tariffs_tournet: Boolean = false,
+    val activeFragment_Its_not_FragmentProduitFastSearchDialog: Boolean = true,
     val hasStartedLoading: Boolean = false
 )
 
 class TariffsButtonsViewModelSec7ID2(
     val aCentralFacade: ACentralFacade,
+    val fragmentNavigationHandler: FragmentNavigationHandler,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
+    appDatabase: AppDatabase
 ) : ViewModel() {
+
+    // Proper Flow — collected in viewModelScope, never inside a @Composable
+    private val allAppComptsFlow = appDatabase.dao_M9AppCompt().getAllFlow()
+
+    // Exposed as StateFlow for the Composable to observe if needed
+    private val _activeAppCompt = MutableStateFlow<Z_AppCompt?>(null)
+    val activeAppCompt: StateFlow<Z_AppCompt?> = _activeAppCompt.asStateFlow()
+
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
 
-    private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
-
-    private val produitRepository = getter.repo1ProduitInfos
-
-    private val repoC3_BonVent = getter.repo8BonVent
-
-    private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
-        .repositorys_Model
-        .repositoryC2_ProduitAcheteOperation
 
     private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+        val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
     private var loadingJob: Job? = null
     private var bonAchatCollectorJob: Job? = null
     private var produitAcheteOperationCollectorJob: Job? = null
@@ -58,6 +66,33 @@ class TariffsButtonsViewModelSec7ID2(
                 loadingProgress = 0f
             )
         }
+
+        // Collect active account from DB → sync relevant fields into UiState
+        viewModelScope.launch {
+            allAppComptsFlow.collect { list ->
+                val active = list.find {
+                    it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+                }
+                _activeAppCompt.update { active }
+                _uiState.update {
+                    it.copy(
+                        affiche_toujoure_tariffs_tournet = active?.affiche_toujoure_tariffs_tournet ?: false
+                    )
+                }
+            }
+        }
+        // Collect active fragment changes → update UiState flag
+        viewModelScope.launch {
+            fragmentNavigationHandler.currentFragment.collect { activeFragment ->
+                _uiState.update {
+                    it.copy(
+                        activeFragment_Its_not_FragmentProduitFastSearchDialog =
+                            activeFragment != Screen.FragmentProduitFastSearchDialog
+                    )
+                }
+            }
+        }
+
         loadTariffs()
     }
 
@@ -65,14 +100,14 @@ class TariffsButtonsViewModelSec7ID2(
         m1produitInfos: M01Produit?,
         newPrix: Double,
         listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>
-    ): Unit {
+    ) {
         setter.updateListRelativeVentCouleurPrixVentFacade(
             m1produitInfos,
             newPrix
         )
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+            .clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
     }
-
 
     private fun loadTariffs() {
         loadingJob?.cancel()
@@ -92,12 +127,11 @@ class TariffsButtonsViewModelSec7ID2(
             }
 
             try {
-
                 delay(100)
 
                 launch {
                     try {
-
+                        // reserved for future data loading
                     } catch (e: Exception) {
                         // Handle error silently
                     }
@@ -125,8 +159,6 @@ class TariffsButtonsViewModelSec7ID2(
                 error = null,
             )
         }
-
-
         loadTariffs()
     }
 
@@ -152,6 +184,4 @@ class TariffsButtonsViewModelSec7ID2(
 
     fun deleteVents(parentProduitOldId: Long) {
     }
-
-
 }

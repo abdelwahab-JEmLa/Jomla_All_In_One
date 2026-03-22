@@ -80,8 +80,7 @@ fun NavigationBarWithFab(
     context: Context = LocalContext.current,
     onClickImageToShowControles: () -> Unit,
     showWarningState: Boolean = true
-) {        //<--
-//TODO(1): ajot affiche fab button de 
+) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
     val _activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()

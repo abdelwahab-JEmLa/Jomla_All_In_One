@@ -41,7 +41,11 @@ data class Z_AppCompt(
 
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
     var hideAppScreen: Boolean = false,
+
     val travailleChezGrossisst3Ali: Boolean = false,
+
+    val affiche_toujoure_tariffs_tournet: Boolean = false,
+
     val its_Admin: Boolean = false,
     var c_Ouvert_Pour_Au_Command_Add_Period: Boolean =true,
 

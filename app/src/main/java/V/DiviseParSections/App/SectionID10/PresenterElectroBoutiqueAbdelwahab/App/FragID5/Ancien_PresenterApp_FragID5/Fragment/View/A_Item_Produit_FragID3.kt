@@ -378,17 +378,15 @@ fun Item_Produit_FragID5(
                 Compact_Header_FragID3(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
-                    shouldShowButtons = isHostPhone,
-                    onUpdateTariffContext = if (isHostPhone) {
-                        {
+                    shouldShowButtons = true,
+                    onUpdateTariffContext ={
                             focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
                                 aCentralFacade.repositorysMainSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
                                     relative_M1produit,
                                     appCompt
                                 )
                             }
-                        }
-                    } else null,
+                    } ,
                     modifier = modifier
                 )
 
