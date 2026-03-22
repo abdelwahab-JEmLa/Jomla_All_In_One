@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Item_Produit_FragID3(
+fun A_Item_Produit_App4(
     relative_M1produit: M01Produit,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
@@ -62,10 +62,6 @@ fun Item_Produit_FragID3(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-
-    // -------------------------------------------------------------------------
-    // All data comes from uiState — no direct repository/getter injections
-    // -------------------------------------------------------------------------
 
     val centralValues = uiState.active_Central_Values
 
@@ -282,9 +278,7 @@ fun Item_Produit_FragID3(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
-                if (isHostPhone && centralValues.currentApp_Est_Admin &&
-                    (currentCatalogue != null || currentCategory != null)
-                ) {
+                if (centralValues.currentApp_Est_Admin && (currentCatalogue != null || currentCategory != null)) {
                     CategoryBadge(
                         catalogueName = currentCatalogue?.nom,
                         categoryName = currentCategory?.nom,

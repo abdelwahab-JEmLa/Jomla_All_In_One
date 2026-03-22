@@ -2,7 +2,7 @@ package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.View.Item_Produit_FragID3
+import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.M01Produit
@@ -10,7 +10,6 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
@@ -313,7 +312,7 @@ fun LazyStigerList_Produits_FragID4(
             }
             .background(backgroundColor, RoundedCornerShape(12.dp))
     ) {
-        Item_Produit_FragID3(
+        A_Item_Produit_App4(
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = product,
             on_pour_send_data = on_pour_send_data,

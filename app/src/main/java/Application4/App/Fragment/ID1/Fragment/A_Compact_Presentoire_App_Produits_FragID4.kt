@@ -109,7 +109,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
                     )
                 } ?: product
 
-                // Use ViewModel method so local state stays in sync too
                 viewModelNewProtoPatterns.update_m1Produit(updatedProduct)
                 justMovedProductKeyID = product.keyID
 
