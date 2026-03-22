@@ -2,7 +2,6 @@ package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonn
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import Z_CodePartageEntreApps.Modules.D.Glide.Proto.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +45,9 @@ fun CategoryOptionGridCard(
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
     productsInCategory: List<M01Produit> = emptyList(), // Pass products as parameter
+    // Slot API: caller injects image composable (e.g. Image_Displaye) per product.
+    // Receives the product to display, or null for the placeholder case.
+    imageContent: @Composable (product: M01Produit?) -> Unit = {},
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
 
@@ -83,41 +85,14 @@ fun CategoryOptionGridCard(
                 // Product images at the top
                 if (displayProduct != null) {
                     Row {
-                        A_GlideDisplayImageByKeyId_Proto_5(
-                            produitVID = displayProduct.id,
-                            modifier = Modifier.size(40.dp),
-                            produitNom = displayProduct.nom,
-                            size = 40.dp,
-                            product = displayProduct,
-                            qualityImage = 3,
-                            refreshImage = displayProduct.actualiseSonImage,
-                            enableAutoScroll = false
-                        )
+                        imageContent(displayProduct)
                         if (displayProduct2 != null) {
-                            A_GlideDisplayImageByKeyId_Proto_5(
-                                produitVID = displayProduct2.id,
-                                modifier = Modifier.size(40.dp),
-                                produitNom = displayProduct2.nom,
-                                size = 40.dp,
-                                product = displayProduct2,
-                                qualityImage = 3,
-                                refreshImage = displayProduct2.actualiseSonImage,
-                                enableAutoScroll = false
-                            )
+                            imageContent(displayProduct2)
                         }
                     }
                 } else {
                     // Show placeholder when no product is available for this category
-                    A_GlideDisplayImageByKeyId_Proto_5(
-                        produitVID = null, // This will show the default logo
-                        modifier = Modifier.size(20.dp),
-                        produitNom = categoryName,
-                        size = 20.dp,
-                        product = null,
-                        qualityImage = 3,
-                        refreshImage = 0,
-                        enableAutoScroll = false
-                    )
+                    imageContent(null)
                 }
 
                 // Category name positioned below the image

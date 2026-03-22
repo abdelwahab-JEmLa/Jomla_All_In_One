@@ -80,7 +80,7 @@ class ActiveDatasFragNewProto {
             by mutableStateOf(null)
 
     var active_M21Catalogue: M21CataloguesCategorie
-            by mutableStateOf(get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: get_ListM21CataloguesCategorie().first())
+            by mutableStateOf(get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: M21CataloguesCategorie())
 
     var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>?
             by mutableStateOf(null)
@@ -240,6 +240,7 @@ class ViewModel_NewProtoPatterns(
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
             val categories = appDatabase.dao_16CategorieProduit().getAll()
                 .filter { it.catalogueParentId == active_Datas.active_M21Catalogue.id }
+
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
             val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }

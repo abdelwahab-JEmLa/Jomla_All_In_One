@@ -67,6 +67,9 @@ fun CategorySelectionDialog(
     onCreateNewCategory: (String) -> Unit = {},
     onUpdateCategoryName: (Long, String) -> Unit = { _, _ -> },
     isFastMoveMode: Boolean = false,
+    // Slot API: caller provides the image composable (e.g. wrapping Image_Displaye).
+    // Receives the product to render, or null for the placeholder.
+    imageContent: @Composable (product: M01Produit?) -> Unit = {},
 ) {
     var showSearch by remember(isFastMoveMode) { mutableStateOf(isFastMoveMode) }
     var searchText by remember { mutableStateOf("") }
@@ -412,7 +415,8 @@ fun CategorySelectionDialog(
                                         onCategorySelected(null)
                                     },
                                     onEditName = null,
-                                    productsInCategory = productsWithoutCategory
+                                    productsInCategory = productsWithoutCategory,
+                                    imageContent = imageContent
                                 )
                             }
                         }
@@ -443,7 +447,8 @@ fun CategorySelectionDialog(
                                     onEditName = { newName ->
                                         onUpdateCategoryName(category.id, newName)
                                     },
-                                    productsInCategory = productsInThisCategory
+                                    productsInCategory = productsInThisCategory,
+                                    imageContent = imageContent
                                 )
                             }
                         }
