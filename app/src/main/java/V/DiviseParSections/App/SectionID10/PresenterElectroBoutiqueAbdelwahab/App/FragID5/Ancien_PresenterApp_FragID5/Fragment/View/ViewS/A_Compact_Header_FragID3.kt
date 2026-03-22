@@ -25,6 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +51,8 @@ fun Compact_Header_FragID3(
     isExpanded: Boolean,
     shouldShowButtons: Boolean = true,
     onUpdateTariffContext: () -> Unit,
+    onUpdateNombreUnite: (Int) -> Unit = {},
+    onUpdateCarton: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     // Dynamic text sizes based on expansion state
@@ -83,15 +89,6 @@ fun Compact_Header_FragID3(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // Delete button - only visible for admin users
-            if (shouldShowButtons && focusedValuesGetter.currentApp_Est_Admin) {
-                DeleteProductHeader(
-                    productName = relative_M1produit.nom,
-                    onDelete = {
-                        repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
-                    }
-                )
-            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -131,6 +128,16 @@ fun Compact_Header_FragID3(
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
+                // Delete button - only visible for admin users
+                if (shouldShowButtons && focusedValuesGetter.currentApp_Est_Admin) {
+                    DeleteProductHeader(
+                        productName = relative_M1produit.nom,
+                        onDelete = {
+                            repositorysMainGetter.repoM1Produit.deleteData(relative_M1produit)
+                        }
+                    )
+                }
+
                 // FIXED: Update tariff context button as InfoCard - shown first if available
                 if (shouldShowButtons  &&  focusedValuesGetter.currentApp_Est_Admin) {
                     ClickableInfoCard(
@@ -151,41 +158,155 @@ fun Compact_Header_FragID3(
                     )
                 }
 
-                // Number of units card - only show if > 1
-                if (relative_M1produit.nombreUniteInt > 1) {
-                    InfoCard(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.ViewModule,
-                                contentDescription = "Units",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        },
-                        value = "${relative_M1produit.nombreUniteInt}",
-                        label = "U",
-                        labelTextSize = labelTextSize,
-                        valueTextSize = valueTextSize,
-                        itemPadding = itemPadding
-                    )
+                // Number of units card - admin: InfoCard pill that opens FastInit on click
+                if (relative_M1produit.nombreUniteInt > 1 || focusedValuesGetter.currentApp_Est_Admin) {
+                    if (focusedValuesGetter.currentApp_Est_Admin) {
+                        EditableInfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.ViewModule,
+                                    contentDescription = "Units",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.nombreUniteInt}",
+                            label = "U",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding,
+                            startCount = relative_M1produit.nombreUniteInt,
+                            isExpanded = isExpanded,
+                            onUpdate = { newVal ->
+                                onUpdateNombreUnite(newVal)
+                            }
+                        )
+                    } else if (relative_M1produit.nombreUniteInt > 1) {
+                        InfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.ViewModule,
+                                    contentDescription = "Units",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.nombreUniteInt}",
+                            label = "U",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding
+                        )
+                    }
                 }
 
-                // Carton quantity card - only show if > 1
-                if (relative_M1produit.quantite_Boit_Par_Carton > 1) {
-                    InfoCard(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Inventory2,
-                                contentDescription = "Carton",
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        },
-                        value = "${relative_M1produit.quantite_Boit_Par_Carton}",
-                        label = "C",
-                        labelTextSize = labelTextSize,
-                        valueTextSize = valueTextSize,
-                        itemPadding = itemPadding
+                // Carton quantity card - admin: InfoCard pill that opens FastInit on click
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || focusedValuesGetter.currentApp_Est_Admin) {
+                    if (focusedValuesGetter.currentApp_Est_Admin) {
+                        EditableInfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Inventory2,
+                                    contentDescription = "Carton",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.quantite_Boit_Par_Carton}",
+                            label = "C",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding,
+                            startCount = relative_M1produit.quantite_Boit_Par_Carton,
+                            isExpanded = isExpanded,
+                            onUpdate = onUpdateCarton
+                        )
+                    } else if (relative_M1produit.quantite_Boit_Par_Carton > 1) {
+                        InfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Inventory2,
+                                    contentDescription = "Carton",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "${relative_M1produit.quantite_Boit_Par_Carton}",
+                            label = "C",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Affiche une InfoCard pill normale.
+ * Au clic, se remplace directement par le OutlinedTextField de FastInit
+ * (force_edit_mode_on_start = true — pas de pill intermédiaire FastInit).
+ * Dès que l'utilisateur confirme (Done), repasse en mode pill.
+ */
+@Composable
+private fun EditableInfoCard(
+    icon: @Composable () -> Unit,
+    value: String,
+    label: String,
+    labelTextSize: TextUnit,
+    valueTextSize: TextUnit,
+    itemPadding: Dp,
+    startCount: Int,
+    isExpanded: Boolean,
+    onUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isEditing by remember { mutableStateOf(false) }
+
+    if (isEditing) {
+        FastInit_Outlined_Int_Edite_Modulable_Proto4(
+            start_count = startCount,
+            standard_count = 1,
+            force_edit_mode_on_start = true,
+            isAvailable = true,
+            compact_taille = !isExpanded,
+            is_admin = true,
+            modifier = modifier,
+            on_Data_Update = { newValue ->
+                onUpdate(newValue)
+                isEditing = false
+            }
+        )
+    } else {
+        Card(
+            modifier = modifier.clickable { isEditing = true },
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = itemPadding + 2.dp, vertical = itemPadding),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                icon()
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = label,
+                        fontSize = labelTextSize,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = labelTextSize
+                    )
+                    Text(
+                        text = value,
+                        fontSize = valueTextSize,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = valueTextSize
                     )
                 }
             }

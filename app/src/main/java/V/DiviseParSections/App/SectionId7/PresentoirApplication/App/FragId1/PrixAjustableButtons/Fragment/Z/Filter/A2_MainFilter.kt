@@ -58,9 +58,10 @@ fun MainFilter(
     val activeFragment by viewModel.fragmentNavigationHandler.currentFragment.collectAsState()
     val activeFragment_Its_not_FragmentProduitFastSearchDialog =
         activeFragment == Screen.FragmentProduitFastSearchDialog
+
     val currentApp_ItsWorkChezGrossisst =
         focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
-                activeFragment_Its_not_FragmentProduitFastSearchDialog
+                uiState.activeFragment_Its_not_FragmentProduitFastSearchDialog
 
     Column(modifier = modifier
         .semantics(mergeDescendants = true) {

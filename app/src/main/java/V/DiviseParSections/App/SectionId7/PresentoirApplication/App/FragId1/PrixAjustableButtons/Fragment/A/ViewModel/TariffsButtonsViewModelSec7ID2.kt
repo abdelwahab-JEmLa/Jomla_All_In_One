@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel
 
+import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.Z_AppCompt
@@ -10,6 +11,7 @@ import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -35,7 +37,12 @@ class TariffsButtonsViewModelSec7ID2(
     val fragmentNavigationHandler: FragmentNavigationHandler,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
-    appDatabase: AppDatabase
+    appDatabase: AppDatabase,
+    context: Context,
+    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
+        appDatabase = appDatabase,
+        context = context
+    )
 ) : ViewModel() {
 
     // Proper Flow — collected in viewModelScope, never inside a @Composable
@@ -87,13 +94,17 @@ class TariffsButtonsViewModelSec7ID2(
                 _uiState.update {
                     it.copy(
                         activeFragment_Its_not_FragmentProduitFastSearchDialog =
-                            activeFragment != Screen.FragmentProduitFastSearchDialog
+                            activeFragment == Screen.FragmentProduitFastSearchDialog
                     )
                 }
             }
         }
 
         loadTariffs()
+    }
+
+    fun update_m1Produit(new: M01Produit) {
+        repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
     }
 
     fun updateListRelativeVentCouleurPrixVent(

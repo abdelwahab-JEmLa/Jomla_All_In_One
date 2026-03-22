@@ -226,7 +226,7 @@ val viewModelModule = module {
     viewModel { EditeBaseDonneMainScreenIdS9ViewModel(get(), get()) }
     viewModel { GrossistAchatSec12FragID1_ViewModel(get()) }
     viewModel { ViewModelT2(get()) }
-    viewModel { TariffsButtonsViewModelSec7ID2(get(),get(),get(), get(), get()) }
+    viewModel { TariffsButtonsViewModelSec7ID2(get(),get(),get(), get(),  get(), context = androidContext(),) }
     viewModel { RecordingViewModel(get(),get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }

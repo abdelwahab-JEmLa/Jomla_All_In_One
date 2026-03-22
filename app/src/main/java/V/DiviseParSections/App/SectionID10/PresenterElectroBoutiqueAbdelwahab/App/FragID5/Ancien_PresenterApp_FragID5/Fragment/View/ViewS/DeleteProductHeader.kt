@@ -111,7 +111,7 @@ fun DeleteProductHeader(
     ) {
         Text(
             text = when {
-                !isCountdownActive -> "🗑️ Supprimer \"$productName\""
+                !isCountdownActive -> "🗑️!!"
                 else -> "👆 Cliquer pour confirmer"
             },
             style = MaterialTheme.typography.bodyMedium,
