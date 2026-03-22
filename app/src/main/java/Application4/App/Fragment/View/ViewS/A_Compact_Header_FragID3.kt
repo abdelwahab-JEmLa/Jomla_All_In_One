@@ -3,6 +3,7 @@ package Application4.App.Fragment.View.ViewS
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -142,7 +143,14 @@ fun Compact_Header_FragID3(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // Update tariff context button — shown first if available, admin only
-                if (shouldShowButtons && isAdmin && onUpdateTariffContext != null) {
+                if (isAdmin) {
+                    if (onUpdateTariffContext == null) {
+                        Log.d(
+                            "Compact_Header_FragID3",
+                            "ClickableInfoCard 'Tarif' non affiché : onUpdateTariffContext est null " +
+                                    "(currentApp_Est_Admin=false ou activeCompt=null)"
+                        )
+                    }
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -250,22 +258,28 @@ private fun InfoCard(
 
 @Composable
 private fun ClickableInfoCard(
-    icon: @Composable () -> Unit,
+    icon: @Composable (() -> Unit),
     value: String,
     label: String,
     labelTextSize: TextUnit,
     valueTextSize: TextUnit,
     itemPadding: Dp,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
+    val isEnabled = onClick != null
     Card(
         modifier = modifier
-            .clickable(onClick = onClick),
+            .then(if (isEnabled) Modifier.clickable(onClick = onClick!!) else Modifier),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+            containerColor = if (isEnabled)
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+            else
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isEnabled) 2.dp else 0.dp
+        )
     ) {
         Row(
             modifier = Modifier.padding(horizontal = itemPadding + 2.dp, vertical = itemPadding),
@@ -279,14 +293,20 @@ private fun ClickableInfoCard(
                 Text(
                     text = label,
                     fontSize = labelTextSize,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f),
+                    color = if (isEnabled)
+                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f)
+                    else
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
                     fontWeight = FontWeight.Medium,
                     lineHeight = labelTextSize
                 )
                 Text(
                     text = value,
                     fontSize = valueTextSize,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = if (isEnabled)
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
                     fontWeight = FontWeight.Bold,
                     lineHeight = valueTextSize
                 )
