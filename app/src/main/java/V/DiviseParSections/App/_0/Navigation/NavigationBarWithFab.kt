@@ -164,7 +164,7 @@ fun NavigationBarWithFab(
         val its_Achats_Produits_Chez_Grossists = activeFragment == Screen.Achats_Produits_Chez_Grossists
         val its_FragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
         val its_EducationFragment = activeFragment == Screen.EducationFragment
-        val its_Compact_Presentoire_App_Produits_FragID4 = activeFragment == Screen.Compact_Presentoire_App_Produits_FragID4
+        val its_Compact_Presentoire_App_Produits_FragID4 = activeFragment == Screen.Compact_Presentoire_App_Produits_FragID5
 
         when {
             its_EditDatabaseWithCreateNewArticles -> {

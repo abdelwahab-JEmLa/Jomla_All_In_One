@@ -82,8 +82,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
         }
     } else {
         Contetn(
-            uiStateNewProtoPatterns = uiState,
-            viewModel = viewModelNewProtoPatterns,
             modifier = modifier,
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             on_pour_send_data = on_pour_send_data,
@@ -91,7 +89,9 @@ fun Compact_Presentoire_App_Produits_FragID4(
             onProductCategoryClick = { product ->
                 selectedProductForCategoryChange = product
             },
-            justMovedProductKeyID = justMovedProductKeyID
+            justMovedProductKeyID = justMovedProductKeyID,
+            viewModel = viewModelNewProtoPatterns,
+            uiStateNewProtoPatterns = uiState,
         )
     }
 

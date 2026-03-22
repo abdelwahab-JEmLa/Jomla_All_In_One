@@ -268,7 +268,7 @@ fun Etager_LazyColumn_FragID3(
                 Button(
                     onClick = {
                         fragmentNavigationHandler.navigateTo(
-                            Screen.Compact_Presentoire_App_Produits_FragID4,
+                            Screen.Compact_Presentoire_App_Produits_FragID5,
                             FragmentNavigationHandler.DEFAULT_CONFIG
                         )
                     },

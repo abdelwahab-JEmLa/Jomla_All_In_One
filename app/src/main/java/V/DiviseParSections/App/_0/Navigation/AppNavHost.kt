@@ -1,6 +1,5 @@
 package V.DiviseParSections.App._0.Navigation
 
-import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
 import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
@@ -8,6 +7,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.App.Compact_Presentoir_Echantilliants_FragID3
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Ancien_PresenterApp_FragID5
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.EducationFragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
@@ -197,9 +197,9 @@ fun AppNavHost(
                 }
 
                 composable(
-                    route = Screen.Compact_Presentoire_App_Produits_FragID4.route,
+                    route = Screen.Compact_Presentoire_App_Produits_FragID5.route,
                 ) {
-                    Compact_Presentoire_App_Produits_FragID4(
+                    Ancien_PresenterApp_FragID5(
                         on_pour_send_data = on_pour_send_data,
                         onClickImageToShowControles = onClickImageToShowControles,
                     )

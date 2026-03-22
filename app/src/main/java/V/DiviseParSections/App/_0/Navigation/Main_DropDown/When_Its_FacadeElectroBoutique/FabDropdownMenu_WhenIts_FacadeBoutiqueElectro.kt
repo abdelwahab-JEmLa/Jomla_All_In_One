@@ -7,6 +7,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val currentFilterState = activeCentralValues.filterState_Facad_Boutique ?: FilterState_Facad_Boutique()
+    val filterState_Facad_Boutique_FragId5 = activeCentralValues.filterState_Facad_Boutique_FragId5 ?: FilterState_Facad_Boutique_FragId5()
     val coroutineScope = rememberCoroutineScope()
     var isUploading by remember { mutableStateOf(false) }
 
@@ -89,6 +91,9 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                     focusedValuesGetter.update_activeCentralValues(
                         activeCentralValues.copy(
                             filterState_Facad_Boutique = currentFilterState.copy(
+                                affiche_dialog_editeur = true
+                            ),
+                            filterState_Facad_Boutique_FragId5 = filterState_Facad_Boutique_FragId5.copy(
                                 affiche_dialog_editeur = true
                             )
                         )

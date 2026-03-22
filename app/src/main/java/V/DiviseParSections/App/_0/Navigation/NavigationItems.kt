@@ -12,7 +12,7 @@ object NavigationItems {
         val baseItems = listOf(
             ScreensApp2.A_ClientsLocationGps,
             Screen.Fragment_Compact_Presentoir_Echantilliants,
-            Screen.Compact_Presentoire_App_Produits_FragID4,
+            Screen.Compact_Presentoire_App_Produits_FragID5,
             Screen.TravailleTempRecorder,
             Screen.Achats_Produits_Chez_Grossists,
             Screen.ToggleFab,

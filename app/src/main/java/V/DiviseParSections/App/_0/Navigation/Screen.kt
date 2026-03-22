@@ -6,7 +6,8 @@ import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.MapsHomeWork
-import androidx.compose.material.icons.filled.PauseCircleOutline
+import androidx.compose.material.icons.filled.NewLabel
+import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
@@ -41,15 +42,11 @@ sealed class Screen(
 
         )
 
-    data object Compact_Presentoire_App_Produits_FragID4: Screen(
+    data object Compact_Presentoire_App_Produits_FragID5: Screen(
         route = "Compact_Presentoire_App_Produits_FragID4",
-        icon = Icons.Default.PauseCircleOutline,
+        icon = Icons.Default.Preview,
         title = "Compact_Presentoire_App_Produits_FragID4",
         color = Color(0xFFF44336),
-        customIconRes = R.drawable.logo
-        // FIXED: Custom icon now displays correctly in navigation bar
-        // The issue was that the Image composable needed proper size constraints
-        // which are now properly set in NavigationBarWithFab.kt (line 109: Modifier.size(24.dp))
     )
 
     data object EditDatabaseWithCreateNewArticles : Screen(

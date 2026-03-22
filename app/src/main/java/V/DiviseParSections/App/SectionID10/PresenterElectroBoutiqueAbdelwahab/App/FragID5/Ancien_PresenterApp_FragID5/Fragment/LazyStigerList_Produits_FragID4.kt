@@ -7,7 +7,6 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.Item_Produit_FragID5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.ScrolleAdBanner
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
@@ -138,7 +137,7 @@ fun Etager_LazyColumn_FragID4(
         userScrollEnabled = isScrollEnabled
     ) {
         // Add banner at the top
-         item(
+       /*  item(
               key = "ad_banner_header",
               span = StaggeredGridItemSpan.Companion.FullLine
           ) {
@@ -149,7 +148,7 @@ fun Etager_LazyColumn_FragID4(
                   onClickImageToShowControles = onClickImageToShowControles
               )
           }
-
+                */
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
             // Add Catalogue Header
             item(
