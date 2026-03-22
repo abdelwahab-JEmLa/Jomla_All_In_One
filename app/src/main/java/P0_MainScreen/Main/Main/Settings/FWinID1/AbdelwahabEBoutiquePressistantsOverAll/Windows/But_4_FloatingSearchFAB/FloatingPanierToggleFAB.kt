@@ -54,7 +54,6 @@ fun FloatingPanierToggleFAB(
 ) {
     val isPanierOpen = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
 
-    // Observe Room via Flow → MutableState réactif, se recompose automatiquement à chaque update BDD
     val allAppCompts by appDatabase.dao_M9AppCompt().getAllFlow().collectAsState(initial = emptyList())
     val m9: Z_AppCompt? = allAppCompts.find {
         it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
@@ -95,13 +94,13 @@ fun FloatingPanierToggleFAB(
 
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                     latestValues.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = true
+                        affiche_Dialog_Fast_Affiche_Panie = !affiche_Dialog_Fast_Affiche_Panie_App4!!
                     )
                 )
 
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                     latestValues.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = true
+                        affiche_Dialog_Fast_Affiche_Panie = !affiche_Dialog_Fast_Affiche_Panie_App4
                     )
                 )
 

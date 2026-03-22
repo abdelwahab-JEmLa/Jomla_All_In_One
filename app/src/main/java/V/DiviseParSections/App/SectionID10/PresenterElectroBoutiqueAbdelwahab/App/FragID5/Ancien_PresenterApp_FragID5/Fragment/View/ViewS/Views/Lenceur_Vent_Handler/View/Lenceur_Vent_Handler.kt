@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -166,32 +167,79 @@ fun Lenceur_Vent_Handler_FragID3(
     } else {
         MaterialTheme.colorScheme.primary
     }
+    val boitParCarton = relative_M1produit.quantite_Boit_Par_Carton
+    val currentCartons = if (boitParCarton > 0) currentQuantity / boitParCarton else 0
+    val depotEnCartons = if (boitParCarton > 0) au_depot / boitParCarton else 0
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(containerColor.copy(alpha = 0.15f))
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        contentAlignment = Alignment.CenterEnd
+    androidx.compose.foundation.layout.Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
     ) {
-        FastInit_Outlined_Int_Edite_Modulable_Proto3(
-            start_count = currentQuantity,
-            au_depot = au_depot,
-            standard_count = standardCount,
-            start_au_premier_click_par_add_outlined = false,
-            icon = Icons.Default.ShoppingCart,
-            isAvailable = isAvailable,
-            compact_taille = compactMode,
-            show_depot_card_on_top_in_flow_row = true,
-            is_admin = isAdmin,
-            // FIXED: Add spacing between depot and sale button for admin to prevent accidental clicks
-            add_spacing_between_depot_and_sale = isAdmin,
-            on_admin_depot_update = { newDepotCount ->
-                handleDepotUpdate(newDepotCount)
+        // ── Carton handler ─────────────────────────────────────────────────
+        // First click  → adds 1 carton (= boitParCarton units)
+        // Subsequent   → opens edit mode; user types N cartons → N * boitParCarton units sent
+        if (boitParCarton > 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 12.dp, topEnd = 12.dp,
+                            bottomStart = 0.dp, bottomEnd = 0.dp
+                        )
+                    )
+                    .background(containerColor.copy(alpha = 0.10f))
+                    .padding(horizontal = horizontalPadding, vertical = verticalPadding / 2),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                FastInit_Outlined_Int_Edite_Modulable_Proto3(
+                    start_count = currentCartons,
+                    au_depot = depotEnCartons,
+                    standard_count = 1,                        // 1 carton per first-click
+                    start_au_premier_click_par_add_outlined = false,
+                    icon = Icons.Default.Inventory2,
+                    isAvailable = isAvailable,
+                    compact_taille = compactMode,
+                    show_depot_card_on_top_in_flow_row = true,
+                    is_admin = isAdmin,
+                    add_spacing_between_depot_and_sale = isAdmin,
+                    on_admin_depot_update = { newDepotCartons ->
+                        // Convert cartons back to units before updating depot
+                        handleDepotUpdate(newDepotCartons * boitParCarton)
+                    }
+                ) { newCartons ->
+                    // Convert cartons → units and delegate to the shared sale handler
+                    handleLenceVent(newCartons * boitParCarton)
+                }
             }
-        ) { newQuantity ->
-            handleLenceVent(newQuantity)
+        }
+
+        // ── Boit / unit handler (unchanged) ───────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(containerColor.copy(alpha = 0.15f))
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            FastInit_Outlined_Int_Edite_Modulable_Proto3(
+                start_count = currentQuantity,
+                au_depot = au_depot,
+                standard_count = standardCount,
+                start_au_premier_click_par_add_outlined = false,
+                icon = Icons.Default.ShoppingCart,
+                isAvailable = isAvailable,
+                compact_taille = compactMode,
+                show_depot_card_on_top_in_flow_row = true,
+                is_admin = isAdmin,
+                add_spacing_between_depot_and_sale = isAdmin,
+                on_admin_depot_update = { newDepotCount ->
+                    handleDepotUpdate(newDepotCount)
+                }
+            ) { newQuantity ->
+                handleLenceVent(newQuantity)
+            }
         }
     }
 

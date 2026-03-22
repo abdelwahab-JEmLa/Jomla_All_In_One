@@ -1,18 +1,18 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components.V1ProductHeader_T1.View
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.Companion.ref
 import android.annotation.SuppressLint
@@ -488,7 +488,41 @@ fun ProductHeader_T1(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     //<--
-                    //TODO(1): ajout un button au click affiche dialoge contien les operation de vent de vent de clicked produit avec key id de leur parentbon vent et quantitie
+                    // Button that, on click, opens a dialog listing all vent operations
+                    // for this product (parent bon vent key ID + quantity).
+                    var shouldShowVentOps by remember { mutableStateOf(false) }
+                    val ventOpsForProduit by derivedStateOf {
+                        viewModel.aCentralFacade.repositorysMainGetter
+                            .repo10OperationVentCouleur.datasValue
+                            .filter { it.parent_M1Produit_KeyId == relative_Produit.keyID }
+                    }
+                    if (ventOpsForProduit.isNotEmpty()) {
+                        androidx.compose.material3.IconButton(
+                            onClick = { shouldShowVentOps = true },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            androidx.compose.material3.Badge(
+                                containerColor = if (allNonTrouve)
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                else MaterialTheme.colorScheme.primary
+                            ) {
+                                Text(
+                                    text = "${ventOpsForProduit.size}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        if (shouldShowVentOps) {
+                            Dialog_VentOperations_ForProduct(
+                                produit = relative_Produit,
+                                ventOperations = ventOpsForProduit,
+                                viewModel = viewModel,
+                                onDismiss = { shouldShowVentOps = false }
+                            )
+                        }
+                    }
                     Card_Produit_Nombre_Unites(
                         allNonTrouve = allNonTrouve,
                         produit = relative_Produit,
