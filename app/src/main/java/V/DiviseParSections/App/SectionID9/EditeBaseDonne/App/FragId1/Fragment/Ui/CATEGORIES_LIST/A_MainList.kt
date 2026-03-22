@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import androidx.compose.foundation.background

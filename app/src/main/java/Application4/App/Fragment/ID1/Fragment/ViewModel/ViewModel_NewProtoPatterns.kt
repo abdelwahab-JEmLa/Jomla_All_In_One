@@ -18,7 +18,9 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
@@ -77,6 +79,12 @@ class ActiveDatasFragNewProto {
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>?
             by mutableStateOf(null)
 
+    var active_M21Catalogue: M21CataloguesCategorie
+            by mutableStateOf(get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: get_ListM21CataloguesCategorie().first())
+
+    var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>?
+            by mutableStateOf(null)
+
     var lastKnownBonVentKey: String? = null
 
     companion object {
@@ -100,6 +108,14 @@ class ActiveDatasFragNewProto {
                         onVentKey to filtered
                     }
             }
+
+        fun get_listM16_FilteredBy_active_M21Catalogue(
+            dao_M16CategorieProduit: Dao_M16CategorieProduit,
+            active_M21Catalogue: M21CataloguesCategorie,
+        ): Flow<List<M16CategorieProduit>> =
+            dao_M16CategorieProduit.getAllFlow()
+                .map { list -> list.filter { it.catalogueParentId == active_M21Catalogue.id } }
+
     }
 }
 
@@ -165,8 +181,6 @@ class ViewModel_NewProtoPatterns(
     }
 
     private fun updateActiveCentralValues(updated: ActiveCentralValues_app2) =
-    // Read from focusedValues (source of truth) — not from _uiStateNewProtoPatterns,
-        // which is a collected copy and may be one coroutine tick behind.
         update_activeCentralValues(
             focusedValues_NewProtoPatterns.active_Central_Values.value.copy(
                 expanded_M3CouleurProduitInfos = updated.expanded_M3CouleurProduitInfos,
@@ -225,6 +239,7 @@ class ViewModel_NewProtoPatterns(
             val clients = appDatabase.dao_M2Client().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
             val categories = appDatabase.dao_16CategorieProduit().getAll()
+                .filter { it.catalogueParentId == active_Datas.active_M21Catalogue.id }
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
             val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
             _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
@@ -268,6 +283,7 @@ class ViewModel_NewProtoPatterns(
                             filtered
 
                     }
+
                     emittedKey == null -> {}
                     emittedKey != active_Datas.lastKnownBonVentKey -> {
                         active_Datas.lastKnownBonVentKey = emittedKey
@@ -275,6 +291,7 @@ class ViewModel_NewProtoPatterns(
                             emptyList()
 
                     }
+
                     else -> {
                     }
                 }
@@ -379,8 +396,8 @@ class ViewModel_NewProtoPatterns(
             val current = state.list_Datas ?: List_Datas()
             state.copy(
                 list_Datas = current.copy(
-                m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == couleur.keyID) couleur else it }
-            ))
+                    m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == couleur.keyID) couleur else it }
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
@@ -398,8 +415,8 @@ class ViewModel_NewProtoPatterns(
             val current = state.list_Datas ?: List_Datas()
             state.copy(
                 list_Datas = current.copy(
-                m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == updated.keyID) updated else it }
-            ))
+                    m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == updated.keyID) updated else it }
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(
             data = updated,
@@ -412,8 +429,8 @@ class ViewModel_NewProtoPatterns(
             val current = state.list_Datas ?: List_Datas()
             state.copy(
                 list_Datas = current.copy(
-                m16CategorieProduit = current.m16CategorieProduit.map { if (it.keyID == new.keyID) new else it }
-            ))
+                    m16CategorieProduit = current.m16CategorieProduit.map { if (it.keyID == new.keyID) new else it }
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(new)
     }
@@ -423,8 +440,8 @@ class ViewModel_NewProtoPatterns(
             val current = state.list_Datas ?: List_Datas()
             state.copy(
                 list_Datas = current.copy(
-                m1Produit = current.m1Produit.map { if (it.keyID == new.keyID) new else it }
-            ))
+                    m1Produit = current.m1Produit.map { if (it.keyID == new.keyID) new else it }
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
     }
@@ -434,8 +451,8 @@ class ViewModel_NewProtoPatterns(
             val current = state.list_Datas ?: List_Datas()
             state.copy(
                 list_Datas = current.copy(
-                m1Produit = current.m1Produit.filter { it.keyID != produit.keyID }
-            ))
+                    m1Produit = current.m1Produit.filter { it.keyID != produit.keyID }
+                ))
         }
         repositorysMainSetter_NewProtoPatterns.delete_M1Produit(produit)
     }

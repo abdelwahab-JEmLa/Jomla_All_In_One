@@ -5,7 +5,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.toArticle
 import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
-import EntreApps.Shared.Modules.Base.SQL.M16CategorieProduitDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.content.Context
 import android.net.ConnectivityManager
@@ -37,7 +37,7 @@ class Initializer_Funcs_app2(
     val context: Context,
     val on_Progress_Datas: (Float) -> Unit,
     val dao_M1Produit: ArticlesBasesStatsModelDao,
-    val dao_16CategorieProduit: M16CategorieProduitDao,
+    val dao_16CategorieProduit: Dao_M16CategorieProduit,
     val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
 ) {
     private val mutex = Mutex()

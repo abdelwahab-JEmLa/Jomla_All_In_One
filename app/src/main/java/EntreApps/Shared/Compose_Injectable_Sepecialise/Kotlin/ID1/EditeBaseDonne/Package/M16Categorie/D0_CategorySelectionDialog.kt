@@ -1,10 +1,10 @@
 package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,7 +58,7 @@ import kotlinx.coroutines.delay
 private const val TAG = "CategorySelectionDialog"
 
 @Composable
-fun CategorySelectionDialog_FragID4(
+fun CategorySelectionDialog(
     product: M01Produit,
     allCategories: List<M16CategorieProduit>?,
     allProducts: List<M01Produit>?, // For calculating products per category

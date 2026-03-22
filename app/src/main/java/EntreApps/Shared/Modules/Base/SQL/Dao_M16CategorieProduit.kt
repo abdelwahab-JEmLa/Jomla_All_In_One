@@ -12,10 +12,11 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface M16CategorieProduitDao {
+interface Dao_M16CategorieProduit {
 
     @Delete
     fun delete(data: M16CategorieProduit)
+
 
     @Update
     suspend fun update(data: M16CategorieProduit)
@@ -39,7 +40,7 @@ interface M16CategorieProduitDao {
     suspend fun updateAll(categories: List<M16CategorieProduit>)
 
     @Transaction
-    suspend fun transaction(block: suspend M16CategorieProduitDao.() -> Unit) {
+    suspend fun transaction(block: suspend Dao_M16CategorieProduit.() -> Unit) {
         block()
     }
 

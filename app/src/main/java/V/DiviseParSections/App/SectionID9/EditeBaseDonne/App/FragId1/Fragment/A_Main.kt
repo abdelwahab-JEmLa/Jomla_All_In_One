@@ -15,7 +15,7 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M01Produit.EtateActuelleOnFusionAvecBaseDonne
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps

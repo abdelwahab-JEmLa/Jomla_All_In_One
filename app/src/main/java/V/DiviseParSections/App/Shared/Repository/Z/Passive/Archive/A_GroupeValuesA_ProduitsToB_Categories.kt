@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 
 import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.Repo21.Repository.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import androidx.compose.runtime.Stable
