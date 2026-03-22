@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Z.Components.Dialogs
+package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import EntreApps.Shared.Models.M01Produit
