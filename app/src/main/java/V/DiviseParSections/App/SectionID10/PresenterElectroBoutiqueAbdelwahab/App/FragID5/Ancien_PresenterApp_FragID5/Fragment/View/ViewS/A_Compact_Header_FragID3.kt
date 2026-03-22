@@ -92,6 +92,7 @@ fun Compact_Header_FragID3(
                     }
                 )
             }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

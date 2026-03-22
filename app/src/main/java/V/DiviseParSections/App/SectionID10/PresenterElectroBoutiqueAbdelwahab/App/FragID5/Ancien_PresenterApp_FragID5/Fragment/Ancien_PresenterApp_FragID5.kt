@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Dialogs.CategorySelectionDialog_FragID5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterSortGroupe_Tunnels
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.GroupTunnel
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Dialogs.CategorySelectionDialog_FragID4
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -98,13 +98,10 @@ fun Ancien_PresenterApp_FragID5(
         justMovedProductKeyID = justMovedProductKeyID
     )
 
-    // ============================================
-    // STEP 4: CATEGORY SELECTION DIALOG
-    // ============================================
 
     selectedProductForCategoryChange?.let { product ->
         Log.d("Compact_Presentoire_FragID4", "Displaying CategorySelectionDialog for: ${product.nom}")
-        CategorySelectionDialog_FragID4(
+        CategorySelectionDialog_FragID5(
             product = product,
             allCategories = allCategories,
             allProducts = allProducts,
@@ -147,4 +144,5 @@ fun Ancien_PresenterApp_FragID5(
             }
         )
     }
+
 }

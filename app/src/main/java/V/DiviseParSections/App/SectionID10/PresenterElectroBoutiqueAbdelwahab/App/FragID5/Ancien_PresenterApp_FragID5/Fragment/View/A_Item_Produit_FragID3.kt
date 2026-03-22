@@ -358,7 +358,7 @@ fun Item_Produit_FragID5(
                     .padding(innerPadding)
             ) {
                 // FIXED: Category/Catalogue Display Badge - now delegates to parent
-                if (isHostPhone  && focusedValuesGetter.currentApp_Est_Admin && (currentCatalogue != null || currentCategory != null)) {
+                if ( focusedValuesGetter.currentApp_Est_Admin && (currentCatalogue != null || currentCategory != null)) {
                     Log.d("CategoryDialog_Item", "Rendering CategoryBadge - isHostPhone: $isHostPhone, onCategoryClick null: ${onCategoryClick == null}")
                     CategoryBadge(
                         catalogueName = currentCatalogue?.nom,
