@@ -1,0 +1,2 @@
+package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package
+

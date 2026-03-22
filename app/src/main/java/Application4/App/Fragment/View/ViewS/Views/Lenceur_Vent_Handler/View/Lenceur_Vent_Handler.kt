@@ -192,15 +192,15 @@ fun Lenceur_Vent_Handler_FragID3(
             start_count = currentQuantity,
             au_depot = au_depot,
             standard_count = standardCount,
-            start_au_premier_click_par_add_outlined = false,
             icon = Icons.Default.ShoppingCart,
             isAvailable = isAvailable,
             compact_taille = compactMode,
             show_depot_card_on_top_in_flow_row = true,
             is_admin = isAdmin,
             add_spacing_between_depot_and_sale = isAdmin,
-            on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) }
-        ) { newQuantity -> handleLenceVent(newQuantity) }
+            on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) },
+            on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
+        )
     }
 
     depotAlertInfo?.let { alertInfo ->

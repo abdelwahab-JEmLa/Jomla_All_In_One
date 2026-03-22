@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -178,7 +179,7 @@ fun Lenceur_Vent_Handler_FragID3(
         // ── Carton handler ─────────────────────────────────────────────────
         // First click  → adds 1 carton (= boitParCarton units)
         // Subsequent   → opens edit mode; user types N cartons → N * boitParCarton units sent
-        if (boitParCarton > 0) {
+        if (boitParCarton > 1 && focusedValuesGetter.currentApp_Est_Admin) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -195,10 +196,9 @@ fun Lenceur_Vent_Handler_FragID3(
                 FastInit_Outlined_Int_Edite_Modulable_Proto3(
                     start_count = currentCartons,
                     au_depot = depotEnCartons,
-                    standard_count = 1,                        // 1 carton per first-click
-                    start_au_premier_click_par_add_outlined = false,
+                    startCouleur =Color(0xFFF44336),
                     icon = Icons.Default.Inventory2,
-                    isAvailable = isAvailable,
+                    isAvailable = isAvailable,                        // 1 carton per first-click
                     compact_taille = compactMode,
                     show_depot_card_on_top_in_flow_row = true,
                     is_admin = isAdmin,
@@ -206,11 +206,12 @@ fun Lenceur_Vent_Handler_FragID3(
                     on_admin_depot_update = { newDepotCartons ->
                         // Convert cartons back to units before updating depot
                         handleDepotUpdate(newDepotCartons * boitParCarton)
-                    }
-                ) { newCartons ->
-                    // Convert cartons → units and delegate to the shared sale handler
-                    handleLenceVent(newCartons * boitParCarton)
-                }
+                    },
+                    on_Data_Update = { newCartons ->
+                        // Convert cartons → units and delegate to the shared sale handler
+                        handleLenceVent(newCartons * boitParCarton)
+                    },
+                )
             }
         }
 
@@ -227,7 +228,6 @@ fun Lenceur_Vent_Handler_FragID3(
                 start_count = currentQuantity,
                 au_depot = au_depot,
                 standard_count = standardCount,
-                start_au_premier_click_par_add_outlined = false,
                 icon = Icons.Default.ShoppingCart,
                 isAvailable = isAvailable,
                 compact_taille = compactMode,
@@ -236,10 +236,11 @@ fun Lenceur_Vent_Handler_FragID3(
                 add_spacing_between_depot_and_sale = isAdmin,
                 on_admin_depot_update = { newDepotCount ->
                     handleDepotUpdate(newDepotCount)
-                }
-            ) { newQuantity ->
-                handleLenceVent(newQuantity)
-            }
+                },
+                on_Data_Update = { newQuantity ->
+                    handleLenceVent(newQuantity)
+                },
+            )
         }
     }
 

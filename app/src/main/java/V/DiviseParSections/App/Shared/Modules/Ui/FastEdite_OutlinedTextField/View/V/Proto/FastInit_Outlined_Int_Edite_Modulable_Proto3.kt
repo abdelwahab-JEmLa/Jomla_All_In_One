@@ -79,8 +79,11 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
     add_spacing_between_depot_and_sale: Boolean = false,
     on_admin_depot_update: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
-    on_Data_Update: (Int) -> Unit
-) {
+    on_Data_Update: (Int) -> Unit,
+    startCouleur: Color=         Color(0xFF3F51B5),        //<--
+    //TODO(1): regle pour l utilise 
+
+    ) {
     val context = LocalContext.current
 
     var isEditMode by remember { mutableStateOf(false) }
@@ -176,7 +179,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
         } else if (start_count > 0) {
             MaterialTheme.colorScheme.tertiary
         } else {
-            MaterialTheme.colorScheme.primary
+            startCouleur
         }
 
         val contentColor = if (!isAvailable) {
