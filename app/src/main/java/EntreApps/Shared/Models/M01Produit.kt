@@ -39,7 +39,8 @@ data class M01Produit(
     //-----------------Filter States-------------------------------------------------------------------------------------------------------------------------
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
-    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name + ",",
+    // FIX (TODO 1): default tag is now Dernier_VentAchat_Est_Trop_Luin (added to Prioriter enum)
+    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -388,7 +389,11 @@ fun DocumentSnapshot.toArticle(): M01Produit? {
             etateActuelleOnFusionAvecBaseDonne = getString("etateActuelleOnFusionAvecBaseDonne")
                 ?.let { name -> runCatching { M01Produit.EtateActuelleOnFusionAvecBaseDonne.valueOf(name) }.getOrNull() }
                 ?: M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
-            tag_prioriter_str = getString("tag_prioriter_str") ?: "",
+            // FIX (TODO 1): fall back to Dernier_VentAchat_Est_Trop_Luin for products
+            // arriving from Firestore with no tag stored yet
+            tag_prioriter_str = getString("tag_prioriter_str")
+                ?.takeIf { it.isNotBlank() }
+                ?: Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,
 
             // Units / cartons
             nombreUniteInt = getLong("nombreUniteInt")?.toInt() ?: 1,
