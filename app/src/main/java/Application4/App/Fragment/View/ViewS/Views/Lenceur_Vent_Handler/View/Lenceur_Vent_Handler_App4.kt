@@ -11,7 +11,9 @@ import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -173,16 +175,16 @@ fun Lenceur_Vent_Handler_App4(
     val currentCartons = if (boitParCarton > 0) currentQuantity / boitParCarton else 0
     val depotEnCartons = if (boitParCarton > 0) au_depot / boitParCarton else 0
 
-    androidx.compose.foundation.layout.Column(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (boitParCarton > 1 && isAdmin) {
+        if (boitParCarton > 1 && isAdmin && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true) {
             CartonVentHandler_App4(
                 currentCartons = currentCartons,
                 depotEnCartons = depotEnCartons,
                 isAvailable = isAvailable,
-                isAdmin = isAdmin,
+                isAdmin = true,
                 compactMode = compactMode,
                 containerColor = containerColor,
                 horizontalPadding = horizontalPadding,
