@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -25,8 +26,6 @@ data class M01Produit(
 
     var count_Don_Depot: Int = 0,
 
-    // Garde les propriétés originales pour la compatibilité
-    val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
 
     //S P Ids
     var idParentCategorie: Long = 0,
@@ -37,9 +36,12 @@ data class M01Produit(
     var nom: String = "",
     var nomMutable: String = "",
 
-
-    // Garde la propriété originale pour la compatibilité
+    //-----------------Filter States-------------------------------------------------------------------------------------------------------------------------
+    val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
+    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name + ",",
+
+    //----------------------------------------------------------------------------------------------------------------------------------------
 
     var nombreUniteInt: Int = 1,
     //-----------------Cartons-------------------------------------------------------------------------------------------------------------------------
@@ -132,11 +134,47 @@ data class M01Produit(
     var setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent =
         M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
     var quantite_Boit_Par_Carton: Int = 1,
+    var prioriter: Prioriter? = null,
 
     ) {
 
     fun getDebugInfos(): String {
         return nom + "[" + keyID.takeLast(4).uppercase() + "]"
+    }
+
+    /**
+     * Parses [tag_prioriter_str] (comma-separated Prioriter names) into a Set<Prioriter>.
+     * Unknown / blank tokens are silently ignored.
+     */
+    fun produit_set_Tag_Priorite(): Set<Prioriter> {
+        if (tag_prioriter_str.isBlank()) return emptySet()
+        return tag_prioriter_str
+            .split(",")
+            .mapNotNull { token -> Prioriter.entries.firstOrNull { it.name == token.trim() } }
+            .toSet()
+    }
+
+    fun setReturn_Produit_Ac_tag_prioriter_str(
+        produit_set_Tag_Priorite: Set<Prioriter>,
+        produit: M01Produit
+    ): M01Produit {
+        val serialized = produit_set_Tag_Priorite.joinToString(",") { it.name }
+        return produit.copy(
+            tag_prioriter_str = serialized,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
+
+    fun priorite_GetSet(prioriter: Prioriter): Prioriter {
+        this.prioriter = if (this.prioriter == prioriter) null else prioriter
+        return prioriter
+    }
+
+
+    fun matchesPrioriteFilter(filterSet: Set<Prioriter>?): Boolean {
+        if (filterSet.isNullOrEmpty()) return true
+        val productTags = produit_set_Tag_Priorite()
+        return filterSet.all { it in productTags }
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
@@ -164,20 +202,20 @@ data class M01Produit(
 
             // Fusion state
             "etateActuelleOnFusionAvecBaseDonne" to etateActuelleOnFusionAvecBaseDonne.name,
+            "tag_prioriter_str" to tag_prioriter_str,
 
-            // Units and cartons
+            // Units / cartons
             "nombreUniteInt" to nombreUniteInt,
             "nombreProduitDonSonCarton" to nombreProduitDonSonCarton,
             "its_Carton" to its_Carton,
             "cartonState" to cartonState,
-            "quantite_Boit_Par_Carton" to quantite_Boit_Par_Carton,
 
-            // Priority and positions
+            // Priority / position
             "heldPrioriteDemandAuGrossist" to heldPrioriteDemandAuGrossist,
             "position_store_3jamale" to position_store_3jamale,
             "dernier_timeTamps_position_store_3jamale" to dernier_timeTamps_position_store_3jamale,
 
-            // Pricing
+            // Prices
             "prixDefiniParGerant" to prixDefiniParGerant,
             "prixVent" to prixVent,
             "cachePrixVent" to cachePrixVent,
@@ -190,40 +228,31 @@ data class M01Produit(
             // Images
             "actualiseSonImage" to actualiseSonImage,
             "actualiseSonImageTest2" to actualiseSonImageTest2,
-            "articleHaveUniteImages" to articleHaveUniteImages,
-            "funChangeImagsDimention" to funChangeImagsDimention,
-            "imageDimention" to imageDimention,
-
-            // UI states
             "afficheCesDetailPourComptBsonId" to afficheCesDetailPourComptBsonId,
 
+            // Disponibility
             "disponibilityEtates" to disponibilityEtates.name,
             "disponibilityEtates_Pour_presentaion_par_Camion" to disponibilityEtates_Pour_presentaion_par_Camion.name,
 
-            // Firebase key
             "keyFireBase" to keyFireBase,
-
-            // Colors - all 9 colors
             "couleur1" to couleur1,
-            "idcolor1" to idcolor1,
             "couleur2" to couleur2,
-            "idcolor2" to idcolor2,
             "couleur3" to couleur3,
-            "idcolor3" to idcolor3,
             "couleur4" to couleur4,
-            "idcolor4" to idcolor4,
             "couleur5" to couleur5,
-            "idcolor5" to idcolor5,
             "couleur6" to couleur6,
-            "idcolor6" to idcolor6,
             "couleur7" to couleur7,
-            "idcolor7" to idcolor7,
             "couleur8" to couleur8,
-            "idcolor8" to idcolor8,
             "couleur9" to couleur9,
+            "idcolor1" to idcolor1,
+            "idcolor2" to idcolor2,
+            "idcolor3" to idcolor3,
+            "idcolor4" to idcolor4,
+            "idcolor5" to idcolor5,
+            "idcolor6" to idcolor6,
+            "idcolor7" to idcolor7,
+            "idcolor8" to idcolor8,
             "idcolor9" to idcolor9,
-
-            // Additional fields
             "nomCategorie2" to nomCategorie2,
             "affichageUniteState" to affichageUniteState,
             "commmentSeVent" to commmentSeVent,
@@ -231,22 +260,22 @@ data class M01Produit(
             "minQuan" to minQuan,
             "monBenfice" to monBenfice,
             "neaon2" to neaon2,
-            "catalogeParentID" to idParentCategorie,
+            "funChangeImagsDimention" to funChangeImagsDimention,
             "nomCategorie" to nomCategorie,
             "neaon1" to neaon1,
             "lastUpdateState" to lastUpdateState,
             "dateCreationCategorie" to dateCreationCategorie,
-
-            // Financial calculations
             "prixDeVentTotaleChezClient" to prixDeVentTotaleChezClient,
             "benficeTotaleEntreMoiEtClien" to benficeTotaleEntreMoiEtClien,
             "benificeTotaleEn2" to benificeTotaleEn2,
             "monPrixAchatUniter" to monPrixAchatUniter,
             "monPrixVentUniter" to monPrixVentUniter,
-
-            // Flags
+            "articleHaveUniteImages" to articleHaveUniteImages,
             "itsNewArrivale" to itsNewArrivale,
+            "imageDimention" to imageDimention,
             "idForSearchArticles" to idForSearchArticles,
+            "prioriter" to prioriter?.name,
+            "quantite_Boit_Par_Carton" to quantite_Boit_Par_Carton,
 
             // Quantity representation
             "setIN_Vent_Its_Quantity_Represent" to setIN_Vent_Its_Quantity_Represent.name
@@ -316,107 +345,147 @@ data class M01Produit(
     }
 }
 
+
 /**
- * Extension Firestore → ArticlesBasesStatsTable
- * Utilisable partout : snapshot.documents.mapNotNull { it.toArticle() }
- * Gère tous les types (enums, Long/Int, nullable strings) sans boilerplate répété.
+ * Maps a Firestore [DocumentSnapshot] to [M01Produit].
+ *
+ * Fixes: `Unresolved reference 'toArticle'` in Initializer_Funcs_app2.seedProducts().
+ *
+ * Every field mirrors [M01Produit.toFirebaseMap()] in reverse, with safe
+ * fallbacks so that missing / null Firestore fields never crash deserialization.
  */
 fun DocumentSnapshot.toArticle(): M01Produit? {
-    val d = data ?: return null
+    return try {
+        M01Produit(
+            id = getLong("id") ?: 0L,
+            keyID = getString("keyID") ?: id,   // Firestore doc-id as fallback
+            creationTimestamp = getLong("creationTimestamp") ?: System.currentTimeMillis(),
+            dernierTimeTampsSynchronisationAvecFireBase =
+                getLong("dernierTimeTampsSynchronisationAvecFireBase") ?: System.currentTimeMillis(),
 
-    fun str(k: String, def: String = "") = (d[k] as? String) ?: def
-    fun bool(k: String, def: Boolean = false) = (d[k] as? Boolean) ?: def
-    fun long(k: String, def: Long = 0L) = (d[k] as? Long) ?: (d[k] as? Number)?.toLong() ?: def
-    fun int(k: String, def: Int = 0) = (d[k] as? Long)?.toInt() ?: (d[k] as? Number)?.toInt() ?: def
-    fun dbl(k: String, def: Double = 0.0) = (d[k] as? Double) ?: (d[k] as? Number)?.toDouble() ?: def
-    fun <T : Enum<T>> enum(k: String, values: Array<T>, def: T): T =
-        values.firstOrNull { it.name == d[k] as? String } ?: def
+            bsonObjectId = getString("bsonObjectId") ?: "",
+            dernierFireBaseUpdateTimestamps = getLong("dernierFireBaseUpdateTimestamps") ?: 0L,
 
-    return M01Produit(
-        id = long("id"),
-        keyID = str("keyID"),
-        creationTimestamp = long("creationTimestamp"),
-        dernierTimeTampsSynchronisationAvecFireBase = long("dernierTimeTampsSynchronisationAvecFireBase"),
-        bsonObjectId = str("bsonObjectId"),
-        dernierFireBaseUpdateTimestamps = long("dernierFireBaseUpdateTimestamps"),
-        count_Don_Depot = int("count_Don_Depot"),
-        processPositioningInFactory = enum("processPositioningInFactory",
-            M01Produit.ProcessPositioningInFactoryID1.values(),
-            M01Produit.ProcessPositioningInFactoryID1.CreeAuGeneralHandler),
-        idParentCategorie = long("idParentCategorie"),
-        positionDonSonCesFrereCategorieProduits = int("positionDonSonCesFrereCategorieProduits"),
-        nom = str("nom"),
-        nomMutable = str("nomMutable"),
-        etateActuelleOnFusionAvecBaseDonne = enum("etateActuelleOnFusionAvecBaseDonne",
-            M01Produit.EtateActuelleOnFusionAvecBaseDonne.values(),
-            M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie),
-        nombreUniteInt = int("nombreUniteInt", 1),
-        nombreProduitDonSonCarton = int("nombreProduitDonSonCarton", 1),
-        its_Carton = bool("its_Carton"),
-        cartonState = str("cartonState"),
-        heldPrioriteDemandAuGrossist = bool("heldPrioriteDemandAuGrossist"),
-        position_store_3jamale = int("position_store_3jamale"),
-        dernier_timeTamps_position_store_3jamale = long("dernier_timeTamps_position_store_3jamale"),
-        prixDefiniParGerant = dbl("prixDefiniParGerant"),
-        prixVent = dbl("prixVent"),
-        cachePrixVent = bool("cachePrixVent"),
-        pourcentage_Prix_Progressive = int("pourcentage_Prix_Progressive", 60),
-        prixAchat = dbl("prixAchat"),
-        prixAchatDernierTimeTempUpdate = long("prixAchatDernierTimeTempUpdate"),
-        clientPrixVentUnite = dbl("clientPrixVentUnite"),
-        afficheUniteAuPrint = bool("afficheUniteAuPrint"),
-        actualiseSonImage = int("actualiseSonImage"),
-        actualiseSonImageTest2 = int("actualiseSonImageTest2"),
-        afficheCesDetailPourComptBsonId = str("afficheCesDetailPourComptBsonId"),
-        disponibilityEtates = enum("disponibilityEtates",
-            DisponibilityEtates.values(), DisponibilityEtates.NON_DISPO),
-        disponibilityEtates_Pour_presentaion_par_Camion = enum("disponibilityEtates_Pour_presentaion_par_Camion",
-            DisponibilityEtates.values(), DisponibilityEtates.NON_DISPO),
-        keyFireBase = str("keyFireBase"),
-        nomArab = str("nomArab"),
-        autreNomDarticle = d["autreNomDarticle"] as? String,
-        couleur1 = d["couleur1"] as? String ?: "couleur1",
-        couleur2 = d["couleur2"] as? String,
-        couleur3 = d["couleur3"] as? String,
-        couleur4 = d["couleur4"] as? String,
-        couleur5 = d["couleur5"] as? String,
-        couleur6 = d["couleur6"] as? String,
-        couleur7 = d["couleur7"] as? String,
-        couleur8 = d["couleur8"] as? String,
-        couleur9 = d["couleur9"] as? String,
-        idcolor1 = long("idcolor1", 1),
-        idcolor2 = long("idcolor2"),
-        idcolor3 = long("idcolor3"),
-        idcolor4 = long("idcolor4"),
-        idcolor5 = long("idcolor5"),
-        idcolor6 = long("idcolor6"),
-        idcolor7 = long("idcolor7"),
-        idcolor8 = long("idcolor8"),
-        idcolor9 = long("idcolor9"),
-        nomCategorie2 = d["nomCategorie2"] as? String,
-        affichageUniteState = bool("affichageUniteState"),
-        commmentSeVent = d["commmentSeVent"] as? String,
-        afficheBoitSiUniter = d["afficheBoitSiUniter"] as? String,
-        minQuan = int("minQuan"),
-        monBenfice = dbl("monBenfice"),
-        neaon2 = str("neaon2"),
-        funChangeImagsDimention = bool("funChangeImagsDimention"),
-        nomCategorie = str("nomCategorie"),
-        neaon1 = dbl("neaon1"),
-        lastUpdateState = str("lastUpdateState"),
-        dateCreationCategorie = str("dateCreationCategorie"),
-        prixDeVentTotaleChezClient = dbl("prixDeVentTotaleChezClient"),
-        benficeTotaleEntreMoiEtClien = dbl("benficeTotaleEntreMoiEtClien"),
-        benificeTotaleEn2 = dbl("benificeTotaleEn2"),
-        monPrixAchatUniter = dbl("monPrixAchatUniter"),
-        monPrixVentUniter = dbl("monPrixVentUniter"),
-        articleHaveUniteImages = bool("articleHaveUniteImages"),
-        itsNewArrivale = bool("itsNewArrivale"),
-        imageDimention = str("imageDimention"),
-        idForSearchArticles = long("idForSearchArticles"),
-        quantite_Boit_Par_Carton = int("quantite_Boit_Par_Carton", 1),
-        setIN_Vent_Its_Quantity_Represent = enum("setIN_Vent_Its_Quantity_Represent",
-            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.values(),
-            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit),
-    )
+            count_Don_Depot = getLong("count_Don_Depot")?.toInt() ?: 0,
+
+            // Process positioning
+            processPositioningInFactory = getString("processPositioningInFactory")
+                ?.let { name -> runCatching { M01Produit.ProcessPositioningInFactoryID1.valueOf(name) }.getOrNull() }
+                ?: M01Produit.ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
+
+            // Category & position
+            idParentCategorie = getLong("idParentCategorie") ?: 0L,
+            positionDonSonCesFrereCategorieProduits =
+                getLong("positionDonSonCesFrereCategorieProduits")?.toInt() ?: 0,
+
+            // Names
+            nom = getString("nom") ?: "",
+            nomMutable = getString("nomMutable") ?: "",
+            nomArab = getString("nomArab") ?: "",
+            autreNomDarticle = getString("autreNomDarticle"),
+
+            // Fusion state
+            etateActuelleOnFusionAvecBaseDonne = getString("etateActuelleOnFusionAvecBaseDonne")
+                ?.let { name -> runCatching { M01Produit.EtateActuelleOnFusionAvecBaseDonne.valueOf(name) }.getOrNull() }
+                ?: M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
+            tag_prioriter_str = getString("tag_prioriter_str") ?: "",
+
+            // Units / cartons
+            nombreUniteInt = getLong("nombreUniteInt")?.toInt() ?: 1,
+            nombreProduitDonSonCarton = getLong("nombreProduitDonSonCarton")?.toInt() ?: 1,
+            its_Carton = getBoolean("its_Carton") ?: false,
+            cartonState = getString("cartonState") ?: "",
+
+            // Priority / position
+            heldPrioriteDemandAuGrossist = getBoolean("heldPrioriteDemandAuGrossist") ?: false,
+            position_store_3jamale = getLong("position_store_3jamale")?.toInt() ?: 0,
+            dernier_timeTamps_position_store_3jamale =
+                getLong("dernier_timeTamps_position_store_3jamale") ?: 0L,
+
+            // Prices
+            prixDefiniParGerant = getDouble("prixDefiniParGerant") ?: 0.0,
+            prixVent = getDouble("prixVent") ?: 0.0,
+            cachePrixVent = getBoolean("cachePrixVent") ?: false,
+            pourcentage_Prix_Progressive = getLong("pourcentage_Prix_Progressive")?.toInt() ?: 60,
+            prixAchat = getDouble("prixAchat") ?: 0.0,
+            prixAchatDernierTimeTempUpdate = getLong("prixAchatDernierTimeTempUpdate") ?: 0L,
+            clientPrixVentUnite = getDouble("clientPrixVentUnite") ?: 0.0,
+            afficheUniteAuPrint = getBoolean("afficheUniteAuPrint") ?: false,
+
+            // Images
+            actualiseSonImage = getLong("actualiseSonImage")?.toInt() ?: 0,
+            actualiseSonImageTest2 = getLong("actualiseSonImageTest2")?.toInt() ?: 0,
+            afficheCesDetailPourComptBsonId = getString("afficheCesDetailPourComptBsonId") ?: "",
+
+            // Disponibility
+            disponibilityEtates = getString("disponibilityEtates")
+                ?.let { name -> runCatching { DisponibilityEtates.valueOf(name) }.getOrNull() }
+                ?: DisponibilityEtates.NON_DISPO,
+            disponibilityEtates_Pour_presentaion_par_Camion =
+                getString("disponibilityEtates_Pour_presentaion_par_Camion")
+                    ?.let { name -> runCatching { DisponibilityEtates.valueOf(name) }.getOrNull() }
+                    ?: DisponibilityEtates.NON_DISPO,
+
+            keyFireBase = getString("keyFireBase") ?: "",
+
+            // Colours (string labels)
+            couleur1 = getString("couleur1"),
+            couleur2 = getString("couleur2"),
+            couleur3 = getString("couleur3"),
+            couleur4 = getString("couleur4"),
+            couleur5 = getString("couleur5"),
+            couleur6 = getString("couleur6"),
+            couleur7 = getString("couleur7"),
+            couleur8 = getString("couleur8"),
+            couleur9 = getString("couleur9"),
+
+            // Colour IDs
+            idcolor1 = getLong("idcolor1") ?: 1L,
+            idcolor2 = getLong("idcolor2") ?: 0L,
+            idcolor3 = getLong("idcolor3") ?: 0L,
+            idcolor4 = getLong("idcolor4") ?: 0L,
+            idcolor5 = getLong("idcolor5") ?: 0L,
+            idcolor6 = getLong("idcolor6") ?: 0L,
+            idcolor7 = getLong("idcolor7") ?: 0L,
+            idcolor8 = getLong("idcolor8") ?: 0L,
+            idcolor9 = getLong("idcolor9") ?: 0L,
+
+            // Misc
+            nomCategorie2 = getString("nomCategorie2"),
+            affichageUniteState = getBoolean("affichageUniteState") ?: false,
+            commmentSeVent = getString("commmentSeVent"),
+            afficheBoitSiUniter = getString("afficheBoitSiUniter"),
+            minQuan = getLong("minQuan")?.toInt() ?: 0,
+            monBenfice = getDouble("monBenfice") ?: 0.0,
+            neaon2 = getString("neaon2") ?: "",
+            funChangeImagsDimention = getBoolean("funChangeImagsDimention") ?: false,
+            nomCategorie = getString("nomCategorie") ?: "",
+            neaon1 = getDouble("neaon1") ?: 0.0,
+            lastUpdateState = getString("lastUpdateState") ?: "",
+            dateCreationCategorie = getString("dateCreationCategorie") ?: "",
+            prixDeVentTotaleChezClient = getDouble("prixDeVentTotaleChezClient") ?: 0.0,
+            benficeTotaleEntreMoiEtClien = getDouble("benficeTotaleEntreMoiEtClien") ?: 0.0,
+            benificeTotaleEn2 = getDouble("benificeTotaleEn2") ?: 0.0,
+            monPrixAchatUniter = getDouble("monPrixAchatUniter") ?: 0.0,
+            monPrixVentUniter = getDouble("monPrixVentUniter") ?: 0.0,
+            articleHaveUniteImages = getBoolean("articleHaveUniteImages") ?: false,
+            itsNewArrivale = getBoolean("itsNewArrivale") ?: false,
+            imageDimention = getString("imageDimention") ?: "",
+            idForSearchArticles = getLong("idForSearchArticles") ?: 0L,
+
+            // Quantity representation
+            setIN_Vent_Its_Quantity_Represent = getString("setIN_Vent_Its_Quantity_Represent")
+                ?.let { name ->
+                    runCatching {
+                        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.valueOf(name)
+                    }.getOrNull()
+                } ?: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
+            quantite_Boit_Par_Carton = getLong("quantite_Boit_Par_Carton")?.toInt() ?: 1,
+
+            prioriter = getString("prioriter")
+                ?.let { name -> runCatching { Prioriter.valueOf(name) }.getOrNull() },
+        )
+    } catch (e: Exception) {
+        null   // Return null so mapNotNull() silently skips malformed documents
+    }
 }
