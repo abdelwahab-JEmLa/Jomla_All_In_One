@@ -1,5 +1,7 @@
 package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog
 
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.ActivationTigger
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.D1_CategoryOptionGridCard
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -59,6 +61,7 @@ private const val TAG = "CategorySelectionDialog"
 
 @Composable
 fun CategorySelectionDialog(
+    activation: Boolean = ActivationTigger.Categories16.activation,
     product: M01Produit,
     allCategories: List<M16CategorieProduit>?,
     allProducts: List<M01Produit>?, // For calculating products per category
@@ -99,8 +102,7 @@ fun CategorySelectionDialog(
 
     // Calculate products per category for filtering and display
     val productsByCategory = remember(allProducts) {
-        allProducts
-            ?.mapNotNull { product -> product.idParentCategorie?.let { it to product } }
+        allProducts?.mapNotNull { product -> product.idParentCategorie?.let { it to product } }
             ?.groupBy({ it.first }, { it.second }) ?: error("err")
     }
 
@@ -147,10 +149,7 @@ fun CategorySelectionDialog(
     }
 
     val filteredCategoriesByCatalogue by remember(
-        categoriesByCatalogue,
-        searchText,
-        filterWithProducts,
-        availableCategories
+        categoriesByCatalogue, searchText, filterWithProducts, availableCategories
     ) {
         derivedStateOf {
             val result = categoriesByCatalogue.mapValues { (_, categories) ->
@@ -192,11 +191,8 @@ fun CategorySelectionDialog(
     }
 
     Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = false
+        onDismissRequest = onDismiss, properties = DialogProperties(
+            dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = false
         )
     ) {
         Surface(
@@ -233,12 +229,10 @@ fun CategorySelectionDialog(
                             }
                         }) {
                             Card(
-                                modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
+                                modifier = Modifier.size(48.dp), colors = CardDefaults.cardColors(
                                     containerColor = if (showSearch) MaterialTheme.colorScheme.secondary
                                     else MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                shape = RoundedCornerShape(12.dp)
+                                ), shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -259,12 +253,10 @@ fun CategorySelectionDialog(
                             Log.d(TAG, "Filter with products: $filterWithProducts")
                         }) {
                             Card(
-                                modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
+                                modifier = Modifier.size(48.dp), colors = CardDefaults.cardColors(
                                     containerColor = if (filterWithProducts) MaterialTheme.colorScheme.tertiary
                                     else MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                shape = RoundedCornerShape(12.dp)
+                                ), shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -283,11 +275,9 @@ fun CategorySelectionDialog(
                         // Add new category
                         IconButton(onClick = createCategoryFromSearchText) {
                             Card(
-                                modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
+                                modifier = Modifier.size(48.dp), colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.primary
-                                ),
-                                shape = RoundedCornerShape(12.dp)
+                                ), shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -335,10 +325,8 @@ fun CategorySelectionDialog(
                                 if (searchText.trim().isNotEmpty()) {
                                     createCategoryFromSearchText()
                                 }
-                            }
-                        ),
-                        singleLine = true
-                    )
+                            }),
+                        singleLine = true)
                 }
 
                 // Product name
@@ -397,19 +385,16 @@ fun CategorySelectionDialog(
                             item(span = { GridItemSpan(4) }) {
                                 CatalogHeaderCard(
                                     catalogue = M21CataloguesCategorie(
-                                        id = 0,
-                                        nom = "Sans Catégorie",
-                                        premierCategorieId = 0
-                                    ),
-                                    modifier = Modifier.padding(bottom = 4.dp)
+                                        id = 0, nom = "Sans Catégorie", premierCategorieId = 0
+                                    ), modifier = Modifier.padding(bottom = 4.dp)
                                 )
                             }
                             item {
-                                _root_ide_package_.EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.D1_CategoryOptionGridCard(
+                                D1_CategoryOptionGridCard(
                                     categorie = sansCategorieCategory,
                                     categoryId = null,
                                     categoryName = "Sans Catégorie",
-                                    isSelected = product.idParentCategorie == null || product.idParentCategorie == 0L,
+                                    isSelected = product.idParentCategorie == 0L,
                                     onClick = {
                                         Log.d(
                                             TAG,
@@ -433,9 +418,10 @@ fun CategorySelectionDialog(
                                 )
                             }
                             items(categories) { category ->
-                                val productsInThisCategory = productsByCategory[category.id] ?: emptyList()
+                                val productsInThisCategory =
+                                    productsByCategory[category.id] ?: emptyList()
 
-                                _root_ide_package_.EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.D1_CategoryOptionGridCard(
+                                D1_CategoryOptionGridCard(
                                     categorie = category,
                                     categoryId = category.id,
                                     categoryName = category.nom,

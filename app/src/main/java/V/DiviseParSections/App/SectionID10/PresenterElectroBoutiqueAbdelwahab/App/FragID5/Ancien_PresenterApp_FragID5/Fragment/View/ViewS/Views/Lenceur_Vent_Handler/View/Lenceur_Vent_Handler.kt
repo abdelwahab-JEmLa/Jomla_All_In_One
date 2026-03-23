@@ -196,9 +196,10 @@ fun Lenceur_Vent_Handler_FragID3(
                 FastInit_Outlined_Int_Edite_Modulable_Proto3(
                     start_count = currentCartons,
                     au_depot = depotEnCartons,
-                    startCouleur =Color(0xFFF44336),
+                    standard_count = 1,                          // 1 carton per first-click
+                    startCouleur = Color(0xFFF44336),
                     icon = Icons.Default.Inventory2,
-                    isAvailable = isAvailable,                        // 1 carton per first-click
+                    isAvailable = isAvailable,
                     compact_taille = compactMode,
                     show_depot_card_on_top_in_flow_row = true,
                     is_admin = isAdmin,

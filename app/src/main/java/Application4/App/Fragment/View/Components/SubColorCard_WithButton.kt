@@ -3,7 +3,7 @@ package Application4.App.Fragment.View.Components
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.ColorImageCard_FragID3
-import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_FragID3
+import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
@@ -54,7 +54,7 @@ fun SubColorCard_WithButton(
         )
 
         shouldShowButtons.ifTrue {
-            Lenceur_Vent_Handler_FragID3(
+            Lenceur_Vent_Handler_App4(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 selectedCouleur = couleur,

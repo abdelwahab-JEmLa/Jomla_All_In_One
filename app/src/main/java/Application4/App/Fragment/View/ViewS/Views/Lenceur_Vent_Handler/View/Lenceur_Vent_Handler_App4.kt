@@ -2,11 +2,12 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.FastInit_Outlined_Int_Edite_Modulable_Proto3
+import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -35,7 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Lenceur_Vent_Handler_FragID3(
+fun Lenceur_Vent_Handler_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
     relative_M8BonVent: M8BonVent? = null,
@@ -106,7 +107,6 @@ fun Lenceur_Vent_Handler_FragID3(
     }
 
     fun handleLenceVent(newQuantity: Int) {
-
         val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
         val currentOp   = currentList?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
@@ -141,11 +141,7 @@ fun Lenceur_Vent_Handler_FragID3(
             if (isNew) (currentList ?: emptyList()) + operationToUse
             else currentList?.map { if (it.keyID == operationToUse.keyID) operationToUse else it }
 
-        val sizeBefore = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.size
         viewModel.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedFilteredList)
-        val sizeAfter  = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.size
-        val opAfter    = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-            ?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
         val updatedCouleur =
             if (isGrossist || quantityChange == 0) null
@@ -173,35 +169,63 @@ fun Lenceur_Vent_Handler_FragID3(
     } else {
         MaterialTheme.colorScheme.primary
     }
+    val boitParCarton = relative_M1produit.quantite_Boit_Par_Carton
+    val currentCartons = if (boitParCarton > 0) currentQuantity / boitParCarton else 0
+    val depotEnCartons = if (boitParCarton > 0) au_depot / boitParCarton else 0
 
-    Box(
-        modifier = modifier
-            .semantics(mergeDescendants = true) {
-                set(
-                    value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
-                    key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent")
-                )
-            }
-            .fillMaxWidth()
-            .clip(shape)
-            .background(containerColor.copy(alpha = 0.15f))
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        contentAlignment = Alignment.CenterEnd
+    androidx.compose.foundation.layout.Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
     ) {
-        FastInit_Outlined_Int_Edite_Modulable_Proto3(
-            start_count = currentQuantity,
-            au_depot = au_depot,
-            standard_count = standardCount,
-            icon = Icons.Default.ShoppingCart,
-            isAvailable = isAvailable,
-            compact_taille = compactMode,
-            show_depot_card_on_top_in_flow_row = true,
-            is_admin = isAdmin,
-            add_spacing_between_depot_and_sale = isAdmin,
-            on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) },
-            on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
-        )
-    }
+        if (boitParCarton > 1 && isAdmin) {
+            CartonVentHandler_App4(
+                currentCartons = currentCartons,
+                depotEnCartons = depotEnCartons,
+                isAvailable = isAvailable,
+                isAdmin = isAdmin,
+                compactMode = compactMode,
+                containerColor = containerColor,
+                horizontalPadding = horizontalPadding,
+                verticalPadding = verticalPadding,
+                onDepotUpdate = { newDepotCartons ->
+                    handleDepotUpdate(newDepotCartons * boitParCarton)
+                },
+                onVentUpdate = { newCartons ->
+                    handleLenceVent(newCartons * boitParCarton)
+                },
+            )
+        }
+
+        // ── Boit / unit handler ───────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
+                        key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent")
+                    )
+                }
+                .fillMaxWidth()
+                .clip(shape)
+                .background(containerColor.copy(alpha = 0.15f))
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            FastInit_Outlined_Int_Edite_Modulable_Proto4(
+                start_count = currentQuantity,
+                au_depot = au_depot,
+                standard_count = standardCount,
+                icon = Icons.Default.ShoppingCart,
+                isAvailable = isAvailable,
+                compact_taille = compactMode,
+                show_depot_card_on_top_in_flow_row = true,
+                is_admin = isAdmin,
+                add_spacing_between_depot_and_sale = isAdmin,
+                on_admin_depot_update = { newDepotCount -> handleDepotUpdate(newDepotCount) },
+                on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
+            )
+        }
+    } // end Column
 
     depotAlertInfo?.let { alertInfo ->
         DepotAlertDialog(alertInfo = alertInfo, onDismiss = { depotAlertInfo = null })

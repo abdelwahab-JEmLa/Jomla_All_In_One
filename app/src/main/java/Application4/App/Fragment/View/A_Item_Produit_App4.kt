@@ -5,34 +5,24 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatter
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
 import Application4.App.Fragment.View.ViewS.Compact_Header_FragID4
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,15 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -278,7 +263,11 @@ fun A_Item_Produit_App4(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
-                if (centralValues.currentApp_Est_Admin && (currentCatalogue != null || currentCategory != null)) {
+
+                if (centralValues.currentApp_Est_Admin
+                    && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
+                    && (currentCatalogue != null || currentCategory != null)
+                ) {
                     CategoryBadge(
                         catalogueName = currentCatalogue?.nom,
                         categoryName = currentCategory?.nom,
@@ -302,7 +291,7 @@ fun A_Item_Produit_App4(
                     onUpdateProduit = { viewModel.update_m1Produit(it) },
                     affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
                             || centralValues.activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
-                    onDelete = {viewModel.delete_m1Produit(it)},
+                    onDelete = { viewModel.delete_m1Produit(it) },
                     modifier = modifier
                 )
 
@@ -384,59 +373,3 @@ fun A_Item_Produit_App4(
     }
 }
 
-@Composable
-private fun CategoryBadge(
-    catalogueName: String?,
-    categoryName: String?,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f))
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Default.Category,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(16.dp)
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                if (catalogueName != null) {
-                    Text(
-                        text = catalogueName,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                Text(
-                    text = categoryName ?: "Sans Catégorie",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Changer catégorie",
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(14.dp)
-            )
-        }
-    }
-}

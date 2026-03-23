@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
+package EntreApps.Shared.Modules.Utils.M1.Module.Views
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -66,7 +66,7 @@ private fun vibrateOnUpdate(context: Context) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FastInit_Outlined_Int_Edite_Modulable_Proto3(
+fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     start_count: Int,
     au_depot: Int = 0,
     standard_count: Int = 1,
