@@ -1,7 +1,9 @@
 package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie
 
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.ActivationTigger
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.FunctionsBase.ifTrue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,18 +37,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
 @Composable
-fun CategoryOptionGridCard(
+fun D1_CategoryOptionGridCard(
+    activation: Boolean = ActivationTigger.Categories16.activation,
     categorie: M16CategorieProduit,
     categoryId: Long?,
     categoryName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
-    productsInCategory: List<M01Produit> = emptyList(), // Pass products as parameter
-    // Slot API: caller injects image composable (e.g. Image_Displaye) per product.
-    // Receives the product to display, or null for the placeholder case.
+    productsInCategory: List<M01Produit> = emptyList(),
     imageContent: @Composable (product: M01Produit?) -> Unit = {},
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
@@ -58,82 +58,83 @@ fun CategoryOptionGridCard(
 
     val displayProduct = displayProducts.firstOrNull()
     val displayProduct2 = displayProducts.getOrNull(1)
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 4.dp else 2.dp
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+    activation.ifTrue {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = if (isSelected) 4.dp else 2.dp
+            ),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(onClick = onClick),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                // Product images at the top
-                if (displayProduct != null) {
-                    Row {
-                        imageContent(displayProduct)
-                        if (displayProduct2 != null) {
-                            imageContent(displayProduct2)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(onClick = onClick),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // Product images at the top
+                    if (displayProduct != null) {
+                        Row {
+                            imageContent(displayProduct)
+                            if (displayProduct2 != null) {
+                                imageContent(displayProduct2)
+                            }
                         }
+                    } else {
+                        // Show placeholder when no product is available for this category
+                        imageContent(null)
                     }
-                } else {
-                    // Show placeholder when no product is available for this category
-                    imageContent(null)
+
+                    // Category name positioned below the image
+                    Text(
+                        text = categoryName,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 11.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                    )
                 }
 
-                // Category name positioned below the image
-                Text(
-                    text = categoryName,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 11.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            // Selection indicator
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Sélectionné",
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                        .size(12.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            // Edit button
-            if (onEditName != null && categoryId != null) {
-                IconButton(
-                    onClick = { showEditDialog = true },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(16.dp)
-                ) {
+                // Selection indicator
+                if (isSelected) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Modifier",
-                        modifier = Modifier.size(10.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Sélectionné",
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                            .size(12.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
+                }
+
+                // Edit button
+                if (onEditName != null && categoryId != null) {
+                    IconButton(
+                        onClick = { showEditDialog = true },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Modifier",
+                            modifier = Modifier.size(10.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }

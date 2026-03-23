@@ -3,7 +3,7 @@ package Application4.App.Fragment.ID1.Fragment
 import Application4.App.Fragment.ID1.Fragment.Filter.Contetn
 import Application4.App.Fragment.ID1.Fragment.Filter.GroupTunnel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategorySelectionDialog
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import androidx.compose.foundation.layout.Box

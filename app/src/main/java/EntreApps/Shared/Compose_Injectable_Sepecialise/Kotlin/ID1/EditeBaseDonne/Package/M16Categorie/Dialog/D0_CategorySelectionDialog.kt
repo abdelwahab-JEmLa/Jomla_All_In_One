@@ -1,4 +1,4 @@
-package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie
+package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
@@ -405,13 +405,16 @@ fun CategorySelectionDialog(
                                 )
                             }
                             item {
-                                CategoryOptionGridCard(
+                                _root_ide_package_.EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.D1_CategoryOptionGridCard(
                                     categorie = sansCategorieCategory,
                                     categoryId = null,
                                     categoryName = "Sans Catégorie",
                                     isSelected = product.idParentCategorie == null || product.idParentCategorie == 0L,
                                     onClick = {
-                                        Log.d(TAG, "Selected 'Sans Catégorie' for product: ${product.nom}")
+                                        Log.d(
+                                            TAG,
+                                            "Selected 'Sans Catégorie' for product: ${product.nom}"
+                                        )
                                         onCategorySelected(null)
                                     },
                                     onEditName = null,
@@ -432,7 +435,7 @@ fun CategorySelectionDialog(
                             items(categories) { category ->
                                 val productsInThisCategory = productsByCategory[category.id] ?: emptyList()
 
-                                CategoryOptionGridCard(
+                                _root_ide_package_.EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.D1_CategoryOptionGridCard(
                                     categorie = category,
                                     categoryId = category.id,
                                     categoryName = category.nom,
