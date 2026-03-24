@@ -29,7 +29,9 @@ object ActiveDatasFragNewProtoFlows {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,
-        allCatalogues: List<M21CataloguesCategorie>,
+        // FIX TODO(1) + TODO(2.C): only the active catalogue is passed in; the full list
+        // was the reason every catalogue (e.g. "cosmétique") was always rendered.
+        activeCatalogue: M21CataloguesCategorie,
         allColours: List<M3CouleurProduitInfos>,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<List<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>>> {
@@ -38,7 +40,8 @@ object ActiveDatasFragNewProtoFlows {
         return dao_M16CategorieProduit.getAllFlow().map { allCategories ->
             val allProducts = activeDatasFragNewProto.list_M1Produit
 
-            allCatalogues.mapNotNull { catalogue ->
+            // Only iterate the single active catalogue, not the full list.
+            listOf(activeCatalogue).mapNotNull { catalogue ->
                 val categoriesForCatalogue = allCategories.filter { it.catalogueParentId == catalogue.id }
 
                 val categoryProductColourTree = categoriesForCatalogue.mapNotNull { category ->

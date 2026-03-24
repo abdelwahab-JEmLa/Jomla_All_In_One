@@ -3,7 +3,6 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel.Init
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.ActiveDatasFragNewProtoFlows
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -108,16 +107,17 @@ private fun ViewModel_NewProtoPatterns.subInit_collectFilteredProductTree() {
     viewModelScope.launch(Dispatchers.IO) {
         _uiStateNewProtoPatterns.collect { state ->
             val allColours = state.list_Datas?.m3CouleurProduit ?: return@collect
-            val allCatalogues = get_ListM21CataloguesCategorie()
+            // FIX TODO(1) + TODO(2.C): use active_M21Catalogue only, not the full catalogue list.
+            // Passing the full list caused every catalogue to be rendered regardless of selection.
             ActiveDatasFragNewProtoFlows.getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
-                    dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
-                    allCatalogues = allCatalogues,
-                    allColours = allColours,
-                    activeDatasFragNewProto = active_Datas,
-                ).collect { tree ->
-                    active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
-                        tree
-                }
+                dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
+                activeCatalogue = active_Datas.active_M21Catalogue,
+                allColours = allColours,
+                activeDatasFragNewProto = active_Datas,
+            ).collect { tree ->
+                active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
+                    tree
+            }
         }
     }
 }

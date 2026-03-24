@@ -50,7 +50,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+//<--
+//TODO(1): pk le catalogue cosmitique s affiche meem si
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier.Companion,
@@ -134,13 +135,17 @@ fun Etager_LazyColumn(
         userScrollEnabled = isScrollEnabled
     ) {
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
-            if (categoriesWithProducts.isEmpty()) return@forEach
+            // Skip the whole catalogue (including its header) if no category has active products.
+            val hasActiveProducts = categoriesWithProducts.any { (_, productColorPairs) -> productColorPairs.isNotEmpty() }
+            if (!hasActiveProducts) return@forEach
 
             item(key = "catalogue_header_${catalogue.id}", span = StaggeredGridItemSpan.Companion.FullLine) {
                 CatalogueHeader(catalogue = catalogue)
             }
 
             categoriesWithProducts.forEach { (category, productColorPairs) ->
+                if (productColorPairs.isEmpty()) return@forEach  // skip categories with no products
+
                 if (category.displayedHeader) {
                     item(key = "category_header_${category.id}", span = StaggeredGridItemSpan.Companion.FullLine) {
                         CategoryStickyHeader(

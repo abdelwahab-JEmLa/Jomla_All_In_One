@@ -1,4 +1,4 @@
-package Application4.App.Fragment.View.ViewS.A_Header.View
+package Application4.App.Fragment.View.Components.A_Header.View
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.FastInit_Outlined_Int_Edite_Modulable_Proto4
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditableInfoCard(
+ fun EditableInfoCard(
     icon: @Composable () -> Unit,
     value: String,
     label: String,

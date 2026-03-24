@@ -2,7 +2,7 @@ package Application4.App.Fragment.View.Components
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import Application4.App.Fragment.View.ViewS.A_Header.View.ColorImageCard_FragID3
+import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import Application4.App.Fragment.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
 import EntreApps.Shared.Models.M01Produit
@@ -23,49 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
-/**
- * Extension function to update tariff for all product operations
- */
-fun ACentralFacade.updateTariffForProductOperations(
-    productKeyId: String,
-    newTariff: M13TarificationInfos
-) {
-    val currentBonVentKey = focusedActiveValuesFacade
-        .focusedValuesGetter.activeOnVent_M8BonVent?.keyID ?: return
-
-    // Find all operations for this product in the current bon vent
-    val relatedOperations = repositorysMainGetter.repo10OperationVentCouleur
-        .onVentFilteredDatas
-        .filter {
-            it.parent_M1Produit_KeyId == productKeyId &&
-                    it.parent_M8BonVent_KeyId == currentBonVentKey
-        }
-
-    // Update each operation with the new tariff
-    val updatedOperations = relatedOperations.map { operation ->
-        operation.copy(
-            parentM13TarificationKeyID = newTariff.keyID,
-            parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
-            typeTarificationEnumT2 = newTariff.typeChoisi,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
-
-    // Save all updated operations
-    updatedOperations.forEach { updatedOperation ->
-        repositorysMainGetter.repo10OperationVentCouleur.update_If_Exist(updatedOperation)
-    }
-
-    // Save tariff relationship if there are operations
-    if (updatedOperations.isNotEmpty()) {
-        repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-            newTariff,
-            updatedOperations,
-            this
-        )
-    }
-}
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)

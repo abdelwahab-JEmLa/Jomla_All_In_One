@@ -1,4 +1,4 @@
-package Application4.App.Fragment.View.ViewS.A_Header.View
+package Application4.App.Fragment.View.Components.A_Header.View
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.Prioriter

@@ -1,4 +1,4 @@
-package Application4.App.Fragment.View.ViewS.A_Header.View
+package Application4.App.Fragment.View.Components.A_Header.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
