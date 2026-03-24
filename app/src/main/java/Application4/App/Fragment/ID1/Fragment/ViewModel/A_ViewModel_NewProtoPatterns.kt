@@ -1,10 +1,8 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Init.Initializer
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.ActiveDatasFragNewProto
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.List_Datas
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
@@ -49,7 +47,6 @@ class A_ViewModel_NewProtoPatterns(
         context = context
     ),
 ) : ViewModel() {
-
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
     val active_Datas = ActiveDatasFragNewProto()
@@ -181,12 +178,21 @@ class A_ViewModel_NewProtoPatterns(
         )
         return true
     }
-
+    //<--
+    //TODO(1): extract depuit ici 
+    //<--
+    //TODO(1): ajout update_Active_Compt //<--
+    //TODO(1): ca update activeDatas et utilis       repositorysMainSetter_NewProtoPatterns.  update_M9()
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
         repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
 
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
         repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
+
+    fun update_active_Compt(compt: Z_AppCompt) {
+        active_Datas.active_M9Compt = compt
+        repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
+    }
 
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) {
         active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
@@ -264,6 +270,8 @@ class A_ViewModel_NewProtoPatterns(
 
     fun update_activeCentralValues(new: ActiveCentralValues) =
         focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-
+       //<--
+       //TODO(2.C Relative Au Todo(1): 
+               //... a ici a Update_Functions_Vm
     override fun onCleared() = super.onCleared()
 }

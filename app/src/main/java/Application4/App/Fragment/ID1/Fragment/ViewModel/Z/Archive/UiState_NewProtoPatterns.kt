@@ -1,4 +1,4 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive
+package Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos

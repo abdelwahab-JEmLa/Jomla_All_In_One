@@ -1,4 +1,4 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel.Model
+package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit

@@ -22,7 +22,7 @@ class RepositorysMainSetter_NewProtoPatterns(
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    // -------------------------------------------------------------------------
+        // -------------------------------------------------------------------------
     // M01Produit
     // -------------------------------------------------------------------------
 
@@ -146,9 +146,68 @@ class RepositorysMainSetter_NewProtoPatterns(
     }
 
     // -------------------------------------------------------------------------
-    // Z_AppCompt
+    // M9AppCompt
+    // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
 
+    /**
+     * Inserts a new M9AppCompt (compte) into the database and Firebase
+     */
+    fun insert_M9AppCompt(
+        data: Z_AppCompt,
+        onSuccess: () -> Unit = {}
+    ) {
+        if (data.keyID.isBlank()) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Erreur : données du compte invalides", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+        composScope.launch {
+            try {
+                appDatabase.dao_M9AppCompt().insert(data)
+                val updates = mutableMapOf<String, Any>(data.keyID to data)
+                Z_AppCompt.ref.updateChildren(updates).await()
+                withContext(Dispatchers.Main) { onSuccess() }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Erreur lors de l'insertion : ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates an existing M9AppCompt (compte) in the database and Firebase
+     */
+    fun update_M9AppCompt(
+        data: Z_AppCompt,
+        onSuccess: () -> Unit = {}
+    ) {
+        if (data.keyID.isBlank()) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+        composScope.launch {
+            try {
+                appDatabase.dao_M9AppCompt().update(data)
+                val updates = mutableMapOf<String, Any>(data.keyID to data)
+                Z_AppCompt.ref.updateChildren(updates).await()
+                withContext(Dispatchers.Main) { onSuccess() }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Erreur lors de la mise à jour : ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+    
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
         produit: M01Produit,
         currentAppCompt: Z_AppCompt

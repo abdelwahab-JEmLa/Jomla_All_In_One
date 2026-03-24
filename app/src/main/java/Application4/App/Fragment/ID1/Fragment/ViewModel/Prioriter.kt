@@ -1,4 +1,4 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel.Model
+package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 enum class Prioriter {
     Dernier_VentAchat_Est_Trop_Luin,

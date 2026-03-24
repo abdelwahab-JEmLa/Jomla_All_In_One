@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun EditableInfoCard(
+fun EditableInfoCard(
     icon: @Composable () -> Unit,
     value: String,
     label: String,

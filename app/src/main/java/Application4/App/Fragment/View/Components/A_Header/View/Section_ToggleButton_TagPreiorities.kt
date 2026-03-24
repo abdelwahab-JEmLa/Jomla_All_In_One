@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import EntreApps.Shared.Models.M01Produit
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -117,7 +117,7 @@ fun Section_ToggleButton_TagPreiorities(
                         },
                         label = {
                             Text(
-                                text = prioriter.label(),
+                                text = prioriter.name,
                                 fontSize = 8.sp,
                                 lineHeight = 10.sp
                             )
